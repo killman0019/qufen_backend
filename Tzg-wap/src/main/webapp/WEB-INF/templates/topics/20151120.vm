@@ -1,0 +1,356 @@
+#set($layout = "/layout/blank.vm")
+#set($activityCode = "20151120")
+#set($activityTitle = "铜掌柜理财")
+#set($imagePath = "$!{staticPath}/pics/topics/$!{activityCode}/images")
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>$!{activityTitle}_铜掌柜，小理财大生活_互联网金融服务平台_网络投资理财首选</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="renderer" content="webkit">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no">
+<meta name="basepath" content="$!{basePath}" id="j_basepath">
+<meta name="staticpath" content="$!{staticPath}" id="j_staticpath">
+<link rel="icon" href="$!{staticPath}/images/favicon.ico">
+<link rel="shortcut icon" href="$!{staticPath}/images/favicon.ico">
+<style type="text/css">
+html {
+	height: 100%;
+	font-size: 62.5%;
+	background: #c73232;
+}
+@media screen and (max-width: 560px) {
+	html {
+		font-size: 8.75px;
+	}
+}
+@media screen and (max-width: 480px) {
+	html {
+		font-size: 7.5px;
+	}
+}
+@media screen and (max-width: 400px) {
+	html {
+		font-size: 6.25px;
+	}
+}
+body {
+	margin: 0 auto;
+	max-width: 640px;
+	min-width: 320px;
+	min-height: 100%;
+	font-family: 'Microsoft Yahei', sans-serif;
+	font-size: 2.4rem;
+	background: #c73232;
+    position: relative;
+}
+input, button {
+	font-size: 2.4rem;
+	font-family: 'Microsoft Yahei', sans-serif;
+}
+ul,li{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.topic-container {
+}
+.topic-container img {
+	vertical-align: top;
+	width: 100%;
+}
+.reg-ct{
+    position: absolute;
+    width: 90%;
+    left: 50%;
+    margin-left: -45%;
+    top: -15%;
+}
+.topic-reg-box{
+    margin: 8% auto 8% auto;
+    /*position: absolute;*/
+    /*top:5%;*/
+    width: 100%;
+}
+    .form-items{
+        /*border:1px solid #ffffff;*/
+        border-radius: 5px;
+        width: 100%;
+    }
+
+    .form-item{
+        width: 90%;
+        /*line-height: 45px;*/
+        /*height: 45px;*/
+        padding:1.5% 0;
+        margin: 0 auto;
+    }
+.form-item .txt{
+    width: 100%;
+    padding: 0;
+    margin: 0 auto;
+    display: block;
+    line-height: 40px;
+    border: none;
+    background: #fff;
+    color: #54556c;
+    outline: none;
+    border-radius: 5px;
+    text-indent: 28%;
+}
+.form-item.txt-line{
+    /*border-bottom: 1px solid #3a3b4c;*/
+}
+    .captcha{
+        position: relative;
+    }
+    #j_send_captcha{
+        position: absolute;
+        right: 5px;
+        top: 2px;
+        background-color: #ff5161;
+        width: 30%;
+        /* min-width: 130px; */
+        text-align: center;
+        color: #fff;
+        text-decoration: none;
+        height: 36px;
+        line-height: 36px;
+    }
+    .submit-btn_btn{
+        background: url("$imagePath/btn.png");
+        background-size: cover;
+        width: 210px;
+        height: 37px;
+        text-indent: -9999px;
+        text-align: center;
+        color: #242538;
+        display: block;
+        border: none;
+
+        margin: 5% auto 0 auto;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .form-error{
+        height: 40px;
+        color: #fff;
+        font-size: 2rem;
+    }
+    #j_agree_protocol{
+        margin-left: 5%;
+        height: auto;
+    }
+
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color: #54556c;
+}
+
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color: #54556c;
+}
+
+input:-ms-input-placeholder,
+textarea:-ms-input-placeholder {
+    color: #54556c;
+}
+
+input::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder {
+    color: #54556c;
+}
+#j_send_captcha.z-gray{
+    background-color: #999;
+    font-size: 1.8rem;
+}
+input[type="button"], input[type="submit"], input[type="reset"] {
+    -webkit-appearance: none;
+}
+    .pt{
+        position: relative;
+    }
+.m-ppp {
+    position: fixed;
+    top: 100%;
+    left: 0;
+    z-index: 5;
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+    -webkit-transition: top 0.2s ease-out;
+    -moz-transition: top 0.2s ease-out;
+    transition: top 0.2s ease-out;
+}
+.m-ppp.z-opened {
+    top: 0;
+    -webkit-transition: top 0.2s ease-out;
+    -moz-transition: top 0.2s ease-out;
+    transition: top 0.2s ease-out;
+}
+.m-ppp-hd,
+.m-ppp-ft {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 44px;
+    text-align: center;
+    background-color: #fff;
+}
+.m-ppp-hd {
+    top: 0;
+    line-height: 44px;
+    font-size: 16px;
+    -webkit-box-shadow: 0 3px 3px rgba(0, 91, 172, 0.15);
+    -moz-box-shadow: 0 3px 3px rgba(0, 91, 172, 0.15);
+    box-shadow: 0 3px 3px rgba(0, 91, 172, 0.15);
+}
+.m-ppp-ft {
+    bottom: 0;
+    -webkit-box-shadow: 0 -3px 3px rgba(0, 91, 172, 0.15);
+    -moz-box-shadow: 0 -3px 3px rgba(0, 91, 172, 0.15);
+    box-shadow: 0 -3px 3px rgba(0, 91, 172, 0.15);
+}
+.m-ppp-bd {
+    margin: 44px 0;
+    height: 100%;
+}
+.m-ppp-bd-cnt {
+    box-sizing: border-box;
+    padding: 10px 3% 100px;
+    height: 100%;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.u-btn,
+.u-btn--lnk {
+    display: inline-block;
+    box-sizing: border-box;
+    padding: 0 3%;
+    height: 44px;
+    border: none;
+    border-radius: 3px;
+    font-size: 16px;
+    line-height: 44px;
+    color: #666;
+    white-space: nowrap;
+    vertical-align: middle;
+    text-align: center;
+    background: none;
+}
+.u-btn.z-fll,
+.u-btn--lnk.z-fll {
+    width: 100%;
+}
+    .u-clPrm{
+        color: #000;
+    }
+    .form-item-inner{
+        position: relative;
+    }
+    .form-item-inner .title{
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 30%;
+        height: 40px;
+        line-height: 40px;
+        text-indent: 8px;
+        font-size: 2.4rem;
+    }
+.form-item-inner .title-3{
+    width: 26%;
+}
+    .form-item-inner-short .txt{
+        /*text-indent: 26%;*/
+    }
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color: #999999;
+}
+
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color: #999999;
+}
+
+input:-ms-input-placeholder,
+textarea:-ms-input-placeholder {
+    color: #999999;
+}
+
+input::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder {
+    color: #999999;
+}
+    #agreeProtocol-error{
+        display: block;
+        margin-left: 15px;
+    }
+</style>
+</head>
+<body>
+	<div class="topic-container">
+		<img src="$imagePath/wap_bg1.png?v=12" alt="$activityTitle">
+        <img src="$imagePath/wap_bg2.png?v=1" alt="$activityTitle">
+        <div class="pt">
+            <img src="$imagePath/wap_bg3.png?v=1" alt="$activityTitle">
+            <div class="reg-ct">
+                <form method="post" class="topic-reg-box" action="$!{basePath}/register" novalidate id="j_register_form">
+                    <ul class="form-items">
+                        <li class="form-item txt-line">
+                            <div class="form-item-inner">
+                                <div class="form-content"><input type="number" class="txt " name="phoneNumber" placeholder="11位手机号码" maxlength="11"></div>
+                                <label class="title">手机号码:</label>
+                            </div>
+                        </li>
+                        <li class="form-item txt-line">
+                            <div class="form-item-inner form-item-inner-short">
+                                <div class="captcha">
+                                    <a href="javascript:;" class="btn" id="j_send_captcha">获取验证码</a>
+                                    <input type="text" class="txt " name="dynamicVerifyCode" placeholder="请输入验证码" maxlength="6">
+                                </div>
+                                <label class="title title-3">验证码:</label>
+                            </div>
+                        </li>
+                        <li class="form-item">
+                            <div class="form-item-inner">
+                                <div class="form-content"><input class="txt"  type="password" name="password" maxlength="20" placeholder="请设置登录密码" maxlength="20"></div>
+                                <label class="title">登录密码:</label>
+                            </div>
+
+                        </li>
+                        <label>
+                            <input type="checkbox" name="agreeProtocol" checked value="true" id="j_agree_protocol">
+                            已阅读并同意<a href="javascript:;" class="u-clPrm" id="j_protocol_btn">《融佰通注册协议》</a>
+                        </label>
+                    </ul>
+                    <input type="submit" name="submity" value="下一步"   class="submit-btn_btn" />
+                    <input type="hidden" name="bus" value="register">
+                    <input type="hidden" id="j_invite" name="inviteCode" value="$!{tzg_recommend_link_key}">
+
+                </form>
+                <div class="m-ppp" id="j_protocol_popup">
+                    <div class="m-ppp-hd">《融佰通注册协议》</div>
+                    <div class="m-ppp-bd">
+                        <div class="m-ppp-bd-cnt">
+                            <iframe src="https://upload.tzg.cn/upload/201505/RegisteregProtocol.html" frameborder="0" width="100%" height="100%" scrolling="yes"></iframe>
+                        </div>
+                    </div>
+                    <div class="m-ppp-ft">
+                        <button type="button" class="u-btn--lnk z-fll" pppclosebtn>确 定</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+	</div>
+    <div style="position:fixed;left:-150px;width:100px;">
+        ##百度统计
+        <img src="$sc.getBaidu($request,$response,'b274beec7e93e435fc242fc634bb5c73')" width="0" height="0" />
+        ##cnzz统计
+        <img src="$sc.getCnzz($request,$response,1254699603)" width="0" height="0" />
+    </div>
+</body>
+<script src="$!{staticPath}/js/modules/pages/topic-$!{activityCode}.js"></script>
+</html>

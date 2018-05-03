@@ -1,0 +1,53 @@
+#set($layout = "/layout/default2.vm")
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>投资记录</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="renderer" content="webkit">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="stylesheet" href="$!{basePath}/app/css/style.css?v=1020">
+</head>
+<body>
+	
+<ul class="tab">
+	<li><a href="project-intro.html">项目介绍</a></li>
+	<li><a href="project-safety.html">安全保障</a></li>
+	<li class="-active"><a href="project-invest-record.html">投资记录</a></li>
+	<li><a href="project-repayments.html">还款计划</a></li>
+</ul>
+
+
+<div class="container-spacing mtb">
+	<table class="dataset">
+		<thead>
+			<tr>
+				<th>投资人</th>
+				<th>投资金额(元)</th>
+				<th>投资时间</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>150****8888</td>
+				<td>8,888.00</td>
+				<td class="-datetime">2015/05/05 13:33:33</td>
+			</tr>
+			<tr>
+				<td>150****8888</td>
+				<td>8,888.00</td>
+				<td class="-datetime">2015/11/30 13:33:33</td>
+			</tr>
+			<tr>
+				<td>150****8888</td>
+				<td>8,888.00</td>
+				<td class="-datetime">2015/08/21 13:33:33</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+
+
+</body>
+</html>

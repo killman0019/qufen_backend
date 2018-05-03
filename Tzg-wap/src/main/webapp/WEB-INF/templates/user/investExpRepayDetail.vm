@@ -1,0 +1,48 @@
+#set($pageTitle = "回款计划_我的账户_投资人")
+#set($bodyClass = "body--gray")
+#set($topbar = {
+	"title": '体验标回款计划',
+	"backLink": "$!{basePath}/user/investRepayDetail/page"
+})
+
+#set($pageFootCode = '<script>seajs.use("page/invest-exprepay-detail")</script>')
+
+<ul class="m-tab">
+	<li#if (!$istate || $istate == 1) class="z-atv"#end><a href="$!{basePath}/user/investExperienceRepayDetail/page?istate=1">待回款明细</a></li>
+	<li#if ($istate == 2) class="z-atv"#end><a href="$!{basePath}/user/investExperienceRepayDetail/page?istate=2">已回款明细</a></li>
+</ul>
+<script type="text/template" id="j_list_template">
+[@each rows as item]
+<div class="m-lst-itm[@if item.istate == 4||item.istate == 5] z-gray[@/if]">
+	<div class="m-lst-itm-topInfo u-clGrayLgt">还款时间 $[item.dtRepayStr]</div>
+
+	<div class="m-lst-itm-boxHd">体验标 $[item.vcSubjectName]</div>
+	<div class="m-lst-itm-boxBd">
+		<ul class="m-dataGrp l-mn">
+			<li>
+				<span class="m-dataGrp-lbl">回款期次</span>
+				<span class="m-dataGrp-val">1/1</span>
+			</li>
+			<li>
+				<span class="m-dataGrp-lbl">应收本息（元）</span>
+				<span class="m-dataGrp-val">$[item.numRepayInterest]</span>
+			</li>
+			<li>
+				<span class="m-dataGrp-lbl">应收本金（元）</span>
+				<span class="m-dataGrp-val">0.00</span>
+			</li>
+			<li>
+				<span class="m-dataGrp-lbl">应收利息（元）</span>
+				<span class="m-dataGrp-val">$[item.numRepayInterest]</span>
+			</li>
+		</ul>
+	</div>
+</div>
+[@/each]
+</script>
+
+<div class="m-lst z-lne l-mn" id="j_list_container"></div>
+<div class="m-loadMr" id="j_load_more" style="display:none">
+	<a href="#" class="u-loadMr">点击查看更多</a>
+	<i class="u-fntIco--ldg"></i>
+</div>

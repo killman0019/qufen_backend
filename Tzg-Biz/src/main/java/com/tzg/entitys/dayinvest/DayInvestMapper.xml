@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.dayinvest.DayInvestMapper">
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.dayinvest.DayInvest">
+		<result property="id" jdbcType="INTEGER" column="id" />
+		<result property="iLoginAccountId" jdbcType="INTEGER" column="iLoginAccountID" />
+		<result property="numAmount" jdbcType="VARCHAR" column="iloginAccountName" />
+		<result property="vcProjectName" jdbcType="VARCHAR" column="vcProjectName" />
+		<result property="vcSubjectName" jdbcType="VARCHAR" column="vcSubjectName" />
+		<result property="numAmount" jdbcType="VARCHAR" column="iloginAccountName" />
+		<result property="numAmount" jdbcType="DECIMAL" column="numAmount" />
+		<result property="dtDate" jdbcType="TIMESTAMP" column="dtDate" />
+	</resultMap>
+
+	<sql id="columns">
+	    <![CDATA[
+        iLoginAccountID, numAmount, dtDate, numRate, vcSubjectName, vcProjectName, vcUserName
+	    ]]>
+	</sql>
+
+	<insert id="save" useGeneratedKeys="true" keyProperty="id">
+	<![CDATA[
+		INSERT INTO tbdayinvest (iLoginAccountID, numAmount, dtDate, numRate, vcSubjectName, vcProjectName, vcUserName)
+		SELECT find.* FROM (
+			SELECT	invset.iLoginAccountID iLoginAccountID, 
+					invset.numInvest numAmount, 
+					invset.dtCreate dtDate, 
+					invset.numInterestRate numRate,
+					`subject`.`vcName` vcSubjectName, 
+					project.vcName vcProjectName,
+					account.vcName vcUserName
+			FROM
+				(
+					SELECT iLoginAccountID, numInvest, dtCreate, numInterestRate, iSubjectID
+					FROM tbinvestrecord
+					WHERE DATE(dtCreate)= SUBDATE(CURRENT_DATE,INTERVAL 1 DAY)
+						AND numInvest>=10000
+						AND iState <> 3
+					ORDER BY numInvest DESC
+					LIMIT 0, 50
+				) invset
+			LEFT JOIN tbloginaccount account 
+					ON	account.id=invset.iLoginAccountID
+			LEFT JOIN tbsubject `subject` 
+					ON `subject`.id = invset.iSubjectId
+			LEFT JOIN tbproject project	
+					ON `subject`.iProjectID = project.id
+		) find
+	]]>
+	</insert>
+
+	<delete id="delete" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbdayinvest
+	]]>
+	</delete>
+
+	<select id="list" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT
+		<include refid="columns" /> 
+	<![CDATA[
+		FROM tbdayinvest 
+	]]>
+	</select>
+</mapper>

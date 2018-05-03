@@ -1,0 +1,18 @@
+#if($wapLoginSessionInfo)
+	#set($investLink = "$!{basePath}/subject/page")
+#else
+	#set($investLink = "$!{basePath}/register/page")
+#end
+<div class="topic-container" style="background:#ffd801"><img src="$!{staticPath}/pics/topics/gift/gift_01.jpg" alt=""><a href="$!{investLink}"><img src="$!{staticPath}/pics/topics/gift/gift_02.png" alt=""></a><img src="$!{staticPath}/pics/topics/gift/gift_03.png" alt=""><img src="$!{staticPath}/pics/topics/gift/gift_04.png" alt=""><img src="$!{staticPath}/pics/topics/gift/gift_05.png" alt=""><a href="$!{investLink}"><img src="$!{staticPath}/pics/topics/gift/gift_06.png" alt=""></a><div style="margin-top:20px;padding:20px 3%;color:#fff;font-size:16px;background:#21b6ce">
+<div style="margin:10px 0;font-size:24px;">活动规则：</div>
+<ol style="margin-left:30px;list-style:outside decimal;line-height:2">
+	<li>本次活动奖励仅限于活动期间内（2015.3.17-4.17）参与投标的用户；</li>
+	<li>投资红包的获取适用于投资铜掌柜所有标的，累计投资奖励每个账户限领一次；</li>
+	<li>实物奖励的获取仅适用于投资铜掌柜1个月以上期限标的，累计投资奖励每个账户限领一次；</li>
+	<li>活动结束后三个工作日内公布活动获奖名单，七个工作日内统一发放活动奖励；</li>
+	<li>投资红包奖励将直接发送到您的铜掌柜个人账户，实物奖励将在客服人员与您电话联系核实后进行发放；</li>
+	<li>本次活动投资红包有效期为6个月；</li>
+	<li>如有任何疑问请咨询在线客服或拨打平台服务电话：<a href="tel:4006082233" style="color:#fff">400-0311-798</a>；</li>
+	<li>本次活动最终解释权归铜掌柜所有。</li>
+</ol>
+</div><img src="$!{staticPath}/pics/topics/gift/gift_08.png" alt=""></div>

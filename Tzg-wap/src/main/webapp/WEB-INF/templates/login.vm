@@ -1,0 +1,38 @@
+#set($pageName = "登录")
+#set($bodyClass = "body--gray")
+#set($pageFootCode = '<script>seajs.use("page/login")</script>')
+#set($topbar = { "title": "登 录" })
+
+<form method="post" action="$!{basePath}/login" id="j_login_form">
+	#tokenCode
+	<ul class="m-frm2">
+		<li class="m-frm2-itm">
+			<label class="m-frm2-lbl"><i class="u-fntIco">&#xe612;</i></label>
+			<div class="m-frm2-cnt">
+				<input type="text" name="loginName" class="u-ipt" placeholder="用户名 / 手机号码 / 电子邮箱" maxlength="100" required>
+			</div>
+		</li>
+		<li class="m-frm2-itm">
+			<label class="m-frm2-lbl"><i class="u-fntIco">&#xe614;</i></label>
+			<div class="m-frm2-cnt">
+				<input type="password" name="password" class="u-ipt" placeholder="请输入密码" maxlength="20" autocomplete="off" required>
+			</div>
+		</li>
+		<li class="m-frm2-itm f-tlr">
+			<a href="$!{basePath}/forgetPassword/page" class="u-clPrm">忘记密码？</a>
+		</li>
+		<li class="m-frm2-itm">
+			<button class="u-btn z-prm z-fll z-ldg" type="submit">立即登录</button>
+		</li>
+		<li class="m-frm2-itm">
+			<div class="f-mt2"><a href="$!{basePath}/register/page" class="u-btn z-prmHollow z-fll" j-tourl-link>免费注册</a></div>
+			<input type="hidden" name="toURL" value="$!{toURL}"/>
+		</li>
+	</ul>
+</form>
+
+#if ($!request.getParameter('msg'))
+	#set($msg = "$!{request.getParameter('msg')}")
+	<script>alert('$!{msg}')</script>
+#end
+

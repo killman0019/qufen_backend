@@ -1,0 +1,90 @@
+/*--------------------------*\
+	Global reset
+\*--------------------------*/
+html {
+	height: 100%;
+
+	font-size: 62.5%;
+
+	background-color: #fff;
+
+	@media screen and (max-width: @viewport-wide) {
+		font-size: @viewport-wide / @viewport-wider * 62.5%;
+	}
+	@media screen and (max-width: @viewport-middle) {
+		font-size: @viewport-middle / @viewport-wider * 62.5%;
+	}
+	@media screen and (max-width: @viewport-middle2) {
+		font-size: @viewport-middle2 / @viewport-wider * 62.5%;
+	}
+	@media screen and (max-width: @viewport-narrow) {
+		font-size: @viewport-narrow / @viewport-wider * 62.5%;
+	}
+	@media screen and (max-width: @viewport-narrower) {
+		font-size: @viewport-narrower / @viewport-wider * 62.5%;
+	}
+}
+body {
+	position: relative;
+	margin: 0 auto;
+	max-width: @viewport-wider;
+	min-width: @viewport-narrower;
+	min-height: 100%;
+	font: @font-size-base/@line-height-base @font-family-base;
+	color: @color-base;
+	&:before {
+		content: ".";
+		display: block;
+		font-size: 0;
+	}
+	&:after {
+		content: ".";
+		display: block;
+		font-size: 0;
+	}
+}
+
+a {
+	text-decoration: none;
+	color: @color-base;
+
+	&:focus {
+		color: @brand-primary;
+	}
+}
+
+img {
+	border: none;
+}
+
+input,button,textarea,select {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	vertical-align: middle;
+	font: @font-size-base/@line-height-base @font-family-base;
+	color: @color-base;
+	box-shadow: none;
+}
+
+:-ms-input-placeholder {
+	color: @gray-lighter;
+}
+::-webkit-input-placeholder {
+	color: @gray-lighter;
+}
+::-moz-placeholder {
+	color: @gray-lighter;
+}
+
+// 字体图标
+@font-face {
+	font-family: 'tzg-icon';
+	src:url('../../statics/fonts/tzg-icon.eot?-ayjraa');
+	src:url('../../statics/fonts/tzg-icon.eot?#iefix-ayjraa') format('embedded-opentype'),
+		url('../../statics/fonts/tzg-icon.woff?-ayjraa') format('woff'),
+		url('../../statics/fonts/tzg-icon.ttf?-ayjraa') format('truetype'),
+		url('../../statics/fonts/tzg-icon.svg?-ayjraa#tzg-icon') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}

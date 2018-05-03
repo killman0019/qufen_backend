@@ -1,0 +1,1170 @@
+.topbar {
+	position: relative;
+}
+
+.topbar_title {
+	margin: 0;
+	padding: 2.6667% 0;
+	border-bottom: 1px solid @border-color-base;
+
+	text-align: center;
+	font-size: 3.6rem;
+	font-weight: normal;
+	color: @brand-primary;
+
+	background: #fff;
+}
+.topbar_back {
+	display: block;
+
+	position: absolute;
+	left: 0;
+	top: 0;
+
+	padding: 4% 0;
+	width: 10%;
+
+	text-align: center;
+
+	&:after {
+		content: "\e609";
+
+		font-family: @font-family-icon;
+		font-size: 4.2rem;
+		line-height: 1;
+		color: #d9dada;
+	}
+}
+
+.f-hd-v2{
+  height: 49px;
+  background-color: #1992f5;
+  position: relative;
+  z-index: 5;
+
+  .m-topbar-sub {
+    display: none;
+    top: 49px;
+  }
+  .u-icoArrDwn, .u-icoArrUp {
+    position: relative;
+    top: -5px;
+    margin-left: 5px;
+  }
+  .u-icoArrUp {
+    top: 3px;
+    display: none;
+  }
+
+  &.-open {
+    .m-topbar-sub {
+      display: block;
+    }
+    .u-icoArrDwn {
+      display: none;
+    }
+    .u-icoArrUp {
+      display: inline-block;
+    }
+  }
+}
+.logo-v2{
+  display: block;
+  width:100px;
+  height: 37px;
+  margin: 6px auto 0 auto;
+}
+.f-hd-v2-title{
+  font-size: 18px;
+  color: #ffffff;
+  text-align: center;
+  line-height: 49px;
+  padding: 0;
+  margin: 0;
+}
+.btn_back{
+  position: absolute;
+  left: 3%;
+  top: 0;
+  display: block;
+  width: 40px;
+  height: 100%;
+  text-align: center;
+  .u-icoArrBck-blue{
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+    margin: 16px 0 -3px 3px;
+  }
+}
+
+
+// 标的详情
+.project-detail {
+
+	position: relative;
+
+	overflow: hidden;
+
+	&.-new:after,
+	&.-new-gray:after,
+	&.-activity:after,
+	&.-activity-gray:after,
+	&.-activity-new:after,
+	&.-activity-new-gray:after,
+	&.-hot-sales:after,
+	&.-hot-sales-gray:after,
+	&.-seckill:after,
+	&.-seckill-gray:after {
+		content: "新客";
+
+		position: absolute;
+		top: 1rem;
+		left: -7.5%;
+
+		width: 25%;
+		//height: 4.2rem;
+		text-align: center;
+
+		font-size: 2.8rem;
+		line-height: 1.5;
+		color: #fff;
+
+		background-color: @brand-pink;
+		.transform(~"rotate(-45deg)");
+	}
+
+	&.-activity:after,
+	&.-activity-gray:after {
+		content: "活动";
+		background-color: #56dbc8;
+	}
+
+	&.-activity-new:after,
+	&.-activity-new-gray:after {
+		content: "新客活动";
+
+		font-size: 1.8rem;
+		line-height: 2.4;
+		text-indent: 5.5rem;
+
+		background-color: #30d2ba;
+	}
+
+	&.-hot-sales:after,
+	&.-hot-sales-gray:after {
+		content: "爆款";
+		background-color: #e33347;
+	}
+
+	&.-seckill:after,
+	&.-seckill-gray:after {
+		content: "秒杀";
+		background-color: #90cc3a;
+	}
+
+	&.-new-gray:after,
+	&.-activity-gray:after,
+	&.-activity-new-gray:after,
+	&.-hot-sales-gray:after,
+	&.-seckill-gray:after {
+		background-color: #b9b9b9;
+	}
+}
+
+.pd_earning {
+	margin-top: 2.5%;
+
+	text-align: center;
+}
+.pd_earning_name {
+	font-size: 2.8rem;
+	color: #999;
+}
+.pd_earning_value {
+	font-size: 7.5rem;
+	font-weight: bold;
+	line-height: 1.45;
+	color: @brand-pink;
+
+	sub {
+		vertical-align: baseline;
+		font-size: 6rem;
+	}
+}
+
+.pd_progress {
+	margin-top: 1%;
+	text-align: center;
+
+	font-size: 2.2rem;
+	color: @gray-lighter2;
+
+	.progressbar {
+		display: inline-block;
+		margin: 0 3%;
+		width: 66%;
+		vertical-align: middle;
+	}
+}
+.pd_progress_title,
+.pd_progress_percent {
+	display: inline-block;
+}
+
+.pd_account-guarantee {
+	margin: 2% auto 0;
+	width: 94.29%;
+}
+
+
+.pd_property-group1:extend(.clearfix all) {
+	margin: 5.71% 8.45%;
+
+	.property-item {
+		box-sizing: border-box;
+
+		float: left;
+
+		width: 50%;
+		
+		text-align: center;
+
+		&:first-child {
+			border-right: 1px solid #ccc;
+		}
+	}
+
+	.property-name {
+		font-size: 3rem;
+		line-height: 1;
+		color: @gray-light;
+	}
+
+	.property-content {
+		margin-top: 5%;
+
+		font-size: 5.5rem;
+		line-height: 1;
+	}
+}
+
+.pd_tags {
+	list-style: none;
+
+	margin: 0 auto;
+	padding: 0;
+	width: 94.29%;
+	overflow: hidden;
+
+	li {
+		float: left;
+		margin-right: 8%;
+		width: 19%;
+
+		text-indent: .5em;
+		color: @gray-light;
+
+		white-space: nowrap;
+
+		&:last-child {
+			margin-right: 0;
+		}
+
+		&:before {
+			content: "";
+			float: left;
+			margin-top: .67em;
+			width: .33em;
+			height: .33em;
+			border-radius: 100%;
+			background: @brand-pink;
+		}
+	}
+}
+
+
+.pd_countdown {
+	margin: 1% auto -2.33%;
+	text-align: center;
+
+	em {
+		font-style: normal;
+		font-size: 4.2rem;
+	}
+
+	.hint {
+		padding-left: 5%;
+	}
+}
+
+.pd_property-group2 {
+	margin-top: 3.8%;
+	padding: 0 2%;
+	border-top: 1px solid #efefef;
+
+	.property-item {
+		padding: 1.5% 0;
+		overflow: hidden;
+		border-bottom: 1px solid #efefef;
+
+		color: @gray-light;
+
+		&:last-child {
+			border-bottom: none;
+		}
+	}
+
+	.property-name,
+	.property-content {
+		float: left;
+		width: 50%;
+	}
+
+	.property-name {
+		box-sizing: border-box;
+
+		padding-left: 3.875%;
+
+		&.-char3 {
+			letter-spacing: .5em;
+		}
+	}
+}
+
+.pd_guarantee {
+	padding: 2.2535% 3.29% 2.2535% 11%;
+	border-top: 1px solid #efefef;
+	line-height: 1.2;
+
+	.icon-shield {
+		float: left;
+		margin: -0.5% 0 0 -9%;
+	}
+}
+
+.pd_tags2 {
+	position: absolute;
+	top: 0;
+	right: 6%;
+	margin-top: 3%;
+}
+
+
+.invest-toolbar {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	z-index: 8;
+
+	width: 100%;
+}
+.invest-toolbar-placeholder {
+	font-size: 7.9rem;
+	color: @bg-color-base;
+}
+.invest-toolbar_inner {
+	box-sizing: border-box;
+
+	position: relative;
+
+	margin: auto;
+	max-width: @viewport-wider;
+	min-width: @viewport-narrower;
+	overflow: hidden;
+	border-top: 1px solid #ccc;
+
+	background: #fff;
+}
+.invest-toolbar_calculator {
+	position: absolute;
+	top: 18%;
+	left: 3.33%;
+
+	float: left;
+
+	width: 11.33%;
+	height: 100%;
+
+	background: url(../../statics/images/icon-calculator.png?__inline) no-repeat;
+	background-size: 100% auto;
+}
+.invest-toolbar_button {
+	margin: 3.33% 3.33% 3.33% 17%;
+}
+
+.box-view-group {
+	border: 1px solid #c7c7c7;
+
+	.box-view {
+		position: relative;
+
+		margin-top: -1px;
+		padding-top: 3%;
+		padding-bottom: 3%;
+		padding-left: 15%;
+
+		border: none;
+		border-top: 1px solid #efefef;
+
+		font-size: 3.2rem;
+		color: @gray-darker;
+
+		&:first-child {
+			border-top-color: #c7c7c7;
+		}
+
+		&:before {
+			content: "";
+
+			display: block;
+
+			position: absolute;
+			top: 18%;
+			left: 5%;
+
+			width: 8%;
+			height: 100%;
+			background: no-repeat;
+			-webkit-background-size: 100% auto;
+			background-size: 100% auto;
+		}
+	}
+
+	.item-1:before {
+		background-image: url(../../statics/images/pi-info.png);
+	}
+
+	.item-2:before {
+		background-image: url(../../statics/images/pi-safety.png);
+	}
+
+	.item-3:before {
+		background-image: url(../../statics/images/pi-invest-record.png);
+	}
+
+	.item-4:before {
+		background-image: url(../../statics/images/pi-repay-record.png);
+	}
+}
+
+//
+// 进度条
+//
+.progressbar {
+	height: .2em;
+	overflow: hidden;
+
+	border-radius: 100px;
+
+	background: #e6e6e6;
+}
+.progressbar_bar {
+	height: 100%;
+	background: @brand-pink;
+}
+
+
+//
+// 弹窗
+//
+.win-wrapper {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 30;
+
+	width: 100%;
+	height: 100%;
+
+	background: rgba(0,0,0,0.5);
+
+	&.-hidden {
+		left: 200%;
+	}
+}
+.win-box {
+	position: relative;
+	top: 20%;
+
+	margin: auto;
+	max-width: @viewport-wider;
+	min-width: @viewport-narrower;
+}
+.win {
+	margin: auto;
+	width: 86.67%;
+	background: #fff;
+}
+.win_hd {
+	position: relative;
+
+	font-size: 3rem;
+	line-height: 2.57;
+	text-align: center;
+	color: #353535;
+
+	background: #bbd1ff;
+}
+.win_close {
+	display: block;
+
+	position: absolute;
+	top: 0;
+	right: 0;
+
+	padding: 0 4%;
+	height: 100%;
+
+	outline: none;
+
+	&:after {
+		content: "\e606";
+		font-family: @font-family-icon;
+	}
+}
+.win_ft {
+	margin-top: 3%;
+	padding: 4.62% 0;
+
+	text-align: center;
+
+	.btn {
+		width: 66.15%;
+		font-size: 3rem;
+		line-height: 2.6;
+	}
+}
+
+.form-items {
+	list-style: none;
+
+	margin: 9% 5.38% 0;
+	padding: 0;
+
+	font-size: 3rem;
+	line-height: 4rem;
+	color: #353535;
+
+	li {
+		margin-top: 5%;
+		padding-left: 5em;
+	}
+}
+.item-label {
+	float: left;
+
+	margin-left: -5em;
+}
+.item-content {
+	.ipt {
+		margin-top: -4.5%;
+	}
+}
+
+
+
+
+.tab2 {
+	.list-reset();
+
+	overflow: hidden;
+	border-bottom: 1px solid @border-color-base;
+
+	background: #fff;
+
+	li {
+		float: left;
+		width: 25%;
+		text-align: center;
+
+		font-size: 3rem;
+		line-height: 1;
+
+		&.-on {
+			.item-inner {
+				border-bottom-color: #70aaf1;
+				color: @brand-blue;
+			}
+		}
+	}
+
+	.item-inner {
+		display: block;
+		padding: 1em 0 .8em;
+		border-bottom: .2em solid #fff;
+	}
+}
+
+.imgtag-list {
+	.list-reset();
+
+	margin-top: 4%;
+	overflow: hidden;
+
+	li {
+		float: left;
+		width: 25%;
+		text-align: center;
+	}
+
+	img {
+		vertical-align: top;
+		width: 37.14%;
+	}
+
+	.name {
+		display: block;
+		margin: .4em auto 0;
+		width: 5em;
+		height: 3em;
+
+		line-height: 1.4;
+		color: #b9b9b9;
+	}
+}
+
+.imgtag-list2 {
+	.list-reset();
+
+	margin-bottom: 3.5%;
+	overflow: hidden;
+
+	li {
+		float: left;
+		margin-top: 3.5%;
+		margin-left: 7.86%;
+		width: 40%;
+	}
+
+	img {
+		float: left;
+		margin-right: 6%;
+		width: 2.7em;
+		height: 2.7em;
+	}
+
+	.name {
+		display: table-cell;
+		width: 6.5em;
+		height: 2.7em;
+
+		vertical-align: middle;
+
+		line-height: 1.3;
+		color: #b9b9b9;
+	}
+}
+
+.file-list {
+	.list-reset();
+
+	margin-top: 3%;
+	overflow: hidden;
+
+	li {
+		float: left;
+		margin-left: 5.4%;
+		width: 37.87%;
+		height: 11em;
+		overflow: hidden;
+
+		text-align: center;
+
+		&:nth-child(even) {
+			margin-left: 13.3%;
+			margin-bottom: 5.14%;
+		}
+	}
+
+	a {
+		display: block;
+	}
+
+	.img {
+		box-sizing: border-box;
+		padding: 1%;
+		height: 2em;
+		border: 1px solid #ccc;
+		font-size: 10rem;
+	}
+
+	.name {
+		line-height: 1.5;
+	}
+
+	img {
+		max-width: 100%;
+		max-height: 100%;
+		vertical-align: middle;
+	}
+}
+
+
+.subject-section {
+	margin: 3.3333%;
+	overflow: hidden;
+	background: #fff;
+
+	.title-1 {
+		margin-top: 3%;
+
+		&:first-child {
+			margin-top: 0;
+		}
+	}
+}
+
+
+// 投资记录/还款计划
+.record-list {
+	@brand-color: #70abf1;
+
+	border-collapse: collapse;
+	width: 100%;
+
+	thead {
+		th {
+			font-weight: normal;
+			background-color: lighten(@brand-color, 20%);
+		}
+	}
+
+	tbody {
+		td {
+			padding: 3% 0;
+			border-bottom: 1px dashed lighten(@brand-color, 15%);
+			text-align: center;
+		}
+	}
+}
+
+
+// 红包页
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.top-tab-container {
+	padding-top: 4%;
+	background: #fff;
+}
+.tab {
+	@color: #70aaf1;
+
+	margin: 0;
+	padding: 0;
+	border-bottom: 1px solid @color;
+	text-align: center;
+	font-size: 0;
+
+	background: #fff;
+
+	li {
+		display: inline-block;
+		margin-right: -1px;
+		width: 31%;
+
+		&.-on {
+			a {
+				color: #fff;
+				background: @color;
+			}
+		}
+	}
+
+	a {
+		display: block;
+		padding: .3846em 0;
+		border: 1px solid @color;
+		border-bottom: none;
+
+		text-align: center;
+		font-size: 2.8rem;
+		color: @color;
+	}
+}
+
+
+.red-timeline {
+	@bg-color: @bg-color-base;
+
+	position: relative;
+
+	margin: 4% auto;
+	width: 92%;
+
+	background: url(../../statics/images/dotted-points.png?__inline) repeat-y 5% 0;
+	background-size: 0.4% auto;
+
+	.red-year {
+		display: inline-block;
+		padding: 0 .5em;
+		border-radius: .3em;
+		font-size: 3.5rem;
+		background-color: #d9dada;
+
+		&:after {
+			content: "";
+			display: block;
+			margin-bottom: -.4em;
+			border-bottom: .4em solid @bg-color;
+		}
+	}
+
+	.red-date {
+		position: relative;
+		z-index: 2;
+		margin-top: 10%;
+		margin-bottom: -15%;
+		width: 10%;
+		background: @bg-color;
+	}
+
+	.red-items {
+		.list-reset();
+
+		margin-left: 15%;
+			
+		@color-default: #8c8c8c;
+
+		li {
+			position: relative;
+
+			margin: 8.5% 0;
+			min-height: 6.25em;
+			border: 1px solid @color-default;
+
+			background-color: #fff;
+
+			&:before {
+				content: "";
+
+				position: absolute;
+				top: .8em;
+				left: -.4em;
+
+				width: .7em;
+				height: .7em;
+				border-top: 1px solid @color-default;
+				border-left: 1px solid @color-default;
+
+				background: #fff;
+
+				.transform(rotate(-45deg));
+			}
+
+			&:after {
+				content: "";
+				position: absolute;
+				top: 1em;
+				left: -13%;
+
+				width: .6em;
+				height: .6em;
+				border-radius: 1em;
+				background: @color-default;
+			}
+
+			&.-income, &.-expend {
+				.red-title:before {
+					content: "\e60d";
+					position: absolute;
+					top: 26%;
+					left: 6%;
+
+					font-family: @font-family-icon;
+					font-size: 7rem;
+				}
+			}
+
+
+			// 未使用
+			&.-income {
+				@color: @brand-pink;
+
+				border-color: @color;
+				color: @color;
+
+				&:before {
+					border-color: @color;
+				}
+
+				&:after {
+					background: @color;
+				}
+
+				.red-title {
+					border-bottom-color: @color;
+
+					&:before {
+						content: "\e60d";
+					}
+				}
+
+				.red-amount {
+					color: @color;
+				}
+			}
+
+			// 已使用
+			&.-expend {
+				@color: #76c259;
+
+				border-color: @color;
+				color: @color;
+
+				&:before {
+					border-color: @color;
+				}
+
+				&:after {
+					background: @color;
+				}
+
+				.red-title {
+					border-bottom-color: @color;
+
+					&:before {
+						content: "\e60e";
+					}
+
+					.project {
+						color: lighten(@color, 5%);
+					}
+				}
+
+				.red-amount {
+					color: @color;
+				}
+			}
+
+			// 已过期
+			&.-expire {
+				background: #fff url(../../statics/images/icon-tag-expire.png) no-repeat right bottom;
+				-webkit-background-size: 22.4% auto;
+						background-size: 22.4% auto;
+			}
+		}
+
+		.red-time {
+			margin-top: -1.75em;
+
+			font-size: 2.2rem;
+			line-height: 1.75;
+			color: #adadad;
+		}
+
+		.red-title {
+			height: 1.8em;
+			overflow: hidden;
+			border-bottom: 1px dashed @color-default;
+			text-align: center;
+
+			font-size: 3rem;
+			line-height: 1.8;
+
+			.project {
+				padding-left: .8%;
+				font-size: 2.4rem;
+				color: lighten(@color-default, 5%);
+			}
+		}
+
+		.red-amount {
+			text-align: center;
+			font-size: 4rem;
+			color: @color-default;
+		}
+
+		.red-deadline {
+			margin-bottom: 1.5%;
+			text-align: center;
+			font-size: 2rem;
+		}
+	}
+}
+
+.topbar-red-exchange-btn {
+	position: absolute;
+	top: 48px;
+	right: 0;
+
+	padding: 0 2%;
+	font-size: 16px;
+	line-height: 40px;
+	color: @brand-blue;
+}
+
+// 红包兑换弹窗
+.red-exchange-wrapper {
+
+	.win_bd {
+		height: 6em;
+	}
+
+	.win_ft {
+		margin-top: 0;
+	}
+
+	.red-ex-form-items {
+		.list-reset();
+
+		margin: 10% 10% 0;
+		font-size: 3rem;
+
+		.msg {
+			color: #f00;
+		}
+	}
+
+	.result-msg {
+		display: none;
+		padding-top: 4em;
+		text-align: center;
+		color: #f00;
+	}
+
+	&.-msg {
+		.red-ex-form-items {
+			display: none;
+		}
+
+		.result-msg {
+			display: block;
+		}
+
+		.win_ft {
+			visibility: hidden;
+		}
+	}
+}
+
+
+// 投资确认
+.invest-confirm-form {
+	.list-reset();
+
+	margin: 0 4%;
+	
+	font-size: 3.2rem;
+
+	li {
+		margin: 4%;
+
+		&.item-use-red {
+			box-sizing: border-box;
+			padding-left: 28.5%;
+
+			.form-label {
+				float: left;
+				margin-left: -45%;
+			}
+
+			.ipt {
+				margin-top: -2%;
+			}
+		}
+	}
+
+	.note {
+		color: #b9b9b9;
+
+		em {
+			font-style: normal;
+			color: @brand-pink;
+		}
+	}
+
+	.amount {
+		color: #f8b62c;
+	}
+}
+
+// 协议弹框
+.protocol-popup {
+	position: fixed;
+	top: 100%;
+	left: 0;
+	z-index: 20;
+	width: 100%;
+	height: 100%;
+	background-color: #fff;
+	.transition(top 0.2s ease-out);
+
+	&.-opened {
+		top: 0;
+		.transition(top 0.2s ease-out);
+	}
+
+	&_hd, &_ft {
+		position: absolute;
+		left: 0;
+		z-index: 3;
+		width: 100%;
+		height: 2.5em;
+		text-align: center;
+		background-color: #fff;
+	}
+
+	&_hd {
+		top: 0;
+		line-height: 2.5;
+		.box-shadow(0 3px 3px fade(@brand-blue, 30%));
+	}
+
+	&_ft {
+		bottom: 0;
+		text-align: center;
+		.box-shadow(0 -3px 3px fade(@brand-blue, 30%));
+
+		.button {
+			border: none;
+			margin: 0;
+			padding: 0;
+			width: 100%;
+			height: 100%;
+			background: transparent;
+		}
+	}
+
+	&_bd {
+		position: absolute;
+		top: 2.5em;
+		right: 0;
+		bottom: 2.5em;
+		left: 0;
+		padding: 0 3%;
+		overflow: scroll;
+	}
+
+	&_content {
+		
+	}
+
+	.section-title {
+		
+	}
+}
+
+
+// 先改成跟线上保持一致
+//===============================================
+.topbar {
+	height: 44px;
+}
+.topbar_title {
+	padding: 7px 0;
+	font-size: 18px;
+}
+.topbar_back {
+	padding: 0;
+	height: 100%;
+}
+.topbar_back:after {
+	font-size: 20px;
+	line-height: 44px;
+}

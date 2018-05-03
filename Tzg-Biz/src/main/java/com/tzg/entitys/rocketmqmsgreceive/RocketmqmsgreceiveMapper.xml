@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.rocketmqmsgreceive.RocketmqmsgreceiveMapper">	
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.rocketmqmsgreceive.Rocketmqmsgreceive">
+		<result property="id" jdbcType="INTEGER" column="id"/>
+		<result property="vckey" jdbcType="VARCHAR" column="vckey"/>
+		<result property="vcresult" jdbcType="VARCHAR" column="vcresult"/>
+    </resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+        id ,vckey ,vcresult 
+	    ]]>
+	</sql>
+	
+	<insert id="save" parameterType="com.tzg.entitys.rocketmqmsgreceive.Rocketmqmsgreceive" useGeneratedKeys="true" keyProperty="id">
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+	      SELECT LAST_INSERT_ID() AS id
+	    </selectKey>
+	<![CDATA[
+		INSERT INTO tbrocketmqmsgreceive (
+        	vckey ,
+        	vcresult 
+		) VALUES (
+        	#{vckey,jdbcType=VARCHAR} ,
+        	#{vcresult,jdbcType=VARCHAR} 
+		)
+	]]>
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.rocketmqmsgreceive.Rocketmqmsgreceive">
+		UPDATE tbrocketmqmsgreceive
+		<set>
+			<if test="vckey != null">
+	        vckey = #{vckey,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcresult != null">
+	        vcresult = #{vcresult,jdbcType=VARCHAR} 
+	        </if>
+	    </set>
+		WHERE 
+	        id = #{id,jdbcType=INTEGER} 
+	</update>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbrocketmqmsgreceive WHERE
+        id = #{id} 
+	]]>
+	</delete>
+    
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbrocketmqmsgreceive 
+		WHERE 
+        id = #{id} 
+	]]>
+	</select>
+	
+	
+	<select id="findByKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+	    SELECT <include refid="columns"/> 
+		<![CDATA[
+			FROM tbrocketmqmsgreceive 
+			WHERE 
+	        vckey = #{vckey} 
+		]]>
+	</select>
+	
+	<select id="findByKeyMqTag" resultMap="BaseResultMap" parameterType="java.util.Map">
+	    SELECT <include refid="columns"/> FROM tbrocketmqmsgreceive where 1=1
+		<if test="key != null and key.trim() != ''">
+	       and vckey = #{key}
+		</if>
+		<if test="mqtag != null and mqtag.trim() != ''">
+			and vcresult = #{mqtag}
+		</if>
+	</select>
+	
+	
+	
+	 
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from tbrocketmqmsgreceive where 1=1
+		<include refid="queryWhere"/>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbrocketmqmsgreceive where 1=1
+		<include refid="queryWhere"/> 
+	    <![CDATA[ ORDER BY id DESC ]]>
+        <![CDATA[ LIMIT #{startRecord,jdbcType=INTEGER},#{endRecord,jdbcType=INTEGER} ]]>
+	</select>
+	
+	<sql id="queryWhere">
+		<if test="id != null and id.trim() != ''">
+		and id = #{id}
+		</if>
+		<if test="vckey != null and vckey.trim() != ''">
+		and vckey = #{vckey}
+		</if>
+		<if test="vcresult != null and vcresult.trim() != ''">
+		and vcresult = #{vcresult}
+		</if>
+	</sql>
+</mapper>
+
+

@@ -1,0 +1,96 @@
+#set($pageTitle = "资金记录_我的账户_投资人")
+#set($bodyClass = "body--gray")
+#set($topbar = {
+	"title": '资金记录',
+	"backLink": "$!{basePath}/user/home" ,
+	"sub":  [{ "title": "全部", "link": "#", "dataParam": "{'itradeType':''}", "current": "yes" },
+			{ "title": "投资", "link": "#", "dataParam": "{'itradeType':'4'}" },
+			{ "title": "充值", "link": "#", "dataParam": "{'itradeType':'1'}" },
+			{ "title": "提现", "link": "#", "dataParam": "{'itradeType':'2,8'}" },
+			{ "title": "回款", "link": "#", "dataParam": "{'itradeType':'5,6,7'}" },
+			{ "title": "手续费", "link": "#", "dataParam": "{'itradeType':'3'}" },
+			{ "title": "体验标收益", "link": "#", "dataParam": "{'itradeType':'12'}" }]
+})
+
+#set($pageFootCode = '<script>seajs.use("page/financial-record")</script>')
+
+
+<script type="text/template" id="j_list_template">
+[@each rows as item]
+<div class="m-lst-itm[@if item.itradeType == 1 || item.itradeType == 5 || item.itradeType == 6  || item.itradeType == 7  || item.itradeType == 8  ||  item.itradeType == 12 ] z-prm[@/if]">
+	<div class="m-lst-itm-topInfo">
+		[@if item.itradeType == 1]充值
+		[@else if item.itradeType == 2]提现
+		[@else if item.itradeType == 3]手续费
+		[@else if item.itradeType == 4]投资
+		[@else if item.itradeType == 5 || item.itradeType == 6  || item.itradeType == 7 ]回款
+		[@else if item.itradeType == 8]提现失败退款
+		[@else if item.itradeType == 9]微公益
+		[@else if item.itradeType == 12]体验标收益
+		[@else if item.itradeType == 14]投资掌薪计划
+		[@else if item.itradeType == 15]掌薪计划返还本息
+		[@else if item.itradeType == 19]转入铜钱宝
+		[@else if item.itradeType == 200]铜钱宝收益
+		[@else if item.itradeType == 201]转出铜钱宝
+		[@else if item.itradeType == 202]人人赚提现
+		[@/if] 
+		<span class="u-clGrayLgt">$[item.dtTradeDateStr]</span>
+	</div>
+	<div class="m-lst-itm-boxBd">
+		<ul class="m-dataGrp l-mn">
+			<li>
+				<span class="m-dataGrp-lbl">
+				[@if item.itradeType == 1]充值金额
+				<span class="m-dataGrp-val u-fsH"><span class="u-clScd">+$[item.numAmount|toCurrency]</span> 元</span>
+				[@else if item.itradeType == 2]提现金额
+				<span class="m-dataGrp-val u-fsH"><span class="u-clPrm">-$[item.numAmount|toCurrency]</span> 元</span>
+				[@else if item.itradeType == 3]手续费
+				<span class="m-dataGrp-val u-fsH"><span class="u-clPrm">-$[item.numAmount|toCurrency]</span> 元</span>
+				[@else if item.itradeType == 4]投资金额
+				<span class="m-dataGrp-val u-fsH"><span class="u-clPrm">-$[item.numAmount|toCurrency]</span> 元</span>
+				[@if item.vcMemo!=null]$[item.vcMemo][@/if]
+				[@else if item.itradeType == 5]本息回款
+				<span class="m-dataGrp-val u-fsH"><span class="u-clScd">+$[item.numAmount|toCurrency]</span> 元</span>
+				[@else if item.itradeType == 6]本金回款
+				<span class="m-dataGrp-val u-fsH"><span class="u-clScd">+$[item.numAmount|toCurrency]</span> 元</span>
+				[@else if item.itradeType == 7]利息回款
+				<span class="m-dataGrp-val u-fsH"><span class="u-clScd">+$[item.numAmount|toCurrency]</span> 元</span>
+				[@else if item.itradeType == 8]提现失败退款
+				<span class="m-dataGrp-val u-fsH"><span class="u-clScd">+$[item.numAmount|toCurrency]</span> 元</span>
+				[@else if item.itradeType == 9]捐款金额
+				<span class="m-dataGrp-val u-fsH"><span class="u-clPrm">-$[item.numAmount|toCurrency]</span> 元</span>
+				[@else if item.itradeType == 10]充值扣款
+				<span class="m-dataGrp-val u-fsH"><span class="u-clPrm">-$[item.numAmount|toCurrency]</span> 元</span>
+				[@else if item.itradeType == 12]体验标收益
+				<span class="m-dataGrp-val u-fsH"><span class="u-clPrm">+$[item.numAmount|toCurrency]</span> 元</span>
+				[@else if item.itradeType == 14]投资掌薪计划
+				<span class="m-dataGrp-val u-fsH"><span class="u-clPrm">-$[item.numAmount|toCurrency]</span> 元</span>
+				[@else if item.itradeType == 15]掌薪计划返还本息
+				<span class="m-dataGrp-val u-fsH"><span class="u-clPrm">+$[item.numAmount|toCurrency]</span> 元</span>
+				[@else if item.itradeType == 19]转入铜钱宝
+				<span class="m-dataGrp-val u-fsH"><span class="u-clPrm">-$[item.numAmount|toCurrency]</span> 元</span>
+				[@else if item.itradeType == 200]铜钱宝收益
+				<span class="m-dataGrp-val u-fsH"><span class="u-clPrm">+$[item.numAmount|toCurrency]</span> 元</span>
+				[@else if item.itradeType == 201]转出铜钱宝
+				<span class="m-dataGrp-val u-fsH"><span class="u-clPrm">+$[item.numAmount|toCurrency]</span> 元</span>
+				[@else if item.itradeType == 202]人人赚提现
+				<span class="m-dataGrp-val u-fsH"><span class="u-clPrm">+$[item.numAmount|toCurrency]</span> 元</span>
+				[@/if]
+				</span>
+			</li>
+			<li>
+				<span class="m-dataGrp-lbl">账户余额</span>
+				<span class="m-dataGrp-val u-fsH">$[item.numBalance|toCurrency]元</span>
+			</li>
+		</ul>
+		<div class="m-LIB-ftInfo"><span class="u-clGrayLgtr">资金流水号：</span>$[item.vcCode]</div>
+	</div>
+</div>
+[@/each]
+</script>
+
+<div class="m-lst z-lne l-mn" id="j_list_container"></div>
+<div class="m-loadMr" id="j_load_more" style="display:none">
+	<a href="#" class="u-loadMr">点击查看更多</a>
+	<i class="u-fntIco--ldg"></i>
+</div>

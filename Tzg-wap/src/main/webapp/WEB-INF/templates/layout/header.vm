@@ -1,0 +1,81 @@
+#*
+<header class="f-hd f-hd-v2">
+    <!--<img class="logo-v2" src="$!staticPath/images/v2/logo_v2.png" alt="铜掌柜"/>-->
+
+    <!--<h2 class="f-hd-v2-title">-->
+        <!--投资-->
+    <!--</h2>-->
+
+
+    <h2 class="f-hd-v2-title">
+        投资
+    </h2>
+    <a class="btn_back" target="_self" href="#">
+        <i class="u-icoArrBck-blue"></i>
+    </a>
+</header>
+
+<nav class="m-prmNav" id="j_primary_nav">
+	#if(!$wapLoginSessionInfo)
+	<a href="$!{basePath}/login/page">登录</a>
+	<a href="$!{basePath}/register/page">注册</a>
+	#end
+	<a href="$!{basePath}/subject/page">理财专区</a>
+	<a href="$!{basePath}/user/home">我的账户</a>
+	##<a href="$!{basePath}/user/financialRecord/page">资金记录</a>
+	##<a href="$!{basePath}/user/investRecord/page">投资记录</a>
+	<a href="$!{basePath}/user/charge/page">充值</a>
+	<a href="$!{basePath}/user/cash/page">提现</a>
+	<a href="$!{basePath}/down/app?from=wap">铜掌柜APP</a>
+	<a href="$!{basePath}/aboutUs">关于铜掌柜</a>
+	<a href="$!{basePath}/topics/aboutShareholder">股东背景</a>
+	
+	#if($wapLoginSessionInfo && !$wechat_openid)
+	<a href="$!{basePath}/logout">退出登录</a>
+	#end
+
+	<i class="u-fntIco">&#xe613;</i>
+</nav>
+*#
+
+#if ($topbar)
+#* 
+<div class="m-topbar" id="j_topbar">
+	<h1 class="m-topbar-ttl">$!topbar.title #if ($topbar.sub)<i class="u-icoArrDwn"></i><i class="u-icoArrUp"></i>#end</h1>
+	#if ($topbar.backLink != "no")
+		#if ($topbar.backLink)
+			<a href="$!topbar.backLink" class="m-topbar-bck"><i class="u-icoArrBck"></i></a>
+		#else
+			<a href="javascript:self.history.go(-1)" class="m-topbar-bck"><i class="u-icoArrBck"></i></a>
+		#end
+	#end
+
+	#if ($topbar.sub)
+		<div class="m-topbar-sub">
+			#foreach ($!{item} in $!{topbar.sub})
+				<a href="$!{item.link}"#if ($item.current) class="z-atv"#end#if ($item.dataParam) data-param="$!{item.dataParam}"#end>$!{item.title}</a>
+			#end
+		</div>
+	#end
+</div>
+ *#
+<header class="f-hd f-hd-v2" id="j_topbar">
+	<h2 class="f-hd-v2-title">
+		$!topbar.title #if ($topbar.sub)<i class="u-icoArrDwn"></i><i class="u-icoArrUp"></i>#end
+	</h2>
+	#if ($topbar.backLink != "no")
+		#if ($topbar.backLink)
+			<a href="$!topbar.backLink" class="btn_back"><i class="u-icoArrBck-blue"></i></a>
+		#else
+			<a href="javascript:self.history.go(-1)" class="btn_back"><i class="u-icoArrBck-blue"></i></a>
+		#end
+	#end
+	#if ($topbar.sub)
+		<div class="m-topbar-sub">
+			#foreach ($!{item} in $!{topbar.sub})
+				<a href="$!{item.link}"#if ($item.current) class="z-atv"#end#if ($item.dataParam) data-param="$!{item.dataParam}"#end>$!{item.title}</a>
+			#end
+		</div>
+	#end
+</header>
+#end

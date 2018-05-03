@@ -1,0 +1,15 @@
+CACHE MANIFEST
+# 2015-12-29 v1.0.0
+CACHE:
+/app/css/app-css.css
+/assets/images/act/m_01.png
+/assets/images/act/m_02.png
+/assets/images/act/m_03.png
+/assets/images/act/m_04.png
+/assets/images/act/m_05.png
+/assets/images/act/m_06.png
+/assets/js/lib/sea.js
+
+NETWORK:
+
+FALLBACK:

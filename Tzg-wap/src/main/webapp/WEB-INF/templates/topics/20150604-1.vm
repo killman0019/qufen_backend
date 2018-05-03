@@ -1,0 +1,54 @@
+#set($layout = "/layout/blank.vm")
+#set($activityCode = "20150604")
+#set($activityTitle = "APP重磅上线 下载就送60元红包")
+#set($imagePath = "$!{staticPath}/pics/topics/$!{activityCode}")
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>$!{activityTitle}</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="renderer" content="webkit">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no">
+<meta name="basepath" content="$!{basePath}" id="j_basepath">
+<meta name="staticpath" content="$!{staticPath}" id="j_staticpath">
+<link rel="icon" href="$!{staticPath}/images/favicon.ico">
+<link rel="shortcut icon" href="$!{staticPath}/images/favicon.ico">
+<script src="$!{staticPath}/js/modules/pages/topic-$!{activityCode}.js"></script>
+<link type="text/css" rel="stylesheet" href="$imagePath/style.css">
+</head>
+<body>
+
+	<div class="topic-container">
+		<img src="$imagePath/images/i_01.png" alt="$!{activityTitle}">
+		<img src="$imagePath/images/i_02.png" alt="$!{activityTitle}">
+		<img src="$imagePath/images/i_03.png" alt="$!{activityTitle}">
+	</div>
+
+	<form method="post" action="$!{basePath}/register" novalidate class="register-form" id="j_register_form">
+		<ul class="form-items">
+			<li class="form-item">
+				<div class="form-item-inner">
+					<div class="form-content"><input type="number" name="phoneNumber" placeholder="请输入手机号" maxlength="11" required></div>
+				</div>
+			</li>
+			<li class="form-item">
+				<div class="form-item-inner">
+					<div class="form-content captcha">
+						<a href="javascript:;" class="btn" id="j_send_captcha">获取验证码</a>
+						<input type="number" name="dynamicVerifyCode" placeholder="请输入验证码" maxlength="6" required>
+					</div>
+				</div>
+			</li>
+			<li class="form-item">
+				<div class="form-item-inner">
+					<div class="form-content"><input type="password" name="password" maxlength="20" placeholder="请设置登录密码" maxlength="20" required></div>
+				</div>
+			</li>
+		</ul>
+		<div class="form-items"><button type="submit" name="submity" class="submit-btn_btn">下一步</button></div>
+	</form>
+
+</body>
+</html>

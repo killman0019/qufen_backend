@@ -1,0 +1,41 @@
+<div class="invest-toolbar">
+	<div class="invest-toolbar_inner">
+		<a href="#" class="invest-toolbar_calculator" id="j_calculator_btn"></a>
+		<div class="invest-toolbar_button">
+			#if($bottomState.redirect_url)
+				<a href="$!{basePath}${bottomState.redirect_url}" class="btn -primary -full">$!{bottomState.msg}</a>
+			#else
+				<span class="btn -full">$!{bottomState.msg}</span>
+			#end
+		</div>
+	</div>
+</div>
+<div class="invest-toolbar-placeholder">.</div>
+
+
+<div class="win-wrapper -hidden" id="j_win_wrapper">
+	<div class="win-box">
+		<div class="win">
+			<div class="win_hd">
+				收益计算器
+				<a href="javascript:void(0)" class="win_close"></a>
+			</div>
+			<div class="win_bd">
+				<ul class="form-items">
+					<li>
+						<div class="item-label">投资金额</div>
+						<div class="item-content"><input type="text" name="amount" class="ipt -full" id="j_amount_ipt" data-subject-id="$!{subject.id}"></div>
+					</li>
+					<li style="color:red;display:none" id="j_form_msg"></li>
+					<li id="j_item_result">
+						<div class="item-label">预期收益</div>
+						<div class="item-content form-text" id="j_result_wrap"><span class="cl-pink fs-4 vtt" id="j_result"></span>元</div>
+					</li>
+				</ul>
+			</div>
+			<div class="win_ft">
+				<button type="button" class="btn -primary" id="j_calc_btn">计算</button>
+			</div>
+		</div>
+	</div>
+</div>

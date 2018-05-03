@@ -1,0 +1,17 @@
+<footer class="f-ft">
+	## <div class="m-ft-tel">
+	## 	<a href="tel:4006082233" class="m-ft-tel-lnk"><i class="u-fntIco">&#xe611;</i> 400-0311-798</a>
+	## </div>
+
+	<div class="m-ft-lnk">
+		<a href="https://www.tzg.cn/?autoRedirect=false">电脑版</a>
+		##<a href="$!{basePath}/down/app?from=wap">下载铜掌柜APP</a>
+	</div>
+	
+	<div class="m-ft-copyright">
+		<p>版权所有：浙江铜米网络科技有限公司</p>
+		<p>Copyright &copy; 2015,tzg.cn. All Rights Reserved.</p>
+		<p>浙ICP备14026205号</p>
+	</div>
+</footer>
+<div class="f-ft-placeholder"></div>
