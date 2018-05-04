@@ -1872,8 +1872,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}	
 		List<Comments> result = new ArrayList<>();
 		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("postId", postId);
-		map.put("status", KFFConstants.STATUS_ACTIVE);
+		map.put("postId", postId + "");
+		map.put("status", KFFConstants.STATUS_ACTIVE + "");
 		List<Comments> comments = kffCommentsService.findAllCommentsByWhere(map);
 		if( CollectionUtils.isNotEmpty(comments)){
 			PaginationQuery childQuery = new PaginationQuery();
