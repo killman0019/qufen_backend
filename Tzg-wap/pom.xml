@@ -25,6 +25,6 @@
 		</dependency>
 	</dependencies>
 	<build>
-		<finalName>tzg-wap</finalName>
+		<finalName>wap</finalName>
 	</build>
 </project>

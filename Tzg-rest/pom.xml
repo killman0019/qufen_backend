@@ -22,6 +22,6 @@
 
 	</dependencies>  
 	<build>
-    	<finalName>tzg-rest</finalName>
+    	<finalName>rest</finalName>
 	</build>
 </project>

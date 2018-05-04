@@ -21,7 +21,7 @@
 		</dependency>
 	</dependencies>
 	<build>
-		<finalName>tzg-rmi-server</finalName>
+		<finalName>rmi</finalName>
 		<plugins>
 			<!-- jetty插件 -->
 			<plugin>
