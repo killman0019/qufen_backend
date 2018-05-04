@@ -22,14 +22,16 @@
       http://code.alibabatech.com/schema/dubbo/dubbo.xsd"
 	default-lazy-init="true">
 
-	<util:properties id="props" location="file:/opt/resource/system.properties"/>
+	<util:properties id="sysConfig" location="file:/opt/resource/system.properties"/>
+	
+	<!--
 	<bean id="configProfile" class="com.dangdang.config.service.zookeeper.ZookeeperConfigProfile">
 		<constructor-arg name="connectStr" value="#{props['zookeeper.hosts']}" />
 		<constructor-arg name="rootNode" value="#{props['rootNode']}" />
 		<constructor-arg name="version" value="#{props['version']}" />
 	</bean>
 	<bean id="sysConfig" class="com.dangdang.config.service.zookeeper.ZookeeperConfigGroup" c:configProfile-ref="configProfile" c:node="system" />
-	
+	-->
   	<dubbo:application name="tzg-rest" />
 	<dubbo:registry address="#{sysConfig['dubbo.registry']}" />
 	<!--  <dubbo:monitor protocol="registry"/>  -->

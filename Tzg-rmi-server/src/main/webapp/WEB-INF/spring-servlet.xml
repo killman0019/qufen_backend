@@ -31,14 +31,16 @@
 	<!-- 启动注解驱动的Spring MVC功能，注册请求url和注解POJO类方法的映射 -->
 	<mvc:annotation-driven />
 
-	<util:properties id="props" location="file:/opt/resource/system.properties"/>
+	<util:properties id="sysConfig" location="file:/opt/resource/system.properties"/>
+	
+	<!--
 	<bean id="configProfile" class="com.dangdang.config.service.zookeeper.ZookeeperConfigProfile">
 		<constructor-arg name="connectStr" value="#{props['zookeeper.hosts']}" />
 		<constructor-arg name="rootNode" value="#{props['rootNode']}" />
 		<constructor-arg name="version" value="#{props['version']}" />
 	</bean>
 	<bean id="sysConfig" class="com.dangdang.config.service.zookeeper.ZookeeperConfigGroup" c:configProfile-ref="configProfile" c:node="system" />
-
+    -->
 	<!--dubbo 服务提供者应用名称 -->
 	<dubbo:application name="tzg-rmi" />
 	<!--服务提供者 端口 -->

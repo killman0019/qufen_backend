@@ -14,8 +14,11 @@
 		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd"
 	default-lazy-init="true">
 
-	<util:properties id="props"
-		location="file:/opt/resource/system.properties" />
+
+	<util:properties id="dbConfig"
+		location="file:/opt/resource/system-db.properties" />
+	
+	<!--			
 	<bean id="configProfile"
 		class="com.dangdang.config.service.zookeeper.ZookeeperConfigProfile">
 		<constructor-arg name="connectStr" value="#{props['zookeeper.hosts']}" />
@@ -25,7 +28,7 @@
 	<bean id="dbConfig"
 		class="com.dangdang.config.service.zookeeper.ZookeeperConfigGroup"
 		c:configProfile-ref="configProfile" c:node="db" />
-
+    -->
 	<bean id="stat-filter" class="com.alibaba.druid.filter.stat.StatFilter">
 		<property name="slowSqlMillis" value="1000" />
 		<property name="logSlowSql" value="false" />
