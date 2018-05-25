@@ -25,67 +25,67 @@ import com.tzg.rest.constant.KFFRestConstants;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 
-@Service(value="KFFUserService")
+@Service(value = "KFFUserService")
 @Transactional
-public class UserService   {
+public class UserService {
 	private static final Log logger = LogFactory.getLog(UserService.class);
 
 	@Autowired
-	private KFFUserMapper userMapper;	
-	   
-	@Transactional(readOnly=true)
-    public KFFUser findById(java.lang.Integer id) throws RestServiceException {
-    	if(id == null){
+	private KFFUserMapper userMapper;
+
+	@Transactional(readOnly = true)
+	public KFFUser findById(java.lang.Integer id) throws RestServiceException {
+		if (id == null) {
 			throw new RestServiceException("id不能为空");
 		}
-        return userMapper.findById(id);
-    }
-	
-    public void delete(java.lang.Integer id) throws RestServiceException {
-    	if(id == null){
+		return userMapper.findById(id);
+	}
+
+	public void delete(java.lang.Integer id) throws RestServiceException {
+		if (id == null) {
 			throw new RestServiceException("id不能为空");
 		}
-        userMapper.deleteById(id);
-    }
-	
-	public void save(KFFUser user) throws RestServiceException {	    
+		userMapper.deleteById(id);
+	}
+
+	public void save(KFFUser user) throws RestServiceException {
 		userMapper.save(user);
 	}
-	
-	public boolean update(KFFUser user) throws RestServiceException {	
-		if(user.getUserId() == null){
+
+	public boolean update(KFFUser user) throws RestServiceException {
+		if (user.getUserId() == null) {
 			throw new RestServiceException("id不能为空");
 		}
 		userMapper.update(user);
 		return true;
-	}	
-	
-	@Transactional(readOnly=true)
+	}
+
+	@Transactional(readOnly = true)
 	public PageResult<KFFUser> findPage(PaginationQuery query) throws RestServiceException {
 		PageResult<KFFUser> result = null;
 		try {
 			Integer count = userMapper.findPageCount(query.getQueryData());
 			if (null != count && count.intValue() > 0) {
-				int startRecord = (query.getPageIndex() - 1)* query.getRowsPerPage();
+				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
 				query.addQueryData("startRecord", Integer.toString(startRecord));
 				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
 				List<KFFUser> list = userMapper.findPage(query.getQueryData());
-				result = new PageResult<KFFUser>(list,count,query);
-			} 
+				result = new PageResult<KFFUser>(list, count, query);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return result;
 	}
 
-	public KFFUser registerRest(RegisterRequest registerRequest) throws RestServiceException{
+	public KFFUser registerRest(RegisterRequest registerRequest) throws RestServiceException {
 		Date createTime = new Date();
 		KFFUser user = new KFFUser();
 		user.setMobile(registerRequest.getPhoneNumber());
-		if(StringUtils.isNotBlank(registerRequest.getPassword())){
+		if (StringUtils.isNotBlank(registerRequest.getPassword())) {
 			user.setPassword(SHAUtil.encode(registerRequest.getPassword()));
 		}
-		user.setUserName(KFFRestConstants.USER_NAME_PREFIX+RandomUtil.produceStringAndNumber(8));
+		user.setUserName(KFFRestConstants.USER_NAME_PREFIX + RandomUtil.produceStringAndNumber(8));
 		user.setIcon(KFFRestConstants.DEFAULT_USER_ICON);
 		user.setCreateTime(createTime);
 		user.setUpdateTime(createTime);
@@ -95,105 +95,150 @@ public class UserService   {
 		return findUserByPhoneNumber(registerRequest.getPhoneNumber());
 	}
 
-	public KFFUser login(String loginName, String password) throws RestServiceException{
+	public KFFUser login(String loginName, String password) throws RestServiceException {
 		KFFUser user = null;
-		if(StringUtils.isBlank(loginName)){
+		if (StringUtils.isBlank(loginName)) {
 			throw new RestServiceException(RestErrorCode.USER_ID_BLANK);
-		}else if(StringUtils.isBlank(password)){
+		} else if (StringUtils.isBlank(password)) {
 			throw new RestServiceException(RestErrorCode.PASSWORD_NULL);
 		}
-		logger.info("UserService login pwd before:"+password);
+		logger.info("UserService login pwd before:" + password);
 		password = SHAUtil.encode(password);
-		logger.info("UserService login pwd after:"+password);
+		logger.info("UserService login pwd after:" + password);
 		PaginationQuery query = new PaginationQuery();
-		query.addQueryData("password", password);		
-		if(loginName.length() == 11 && loginName.matches(RegexUtil.PHONEREGEX)){
-		//手机号登录
+		query.addQueryData("password", password);
+		if (loginName.length() == 11 && loginName.matches(RegexUtil.PHONEREGEX)) {
+			// 手机号登录
 			query.addQueryData("mobile", loginName);
-			logger.info("UserService login:mobile=" +loginName);
-		}else{
-		//用户名登录
+			logger.info("UserService login:mobile=" + loginName);
+		} else {
+			// 用户名登录
 			query.addQueryData("userName", loginName);
-			logger.info("UserService login:userName=" +loginName);
+			logger.info("UserService login:userName=" + loginName);
 		}
-		
-		int startRecord = (query.getPageIndex() - 1)* query.getRowsPerPage();
+
+		int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
 		query.addQueryData("startRecord", Integer.toString(startRecord));
 		query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
 		List<KFFUser> list = userMapper.findPage(query.getQueryData());
-		if(CollectionUtils.isNotEmpty(list)){
+		if (CollectionUtils.isNotEmpty(list)) {
 			user = list.get(0);
 		}
-		
+
 		return user;
 	}
 
 	/**
-     * 验证 登陆账号，手机号，邮箱账号 是否存在
-     * @param key
-     * @param value
-     * @return
-     */
+	 * 验证 登陆账号，手机号，邮箱账号 是否存在
+	 * 
+	 * @param key
+	 * @param value
+	 * @return
+	 */
 	public boolean verifyLoginaccount(String key, String value) {
-		  	   
-	        if (StringUtils.isBlank(key) || StringUtils.isBlank(value)) {
-	            return false;
-	        }
-	        Map<String, Object> map = new HashMap<String, Object>();
-	        map.put(key, value);
-	        Integer count = userMapper.verifyLoginaccount(map);
-	        if (count > 0) {
-	            return true;
-	        }
-	        return false;
+
+		if (StringUtils.isBlank(key) || StringUtils.isBlank(value)) {
+			return false;
+		}
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put(key, value);
+		Integer count = userMapper.verifyLoginaccount(map);
+
+		if (count > 0) {
+			return true;
+		}
+		return false;
 
 	}
 
 	/**
 	 * 根据手机号查询用户
+	 * 
 	 * @param phoneNumber
 	 * @return
 	 */
-	public KFFUser findUserByPhoneNumber(String phoneNumber)  throws RestServiceException{
+	public KFFUser findUserByPhoneNumber(String phoneNumber) throws RestServiceException {
 
-		  if (StringUtils.isBlank(phoneNumber)) {
-	          throw new RestServiceException(RestErrorCode.PHONE_NULL);
-	        }
-	        Map<String, Object> map = new HashMap<String, Object>();
-	        map.put("mobile", phoneNumber);
-	        map.put("status", "1");
-	        List<KFFUser> users = userMapper.findAllPage(map);
-	        if(CollectionUtils.isNotEmpty(users)){
-	        	return users.get(0);
-	        }
-		    return null;
+		if (StringUtils.isBlank(phoneNumber)) {
+			throw new RestServiceException(RestErrorCode.PHONE_NULL);
+		}
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("mobile", phoneNumber);
+		map.put("status", "1");
+		List<KFFUser> users = userMapper.findAllPage(map);
+		if (CollectionUtils.isNotEmpty(users)) {
+			return users.get(0);
+		}
+		return null;
 	}
 
 	public void updateUserKFFCoinNum(Integer userId, Integer amount) {
-		
 
-		  if (userId == null) {
-	          throw new RestServiceException("用户ID不能为空");
-	      }
-		  if (amount == null) {
-	          throw new RestServiceException("数量不能为空");
-	      }
-	        Map<String, Object> map = new HashMap<String, Object>();
-	        map.put("userId", userId);
-	        map.put("kffCoinNum", amount);
-	        userMapper.updateUserKFFCoinNum(map);
-	       
+		if (userId == null) {
+			throw new RestServiceException("用户ID不能为空");
+		}
+		if (amount == null) {
+			throw new RestServiceException("数量不能为空");
+		}
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("userId", userId);
+		map.put("kffCoinNum", amount);
+		userMapper.updateUserKFFCoinNum(map);
+
 	}
 
 	public void increaseFansNum(Integer userId) {
 		userMapper.increaseFansNum(userId);
-		
+
 	}
 
 	public void decreaseFansNum(Integer userId) {
-		
+
 		userMapper.decreaseFansNum(userId);
 	}
 
-	
+	public String findPhoneByUserId(Integer userId) {
+		// TODO Auto-generated method stub
+		return userMapper.findPhoneByUserId(userId);
+	}
+
+	public KFFUser saveUserByphoneNotPass(String phoneNumber, Integer invaUserId) {
+
+		Date createTime = new Date();
+		KFFUser user = new KFFUser();
+		user.setMobile(phoneNumber);
+		user.setPassword(null);
+		user.setUserName(KFFRestConstants.USER_NAME_PREFIX + RandomUtil.produceStringAndNumber(8));
+		user.setIcon(KFFRestConstants.DEFAULT_USER_ICON);
+		user.setCreateTime(createTime);
+		user.setUpdateTime(createTime);
+		user.setUserType(1);
+		user.setStatus(1);
+		// 不为null 判断邀请人是第几等级
+		if (null != invaUserId) {
+			// 根据invauserID 查询用户user表 进行查询
+			KFFUser invaUser = userMapper.findById(invaUserId);
+			//
+			if (null == invaUser) {
+				throw new RestServiceException("邀请人参数出错,请再次核实邀请人是否正确!");
+			}
+
+			user.setReferLevel(1);
+			user.setReferUserId(invaUserId);
+			userMapper.save(user);
+			return findUserByPhoneNumber(phoneNumber);
+		}
+		// 没有邀请人ID 说明此人没有推荐人
+		if (null == invaUserId) {
+			// 说明此人没有推荐人
+			user.setReferLevel(0);
+			user.setReferUserId(null);
+			userMapper.save(user);
+			return findUserByPhoneNumber(phoneNumber);
+		}
+
+		return null;
+
+	}
+
 }

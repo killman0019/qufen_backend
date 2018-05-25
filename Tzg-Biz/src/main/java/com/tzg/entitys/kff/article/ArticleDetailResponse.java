@@ -85,6 +85,7 @@ public class ArticleDetailResponse implements Serializable {
      * 浏览量
      */ 	
 	private java.lang.Integer pageviewNum  = 0;
+	
     /**
      * 捐赠人数
      */ 	

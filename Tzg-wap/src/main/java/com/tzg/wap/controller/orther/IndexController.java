@@ -1,4 +1,4 @@
-package com.tzg.wap.controller;
+package com.tzg.wap.controller.orther;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

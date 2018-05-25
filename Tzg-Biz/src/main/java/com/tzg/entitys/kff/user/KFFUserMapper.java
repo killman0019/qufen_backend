@@ -20,6 +20,8 @@ public interface KFFUserMapper extends BaseMapper<KFFUser, java.lang.Integer> {
 
 	public void decreaseFansNum(Integer userId);
 
+	public String findPhoneByUserId(Integer userId);
+
 
 
 }

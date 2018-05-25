@@ -1,4 +1,4 @@
-package com.tzg.wap.controller;
+package com.tzg.wap.controller.orther;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

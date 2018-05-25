@@ -1,4 +1,4 @@
-package com.tzg.wap.controller;
+package com.tzg.wap.controller.orther;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 

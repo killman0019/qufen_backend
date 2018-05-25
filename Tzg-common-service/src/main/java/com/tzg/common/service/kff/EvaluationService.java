@@ -12,57 +12,74 @@ import com.tzg.entitys.kff.evaluation.Evaluation;
 import com.tzg.entitys.kff.evaluation.EvaluationMapper;
 import com.tzg.rest.exception.rest.RestServiceException;
 
-@Service(value="KFFEvaluationService")
+@Service(value = "KFFEvaluationService")
 @Transactional
-public class EvaluationService   {
+public class EvaluationService {
 
 	@Autowired
-	private EvaluationMapper evaluationMapper;	
-	   
-	@Transactional(readOnly=true)
-    public Evaluation findById(java.lang.Integer id) throws RestServiceException {
-    	if(id == null){
+	private EvaluationMapper evaluationMapper;
+
+	@Transactional(readOnly = true)
+	public Evaluation findById(java.lang.Integer id) throws RestServiceException {
+		if (id == null) {
 			throw new RestServiceException("id不能为空");
 		}
-        return evaluationMapper.findById(id);
-    }
-	
-    public void delete(java.lang.Integer id) throws RestServiceException {
-    	if(id == null){
+		return evaluationMapper.findById(id);
+	}
+
+	public void delete(java.lang.Integer id) throws RestServiceException {
+		if (id == null) {
 			throw new RestServiceException("id不能为空");
 		}
-        evaluationMapper.deleteById(id);
-    }
-	
-	public void save(Evaluation evaluation) throws RestServiceException {	    
+		evaluationMapper.deleteById(id);
+	}
+
+	public void save(Evaluation evaluation) throws RestServiceException {
 		evaluationMapper.save(evaluation);
 	}
-	
-	public void update(Evaluation evaluation) throws RestServiceException {	
-		if(evaluation.getEvaluationId() == null){
+
+	public void update(Evaluation evaluation) throws RestServiceException {
+		if (evaluation.getEvaluationId() == null) {
 			throw new RestServiceException("id不能为空");
 		}
 		evaluationMapper.update(evaluation);
-	}	
-	
-	@Transactional(readOnly=true)
+	}
+
+	@Transactional(readOnly = true)
 	public PageResult<Evaluation> findPage(PaginationQuery query) throws RestServiceException {
 		PageResult<Evaluation> result = null;
 		try {
 			Integer count = evaluationMapper.findPageCount(query.getQueryData());
 			if (null != count && count.intValue() > 0) {
-				int startRecord = (query.getPageIndex() - 1)* query.getRowsPerPage();
+				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
 				query.addQueryData("startRecord", Integer.toString(startRecord));
 				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
 				List<Evaluation> list = evaluationMapper.findPage(query.getQueryData());
-				result = new PageResult<Evaluation>(list,count,query);
-			} 
+				result = new PageResult<Evaluation>(list, count, query);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return result;
 	}
-	
 
-	
+	@Transactional(readOnly = true)
+	public Evaluation selectEvaluationByPostId(Integer postId) {
+		if (null == postId) {
+			throw new RestServiceException("参数不能为空");
+		}
+
+		return evaluationMapper.selectEvaluationByPostId(postId);
+	}
+
+	@Transactional(readOnly = true)
+	public List<Evaluation> findEvaliationByProjectId(Integer projectId) {
+		// TODO Auto-generated method stub
+		return evaluationMapper.findEvaliationByProjectId(projectId);
+	}
+
+	public Evaluation selectEvaluationOrNotByUserId(Evaluation evaluation) {
+		// TODO Auto-generated method stub
+		return evaluationMapper.selectEvaluationOrNotByUserId(evaluation);
+	}
 }

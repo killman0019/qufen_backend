@@ -15,12 +15,16 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.google.gson.Gson;
 import com.tzg.common.constants.KFFConstants;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.redis.RedisService;
 import com.tzg.common.service.kff.ArticleService;
+import com.tzg.common.service.kff.AuthenticationService;
 import com.tzg.common.service.kff.CollectService;
 import com.tzg.common.service.kff.CommendationService;
 import com.tzg.common.service.kff.CommentsService;
@@ -39,30 +43,41 @@ import com.tzg.common.service.kff.PraiseService;
 import com.tzg.common.service.kff.ProjectService;
 import com.tzg.common.service.kff.SuggestService;
 import com.tzg.common.service.kff.TokenrecordsService;
+import com.tzg.common.service.kff.UserCardService;
+import com.tzg.common.service.kff.UserInvationService;
 import com.tzg.common.service.kff.UserService;
 import com.tzg.common.service.systemParam.SystemParamService;
 import com.tzg.common.utils.DateUtil;
 import com.tzg.common.utils.Numbers;
 import com.tzg.common.utils.RandomUtil;
+import com.tzg.common.utils.RegexUtil;
 import com.tzg.common.zookeeper.ZKClient;
 import com.tzg.entitys.kff.article.Article;
 import com.tzg.entitys.kff.article.ArticleDetailResponse;
+import com.tzg.entitys.kff.article.ArticleDetailShareResponse;
 import com.tzg.entitys.kff.article.ArticleRequest;
+import com.tzg.entitys.kff.authentication.Authentication;
 import com.tzg.entitys.kff.collect.Collect;
 import com.tzg.entitys.kff.collect.CollectPostResponse;
 import com.tzg.entitys.kff.commendation.Commendation;
 import com.tzg.entitys.kff.commendation.CommendationRequest;
+import com.tzg.entitys.kff.comments.CommentShareFloot;
 import com.tzg.entitys.kff.comments.Comments;
 import com.tzg.entitys.kff.comments.CommentsRequest;
+import com.tzg.entitys.kff.comments.CommentsShareRequest;
 import com.tzg.entitys.kff.dareas.Dareas;
 import com.tzg.entitys.kff.devaluationModel.DevaluationModel;
 import com.tzg.entitys.kff.devaluationModel.DevaluationModelRequest;
 import com.tzg.entitys.kff.discuss.Discuss;
+import com.tzg.entitys.kff.discuss.DiscussMapper;
 import com.tzg.entitys.kff.discuss.DiscussRequest;
+import com.tzg.entitys.kff.discuss.DiscussShare;
 import com.tzg.entitys.kff.dprojectType.DprojectType;
 import com.tzg.entitys.kff.dtags.Dtags;
 import com.tzg.entitys.kff.evaluation.Evaluation;
 import com.tzg.entitys.kff.evaluation.EvaluationRequest;
+import com.tzg.entitys.kff.evaluation.ProjectEvaluationDetailResponse;
+import com.tzg.entitys.kff.evaluation.ProjectEvaluationDetailShareResponse;
 import com.tzg.entitys.kff.follow.Follow;
 import com.tzg.entitys.kff.follow.FollowResponse;
 import com.tzg.entitys.kff.message.KFFMessage;
@@ -80,12 +95,18 @@ import com.tzg.entitys.kff.suggest.SuggestRequest;
 import com.tzg.entitys.kff.tokenrecords.Tokenrecords;
 import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.entitys.kff.user.KFFUserHomeResponse;
+import com.tzg.entitys.kff.userInvation.UserInvation;
+import com.tzg.entitys.kff.usercard.UserCard;
 import com.tzg.entitys.loginaccount.RegisterRequest;
+import com.tzg.entitys.photo.PhotoIview;
+import com.tzg.entitys.photo.PhotoParams;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rmi.service.KFFRmiService;
+import com.tzg.entitys.photo.PhotoParams;
+
 public class KFFRmiServiceImpl implements KFFRmiService {
-	
+
 	private static final Log logger = LogFactory.getLog(KFFRmiServiceImpl.class);
 
 	@Autowired
@@ -129,52 +150,57 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	@Autowired
 	private CommendationService kffCommendationService;
 
+	@Autowired
+	private ZKClient zkClient;
+	@Autowired
+	private SystemParamService systemParamService;
+	@Autowired
+	private RedisService redisService;
+	@Autowired
+	private UserCardService userCardService;
+	@Autowired
+	private AuthenticationService authenticationService;
 
-    @Autowired
-    private ZKClient zkClient;
-    @Autowired
-    private SystemParamService systemParamService;
-    @Autowired
-    private RedisService redisService;
+	@Autowired
+	private UserInvationService userInvationService;
 
 	@Override
 	public KFFUser registerRest(RegisterRequest registerRequest) {
-		 return kffUserService.registerRest(registerRequest);
+		return kffUserService.registerRest(registerRequest);
 	}
 
 	@Override
 	public boolean verifyLoginaccount(String key, String value) {
-		return kffUserService.verifyLoginaccount(key,value);
-		
+		System.out.println("============================");
+		return kffUserService.verifyLoginaccount(key, value);
+
 	}
 
 	@Override
 	public KFFUser login(String loginName, String password) {
-		
-		return kffUserService.login(loginName,password);
+
+		return kffUserService.login(loginName, password);
 	}
 
 	@Override
-	public Mobileversionupdate selectLastVersionByType(Integer platformType)
-			throws RestServiceException {		
+	public Mobileversionupdate selectLastVersionByType(Integer platformType) throws RestServiceException {
 		return kffMobileversionupdateService.findById(platformType);
 	}
 
 	@Override
-	public void submitSuggest(SuggestRequest suggestRequest)
-			throws RestServiceException {
-		if(StringUtils.isBlank(suggestRequest.getContent())){
+	public void submitSuggest(SuggestRequest suggestRequest) throws RestServiceException {
+		if (StringUtils.isBlank(suggestRequest.getContent())) {
 			throw new RestServiceException("请填写建议内容");
-		}else if(suggestRequest.getContent().length() > KFFConstants.MAX_NORMAL_CONTENT_LENGTH){
-			throw new RestServiceException("建议内容请勿超过"+KFFConstants.MAX_NORMAL_CONTENT_LENGTH+"字");
+		} else if (suggestRequest.getContent().length() > KFFConstants.MAX_NORMAL_CONTENT_LENGTH) {
+			throw new RestServiceException("建议内容请勿超过" + KFFConstants.MAX_NORMAL_CONTENT_LENGTH + "字");
 		}
-		
-		if(StringUtils.isBlank(suggestRequest.getContactInfo())){
+
+		if (StringUtils.isBlank(suggestRequest.getContactInfo())) {
 			throw new RestServiceException("请填写联系方式");
-		}else if(suggestRequest.getContactInfo().length() > KFFConstants.MAX_NORMAL_TITLE_LENGTH){
-			throw new RestServiceException("联系方式请勿超过"+KFFConstants.MAX_NORMAL_TITLE_LENGTH +"字");
+		} else if (suggestRequest.getContactInfo().length() > KFFConstants.MAX_NORMAL_TITLE_LENGTH) {
+			throw new RestServiceException("联系方式请勿超过" + KFFConstants.MAX_NORMAL_TITLE_LENGTH + "字");
 		}
-		
+
 		Suggest suggest = new Suggest();
 		Date now = new Date();
 		suggest.setContactInfo(suggestRequest.getContactInfo());
@@ -184,7 +210,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		suggest.setUpdateTime(now);
 		suggest.setStatus(1);
 		kffSuggestService.save(suggest);
-		
+
 	}
 
 	@Override
@@ -192,124 +218,121 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 		return kffNoticeService.selectLatestNotice();
 	}
-	
+
 	@Override
-	public KFFUser findUserByPhoneNumber(String phoneNumber) throws RestServiceException{
-		
+	public KFFUser findUserByPhoneNumber(String phoneNumber) throws RestServiceException {
+
 		return kffUserService.findUserByPhoneNumber(phoneNumber);
 	}
-	
+
 	@Override
-	public boolean updateUser(KFFUser account) throws RestServiceException{
-		
+	public boolean updateUser(KFFUser account) throws RestServiceException {
+
 		return kffUserService.update(account);
 	}
-	
+
 	@Override
-	public KFFUser findUserById(Integer userId) throws RestServiceException{		
+	public KFFUser findUserById(Integer userId) throws RestServiceException {
 		return kffUserService.findById(userId);
 	}
 
 	@Override
-	public List<Dareas> getAreaListByCode(String areacode)
-			throws RestServiceException {
+	public List<Dareas> getAreaListByCode(String areacode) throws RestServiceException {
 		List<Dareas> areas = new ArrayList<>();
-        if(StringUtils.isBlank(areacode)) {
-        	areas = kffDareasService.findProvinceAreas();
-        }else {
-        	areas = kffDareasService.findSubAreasByCode(areacode);
-        }
+		if (StringUtils.isBlank(areacode)) {
+			areas = kffDareasService.findProvinceAreas();
+		} else {
+			areas = kffDareasService.findSubAreasByCode(areacode);
+		}
 		return areas;
 	}
 
 	@Override
-	public PageResult<Tokenrecords> findPageMyTokenRecords(PaginationQuery query)
-			throws RestServiceException {
-		
+	public PageResult<Tokenrecords> findPageMyTokenRecords(PaginationQuery query) throws RestServiceException {
+
 		return kffTokenrecordsService.findPage(query);
 	}
 
 	@Override
 	public PageResult<CollectPostResponse> findPageMyCollectRecords(PaginationQuery query) throws RestServiceException {
 		PageResult<CollectPostResponse> result = new PageResult<CollectPostResponse>();
-		List<CollectPostResponse> postResponse = new ArrayList<>();		
+		List<CollectPostResponse> postResponse = new ArrayList<>();
 		PageResult<Collect> collects = kffCollectService.findPage(query);
-		if(collects != null && CollectionUtils.isNotEmpty(collects.getRows())){
+		if (collects != null && CollectionUtils.isNotEmpty(collects.getRows())) {
 			result.setCurPageNum(collects.getCurPageNum());
 			result.setPageSize(collects.getPageSize());
 			result.setQueryParameters(collects.getQueryParameters());
 			result.setRowCount(collects.getRowCount());
 			result.setRowsPerPage(collects.getRowsPerPage());
-			for(Collect collect:collects.getRows()){
+			for (Collect collect : collects.getRows()) {
 				CollectPostResponse response = new CollectPostResponse();
 				BeanUtils.copyProperties(collect, response);
-				//查询post和project信息
+				// 查询post和project信息
 				Post post = kffPostService.findById(collect.getPostId());
-				if(post != null){
-							response.setPostShortDesc(post.getPostShortDesc());
-							if(StringUtils.isNotBlank(post.getPostSmallImages())){
-								try{
-								List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
-								response.setPostSmallImages(pfl);
-								}catch(Exception e){
-									logger.error("我的收藏列表解析帖子缩略图json出错:{}",e); 
-								}
-							}
-							response.setPostTitle(post.getPostTitle());
-							response.setCommentsNum(post.getCommentsNum());
-							response.setCollectNum(post.getCollectNum());
-							response.setPraiseNum(post.getPraiseNum());
-							response.setPageviewNum(post.getPageviewNum());
-							response.setDonateNum(post.getDonateNum());
-							response.setCreateUserIcon(post.getCreateUserIcon());
-							response.setCreateUserName(post.getCreateUserName());
-							response.setCreateUserSignature(post.getCreateUserSignature());
-							//response.setTotalScore(post.get);
-							KFFProject project = kffProjectService.findById(post.getProjectId());
-							if(project != null){
-								response.setProjectChineseName(project.getProjectChineseName());
-								response.setProjectCode(project.getProjectCode());
-								response.setProjectEnglishName(project.getProjectEnglishName());
-								response.setProjectIcon(project.getProjectIcon());
-								response.setProjectSignature(project.getProjectSignature());
-								response.setTotalScore(project.getTotalScore());
-							}
-							postResponse.add(response);
+				if (post != null) {
+					response.setPostShortDesc(post.getPostShortDesc());
+					if (StringUtils.isNotBlank(post.getPostSmallImages())) {
+						try {
+							List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
+							response.setPostSmallImages(pfl);
+						} catch (Exception e) {
+							logger.error("我的收藏列表解析帖子缩略图json出错:{}", e);
+						}
+					}
+					response.setPostTitle(post.getPostTitle());
+					response.setCommentsNum(post.getCommentsNum());
+					response.setCollectNum(post.getCollectNum());
+					response.setPraiseNum(post.getPraiseNum());
+					response.setPageviewNum(post.getPageviewNum());
+					response.setDonateNum(post.getDonateNum());
+					response.setCreateUserIcon(post.getCreateUserIcon());
+					response.setCreateUserName(post.getCreateUserName());
+					response.setCreateUserSignature(post.getCreateUserSignature());
+					// response.setTotalScore(post.get);
+					KFFProject project = kffProjectService.findById(post.getProjectId());
+					if (project != null) {
+						response.setProjectChineseName(project.getProjectChineseName());
+						response.setProjectCode(project.getProjectCode());
+						response.setProjectEnglishName(project.getProjectEnglishName());
+						response.setProjectIcon(project.getProjectIcon());
+						response.setProjectSignature(project.getProjectSignature());
+						response.setTotalScore(project.getTotalScore());
+					}
+					postResponse.add(response);
+				}
 			}
-		}
 			result.setRows(postResponse);
-	}
+		}
 		return result;
 	}
 
 	@Override
-	public PageResult<FollowResponse> findPageMyFollow(PaginationQuery query)
-			throws RestServiceException {
-		
+	public PageResult<FollowResponse> findPageMyFollow(PaginationQuery query) throws RestServiceException {
+
 		PageResult<FollowResponse> result = new PageResult<FollowResponse>();
-        List<FollowResponse> followResponses = new ArrayList<>();
-		PageResult<Follow> follows = kffFollowService.findPage(query);				
-		if(follows != null && CollectionUtils.isNotEmpty(follows.getRows())){
+		List<FollowResponse> followResponses = new ArrayList<>();
+		PageResult<Follow> follows = kffFollowService.findPage(query);
+		if (follows != null && CollectionUtils.isNotEmpty(follows.getRows())) {
 			result.setCurPageNum(follows.getCurPageNum());
 			result.setPageSize(follows.getPageSize());
 			result.setQueryParameters(follows.getQueryParameters());
 			result.setRowCount(follows.getRowCount());
-			result.setRowsPerPage(follows.getRowsPerPage());			
-			for(Follow follow:follows.getRows()){
+			result.setRowsPerPage(follows.getRowsPerPage());
+			for (Follow follow : follows.getRows()) {
 				FollowResponse response = new FollowResponse();
 				BeanUtils.copyProperties(follow, response);
-				//查询post和project信息
-				///*关注类型：1-关注项目;2-关注帖子；3-关注用户
-				if(follow.getFollowType() != null && follow.getFollowType() == 2){
+				// 查询post和project信息
+				// /*关注类型：1-关注项目;2-关注帖子；3-关注用户
+				if (follow.getFollowType() != null && follow.getFollowType() == 2) {
 					Post post = kffPostService.findById(follow.getFollowedId());
-					if(post != null){
+					if (post != null) {
 						response.setPostShortDesc(post.getPostShortDesc());
-						if(StringUtils.isNotBlank(post.getPostSmallImages())){
-							try{
-							List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
-							response.setPostSmallImages(pfl);
-							}catch(Exception e){
-								logger.error("我的关注列表解析帖子缩略图json出错:{}",e); 
+						if (StringUtils.isNotBlank(post.getPostSmallImages())) {
+							try {
+								List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
+								response.setPostSmallImages(pfl);
+							} catch (Exception e) {
+								logger.error("我的关注列表解析帖子缩略图json出错:{}", e);
 							}
 						}
 						response.setPostTitle(post.getPostTitle());
@@ -321,9 +344,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						response.setCreateUserIcon(post.getCreateUserIcon());
 						response.setCreateUserName(post.getCreateUserName());
 						response.setCreateUserSignature(post.getCreateUserSignature());
-						//response.setTotalScore(post.get);
+						// response.setTotalScore(post.get);
 						KFFProject project = kffProjectService.findById(post.getProjectId());
-						if(project != null){
+						if (project != null) {
 							response.setProjectChineseName(project.getProjectChineseName());
 							response.setProjectCode(project.getProjectCode());
 							response.setProjectEnglishName(project.getProjectEnglishName());
@@ -332,26 +355,25 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 							response.setTotalScore(project.getTotalScore());
 						}
 					}
-					
-				}else if (follow.getFollowType() != null && follow.getFollowType() == 3){
-					//被关注用户信息在follow表中已包含
+
+				} else if (follow.getFollowType() != null && follow.getFollowType() == 3) {
+					// 被关注用户信息在follow表中已包含
 				}
 				followResponses.add(response);
-			}			
+			}
 			result.setRows(followResponses);
 		}
-		
+
 		return result;
 	}
 
 	@Override
-	public KFFMessage getMessageDetail(Integer userId,Integer messageId)
-			throws RestServiceException {
+	public KFFMessage getMessageDetail(Integer userId, Integer messageId) throws RestServiceException {
 		KFFMessage result = kffMessageService.findById(messageId);
-		if(result == null){
+		if (result == null) {
 			throw new RestServiceException("消息不存在");
 		}
-		if(result.getUserId() != userId){
+		if (result.getUserId() != userId) {
 			throw new RestServiceException("不能查看他人消息");
 		}
 		return result;
@@ -364,67 +386,65 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public void deleteMessage(Integer userId, Integer messageId)
-			throws RestServiceException {
+	public void deleteMessage(Integer userId, Integer messageId) throws RestServiceException {
 		KFFMessage result = kffMessageService.findById(messageId);
-		if(result == null){
+		if (result == null) {
 			throw new RestServiceException("消息不存在");
 		}
-		if(result.getUserId() != userId){
+		if (result.getUserId() != userId) {
 			throw new RestServiceException("不能删除他人消息");
-		}	
-	     result.setState(2);  //已读
-	     result.setStatus(0); //删除
-	     result.setUpdateTime(new Date());
-	     kffMessageService.update(result);
+		}
+		result.setState(2); // 已读
+		result.setStatus(0); // 删除
+		result.setUpdateTime(new Date());
+		kffMessageService.update(result);
 	}
 
 	@Override
-	public KFFProject submitProject(SubmitKFFProjectRequest projectRequest)
-			throws RestServiceException {
+	public KFFProject submitProject(SubmitKFFProjectRequest projectRequest) throws RestServiceException {
 		Date now = new Date();
 		KFFProject project = new KFFProject();
 		BeanUtils.copyProperties(projectRequest, project);
-		if(StringUtils.isBlank(project.getProjectCode())){
+		if (StringUtils.isBlank(project.getProjectCode())) {
 			throw new RestServiceException("代币名称不能为空");
 		}
-		if(StringUtils.isBlank(project.getProjectEnglishName())){
+		if (StringUtils.isBlank(project.getProjectEnglishName())) {
 			throw new RestServiceException("项目英文名称不能为空");
 		}
-		if(StringUtils.isBlank(project.getWebsiteUrl())){
+		if (StringUtils.isBlank(project.getWebsiteUrl())) {
 			throw new RestServiceException("官网地址不能为空");
 		}
-		if(StringUtils.isBlank(project.getWhitepaperUrl())){
+		if (StringUtils.isBlank(project.getWhitepaperUrl())) {
 			throw new RestServiceException("白皮书地址不能为空");
 		}
-		if(StringUtils.isBlank(project.getProjectTypeName())){
+		if (StringUtils.isBlank(project.getProjectTypeName())) {
 			throw new RestServiceException("项目类型名称不能为空");
 		}
-		if(StringUtils.isBlank(project.getSubmitUserContactInfo())){
+		if (StringUtils.isBlank(project.getSubmitUserContactInfo())) {
 			throw new RestServiceException("联系信息不能为空");
 		}
-		if(StringUtils.isBlank(project.getSubmitReason())){
+		if (StringUtils.isBlank(project.getSubmitReason())) {
 			throw new RestServiceException("推荐理由不能为空");
 		}
-		if(StringUtils.isBlank(project.getProjectDesc())){
+		if (StringUtils.isBlank(project.getProjectDesc())) {
 			throw new RestServiceException("项目描述不能为空");
 		}
-		if(project.getWhitepaperUrl().length()>255){
+		if (project.getWhitepaperUrl().length() > 255) {
 			throw new RestServiceException("白皮书地址长度超限");
 		}
-		if(project.getSubmitUserContactInfo().length()>30){
+		if (project.getSubmitUserContactInfo().length() > 30) {
 			throw new RestServiceException("联系信息长度超限");
 		}
-		if(project.getSubmitReason().length()>3000){
+		if (project.getSubmitReason().length() > 3000) {
 			throw new RestServiceException("提交理由信息长度超限");
 		}
-		if(project.getProjectDesc().length()>3000){
+		if (project.getProjectDesc().length() > 3000) {
 			throw new RestServiceException("项目描述信息长度超限");
 		}
-		
+
 		project.setCreateTime(now);
 		project.setUpdateTime(now);
-		project.setState(1);//1；待审核；2-审核通过；3-拒绝
+		project.setState(1);// 1；待审核；2-审核通过；3-拒绝
 		project.setStatus(1);
 		project.setIssueDate(DateUtil.getDate(project.getIssueDateStr(), "YYYY-MM-dd"));
 		kffProjectService.save(project);
@@ -438,193 +458,189 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public List<ProjectResponse> findProjectByCode(int sortType,Integer userId,String projectCode)
-			throws RestServiceException {
-	    if(StringUtils.isBlank(projectCode)){
-	    	throw new RestServiceException("查询条件:项目关键字不能为空");
-	    }
+	public List<ProjectResponse> findProjectByCode(int sortType, Integer userId, String projectCode) throws RestServiceException {
+		if (StringUtils.isBlank(projectCode)) {
+			throw new RestServiceException("查询条件:项目关键字不能为空");
+		}
 		List<KFFProject> projects = new ArrayList<>();
 		List<ProjectResponse> result = new ArrayList<>();
-		Map<String,Object> map = new HashMap<>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("state", "2");
 		map.put("projectCode", projectCode);
-		if(sortType == 1 ){
+		if (sortType == 1) {
 			map.put("sortField", "follower_num");
 		}
 		projects = kffProjectService.findProjectByCode(map);
-		if(CollectionUtils.isNotEmpty(projects)){
+		if (CollectionUtils.isNotEmpty(projects)) {
 			PaginationQuery query = new PaginationQuery();
-	        query.addQueryData("followUserId", userId +"");
-	        query.addQueryData("followType", "1"); //关注类型：1-关注项目;2-关注帖子；3-关注用户       
-	        query.addQueryData("status", "1");
-	        query.setPageIndex(1);
-	        query.setRowsPerPage(10);
-	        
-			for(KFFProject project:projects){
+			query.addQueryData("followUserId", userId + "");
+			query.addQueryData("followType", "1"); // 关注类型：1-关注项目;2-关注帖子；3-关注用户
+			query.addQueryData("status", "1");
+			query.setPageIndex(1);
+			query.setRowsPerPage(10);
+
+			for (KFFProject project : projects) {
 				ProjectResponse response = new ProjectResponse();
 				BeanUtils.copyProperties(project, response);
-				query.addQueryData("followedProjectId", project.getProjectId()+"");
-                PageResult<Follow> follows = kffFollowService.findPage(query);  
-				if(follows != null && CollectionUtils.isNotEmpty(follows.getRows())){
+				query.addQueryData("followedProjectId", project.getProjectId() + "");
+				PageResult<Follow> follows = kffFollowService.findPage(query);
+				if (follows != null && CollectionUtils.isNotEmpty(follows.getRows())) {
 					response.setFollowStatus(1);
 				}
 				result.add(response);
 			}
 		}
-		
+
 		return result;
 	}
 
 	@Override
-	public void saveCommendation(CommendationRequest commendationRequest)
-			throws RestServiceException {
-		if(commendationRequest == null){
+	public void saveCommendation(CommendationRequest commendationRequest) throws RestServiceException {
+		if (commendationRequest == null) {
 			throw new RestServiceException("commendationRequest can't be null");
 		}
-		if(commendationRequest.getPostId() == null){
+		if (commendationRequest.getPostId() == null) {
 			throw new RestServiceException("帖子ID不能为空");
 		}
-		if(commendationRequest.getProjectId() == null){
+		if (commendationRequest.getProjectId() == null) {
 			throw new RestServiceException("项目ID不能为空");
 		}
 		Post post = kffPostService.findById(commendationRequest.getPostId());
-		if(post == null){
+		if (post == null) {
 			throw new RestServiceException("帖子不存在");
 		}
-		//帖子捐赠人数加+1
+		// 帖子捐赠人数加+1
 		kffPostService.updateDonateNum(post.getPostId());
-		
-		if(commendationRequest.getSendUserId() == null){
+
+		if (commendationRequest.getSendUserId() == null) {
 			throw new RestServiceException("发送用户不能为空");
 		}
-		if(commendationRequest.getAmount() == null || commendationRequest.getAmount() <= 0){
+		if (commendationRequest.getAmount() == null || commendationRequest.getAmount() <= 0) {
 			throw new RestServiceException("打赏金额不合法");
 		}
-		if(commendationRequest.getReceiveUserId() == null){
+		if (commendationRequest.getReceiveUserId() == null) {
 			throw new RestServiceException("接收用户不能为空");
 		}
 		KFFUser receiveUser = kffUserService.findById(commendationRequest.getReceiveUserId());
-		if(receiveUser == null){
+		if (receiveUser == null) {
 			throw new RestServiceException("接收用户不存在");
 		}
 		KFFUser sendUser = kffUserService.findById(commendationRequest.getSendUserId());
-		
-		if(sendUser == null){
+
+		if (sendUser == null) {
 			throw new RestServiceException("发送用户不存在");
 		}
-		if(sendUser.getKffCoinNum() < commendationRequest.getAmount()){
-			throw new RestServiceException("账户余额不足:捐赠数量"+commendationRequest.getAmount()+"余额数量"+sendUser.getKffCoinNum());
+		if (sendUser.getKffCoinNum() < commendationRequest.getAmount()) {
+			throw new RestServiceException("账户余额不足:捐赠数量" + commendationRequest.getAmount() + "余额数量" + sendUser.getKffCoinNum());
 		}
 		commendationRequest.setSendUserIcon(sendUser.getIcon());
 		commendationRequest.setPostType(post.getPostType());
-		
+
 		Commendation commendation = new Commendation();
 		BeanUtils.copyProperties(commendationRequest, commendation);
 		kffCommendationService.save(commendation);
-		
+
 		Date now = new Date();
-		Integer randomBIZCode=Integer.valueOf(RandomUtil.produceNumber(3));
-		//发送方扣减，接收方增加
-		kffUserService.updateUserKFFCoinNum(sendUser.getUserId(),-commendationRequest.getAmount());
+		Integer randomBIZCode = Integer.valueOf(RandomUtil.produceNumber(3));
+		// 发送方扣减，接收方增加
+		kffUserService.updateUserKFFCoinNum(sendUser.getUserId(), -commendationRequest.getAmount());
 		kffUserService.updateUserKFFCoinNum(receiveUser.getUserId(), commendationRequest.getAmount());
-		//生成流水记录
+		// 生成流水记录
 		Tokenrecords sendTokenRecords = new Tokenrecords();
-		sendTokenRecords.setTradeType(2); //交易类型:1-收入；2-支出
+		sendTokenRecords.setTradeType(2); // 交易类型:1-收入；2-支出
 		sendTokenRecords.setAmount(commendationRequest.getAmount());
 		sendTokenRecords.setBalance(sendUser.getKffCoinNum());
 		sendTokenRecords.setCreateTime(now);
-		//交易描述:10-充值11-评测奖励12-讨论奖励13-文章奖励14-榜单奖励15-用户赞赏16-注册奖励17-点赞奖励18-邀请好友奖励21-提现22-赞赏他人'
+		// 交易描述:10-充值11-评测奖励12-讨论奖励13-文章奖励14-榜单奖励15-用户赞赏16-注册奖励17-点赞奖励18-邀请好友奖励21-提现22-赞赏他人'
 		sendTokenRecords.setFunctionDesc("赞赏他人");
 		sendTokenRecords.setFunctionType(22);
 		sendTokenRecords.setMemo("捐赠他人");
 		sendTokenRecords.setStatus(1);
-		//交易流水号=交易类型（2位） 交易时间年月日（8位） 业务记录ID（10位）
+		// 交易流水号=交易类型（2位） 交易时间年月日（8位） 业务记录ID（10位）
 		sendTokenRecords.setTradeCode(Numbers.getSerialNumber(sendTokenRecords.getTradeType(), randomBIZCode));
-		sendTokenRecords.setTradeDate(now);		
+		sendTokenRecords.setTradeDate(now);
 		sendTokenRecords.setUpdateTime(now);
-		sendTokenRecords.setUserId(sendUser.getUserId());		
+		sendTokenRecords.setUserId(sendUser.getUserId());
 		kffTokenrecordsService.save(sendTokenRecords);
-		
-		Tokenrecords receiveTokenRecords  = new Tokenrecords();	
-		receiveTokenRecords.setTradeType(1); //交易类型:1-收入；2-支出
+
+		Tokenrecords receiveTokenRecords = new Tokenrecords();
+		receiveTokenRecords.setTradeType(1); // 交易类型:1-收入；2-支出
 		receiveTokenRecords.setAmount(commendationRequest.getAmount());
 		receiveTokenRecords.setBalance(receiveUser.getKffCoinNum());
 		receiveTokenRecords.setCreateTime(now);
-		//交易描述:10-充值11-评测奖励12-讨论奖励13-文章奖励14-榜单奖励15-用户赞赏16-注册奖励17-点赞奖励18-邀请好友奖励21-提现22-赞赏他人'
+		// 交易描述:10-充值11-评测奖励12-讨论奖励13-文章奖励14-榜单奖励15-用户赞赏16-注册奖励17-点赞奖励18-邀请好友奖励21-提现22-赞赏他人'
 		receiveTokenRecords.setFunctionDesc("用户赞赏");
 		sendTokenRecords.setFunctionType(15);
 		receiveTokenRecords.setMemo("他人捐赠");
 		receiveTokenRecords.setStatus(1);
-		//交易流水号=交易类型（2位） 交易时间年月日（8位） 业务记录ID（10位）
+		// 交易流水号=交易类型（2位） 交易时间年月日（8位） 业务记录ID（10位）
 		receiveTokenRecords.setTradeCode(Numbers.getSerialNumber(sendTokenRecords.getTradeType(), randomBIZCode));
-		receiveTokenRecords.setTradeDate(now);		
+		receiveTokenRecords.setTradeDate(now);
 		receiveTokenRecords.setUpdateTime(now);
-		receiveTokenRecords.setUserId(receiveUser.getUserId());	
+		receiveTokenRecords.setUserId(receiveUser.getUserId());
 		kffTokenrecordsService.save(receiveTokenRecords);
 	}
 
 	@Override
-	public KFFUserHomeResponse findUserHomeByUserId(Integer loginUserId,
-			Integer userId) throws RestServiceException {
+	public KFFUserHomeResponse findUserHomeByUserId(Integer loginUserId, Integer userId) throws RestServiceException {
 		KFFUserHomeResponse result = null;
-		if(loginUserId == null || loginUserId <=0){
+		if (loginUserId == null || loginUserId <= 0) {
 			throw new RestServiceException("登录用户ID不能为空");
 		}
 		KFFUser user = null;
-		if(userId == null || userId <= 0){
-		//查看用户本人	
+		if (userId == null || userId <= 0) {
+			// 查看用户本人
 			user = kffUserService.findById(loginUserId);
-			if(user == null){
-				throw new RestServiceException("用户不存在"+loginUserId);
+			if (user == null) {
+				throw new RestServiceException("用户不存在" + loginUserId);
 			}
 			result.setHomePageTitle("我的主页");
 			result.setShowFollow(0);
-			
-		}else{
-		//查看他人	
-			user = kffUserService.findById(userId);	
-			if(user == null){
-				throw new RestServiceException("用户不存在"+userId);
+
+		} else {
+			// 查看他人
+			user = kffUserService.findById(userId);
+			if (user == null) {
+				throw new RestServiceException("用户不存在" + userId);
 			}
-			result.setHomePageTitle(user.getUserName()+"的主页");
-			//默认设置显示 关注
+			result.setHomePageTitle(user.getUserName() + "的主页");
+			// 默认设置显示 关注
 			result.setShowFollow(1);
 			PaginationQuery query = new PaginationQuery();
-	        query.addQueryData("followUserId", loginUserId +"");
-	        query.addQueryData("followedUserId", userId +"");
-	        query.addQueryData("followType", "3"); //关注类型：1-关注项目;2-关注帖子；3-关注用户       	        
-	        query.addQueryData("status", "1");
-	        query.setPageIndex(1);
-	        query.setRowsPerPage(10);
-	        PageResult<Follow> follows = kffFollowService.findPage(query);
-		    if(follows !=null && CollectionUtils.isNotEmpty(follows.getRows())){
-		    	//默认设置显示 取消关注
+			query.addQueryData("followUserId", loginUserId + "");
+			query.addQueryData("followedUserId", userId + "");
+			query.addQueryData("followType", "3"); // 关注类型：1-关注项目;2-关注帖子；3-关注用户
+			query.addQueryData("status", "1");
+			query.setPageIndex(1);
+			query.setRowsPerPage(10);
+			PageResult<Follow> follows = kffFollowService.findPage(query);
+			if (follows != null && CollectionUtils.isNotEmpty(follows.getRows())) {
+				// 默认设置显示 取消关注
 				result.setShowFollow(2);
-		    }
-		
+			}
+
 		}
 		BeanUtils.copyProperties(user, result);
-		result.setTotalPostNum(result.getArticleNum()+result.getDiscussNum()+result.getEvaluationNum());
-		
+		result.setTotalPostNum(result.getArticleNum() + result.getDiscussNum() + result.getEvaluationNum());
+
 		return result;
 	}
 
 	@Override
-	public PageResult<PostResponse> findPageEvaluationList(PaginationQuery query)
-			throws RestServiceException {
+	public PageResult<PostResponse> findPageEvaluationList(PaginationQuery query) throws RestServiceException {
 		PageResult<PostResponse> result = new PageResult<PostResponse>();
 		List<PostResponse> respones = new ArrayList<>();
 		PageResult<Post> posts = kffPostService.findPage(query);
-		if(posts != null && CollectionUtils.isNotEmpty(posts.getRows())){
-			for(Post post:posts.getRows()){
+		if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
+			for (Post post : posts.getRows()) {
 				PostResponse response = new PostResponse();
 				BeanUtils.copyProperties(post, response);
-				if(StringUtils.isNotBlank(post.getPostSmallImages())){
-					try{
-					List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
-					response.setPostSmallImages(pfl);
-					}catch(Exception e){
-						logger.error("评测列表解析帖子缩略图json出错:{}",e); 
+				if (StringUtils.isNotBlank(post.getPostSmallImages())) {
+					try {
+						List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
+						response.setPostSmallImages(pfl);
+					} catch (Exception e) {
+						logger.error("评测列表解析帖子缩略图json出错:{}", e);
 					}
 				}
 				respones.add(response);
@@ -635,21 +651,20 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public PageResult<PostResponse> findPageDisscussList(PaginationQuery query)
-			throws RestServiceException {
+	public PageResult<PostResponse> findPageDisscussList(PaginationQuery query) throws RestServiceException {
 		PageResult<PostResponse> result = new PageResult<PostResponse>();
 		List<PostResponse> respones = new ArrayList<>();
 		PageResult<Post> posts = kffPostService.findPage(query);
-		if(posts != null && CollectionUtils.isNotEmpty(posts.getRows())){
-			for(Post post:posts.getRows()){
+		if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
+			for (Post post : posts.getRows()) {
 				PostResponse response = new PostResponse();
 				BeanUtils.copyProperties(post, response);
-				if(StringUtils.isNotBlank(post.getPostSmallImages())){
-					try{
-					List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
-					response.setPostSmallImages(pfl);
-					}catch(Exception e){
-						logger.error("讨论列表解析帖子缩略图json出错:{}",e); 
+				if (StringUtils.isNotBlank(post.getPostSmallImages())) {
+					try {
+						List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
+						response.setPostSmallImages(pfl);
+					} catch (Exception e) {
+						logger.error("讨论列表解析帖子缩略图json出错:{}", e);
 					}
 				}
 				respones.add(response);
@@ -660,21 +675,20 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public PageResult<PostResponse> findPageArticleList(PaginationQuery query)
-			throws RestServiceException {
+	public PageResult<PostResponse> findPageArticleList(PaginationQuery query) throws RestServiceException {
 		PageResult<PostResponse> result = new PageResult<PostResponse>();
 		List<PostResponse> respones = new ArrayList<>();
 		PageResult<Post> posts = kffPostService.findPage(query);
-		if(posts != null && CollectionUtils.isNotEmpty(posts.getRows())){
-			for(Post post:posts.getRows()){
+		if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
+			for (Post post : posts.getRows()) {
 				PostResponse response = new PostResponse();
 				BeanUtils.copyProperties(post, response);
-				if(StringUtils.isNotBlank(post.getPostSmallImages())){
-					try{
-					List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
-					response.setPostSmallImages(pfl);
-					}catch(Exception e){
-						logger.error("文章列表解析帖子缩略图json出错:{}",e); 
+				if (StringUtils.isNotBlank(post.getPostSmallImages())) {
+					try {
+						List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
+						response.setPostSmallImages(pfl);
+					} catch (Exception e) {
+						logger.error("文章列表解析帖子缩略图json出错:{}", e);
 					}
 				}
 				respones.add(response);
@@ -685,57 +699,55 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public ProjectResponse findProjectById(Integer userId, Integer projectId)
-			throws RestServiceException {
+	public ProjectResponse findProjectById(Integer userId, Integer projectId) throws RestServiceException {
 		ProjectResponse response = new ProjectResponse();
-		if(userId == null){
+		if (userId == null) {
 			throw new RestServiceException("用户ID不能为空");
 		}
-		if(projectId == null){
+		if (projectId == null) {
 			throw new RestServiceException("项目ID不能为空");
 		}
 		KFFProject project = kffProjectService.findById(projectId);
-		if(project == null){
-			throw new RestServiceException("项目不存在"+projectId);
+		if (project == null) {
+			throw new RestServiceException("项目不存在" + projectId);
 		}
-		
-		BeanUtils.copyProperties(project, response);		
-		
+
+		BeanUtils.copyProperties(project, response);
+
 		PaginationQuery query = new PaginationQuery();
-        query.addQueryData("followUserId", userId +"");
-        query.addQueryData("followType", "1"); //关注类型：1-关注项目;2-关注帖子；3-关注用户       
-        query.addQueryData("status", "1");
-        query.addQueryData("followedProjectId", projectId+"");
-        query.setPageIndex(1);
-        query.setRowsPerPage(10);
-        PageResult<Follow> follows = kffFollowService.findPage(query);  
-		if(follows != null && CollectionUtils.isNotEmpty(follows.getRows())){
-		  response.setFollowStatus(1);
-		}else{
-		  response.setFollowStatus(0);
+		query.addQueryData("followUserId", userId + "");
+		query.addQueryData("followType", "1"); // 关注类型：1-关注项目;2-关注帖子；3-关注用户
+		query.addQueryData("status", "1");
+		query.addQueryData("followedProjectId", projectId + "");
+		query.setPageIndex(1);
+		query.setRowsPerPage(10);
+		PageResult<Follow> follows = kffFollowService.findPage(query);
+		if (follows != null && CollectionUtils.isNotEmpty(follows.getRows())) {
+			response.setFollowStatus(1);
+		} else {
+			response.setFollowStatus(0);
 		}
-		
+
 		List<KFFUser> activeUsers = findProjectActiveUsers(projectId);
-		
+
 		response.setActiveUsers(activeUsers);
-		
+
 		KFFUser owner = kffUserService.findById(project.getSubmitUserId());
 		response.setOwner(owner);
-				
+
 		return response;
 	}
 
 	@Override
-	public List<KFFUser> findProjectActiveUsers(Integer projectId)
-			throws RestServiceException {
+	public List<KFFUser> findProjectActiveUsers(Integer projectId) throws RestServiceException {
 		List<KFFUser> activeUsers = new ArrayList<>();
 		KFFProject project = kffProjectService.findById(projectId);
-		if(project != null){
-			Map<String,Object> map = new HashMap<>();
-			map.put("projectId", projectId+"");
+		if (project != null) {
+			Map<String, Object> map = new HashMap<>();
+			map.put("projectId", projectId + "");
 			List<Post> posts = kffPostService.findProjectActiveUsers(map);
-			if(CollectionUtils.isNotEmpty(posts)){
-				for(Post post:posts){
+			if (CollectionUtils.isNotEmpty(posts)) {
+				for (Post post : posts) {
 					KFFUser user = new KFFUser();
 					user = kffUserService.findById(post.getCreateUserId());
 					activeUsers.add(user);
@@ -746,46 +758,45 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public void saveComment(CommentsRequest comment)
-			throws RestServiceException {
-		if(comment == null){
+	public void saveComment(CommentsRequest comment) throws RestServiceException {
+		if (comment == null) {
 			throw new RestServiceException("参数缺失");
-		}		
-		if(comment.getCommentUserId() == null){
+		}
+		if (comment.getCommentUserId() == null) {
 			throw new RestServiceException("评论用户ID不能为空");
-		}		
-		if(StringUtils.isBlank(comment.getCommentContent())){
+		}
+		if (StringUtils.isBlank(comment.getCommentContent())) {
 			throw new RestServiceException("评论内容不能为空");
 		}
-		if(comment.getCommentContent().length() > 30000){
+		if (comment.getCommentContent().length() > 30000) {
 			throw new RestServiceException("文章内容长度超过限制");
 		}
-		if(comment.getPostId() == null){
+		if (comment.getPostId() == null) {
 			throw new RestServiceException("帖子ID不能为空");
-		}	
+		}
 		KFFUser commentUser = kffUserService.findById(comment.getCommentUserId());
-		if(commentUser == null){
-			throw new RestServiceException("用户不存在"+comment.getCommentUserId());
+		if (commentUser == null) {
+			throw new RestServiceException("用户不存在" + comment.getCommentUserId());
 		}
 		Post post = kffPostService.findById(comment.getPostId());
-		if(post == null){
-			throw new RestServiceException("帖子不存在"+comment.getPostId());
+		if (post == null) {
+			throw new RestServiceException("帖子不存在" + comment.getPostId());
 		}
 		Comments saveComment = new Comments();
 		Date now = new Date();
 		BeanUtils.copyProperties(comment, saveComment);
 		saveComment.setCommentUserIcon(commentUser.getIcon());
 		saveComment.setCommentUserName(commentUser.getUserName());
-		
+
 		saveComment.setBecommentedUserId(post.getCreateUserId());
 		saveComment.setBecommentedUserIcon(post.getCreateUserIcon());
 		saveComment.setBecommentedUserName(post.getCreateUserName());
-		
-		if(comment.getParentCommentsId() != null){
-		//回复评论需要把评论的用户ID做为被评论人ID
+
+		if (comment.getParentCommentsId() != null) {
+			// 回复评论需要把评论的用户ID做为被评论人ID
 			Comments parentComment = kffCommentsService.findById(comment.getParentCommentsId());
-			if(parentComment == null){
-				throw new RestServiceException("错误的父帖ID"+comment.getParentCommentsId());
+			if (parentComment == null) {
+				throw new RestServiceException("错误的父帖ID" + comment.getParentCommentsId());
 			}
 			saveComment.setBecommentedUserId(parentComment.getCommentUserId());
 			saveComment.setBecommentedUserIcon(parentComment.getCommentUserIcon());
@@ -802,37 +813,36 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public void saveArticle(ArticleRequest articleRequest)
-			throws RestServiceException {
+	public void saveArticle(ArticleRequest articleRequest) throws RestServiceException {
 		String uuid = UUID.randomUUID().toString().replace("-", "");
-		if(articleRequest == null){
+		if (articleRequest == null) {
 			throw new RestServiceException("参数缺失");
-		}		
-		if(articleRequest.getCreateUserId() == null){
+		}
+		if (articleRequest.getCreateUserId() == null) {
 			throw new RestServiceException("创建用户ID不能为空");
-		}	
-		if(articleRequest.getProjectId() == null){
+		}
+		if (articleRequest.getProjectId() == null) {
 			throw new RestServiceException("项目ID不能为空");
-		}	
-		if(StringUtils.isBlank(articleRequest.getArticleContents())){
+		}
+		if (StringUtils.isBlank(articleRequest.getArticleContents())) {
 			throw new RestServiceException("文章内容不能为空");
 		}
-		if(StringUtils.isBlank(articleRequest.getPostTitle())){
+		if (StringUtils.isBlank(articleRequest.getPostTitle())) {
 			throw new RestServiceException("文章标题不能为空");
 		}
-		if(articleRequest.getArticleContents().length() > 30000){
+		if (articleRequest.getArticleContents().length() > 30000) {
 			throw new RestServiceException("文章内容长度超过限制");
-		}	
-		if(articleRequest.getPostTitle().length() > 30){
+		}
+		if (articleRequest.getPostTitle().length() > 30) {
 			throw new RestServiceException("文章标题长度不能超过30字");
 		}
 		KFFUser createUser = kffUserService.findById(articleRequest.getCreateUserId());
-		if(createUser == null){
-			throw new RestServiceException("用户不存在"+articleRequest.getCreateUserId());
+		if (createUser == null) {
+			throw new RestServiceException("用户不存在" + articleRequest.getCreateUserId());
 		}
 		KFFProject project = kffProjectService.findById(articleRequest.getProjectId());
-		if(project == null){
-			throw new RestServiceException("项目不存在"+articleRequest.getProjectId());
+		if (project == null) {
+			throw new RestServiceException("项目不存在" + articleRequest.getProjectId());
 		}
 		Post post = new Post();
 		Date now = new Date();
@@ -846,10 +856,16 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		post.setCreateUserSignature(createUser.getUserSignature());
 		post.setDonateNum(0);
 		post.setPageviewNum(0);
-		post.setPostShortDesc(articleRequest.getArticleContents().substring(300));
+
+		if (articleRequest.getArticleContents().length() < 200) {
+			post.setPostShortDesc(articleRequest.getArticleContents());
+		} else {
+			post.setPostShortDesc(articleRequest.getArticleContents().substring(0, 200));
+		}
+
 		post.setPostSmallImages(articleRequest.getPostSmallImages());
-		post.setPostTitle(articleRequest.getPostTitle()); 
-		post.setPostType(3);//帖子类型：1-评测；2-讨论；3-文章
+		post.setPostTitle(articleRequest.getPostTitle());
+		post.setPostType(3);// 帖子类型：1-评测；2-讨论；3-文章
 		post.setPraiseNum(0);
 		post.setProjectCode(project.getProjectCode());
 		post.setProjectEnglishName(project.getProjectEnglishName());
@@ -858,51 +874,51 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		post.setStatus(1);
 		post.setUuid(uuid);
 		kffPostService.save(post);
-		
+
 		Post newPost = kffPostService.findByUUID(uuid);
-		if(newPost == null){
-			throw new RestServiceException("帖子不存在"+uuid);
+		if (newPost == null) {
+			throw new RestServiceException("帖子不存在" + uuid);
 		}
 		Article article = new Article();
 		article.setArticleContents(articleRequest.getArticleContents());
 		article.setPostId(newPost.getPostId());
 		article.setPostUuid(uuid);
 		kffArticleService.save(article);
-		
+
 	}
 
 	@Override
-	public void saveDiscuss(DiscussRequest discussRequest)
-			throws RestServiceException {
+	public void saveDiscuss(DiscussRequest discussRequest) throws RestServiceException {
 		String uuid = UUID.randomUUID().toString().replace("-", "");
-		if(discussRequest == null){
+		if (discussRequest == null) {
 			throw new RestServiceException("参数缺失");
-		}		
-		if(discussRequest.getCreateUserId() == null){
+		}
+		if (discussRequest.getCreateUserId() == null) {
 			throw new RestServiceException("创建用户ID不能为空");
-		}	
-		if(discussRequest.getProjectId() == null){
+		}
+		if (discussRequest.getProjectId() == null) {
 			throw new RestServiceException("项目ID不能为空");
-		}	
-		if(StringUtils.isBlank(discussRequest.getDisscussContents())){
+		}
+		if (StringUtils.isBlank(discussRequest.getDisscussContents())) {
 			throw new RestServiceException("讨论内容不能为空");
 		}
-		if(StringUtils.isBlank(discussRequest.getPostTitle())){
-			throw new RestServiceException("讨论标题不能为空");
-		}
-		if(discussRequest.getDisscussContents().length() > 30000){
+		/*
+		 * if (StringUtils.isBlank(discussRequest.getPostTitle())) { throw new
+		 * RestServiceException("讨论标题不能为空"); }
+		 */
+		if (discussRequest.getDisscussContents().length() > 30000) {
 			throw new RestServiceException("讨论内容长度超过限制");
-		}	
-		if(discussRequest.getPostTitle().length() > 30){
+		}
+		if (discussRequest.getPostTitle().length() > 30) {
 			throw new RestServiceException("讨论标题长度不能超过30字");
 		}
 		KFFUser createUser = kffUserService.findById(discussRequest.getCreateUserId());
-		if(createUser == null){
-			throw new RestServiceException("用户不存在"+discussRequest.getCreateUserId());
+		if (createUser == null) {
+			throw new RestServiceException("用户不存在" + discussRequest.getCreateUserId());
 		}
 		KFFProject project = kffProjectService.findById(discussRequest.getProjectId());
-		if(project == null){
-			throw new RestServiceException("项目不存在"+discussRequest.getProjectId());
+		if (project == null) {
+			throw new RestServiceException("项目不存在" + discussRequest.getProjectId());
 		}
 		Post post = new Post();
 		Date now = new Date();
@@ -916,10 +932,15 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		post.setCreateUserSignature(createUser.getUserSignature());
 		post.setDonateNum(0);
 		post.setPageviewNum(0);
-		post.setPostShortDesc(discussRequest.getDisscussContents().substring(300));
+		if (discussRequest.getDisscussContents().length() < 300) {
+			post.setPostShortDesc(discussRequest.getDisscussContents());
+		} else {
+			post.setPostShortDesc(discussRequest.getDisscussContents().substring(0, 300));
+		}
+
 		post.setPostSmallImages(discussRequest.getDiscussImages());
-		post.setPostTitle(discussRequest.getPostTitle()); 
-		post.setPostType(2);//帖子类型：1-评测；2-讨论；3-文章
+		post.setPostTitle(discussRequest.getPostTitle());
+		post.setPostType(2);// 帖子类型：1-评测；2-讨论；3-文章
 		post.setPraiseNum(0);
 		post.setProjectCode(project.getProjectCode());
 		post.setProjectEnglishName(project.getProjectEnglishName());
@@ -928,10 +949,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		post.setStatus(1);
 		post.setUuid(uuid);
 		kffPostService.save(post);
-		
+
 		Post newPost = kffPostService.findByUUID(uuid);
-		if(newPost == null){
-			throw new RestServiceException("帖子不存在"+uuid);
+		if (newPost == null) {
+			throw new RestServiceException("帖子不存在" + uuid);
 		}
 		Discuss discuss = new Discuss();
 		discuss.setDisscussContents(discussRequest.getDisscussContents());
@@ -939,60 +960,76 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		discuss.setPostUuid(uuid);
 		discuss.setTagInfos(discussRequest.getTagInfos());
 		kffDiscussService.save(discuss);
-		
+
 	}
 
 	@Override
 	public List<Dtags> findAllTags() throws RestServiceException {
-		
+
 		return kffDtagsService.findAllTags();
-		
+
 	}
 
 	@Override
-	public void saveEvaluation(EvaluationRequest evaluationRequest)
-			throws RestServiceException {
+	public void saveEvaluation(EvaluationRequest evaluationRequest) throws RestServiceException {
+
+		// 根据用户的ID判断用户是否对项目进行评分,如果已经进行评分了,则抛出异常
+
 		String uuid = UUID.randomUUID().toString().replace("-", "");
-		if(evaluationRequest == null){
+		if (evaluationRequest == null) {
 			throw new RestServiceException("参数缺失");
-		}		
-		if(evaluationRequest.getCreateUserId() == null){
+		}
+		if (evaluationRequest.getTotalScore() == null) {
+			throw new RestServiceException("综合评分丢失!");
+		}
+		if (evaluationRequest.getCreateUserId() == null) {
 			throw new RestServiceException("创建用户ID不能为空");
-		}	
-		if(evaluationRequest.getProjectId() == null){
+		}
+
+		if (evaluationRequest.getProjectId() == null) {
 			throw new RestServiceException("项目ID不能为空");
 		}
-		if(evaluationRequest.getModelType() == null){
+		if (evaluationRequest.getModelType() == null) {
 			throw new RestServiceException("评测类型不能为空");
 		}
-		if(evaluationRequest.getModelType() != 1 &&
-		   evaluationRequest.getModelType() != 2 &&
-		   evaluationRequest.getModelType() != 3 &&
-		   evaluationRequest.getModelType() != 4){
+		if (1 == evaluationRequest.getModelType()) {
+			evaluationRequest.setPostTitle("简单评测");
+		}
+		if (2 == evaluationRequest.getModelType()) {
+			evaluationRequest.setPostTitle("ALL-专业评测");
+		}
+		if (3 == evaluationRequest.getModelType()) {
+			evaluationRequest.setPostTitle("PART-专业评测");
+		}
+		if (4 == evaluationRequest.getModelType()) {
+			evaluationRequest.setPostTitle("ALL-专业评测");
+		}
+		if (evaluationRequest.getModelType() != 1 && evaluationRequest.getModelType() != 2 && evaluationRequest.getModelType() != 3
+				&& evaluationRequest.getModelType() != 4) {
 			throw new RestServiceException("非法评测类型");
 		}
-		if(StringUtils.isBlank(evaluationRequest.getEvauationContent())){
+		if (StringUtils.isBlank(evaluationRequest.getEvauationContent())) {
 			throw new RestServiceException("评测内容不能为空");
 		}
-		if(StringUtils.isBlank(evaluationRequest.getPostTitle())){
+		if (StringUtils.isBlank(evaluationRequest.getPostTitle())) {
 			throw new RestServiceException("评测标题不能为空");
 		}
-		if(evaluationRequest.getEvauationContent().length() > 30000){
+		if (evaluationRequest.getEvauationContent().length() > 30000) {
 			throw new RestServiceException("评测内容长度超过限制");
-		}	
-		if(evaluationRequest.getPostTitle().length() > 30){
+		}
+		if (evaluationRequest.getPostTitle().length() > 30) {
 			throw new RestServiceException("评测标题长度不能超过30字");
 		}
 		KFFUser createUser = kffUserService.findById(evaluationRequest.getCreateUserId());
-		if(createUser == null){
-			throw new RestServiceException("用户不存在"+evaluationRequest.getCreateUserId());
+		if (createUser == null) {
+			throw new RestServiceException("用户不存在" + evaluationRequest.getCreateUserId());
 		}
 		KFFProject project = kffProjectService.findById(evaluationRequest.getProjectId());
-		if(project == null){
-			throw new RestServiceException("项目不存在"+evaluationRequest.getProjectId());
+		if (project == null) {
+			throw new RestServiceException("项目不存在" + evaluationRequest.getProjectId());
 		}
 		BigDecimal totalScore = evaluationRequest.getTotalScore();
-		
+
 		Post post = new Post();
 		Date now = new Date();
 		post.setCollectNum(0);
@@ -1005,10 +1042,14 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		post.setCreateUserSignature(createUser.getUserSignature());
 		post.setDonateNum(0);
 		post.setPageviewNum(0);
-		post.setPostShortDesc(evaluationRequest.getEvauationContent().substring(300));
+		if (evaluationRequest.getEvauationContent().length() < 200) {
+			post.setPostShortDesc(evaluationRequest.getEvauationContent());
+		} else {
+			post.setPostShortDesc(evaluationRequest.getEvauationContent().substring(0, 200));
+		}
 		post.setPostSmallImages(evaluationRequest.getPostSmallImages());
-		post.setPostTitle(evaluationRequest.getPostTitle()); 
-		post.setPostType(1);//帖子类型：1-评测；2-讨论；3-文章
+		post.setPostTitle(evaluationRequest.getPostTitle());
+		post.setPostType(1);// 帖子类型：1-评测；2-讨论；3-文章
 		post.setPraiseNum(0);
 		post.setProjectCode(project.getProjectCode());
 		post.setProjectEnglishName(project.getProjectEnglishName());
@@ -1017,10 +1058,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		post.setStatus(1);
 		post.setUuid(uuid);
 		kffPostService.save(post);
-		
+
 		Post newPost = kffPostService.findByUUID(uuid);
-		if(newPost == null){
-			throw new RestServiceException("帖子不存在"+uuid);
+		if (newPost == null) {
+			throw new RestServiceException("帖子不存在" + uuid);
 		}
 		Evaluation evaluation = new Evaluation();
 		evaluation.setEvauationContent(evaluationRequest.getEvauationContent());
@@ -1030,51 +1071,50 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		evaluation.setEvaluationTags(evaluationRequest.getEvaluationTags());
 		evaluation.setProfessionalEvaDetail(evaluationRequest.getProfessionalEvaDetail());
 		evaluation.setCreateTime(now);
+		evaluation.setUpdateTime(now);
 		evaluation.setCreateUserId(createUser.getUserId());
 		evaluation.setModelType(evaluationRequest.getModelType());
 		evaluation.setStatus(1);
 		evaluation.setTotalScore(totalScore);
 		kffEvaluationService.save(evaluation);
-		
+
 	}
 
 	@Override
-	public void saveEvaluationModel(
-			DevaluationModelRequest devaluationModelRequest)
-			throws RestServiceException {
-		if(devaluationModelRequest == null){
+	public void saveEvaluationModel(DevaluationModelRequest devaluationModelRequest) throws RestServiceException {
+		if (devaluationModelRequest == null) {
 			throw new RestServiceException("参数缺失");
-		}	
-		if(devaluationModelRequest.getProjectId() == null){
+		}
+		if (devaluationModelRequest.getProjectId() == null) {
 			throw new RestServiceException("项目ID不能为空");
 		}
-		if(StringUtils.isBlank(devaluationModelRequest.getProfessionalEvaDetail())){
+		if (StringUtils.isBlank(devaluationModelRequest.getProfessionalEvaDetail())) {
 			throw new RestServiceException("模型内容不能为空");
 		}
-		
-		try{
-			
+
+		try {
+
 			List<DevaluationModel> dms = JSONArray.parseArray(devaluationModelRequest.getProfessionalEvaDetail(), DevaluationModel.class);
-			if(CollectionUtils.isNotEmpty(dms)){
+			if (CollectionUtils.isNotEmpty(dms)) {
 				int totalWeight = 0;
-				for(DevaluationModel dm:dms){
-					if(StringUtils.isBlank(dm.getModelName())){
+				for (DevaluationModel dm : dms) {
+					if (StringUtils.isBlank(dm.getModelName())) {
 						throw new RestServiceException("模型名称不能为空");
 					}
-					if(dm.getModelName().length()>30){
+					if (dm.getModelName().length() > 30) {
 						throw new RestServiceException("模型名称能超过30字符");
 					}
-					if(dm.getModelWeight()==null){
+					if (dm.getModelWeight() == null) {
 						throw new RestServiceException("模型权重不能为空");
 					}
 					totalWeight = totalWeight + dm.getModelWeight();
 				}
-				if(totalWeight != 100){
+				if (totalWeight != 100) {
 					throw new RestServiceException("模型权重之和不为100");
 				}
 				Integer batchId = Integer.parseInt(RandomUtil.produceNumber(8));
 				Date now = new Date();
-				for(DevaluationModel dm:dms){
+				for (DevaluationModel dm : dms) {
 					DevaluationModel save = new DevaluationModel();
 					save.setBatchId(batchId);
 					save.setCreateTime(now);
@@ -1087,440 +1127,444 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					save.setUpdateTime(now);
 					kffDevaluationModelService.save(save);
 				}
-				
+
 			}
-		}catch(Exception e){
-			logger.error("用户自定义模型解析json失败:{}",e);
-			throw new RestServiceException("非法模型内容"+devaluationModelRequest.getProfessionalEvaDetail());
+		} catch (Exception e) {
+			logger.error("用户自定义模型解析json失败:{}", e);
+			throw new RestServiceException("非法模型内容" + devaluationModelRequest.getProfessionalEvaDetail());
 		}
 	}
 
 	@Override
 	public void savePraise(Integer userId, Integer postId) throws RestServiceException {
-		if(userId == null){
+		if (userId == null) {
 			throw new RestServiceException("用户id不能为空");
 		}
-		if(postId == null){
+		if (postId == null) {
 			throw new RestServiceException("帖子id不能为空");
 		}
 		KFFUser user = kffUserService.findById(userId);
-		if(user == null){
-			throw new RestServiceException("用户不存在"+userId);
+		if (user == null) {
+			throw new RestServiceException("用户不存在" + userId);
 		}
 		Post post = kffPostService.findById(postId);
-		if(post == null){
-			throw new RestServiceException("帖子不存在"+postId);
+		if (post == null) {
+			throw new RestServiceException("帖子不存在" + postId);
 		}
-	    Date now = new Date();
-	    boolean praiseNumIncrease = false;
-		Praise praise = kffPraiseService.findByPostId(userId,postId);
-		if(praise == null){
-		    Praise save = new Praise();
-		    save.setBepraiseUserId(post.getCreateUserId());
-		    save.setCreateTime(now);
-		    save.setPostId(postId);
-		    save.setPostType(post.getPostType());
-		    save.setPraiseUserId(userId);
-		    save.setProjectId(post.getProjectId());
-		    save.setStatus(1);
-		    save.setUpdateTime(now);;
+		Date now = new Date();
+		boolean praiseNumIncrease = false;
+		Praise praise = kffPraiseService.findByPostId(userId, postId);
+		if (praise == null) {
+			Praise save = new Praise();
+			save.setBepraiseUserId(post.getCreateUserId());
+			save.setCreateTime(now);
+			save.setPostId(postId);
+			save.setPostType(post.getPostType());
+			save.setPraiseUserId(userId);
+			save.setProjectId(post.getProjectId());
+			save.setStatus(1);
+			save.setUpdateTime(now);
+			;
 			kffPraiseService.save(save);
 			praiseNumIncrease = true;
-		}else{
-			if(praise.getStatus() !=null && praise.getStatus()==0){
+		} else {
+			if (praise.getStatus() != null && praise.getStatus() == 0) {
 				praise.setUpdateTime(now);
 				praise.setStatus(1);
 				kffPraiseService.update(praise);
 				praiseNumIncrease = true;
-			}else{
+			} else {
 				logger.warn("已点赞存在重复点赞");
-				//throw new RestServiceException("已点赞，请勿重复点赞");
+				// throw new RestServiceException("已点赞，请勿重复点赞");
 			}
 		}
-		//帖子点赞数加1
-		if(praiseNumIncrease){
+		// 帖子点赞数加1
+		if (praiseNumIncrease) {
 			kffPostService.increasePraiseNum(postId);
 		}
 	}
 
 	@Override
 	public void cancelPraise(Integer userId, Integer postId) throws RestServiceException {
-		if(userId == null){
+		if (userId == null) {
 			throw new RestServiceException("用户id不能为空");
 		}
-		if(postId == null){
+		if (postId == null) {
 			throw new RestServiceException("帖子id不能为空");
 		}
 		KFFUser user = kffUserService.findById(userId);
-		if(user == null){
-			throw new RestServiceException("用户不存在"+userId);
+		if (user == null) {
+			throw new RestServiceException("用户不存在" + userId);
 		}
 		Post post = kffPostService.findById(postId);
-		if(post == null){
-			throw new RestServiceException("帖子不存在"+post);
+		if (post == null) {
+			throw new RestServiceException("帖子不存在" + post);
 		}
-	    Date now = new Date();
-	    boolean praiseNumDecrese = false;
-		Praise praise = kffPraiseService.findByPostId(userId,postId);
-		if(praise == null){
-		    Praise save = new Praise();
-		    save.setBepraiseUserId(post.getCreateUserId());
-		    save.setCreateTime(now);
-		    save.setPostId(postId);
-		    save.setPostType(post.getPostType());
-		    save.setPraiseUserId(userId);
-		    save.setProjectId(post.getProjectId());
-		    save.setStatus(0);
-		    save.setUpdateTime(now);;
+		Date now = new Date();
+		boolean praiseNumDecrese = false;
+		Praise praise = kffPraiseService.findByPostId(userId, postId);
+		if (praise == null) {
+			Praise save = new Praise();
+			save.setBepraiseUserId(post.getCreateUserId());
+			save.setCreateTime(now);
+			save.setPostId(postId);
+			save.setPostType(post.getPostType());
+			save.setPraiseUserId(userId);
+			save.setProjectId(post.getProjectId());
+			save.setStatus(0);
+			save.setUpdateTime(now);
+
 			kffPraiseService.save(save);
 			praiseNumDecrese = true;
-		}else{
-			if(praise.getStatus() !=null && praise.getStatus()==0){
+		} else {
+			if (praise.getStatus() != null && praise.getStatus() == 0) {
 				logger.warn("已取消点赞存在重复取消点赞");
-				//throw new RestServiceException("已取消点赞存在重复取消点赞");
-			}else{
+				// throw new RestServiceException("已取消点赞存在重复取消点赞");
+			} else {
 				praise.setUpdateTime(now);
 				praise.setStatus(0);
 				kffPraiseService.update(praise);
-				praiseNumDecrese = true;								
+				praiseNumDecrese = true;
 			}
 		}
-		//帖子点赞数减1
-		if(praiseNumDecrese){
+		// 帖子点赞数减1
+		if (praiseNumDecrese) {
 			kffPostService.decreasePraiseNum(postId);
 		}
-		
+
 	}
 
 	@Override
 	public void saveFollow(Integer userId, Integer followType, Integer followedId) throws RestServiceException {
-		if(userId == null){
+		if (userId == null) {
 			throw new RestServiceException("用户id不能为空");
 		}
-		if(followedId == null){
+		if (followedId == null) {
 			throw new RestServiceException("关注id不能为空");
 		}
-		if(followType == null){
+		if (followType == null) {
 			throw new RestServiceException("关注类型不能为空");
 		}
-		//1-关注项目;2-关注帖子；3-关注用户
-		if(followType != 1 && followType != 2 && followType != 3){
+		// 1-关注项目;2-关注帖子；3-关注用户
+		if (followType != 1 && followType != 2 && followType != 3) {
 			throw new RestServiceException("无效的关注类型");
 		}
 		KFFUser user = kffUserService.findById(userId);
-		if(user == null){
-			throw new RestServiceException("用户不存在"+userId);
+		if (user == null) {
+			throw new RestServiceException("用户不存在" + userId);
 		}
-		
+
 		Integer followedUserId = 0;
 		String followedUserIcon = "";
 		String followedUserName = "";
-        String followedUserSignature = "";				
-		//关注项目
-		if(followType == KFFConstants.FOLLOW_TYPE_PROJECT){
-		    KFFProject followedProject = kffProjectService.findById(followedId);
-		    if(followedProject == null){
-		    	throw new RestServiceException("关注项目不存在"+followedId);
-		    }
-		    followedUserId = followedProject.getSubmitUserId();
-		    KFFUser projectCreator = kffUserService.findById(followedUserId);
-		    if(projectCreator != null){
-		    	followedUserId = projectCreator.getUserId();
-		    	followedUserIcon = projectCreator.getIcon();
-			    followedUserName = projectCreator.getUserName();
-			    followedUserSignature = projectCreator.getUserSignature();			    
-		    }
-		}else if(followType == KFFConstants.FOLLOW_TYPE_POST){
-			//2-关注帖子
-			Post followedPost = kffPostService.findById(followedId);
-			if(followedPost == null){
-				throw new RestServiceException("关注帖子不存在"+followedId);
+		String followedUserSignature = "";
+		// 关注项目
+		if (followType == KFFConstants.FOLLOW_TYPE_PROJECT) {
+			KFFProject followedProject = kffProjectService.findById(followedId);
+			if (followedProject == null) {
+				throw new RestServiceException("关注项目不存在" + followedId);
 			}
-	    	followedUserId = followedPost.getCreateUserId();
+			followedUserId = followedProject.getSubmitUserId();
+			KFFUser projectCreator = kffUserService.findById(followedUserId);
+			if (projectCreator != null) {
+				followedUserId = projectCreator.getUserId();
+				followedUserIcon = projectCreator.getIcon();
+				followedUserName = projectCreator.getUserName();
+				followedUserSignature = projectCreator.getUserSignature();
+			}
+		} else if (followType == KFFConstants.FOLLOW_TYPE_POST) {
+			// 2-关注帖子
+			Post followedPost = kffPostService.findById(followedId);
+			if (followedPost == null) {
+				throw new RestServiceException("关注帖子不存在" + followedId);
+			}
+			followedUserId = followedPost.getCreateUserId();
 			followedUserIcon = followedPost.getCreateUserIcon();
-		    followedUserName = followedPost.getCreateUserName();
-		    followedUserSignature = followedPost.getCreateUserSignature();
-		    
-		}else if(followType == KFFConstants.FOLLOW_TYPE_USER){
-		 //3-关注用户
+			followedUserName = followedPost.getCreateUserName();
+			followedUserSignature = followedPost.getCreateUserSignature();
+
+		} else if (followType == KFFConstants.FOLLOW_TYPE_USER) {
+			// 3-关注用户
 			KFFUser followedUser = kffUserService.findById(followedId);
-            if(followedUser == null){
-            	throw new RestServiceException("关注的用户不存在"+followedId);
-            }
-            followedUserId = followedUser.getUserId();
+			if (followedUser == null) {
+				throw new RestServiceException("关注的用户不存在" + followedId);
+			}
+			followedUserId = followedUser.getUserId();
 			followedUserIcon = followedUser.getIcon();
-		    followedUserName = followedUser.getUserName();
-		    followedUserSignature = followedUser.getUserSignature();
-            
-		}		
-		Follow existFollow = kffFollowService.findByUserIdAndFollowType(userId,followType,followedId);
+			followedUserName = followedUser.getUserName();
+			followedUserSignature = followedUser.getUserSignature();
+
+		}
+		Follow existFollow = kffFollowService.findByUserIdAndFollowType(userId, followType, followedId);
 		Date now = new Date();
-	    boolean followNumIncrease = false;
-		if(existFollow == null){
-		//新增	
-				Follow save = new Follow();
-				save.setCreateTime(now);
-				save.setFollowedId(followedId);
-				save.setFollowedUserIcon(followedUserIcon);
-				save.setFollowedUserId(followedUserId);
-				save.setFollowedUserName(followedUserName);
-				save.setFollowedUserSignature(followedUserSignature);
-				save.setFollowerUserName(user.getUserName());
-				save.setFollowType(followType);
-				save.setFollowUserId(userId);
-				save.setStatus(1);
-				save.setUpdateTime(now);			    
-				kffFollowService.save(save);
-				followNumIncrease = true;
-		}else{
-		//更新状态	
-			if(existFollow.getStatus() != null && existFollow.getStatus() == 0){
+		boolean followNumIncrease = false;
+		if (existFollow == null) {
+			// 新增
+			Follow save = new Follow();
+			save.setCreateTime(now);
+			save.setFollowedId(followedId);
+			save.setFollowedUserIcon(followedUserIcon);
+			save.setFollowedUserId(followedUserId);
+			save.setFollowedUserName(followedUserName);
+			save.setFollowedUserSignature(followedUserSignature);
+			save.setFollowerUserName(user.getUserName());
+			save.setFollowType(followType);
+			save.setFollowUserId(userId);
+			save.setStatus(1);
+			save.setUpdateTime(now);
+			kffFollowService.save(save);
+			followNumIncrease = true;
+		} else {
+			// 更新状态
+			if (existFollow.getStatus() != null && existFollow.getStatus() == 0) {
 				existFollow.setStatus(1);
 				existFollow.setUpdateTime(now);
 				kffFollowService.update(existFollow);
 				followNumIncrease = true;
-			}else{
+			} else {
 				logger.warn("重复关注");
 			}
 		}
-		
-		//关注数量加1
-		if(followNumIncrease){
-			if(followType == 1){
-			   kffProjectService.increaseFollowerNum(followedId);
-			}else if(followType == 3){
-			   kffUserService.increaseFansNum(followedUserId);
+
+		// 关注数量加1
+		if (followNumIncrease) {
+			if (followType == 1) {
+				kffProjectService.increaseFollowerNum(followedId);
+			} else if (followType == 3) {
+				kffUserService.increaseFansNum(followedUserId);
 			}
 		}
-		
+
 	}
 
 	@Override
 	public void cancelFollow(Integer userId, Integer followType, Integer followedId) throws RestServiceException {
-		
-		if(userId == null){
+
+		if (userId == null) {
 			throw new RestServiceException("用户id不能为空");
 		}
-		if(followedId == null){
+		if (followedId == null) {
 			throw new RestServiceException("取消关注id不能为空");
 		}
-		if(followType == null){
+		if (followType == null) {
 			throw new RestServiceException("取消关注类型不能为空");
 		}
-		//1-关注项目;2-关注帖子；3-关注用户
-		if(followType != 1 && followType != 2 && followType != 3){
+		// 1-关注项目;2-关注帖子；3-关注用户
+		if (followType != 1 && followType != 2 && followType != 3) {
 			throw new RestServiceException("无效的取消关注类型");
 		}
 		KFFUser user = kffUserService.findById(userId);
-		if(user == null){
-			throw new RestServiceException("用户不存在"+userId);
+		if (user == null) {
+			throw new RestServiceException("用户不存在" + userId);
 		}
-		
+
 		Integer followedUserId = 0;
 		String followedUserIcon = "";
 		String followedUserName = "";
-        String followedUserSignature = "";				
-		//1-取消关注项目
-		if(followType == KFFConstants.FOLLOW_TYPE_PROJECT){
-		    KFFProject followedProject = kffProjectService.findById(followedId);
-		    if(followedProject == null){
-		    	throw new RestServiceException("取消关注项目不存在"+followedId);
-		    }
-		    followedUserId = followedProject.getSubmitUserId();
-		    KFFUser projectCreator = kffUserService.findById(followedUserId);
-		    if(projectCreator != null){
-		    	followedUserId = projectCreator.getUserId();
-		    	followedUserIcon = projectCreator.getIcon();
-			    followedUserName = projectCreator.getUserName();
-			    followedUserSignature = projectCreator.getUserSignature();			    
-		    }
-		}else if(followType == KFFConstants.FOLLOW_TYPE_POST){
-			//2-取消关注帖子
-			Post followedPost = kffPostService.findById(followedId);
-			if(followedPost == null){
-				throw new RestServiceException("取消关注帖子不存在"+followedId);
+		String followedUserSignature = "";
+		// 1-取消关注项目
+		if (followType == KFFConstants.FOLLOW_TYPE_PROJECT) {
+			KFFProject followedProject = kffProjectService.findById(followedId);
+			if (followedProject == null) {
+				throw new RestServiceException("取消关注项目不存在" + followedId);
 			}
-	    	followedUserId = followedPost.getCreateUserId();
+			followedUserId = followedProject.getSubmitUserId();
+			KFFUser projectCreator = kffUserService.findById(followedUserId);
+			if (projectCreator != null) {
+				followedUserId = projectCreator.getUserId();
+				followedUserIcon = projectCreator.getIcon();
+				followedUserName = projectCreator.getUserName();
+				followedUserSignature = projectCreator.getUserSignature();
+			}
+		} else if (followType == KFFConstants.FOLLOW_TYPE_POST) {
+			// 2-取消关注帖子
+			Post followedPost = kffPostService.findById(followedId);
+			if (followedPost == null) {
+				throw new RestServiceException("取消关注帖子不存在" + followedId);
+			}
+			followedUserId = followedPost.getCreateUserId();
 			followedUserIcon = followedPost.getCreateUserIcon();
-		    followedUserName = followedPost.getCreateUserName();
-		    followedUserSignature = followedPost.getCreateUserSignature();
-		    
-		}else if(followType == KFFConstants.FOLLOW_TYPE_USER){
-		 //3-取消关注用户
+			followedUserName = followedPost.getCreateUserName();
+			followedUserSignature = followedPost.getCreateUserSignature();
+
+		} else if (followType == KFFConstants.FOLLOW_TYPE_USER) {
+			// 3-取消关注用户
 			KFFUser followedUser = kffUserService.findById(followedId);
-            if(followedUser == null){
-            	throw new RestServiceException("取消关注的用户不存在"+followedId);
-            }
-            followedUserId = followedUser.getUserId();
+			if (followedUser == null) {
+				throw new RestServiceException("取消关注的用户不存在" + followedId);
+			}
+			followedUserId = followedUser.getUserId();
 			followedUserIcon = followedUser.getIcon();
-		    followedUserName = followedUser.getUserName();
-		    followedUserSignature = followedUser.getUserSignature();
-            
-		}		
-		Follow existFollow = kffFollowService.findByUserIdAndFollowType(userId,followType,followedId);
+			followedUserName = followedUser.getUserName();
+			followedUserSignature = followedUser.getUserSignature();
+
+		}
+		Follow existFollow = kffFollowService.findByUserIdAndFollowType(userId, followType, followedId);
 		Date now = new Date();
-	    boolean followNumDecrease = false;
-		if(existFollow == null){
-		//新增	
-				Follow save = new Follow();
-				save.setCreateTime(now);
-				save.setFollowedId(followedId);
-				save.setFollowedUserIcon(followedUserIcon);
-				save.setFollowedUserId(followedUserId);
-				save.setFollowedUserName(followedUserName);
-				save.setFollowedUserSignature(followedUserSignature);
-				save.setFollowerUserName(user.getUserName());
-				save.setFollowType(followType);
-				save.setFollowUserId(userId);
-				save.setStatus(KFFConstants.STATUS_INACTIVE);
-				save.setUpdateTime(now);			    
-				kffFollowService.save(save);
-				followNumDecrease = true;
-		}else{
-		//更新状态	
-			if(existFollow.getStatus() != null && existFollow.getStatus() == KFFConstants.STATUS_ACTIVE){
+		boolean followNumDecrease = false;
+		if (existFollow == null) {
+			// 新增
+			Follow save = new Follow();
+			save.setCreateTime(now);
+			save.setFollowedId(followedId);
+			save.setFollowedUserIcon(followedUserIcon);
+			save.setFollowedUserId(followedUserId);
+			save.setFollowedUserName(followedUserName);
+			save.setFollowedUserSignature(followedUserSignature);
+			save.setFollowerUserName(user.getUserName());
+			save.setFollowType(followType);
+			save.setFollowUserId(userId);
+			save.setStatus(KFFConstants.STATUS_INACTIVE);
+			save.setUpdateTime(now);
+			kffFollowService.save(save);
+			followNumDecrease = true;
+		} else {
+			// 更新状态
+			if (existFollow.getStatus() != null && existFollow.getStatus() == KFFConstants.STATUS_ACTIVE) {
 				existFollow.setStatus(KFFConstants.STATUS_INACTIVE);
 				existFollow.setUpdateTime(now);
 				kffFollowService.update(existFollow);
 				followNumDecrease = true;
-			}else{
+			} else {
 				logger.warn("重复取消关注");
 			}
 		}
-		
-		//关注数量减1
-		if(followNumDecrease){
-			if(followType == 1){
-			   kffProjectService.decreaseFollowerNum(followedId);
-			}else if(followType == 3){
-			   kffUserService.decreaseFansNum(followedUserId);
+
+		// 关注数量减1
+		if (followNumDecrease) {
+			if (followType == 1) {
+				kffProjectService.decreaseFollowerNum(followedId);
+			} else if (followType == 3) {
+				kffUserService.decreaseFansNum(followedUserId);
 			}
 		}
 	}
 
 	@Override
 	public void saveCollect(Integer userId, Integer postId) throws RestServiceException {
-		if(userId == null){
+		if (userId == null) {
 			throw new RestServiceException("用户id不能为空");
 		}
-		if(postId == null){
+		if (postId == null) {
 			throw new RestServiceException("帖子id不能为空");
 		}
 		KFFUser user = kffUserService.findById(userId);
-		if(user == null){
-			throw new RestServiceException("用户不存在"+userId);
+		if (user == null) {
+			throw new RestServiceException("用户不存在" + userId);
 		}
 		Post post = kffPostService.findById(postId);
-		if(post == null){
-			throw new RestServiceException("帖子不存在"+postId);
+		if (post == null) {
+			throw new RestServiceException("帖子不存在" + postId);
 		}
-	    Date now = new Date();
-	    boolean collectNumIncrease = false;
-		Collect existCollect = kffCollectService.findByPostId(userId,postId);
-		if(existCollect == null){
-		    Collect save = new Collect();
-		    save.setCollectUserId(userId);
-		    save.setCreateTime(now);
-		    save.setPostId(postId);
-		    save.setPostType(post.getPostType());
-		    save.setProjectId(post.getProjectId());
-		    save.setStatus(KFFConstants.STATUS_ACTIVE);
-		    save.setUpdateTime(now);;
+		Date now = new Date();
+		boolean collectNumIncrease = false;
+		Collect existCollect = kffCollectService.findByPostId(userId, postId);
+		if (existCollect == null) {
+			Collect save = new Collect();
+			save.setCollectUserId(userId);
+			save.setCreateTime(now);
+			save.setPostId(postId);
+			save.setPostType(post.getPostType());
+			save.setProjectId(post.getProjectId());
+			save.setStatus(KFFConstants.STATUS_ACTIVE);
+			save.setUpdateTime(now);
+			;
 			kffCollectService.save(save);
 			collectNumIncrease = true;
-		}else{
-			if(existCollect.getStatus() !=null && existCollect.getStatus()==KFFConstants.STATUS_INACTIVE){
+		} else {
+			if (existCollect.getStatus() != null && existCollect.getStatus() == KFFConstants.STATUS_INACTIVE) {
 				existCollect.setUpdateTime(now);
 				existCollect.setStatus(KFFConstants.STATUS_ACTIVE);
 				kffCollectService.update(existCollect);
 				collectNumIncrease = true;
-			}else{
+			} else {
 				logger.warn("已收藏存在重复收藏");
-				//throw new RestServiceException("已收藏，请勿重复收藏");
+				// throw new RestServiceException("已收藏，请勿重复收藏");
 			}
 		}
-		//帖子收藏数加1
-		if(collectNumIncrease){
+		// 帖子收藏数加1
+		if (collectNumIncrease) {
 			kffPostService.increaseCollectNum(postId);
 		}
-		
+
 	}
 
 	@Override
 	public void cancelCollect(Integer userId, Integer postId) throws RestServiceException {
-		if(userId == null){
+		if (userId == null) {
 			throw new RestServiceException(RestErrorCode.USER_ID_BLANK);
 		}
-		if(postId == null){
+		if (postId == null) {
 			throw new RestServiceException(RestErrorCode.POST_ID_BLANK);
 		}
 		KFFUser user = kffUserService.findById(userId);
-		if(user == null){
-			throw new RestServiceException("用户不存在"+userId);
+		if (user == null) {
+			throw new RestServiceException("用户不存在" + userId);
 		}
 		Post post = kffPostService.findById(postId);
-		if(post == null){
-			throw new RestServiceException("帖子不存在"+post);
+		if (post == null) {
+			throw new RestServiceException("帖子不存在" + post);
 		}
-	    Date now = new Date();
-	    boolean collectNumDecrese = false;
-		Collect existCollect = kffCollectService.findByPostId(userId,postId);
-		if(existCollect == null){
-		    Collect save = new Collect();
-		    save.setCollectUserId(userId);
-		    save.setCreateTime(now);
-		    save.setPostId(postId);
-		    save.setPostType(post.getPostType());
-		    save.setProjectId(post.getProjectId());
-		    save.setStatus(KFFConstants.STATUS_INACTIVE);
-		    save.setUpdateTime(now);;
-		    kffCollectService.save(save);
+		Date now = new Date();
+		boolean collectNumDecrese = false;
+		Collect existCollect = kffCollectService.findByPostId(userId, postId);
+		if (existCollect == null) {
+			Collect save = new Collect();
+			save.setCollectUserId(userId);
+			save.setCreateTime(now);
+			save.setPostId(postId);
+			save.setPostType(post.getPostType());
+			save.setProjectId(post.getProjectId());
+			save.setStatus(KFFConstants.STATUS_INACTIVE);
+			save.setUpdateTime(now);
+			;
+			kffCollectService.save(save);
 			collectNumDecrese = true;
-		}else{
-			if(existCollect.getStatus() !=null && existCollect.getStatus()==KFFConstants.STATUS_ACTIVE){
+		} else {
+			if (existCollect.getStatus() != null && existCollect.getStatus() == KFFConstants.STATUS_ACTIVE) {
 				existCollect.setUpdateTime(now);
 				existCollect.setStatus(KFFConstants.STATUS_INACTIVE);
 				kffCollectService.update(existCollect);
-				collectNumDecrese = true;	
-				
-			}else{
+				collectNumDecrese = true;
+
+			} else {
 				logger.warn("已取消收藏存在重复取消收藏");
-				//throw new RestServiceException("已取消收藏存在重复取消收藏");						
+				// throw new RestServiceException("已取消收藏存在重复取消收藏");
 			}
 		}
-		//帖子收藏数减1
-		if(collectNumDecrese){
+		// 帖子收藏数减1
+		if (collectNumDecrese) {
 			kffPostService.decreaseCollectNum(postId);
 		}
-		
+
 	}
 
 	@Override
-	public PageResult<PostResponse> findPageRecommendList(Integer loginUserId,PaginationQuery query) throws RestServiceException {
+	public PageResult<PostResponse> findPageRecommendList(Integer loginUserId, PaginationQuery query) throws RestServiceException {
 		PageResult<PostResponse> result = new PageResult<PostResponse>();
-		List<PostResponse> postResponse = new ArrayList<>();		
+		List<PostResponse> postResponse = new ArrayList<>();
 		PageResult<Post> posts = kffPostService.findPage(query);
 		KFFUser loginUser = null;
-		if(loginUserId != null){
+		if (loginUserId != null) {
 			loginUser = kffUserService.findById(loginUserId);
 		}
-		if(posts != null && CollectionUtils.isNotEmpty(posts.getRows())){
+		if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
 			result.setCurPageNum(posts.getCurPageNum());
 			result.setPageSize(posts.getPageSize());
 			result.setQueryParameters(posts.getQueryParameters());
 			result.setRowCount(posts.getRowCount());
 			result.setRowsPerPage(posts.getRowsPerPage());
-			for(Post post:posts.getRows()){
+			for (Post post : posts.getRows()) {
 				PostResponse response = new PostResponse();
 				BeanUtils.copyProperties(post, response);
-				//设置post和project信息
+				// 设置post和project信息
 				response.setPostShortDesc(post.getPostShortDesc());
-				if(StringUtils.isNotBlank(post.getPostSmallImages())){
-					try{
-							List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
-							response.setPostSmallImages(pfl);
-					}catch(Exception e){
-							logger.error("首页推荐列表解析帖子缩略图json出错:{}",e); 
+				if (StringUtils.isNotBlank(post.getPostSmallImages())) {
+					try {
+						List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
+						response.setPostSmallImages(pfl);
+					} catch (Exception e) {
+						logger.error("首页推荐列表解析帖子缩略图json出错:{}", e);
 					}
 				}
 				response.setPostTitle(post.getPostTitle());
@@ -1533,61 +1577,61 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				response.setCreateUserName(post.getCreateUserName());
 				response.setCreateUserSignature(post.getCreateUserSignature());
 				KFFProject project = kffProjectService.findById(post.getProjectId());
-				if(project != null){
-						response.setProjectChineseName(project.getProjectChineseName());
-						response.setProjectCode(project.getProjectCode());
-						response.setProjectEnglishName(project.getProjectEnglishName());
-						response.setProjectIcon(project.getProjectIcon());
-						response.setProjectSignature(project.getProjectSignature());
-						response.setTotalScore(project.getTotalScore());
+				if (project != null) {
+					response.setProjectChineseName(project.getProjectChineseName());
+					response.setProjectCode(project.getProjectCode());
+					response.setProjectEnglishName(project.getProjectEnglishName());
+					response.setProjectIcon(project.getProjectIcon());
+					response.setProjectSignature(project.getProjectSignature());
+					response.setTotalScore(project.getTotalScore());
 				}
-				
-				//设置项目关注状态
-				if(loginUser == null){
+
+				// 设置项目关注状态
+				if (loginUser == null) {
 					response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
-				}else{					
+				} else {
 					Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT, post.getProjectId());
-				    if(follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE){
-				    	response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
-				    }else{
-				    	response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
-				    }
+					if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+						response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+					} else {
+						response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+					}
 				}
-				
+
 				postResponse.add(response);
 			}
-		}		
+		}
 		result.setRows(postResponse);
 
-	return result;
-}
-	
+		return result;
+	}
+
 	@Override
-	public PageResult<PostResponse> findPageFollowList(Integer loginUserId,PaginationQuery query) throws RestServiceException {
+	public PageResult<PostResponse> findPageFollowList(Integer loginUserId, PaginationQuery query) throws RestServiceException {
 		PageResult<PostResponse> result = new PageResult<PostResponse>();
-		List<PostResponse> postResponse = new ArrayList<>();		
+		List<PostResponse> postResponse = new ArrayList<>();
 		PageResult<Post> posts = kffPostService.findPage(query);
 		KFFUser loginUser = null;
-		if(loginUserId != null){
+		if (loginUserId != null) {
 			loginUser = kffUserService.findById(loginUserId);
 		}
-		if(posts != null && CollectionUtils.isNotEmpty(posts.getRows())){
+		if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
 			result.setCurPageNum(posts.getCurPageNum());
 			result.setPageSize(posts.getPageSize());
 			result.setQueryParameters(posts.getQueryParameters());
 			result.setRowCount(posts.getRowCount());
 			result.setRowsPerPage(posts.getRowsPerPage());
-			for(Post post:posts.getRows()){
+			for (Post post : posts.getRows()) {
 				PostResponse response = new PostResponse();
 				BeanUtils.copyProperties(post, response);
-				//设置post和project信息
+				// 设置post和project信息
 				response.setPostShortDesc(post.getPostShortDesc());
-				if(StringUtils.isNotBlank(post.getPostSmallImages())){
-					try{
-							List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
-							response.setPostSmallImages(pfl);
-					}catch(Exception e){
-							logger.error("首页关注列表解析帖子缩略图json出错:{}",e); 
+				if (StringUtils.isNotBlank(post.getPostSmallImages())) {
+					try {
+						List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
+						response.setPostSmallImages(pfl);
+					} catch (Exception e) {
+						logger.error("首页关注列表解析帖子缩略图json出错:{}", e);
 					}
 				}
 				response.setPostTitle(post.getPostTitle());
@@ -1600,59 +1644,59 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				response.setCreateUserName(post.getCreateUserName());
 				response.setCreateUserSignature(post.getCreateUserSignature());
 				KFFProject project = kffProjectService.findById(post.getProjectId());
-				if(project != null){
-						response.setProjectChineseName(project.getProjectChineseName());
-						response.setProjectCode(project.getProjectCode());
-						response.setProjectEnglishName(project.getProjectEnglishName());
-						response.setProjectIcon(project.getProjectIcon());
-						response.setProjectSignature(project.getProjectSignature());
-						response.setTotalScore(project.getTotalScore());
+				if (project != null) {
+					response.setProjectChineseName(project.getProjectChineseName());
+					response.setProjectCode(project.getProjectCode());
+					response.setProjectEnglishName(project.getProjectEnglishName());
+					response.setProjectIcon(project.getProjectIcon());
+					response.setProjectSignature(project.getProjectSignature());
+					response.setTotalScore(project.getTotalScore());
 				}
-				
-				//设置项目关注状态
-				if(loginUser == null){
+
+				// 设置项目关注状态
+				if (loginUser == null) {
 					response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
-				}else{					
+				} else {
 					Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT, post.getProjectId());
-				    if(follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE){
-				    	response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
-				    }else{
-				    	response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
-				    }
+					if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+						response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+					} else {
+						response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+					}
 				}
-				
+
 				postResponse.add(response);
 			}
-		}		
+		}
 		result.setRows(postResponse);
 
-	return result;
+		return result;
 	}
 
 	@Override
-	public List<ProjectResponse> findPageProjectRankList(Integer loginUserId,PaginationQuery query) throws RestServiceException {
-		//登录和非登录用户区别只有关注状态按钮显示
+	public List<ProjectResponse> findPageProjectRankList(Integer loginUserId, PaginationQuery query) throws RestServiceException {
+		// 登录和非登录用户区别只有关注状态按钮显示
 		KFFUser loginUser = null;
-		if(loginUserId != null){
+		if (loginUserId != null) {
 			loginUser = kffUserService.findById(loginUserId);
 		}
 		List<ProjectResponse> result = new ArrayList<>();
-		PageResult<KFFProject> projects =  kffProjectService.findPage(query);
-		if(projects != null && CollectionUtils.isNotEmpty(projects.getRows())){
-			for(KFFProject project:projects.getRows()){
+		PageResult<KFFProject> projects = kffProjectService.findPage(query);
+		if (projects != null && CollectionUtils.isNotEmpty(projects.getRows())) {
+			for (KFFProject project : projects.getRows()) {
 				ProjectResponse response = new ProjectResponse();
 				BeanUtils.copyProperties(project, response);
-				if(loginUser == null){
+				if (loginUser == null) {
 					response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
-				}else{					
+				} else {
 					Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT, project.getProjectId());
-				    if(follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE){
-				    	response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
-				    }else{
-				    	response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
-				    }
+					if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+						response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+					} else {
+						response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+					}
 				}
-				
+
 				result.add(response);
 			}
 		}
@@ -1660,45 +1704,44 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public ArticleDetailResponse findArticleDetail(Integer userId,Integer postId)
-			throws RestServiceException {
+	public ArticleDetailResponse findArticleDetail(Integer userId, Integer postId) throws RestServiceException {
 		ArticleDetailResponse response = new ArticleDetailResponse();
-		//登录和非登录用户区别只有关注状态按钮显示
+		// 登录和非登录用户区别只有关注状态按钮显示
 		KFFUser loginUser = null;
-		if(userId != null){
+		if (userId != null) {
 			loginUser = kffUserService.findById(userId);
 		}
-		if(postId == null || postId == 0){
+		if (postId == null || postId == 0) {
 			throw new RestServiceException(RestErrorCode.MISSING_ARG_POSTID);
 		}
 		Post post = kffPostService.findById(postId);
-		if(post == null){
+		if (post == null) {
 			throw new RestServiceException(RestErrorCode.POST_NOT_EXIST);
 		}
 		BeanUtils.copyProperties(post, response);
-		
+
 		Article article = kffArticleService.findByPostId(postId);
-		response.setArticleContents(article == null ? "":article.getArticleContents());
-		
-		if(loginUser == null){
+		response.setArticleContents(article == null ? "" : article.getArticleContents());
+
+		if (loginUser == null) {
 			response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
-		}else{					
+		} else {
 			Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_POST, post.getPostId());
-		    if(follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE){
-		    	response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
-		    }else{
-		    	response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
-		    }
+			if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+				response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+			} else {
+				response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+			}
 		}
-		//赞赏用户列表最多8个
+		// 赞赏用户列表最多8个
 		List<Commendation> donateUsers = new ArrayList<>();
 		PaginationQuery query = new PaginationQuery();
-		query.addQueryData("postId", postId+"");
+		query.addQueryData("postId", postId + "");
 		query.addQueryData("status", "1");
 		query.setPageIndex(1);
 		query.setRowsPerPage(8);
 		PageResult<Commendation> pages = kffCommendationService.findPage(query);
-		if(pages != null && CollectionUtils.isNotEmpty(pages.getRows())){
+		if (pages != null && CollectionUtils.isNotEmpty(pages.getRows())) {
 			donateUsers = pages.getRows();
 		}
 		response.setCommendationList(donateUsers);
@@ -1706,35 +1749,35 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public List<Comments> findPageHotCommentsList(Integer userId,Integer postId, PaginationQuery query) throws RestServiceException {
+	public List<Comments> findPageHotCommentsList(Integer userId, Integer postId, PaginationQuery query) throws RestServiceException {
 		KFFUser user = null;
-		if(userId != null && userId != 0){
+		if (userId != null && userId != 0) {
 			user = kffUserService.findById(userId);
-		}	
+		}
 		List<Comments> result = new ArrayList<>();
 		PageResult<Comments> comments = kffCommentsService.findPage(query);
-		if(comments != null && CollectionUtils.isNotEmpty(comments.getRows())){
+		if (comments != null && CollectionUtils.isNotEmpty(comments.getRows())) {
 			PaginationQuery childQuery = new PaginationQuery();
 			childQuery.setPageIndex(1);
 			childQuery.setRowsPerPage(2);
-			childQuery.addQueryData("postType", KFFConstants.POST_TYPE_ARTICLE+"");
-			for(Comments comment:comments.getRows()){
+			childQuery.addQueryData("postType", KFFConstants.POST_TYPE_ARTICLE + "");
+			for (Comments comment : comments.getRows()) {
 				Comments finalComment = new Comments();
 				BeanUtils.copyProperties(comment, finalComment);
-				query.addQueryData("parentCommentsId", comment.getCommentsId()+"");
+				query.addQueryData("parentCommentsId", comment.getCommentsId() + "");
 				PageResult<Comments> childComments = kffCommentsService.findPage(query);
-				if(childComments != null && CollectionUtils.isNotEmpty(childComments.getRows())){
+				if (childComments != null && CollectionUtils.isNotEmpty(childComments.getRows())) {
 					finalComment.setChildCommentsList(childComments.getRows());
 					finalComment.setChildCommentsNum(childComments.getRowCount());
 				}
-				
-				//登录用户判断点赞状态
-				if(user != null){
+
+				// 登录用户判断点赞状态
+				if (user != null) {
 					Praise praise = kffPraiseService.findByPostId(userId, comment.getCommentsId());
-					if(praise != null){
+					if (praise != null) {
 						finalComment.setPraiseStatus(praise.getStatus());
 					}
-				}else{
+				} else {
 					finalComment.setPraiseStatus(KFFConstants.PRAISE_STATUS_NOSHOW);
 				}
 				result.add(finalComment);
@@ -1744,35 +1787,35 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public List<Comments> findPageNewestComments(Integer userId,Integer postId, PaginationQuery query) throws RestServiceException {
+	public List<Comments> findPageHotCommentsListDis(Integer userId, Integer postId, PaginationQuery query) throws RestServiceException {
 		KFFUser user = null;
-		if(userId != null && userId != 0){
+		if (userId != null && userId != 0) {
 			user = kffUserService.findById(userId);
-		}	
+		}
 		List<Comments> result = new ArrayList<>();
 		PageResult<Comments> comments = kffCommentsService.findPage(query);
-		if(comments != null && CollectionUtils.isNotEmpty(comments.getRows())){
+		if (comments != null && CollectionUtils.isNotEmpty(comments.getRows())) {
 			PaginationQuery childQuery = new PaginationQuery();
 			childQuery.setPageIndex(1);
 			childQuery.setRowsPerPage(2);
-			childQuery.addQueryData("postType", KFFConstants.POST_TYPE_ARTICLE+"");
-			for(Comments comment:comments.getRows()){
+			childQuery.addQueryData("postType", KFFConstants.POST_TYPE_DISCUSS + "");
+			for (Comments comment : comments.getRows()) {
 				Comments finalComment = new Comments();
 				BeanUtils.copyProperties(comment, finalComment);
-				childQuery.addQueryData("parentCommentsId", comment.getCommentsId()+"");
-				PageResult<Comments> childComments = kffCommentsService.findPage(childQuery);
-				if(childComments != null && CollectionUtils.isNotEmpty(childComments.getRows())){
+				query.addQueryData("parentCommentsId", comment.getCommentsId() + "");
+				PageResult<Comments> childComments = kffCommentsService.findPage(query);
+				if (childComments != null && CollectionUtils.isNotEmpty(childComments.getRows())) {
 					finalComment.setChildCommentsList(childComments.getRows());
 					finalComment.setChildCommentsNum(childComments.getRowCount());
 				}
-				
-				//登录用户判断点赞状态
-				if(user != null){
+
+				// 登录用户判断点赞状态
+				if (user != null) {
 					Praise praise = kffPraiseService.findByPostId(userId, comment.getCommentsId());
-					if(praise != null){
+					if (praise != null) {
 						finalComment.setPraiseStatus(praise.getStatus());
 					}
-				}else{
+				} else {
 					finalComment.setPraiseStatus(KFFConstants.PRAISE_STATUS_NOSHOW);
 				}
 				result.add(finalComment);
@@ -1782,34 +1825,109 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public List<Comments> findAllChildCommentsList(Integer userId, Integer commentsId, PaginationQuery query)
-			throws RestServiceException {
+	public List<Comments> findPageNewestComments(Integer userId, Integer postId, PaginationQuery query) throws RestServiceException {
 		KFFUser user = null;
-		if(userId != null && userId != 0){
+		if (userId != null && userId != 0) {
 			user = kffUserService.findById(userId);
-		}	
+		}
 		List<Comments> result = new ArrayList<>();
 		PageResult<Comments> comments = kffCommentsService.findPage(query);
-		if(comments != null && CollectionUtils.isNotEmpty(comments.getRows())){
+		if (comments != null && CollectionUtils.isNotEmpty(comments.getRows())) {
 			PaginationQuery childQuery = new PaginationQuery();
 			childQuery.setPageIndex(1);
 			childQuery.setRowsPerPage(2);
-			for(Comments comment:comments.getRows()){
+			childQuery.addQueryData("postType", KFFConstants.POST_TYPE_ARTICLE + "");
+			for (Comments comment : comments.getRows()) {
 				Comments finalComment = new Comments();
 				BeanUtils.copyProperties(comment, finalComment);
-				childQuery.addQueryData("parentCommentsId", comment.getCommentsId()+"");
+				childQuery.addQueryData("parentCommentsId", comment.getCommentsId() + "");
 				PageResult<Comments> childComments = kffCommentsService.findPage(childQuery);
-				if(childComments != null && CollectionUtils.isNotEmpty(childComments.getRows())){
+				if (childComments != null && CollectionUtils.isNotEmpty(childComments.getRows())) {
 					finalComment.setChildCommentsList(childComments.getRows());
 					finalComment.setChildCommentsNum(childComments.getRowCount());
-				}				
-				//登录用户判断点赞状态
-				if(user != null){
+				}
+
+				// 登录用户判断点赞状态
+				if (user != null) {
 					Praise praise = kffPraiseService.findByPostId(userId, comment.getCommentsId());
-					if(praise != null){
+					if (praise != null) {
 						finalComment.setPraiseStatus(praise.getStatus());
 					}
-				}else{
+				} else {
+					finalComment.setPraiseStatus(KFFConstants.PRAISE_STATUS_NOSHOW);
+				}
+				result.add(finalComment);
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public List<Comments> findPageNewestCommentsDis(Integer userId, Integer postId, PaginationQuery query) throws RestServiceException {
+		KFFUser user = null;
+		if (userId != null && userId != 0) {
+			user = kffUserService.findById(userId);
+		}
+		List<Comments> result = new ArrayList<>();
+		PageResult<Comments> comments = kffCommentsService.findPage(query);
+		if (comments != null && CollectionUtils.isNotEmpty(comments.getRows())) {
+			PaginationQuery childQuery = new PaginationQuery();
+			childQuery.setPageIndex(1);
+			childQuery.setRowsPerPage(1);
+			childQuery.addQueryData("postType", KFFConstants.POST_TYPE_DISCUSS + "");
+			for (Comments comment : comments.getRows()) {
+				Comments finalComment = new Comments();
+				BeanUtils.copyProperties(comment, finalComment);
+				childQuery.addQueryData("parentCommentsId", comment.getCommentsId() + "");
+				PageResult<Comments> childComments = kffCommentsService.findPage(childQuery);
+				if (childComments != null && CollectionUtils.isNotEmpty(childComments.getRows())) {
+					finalComment.setChildCommentsList(childComments.getRows());
+					finalComment.setChildCommentsNum(childComments.getRowCount());
+				}
+
+				// 登录用户判断点赞状态
+				if (user != null) {
+					Praise praise = kffPraiseService.findByPostId(userId, comment.getCommentsId());
+					if (praise != null) {
+						finalComment.setPraiseStatus(praise.getStatus());
+					}
+				} else {
+					finalComment.setPraiseStatus(KFFConstants.PRAISE_STATUS_NOSHOW);
+				}
+				result.add(finalComment);
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public List<Comments> findAllChildCommentsList(Integer userId, Integer commentsId, PaginationQuery query) throws RestServiceException {
+		KFFUser user = null;
+		if (userId != null && userId != 0) {
+			user = kffUserService.findById(userId);
+		}
+		List<Comments> result = new ArrayList<>();
+		PageResult<Comments> comments = kffCommentsService.findPage(query);
+		if (comments != null && CollectionUtils.isNotEmpty(comments.getRows())) {
+			PaginationQuery childQuery = new PaginationQuery();
+			childQuery.setPageIndex(1);
+			childQuery.setRowsPerPage(2);
+			for (Comments comment : comments.getRows()) {
+				Comments finalComment = new Comments();
+				BeanUtils.copyProperties(comment, finalComment);
+				childQuery.addQueryData("parentCommentsId", comment.getCommentsId() + "");
+				PageResult<Comments> childComments = kffCommentsService.findPage(childQuery);
+				if (childComments != null && CollectionUtils.isNotEmpty(childComments.getRows())) {
+					finalComment.setChildCommentsList(childComments.getRows());
+					finalComment.setChildCommentsNum(childComments.getRowCount());
+				}
+				// 登录用户判断点赞状态
+				if (user != null) {
+					Praise praise = kffPraiseService.findByPostId(userId, comment.getCommentsId());
+					if (praise != null) {
+						finalComment.setPraiseStatus(praise.getStatus());
+					}
+				} else {
 					finalComment.setPraiseStatus(KFFConstants.PRAISE_STATUS_NOSHOW);
 				}
 				result.add(finalComment);
@@ -1821,43 +1939,42 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	@Override
 	public ArticleDetailResponse findDiscussDetail(Integer userId, Integer postId) throws RestServiceException {
 		ArticleDetailResponse response = new ArticleDetailResponse();
-		//登录和非登录用户区别只有关注状态按钮显示
+		// 登录和非登录用户区别只有关注状态按钮显示
 		KFFUser loginUser = null;
-		if(userId != null){
+		if (userId != null) {
 			loginUser = kffUserService.findById(userId);
 		}
-		if(postId == null || postId == 0){
+		if (postId == null || postId == 0) {
 			throw new RestServiceException(RestErrorCode.MISSING_ARG_POSTID);
 		}
 		Post post = kffPostService.findById(postId);
-		if(post == null){
+		if (post == null) {
 			throw new RestServiceException(RestErrorCode.POST_NOT_EXIST);
 		}
 		BeanUtils.copyProperties(post, response);
-		
+
 		Discuss discuss = kffDiscussService.findByPostId(postId);
-		response.setArticleContents(discuss == null ? "":discuss.getDisscussContents());
-		
-		
-		if(loginUser == null){
+		response.setArticleContents(discuss == null ? "" : discuss.getDisscussContents());
+
+		if (loginUser == null) {
 			response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
-		}else{					
+		} else {
 			Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_POST, post.getPostId());
-		    if(follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE){
-		    	response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
-		    }else{
-		    	response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
-		    }
+			if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+				response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+			} else {
+				response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+			}
 		}
-		//赞赏用户列表最多8个
+		// 赞赏用户列表最多8个
 		List<Commendation> donateUsers = new ArrayList<>();
 		PaginationQuery query = new PaginationQuery();
-		query.addQueryData("postId", postId+"");
+		query.addQueryData("postId", postId + "");
 		query.addQueryData("status", "1");
 		query.setPageIndex(1);
 		query.setRowsPerPage(8);
 		PageResult<Commendation> pages = kffCommendationService.findPage(query);
-		if(pages != null && CollectionUtils.isNotEmpty(pages.getRows())){
+		if (pages != null && CollectionUtils.isNotEmpty(pages.getRows())) {
 			donateUsers = pages.getRows();
 		}
 		response.setCommendationList(donateUsers);
@@ -1867,35 +1984,35 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	@Override
 	public List<Comments> findAllDiscussCommentsList(Integer userId, Integer postId) throws RestServiceException {
 		KFFUser user = null;
-		if(userId != null && userId != 0){
+		if (userId != null && userId != 0) {
 			user = kffUserService.findById(userId);
-		}	
+		}
 		List<Comments> result = new ArrayList<>();
-		Map<String,Object> map = new HashMap<String,Object>();
+		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("postId", postId + "");
 		map.put("status", KFFConstants.STATUS_ACTIVE + "");
 		List<Comments> comments = kffCommentsService.findAllCommentsByWhere(map);
-		if( CollectionUtils.isNotEmpty(comments)){
+		if (CollectionUtils.isNotEmpty(comments)) {
 			PaginationQuery childQuery = new PaginationQuery();
 			childQuery.setPageIndex(1);
 			childQuery.setRowsPerPage(2);
-			childQuery.addQueryData("postType", KFFConstants.POST_TYPE_DISCUSS+"");
-			for(Comments comment:comments){
+			childQuery.addQueryData("postType", KFFConstants.POST_TYPE_DISCUSS + "");
+			for (Comments comment : comments) {
 				Comments finalComment = new Comments();
 				BeanUtils.copyProperties(comment, finalComment);
-				childQuery.addQueryData("parentCommentsId", comment.getCommentsId()+"");
+				childQuery.addQueryData("parentCommentsId", comment.getCommentsId() + "");
 				PageResult<Comments> childComments = kffCommentsService.findPage(childQuery);
-				if(childComments != null && CollectionUtils.isNotEmpty(childComments.getRows())){
+				if (childComments != null && CollectionUtils.isNotEmpty(childComments.getRows())) {
 					finalComment.setChildCommentsList(childComments.getRows());
 					finalComment.setChildCommentsNum(childComments.getRowCount());
-				}				
-				//登录用户判断点赞状态
-				if(user != null){
+				}
+				// 登录用户判断点赞状态
+				if (user != null) {
 					Praise praise = kffPraiseService.findByPostId(userId, comment.getCommentsId());
-					if(praise != null){
+					if (praise != null) {
 						finalComment.setPraiseStatus(praise.getStatus());
 					}
-				}else{
+				} else {
 					finalComment.setPraiseStatus(KFFConstants.PRAISE_STATUS_NOSHOW);
 				}
 				result.add(finalComment);
@@ -1904,7 +2021,765 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		return result;
 	}
 
+	/**
+	 * 根据用户ID查询用户的身份审核信息
+	 * 
+	 * 1:审核成功 2: 审核中 3: 审核不通过 4 未进行身份审核',
+	 */
+	@Override
+	public Integer selectStatusByUserID(Integer userId) throws RestServiceException {
+		if (null == userId) {
+			throw new RestServiceException(RestErrorCode.USER_NOT_EXIST);
+		}
+		List<UserCard> userCards = userCardService.selectStatusByUserID(userId);
+		if (null == userCards) {
+			return 4;
+		}
+		return userCards.get(0).getStatus();
+	}
 
-	
-    
+	@Override
+	public void saveUserIdCard(UserCard userCard) throws RestServiceException {
+		userCardService.saveUserIdCard(userCard);
+
+	}
+
+	@Override
+	public List<Authentication> selectAuthenticatiobByUserId(Integer userId) throws RestServiceException {
+		if (null == userId) {
+			throw new RestServiceException(RestErrorCode.USER_NOT_EXIST);
+		}
+		return authenticationService.selectAuthenticationByUserId(userId);
+	}
+
+	/**
+	 * 根据用户ID把authentication插入审核表中
+	 */
+	@Override
+	public void saveAuthenticationByUseId(Integer userId) {
+		if (null == userId) {
+			throw new RestServiceException(RestErrorCode.USER_NOT_LOGIN);
+		}
+		Authentication authentication = new Authentication();
+		authentication.setUserid(userId);
+		authentication.setStatus(4);
+		authentication.setValid(1);
+		authentication.setCreatedata(new Date());
+		authenticationService.saveAuthenByUserId(authentication);
+
+	}
+
+	/**
+	 * 从后台获取所有项目名称
+	 */
+	@Override
+	public List<KFFProject> findProjectName() {
+
+		return kffProjectService.findProjectName();
+
+	}
+
+	@Override
+	public void selectUserIdStstus(String userRealName, String userCardNum, String photoIviews, Integer userId) {
+		String idcard = RegexUtil.IDCARD; // 判断手机是否符合标注
+		if (!userCardNum.matches(idcard)) {
+			throw new RestServiceException(RestErrorCode.USER_IDCARD_IS_FALSE);
+		}
+		// 将前台传来的数据进行转化保存在数据库
+		if (null == userRealName) {
+			throw new RestServiceException(RestErrorCode.VCNAME_NULL);
+		}
+		// 根据用户的ID查询手机手机号
+		String phone = kffUserService.findPhoneByUserId(userId);
+		if (null == phone) {
+			throw new RestServiceException(RestErrorCode.PHONE_NULL);
+		}
+		// 将URL转化成字符串对象
+		String uploadIeviw = this.uploadIeviw(photoIviews);
+		UserCard userCard = new UserCard();
+		userCard.setUserrealname(userRealName);
+		userCard.setUsercardNum(userCardNum);
+		userCard.setPositiveofcard(uploadIeviw);
+		userCard.setStatus(2);// status 1 审核成功 2 审核中 3 审核不通过 4 未审核
+		userCard.setUpdatatime(new Date());
+		userCard.setCreatetime(new Date());
+		userCard.setValid(1);
+		userCard.setPhone(phone);
+		this.updataUserIdCard(userCard);
+
+	}
+
+	public void updataUserIdCard(UserCard userCard) {
+		userCardService.updataUserIdCard(userCard);
+
+	}
+
+	public String uploadIeviw(String photoIviews) {
+		if (null == photoIviews) {
+			throw new RestServiceException(RestErrorCode.PICTURE_UPLOAD_FAIL);
+		}
+
+		// 把前台参数传输给后台
+		// 创建图片参数对象,用于存放photo参数 将URL转化字符串对象
+		// upload/Idcard/2.jpg
+		PhotoParams photoParams = new PhotoParams();
+		photoParams.setFileUrl(photoIviews);
+		// 取后缀名
+		String[] str = photoIviews.split("\\.");
+		System.out.println(str[0]);
+		System.out.println(str[1]);
+		photoParams.setExtension(str[1]);
+
+		System.out.println(str[0].lastIndexOf("/"));
+		str[0].substring(str[0].lastIndexOf("/") + 1);
+		System.out.println(str[0].substring(str[0].lastIndexOf("/") + 1));
+		// imgUrl.substring(imgUrl.lastIndexOf("/")+1);
+		/** 88888888888888888888888888 ***/
+		photoParams.setFileName(str[0].substring(str[0].lastIndexOf("/") + 1));
+		// 截取位置
+		// String
+		// 将对象转化成json字符串
+		// JSON.toJSONString(photoParams);
+		return JSON.toJSONString(photoParams);
+	}
+
+	public String uploadIeviwList(List<String> photoIviewses) {
+		if (null == photoIviewses) {
+			throw new RestServiceException(RestErrorCode.PICTURE_UPLOAD_FAIL);
+		}
+
+		// 把前台参数传输给后台
+		// 创建图片参数对象,用于存放photo参数 将URL转化字符串对象
+		// upload/Idcard/2.jpg
+		List<PhotoParams> PhotoParamses = new ArrayList<PhotoParams>();
+		for (String photoIviews : photoIviewses) {
+			PhotoParams photoParams = new PhotoParams();
+			photoParams.setFileUrl(photoIviews);
+			// 取后缀名
+			String[] str = photoIviews.split("\\.");
+			System.out.println(str[0]);
+			System.out.println(str[1]);
+			photoParams.setExtension(str[1]);
+
+			System.out.println(str[0].lastIndexOf("/"));
+			str[0].substring(str[0].lastIndexOf("/") + 1);
+			System.out.println(str[0].substring(str[0].lastIndexOf("/") + 1));
+			// imgUrl.substring(imgUrl.lastIndexOf("/")+1);
+			/** 88888888888888888888888888 ***/
+			photoParams.setFileName(str[0].substring(str[0].lastIndexOf("/") + 1));
+			// 截取位置
+			// String
+			// 将对象转化成json字符串
+			// JSON.toJSONString(photoParams);
+			photoIviewses.add(photoIviews);
+		}
+		return JSON.toJSONString(photoIviewses);
+	}
+
+	@Override
+	public void setUserCardAuthentication(Integer userId, String phone) {
+		if (null == selectAuthenticatiobByUserId(userId)) {
+			throw new RestServiceException(RestErrorCode.SYS_ERROR);
+		}
+		UserCard userCard = new UserCard();
+		userCard.setUserid(userId);
+		userCard.setPhone(phone);
+		userCard.setCreatetime(new Date());
+		userCard.setUpdatatime(new Date());
+		userCard.setValid(1);
+		userCard.setStatus(4);
+
+		this.saveUserCardOnRegister(userCard);
+	}
+
+	public void saveUserCardOnRegister(UserCard userCard) {
+		this.saveUserIdCard(userCard);
+
+	}
+
+	@Override
+	public Integer selectUserCardNum(String userCardNum) {
+
+		return userCardService.selectUserCardNum(userCardNum);
+	}
+
+	@Override
+	public Integer selectUserCardStatusByUserId(Integer userId) {
+
+		List<UserCard> userCards = userCardService.selectStatusByUserID(userId);
+		if (null == userCards) {
+			return 4;
+		}
+		UserCard userCard = userCards.get(0);
+		return userCard.getStatus();
+	}
+
+	@Override
+	public Integer selectAuthenticationStatusByUserId(Integer userId) {
+		List<Authentication> authentications = authenticationService.selectAuthenticationByUserId(userId);
+		if (null == authentications) {
+			return 4;
+		}
+		return authentications.get(0).getStatus();
+	}
+
+	@Override
+	public void updataAuthentication(Authentication authentication) {
+		if (null == authentication) {
+			throw new RestServiceException(RestErrorCode.MISSING_ARGS);
+		}
+		if (null == authentication.getType()) {
+			throw new RestServiceException(RestErrorCode.SYS_ERROR);
+		}
+		// 分类型进行参数验证begin
+		// 项目方认证
+		if (1 == authentication.getType()) {
+			if (null == authentication.getQufennickname()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getAuthinformation()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getCompany()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getRegistrationnum()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+
+			if (null == authentication.getLicencepic()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getMissivepic()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getOperatorname()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getNumber()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getMail()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			authentication.setLicencepic(uploadIeviw(authentication.getLicencepic()));
+			authentication.setMissivepic(uploadIeviw(authentication.getMissivepic()));
+		}
+		// 评测媒体认证
+		if (2 == authentication.getType()) {
+			if (null == authentication.getQufennickname()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getMediaintroduce()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getMediachannel()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getLink()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getAssistpic()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getOperatorname()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getWechat()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getMail()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			authentication.setAssistpic(uploadIeviw(authentication.getAssistpic()));
+		}
+		// 机构号认证
+		if (3 == authentication.getType()) {
+			if (null == authentication.getQufennickname()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getAuthinformation()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getCompany()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getRegistrationnum()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getRegistrationnum()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getLicencepic()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getMissivepic()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getOperatorname()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getNumber()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getMail()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			authentication.setLicencepic(uploadIeviw(authentication.getLicencepic()));
+			authentication.setMissivepic(uploadIeviw(authentication.getMissivepic()));
+		}
+		// 分类型进行参数判断 end
+		authentication.setCreatedata(new Date());
+		authentication.setStatus(2);
+		authentication.setValid(1);
+
+		authenticationService.updataAuthenByUserId(authentication);
+
+	}
+
+	@Override
+	public List<Dtags> findAllTagsName() {
+
+		return kffDtagsService.findAllTagsName();
+
+	}
+
+	@Override
+	public KFFProject findProjectIdByCodeAndChineseName(KFFProject kffProject) {
+		if (null == kffProject) {
+			throw new RestServiceException(RestErrorCode.SYS_ERROR);
+		}
+		return kffProjectService.findProjectIdByCodeAndChineseName(kffProject);
+	}
+
+	@Override
+	public KFFUser saveUserByphoneNotPass(String phoneNumber, Integer invaUserId) {
+		return kffUserService.saveUserByphoneNotPass(phoneNumber, invaUserId);
+
+	}
+
+	/**
+	 * 根据分享的postID 展示post相关信息
+	 */
+	@Override
+	public ArticleDetailResponse findArticleDetailForShare(Integer postId) {
+		ArticleDetailShareResponse articleDetailShareResponse = new ArticleDetailShareResponse();
+
+		if (postId == null || postId == 0) {
+			throw new RestServiceException(RestErrorCode.MISSING_ARG_POSTID);
+		}
+
+		Post post = kffPostService.findById(postId);
+
+		if (post == null) {
+			throw new RestServiceException(RestErrorCode.POST_NOT_EXIST);
+		}
+		BeanUtils.copyProperties(post, articleDetailShareResponse);
+
+		// 赞赏用户列表最多8个
+		List<Commendation> donateUsers = new ArrayList<>();
+		PaginationQuery query = new PaginationQuery();
+		query.addQueryData("postId", postId + "");
+		query.addQueryData("status", "1");
+		query.setPageIndex(1);
+		query.setRowsPerPage(6);
+		PageResult<Commendation> pages = kffCommendationService.findPage(query);
+		if (pages != null && CollectionUtils.isNotEmpty(pages.getRows())) {
+			donateUsers = pages.getRows();
+		}
+		articleDetailShareResponse.setCommendationList(donateUsers);
+
+		// 根据postID 查询文章详情
+		Article acticle = kffArticleService.selectArticleByPostId(postId);
+		articleDetailShareResponse.setArticleId(acticle.getArticleId());
+		articleDetailShareResponse.setArticle(acticle);
+		// 根据postid查询project
+		KFFProject kFFProject = kffProjectService.findById(post.getProjectId());
+		articleDetailShareResponse.setProjectIcon(kFFProject.getProjectIcon());
+		return articleDetailShareResponse;
+	}
+
+	@Override
+	public ProjectEvaluationDetailShareResponse findEvaluationDetailForShare(Integer postId) {
+		ProjectEvaluationDetailShareResponse projectEvaluationDetailShareResponse = new ProjectEvaluationDetailShareResponse();
+		if (postId == null || postId == 0) {
+			throw new RestServiceException(RestErrorCode.MISSING_ARG_POSTID);
+		}
+		Post post = kffPostService.findById(postId);
+
+		if (post == null) {
+			throw new RestServiceException(RestErrorCode.POST_NOT_EXIST);
+		}
+		post.setUuid(null);
+		post.setCreateUserId(null);
+
+		post.setPostType(null);
+		post.setUpdateTime(null);
+		post.setPostId(null);
+		post.setProjectId(null);
+		post.setStatus(null);
+		projectEvaluationDetailShareResponse.setPost(post);
+		// 根据post查询evaluation
+		Evaluation evaluation = kffEvaluationService.selectEvaluationByPostId(postId);
+
+		projectEvaluationDetailShareResponse.setEvaluation(evaluation);
+		// 根据evaluation的evaluationTags 标签查询标签库 获得对应的tag标签
+		List<Commendation> donateUsers = new ArrayList<>();
+		PaginationQuery query = new PaginationQuery();
+		query.addQueryData("postId", postId + "");
+		query.addQueryData("status", "1");
+		query.setPageIndex(1);
+		query.setRowsPerPage(6);
+		PageResult<Commendation> pages = kffCommendationService.findPage(query);
+		if (pages != null && CollectionUtils.isNotEmpty(pages.getRows())) {
+			donateUsers = pages.getRows();
+		}
+
+		for (Commendation donateUser : donateUsers) {
+			donateUser.setAmount(null);
+			donateUser.setCommendationId(null);
+			donateUser.setCreateTime(null);
+			donateUser.setPostType(null);
+			donateUser.setProjectId(null);
+			donateUser.setReceiveUserId(null);
+			donateUser.setSendUserId(null);
+			donateUser.setUpdateTime(null);
+			donateUser.setStatus(null);
+			donateUser.setPostId(null);
+		}
+		// 取权重
+		List<DevaluationModel> evaliationModel = findEvaliationModel();
+		for (DevaluationModel devaluationModel1 : evaliationModel) {
+			devaluationModel1.setModelDesc(null);
+			devaluationModel1.setCreateUserId(null);
+			devaluationModel1.setCreateTime(null);
+			devaluationModel1.setModelType(null);
+		}
+
+		projectEvaluationDetailShareResponse.setCommendationList(donateUsers);
+
+		String evaluationTags = evaluation.getEvaluationTags();
+
+		projectEvaluationDetailShareResponse.setDtags(evaluationTags);
+
+		return projectEvaluationDetailShareResponse;
+	}
+
+	@Override
+	public ProjectEvaluationDetailShareResponse findEvaluationDetailPartForShare(Integer postId) {
+		ProjectEvaluationDetailShareResponse projectEvaluationDetailShareResponse = new ProjectEvaluationDetailShareResponse();
+		if (postId == null || postId == 0) {
+			throw new RestServiceException(RestErrorCode.MISSING_ARG_POSTID);
+		}
+		Post post = kffPostService.findById(postId);
+
+		if (post == null) {
+			throw new RestServiceException(RestErrorCode.POST_NOT_EXIST);
+		}
+		projectEvaluationDetailShareResponse.setPost(post);
+		// 根据post查询evaluation
+		Evaluation evaluation = kffEvaluationService.selectEvaluationByPostId(postId);
+
+		projectEvaluationDetailShareResponse.setEvaluation(evaluation);
+
+		return projectEvaluationDetailShareResponse;
+	}
+
+	@Override
+	public void saveUserInvation(Integer userId, String userIdTo2code) {
+		if (null == userId) {
+			throw new RestServiceException("系统错误,请重新注册");
+		}
+		if (null == userIdTo2code) {
+			throw new RestServiceException("生成二维码错误,请重新注册");
+		}
+		// 将相关参数插入表中
+		userInvationService.saveUserInvation(userId, userIdTo2code);
+
+	}
+
+	@Override
+	public CommentsShareRequest findCommentMessage(Integer postId) {
+		CommentsShareRequest commentsShareRequest = new CommentsShareRequest();
+		if (null == postId) {
+			throw new RestServiceException("参数异常");
+		}
+		Post post = kffPostService.findById(postId);
+		if (null == post) {
+			throw new RestServiceException("帖子为空");
+		}
+
+		KFFProject project = kffProjectService.findById(post.getProjectId());
+		if (null == project) {
+			throw new RestServiceException("项目为空!");
+		}
+		commentsShareRequest.setProjectIcon(project.getProjectIcon());
+
+		commentsShareRequest.setProjectCode(project.getProjectCode());
+
+		commentsShareRequest.setProjectChineseName(project.getProjectChineseName());
+
+		// Map<String, Object> findMap = new HashMap<String, Object>();
+
+		// 进行排序分页查询
+		List<Comments> commentUsers = new ArrayList<>();
+		PaginationQuery query = new PaginationQuery();
+		query.addQueryData("postId", postId + "");
+		query.addQueryData("status", "1");
+		query.setPageIndex(1);
+		query.setRowsPerPage(5);// 展示三条最热门的评论
+		PageResult<Comments> pages = kffCommentsService.findPageOrderBy(query);
+		if (pages != null && CollectionUtils.isNotEmpty(pages.getRows())) {
+			commentUsers = pages.getRows();
+		}
+		if (null == commentUsers) {
+			throw new RestServiceException("当前没有评论!");
+		}
+		for (Comments commentUser : commentUsers) {
+
+		}
+		commentsShareRequest.setCommentses(commentUsers);
+		// 根据postid 查询discuss
+		Discuss discuss = kffDiscussService.findByPostId(postId);
+
+		commentsShareRequest.setDiscuss(discuss);
+
+		PaginationQuery hotQuery = new PaginationQuery();
+		hotQuery.addQueryData("status", "1");
+		hotQuery.addQueryData("postId", postId + "");
+		hotQuery.addQueryData("postType", KFFConstants.POST_TYPE_ARTICLE + "");
+		// 点赞数最多的2个评论
+		hotQuery.addQueryData("sortField", "praiseNum");
+		hotQuery.setPageIndex(1);
+		hotQuery.setRowsPerPage(2);
+		List<Comments> hotComments = this.findPageHotCommentsList(post.getCreateUserId(), postId, hotQuery);
+		commentsShareRequest.setHotComments(hotComments);
+		PaginationQuery newQuery = new PaginationQuery();
+		newQuery.addQueryData("status", "1");
+		newQuery.addQueryData("postId", postId + "");
+		newQuery.addQueryData("postType", KFFConstants.POST_TYPE_ARTICLE + "");
+		// 最新的4个评论
+		newQuery.setPageIndex(1);
+		newQuery.setRowsPerPage(4);
+		List<Comments> newestComments = this.findPageNewestComments(post.getCreateUserId(), postId, newQuery);
+		commentsShareRequest.setNewestComments(newestComments);
+		return commentsShareRequest;
+	}
+
+	@Override
+	public List<Authentication> selectAuthenticationByUserId(Integer userId) {
+
+		return authenticationService.selectAuthenticationByUserId(userId);
+	}
+
+	@Override
+	public List<Evaluation> findEvaliation(Integer projectId) {
+
+		return kffEvaluationService.findEvaliationByProjectId(projectId);
+	}
+
+	@Override
+	public KFFProject selectProjectByprojectName(String projectName) {
+		if (null == projectName) {
+			throw new RestServiceException("请选择项目名称!");
+		}
+		String[] str = projectName.split("\\/");
+		System.out.println(str[0]);
+		System.out.println(str[1]);
+		KFFProject kffProject = new KFFProject();
+		kffProject.setProjectChineseName(str[0]);
+		kffProject.setProjectCode(str[1]);
+		return findProjectIdByCodeAndChineseName(kffProject);
+
+	}
+
+	@Override
+	public List<DevaluationModel> findEvaliationModel() {
+		List<DevaluationModel> devaluationModels = kffDevaluationModelService.findAll();
+		if (devaluationModels == null) {
+			throw new RestServiceException("评测系统出错,请联系客服!");
+		}
+		return devaluationModels;
+	}
+
+	@Override
+	public Evaluation selectEvaluationByUserId(Evaluation evaluation) {
+		if (null == evaluation.getCreateUserId()) {
+			throw new RestServiceException(RestErrorCode.USER_NOT_LOGIN);
+		}
+		return kffEvaluationService.selectEvaluationOrNotByUserId(evaluation);
+	}
+
+	@Override
+	public DiscussShare findDiscussDetailWAP(Integer postId) {
+		DiscussShare discussShare = new DiscussShare();
+
+		if (postId == null || postId == 0) {
+			throw new RestServiceException(RestErrorCode.MISSING_ARG_POSTID);
+		}
+		Post post = kffPostService.findById(postId);
+		if (post == null) {
+			throw new RestServiceException(RestErrorCode.POST_NOT_EXIST);
+		}
+
+		Discuss discuss = kffDiscussService.findByPostId(postId);
+		discussShare.setTagInfo(discuss.getTagInfos());
+		// 防止post
+		post.setPostId(null);
+		post.setUpdateTime(null);
+		post.setUuid(null);
+		post.setUpdateTime(null);
+		discussShare.setPost(post);
+
+		// 赞赏用户列表最多8个
+		List<Commendation> donateUsers = new ArrayList<>();
+		PaginationQuery query = new PaginationQuery();
+		query.addQueryData("postId", postId + "");
+		query.addQueryData("status", "1");
+		query.setPageIndex(1);
+		query.setRowsPerPage(4);
+		PageResult<Commendation> pages = kffCommendationService.findPage(query);
+		if (pages != null && CollectionUtils.isNotEmpty(pages.getRows())) {
+			donateUsers = pages.getRows();
+		}
+		// 打赏
+		discussShare.setDonateUsers(donateUsers);
+		// 根据Postid 获取讨论的标签
+		// 防止热门评论
+
+		// 获得当前评论列表所在的楼层
+		/*
+		 * 
+		 * 解决思路 : 根据postID 和 parentcommentsId(为空)
+		 * 
+		 * 
+		 * 根据ID进行排序
+		 */
+		List<Comments> commentsList = kffCommentsService.findFlootOrderById(postId);
+
+		/**************** 热门评论产 *****************************/
+		/* 热门评论 */
+		// 进行排序分页查询
+		List<Comments> commentUsers = new ArrayList<>();
+		PaginationQuery queryhot = new PaginationQuery();
+		queryhot.addQueryData("postId", postId + "");
+		queryhot.addQueryData("status", "1");
+		queryhot.setPageIndex(1);
+		queryhot.setRowsPerPage(2);// 展示三条最热门的评论
+		PageResult<Comments> pageshot = kffCommentsService.findPageOrderBy(queryhot);
+		if (pageshot != null && CollectionUtils.isNotEmpty(pages.getRows())) {
+			commentUsers = pageshot.getRows();
+		}
+		if (null == commentUsers) {
+			throw new RestServiceException("当前没有评论!");
+		}
+		// 屏蔽部分参数
+		List<CommentShareFloot> commentUsersfl = new ArrayList<>();
+		for (Comments commentUser : commentUsers) {
+			commentUser.setCreateTime(null);
+			commentUser.setUpdateTime(null);
+			commentUser.setBecommentedUserIcon(null);
+			commentUser.setPostId(null);
+			commentUser.setProjectId(null);
+			CommentShareFloot commentShareFloot = new CommentShareFloot();
+			BeanUtils.copyProperties(commentUser, commentShareFloot);
+			Integer indexOf = commentsList.indexOf(commentUser);
+			commentShareFloot.setFloot(indexOf);
+			commentUsersfl.add(commentShareFloot);
+
+		}
+		// discussShare.setCommentsehot(commentUsers);
+		// 根据postid 查询discuss
+		/***************** 点赞最多的评论 ****************************/
+		// 点赞最多的评论
+		PaginationQuery hotQuery = new PaginationQuery();
+		hotQuery.addQueryData("status", "1");
+		hotQuery.addQueryData("postId", postId + "");
+		hotQuery.addQueryData("postType", KFFConstants.POST_TYPE_ARTICLE + "");
+		// 点赞数最多的2个评论
+		hotQuery.addQueryData("sortField", "praise_num");
+		hotQuery.setPageIndex(1);
+		hotQuery.setRowsPerPage(2);
+		List<Comments> hotComments = this.findPageHotCommentsListDis(post.getCreateUserId(), postId, hotQuery);
+		List<CommentShareFloot> commenthotfl = new ArrayList<>();
+
+		for (Comments commentUserHot : hotComments) {
+
+			CommentShareFloot commentShareFloot = new CommentShareFloot();
+			BeanUtils.copyProperties(commentUserHot, commentShareFloot);
+			int indexOfhot = 0;
+
+			for (Comments commentsli : commentsList) {
+				if (commentsli.getCommentsId() == commentUserHot.getCommentsId()) {
+					int indexOf = commentsList.indexOf(commentsli);
+					indexOfhot = indexOf + 1;
+				}
+			}
+
+			commentShareFloot.setFloot(indexOfhot);
+			commenthotfl.add(commentShareFloot);
+		}
+		discussShare.setCommentsehot(commenthotfl);
+
+		/******************* 新的2个评论 **************************/
+		PaginationQuery newQuery = new PaginationQuery();
+		newQuery.addQueryData("status", "1");
+		newQuery.addQueryData("postId", postId + "");
+		newQuery.addQueryData("postType", KFFConstants.POST_TYPE_ARTICLE + "");
+
+		// 最新的2个评论
+		newQuery.setPageIndex(1);
+		newQuery.setRowsPerPage(2);
+		List<Comments> newestComments = this.findPageNewestCommentsDis(post.getCreateUserId(), postId, newQuery);
+
+		List<CommentShareFloot> commentnewfl = new ArrayList<>();
+		for (Comments commentUsernew : newestComments) {
+
+			CommentShareFloot commentShareFloot = new CommentShareFloot();
+			BeanUtils.copyProperties(commentUsernew, commentShareFloot);
+
+			int indexOfnew = 0;
+
+			for (Comments commentsli : commentsList) {
+				if (commentsli.getCommentsId() == commentUsernew.getCommentsId()) {
+					int indexOf = commentsList.indexOf(commentsli);
+					indexOfnew = indexOf + 1;
+				}
+			}
+
+			commentShareFloot.setFloot(indexOfnew);
+
+			Integer indexOf = commentsList.indexOf(commentUsernew);
+			commentShareFloot.setFloot(indexOf);
+			commentnewfl.add(commentShareFloot);
+		}
+
+		discussShare.setCommentseNew(commentnewfl);
+		/*********************************************/
+		// 获得最多赞的人评论 根据praisenum 排序
+		List<Comments> commentZanDuoOnly = kffCommentsService.findBidPraiseNum(postId);
+		CommentShareFloot commentShareFlootZanDuoOnly = new CommentShareFloot();
+		BeanUtils.copyProperties(commentZanDuoOnly.get(0), commentShareFlootZanDuoOnly);
+
+		int indexOfzan = 0;
+		for (Comments commentsli : commentsList) {
+			if (commentsli.getCommentsId() == commentZanDuoOnly.get(0).getCommentsId()) {
+				int indexOf = commentsList.indexOf(commentsli);
+				indexOfzan = indexOf + 1;
+			}
+		}
+		commentShareFlootZanDuoOnly.setFloot(indexOfzan);
+		//discussShare.setCommentseZanDuoOnly(commentShareFlootZanDuoOnly);
+		// 设置评论总数
+		Integer commentsSum = kffCommentsService.findCommentsSum();
+		discussShare.setCommentseSum(commentsSum);
+		return discussShare;
+	}
+
+	@Override
+	public Discuss findDisscussBypostId(Integer postId) {
+
+		return kffDiscussService.findDisscussBypostId(postId);
+	}
+
 }

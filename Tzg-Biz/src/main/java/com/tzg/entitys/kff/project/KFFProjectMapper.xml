@@ -1,47 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.tzg.entitys.kff.project.KFFProjectMapper">	
+<mapper namespace="com.tzg.entitys.kff.project.KFFProjectMapper">
 	<resultMap id="BaseResultMap" type="com.tzg.entitys.kff.project.KFFProject">
-		<result property="projectId" jdbcType="INTEGER" column="project_id"/>
-		<result property="projectIcon" jdbcType="VARCHAR" column="project_icon"/>
-		<result property="state" jdbcType="INTEGER" column="state"/>
-		<result property="projectCode" jdbcType="VARCHAR" column="project_code"/>
-		<result property="projectEnglishName" jdbcType="VARCHAR" column="project_english_name"/>
-		<result property="projectChineseName" jdbcType="VARCHAR" column="project_chinese_name"/>
-		<result property="projectSignature" jdbcType="VARCHAR" column="project_signature"/>
-		<result property="websiteUrl" jdbcType="VARCHAR" column="website_url"/>
-		<result property="listed" jdbcType="INTEGER" column="listed"/>
-		<result property="issueDate" jdbcType="DATE" column="issue_date"/>
-		<result property="issueNum" jdbcType="INTEGER" column="issue_num"/>
-		<result property="whitepaperUrl" jdbcType="VARCHAR" column="whitepaper_url"/>
-		<result property="projectTypeName" jdbcType="VARCHAR" column="project_type_name"/>
-		<result property="projectTypeId" jdbcType="INTEGER" column="project_type_id"/>
-		<result property="projectDesc" jdbcType="LONGVARCHAR" column="project_desc"/>
-		<result property="submitUserId" jdbcType="INTEGER" column="submit_user_id"/>
-		<result property="submitUserType" jdbcType="INTEGER" column="submit_user_type"/>
-		<result property="submitUserContactInfo" jdbcType="VARCHAR" column="submit_user_contact_info"/>
-		<result property="submitReason" jdbcType="LONGVARCHAR" column="submit_reason"/>
-		<result property="status" jdbcType="INTEGER" column="status"/>
-		<result property="createTime" jdbcType="TIMESTAMP" column="createTime"/>
-		<result property="publishTime" jdbcType="TIMESTAMP" column="publishTime"/>
-		<result property="updateTime" jdbcType="TIMESTAMP" column="updateTime"/>
-		<result property="totalScore" jdbcType="DECIMAL" column="total_score"/>
-		<result property="raterNum" jdbcType="INTEGER" column="rater_num"/>
-		<result property="followerNum" jdbcType="INTEGER" column="follower_num"/>
-		<result property="commentsNum" jdbcType="INTEGER" column="comments_num"/>
-		<result property="collectNum" jdbcType="INTEGER" column="collect_num"/>
-    </resultMap>
-	
+		<result property="projectId" jdbcType="INTEGER" column="project_id" />
+		<result property="projectIcon" jdbcType="VARCHAR" column="project_icon" />
+		<result property="state" jdbcType="INTEGER" column="state" />
+		<result property="projectCode" jdbcType="VARCHAR" column="project_code" />
+		<result property="projectEnglishName" jdbcType="VARCHAR" column="project_english_name" />
+		<result property="projectChineseName" jdbcType="VARCHAR" column="project_chinese_name" />
+		<result property="projectSignature" jdbcType="VARCHAR" column="project_signature" />
+		<result property="websiteUrl" jdbcType="VARCHAR" column="website_url" />
+		<result property="listed" jdbcType="INTEGER" column="listed" />
+		<result property="issueDate" jdbcType="DATE" column="issue_date" />
+		<result property="issueNum" jdbcType="INTEGER" column="issue_num" />
+		<result property="whitepaperUrl" jdbcType="VARCHAR" column="whitepaper_url" />
+		<result property="projectTypeName" jdbcType="VARCHAR" column="project_type_name" />
+		<result property="projectTypeId" jdbcType="INTEGER" column="project_type_id" />
+		<result property="projectDesc" jdbcType="LONGVARCHAR" column="project_desc" />
+		<result property="submitUserId" jdbcType="INTEGER" column="submit_user_id" />
+		<result property="submitUserType" jdbcType="INTEGER" column="submit_user_type" />
+		<result property="submitUserContactInfo" jdbcType="VARCHAR" column="submit_user_contact_info" />
+		<result property="submitReason" jdbcType="LONGVARCHAR" column="submit_reason" />
+		<result property="status" jdbcType="INTEGER" column="status" />
+		<result property="createTime" jdbcType="TIMESTAMP" column="createTime" />
+		<result property="publishTime" jdbcType="TIMESTAMP" column="publishTime" />
+		<result property="updateTime" jdbcType="TIMESTAMP" column="updateTime" />
+		<result property="totalScore" jdbcType="DECIMAL" column="total_score" />
+		<result property="raterNum" jdbcType="INTEGER" column="rater_num" />
+		<result property="followerNum" jdbcType="INTEGER" column="follower_num" />
+		<result property="commentsNum" jdbcType="INTEGER" column="comments_num" />
+		<result property="collectNum" jdbcType="INTEGER" column="collect_num" />
+	</resultMap>
+
 	<sql id="columns">
 	    <![CDATA[
         project_id ,project_icon ,state ,project_code ,project_english_name ,project_chinese_name ,project_signature ,website_url ,listed ,issue_date ,issue_num ,whitepaper_url ,project_type_name ,project_type_id ,project_desc ,submit_user_id ,submit_user_type,submit_user_contact_info,submit_reason ,status ,createTime ,publishTime ,updateTime ,total_score ,rater_num ,follower_num ,comments_num ,collect_num 
 	    ]]>
 	</sql>
-	
+
 	<insert id="save" parameterType="com.tzg.entitys.kff.project.KFFProject" useGeneratedKeys="true" keyProperty="projectId">
-		<selectKey resultType="java.lang.Integer" keyProperty="projectId" order="AFTER" >
-	      SELECT LAST_INSERT_ID() AS id
-	    </selectKey>
+		<selectKey resultType="java.lang.Integer" keyProperty="projectId" order="AFTER">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
 	<![CDATA[
 		INSERT INTO tbproject (
         	project_icon ,
@@ -107,89 +107,89 @@
 		UPDATE tbproject
 		<set>
 			<if test="projectIcon != null">
-	        project_icon = #{projectIcon,jdbcType=VARCHAR} ,
-	        </if>
+				project_icon = #{projectIcon,jdbcType=VARCHAR} ,
+			</if>
 			<if test="state != null">
-	        state = #{state,jdbcType=INTEGER} ,
-	        </if>
+				state = #{state,jdbcType=INTEGER} ,
+			</if>
 			<if test="projectCode != null">
-	        project_code = #{projectCode,jdbcType=VARCHAR} ,
-	        </if>
+				project_code = #{projectCode,jdbcType=VARCHAR} ,
+			</if>
 			<if test="projectEnglishName != null">
-	        project_english_name = #{projectEnglishName,jdbcType=VARCHAR} ,
-	        </if>
+				project_english_name = #{projectEnglishName,jdbcType=VARCHAR} ,
+			</if>
 			<if test="projectChineseName != null">
-	        project_chinese_name = #{projectChineseName,jdbcType=VARCHAR} ,
-	        </if>
+				project_chinese_name = #{projectChineseName,jdbcType=VARCHAR} ,
+			</if>
 			<if test="projectSignature != null">
-	        project_signature = #{projectSignature,jdbcType=VARCHAR} ,
-	        </if>
+				project_signature = #{projectSignature,jdbcType=VARCHAR} ,
+			</if>
 			<if test="websiteUrl != null">
-	        website_url = #{websiteUrl,jdbcType=VARCHAR} ,
-	        </if>
+				website_url = #{websiteUrl,jdbcType=VARCHAR} ,
+			</if>
 			<if test="listed != null">
-	        listed = #{listed,jdbcType=INTEGER} ,
-	        </if>
+				listed = #{listed,jdbcType=INTEGER} ,
+			</if>
 			<if test="issueDate != null">
-	        issue_date = #{issueDate,jdbcType=DATE} ,
-	        </if>
+				issue_date = #{issueDate,jdbcType=DATE} ,
+			</if>
 			<if test="issueNum != null">
-	        issue_num = #{issueNum,jdbcType=INTEGER} ,
-	        </if>
+				issue_num = #{issueNum,jdbcType=INTEGER} ,
+			</if>
 			<if test="whitepaperUrl != null">
-	        whitepaper_url = #{whitepaperUrl,jdbcType=VARCHAR} ,
-	        </if>
+				whitepaper_url = #{whitepaperUrl,jdbcType=VARCHAR} ,
+			</if>
 			<if test="projectTypeName != null">
-	        project_type_name = #{projectTypeName,jdbcType=VARCHAR} ,
-	        </if>
+				project_type_name = #{projectTypeName,jdbcType=VARCHAR} ,
+			</if>
 			<if test="projectTypeId != null">
-	        project_type_id = #{projectTypeId,jdbcType=INTEGER} ,
-	        </if>
+				project_type_id = #{projectTypeId,jdbcType=INTEGER} ,
+			</if>
 			<if test="projectDesc != null">
-	        project_desc = #{projectDesc,jdbcType=LONGVARCHAR} ,
-	        </if>
+				project_desc = #{projectDesc,jdbcType=LONGVARCHAR} ,
+			</if>
 			<if test="submitUserId != null">
-	        submit_user_id = #{submitUserId,jdbcType=INTEGER} ,
-	        </if>
-	        <if test="submitUserType != null">
-	        submit_user_type = #{submitUserType,jdbcType=INTEGER} ,
-	        </if>
-	        <if test="submitUserContactInfo != null">
-	        submit_user_contact_info = #{submitUserContactInfo,jdbcType=LONGVARCHAR} ,
-	        </if>
+				submit_user_id = #{submitUserId,jdbcType=INTEGER} ,
+			</if>
+			<if test="submitUserType != null">
+				submit_user_type = #{submitUserType,jdbcType=INTEGER} ,
+			</if>
+			<if test="submitUserContactInfo != null">
+				submit_user_contact_info = #{submitUserContactInfo,jdbcType=LONGVARCHAR} ,
+			</if>
 			<if test="submitReason != null">
-	        submit_reason = #{submitReason,jdbcType=VARCHAR} ,
-	        </if>
+				submit_reason = #{submitReason,jdbcType=VARCHAR} ,
+			</if>
 			<if test="status != null">
-	        status = #{status,jdbcType=INTEGER} ,
-	        </if>
+				status = #{status,jdbcType=INTEGER} ,
+			</if>
 			<if test="createTime != null">
-	        createTime = #{createTime,jdbcType=TIMESTAMP} ,
-	        </if>
+				createTime = #{createTime,jdbcType=TIMESTAMP} ,
+			</if>
 			<if test="publishTime != null">
-	        publishTime = #{publishTime,jdbcType=TIMESTAMP} ,
-	        </if>
+				publishTime = #{publishTime,jdbcType=TIMESTAMP} ,
+			</if>
 			<if test="updateTime != null">
-	        updateTime = #{updateTime,jdbcType=TIMESTAMP} ,
-	        </if>
+				updateTime = #{updateTime,jdbcType=TIMESTAMP} ,
+			</if>
 			<if test="totalScore != null">
-	        total_score = #{totalScore,jdbcType=DECIMAL} ,
-	        </if>
+				total_score = #{totalScore,jdbcType=DECIMAL} ,
+			</if>
 			<if test="raterNum != null">
-	        rater_num = #{raterNum,jdbcType=INTEGER} ,
-	        </if>
+				rater_num = #{raterNum,jdbcType=INTEGER} ,
+			</if>
 			<if test="followerNum != null">
-	        follower_num = #{followerNum,jdbcType=INTEGER} ,
-	        </if>
+				follower_num = #{followerNum,jdbcType=INTEGER} ,
+			</if>
 			<if test="commentsNum != null">
-	        comments_num = #{commentsNum,jdbcType=INTEGER} ,
-	        </if>
+				comments_num = #{commentsNum,jdbcType=INTEGER} ,
+			</if>
 			<if test="collectNum != null">
-	        collect_num = #{collectNum,jdbcType=INTEGER} 
-	        </if>
-	    </set>
-		WHERE 
-	        project_id = #{projectId,jdbcType=INTEGER} 
+				collect_num = #{collectNum,jdbcType=INTEGER}
+			</if>
+		</set>
+		WHERE
+		project_id = #{projectId,jdbcType=INTEGER}
 	</update>
 
 	<delete id="deleteById" parameterType="java.lang.Integer">
@@ -198,153 +198,178 @@
         project_id = #{projectId} 
 	]]>
 	</delete>
-    
+
 	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
-	    SELECT <include refid="columns"/> 
+		SELECT
+		<include refid="columns" /> 
 	<![CDATA[
 		FROM tbproject 
 		WHERE 
         project_id = #{projectId} 
 	]]>
 	</select>
-	 
+
 	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
-    	select count(*) from tbproject where 1=1
-		<include refid="queryWhere"/>
+		select count(*) from tbproject where 1=1
+		<include refid="queryWhere" />
 	</select>
-    
+
 	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
-		select <include refid="columns"/>  from tbproject where status=1
-		<include refid="queryWhere"/> 
-		 <choose>
-	            <when test="sortField != null and sortField != ''">
-	               ORDER BY ${sortField} DESC
-	            </when>
-	            <otherwise>
+		select
+		<include refid="columns" />
+		from tbproject where status=1
+		<include refid="queryWhere" />
+		<choose>
+			<when test="sortField != null and sortField != ''">
+				ORDER BY ${sortField} DESC
+			</when>
+			<otherwise>
 	                <![CDATA[ ORDER BY project_id desc ]]>
-	            </otherwise>
-	     </choose>
+			</otherwise>
+		</choose>
         <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
 	</select>
-	
-	
+
+
 	<select id="findProjectByCode" resultMap="BaseResultMap" parameterType="java.util.Map">
-		select <include refid="columns"/>  from tbproject where status=1
-		<include refid="queryWhere"/> 
-		 <choose>
-	            <when test="sortField != null and sortField != ''">
-	               ORDER BY ${sortField} DESC
-	            </when>
-	            <otherwise>
+		select
+		<include refid="columns" />
+		from tbproject where status=1
+		<include refid="queryWhere" />
+		<choose>
+			<when test="sortField != null and sortField != ''">
+				ORDER BY ${sortField} DESC
+			</when>
+			<otherwise>
 	                <![CDATA[ ORDER BY project_code ASC ]]>
-	            </otherwise>
-	        </choose>
-	    
+			</otherwise>
+		</choose>
+
 	</select>
-	
-	
-	<sql id="queryWhereByCode">	
+
+
+	<sql id="queryWhereByCode">
 		<if test="state != null and state.trim() != ''">
-		and state = #{state}
+			and state = #{state}
 		</if>
 		<if test="projectCode != null and projectCode.trim() != ''">
-		and ( project_code like CONCAT('%', #{projectCode},'%') or project_english_name like CONCAT('%', #{projectCode},'%') )
+			and ( project_code like CONCAT('%', #{projectCode},'%') or project_english_name like CONCAT('%', #{projectCode},'%') )
 		</if>
-		
+
 	</sql>
-	
+
 	<sql id="queryWhere">
 		<if test="projectId != null and projectId.trim() != ''">
-		and project_id = #{projectId}
+			and project_id = #{projectId}
 		</if>
 		<if test="projectIcon != null and projectIcon.trim() != ''">
-		and project_icon = #{projectIcon}
+			and project_icon = #{projectIcon}
 		</if>
 		<if test="state != null and state.trim() != ''">
-		and state = #{state}
+			and state = #{state}
 		</if>
 		<if test="projectCode != null and projectCode.trim() != ''">
-		and project_code = #{projectCode}
+			and project_code = #{projectCode}
 		</if>
 		<if test="projectEnglishName != null and projectEnglishName.trim() != ''">
-		and project_english_name = #{projectEnglishName}
+			and project_english_name = #{projectEnglishName}
 		</if>
 		<if test="projectChineseName != null and projectChineseName.trim() != ''">
-		and project_chinese_name = #{projectChineseName}
+			and project_chinese_name = #{projectChineseName}
 		</if>
 		<if test="projectSignature != null and projectSignature.trim() != ''">
-		and project_signature = #{projectSignature}
+			and project_signature = #{projectSignature}
 		</if>
 		<if test="websiteUrl != null and websiteUrl.trim() != ''">
-		and website_url = #{websiteUrl}
+			and website_url = #{websiteUrl}
 		</if>
 		<if test="listed != null and listed.trim() != ''">
-		and listed = #{listed}
+			and listed = #{listed}
 		</if>
 		<if test="issueDateBegin != null and issueDateBegin.trim() != ''">
-		and issue_date >= #{issueDateBegin}
+			and issue_date >= #{issueDateBegin}
 		</if>
 		<if test="issueDateEnd != null and issueDateEnd.trim() != ''">
-		and issue_date &lt;= #{issueDateEnd}
+			and issue_date &lt;= #{issueDateEnd}
 		</if>
 		<if test="issueNum != null and issueNum.trim() != ''">
-		and issue_num = #{issueNum}
+			and issue_num = #{issueNum}
 		</if>
 		<if test="whitepaperUrl != null and whitepaperUrl.trim() != ''">
-		and whitepaper_url = #{whitepaperUrl}
+			and whitepaper_url = #{whitepaperUrl}
 		</if>
 		<if test="projectTypeName != null and projectTypeName.trim() != ''">
-		and project_type_name = #{projectTypeName}
+			and project_type_name = #{projectTypeName}
 		</if>
 		<if test="projectTypeId != null and projectTypeId.trim() != ''">
-		and project_type_id = #{projectTypeId}
+			and project_type_id = #{projectTypeId}
 		</if>
 		<if test="projectDesc != null and projectDesc.trim() != ''">
-		and project_desc = #{projectDesc}
+			and project_desc = #{projectDesc}
 		</if>
 		<if test="submitUserId != null and submitUserId.trim() != ''">
-		and submit_user_id = #{submitUserId}
+			and submit_user_id = #{submitUserId}
 		</if>
 		<if test="submitReason != null and submitReason.trim() != ''">
-		and submit_reason = #{submitReason}
+			and submit_reason = #{submitReason}
 		</if>
 		<if test="status != null and status.trim() != ''">
-		and status = #{status}
+			and status = #{status}
 		</if>
 		<if test="createTimeBegin != null and createTimeBegin.trim() != ''">
-		and createTime >= #{createTimeBegin}
+			and createTime >= #{createTimeBegin}
 		</if>
 		<if test="createTimeEnd != null and createTimeEnd.trim() != ''">
-		and createTime &lt;= #{createTimeEnd}
+			and createTime &lt;= #{createTimeEnd}
 		</if>
 		<if test="publishTimeBegin != null and publishTimeBegin.trim() != ''">
-		and publishTime >= #{publishTimeBegin}
+			and publishTime >= #{publishTimeBegin}
 		</if>
 		<if test="publishTimeEnd != null and publishTimeEnd.trim() != ''">
-		and publishTime &lt;= #{publishTimeEnd}
+			and publishTime &lt;= #{publishTimeEnd}
 		</if>
 		<if test="updateTimeBegin != null and updateTimeBegin.trim() != ''">
-		and updateTime >= #{updateTimeBegin}
+			and updateTime >= #{updateTimeBegin}
 		</if>
 		<if test="updateTimeEnd != null and updateTimeEnd.trim() != ''">
-		and updateTime &lt;= #{updateTimeEnd}
+			and updateTime &lt;= #{updateTimeEnd}
 		</if>
 		<if test="totalScore != null and totalScore.trim() != ''">
-		and total_score = #{totalScore}
+			and total_score = #{totalScore}
 		</if>
 		<if test="raterNum != null and raterNum.trim() != ''">
-		and rater_num = #{raterNum}
+			and rater_num = #{raterNum}
 		</if>
 		<if test="followerNum != null and followerNum.trim() != ''">
-		and follower_num = #{followerNum}
+			and follower_num = #{followerNum}
 		</if>
 		<if test="commentsNum != null and commentsNum.trim() != ''">
-		and comments_num = #{commentsNum}
+			and comments_num = #{commentsNum}
 		</if>
 		<if test="collectNum != null and collectNum.trim() != ''">
-		and collect_num = #{collectNum}
+			and collect_num = #{collectNum}
 		</if>
 	</sql>
+	<select id="findProjectName" resultMap="BaseResultMap">
+		SELECT
+		DISTINCT
+		project_code , project_chinese_name
+		FROM
+		tbproject where status = 1
+	</select>
+	<select id="findProjectIdByCodeAndChineseName" resultMap="BaseResultMap">
+		SELECT
+		<include refid="columns" />
+		FROM
+		tbproject
+		WHERE
+		project_code = #{projectCode}
+		AND project_chinese_name = #{projectChineseName}
+	</select>
+
+
+
+
 </mapper>
 
 

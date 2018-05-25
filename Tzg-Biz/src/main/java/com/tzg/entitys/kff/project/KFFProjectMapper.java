@@ -1,4 +1,5 @@
 package com.tzg.entitys.kff.project;
+
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +14,12 @@ public interface KFFProjectMapper extends BaseMapper<KFFProject, java.lang.Integ
 
 	void increaseFollowerNum(Integer projectId);
 
-	void decreaseFollowerNum(Integer projectId);	
+	void decreaseFollowerNum(Integer projectId);
+
+	List<KFFProject> findProjectName();
+
+	KFFProject findProjectIdByCodeAndChineseName(KFFProject kffProject);
+
+
 
 }
