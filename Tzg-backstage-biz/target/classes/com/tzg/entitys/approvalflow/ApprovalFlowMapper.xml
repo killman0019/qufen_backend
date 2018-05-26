@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.approvalflow.ApprovalFlowMapper">
+    <resultMap id="BaseResultMap" type="com.tzg.entitys.approvalflow.ApprovalFlow">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="vcApprovalFlow" jdbcType="VARCHAR" property="vcApprovalFlow" />
+        <result column="vcApprovalType" jdbcType="INTEGER" property="vcApprovalType" />
+    </resultMap>
+    
+    <sql id="Base_Column_List" >
+    id, vcApprovalType, vcApprovalFlow
+  </sql>
+    
+    <insert id="save" parameterType="com.tzg.entitys.approvalflow.ApprovalFlow"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into tbapprovalflow(vcApprovalType,vcApprovalFlow)
+        values (#{vcApprovalType,jdbcType=INTEGER},#{vcApprovalFlow,jdbcType=VARCHAR})
+    </insert>
+
+    <update id="update" parameterType="com.tzg.entitys.approvalflow.ApprovalFlow" >
+	    update tbapprovalflow
+	    <set >
+	      <if test="vcApprovalType != null" >
+	        vcApprovalType = #{vcApprovalType,jdbcType=INTEGER},
+	      </if>
+	      <if test="vcApprovalFlow != null" >
+	        vcApprovalFlow = #{vcApprovalFlow,jdbcType=VARCHAR},
+	      </if>
+	    </set>
+	    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+    <select id="queryApprovalFlowCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT count(*) from  tbapprovalflow a where 1=1
+        <if test="vcApprovalFlow != null">
+            and  vcApprovalFlow like "%"#{vcApprovalFlow}"%"
+        </if>
+        ORDER BY a.id DESC
+    </select>
+
+    <select id="queryApprovalFlows" parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT * from  tbapprovalflow a where 1=1
+        <if test="vcApprovalFlow != null">
+            and  vcApprovalFlow like "%"#{vcApprovalFlow}"%"
+        </if>
+        ORDER BY a.id DESC
+        <![CDATA[ limit ${startRecord},${endRecord} ]]>
+    </select>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT * from  tbapprovalflow a where id = #{id,jdbcType=INTEGER}
+    </select>
+    
+    <select id="findByType" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT * from  tbapprovalflow a where vcApprovalType = #{type,jdbcType=INTEGER}
+    </select>
+	
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from tbapprovalflow where id = #{id,jdbcType=INTEGER}
+    </delete>
+    
+    <!-- 分页查询 -->
+    <select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from tbapprovalflow
+	</select>
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select 
+		<include refid="Base_Column_List"/>  
+		from tbapprovalflow 
+		ORDER BY id desc
+       <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	
+	<select id="queryInfoByVcApprovalType" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		select id from tbapprovalflow
+        where vcApprovalType = #{vcApprovalType,jdbcType=INTEGER}
+        LIMIT 1
+	</select>
+    
+</mapper>

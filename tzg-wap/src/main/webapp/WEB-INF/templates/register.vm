@@ -1,0 +1,49 @@
+#set($pageName = "注册")
+#set($bodyClass = "body--gray")
+#set($pageFootCode = '<script>seajs.use("page/register-password")</script>')
+#set($topbar = { "title": "注 册" })
+
+<form method="post" action="$!{basePath}/registernew" id="j_register_3_form">
+	#tokenCode
+	<ul class="m-frm4">
+		<li class="m-frm4-itm -icon-label">
+			<input type="password" name="password" class="u-ipt" placeholder="请设置登录密码" maxlength="20" required>
+			<span class="m-frm4-lbl">&#xe615;</span>
+		</li>
+		#if (!$tzg_recommend_link_key)
+			<li class="m-frm4-itm">
+				<input type="text" name="inviteCode" class="u-ipt" placeholder="6位数字邀请码（选填）" value="$!tzg_recommend_link_key">
+			</li>
+		#else
+			<input type="hidden" name="inviteCode" value="$!tzg_recommend_link_key">
+		#end
+		<li class="m-frm4-itm">
+			<div>
+				<label class="m-frm4-cnt m-frm4-txt">
+					<input type="checkbox" name="agreeProtocol" checked value="true" id="j_agree_protocol">
+					已阅读并同意<a href="javascript:;" class="u-clPrm" id="j_protocol_btn">《融佰通注册协议》</a>
+				</label>
+			</div>
+		</li>
+		<li class="m-frm4-itm">
+			<button type="submit" name="submity" class="u-btn z-prm z-fll z-ldg">注册</button>
+		</li>
+		<li class="m-frm4-itm f-tlr">
+			<a href="$!{basePath}/login/page" class="u-clPrm">已有账户？登录</a>
+		</li>
+	</ul>
+	<input type="hidden" id="toURL" name="toURL" value="$!{toURL}">
+</form>
+
+<div class="m-ppp" id="j_protocol_popup">
+	<div class="m-ppp-hd">《融佰通注册协议》</div>
+	<div class="m-ppp-bd">
+		<div class="m-ppp-bd-cnt">
+			<iframe src="https://upload.tzg.cn/upload/201505/RegisteregProtocol.html" frameborder="0" width="100%" height="100%" scrolling="yes"></iframe>
+		</div>
+	</div>
+	<div class="m-ppp-ft">
+		<button type="button" class="u-btn--lnk z-fll" pppclosebtn>确 定</button>
+	</div>
+</div>
+

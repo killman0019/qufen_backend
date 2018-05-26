@@ -1,0 +1,85 @@
+<div class="main-content">
+    <div class="breadcrumbs" id="breadcrumbs">
+        <script type="text/javascript">
+            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+        </script>
+
+        <ul class="breadcrumb">
+            <li>
+                <i class="icon-home home-icon"></i>
+                <a href="${www}/main">主页</a>
+            </li>
+
+            <li class="active">利率配置</li>
+        </ul><!-- .breadcrumb -->
+
+        <div class="nav-search" id="nav-search">
+            <form class="form-search">
+						<span class="input-icon">
+							<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+							<i class="icon-search nav-search-icon"></i>
+						</span>
+            </form>
+        </div><!-- #nav-search -->
+    </div>
+	<div class="page-content">
+		<div class="page-header">
+		    <h1>利率配置</h1>
+		</div>
+		<div class="container-fluid">
+		    <div class="dataTables_wrapper">
+		        <div class="row">
+		            <div class="col-sm-11">
+		            </div>
+                    <div class="col-sm-1">
+                        <a href="$!{www}/interestconfig/new" class="btn btn-success btn-xs">添加</a>
+                    </div>
+		        </div>
+		        <table class="table table-striped table-bordered table-hover dataTable">
+		            <thead>
+		            <tr>
+		                <th>序号</th>
+		                <th>分类名称</th>
+		                <th>是否有效</th>
+		                <th>操作</th>
+		               
+		            </tr>
+		            </thead>
+		            <tbody>
+		            	#set($num=0)
+		                #foreach($row in $result.rows)
+		                <tr>
+		                	#set($num=$num+1)
+		                	<td> ${num} </td>
+		                	<td> $!{row.vcName} </td>
+		                	<td> #if($!{row.ivalid}==1)有效
+		                		 #elseif($!{row.ivalid}==2) 无效
+		                		 #end
+                		    </td>
+		                    <td>
+		                    #if($!{row.ivalid}==1)
+		                    	<a href="$!{www}/interestconfig/detailnew?id=$!{row.id}">新增</a> |
+		                    #end
+		                    <a href="$!{www}/interestconfig/detaillist?id=$!{row.id}">查看</a> |
+		                    <a href="$!{www}/interestconfig/find?id=$!{row.id}">修改</a>   
+		                        
+		                    </td>
+		                </tr>
+		                #end
+		            </tbody>
+		        </table>
+		        <div class="row">
+		            <div class="col-sm-12">
+		                <div class="dataTables_paginate paging_bootstrap">
+		                    <ul class="pagination">
+		                    	#set($pageRequestURL="$!{www}/interestconfig?pageIndex=[PAGINATION_PAGE_INDEX]#if($!{result.queryParameters})&$!{result.queryParameters}#end")
+		                    	#paginationHelper($result $pageRequestURL)
+		                    </ul>
+		                </div>
+		            </div>
+		       </div>
+		       
+		    </div>
+		</div>
+    </div><!-- /.page-content -->
+</div><!-- /.main-content -->

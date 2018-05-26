@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.kff.tokenaward.TokenawardMapper">	
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.kff.tokenaward.Tokenaward">
+		<result property="tokenAwardId" jdbcType="INTEGER" column="token_award_id"/>
+		<result property="userId" jdbcType="INTEGER" column="user_id"/>
+		<result property="tokenRecordsId" jdbcType="INTEGER" column="token_records_id"/>
+		<result property="praiseId" jdbcType="INTEGER" column="praise_id"/>
+		<result property="tokenAwardFunctionDesc" jdbcType="VARCHAR" column="token_award_function_desc"/>
+		<result property="tokenAwardFunctionType" jdbcType="INTEGER" column="token_award_function_type"/>
+		<result property="inviteRewards" jdbcType="DOUBLE" column="invite_rewards"/>
+		<result property="priaiseAward" jdbcType="DOUBLE" column="priaise_award"/>
+		<result property="giveTime" jdbcType="TIMESTAMP" column="give_time"/>
+		<result property="containerAward" jdbcType="DOUBLE" column="container_award"/>
+		<result property="createTime" jdbcType="TIMESTAMP" column="createTime"/>
+		<result property="updateTime" jdbcType="TIMESTAMP" column="updateTime"/>
+		<result property="giveNext" jdbcType="DOUBLE" column="give_next"/>
+		<result property="rewardToken" jdbcType="DOUBLE" column="reward_token"/>
+		<result property="awardBalance" jdbcType="DOUBLE" column="award_balance"/>
+		<result property="inviteNumber" jdbcType="INTEGER" column="invite_number"/>
+		<result property="distributionType" jdbcType="INTEGER" column="distribution_type"/>
+		<result property="counter" jdbcType="INTEGER" column="counter"/>
+		<result property="grantType" jdbcType="INTEGER" column="grant_type"/>
+		<result property="userName" jdbcType="VARCHAR" column="user_name"/>
+		<result property="mobile" jdbcType="VARCHAR" column="mobile"/>
+		<result property="issuer" jdbcType="VARCHAR" column="issuer"/>
+		<result property="remark" jdbcType="VARCHAR" column="remark"/>
+    </resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+        token_award_id ,user_id ,token_records_id ,praise_id ,token_award_function_desc ,token_award_function_type ,invite_rewards ,priaise_award
+         ,give_time ,container_award ,createTime,updateTime ,give_next ,reward_token,award_balance,invite_number ,distribution_type,counter,grant_type,
+         user_name,mobile,remark,issuer
+         
+	    ]]>
+	</sql>
+	
+	<insert id="save" parameterType="com.tzg.entitys.kff.tokenaward.Tokenaward" useGeneratedKeys="true" keyProperty="tokenAwardId">
+		<selectKey resultType="java.lang.Integer" keyProperty="tokenAwardId" order="AFTER" >
+	      SELECT LAST_INSERT_ID() AS id
+	    </selectKey>
+	<![CDATA[
+		INSERT INTO tbtokenaward (
+        	user_id ,
+        	token_records_id ,
+        	praise_id ,
+        	token_award_function_desc ,
+        	token_award_function_type ,
+        	invite_rewards ,
+        	priaise_award ,
+        	give_time ,
+        	container_award ,
+        	createTime,
+        	updateTime ,
+        	give_next ,
+        	reward_token ,
+        	award_balance ,
+        	invite_number ,
+        	distribution_type ,
+        	counter ,
+        	grant_type,
+        	user_name,
+        	mobile,
+        	remark ,
+        	issuer
+		) VALUES (
+		
+        	#{userId,jdbcType=INTEGER} ,
+        	#{tokenRecordsId,jdbcType=INTEGER} ,
+        	#{praiseId,jdbcType=INTEGER} ,
+        	#{tokenAwardFunctionDesc,jdbcType=VARCHAR} ,
+        	#{tokenAwardFunctionType,jdbcType=INTEGER} ,
+        	#{inviteRewards,jdbcType=DOUBLE} ,
+        	#{priaiseAward,jdbcType=DOUBLE} ,
+        	#{giveTime,jdbcType=TIMESTAMP} ,
+        	#{containerAward,jdbcType=DOUBLE} ,
+        	#{createTime,jdbcType=TIMESTAMP} ,
+        	#{updateTime,jdbcType=TIMESTAMP} ,
+        	#{giveNext,jdbcType=DOUBLE} ,
+        	#{rewardToken,jdbcType=DOUBLE} ,
+        	#{awardBalance,jdbcType=DOUBLE} ,
+        	#{inviteNumber,jdbcType=INTEGER}
+        	#{distributionType,jdbcType=INTEGER} ,
+        	#{counter,jdbcType=INTEGER},
+        	#{grantType,jdbcType=INTEGER},
+        	#{userName,jdbcType=VARCHAR},
+        	#{mobile,jdbcType=VARCHAR},
+        	#{issuer,jdbcType=VARCHAR},
+        	#{remark,jdbcType=VARCHAR}
+        	
+		)
+	]]>
+	</insert>
+	<!-- 定时更新字段 -->
+	<update id="updateByGrantType" parameterType = "java.lang.Integer">
+		UPDATE tbtokenaward
+		<set>
+			grant_type = #{grantType,jdbcType=INTEGER}
+		</set>
+		
+	</update>
+	
+	<update id="update" parameterType="com.tzg.entitys.kff.tokenaward.Tokenaward">
+		UPDATE tbtokenaward
+		<set>
+			<if test="userId != null">
+	        user_id = #{userId,jdbcType=INTEGER} ,
+	        </if>
+			<if test="tokenRecordsId != null">
+	        token_records_id = #{tokenRecordsId,jdbcType=INTEGER} ,
+	        </if>
+			<if test="praiseId != null">
+	        praise_id = #{praiseId,jdbcType=INTEGER} ,
+	        </if>
+			<if test="tokenAwardFunctionDesc != null">
+	        token_award_function_type = #{tokenAwardFunctionDesc,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="tokenAwardFunctionType != null">
+	        token_award_function_type = #{tokenAwardFunctionType,jdbcType=INTEGER} ,
+	        </if>
+			<if test="inviteRewards != null">
+	        invite_rewards = #{inviteRewards,jdbcType=DOUBLE} ,
+	        </if>
+			<if test="priaiseAward != null">
+	        priaise_award = #{priaiseAward,jdbcType=DOUBLE} ,
+	        </if>
+	        <if test="giveTime != null">
+	        give_time = #{giveTime,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="createTime != null">
+	        create_time = #{createTime,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="updateTime != null">
+	        update_time = #{updateTime,jdbcType=TIMESTAMP} ,
+	        </if>
+	        <if test="containerAward != null">
+	        container_award = #{containerAward,jdbcType=DOUBLE} ,
+	        </if>
+			<if test="giveNext != null">
+	        give_next = #{giveNext,jdbcType=DOUBLE} ,
+	        </if>
+			<if test="rewardToken != null">
+	        reward_token = #{rewardToken,jdbcType=DOUBLE} ,
+	        </if>
+			<if test="awardBalance != null">
+	        award_balance = #{awardBalance,jdbcType=DOUBLE} ,
+	        </if>
+	        <if test="inviteNumber != null">
+	        invite_number = #{inviteNumber,jdbcType=INTEGER} ,
+	        </if>
+	        <if test="distributionType != null">
+	        distribution_type = #{distributionType,jdbcType=INTEGER} ,
+	        </if>
+	        <if test="counter != null">
+	        counter = #{counter,jdbcType=INTEGER} ,
+	        </if>
+	        <if test="grantType != null">
+	        grant_type = #{grantType,jdbcType=INTEGER} ,
+	        </if>
+	        <if test="userName != null">
+	        user_name = #{userName,jdbcType=VARCHAR} ,
+	        </if>
+	        <if test="mobile != null">
+	        mobile = #{mobile,jdbcType=VARCHAR} ,
+	        </if>
+	         <if test="issuer != null">
+	        issuer = #{issuer,jdbcType=VARCHAR} ,
+	        </if>
+	        <if test="remark != null">
+	        remark = #{remark,jdbcType=VARCHAR} ,
+	        </if>
+	      
+	    </set>
+		WHERE 
+	        token_award_id = #{tokenAwardId,jdbcType=INTEGER} 
+	</update>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbtokenaward WHERE
+        token_award_id = #{tokenAwardId} 
+	]]>
+	</delete>
+    
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbtokenaward 
+		WHERE 
+        token_award_id = #{tokenAwardId}
+	]]>
+	</select>
+	
+	<select id="findByUserId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbtokenaward 
+		WHERE 
+        user_id = #{userId} 
+	]]>
+	</select>
+	
+	<!-- 查询rewardToken(赠送的奖励)个人总数量 -->
+	<select id="findUserSumInviteRewards" resultType="java.lang.Double" parameterType="java.lang.Integer">
+		select sum(invite_rewards) from tbtokenaward where 1=1
+	<include refid="queryWhere"/>
+	</select>
+	
+	<select id="reawardSum"  resultType="java.lang.Double" parameterType="java.lang.Double">
+	select sum(reward_token) from tbtokenaward where 1=1
+	<![CDATA[
+		FROM tbtokenaward 
+		WHERE 
+        user_id = #{userId} 
+        AND
+		token_award_function_type = #{tokenAwardFunctionType}        
+	]]>
+	</select>
+	
+	<!-- 查询所有点赞的奖励  -->
+	<select id="priaiseAwardSum"  resultMap="BaseResultMap" parameterType="java.lang.Double">
+	select sum(priaise_award) from tbtokenaward where 1=1
+	<![CDATA[
+		FROM tbtokenaward 
+		WHERE 
+        user_id = #{userId} 
+        AND
+		token_award_function_type = #{tokenAwardFunctionType}        
+	]]>
+	</select>
+	
+	
+	 
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from tbtokenaward where 1=1
+		<include refid="queryWhere"/>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbtokenaward where 1=1
+		<include refid="queryWhere"/> 
+	    <![CDATA[ ORDER BY token_award_id DESC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	<!-- 查询rewardToken(赠送的奖励)个人总数量 -->
+	<select id="findUserSumRewardToken"  resultType="java.lang.Double" parameterType="java.lang.Integer">
+		select sum(reward_token) from tbtokenaward where 1=1
+	<include refid="queryWhere"/>
+	</select>
+	
+	<!-- 查询单人的邀请字段 -->
+	<sql id="queryWhere">
+        	
+		<if test="tokenAwardId != null and tokenAwardId.trim() != ''">
+		and token_award_id = #{tokenAwardId}
+		</if>
+		<if test="userId != null and userId.trim() != ''">
+		and user_id = #{userId}
+		</if>
+		<if test="tokenRecordsId != null and tokenRecordsId.trim() != ''">
+		and token_award_function_desc = #{tokenAwardFunctionDesc}
+		</if>
+		<if test="praiseId != null and praiseId.trim() != ''">
+		and praise_id = #{praiseId}
+		</if>
+		<if test="tokenAwardFunctionDesc != null and tokenAwardFunctionDesc.trim() != ''">
+		and token_award_function_desc = #{tokenAwardFunctionDesc}
+		</if>
+		<if test="tokenAwardFunctionType != null and tokenAwardFunctionType.trim() != ''">
+		and token_award_function_type = #{tokenAwardFunctionType}
+		</if>
+		<if test="inviteRewards != null and inviteRewards.trim() != ''">
+		and invite_rewards = #{inviteRewards}
+		</if>
+		<if test="priaiseAward != null and priaiseAward.trim() != ''">
+		and priaise_award >= #{priaiseAward}
+		</if>
+		<if test="giveTime != null and giveTime.trim() != ''">
+		and give_time &lt;= #{giveTime}
+		</if>
+		<if test="containerAward != null and containerAward.trim() != ''">
+		and container_award = #{containerAward}
+		</if>
+		<if test="createTimeBegin != null and createTimeBegin.trim() != ''">
+		and createTime >= #{createTimeBegin}
+		</if>
+		<if test="createTimeEnd != null and createTimeEnd.trim() != ''">
+		and createTime &lt;= #{createTimeEnd}
+		</if>
+		<if test="updateTimeBegin != null and updateTimeBegin.trim() != ''">
+		and updateTime >= #{updateTimeBegin}
+		</if>
+		<if test="updateTimeEnd != null and updateTimeEnd.trim() != ''">
+		and updateTime &lt;= #{updateTimeEnd}
+		</if>
+		<if test="giveNext != null and giveNext.trim() != ''">
+		and give_next = #{giveNext}
+		</if>
+		<if test="rewardToken != null and rewardToken.trim() != ''">
+		and reward_token = #{rewardToken}
+		</if>
+		<if test="awardBalance != null and awardBalance.trim() != ''">
+		and award_balance = #{awardBalance}
+		</if>
+		<if test="inviteNumber != null and awardBalance.trim() != ''">
+		and invite_number = #{inviteNumber}
+		</if>
+		<if test="distributionType != null and awardBalance.trim() != ''">
+		and distribution_type = #{distributionType}
+		</if>
+		<if test="counter != null and awardBalance.trim() != ''">
+		and counter = #{counter}
+		</if>
+		<if test="grantType != null and awardBalance.trim() != ''">
+		and grant_type = #{grantType}
+		</if>
+		<if test="userName != null and awardBalance.trim() != ''">
+		and user_name = #{userName}
+		</if>
+		<if test="mobile != null and awardBalance.trim() != ''">
+		and mobile = #{mobile}
+		</if>
+		<if test="remark != null and remark.trim() != ''">
+		and remark = #{remark}
+		</if>
+		<if test="issuer != null and issuer.trim() != ''">
+		and issuer = #{issuer}
+		</if>
+	</sql>
+</mapper>
+
+

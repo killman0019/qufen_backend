@@ -1,0 +1,130 @@
+<div class="main-content">
+    <div class="breadcrumbs" id="breadcrumbs">
+        <script type="text/javascript">
+            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+        </script>
+
+        <ul class="breadcrumb">
+            <li>
+                <i class="icon-home home-icon"></i>
+                <a href="${www}/main">主页</a>
+            </li>
+
+            <li>
+                <a href="${www}/post/evaluation">评测列表</a>
+            </li>
+            <li class="active">新增评测</li>
+        </ul><!-- .breadcrumb -->
+
+        <div class="nav-search" id="nav-search">
+            <form class="form-search">
+						<span class="input-icon">
+							<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+							<i class="icon-search nav-search-icon"></i>
+						</span>
+            </form>
+        </div><!-- #nav-search -->
+    </div>
+
+    <div class="page-content">
+        <div class="page-header">
+            <h1>新增评测</h1>
+        </div>
+        <form action="${www}/post/evaluation/save" method="post" class="form-horizontal">
+            <div class="row">
+                <div class="col-xs-12 col-md-4">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">evaluationId：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="evaluationId" value="$!{param.evaluationId}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">postUuid：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="postUuid" value="$!{param.postUuid}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">postId：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="postId" value="$!{param.postId}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">projectId：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="projectId" value="$!{param.projectId}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">1-简单测评；2-全面系统专业测评;3-部分系统专业评测；4-用户自定义专业测评：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="modelType" value="$!{param.modelType}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">1-10，小数点1位：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="totalScore" value="$!{param.totalScore}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">专业评测各子项评测内容详情json字符串：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="professionalEvaDetail" value="$!{param.professionalEvaDetail}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">评测描述信息：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="evauationContent" value="$!{param.evauationContent}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">评测表标签：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="evaluationTags" value="$!{param.evaluationTags}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">0删除；1有效：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="status" value="$!{param.status}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">createTime：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="createTime" value="$!{param.createTime}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">updateTime：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="updateTime" value="$!{param.updateTime}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">createUserId：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="createUserId" value="$!{param.createUserId}"/>
+                        </div>
+                    </div>
+                    <div class="red">$!{msg}</div>
+               	</div>
+            </div>
+            <div class="clearfix form-actions">
+                <div class="col-sm-offset-2 col-md-9">
+                    <button class="btn btn-info" type="submit">
+                        <i class="icon-ok bigger-110"></i> 提交
+                    </button>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		            <button class="btn btn-info" type="button" onclick="javascript:history.go(-1);">
+		                <i class="icon-arrow-left bigger-110"></i>返回
+		            </button>
+                </div>
+            </div>
+</form>
+    </div><!-- /.page-content -->
+</div><!-- /.main-content -->

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+#if ($pageName)
+<title>$!{pageName}</title>
+#else
+<title>铜掌柜，小理财大生活_互联网金融服务平台_网络投资理财首选</title>
+#end
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="renderer" content="webkit">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="stylesheet" href="$!{basePath}/app/css/style.css?v=20151229">
+<meta name="basepath" content="$!{basePath}" id="j_basepath">
+<meta name="staticpath" content="$!{staticPath}" id="j_staticpath">
+<meta name="staticversion" content="$!{staticVersion}" id="j_staticversion">
+</head>
+#if ($bodyClass)
+<body class="$!{bodyClass}">
+#else
+<body>
+#end
+$screen_content
+<div style="position:fixed;left:-150px;width:100px;">
+##cnzz统计
+<img src="$sc.getCnzz($request,$response,1254699603)" width="0" height="0" />
+</div>
+</body>
+</html>

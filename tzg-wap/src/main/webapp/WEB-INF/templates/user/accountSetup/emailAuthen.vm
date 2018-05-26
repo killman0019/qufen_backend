@@ -1,0 +1,19 @@
+#set($pageName = "邮箱认证")
+#set($pageFootCode = '<script>seajs.use("page/email-authen")</script>')
+#set($topbar = { "title": $pageName })
+
+<form method="post" action="$!{basePath}/user/emailAuthen/emailAuthen" id="j_email_authen">
+	<input type="hidden" name="token" value="$!{token}">
+	<ul class="m-frm">
+		<li class="m-frm-itm">
+			<label class="m-frm-lbl">邮箱：</label>
+			<div class="m-frm-cnt">
+				<input type="text" name="vcEmail" placeholder="请输入邮箱" class="u-ipt">
+			</div>
+		</li>
+		<li class="m-frm-itm--btn">
+			<button class="u-btn z-prm z-fll z-ldg" type="submit">确认</button>
+		</li>
+	</ul>
+</form>
+

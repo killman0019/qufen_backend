@@ -1,0 +1,32 @@
+<ul class="icon2_ul">
+<!--实名认证-->
+#if(${isIdentityVerify} == 'true')
+<li class="icon2_ul_1 certified"></li>
+#else
+<li class="icon2_ul_1 noimg"></li>
+#end
+<!--是否复杂密码-->
+#if(${isPasswordLevelComplex} == 'true')
+<li class="icon2_ul_2 certified"></li>
+#else
+<li class="icon2_ul_2 noimg"></li>
+#end
+<!--是否开通第三方账户-->
+#if(${isPaymentAccountOpen} == 'true')
+<li class="icon2_ul_3 certified"></li>
+#else
+<li class="icon2_ul_3 noimg"></li>
+#end
+<!--是否手机验证-->
+#if(${isPhoneVerify} == 'true')
+<li class="icon2_ul_4 certified"></li>
+#else
+<li class="icon2_ul_4 noimg"></li>
+#end
+<!--是否邮箱验证-->
+#if(${isEmailVerify} == 'true')
+<li class="icon2_ul_5 certified"></li>
+#else
+<li class="icon2_ul_5 noimg"></li>
+#end
+</ul>

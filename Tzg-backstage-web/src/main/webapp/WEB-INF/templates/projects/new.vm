@@ -1,0 +1,490 @@
+<div class="main-content">
+    <div class="breadcrumbs" id="breadcrumbs">
+    	<script src="${www}/js/jquery.maskedinput.min.js"></script>
+        <script type="text/javascript">
+            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+            
+            jQuery(function($) {
+				$('.input-mask-date').mask('9999-99-99');
+			});
+			
+			function changeMode(iMode){
+				if(iMode==2){
+					$("#assignment-div").css("display","");
+				}else{
+					$("#assignment-div").css("display","none");
+				}
+			}
+	
+        </script>
+
+        <ul class="breadcrumb">
+            <li>
+                <i class="icon-home home-icon"></i>
+                <a href="${www}/main">主页</a>
+            </li>
+
+            <li>
+                <a href="${www}/projects">项目列表</a>
+            </li>
+            <li class="active">新增项目</li>
+        </ul><!-- .breadcrumb -->
+
+        <div class="nav-search" id="nav-search">
+            <form class="form-search">
+						<span class="input-icon">
+							<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+							<i class="icon-search nav-search-icon"></i>
+						</span>
+            </form>
+        </div><!-- #nav-search -->
+    </div>
+
+    <div class="page-content">
+        <div class="page-header">
+            <h1>新增项目</h1>
+        </div>
+		
+		#if(${msg})
+	     <div>
+		     #if(${success})
+	    		<li class="text-success">$!{msg}</li>
+			 #else
+	    		<li class="text-danger">$!{msg}</li>
+			 #end    	
+		 </div>
+	    #end
+		
+        <form id="inputForm" action="${www}/projects/save" method="post" class="form-horizontal">
+        
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">借款人类型：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <select class="col-sm-12" name="iBorrowerType" id="iBorrowerType">
+                                <option value="">请选择</option>
+                                <option value="1" #if($project.iBorrowerType && $project.iBorrowerType ==1) selected #end>个人</option>
+                                <option value="2" #if($project.iBorrowerType && $project.iBorrowerType ==2) selected #end>企业</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>        
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">借款人：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <div class="row">
+                                <div class="col-md-11">
+                                    <input type="text" class="col-sm-12" id="iLoginAccountName" name="iLoginAccountName"  value="$!{iLoginAccountName}" readonly/> 
+                                    <input type="hidden" id="iLoginAccountID" name="iLoginAccountID" value="$!{project.iLoginAccountID}">
+                                    $!{project.iLoginAccountName}
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" id="select_account_name_btn" class="btn btn-xs">选择借款人</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+             </div>
+             <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">项目所属产品：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <div class="row">
+                                <div class="col-md-11">
+                                    <input type="text" class="col-sm-12" id="iProjectCategyName" name="iProjectCategyName"  value="$!{iProjectCategyName}" readonly/> 
+                                    <input type="hidden" id="iprojectcategyid" name="iprojectcategyid" value="$!{project.iprojectcategyid}">
+                                    $!{project.iProjectCategyName}
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" id="select_project_categy_name_btn" class="btn btn-xs">选择项目所属产品</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+             </div>
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">担保机构：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	<select class="col-sm-12" name="iGuaranteeID" id="iGuaranteeID">
+                        		<option value="">请选择</option>
+	                        	#foreach($!guarantee in $!guaranteeList)
+	                        		<option value="$!{guarantee.id}" #if($project.iGuaranteeID && $guarantee.id == $project.iGuaranteeID) selected #end>
+	                        			$!{guarantee.vcName}
+	                        		</option>
+	                        	#end
+                        	</select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">渠道：</label>
+                        <div class="col-md-8 col-sm-8">
+                          <select class="col-sm-12" name="iChannelID" id="iChannelID">
+                        		<option value="">请选择</option>
+	                        	#foreach($!channel in $!channelList)
+	                        		<option value="$!{channel.id}" #if($project.iChannelID && $channel.id == $project.iChannelID) selected #end>
+	                        			$!{channel.vcName}
+	                        		</option>
+	                        	#end
+                        	</select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">编号：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" id="vcCode" name="vcCode" value="$!{project.vcCode}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">名称：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" id="vcName" name="vcName" value="$!{project.vcName}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+			
+			 <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">项目特色：</label>
+                        <div class="col-md-8 col-sm-8">
+							<textarea id="vcShortDesp" name="vcShortDesp" style="margin: 0px; width: 480px; height: 80px;">$!{project.vcShortDesp}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+			
+
+			
+			
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">类型：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="checkbox"  id="vcTypeList" name="vcTypeList" value="00"
+                                 #foreach( $vcTypeStr in $project.vcTypeList)
+                                 	#if($vcTypeStr == "00")
+                                 		checked="checked"
+                                 	#end
+                                 #end
+                                 >抵押
+                           		&nbsp;&nbsp;
+                            <input type="checkbox"  id="vcTypeList" name="vcTypeList" value="01"
+                            	#foreach( $vcTypeStr in $project.vcTypeList)
+                                 	#if($vcTypeStr == "01")
+                                 		checked="checked"
+                                 	#end
+                                 #end
+                            >担保
+                            	&nbsp;&nbsp;
+                            <input type="checkbox"  id="vcTypeList" name="vcTypeList" value="02"
+                            	#foreach( $vcTypeStr in $project.vcTypeList)
+                                 	#if($vcTypeStr == "02")
+                                 		checked="checked"
+                                 	#end
+                                 #end
+                            >质押
+                           	 	&nbsp;&nbsp;
+                            <input type="checkbox"  id="vcTypeList" name="vcTypeList" value="03"
+                            	#foreach( $vcTypeStr in $project.vcTypeList)
+                                 	#if($vcTypeStr == "03")
+                                 		checked="checked"
+                                 	#end
+                                 #end
+                            >信用
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">简介：</label>
+                        <div class="col-md-8 col-sm-8" style="color:red">
+                           	注：请把简介内容写到下面的编辑框内
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                     <script id="editor" name="vcIntroduce" type="text/plain" style="height:500px;"></script>
+            </div>    
+            <br>        
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">融资模式：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <select class="col-sm-12" name="iMode" id="iMode" onchange="changeMode(this.value)">
+                                <option value="">请选择</option>
+                                <option value="1" #if($project.iMode && $project.iMode ==1) selected #end>直融</option>
+                                <option value="2" #if($project.iMode && $project.iMode ==2) selected #end>债权转让</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">融资金额（元）：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="number" class="col-sm-12" id="numTotalFinancing" name="numTotalFinancing" value="$!{project.numTotalFinancing}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">还款日期：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12 input-mask-date" id="dtRepaymentStr"
+                             name="dtRepaymentStr" value="$!{project.dtRepaymentStr}" >
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">还款方式：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <select class="col-sm-12" name="iRepayMode" id="iRepayMode" onchange=checkFun(this.value)>
+                                <option value="">请选择</option>
+                                <option value="1" #if($project.iRepayMode && $project.iRepayMode ==1) selected #end> 到期还本付息</option>
+                                <option value="2" #if($project.iRepayMode && $project.iRepayMode ==2) selected #end>每日付息到期还本</option>
+                                <option value="3" #if($project.iRepayMode && $project.iRepayMode ==3) selected #end>每月付息到期还本</option>
+                                <option value="4" #if($project.iRepayMode && $project.iRepayMode ==4) selected #end>等额本息</option>
+                                <option value="5" #if($project.iRepayMode && $project.iRepayMode ==5) selected #end>按季付息到期还本</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">出借转账方式：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <select class="col-sm-12" name="iTransferMode" id="iTransferMode">
+                                <option value="">请选择</option>
+                               ## <option value="1" #if($project.iTransferMode && $project.iTransferMode ==1) selected #end>项目募集完成转账</option>
+                                <option value="2" #if($project.iTransferMode && $project.iTransferMode ==2) selected #end>单标募集完成转账</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">每月还款日 ：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="number" class="col-sm-12" id="iRepayDay" name="iRepayDay"
+                             value="$!{project.iRepayDay}" >
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">项目合同模板：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <select class="col-sm-12" name="iContractID" id="iContractID">
+                        		<option value="">请选择</option>
+	                        	#foreach($!contem in $!contemList)
+	                        		<option value="$!{contem.id}" #if($!contem.id == $!{project.iContractID}) selected #end>
+	                        			$!{contem.vcName}
+	                        		</option>
+	                        	#end
+                        	</select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+			
+			 <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">项目介绍：</label>
+                        <div class="col-md-8 col-sm-8" style="color:red">
+                            	注：请把项目介绍写到下面的编辑框内
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                    <script id="editor_vcPurpose" name="vcPurpose" type="text/plain" style="height:500px;"></script>
+            </div>
+			
+			
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">保障措施：</label>
+                        <div class="col-md-8 col-sm-8" style="color:red">
+                            	注：请把保障措施写到下面的编辑框内
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                    <script id="editor_vcRepaymentSource" name="vcRepaymentSource" type="text/plain" style="height:500px;"></script>
+            </div>
+			
+			   <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">机构简介：</label>
+                        <div class="col-md-8 col-sm-8" style="color:red">
+                            	注：请把机构简介写到下面的编辑框内
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                    <script id="editor_partnersIntroduce" name="partnersIntroduce" type="text/plain" style="height:500px;"></script>
+            </div>
+            <br> 
+            
+		    <div class="row" id="assignment-div" #if($!project.iMode != 2)  style="display:none" #end>
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">债权生效日：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-11 input-mask-date" id="dtAssignmentOfDebtStr"
+                             name="dtAssignmentOfDebtStr" value="$!{project.dtAssignmentOfDebtStr}" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+			<div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">投资人基准利率 ：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-11" id="numAgreementInterestRate" name="numAgreementInterestRate" value="$!{project.numAgreementInterestRate}" />%
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="clearfix form-actions">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="col-sm-offset-4 col-md-9">
+                            <button class="btn btn-info" type="submit">
+                                <i class="icon-ok bigger-110"></i>提交
+                            </button>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <button class="btn" type="button" onclick="javascript:history.go(-1);">
+                                <i class="icon-arrow-left bigger-110"></i>返回
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </form>
+</div><!-- /.page-content -->
+</div><!-- /.main-content -->
+
+<script src="${www}/js/sea.js" id="seajsnode"></script>
+<script type="text/javascript">
+seajs.use(['dialog'], function(dialog) {
+    var iLoginAccountID = $("#iLoginAccountID");
+    var iLoginAccountName = $("#iLoginAccountName");
+    var showDialog = function () {
+        dialog.alert({
+            title: '借款人列表',
+            content: '<iframe id="js_selector" frameborder="0" width="500" height="400" src="${www}/projects/borrower"></iframe>',
+            ok: function() {
+                var checkedRadio = $(":radio:checked", document.getElementById("js_selector").contentDocument);
+                if (checkedRadio.size()) {
+                    iLoginAccountID.val(checkedRadio.val());
+                    iLoginAccountName.val(checkedRadio.attr("data-name"));
+                }
+            }
+        });
+    };
+    iLoginAccountName.click(showDialog);
+    $("#select_account_name_btn").click(showDialog);
+});
+
+seajs.use(['dialog'], function(dialog_proItem) {
+    var iprojectcategyid = $("#iprojectcategyid");
+    var iProjectCategyName = $("#iProjectCategyName");
+    var showDialog_proItem = function () {
+        dialog_proItem.alert({
+            title: '项目所属产品列表',
+            content: '<iframe id="js_selector" frameborder="0" width="500" height="400" src="${www}/projects/projectCategyList"></iframe>',
+            ok: function() {
+                var checkedRadio = $(":radio:checked", document.getElementById("js_selector").contentDocument);
+                if (checkedRadio.size()) {
+                    iprojectcategyid.val(checkedRadio.val());
+                    iProjectCategyName.val(checkedRadio.attr("data-name"));
+                }
+            }
+        });
+    };
+    iProjectCategyName.click(showDialog_proItem);
+    $("#select_project_categy_name_btn").click(showDialog_proItem);
+});
+</script>
+
+	<script type="text/javascript" charset="utf-8" src="${www}/ueditor/ueditor.config.js"></script>
+    <script type="text/javascript" charset="utf-8" src="${www}/ueditor/ueditor.all.min.js"> </script>
+    <!--建议手动加在语言，避免在ie下有时因为加载语言失败导致编辑器加载失败-->
+    <!--这里加载的语言文件会覆盖你在配置项目里添加的语言类型，比如你在配置项目里配置的是英文，这里加载的中文，那最后就是中文-->
+    <script type="text/javascript" charset="utf-8" src="${www}/ueditor/lang/zh-cn/zh-cn.js"></script>
+	<script type="text/javascript">
+    //实例化编辑器
+    //建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
+   		 var ue = UE.getEditor('editor');
+    		    		 ue.addListener("ready", function () {
+       	 	UE.getEditor('editor').setContent('$!{project.vcIntroduce}');
+		});  		
+		
+		var ue_vcRepaymentSource = UE.getEditor('editor_vcRepaymentSource');
+    		    		 ue_vcRepaymentSource.addListener("ready", function () {
+       	 	UE.getEditor('editor_vcRepaymentSource').setContent('$!{project.vcRepaymentSource}');
+		}); 
+		
+		var ue_vcPurpose = UE.getEditor('editor_vcPurpose');
+    		    		 ue_vcRepaymentSource.addListener("ready", function () {
+       	 	UE.getEditor('editor_vcPurpose').setContent('$!{project.vcPurpose}');
+		}); 
+		
+		var ue_partnersIntroduce = UE.getEditor('editor_partnersIntroduce');
+    		    		 ue_partnersIntroduce.addListener("ready", function () {
+       	 	UE.getEditor('editor_partnersIntroduce').setContent('$!{project.partnersIntroduce}');
+		}); 
+		 
+    </script>
+

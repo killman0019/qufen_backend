@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.kff.user.KFFUserMapper">	
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.kff.user.KFFUser">
+		<result property="userId" jdbcType="INTEGER" column="user_id"/>
+		<result property="userName" jdbcType="VARCHAR" column="user_name"/>
+		<result property="sex" jdbcType="INTEGER" column="sex"/>
+		<result property="icon" jdbcType="VARCHAR" column="icon"/>
+		<result property="mobile" jdbcType="VARCHAR" column="mobile"/>
+		<result property="email" jdbcType="VARCHAR" column="email"/>
+		<result property="wechat" jdbcType="VARCHAR" column="wechat"/>
+		<result property="password" jdbcType="VARCHAR" column="password"/>
+		<result property="payPassword" jdbcType="VARCHAR" column="pay_password"/>
+		<result property="userType" jdbcType="INTEGER" column="user_type"/>
+		<result property="userDegree" jdbcType="INTEGER" column="user_degree"/>
+		<result property="userSignature" jdbcType="VARCHAR" column="user_signature"/>
+		<result property="fansNum" jdbcType="INTEGER" column="fans_num"/>
+		<result property="praiseNum" jdbcType="INTEGER" column="praise_num"/>
+		<result property="evaluationNum" jdbcType="INTEGER" column="evaluation_num"/>
+		<result property="discussNum" jdbcType="INTEGER" column="discuss_num"/>
+		<result property="articleNum" jdbcType="INTEGER" column="article_num"/>
+		<result property="kffCoinNum" jdbcType="INTEGER" column="kff_coin_num"/>
+		<result property="areaName" jdbcType="VARCHAR" column="area_name"/>
+		<result property="createTime" jdbcType="TIMESTAMP" column="createTime"/>
+		<result property="updateTime" jdbcType="TIMESTAMP" column="updateTime"/>
+		<result property="status" jdbcType="INTEGER" column="status"/>
+		<result property="memo" jdbcType="VARCHAR" column="memo"/>
+		<result property="provinceCode" jdbcType="VARCHAR" column="province_code"/>
+		<result property="cityCode" jdbcType="VARCHAR" column="city_code"/>
+		<result property="areaCode" jdbcType="VARCHAR" column="area_code"/>
+		<result property="referUserId" jdbcType="INTEGER" column="refer_user_id"/>
+		<result property="referLevel" jdbcType="INTEGER" column="refer_level"/>
+    </resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+        user_id ,user_name ,sex ,icon ,mobile ,email ,wechat ,password ,pay_password ,user_type ,user_degree ,user_signature ,fans_num ,praise_num ,evaluation_num ,discuss_num ,article_num ,kff_coin_num ,area_name ,createTime ,updateTime ,status ,memo ,province_code ,city_code ,area_code ,refer_user_id ,refer_level 
+	    ]]>
+	</sql>
+	
+	<insert id="save" parameterType="com.tzg.entitys.kff.user.KFFUser" useGeneratedKeys="true" keyProperty="userId">
+		<selectKey resultType="java.lang.Integer" keyProperty="userId" order="AFTER" >
+	      SELECT LAST_INSERT_ID() AS userId
+	    </selectKey>
+	<![CDATA[
+		INSERT INTO tbuser (
+        	user_name ,
+        	sex ,
+        	icon ,
+        	mobile ,
+        	email ,
+        	wechat ,
+        	password ,
+        	pay_password ,
+        	user_type ,
+        	user_degree ,
+        	user_signature ,
+        	fans_num ,
+        	praise_num ,
+        	evaluation_num ,
+        	discuss_num ,
+        	article_num ,
+        	kff_coin_num ,
+        	area_name ,
+        	createTime ,
+        	updateTime ,
+        	status ,
+        	memo ,
+        	province_code ,
+        	city_code ,
+        	area_code ,
+        	refer_user_id ,
+        	refer_level 
+		) VALUES (
+        	#{userName,jdbcType=VARCHAR} ,
+        	#{sex,jdbcType=INTEGER} ,
+        	#{icon,jdbcType=VARCHAR} ,
+        	#{mobile,jdbcType=VARCHAR} ,
+        	#{email,jdbcType=VARCHAR} ,
+        	#{wechat,jdbcType=VARCHAR} ,
+        	#{password,jdbcType=VARCHAR} ,
+        	#{payPassword,jdbcType=VARCHAR} ,
+        	#{userType,jdbcType=INTEGER} ,
+        	#{userDegree,jdbcType=INTEGER} ,
+        	#{userSignature,jdbcType=VARCHAR} ,
+        	#{fansNum,jdbcType=INTEGER} ,
+        	#{praiseNum,jdbcType=INTEGER} ,
+        	#{evaluationNum,jdbcType=INTEGER} ,
+        	#{discussNum,jdbcType=INTEGER} ,
+        	#{articleNum,jdbcType=INTEGER} ,
+        	#{kffCoinNum,jdbcType=INTEGER} ,
+        	#{areaName,jdbcType=VARCHAR} ,
+        	#{createTime,jdbcType=TIMESTAMP} ,
+        	#{updateTime,jdbcType=TIMESTAMP} ,
+        	#{status,jdbcType=INTEGER} ,
+        	#{memo,jdbcType=VARCHAR} ,
+        	#{provinceCode,jdbcType=VARCHAR} ,
+        	#{cityCode,jdbcType=VARCHAR} ,
+        	#{areaCode,jdbcType=VARCHAR} ,
+        	#{referUserId,jdbcType=INTEGER} ,
+        	#{referLevel,jdbcType=INTEGER} 
+		)
+	]]>
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.kff.user.KFFUser">
+		UPDATE tbuser
+		<set>
+			<if test="userName != null">
+	        user_name = #{userName,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="sex != null">
+	        sex = #{sex,jdbcType=INTEGER} ,
+	        </if>
+			<if test="icon != null">
+	        icon = #{icon,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="mobile != null">
+	        mobile = #{mobile,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="email != null">
+	        email = #{email,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="wechat != null">
+	        wechat = #{wechat,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="password != null">
+	        password = #{password,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="payPassword != null">
+	        pay_password = #{payPassword,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="userType != null">
+	        user_type = #{userType,jdbcType=INTEGER} ,
+	        </if>
+			<if test="userDegree != null">
+	        user_degree = #{userDegree,jdbcType=INTEGER} ,
+	        </if>
+			<if test="userSignature != null">
+	        user_signature = #{userSignature,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="fansNum != null">
+	        fans_num = #{fansNum,jdbcType=INTEGER} ,
+	        </if>
+			<if test="praiseNum != null">
+	        praise_num = #{praiseNum,jdbcType=INTEGER} ,
+	        </if>
+			<if test="evaluationNum != null">
+	        evaluation_num = #{evaluationNum,jdbcType=INTEGER} ,
+	        </if>
+			<if test="discussNum != null">
+	        discuss_num = #{discussNum,jdbcType=INTEGER} ,
+	        </if>
+			<if test="articleNum != null">
+	        article_num = #{articleNum,jdbcType=INTEGER} ,
+	        </if>
+			<if test="kffCoinNum != null">
+	        kff_coin_num = #{kffCoinNum,jdbcType=INTEGER} ,
+	        </if>
+			<if test="areaName != null">
+	        area_name = #{areaName,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="createTime != null">
+	        createTime = #{createTime,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="updateTime != null">
+	        updateTime = #{updateTime,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="status != null">
+	        status = #{status,jdbcType=INTEGER} ,
+	        </if>
+			<if test="memo != null">
+	        memo = #{memo,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="provinceCode != null">
+	        province_code = #{provinceCode,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="cityCode != null">
+	        city_code = #{cityCode,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="areaCode != null">
+	        area_code = #{areaCode,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="referUserId != null">
+	        refer_user_id = #{referUserId,jdbcType=INTEGER} ,
+	        </if>
+			<if test="referLevel != null">
+	        refer_level = #{referLevel,jdbcType=INTEGER} 
+	        </if>
+	    </set>
+		WHERE 
+	        user_id = #{userId,jdbcType=INTEGER} 
+	</update>
+	
+	
+	
+	<update id="updateUserKFFCoinNum" parameterType="com.tzg.entitys.kff.user.KFFUser">
+		UPDATE tbuser
+		<set>
+			
+			<if test="kffCoinNum != null">
+	        kff_coin_num = kff_coin_num + #{kffCoinNum,jdbcType=INTEGER} ,
+	        </if>
+			
+	    </set>
+		WHERE 
+	        user_id = #{userId,jdbcType=INTEGER} 
+	</update>
+
+	<update id="increaseFansNum" parameterType="java.lang.Integer">
+		UPDATE tbuser set fans_num = fans_num + 1		
+		WHERE 
+	    user_id = #{userId,jdbcType=INTEGER} 
+	</update>
+	
+	<update id="decreaseFansNum" parameterType="java.lang.Integer">
+		UPDATE tbuser set fans_num = fans_num - 1		
+		WHERE 
+	    user_id = #{userId,jdbcType=INTEGER} 
+	    and praise_num > 0
+	</update>
+	
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbuser WHERE
+        user_id = #{userId} 
+	]]>
+	</delete>
+    
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbuser 
+		WHERE 
+        user_id = #{userId} 
+	]]>
+	</select>
+	<!-- 根据用户的id 去获取用户的等级  -->
+	<select id="findUserById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbuser 
+		WHERE 
+        user_id = #{userId} 
+	]]>
+	</select>
+	<!-- 根据用户的登录手机号  去获取用户的id  -->
+	<select id=" findByMobileId" resultMap="BaseResultMap" parameterType="java.lang.String">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbuser 
+		WHERE 
+        mobile = #{mobile}
+	]]>
+	</select>
+	<!-- 根据用户的登录昵称  去获取用户的id  -->
+	<select id=" findByUserName" resultMap="BaseResultMap" parameterType="java.lang.String">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbuser 
+		WHERE 
+        user_name = #{userName}
+	]]>
+	</select>
+	 
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from tbuser where 1=1
+		<include refid="queryWhere"/>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbuser where 1=1
+		<include refid="queryWhere"/> 
+	    <![CDATA[ ORDER BY user_id DESC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<!-- 根据邀请人用户id 查询已邀请个数 -->
+	<select id="findReferUserIdByUserCount" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+    	select count(*) from tbuser where 1=1
+		<include refid="queryWhere"/>
+	</select>
+	
+	
+	<select id="findAllPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbuser where 1=1
+		<include refid="queryWhere"/> 
+	    <![CDATA[ ORDER BY user_id DESC ]]>      
+	</select>
+	
+	<sql id="queryWhere">
+		<if test="userId != null and userId.trim() != ''">
+		and user_id = #{userId}
+		</if>
+		<if test="userName != null and userName.trim() != ''">
+		and user_name = #{userName}
+		</if>
+		<if test="sex != null and sex.trim() != ''">
+		and sex = #{sex}
+		</if>
+		<if test="icon != null and icon.trim() != ''">
+		and icon = #{icon}
+		</if>
+		<if test="mobile != null and mobile.trim() != ''">
+		and mobile = #{mobile}
+		</if>
+		<if test="email != null and email.trim() != ''">
+		and email = #{email}
+		</if>
+		<if test="wechat != null and wechat.trim() != ''">
+		and wechat = #{wechat}
+		</if>
+		<if test="password != null and password.trim() != ''">
+		and password = #{password}
+		</if>
+		<if test="payPassword != null and payPassword.trim() != ''">
+		and pay_password = #{payPassword}
+		</if>
+		<if test="userType != null and userType.trim() != ''">
+		and user_type = #{userType}
+		</if>
+		<if test="userDegree != null and userDegree.trim() != ''">
+		and user_degree = #{userDegree}
+		</if>
+		<if test="userSignature != null and userSignature.trim() != ''">
+		and user_signature = #{userSignature}
+		</if>
+		<if test="fansNum != null and fansNum.trim() != ''">
+		and fans_num = #{fansNum}
+		</if>
+		<if test="praiseNum != null and praiseNum.trim() != ''">
+		and praise_num = #{praiseNum}
+		</if>
+		<if test="evaluationNum != null and evaluationNum.trim() != ''">
+		and evaluation_num = #{evaluationNum}
+		</if>
+		<if test="discussNum != null and discussNum.trim() != ''">
+		and discuss_num = #{discussNum}
+		</if>
+		<if test="articleNum != null and articleNum.trim() != ''">
+		and article_num = #{articleNum}
+		</if>
+		<if test="kffCoinNum != null and kffCoinNum.trim() != ''">
+		and kff_coin_num = #{kffCoinNum}
+		</if>
+		<if test="areaName != null and areaName.trim() != ''">
+		and area_name = #{areaName}
+		</if>
+		<if test="createTimeBegin != null and createTimeBegin.trim() != ''">
+		and createTime >= #{createTimeBegin}
+		</if>
+		<if test="createTimeEnd != null and createTimeEnd.trim() != ''">
+		and createTime &lt;= #{createTimeEnd}
+		</if>
+		<if test="updateTimeBegin != null and updateTimeBegin.trim() != ''">
+		and updateTime >= #{updateTimeBegin}
+		</if>
+		<if test="updateTimeEnd != null and updateTimeEnd.trim() != ''">
+		and updateTime &lt;= #{updateTimeEnd}
+		</if>
+		<if test="status != null and status.trim() != ''">
+		and status = #{status}
+		</if>
+		<if test="memo != null and memo.trim() != ''">
+		and memo = #{memo}
+		</if>
+		<if test="provinceCode != null and provinceCode.trim() != ''">
+		and province_code = #{provinceCode}
+		</if>
+		<if test="cityCode != null and cityCode.trim() != ''">
+		and city_code = #{cityCode}
+		</if>
+		<if test="areaCode != null and areaCode.trim() != ''">
+		and area_code = #{areaCode}
+		</if>
+		<if test="referUserId != null and referUserId.trim() != ''">
+		and refer_user_id = #{referUserId}
+		</if>
+		<if test="referLevel != null and referLevel.trim() != ''">
+		and refer_level = #{referLevel}
+		</if>
+	</sql>
+	
+	
+	<select id="verifyLoginaccount" resultType="java.lang.Integer" parameterType="java.util.Map">
+	    SELECT count(*)
+		FROM tbuser 
+		WHERE status=1
+        <if test="mobile != null and mobile.trim() != ''">
+		and mobile = #{mobile}
+		</if>
+		<if test="userName != null and userName.trim() != ''">
+		and user_name = #{userName}
+		</if>
+		<if test="email != null and email.trim() != ''">
+		and email = #{email} 
+		</if>
+		<if test="wechat != null and wechat.trim() != ''">
+		and wechat = #{wechat} 
+		</if>
+	</select>
+</mapper>
+
+

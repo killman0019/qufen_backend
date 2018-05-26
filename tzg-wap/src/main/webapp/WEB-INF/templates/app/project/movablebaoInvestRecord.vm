@@ -1,0 +1,183 @@
+#set($layout = "/app/layout/default.vm")
+#set($pageName="资金明细")
+
+<div class="swiper-container">
+	<ul class="swiper-pagination movable-record-tab">
+		<li class="-active"><a href="javascript:;">转入记录</a></li>
+		<li><a href="javascript:;">转出记录</a></li>
+		<li><a href="javascript:;">收益记录</a></li>
+	</ul>
+	<div class="swiper-wrapper">
+        <div class="swiper-slide" title="转入记录">
+        	<div class="container-spacing p-rel" j-tab-content>
+				<table class="dataset">
+					<thead>
+						<tr>
+							<th>时间</th>
+							<th>金额(元)</th>
+							<th width="20%" class="txt-c">状态</th>
+							<th width="25%" class="txt-r">合同</th>
+						</tr>
+					</thead>
+					<tbody id="j_list_container"></tbody>
+				</table>
+			</div>
+			<div class="load-more" id="j_load_more" style="display:none">点击查看更多</div>
+        </div>
+        <div class="swiper-slide" title="转出记录">
+			<div j-tab-content class="container-spacing p-rel">
+				<table class="dataset">
+					<thead>
+						<tr>
+							<th>时间</th>
+							<th>金额(元)</th>
+							<th width="20%" class="txt-r">状态</th>
+						</tr>
+					</thead>
+					<tbody id="j_out-list_container"></tbody>
+				</table>				
+			</div>
+			<div class="load-more" id="j_out-load_more" style="display:none">点击查看更多</div>
+        </div>
+        <div class="swiper-slide" title="收益记录">
+			<div j-tab-content class="container-spacing p-rel">
+				<table class="dataset">
+					<thead>
+						<tr>
+							<th>收益所属时间</th>
+							<th width="35%">收益金额(元)</th>
+						</tr>
+					</thead>
+					<tbody id="j_income-list_container"></tbody>
+				</table>
+			</div>
+			<div class="load-more" id="j_income-load_more" style="display:none">点击查看更多</div>
+        </div>
+	</div>
+</div>
+
+<div class="m-ppp" id="j_protocol_popup">
+	<div class="m-ppp-hd">《转入合同》</div>
+	<div class="m-ppp-bd">
+		<div class="m-ppp-bd-cnt">
+			<iframe id="pop_protocol" frameborder="0" width="100%" height="100%" scrolling="yes"></iframe>
+		</div>
+	</div>
+	<div class="m-ppp-ft">
+		<button type="button" class="u-btn--lnk z-fll" pppclosebtn>确 定</button>
+	</div>
+</div>
+
+<script src="$!{staticPath}/js/lib/sea.js?v=$!{staticVersion}" id="seajsnode"></script>
+<script src="$!{basePath}/assets/js/modules/swiper.min.js"></script>
+
+<script type="text/template" id="j_list_template">
+[@each rows as item]
+	<tr>
+		<td class="-datetime">$[item.dtInvestStr]</td>
+		<td>$[item.numInvest|toCurrency]</td>
+		<td class="txt-c">成功</td>
+		<td class="txt-r"><a href="$!{basePath}/app/investRecord/currentBaoContract?iinvestRecordId=$[item.id]&amp;accountToken=$!{accountToken}" j-protocol-btn>查看合同</a></td>
+	</tr>
+[@/each]
+</script>
+
+<script type="text/template" id="j_out-list_template">
+[@each rows as item]
+	<tr>
+		<td class="-datetime">$[item.dtCreateStr]</td>
+		<td>$[item.numRepayCorpus|toCurrency]</td>
+		<td class="txt-r">
+			[@if item.istate==1]转出中
+			[@else if item.istate==2]成功
+			[@/if]
+		</td>
+	</tr>
+[@/each]
+</script>
+
+<script type="text/template" id="j_income-list_template">
+[@each rows as item]
+	<tr>
+		<td>$[item.dtCountStr]</td>
+		<td>$[item.numIncome|toCurrency]</td>
+	</tr>
+[@/each]
+</script>
+
+<script>
+	seajs.use(["$", "module/list-loader"], function($, ListLoader) {
+		var loader = new ListLoader({
+			requestURL: basePath + '/app/subject/currentBaoTranferInRecord?accountToken=$!{accountToken}',
+			sendCurrentPageParams: false
+		});
+		loader.emptyHandler = function (data) {
+			var c = this.config;
+			if (c.currentPage === 1) {
+				c.$container.html('<tr style="border-bottom:none"><td colspan="4"><div class="u-lstHnt z-pg" style="position:static">暂无数据</div></td></tr>');
+			}
+			if (c.$loadMore) {
+				c.$loadMore.hide();
+			}
+		};
+		loader.load();
+
+		var out_loader = new ListLoader({
+			requestURL: basePath + '/app/subject/currentBaoTranferOutRecord?accountToken=$!{accountToken}',
+			sendCurrentPageParams: false,
+			template: "#j_out-list_template",		// 模板容器
+			container: "#j_out-list_container",		// 列表容器
+			loadMoreBtn: "#j_out-load_more",
+		});
+		out_loader.emptyHandler = function (data) {
+			var c = this.config;
+			if (c.currentPage === 1) {
+				c.$container.html('<tr style="border-bottom:none"><td colspan="3"><div class="u-lstHnt z-pg" style="position:static">暂无数据</div></td></tr>');
+			}
+			if (c.$loadMore) {
+				c.$loadMore.hide();
+			}
+		};
+		out_loader.load();
+
+		var income_loader = new ListLoader({
+			requestURL: basePath + '/app/subject/currentBaoIncomeRecord?accountToken=$!{accountToken}',
+			sendCurrentPageParams: false,
+			template: "#j_income-list_template",		// 模板容器
+			container: "#j_income-list_container",		// 列表容器
+			loadMoreBtn: "#j_income-load_more",
+		});
+		income_loader.emptyHandler = function (data) {
+			var c = this.config;
+			if (c.currentPage === 1) {
+				c.$container.html('<tr style="border-bottom:none"><td colspan="2"><div class="u-lstHnt z-pg" style="position:static">暂无数据</div></td></tr>');
+			}
+			if (c.$loadMore) {
+				c.$loadMore.hide();
+			}
+		};
+		income_loader.load();
+
+		var popupProtocol = $("#j_protocol_popup");
+		popupProtocol.find("[pppclosebtn]").on("click", function () {
+			popupProtocol.removeClass("z-opened");
+		});
+
+		$("#j_list_container").on("click", "[j-protocol-btn]", function (e) {
+			e.preventDefault();
+			
+			var m_this = $(this);
+			var url = m_this.attr("href");
+
+			popupProtocol.find("iframe")[0].src = url;
+			popupProtocol.addClass("z-opened");
+		});
+	});
+
+	(function(){
+		var swiper = new Swiper('.swiper-container', {
+	        pagination: '.swiper-pagination',
+	        paginationClickable: true
+	    });
+	})();
+</script>

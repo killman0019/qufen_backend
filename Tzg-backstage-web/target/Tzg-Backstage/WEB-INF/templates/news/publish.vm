@@ -1,0 +1,234 @@
+<div class="main-content">
+    <div class="breadcrumbs" id="breadcrumbs">
+        <script type="text/javascript">
+            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+        </script>
+
+        <ul class="breadcrumb">
+            <li>
+                <i class="icon-home home-icon"></i>
+                <a href="${www}/main">主页</a>
+            </li>
+
+            <li>
+                <a href="${www}/news">新闻动态列表</a>
+            </li>
+            <li class="active">新闻动态发布</li>
+        </ul><!-- .breadcrumb -->
+
+        <div class="nav-search" id="nav-search">
+            <form class="form-search">
+						<span class="input-icon">
+							<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+							<i class="icon-search nav-search-icon"></i>
+						</span>
+            </form>
+        </div><!-- #nav-search -->
+    </div>
+
+    <div class="page-content">
+
+        <div class="page-header">
+            <h1>新闻动态发布</h1>
+        </div>
+        
+        #if(${msg})
+        	<div>
+			#if(${success})
+        		<li class="text-success">$!{msg}</li>
+   			 #else
+        		<li class="text-danger">$!{msg}</li>
+   			 #end    	
+   			</div>
+   		 #end 
+        
+        <form action="${www}/news/doPublish" method="post" class="form-horizontal">
+        	<input type="hidden" name="id" id="id" value="$!{news.id}"/>
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">类型：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	#if($news.itype == 1)
+                            	最新动态
+                            #elseif($news.itype == 2)
+                            	媒体报道
+                            #end
+                        </div>
+                    </div>
+                </div>
+             </div>
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">标题：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	$!{news.vcTitle}
+                        </div>
+                    </div>
+                </div>
+             </div>
+             <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">副标题：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	$!{news.vcSubtitle}
+                        </div>
+                    </div>
+                </div>
+             </div>
+             <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">新闻来源：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	$!{news.vcSource}
+                        </div>
+                    </div>
+                </div>
+             </div>
+             <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">原文链接：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	<a href="$!{news.vcOrgLink}">$!{news.vcOrgLink}</a>
+                        </div>
+                    </div>
+                </div>
+             </div>
+             <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">文档图片地址：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	$!{news.vcImgUrl}
+                        </div>
+                    </div>
+                </div>
+             </div>
+             <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">已上传的图片：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	<img src="$!{staticUploadUrl}${news.vcImgUrl}"  alt="图标" />
+                        </div>
+                    </div>
+                </div>
+             </div>
+             <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">新闻概括：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	$!{news.vcSummary}
+                        </div>
+                    </div>
+                </div>
+             </div>
+              <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">新闻内容：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	$!{news.vcContent}
+                        </div>
+                    </div>
+                </div>
+             </div>
+             <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">新闻关键字：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	$!{news.vcKey}
+                        </div>
+                    </div>
+                </div>
+             </div>
+             <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">创建时间：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	$!{news.dtCreateStr}
+                        </div>
+                    </div>
+                </div>
+             </div>
+             <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">发布时间：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	$!{news.dtPublishStr}
+                        </div>
+                    </div>
+                </div>
+             </div>
+             <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">状态：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	#if($news.istate == 1)
+                            	未发布
+                            #elseif($news.istate == 2)
+                            	已发布
+                            #end
+                        </div>
+                    </div>
+                </div>
+             </div>
+             <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">是否首页显示：</label>
+                        <div class="col-md-8 col-sm-8">
+                            #if($news.ihomedisplay && $news.ihomedisplay ==1)
+                            	不显示
+                            #elseif($news.ihomedisplay && $news.ihomedisplay ==2)
+                            	显示
+                            #end
+                        </div>
+                    </div>
+                </div>
+             </div>
+             <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">顺序：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	#if($news.ihomesort && $news.ihomesort ==1) 
+                        		1
+                        	#elseif($news.ihomesort && $news.ihomesort ==2)	
+                        		2
+                    		#elseif($news.ihomesort && $news.ihomesort ==3)	
+                    			3
+                    		#elseif($news.ihomesort && $news.ihomesort ==4)	
+                        		4
+                        	#elseif($news.ihomesort && $news.ihomesort ==5)	
+                        		5	
+                    		#elseif($news.ihomesort && $news.ihomesort ==6)	
+                    			6
+                        	#end
+                        </div>
+                    </div>
+                </div>
+             </div>
+            <div class="clearfix form-actions">
+                <div class="col-sm-offset-2 col-md-9">
+                	<button class="btn btn-info" type="submit">
+                        <i class="icon-ok bigger-110"></i> 发布
+                    </button>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		            <button class="btn" type="button" onclick="javascript:history.go(-1);">
+		                <i class="icon-arrow-left bigger-110"></i>返回
+		            </button>
+                </div>
+            </div>
+    </div>
+</div>
+

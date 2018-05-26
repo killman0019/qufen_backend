@@ -1,0 +1,142 @@
+<div class="main-content">
+    <div class="breadcrumbs" id="breadcrumbs">
+        <script type="text/javascript">
+            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+        </script>
+
+        <ul class="breadcrumb">
+            <li>
+                <i class="icon-home home-icon"></i>
+                <a href="${www}/main">主页</a>
+            </li>
+
+            <li>
+                <a href="${www}/comments">评论列表</a>
+            </li>
+            <li class="active">评论详情</li>
+        </ul><!-- .breadcrumb -->
+
+        <div class="nav-search" id="nav-search">
+            <form class="form-search">
+						<span class="input-icon">
+							<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+							<i class="icon-search nav-search-icon"></i>
+						</span>
+            </form>
+        </div><!-- #nav-search -->
+    </div>
+
+    <div class="page-content">
+
+        <div class="page-header">
+            <h1>评论详情</h1>
+        </div>
+        <form action="${www}/comments/update?id=$!{param.id}" method="post" class="form-horizontal">
+            <div class="row">
+                <div class="col-xs-12 col-md-4">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">评论ID：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="commentsId" value="$!{param.commentsId}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">评论用户ID：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="commentUserId" value="$!{param.commentUserId}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">评论用户头像：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="commentUserIcon" value="$!{param.commentUserIcon}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">评论用户昵称：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="commentUserName" value="$!{param.commentUserName}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">评论内容：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="commentContent" value="$!{param.commentContent}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">帖子ID：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="postId" value="$!{param.postId}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">帖子类型：1-评测；2-讨论；3-文章：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="postType" value="$!{param.postType}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">点赞数量：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="praiseNum" value="$!{param.praiseNum}"/>
+                        </div>
+                    </div>
+					<!--
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">父评论ID：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="parentCommentsId" value="$!{param.parentCommentsId}"/>
+                        </div>
+                    </div>
+					-->
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">被评论用户ID：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="becommentedUserId" value="$!{param.becommentedUserId}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">被评论用户昵称：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="becommentedUserName" value="$!{param.becommentedUserName}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">被评论用户头像：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="becommentedUserIcon" value="$!{param.becommentedUserIcon}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">发表时间：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="createTimeStr" value="$!{param.createTimeStr}"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">状态:0-删除；1-有效：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="status" value="$!{param.status}"/>
+                        </div>
+                    </div>
+                    
+                 </div>
+            </div>
+            <div class="clearfix form-actions">
+                <div class="col-sm-offset-2 col-md-9">
+					
+                   <!--  <button class="btn btn-info" type="submit">
+                        <i class="icon-ok bigger-110"></i>提交
+                    </button>
+					-->
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		            <button class="btn btn-info" type="button" onclick="javascript:history.go(-1);">
+		                <i class="icon-arrow-left bigger-110"></i>返回
+		            </button>
+                </div>
+            </div>
+    </div>
+</div>
+

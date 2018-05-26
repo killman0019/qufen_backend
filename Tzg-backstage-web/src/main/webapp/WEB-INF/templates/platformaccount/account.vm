@@ -1,0 +1,158 @@
+<div class="main-content">
+    <div class="breadcrumbs" id="breadcrumbs">
+        <script type="text/javascript">
+            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+        </script>
+
+        <ul class="breadcrumb">
+            <li>
+                <i class="icon-home home-icon"></i>
+                <a href="${www}/main">主页</a>
+            </li>
+
+            <li>
+                <a href="${www}/financialrepay">平台账户</a>
+            </li>
+            <li class="active">平台账户余额</li>
+        </ul><!-- .breadcrumb -->
+
+        <div class="nav-search" id="nav-search">
+            <form class="form-search">
+						<span class="input-icon">
+							<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+							<i class="icon-search nav-search-icon"></i>
+						</span>
+            </form>
+        </div><!-- #nav-search -->
+    </div>
+
+    <div class="page-content">
+
+        <div class="page-header">
+            <h1>平台账户余额</h1>
+        </div>
+
+<form  class="form-horizontal">
+                <div class="row">
+                   <div class="col-xs-12 col-md-8">
+                        <div class="form-group">
+                            <label class="col-md-4 col-sm-2 control-label">用户名：</label>
+                            <div class="col-md-8 col-sm-8">
+                                $!{platformaccount.iloginAccountName}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-4 col-sm-2 control-label">账户余额：</label>
+                            <div class="col-md-8 col-sm-8">
+                               $!{platformaccount.numAvailable}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-4 col-sm-2 control-label">提现总额：</label>
+                            <div class="col-md-8 col-sm-8">
+                                $!{platformaccount.numTotalCash}
+                            </div>
+                        </div>
+						 <div class="form-group">
+                            <label class="col-md-4 col-sm-2 control-label">充值总额：</label>
+                            <div class="col-md-8 col-sm-8">
+                                $!{platformaccount.numTotalRecharge}
+                            </div>
+                        </div>
+						 <div class="form-group">
+                            <label class="col-md-4 col-sm-2 control-label">手续费总支出：</label>
+                            <div class="col-md-8 col-sm-8">
+                                $!{platformaccount.numTotalFeeCast}
+                            </div>
+                        </div>
+						 <div class="form-group">
+                            <label class="col-md-4 col-sm-2 control-label">红包总支出：</label>
+                            <div class="col-md-8 col-sm-8">
+                                $!{platformaccount.numTotalRedCast}
+                            </div>
+                        </div>
+						<div class="form-group">
+                            <label class="col-md-4 col-sm-2 control-label">体验标奖励总支出：</label>
+                            <div class="col-md-8 col-sm-8">
+                                $!{platformaccount.numExperienceSubjectFee}
+                            </div>
+                        </div>
+						 <div class="form-group">
+                            <label class="col-md-4 col-sm-2 control-label">利率券总支出：</label>
+                            <div class="col-md-8 col-sm-8">
+                                $!{platformaccount.numTotalCouponCast}
+                            </div>
+                        </div>
+                         <div class="form-group">
+                            <label class="col-md-4 col-sm-2 control-label">多财赚息总收入：</label>
+                            <div class="col-md-8 col-sm-8">
+                                $!{platformaccount.numInterestIntervalAmtEarn}
+                            </div>
+                        </div>
+                         <div class="form-group">
+                            <label class="col-md-4 col-sm-2 control-label">多财贴息总支出：</label>
+                            <div class="col-md-8 col-sm-8">
+                                $!{platformaccount.numInterestIntervalAmtLose}
+                            </div>
+                        </div>
+						 <div class="form-group">
+                            <label class="col-md-4 col-sm-2 control-label">服务费总收入：</label>
+                            <div class="col-md-8 col-sm-8">
+                                $!{platformaccount.numTotalServiceFee}
+                            </div>
+                        </div>
+						 <div class="form-group">
+                            <label class="col-md-4 col-sm-2 control-label">管理费总收入：</label>
+                            <div class="col-md-8 col-sm-8">
+                                $!{platformaccount.numTotalExpenseIncome}
+                            </div>
+                        </div>
+						 <div class="form-group">
+                            <label class="col-md-4 col-sm-2 control-label">提现手续费总收入：</label>
+                            <div class="col-md-8 col-sm-8">
+                                $!{platformaccount.numTotalFeeIncome}
+                            </div>
+                        </div>
+						 <div class="form-group">
+                            <label class="col-md-4 col-sm-2 control-label">保证金累计收取：</label>
+                            <div class="col-md-8 col-sm-8">
+                                $!{platformaccount.numTotalBondIncome}
+                            </div>
+                        </div>
+						 <div class="form-group">
+                            <label class="col-md-4 col-sm-2 control-label">保证金累计垫付：</label>
+                            <div class="col-md-8 col-sm-8">
+                                $!{platformaccount.numTotalBondRepaid}
+                            </div>
+                        </div>
+						 <div class="form-group">
+                            <label class="col-md-4 col-sm-2 control-label">保证金累计归还：</label>
+                            <div class="col-md-8 col-sm-8">
+                                $!{platformaccount.numTotalBondCast}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-4 col-sm-2 control-label">账户状态：</label>
+                            <div class="col-md-8 col-sm-8">
+								#if($platformaccount.istatus && $platformaccount.istatus ==1) 有效#end 
+								#if($platformaccount.istatus && $platformaccount.istatus ==2) 冻结中 #end
+								#if($platformaccount.istatus && $platformaccount.istatus ==3) 无效 #end
+                            </div>
+                        </div>
+                       
+                        
+                     </div>
+                </div>
+    		</form>		      
+		      
+		 <div class="clearfix form-actions">
+                <div class="col-sm-offset-2 col-md-9" style="float:right;width:20%;">
+                  <button class="btn btn-info" type="button"  onclick="javascript:history.go(-1);">
+		                <i class="icon-arrow-left bigger-110"></i>返回
+		            </button>  
+                   
+                </div>
+            </div>
+    </div>
+</div>
+

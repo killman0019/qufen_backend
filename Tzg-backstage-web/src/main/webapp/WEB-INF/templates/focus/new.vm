@@ -1,0 +1,216 @@
+<div class="main-content">
+    <div class="breadcrumbs" id="breadcrumbs">
+        <script type="text/javascript">
+            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+            
+            function showBlankChioce(){
+            	var itype = $("#itype").val();
+            	if(itype==1){
+            		$("#iblankWindow").css("display","block");
+            	}else{
+            		$("#iblankWindow").css("display","none");
+            	}
+            }
+        </script>
+
+        <ul class="breadcrumb">
+            <li>
+                <i class="icon-home home-icon"></i>
+                <a href="${www}/main">主页</a>
+            </li>
+
+            <li>
+                <a href="${www}/focus">焦点图列表</a>
+            </li>
+            <li class="active">新增焦点图</li>
+        </ul><!-- .breadcrumb -->
+
+        <div class="nav-search" id="nav-search">
+            <form class="form-search">
+						<span class="input-icon">
+							<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+							<i class="icon-search nav-search-icon"></i>
+						</span>
+            </form>
+        </div><!-- #nav-search -->
+    </div>
+
+    <div class="page-content">
+        <div class="page-header">
+            <h1>新增焦点图</h1>
+        </div>
+        
+        #if(${msg})
+        	<div>
+			#if(${success})
+        		<li class="text-success">$!{msg}</li>
+   			 #else
+        		<li class="text-danger">$!{msg}</li>
+   			 #end    	
+   			</div>
+   		#end        
+        
+        <form id="inputForm" action="${www}/focus/save" method="post" class="form-horizontal">
+        	<div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">别名：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	<input type="text" class="col-sm-12" id="vcName" name="vcName" value="$!{focus.vcName}" />
+                        </div>
+                    </div>
+                </div>
+             </div>
+             <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">适用类型：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	<select name="itype" class="tag-type" id="itype" onchange="showBlankChioce()">
+                        		<option value="">请选择适用类型</option>
+                        		<option value="1">pc</option>
+                        		<option value="2">wap</option>
+                        		<option value="3">app</option>
+								<option value="4">android</option>
+								<option value="5">ios</option>
+                        	</select>
+                        </div>
+                    </div>
+                </div>
+             </div>
+             <div class="row">
+	                <div class="col-xs-12 col-md-8">
+	                    <div class="form-group">
+	                        <label class="col-md-4 col-sm-2 control-label">链接地址：</label>
+	                        <div class="col-md-8 col-sm-8">
+	                        	<div class="row">
+		                        	<div class="col-md-11">
+		                        		<input type="text" class="col-sm-12" id="focusPath" value="$!{focus.vcUrl}"  readonly/>
+		                        		<input type="hidden" id="vcUrl" name="vcUrl" value="$!{focus.vcUrl}">
+		                        	</div>
+		                        	<div class="col-md-1">
+		                        		<button type="button" id="select_focus_path_btn" class="btn btn-xs">选择链接地址</button>
+		                        	</div>
+		                         </div>	
+	                        </div>
+	                    </div>
+	                </div>
+	          </div>
+             <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">顺序：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	<input type="number" class="col-sm-12" id="isort" name="isort" value="$!{focus.isort}" />
+                        </div>
+                    </div>
+                </div>
+             </div> 
+             <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">跳转地址：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	<input type="text" class="col-sm-12" id="vcJumpUrl" name="vcJumpUrl" value="$!{focus.vcJumpUrl}" />
+                        </div>
+                    </div>
+                </div>
+             </div>
+             <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">渠道：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	<select name="vcChannel" class="vc-type">
+                        		<option value="">请选择渠道</option>
+                        		##foreach($row in $result.rows)
+                        		##<option value="$!{row.vcCode}">${row.vcCode}</option>
+                        		###end
+                        	</select>
+                        </div>
+                    </div>
+                </div>
+             </div>
+             <div class="row" style="display:none" id="iblankWindow">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">是否打开新页面：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	<input type="radio" name="iblankWindow" value="1" checked/>是 
+							<input type="radio" name="iblankWindow" value="2"/>否
+                        </div>
+                    </div>
+                </div>
+             </div>
+              
+               <!-- 宋文健2015-12-19 新增 焦点图分类  -->
+               <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">焦点图分类：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	<input type="radio" name="iIsBrandPromotion" value="1" />品宣类
+							<input type="radio" name="iIsBrandPromotion" value="2" checked/>活动类
+                        </div>
+                    </div>
+                </div>
+             </div>
+             
+            <div class="clearfix form-actions">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="col-sm-offset-4 col-md-9">
+           					<button class="btn btn-info" type="submit">
+                                <i class="icon-ok bigger-110"></i>提交
+                            </button>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <button class="btn" type="button" onclick="javascript:history.go(-1);">
+                                <i class="icon-arrow-left bigger-110"></i>返回
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+     </div>
+    </form>
+</div><!-- /.page-content -->
+</div><!-- /.main-content -->
+
+<script src="${www}/js/sea.js" id="seajsnode"></script>
+<script type="text/javascript">
+seajs.use(['dialog'], function(dialog) {
+    var vcUrl = $("#vcUrl");
+    var focusPath = $("#focusPath");
+    var showDialog = function () {
+        dialog.alert({
+            title: '焦点图列表',
+            content: '<iframe id="js_selector" frameborder="0" width="800" height="400" src="${www}/uploadfile/filePathList?itype=3"></iframe>',
+            ok: function() {
+                var checkedRadio = $(":radio:checked", document.getElementById("js_selector").contentDocument);
+                if (checkedRadio.size()) {
+                    vcUrl.val(checkedRadio.val());
+                    focusPath.val(checkedRadio.attr("data-name"));
+                }
+            }
+        });
+    };
+    focusPath.click(showDialog);
+    $("#select_focus_path_btn").click(showDialog);
+});
+
+(function(){
+    $(".tag-type").change(function(){
+        var type = $(".tag-type  option:selected").text();
+
+        $.post("${www}/focus/getChannel",{plat:type},function(data){
+            $(".vc-type").empty();
+			$(".vc-type").append('<option value="">请选择渠道</option>');
+            for(var i=0;i<data.list.length;i++){
+			var row = data.list[i];
+                $(".vc-type").append("<option value='"+ row.vcCode +"'>"+ row.vcCode +"</option>");
+            }
+        });
+
+    })
+})();
+</script>

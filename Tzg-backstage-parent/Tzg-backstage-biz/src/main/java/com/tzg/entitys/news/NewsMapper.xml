@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.news.NewsMapper">	
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.news.News">
+		<result property="id" jdbcType="INTEGER" column="id"/>
+		<result property="vcTitle" jdbcType="VARCHAR" column="vcTitle"/>
+		<result property="vcSubtitle" jdbcType="VARCHAR" column="vcSubtitle"/>
+		<result property="vcSource" jdbcType="VARCHAR" column="vcSource"/>
+		<result property="vcOrgLink" jdbcType="VARCHAR" column="vcOrgLink"/>
+		<result property="vcImgUrl" jdbcType="VARCHAR" column="vcImgUrl"/>
+		<result property="vcSummary" jdbcType="VARCHAR" column="vcSummary"/>
+		<result property="vcContent" jdbcType="LONGVARCHAR" column="vcContent"/>
+		<result property="vcKey" jdbcType="VARCHAR" column="vcKey"/>
+		<result property="dtPublish" jdbcType="TIMESTAMP" column="dtPublish"/>
+		<result property="itype" jdbcType="INTEGER" column="iType"/>
+		<result property="dtCreate" jdbcType="TIMESTAMP" column="dtCreate"/>
+		<result property="istate" jdbcType="INTEGER" column="iState"/>
+		<result column="iHomeDisplay" property="ihomedisplay" jdbcType="INTEGER" />
+    	<result column="iHomeSort" property="ihomesort" jdbcType="INTEGER" />
+    </resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+        id ,vcTitle ,vcSubtitle ,vcSource ,vcOrgLink ,vcImgUrl ,vcSummary ,vcContent ,vcKey ,dtPublish ,iType ,dtCreate ,iState
+        , iHomeDisplay, iHomeSort 
+	    ]]>
+	</sql>
+	
+	<insert id="save" parameterType="com.tzg.entitys.news.News" useGeneratedKeys="true" keyProperty="id">
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+	      SELECT LAST_INSERT_ID() AS id
+	    </selectKey>
+	<![CDATA[
+		INSERT INTO tbnews (
+        	vcTitle ,
+        	vcSubtitle ,
+        	vcSource ,
+        	vcOrgLink ,
+        	vcImgUrl ,
+        	vcSummary ,
+        	vcContent ,
+        	vcKey ,
+        	dtPublish ,
+        	iType ,
+        	dtCreate ,
+        	iState ,
+        	iHomeDisplay, 
+        	iHomeSort
+		) VALUES (
+        	#{vcTitle,jdbcType=VARCHAR} ,
+        	#{vcSubtitle,jdbcType=VARCHAR} ,
+        	#{vcSource,jdbcType=VARCHAR} ,
+        	#{vcOrgLink,jdbcType=VARCHAR} ,
+        	#{vcImgUrl,jdbcType=VARCHAR} ,
+        	#{vcSummary,jdbcType=VARCHAR} ,
+        	#{vcContent,jdbcType=LONGVARCHAR} ,
+        	#{vcKey,jdbcType=VARCHAR} ,
+        	#{dtPublish,jdbcType=TIMESTAMP} ,
+        	#{itype,jdbcType=INTEGER} ,
+        	#{dtCreate,jdbcType=TIMESTAMP} ,
+        	#{istate,jdbcType=INTEGER} ,
+        	#{ihomedisplay,jdbcType=INTEGER},
+        	#{ihomesort,jdbcType=INTEGER}
+        	
+		)
+	]]>
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.news.News">
+		UPDATE tbnews
+		<set>
+			<if test="vcTitle != null">
+	        vcTitle = #{vcTitle,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcSubtitle != null">
+	        vcSubtitle = #{vcSubtitle,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcSource != null">
+	        vcSource = #{vcSource,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcOrgLink != null">
+	        vcOrgLink = #{vcOrgLink,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcImgUrl != null">
+	        vcImgUrl = #{vcImgUrl,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcSummary != null">
+	        vcSummary = #{vcSummary,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcContent != null">
+	        vcContent = #{vcContent,jdbcType=LONGVARCHAR} ,
+	        </if>
+			<if test="vcKey != null">
+	        vcKey = #{vcKey,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="dtPublish != null">
+	        dtPublish = #{dtPublish,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="itype != null">
+	        iType = #{itype,jdbcType=INTEGER} ,
+	        </if>
+			<if test="dtCreate != null">
+	        dtCreate = #{dtCreate,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="istate != null">
+	        iState = #{istate,jdbcType=INTEGER} ,
+	        </if>
+	        <if test="ihomedisplay != null" >
+	        iHomeDisplay = #{ihomedisplay,jdbcType=INTEGER},
+	        </if>
+	        iHomeSort = #{ihomesort,jdbcType=INTEGER}
+	    </set>
+		WHERE 
+	        id = #{id,jdbcType=INTEGER} 
+	</update>
+	
+	<update id="updateIHomeSort" parameterType="com.tzg.entitys.news.News">
+		update tbnews
+		set iHomeSort = iHomeSort + 1
+		where iHomeSort >= #{ihomesort,jdbcType=INTEGER} 
+		and iType = #{itype,jdbcType=INTEGER}
+	</update>
+	
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbnews WHERE
+        id = #{id} 
+	]]>
+	</delete>
+    
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbnews 
+		WHERE 
+        id = #{id} 
+	]]>
+	</select>
+	 
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from tbnews where 1=1
+		<include refid="queryWhere"/>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbnews where 1=1
+		<include refid="queryWhere"/> 
+	    <![CDATA[ ORDER BY iHomeSort is null, iHomeSort ASC,dtCreate desc ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<sql id="queryWhere">
+		<if test="id != null and id.trim() != ''">
+		and id = #{id}
+		</if>
+		<if test="vcTitle != null and vcTitle.trim() != ''">
+		and vcTitle like  "%"#{vcTitle}"%"
+		</if>
+		<if test="vcSubtitle != null and vcSubtitle.trim() != ''">
+		and vcSubtitle = #{vcSubtitle}
+		</if>
+		<if test="vcSource != null and vcSource.trim() != ''">
+		and vcSource = #{vcSource}
+		</if>
+		<if test="vcOrgLink != null and vcOrgLink.trim() != ''">
+		and vcOrgLink = #{vcOrgLink}
+		</if>
+		<if test="vcImgUrl != null and vcImgUrl.trim() != ''">
+		and vcImgUrl = #{vcImgUrl}
+		</if>
+		<if test="vcSummary != null and vcSummary.trim() != ''">
+		and vcSummary = #{vcSummary}
+		</if>
+		<if test="vcContent != null and vcContent.trim() != ''">
+		and vcContent = #{vcContent}
+		</if>
+		<if test="vcKey != null and vcKey.trim() != ''">
+		and vcKey = #{vcKey}
+		</if>
+		<if test="dtPublishBegin != null and dtPublishBegin.trim() != ''">
+		and dtPublish >= #{dtPublishBegin}
+		</if>
+		<if test="dtPublishEnd != null and dtPublishEnd.trim() != ''">
+		and dtPublish &lt;= #{dtPublishEnd}
+		</if>
+		<if test="itype != null and itype.trim() != ''">
+		and iType = #{itype}
+		</if>
+		<if test="dtCreateBegin != null and dtCreateBegin.trim() != ''">
+		and dtCreate >= #{dtCreateBegin}
+		</if>
+		<if test="dtCreateEnd != null and dtCreateEnd.trim() != ''">
+		and dtCreate &lt;= #{dtCreateEnd}
+		</if>
+		<if test="istate != null and istate.trim() != ''">
+		and iState = #{istate}
+		</if>
+		<if test="ihomedisplay != null and ihomedisplay.trim() != ''">
+		and iHomeDisplay = #{ihomedisplay}
+		</if>
+	</sql>
+	
+</mapper>
+
+

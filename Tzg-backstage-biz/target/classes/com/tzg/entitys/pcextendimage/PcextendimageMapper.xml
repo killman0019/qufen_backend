@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.pcextendimage.PcextendimageMapper">	
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.pcextendimage.Pcextendimage">
+		<result property="id" jdbcType="INTEGER" column="id"/>
+		<result property="iextendPlace" jdbcType="INTEGER" column="iExtendPlace"/>
+		<result property="vcName" jdbcType="VARCHAR" column="vcName"/>
+		<result property="vcUrl" jdbcType="VARCHAR" column="vcUrl"/>
+		<result property="vcImageUrl" jdbcType="VARCHAR" column="vcImageUrl"/>
+		<result property="isortNo" jdbcType="INTEGER" column="iSortNo"/>
+		<result property="istate" jdbcType="INTEGER" column="iState"/>
+		<result property="icategory" jdbcType="INTEGER" column="iCategory"/>
+    </resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+        id ,iExtendPlace ,vcName ,vcUrl ,vcImageUrl ,iSortNo ,iState ,iCategory 
+	    ]]>
+	</sql>
+	
+	<insert id="save" parameterType="com.tzg.entitys.pcextendimage.Pcextendimage" useGeneratedKeys="true" keyProperty="id">
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+	      SELECT LAST_INSERT_ID() AS id
+	    </selectKey>
+	<![CDATA[
+		INSERT INTO tbpcextendimage (
+        	iExtendPlace ,
+        	vcName ,
+        	vcUrl ,
+        	vcImageUrl ,
+        	iSortNo ,
+        	iState ,
+        	iCategory 
+		) VALUES (
+        	#{iextendPlace,jdbcType=INTEGER} ,
+        	#{vcName,jdbcType=VARCHAR} ,
+        	#{vcUrl,jdbcType=VARCHAR} ,
+        	#{vcImageUrl,jdbcType=VARCHAR} ,
+        	#{isortNo,jdbcType=INTEGER} ,
+        	#{istate,jdbcType=INTEGER} ,
+        	#{icategory,jdbcType=INTEGER} 
+		)
+	]]>
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.pcextendimage.Pcextendimage">
+		UPDATE tbpcextendimage
+		<set>
+			<if test="iextendPlace != null">
+	        iExtendPlace = #{iextendPlace,jdbcType=INTEGER} ,
+	        </if>
+			<if test="vcName != null">
+	        vcName = #{vcName,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcUrl != null">
+	        vcUrl = #{vcUrl,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcImageUrl != null">
+	        vcImageUrl = #{vcImageUrl,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="isortNo != null">
+	        iSortNo = #{isortNo,jdbcType=INTEGER} ,
+	        </if>
+			<if test="istate != null">
+	        iState = #{istate,jdbcType=INTEGER} ,
+	        </if>
+			<if test="icategory != null">
+	        iCategory = #{icategory,jdbcType=INTEGER} 
+	        </if>
+	    </set>
+		WHERE 
+	        id = #{id,jdbcType=INTEGER} 
+	</update>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbpcextendimage WHERE
+        id = #{id} 
+	]]>
+	</delete>
+    
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbpcextendimage 
+		WHERE 
+        id = #{id} 
+	]]>
+	</select>
+	 
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from tbpcextendimage where 1=1
+		<include refid="queryWhere"/>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbpcextendimage where 1=1
+		<include refid="queryWhere"/> 
+	    <![CDATA[ ORDER BY id DESC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<sql id="queryWhere">
+		<if test="id != null and id.trim() != ''">
+		and id = #{id}
+		</if>
+		<if test="iextendPlace != null and iextendPlace.trim() != ''">
+		and iExtendPlace = #{iextendPlace}
+		</if>
+		<if test="vcName != null and vcName.trim() != ''">
+		and vcName = #{vcName}
+		</if>
+		<if test="vcUrl != null and vcUrl.trim() != ''">
+		and vcUrl = #{vcUrl}
+		</if>
+		<if test="vcImageUrl != null and vcImageUrl.trim() != ''">
+		and vcImageUrl = #{vcImageUrl}
+		</if>
+		<if test="isortNo != null and isortNo.trim() != ''">
+		and iSortNo = #{isortNo}
+		</if>
+		<if test="istate != null and istate.trim() != ''">
+		and iState = #{istate}
+		</if>
+		<if test="icategory != null and icategory.trim() != ''">
+		and iCategory = #{icategory}
+		</if>
+	</sql>
+	
+	<select id="getMaxSort" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+		select IFNULL(max(iSortNo),0) from tbpcextendimage where 1=1 and iExtendPlace = #{iextendPlace};
+	</select>
+	
+	<select id="getVaildMaxSort" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+		select IFNULL(max(iSortNo),0) from tbpcextendimage where 1=1 and iExtendPlace = #{iextendPlace} and iState=1;
+	</select>
+</mapper>
+
+

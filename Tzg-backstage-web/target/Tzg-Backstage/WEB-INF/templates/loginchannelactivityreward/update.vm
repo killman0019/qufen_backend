@@ -1,0 +1,103 @@
+<div class="main-content">
+    <div class="breadcrumbs" id="breadcrumbs">
+        <script type="text/javascript">
+            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+        </script>
+
+        <ul class="breadcrumb">
+            <li>
+                <i class="icon-home home-icon"></i>
+                <a href="${www}/main">主页</a>
+            </li>
+
+            <li>
+                <a href="${www}/loginchannelactivityreward/findactivitylist">渠道活动列表</a>
+            </li>
+            <li>
+                <a href="${www}/loginchannelactivityreward/findactivitylistByactivity?activityid=$!{param.activityid}">渠道活动等级列表</a>
+            </li>
+            <li>
+                <a href="${www}/loginchannelactivityreward/findactivitylistByactivitylevel?activityid=$!{param.activityid}&rewardlevel=$!{param.rewardlevel}">渠道活动详细列表</a>
+            </li>
+            <li class="active">修改渠道活动排名</li>
+        </ul><!-- .breadcrumb -->
+
+        <div class="nav-search" id="nav-search">
+            <form class="form-search">
+						<span class="input-icon">
+							<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+							<i class="icon-search nav-search-icon"></i>
+						</span>
+            </form>
+        </div><!-- #nav-search -->
+    </div>
+
+    <div class="page-content">
+
+        <div class="page-header">
+            <h1>修改渠道活动排名</h1>
+        </div>
+        
+         #if(${msg})
+        	<div>
+			#if(${success})
+        		<li class="text-success">$!{msg}</li>
+   			 #else
+        		<li class="text-danger">$!{msg}</li>
+   			 #end    	
+   			</div>
+   		#end 
+   		
+        <form action="${www}/loginchannelactivityreward/update" method="post" class="form-horizontal">
+          <input type="hidden" name="id" id="id" value="$!{param.id}"/>
+            <div class="row">
+                <div class="col-xs-12 col-md-4">
+                 <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">活动编号：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="activityid" value="$!{param.activityid}" readonly="readonly"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">活动名称：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="activityname" value="$!{param.activityname}" readonly="readonly"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">奖励等级：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="rewardlevel" value="$!{param.rewardlevel}" readonly="readonly"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">排名：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="rewardnum" value="$!{param.rewardnum}"/>
+                        </div>
+                    </div>
+                     <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">是否有效</label>
+                        <div class="col-md-8 col-sm-8">
+                             <select  name="ivalid" id="ivalid">
+                                    <option value="1" #if($param.ivalid && $param.ivalid =='1') selected #end>有效 （默认）</option>
+                                    <option value="2" #if($param.ivalid && $param.ivalid =='2') selected #end>无效 </option>
+                             </select>
+                        </div>
+                    </div>
+                 </div>
+            </div>
+            <div class="clearfix form-actions">
+                <div class="col-sm-offset-2 col-md-9">
+                    <button class="btn btn-info" type="submit">
+                        <i class="icon-ok bigger-110"></i>提交
+                    </button>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		            <button class="btn btn-info" type="button" onclick="javascript:history.go(-1);">
+		                <i class="icon-arrow-left bigger-110"></i>返回
+		            </button>
+                </div>
+            </div>
+    </div>
+</div>
+

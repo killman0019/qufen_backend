@@ -1,0 +1,13 @@
+#set($pageName = "充值失败")
+#set($bodyClass = "body--gray")
+#set($topbar = { "title": $pageName })
+
+<div class="msg-sign -failed">充值失败</div>
+
+<div class="f-mt4 f-tlc u-clGrayLgt">$!{msg}</div>
+
+<div class="f-mtb3 f-mlr4">
+	<a href="$!{basePath}/user/charge/page" class="u-btn z-scs z-fll">重新支付</a>
+</div>
+
+<div class="f-tlc u-clGrayLgt">客服热线：<a href="tel:4006082233">400-0311-798</a></div>

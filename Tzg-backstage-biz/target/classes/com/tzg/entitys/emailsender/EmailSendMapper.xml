@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.emailsender.EmailSendMapper">	
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.emailsender.EmailSend">
+		<result property="id" jdbcType="INTEGER" column="id"/>
+		<result property="imanageId" jdbcType="INTEGER" column="iManageID"/>
+		<result property="iloginAccountId" jdbcType="INTEGER" column="iLoginAccountID"/>
+		<result property="vcEmail" jdbcType="VARCHAR" column="vcEmail"/>
+		<result property="vcTitle" jdbcType="VARCHAR" column="vcTitle"/>
+		<result property="vcContent" jdbcType="LONGVARCHAR" column="vcContent"/>
+		<result property="dtCreate" jdbcType="TIMESTAMP" column="dtCreate"/>
+		<result property="vcMemo" jdbcType="VARCHAR" column="vcMemo"/>
+    </resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+        id ,iManageID ,iLoginAccountID ,vcEmail,vcTitle,vcContent ,dtCreate ,vcMemo
+	    ]]>
+	</sql>
+	
+	<insert id="save" parameterType="com.tzg.entitys.emailsender.EmailSend" useGeneratedKeys="true" keyProperty="id">
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+	      SELECT LAST_INSERT_ID() AS id
+	    </selectKey>
+	<![CDATA[
+		INSERT INTO tbemailsend (
+        	iManageID ,
+        	iLoginAccountID ,
+        	vcEmail,
+        	vcTitle ,
+        	vcContent ,
+        	dtCreate ,
+        	vcMemo
+		) VALUES (
+        	#{imanageId,jdbcType=INTEGER} ,
+        	#{iloginAccountId,jdbcType=INTEGER} ,
+        	#{vcEmail,jdbcType=VARCHAR} ,
+        	#{vcTitle,jdbcType=VARCHAR} ,
+        	#{vcContent,jdbcType=LONGVARCHAR} ,
+        	#{dtCreate,jdbcType=TIMESTAMP} ,
+        	#{vcMemo,jdbcType=VARCHAR} 
+		)
+	]]>
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.emailsender.EmailSend">
+		UPDATE tbemailsend
+		<set>
+			<if test="imanageId != null">
+	        iManageID = #{imanageId,jdbcType=INTEGER} ,
+	        </if>
+			<if test="iloginAccountId != null">
+	        iLoginAccountID = #{iloginAccountId,jdbcType=INTEGER} ,
+	        </if>
+	        <if test="vcEmail != null">
+	        vcEmail = #{vcEmail,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcTitle != null">
+	        vcTitle = #{vcTitle,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcContent != null">
+	        vcContent = #{vcContent,jdbcType=LONGVARCHAR} ,
+	        </if>
+			<if test="dtCreate != null">
+	        dtCreate = #{dtCreate,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="vcMemo != null">
+	        vcMemo = #{vcMemo,jdbcType=VARCHAR} 
+	        </if>
+	    </set>
+		WHERE 
+	        id = #{id,jdbcType=INTEGER} 
+	</update>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbemailsend WHERE
+        id = #{id} 
+	]]>
+	</delete>
+    
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbemailsend 
+		WHERE 
+        id = #{id} 
+	]]>
+	</select>
+	 
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from tbemailsend where 1=1
+		<include refid="queryWhere"/>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbemailsend where 1=1
+		<include refid="queryWhere"/> 
+	    <![CDATA[ ORDER BY id DESC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<sql id="queryWhere">
+		<if test="id != null and id.trim() != ''">
+		and id = #{id}
+		</if>
+		<if test="imanageId != null and imanageId.trim() != ''">
+		and iManageID = #{imanageId}
+		</if>
+		<if test="iloginAccountId != null and iloginAccountId.trim() != ''">
+		and iLoginAccountID = #{iloginAccountId}
+		</if>
+		<if test="vcEmail != null and vcEmail.trim() != ''">
+		and vcEmail = #{vcEmail}
+		</if>
+		<if test="vcTitle != null and vcTitle.trim() != ''">
+		and vcTitle = #{vcTitle}
+		</if>
+		<if test="vcContent != null and vcContent.trim() != ''">
+		and vcContent = #{vcContent}
+		</if>
+		<if test="dtCreateBegin != null and dtCreateBegin.trim() != ''">
+		and dtCreate >= #{dtCreateBegin}
+		</if>
+		<if test="dtCreateEnd != null and dtCreateEnd.trim() != ''">
+		and dtCreate &lt;= #{dtCreateEnd}
+		</if>
+		<if test="vcMemo != null and vcMemo.trim() != ''">
+		and vcMemo = #{vcMemo}
+		</if>	
+	</sql>
+</mapper>
+
+

@@ -1,0 +1,237 @@
+<div class="main-content">
+    <div class="breadcrumbs" id="breadcrumbs">
+        <script type="text/javascript">
+            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+  
+        </script>
+
+        <ul class="breadcrumb">
+            <li>
+                <i class="icon-home home-icon"></i>
+                <a href="${www}/main">主页</a>
+            </li>
+
+            <li>
+                <a href="${www}/smstemplate">短信模板列表</a>
+            </li>
+            <li class="active">修改短信模板</li>
+        </ul><!-- .breadcrumb -->
+
+        <div class="nav-search" id="nav-search">
+            <form class="form-search">
+						<span class="input-icon">
+							<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+							<i class="icon-search nav-search-icon"></i>
+						</span>
+            </form>
+        </div><!-- #nav-search -->
+    </div>
+
+    <div class="page-content">
+        <div class="page-header">
+            <h1>修改短信模板</h1>
+        </div>
+        
+        #if(${msg})
+        	<div>
+			#if(${success})
+        		<li class="text-success">$!{msg}</li>
+   			 #else
+        		<li class="text-danger">$!{msg}</li>
+   			 #end    	
+   			</div>
+   		#end        
+        
+        <form id="inputForm" action="${www}/smstemplate/update" method="post" class="form-horizontal">
+            <input type="hidden" name="id" id="id" value="$!{smstemplate.id}"/>
+        	<div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">类型：</label>
+                        <div class="col-md-8 col-sm-8">
+#if($smstemplate.itype == 1)
+                        	 	注册验证码短信
+                        	 	#elseif($smstemplate.itype == 2)
+                        	 	充值成功短信
+                        	 	#elseif($smstemplate.itype == 3)
+                        	 	提现验证码短信
+                        	 	#elseif($smstemplate.itype == 4)
+                        	 	提现成功短信
+                        	 	#elseif($smstemplate.itype == 5)
+                        	 	找回密码验证码短信
+                        	 	#elseif($smstemplate.itype == 6)
+                        	 	自动投资成功短信
+                        	 	#elseif($smstemplate.itype == 7)
+                        	 	投资成功短信
+                        	 	#elseif($smstemplate.itype == 8)
+                        	 	投资人回款成功短信
+                        	 	#elseif($smstemplate.itype == 9)
+                        	 	项目提交最终审核人短信
+                        	 	#elseif($smstemplate.itype == 10)
+                        	 	项目最终审核人审核结果短信
+                        	 	#elseif($smstemplate.itype == 11)
+                        	 	标的提交最终审核人短信
+                        	 	#elseif($smstemplate.itype == 12)
+                        	 	标的最终审核人审核结果短信
+                        	 	#elseif($smstemplate.itype == 13)
+                        	 	提前三天催借款人短信
+                        	 	#elseif($smstemplate.itype == 14)
+                        	 	提前两天催借款人短信
+                        	 	#elseif($smstemplate.itype == 15)
+                        	 	提前一天上午催借款人短信
+                        	 	#elseif($smstemplate.itype == 16)
+                        	 	提前一天下午催借款人短信
+                        	 	#elseif($smstemplate.itype == 17)
+                        	 	借款逾期发给借款人短信
+                        	 	#elseif($smstemplate.itype == 18)
+                        	 	提前一天上午发给风控短信
+                        	 	#elseif($smstemplate.itype == 19)
+                        	 	借款逾期发给风控短信
+                        	 	#elseif($smstemplate.itype == 20)
+                        	 	提前两天上午发给担保方短信
+                        	 	#elseif($smstemplate.itype == 21)
+                        	 	提前一天上午发给担保方短信
+                        	 	#elseif($smstemplate.itype == 22)
+                        	 	还款时间当天上午发给担保方短信
+                        	 	#elseif($smstemplate.itype == 23)
+                        	 	还款时间当天下午发给担保方短信
+                        	 	#elseif($smstemplate.itype == 24)
+                        	 	担保方偿还成功短信
+                        	 	#elseif($smstemplate.itype == 25)
+                        	 	还款时间当天上午发给公司内部人员短信
+                        	 	#elseif($smstemplate.itype == 26)
+                        	 	募集满分账短信
+                        	 	#elseif($smstemplate.itype == 27)
+                        	 	还款成功短信
+                        	 	#elseif($smstemplate.itype == 28)
+                        	 	后台登陆验证短信
+                        	 	#elseif($smstemplate.itype == 29)
+                        	 	后台借款人账号添加成功短信
+                        	 	#elseif($smstemplate.itype == 30)
+                        	 	修改手机号码发给原手机短信
+                        	 	#elseif($smstemplate.itype == 31)
+                        	 	修改手机号码发给新手机短信
+                        	 	#elseif($smstemplate.itype == 34)
+                        	 	后台账号初始化密码短信
+                        	 	#elseif($smstemplate.itype == 35)
+                        	 	找回交易密码验证码短信         
+								#elseif($smstemplate.itype == 36)
+	                            财务还款审核验证码短信
+	                           #elseif($smstemplate.itype == 37)
+	                           财务借款人提现审核验证码短信
+	                           #elseif($smstemplate.itype == 38)
+	                           财务借款人补还审核验证码短信
+	                           #elseif($smstemplate.itype == 39)
+	                           项目最终审核人审核结果发给担保机构
+	                           #elseif($smstemplate.itype == 40)
+	                           项目最终审核人审核不通过短信
+	                           #elseif($smstemplate.itype == 41)
+	                           标的最终审核人审核不通过短信
+	                           #elseif($smstemplate.itype == 42)
+	                           标的最终审核验证码短信
+	                           #elseif($smstemplate.itype == 43)
+	                           项目最终审核验证码短信        
+	                           #elseif($smstemplate.itype == 44)
+	                           财务投资人提现失败审核验证码短信  
+	                           #elseif($smstemplate.itype == 45)
+	                           投资人提现失败退款短信 		   
+	                           #elseif($smstemplate.itype == 46)	                           	                                
+                               	 用户冻结,解冻审核验证码短信 
+                               #elseif($smstemplate.itype == 47)	                           	                                
+                               	 活动红包资金预警短信模板
+                               #elseif($smstemplate.itype == 48)	                           	                                
+                               	 APP推送的模板 
+                               #elseif($smstemplate.itype == 49)	                           	                                
+                               	 投资人手机号码更换审核效验码短信
+                               #elseif($smstemplate.itype == 50)	                           	                                
+                                                                                                  投资人身份认证审核效验码短信  
+                               #elseif($smstemplate.itype == 51)	                           	                                
+                               	投资人提现金额转移审核效验码短信  
+                               #elseif($smstemplate.itype == 52)	                           	                                
+                               	投资人绑卡删除审核效验码短信 
+                               #elseif($smstemplate.itype == 53)	                           	                                
+                               	后台重置密码短信  
+                               #elseif($smstemplate.itype == 54)	                           	                                
+                               	投资人投资体验标成功短信  	
+                               #elseif($smstemplate.itype == 55)	                           	                                
+                               	投资人的体验标回款成功短信   	
+                               #elseif($smstemplate.itype == 61)	                           	                                
+                               	平台充值短信
+                               #elseif($smstemplate.itype == 62)	                           	                                
+                               	平台提现短信
+                               #elseif($smstemplate.itype == 63)	                           	                                
+                               	备用金充值短信
+                               #elseif($smstemplate.itype == 64)	                           	                                
+                               	备用金提现短信 
+                               #elseif($smstemplate.itype == 68)	                           	                                
+                               	加息券账户预警短信                                                 	 	                  	 	
+                        	   #elseif($smstemplate.itype == 99)
+                        	 	邮箱认证邮件
+                        	   #elseif($smstemplate.itype == 123)
+                        	 	定期宝最终审核验证码短信
+                        	   #elseif($smstemplate.itype == 124)
+                        	 	定期宝提交最终审核人短信
+                        	   #elseif($smstemplate.itype == 125)
+                        	 	定期宝最终审核人审核通过短信
+                        	   #elseif($smstemplate.itype == 126)
+                        	 	定期宝最终审核人审核不通过短信
+                        	 	#end
+                        </div>
+                    </div>
+                </div>
+             </div>            
+        	<div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">手机号码：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	<input type="text" class="col-sm-12" id="vcPhones" name="vcPhones" value="$!{smstemplate.vcPhones}" />
+                        	<div style="color:red">
+                        	说明：多个手机号码用 英文";"分隔。如：13012345678;18812345678;15812345678
+                        	</div>
+                        </div>
+                    </div>
+                </div>
+             </div>
+             <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">短信模板：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	<textarea name="vcTemplate" style="margin: 0px; width: 587px; height: 127px;">$!{smstemplate.vcTemplate}</textarea>
+                        </div>
+                    </div>
+                </div>
+             </div> 
+             <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">状态：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	<select class="col-sm-12" name="istate">
+                                <option value="1" #if($smstemplate.istate ==1) selected #end>有效</option>
+                                <option value="2" #if($smstemplate.istate ==2) selected #end>无效</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+             </div>
+            <div class="clearfix form-actions">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="col-sm-offset-4 col-md-9">
+            				<button class="btn btn-info" type="submit">
+                                <i class="icon-ok bigger-110"></i>提交
+                            </button>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <button class="btn" type="button" onclick="javascript:history.go(-1);">
+                                <i class="icon-arrow-left bigger-110"></i>返回
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>            
+    </form>
+</div><!-- /.page-content -->
+</div><!-- /.main-content -->

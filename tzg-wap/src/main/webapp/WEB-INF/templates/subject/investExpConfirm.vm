@@ -1,0 +1,57 @@
+#set($layout = "/layout/azalea.vm")
+#set($pageTitle = "投资确认")
+#set($bodyClass = "body-gray")
+#set($pageScript = "'pages/invest-confirm'")
+
+#set($topbar = {"title": $pageTitle})
+#parse("/include/titleBar.vm")
+
+<form action="$!{basePath}/user/invest/investExpConfirm" method="post" class="l-mn2" id="j_invest_confirm_form">
+	#tokenCode
+	<div style="position:absolute;left:-1000em;"><input type="password" name="gaga"></div>
+	<ul class="invest-confirm-form">
+		<li><span class="form-label">体验金额：</span>
+			<span class="amount" id="j_original_invest_amount">$!{subject.numInvest}</span>元</li>
+	
+		<li><span class="form-label">实际支付：</span><span class="amount" id="j_actual_amount">0.00</span>元</li>
+		<li><span class="form-label">预计收益：</span>$!{investmentIncome}元</li>
+		<li><input type="password" name="payPassword" class="ipt -full">
+			<div class="tlr"><a href="$!{basePath}/user/payPassword/forgetPayPassword/page">忘记密码？</a></div>
+			<label class="error" style="display:none">请输入支付密码</label>
+		</li>
+		<li>
+			<label>
+				<input type="checkbox" name="agreeProtocol" checked value="true" id="j_agree_protocol">
+				已阅读并同意<a href="javascript:;" class="u-clPrm" id="j_protocol_btn"><span class="cl-blue">《铜掌柜投资咨询与管理服务协议》</span></a>
+				与<a href="javascript:;" class="u-clPrm" id="j_protocol_btn2"><span class="cl-blue">《铜掌柜投资合同》</span></a>
+				<label class="error" style="display:none"></label>
+			</label>
+		</li>
+		<li><button type="submit" name="submity" class="btn -primary -no-border-radius -full">确认</button></li>
+	</ul>
+	<input type="hidden" name="subjectId" value="$!{subjectId}">
+</form>
+
+
+<div class="protocol-popup" id="j_protocol_popup">
+	#parse("/include/investProtocol.vm")
+	<div class="protocol-popup_ft">
+		<button type="button" class="button" ppclosebtn>确 定</button>
+	</div>
+</div>
+
+
+<div class="protocol-popup" id="j_protocol_popup2">
+	<div class="protocol-popup_hd">《铜掌柜投资合同》</div>
+	<div class="protocol-popup_bd">
+		<!--<div class="protocol-popup_content">
+			
+		</div>-->
+		<iframe src="$!{basePath}/user/invest/experienceContract?isubjectId=$!{subjectId}" frameborder="0" width="100%" height="100%" scrolling="yes"></iframe>
+	</div>
+	<div class="protocol-popup_ft">
+		<button type="button" class="button" ppclosebtn2>确 定</button>
+	</div>
+</div>
+
+

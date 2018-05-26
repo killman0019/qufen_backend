@@ -1,0 +1,24 @@
+#set($pageName = "资金转出成功")
+#set($bodyClass = "body--gray")
+#set($topbar = { "title": $pageName })
+
+<div class="msg-sign -success"></div>
+
+<div class="f-mt5 f-tlc">
+	<div class="u-clGrayDrk u-fsH">转出金额 <span class="u-clScd">$numbers.toCurrency($!{investAmt})元</span></div>
+	<div class="f-mtb u-clGrayDrk">预计&nbsp;<time id="out-time"></time>&nbsp;23:59:59&nbsp;前到账</div>
+	<div class="u-clGrayLgt">提交转出申请后，将关闭自动转入铜钱宝功能</div>
+</div>
+
+<div class="f-mt5 f-mlr4">
+	<a href="$!{basePath}/user/home" class="u-btn z-prm z-fll">确定</a>
+</div>
+
+<script>
+(function(){
+	var out_date = new Date();
+	out_date = new Date(out_date.valueOf() + 1*24*60*60*1000)
+	out_date = out_date.getFullYear() + '年' + out_date.getMonth() + '月' + out_date.getDate() + "日"
+	document.getElementById("out-time").innerHTML = out_date;
+})()
+</script>

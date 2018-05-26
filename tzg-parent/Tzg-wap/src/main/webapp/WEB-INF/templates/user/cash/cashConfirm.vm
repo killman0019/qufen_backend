@@ -1,0 +1,54 @@
+#set($pageTitle = "提现确认_我的账户_投资人")
+#set($bodyClass = "body--gray")
+#set($topbar = {"title": '提现确认'})
+
+#set($pageFootCode = '<script>seajs.use("page/cash-confirm")</script>')
+
+<ul class="properties bg-white">
+	<li>
+		<div class="properties_label">提现银行</div>
+		<div class="properties_content">$!{bankCardName}(尾号$!stringUtil.hideBankCard($!{cardNo}))</div>
+	</li>
+	<li>
+		<div class="properties_label">提现金额</div>
+		<div class="properties_content">$!{numCash}元</div>
+	</li>
+	<li>
+		<div class="properties_label">手 续 费</div>
+		<div class="properties_content f-tlr">
+			<div#if ($todayCashCount == 0) class="line-through"#end>$!{numCashFee}元</div>
+			<div class="u-clGrayLgt u-fsSml">(每日首次免手续费)</div>
+		</div>
+	</li>
+</ul>
+<div class="f-mlr4 bdt"></div>
+<ul class="properties bg-white">
+	<li>
+		<div class="properties_label">实际到账</div>
+		<div class="properties_content"><span class="u-clScd">$!{actualCash}</span>元</div>
+	</li>
+</ul>
+
+<form method="post" action="$!{basePath}/user/cash/confirmCashbyself" id="j_cash_confirm_form">
+	<ul class="m-frm">
+		<li class="m-frm-itm">
+			<div class="captcha">
+				<input type="text" name="dynamicVerifyCode" class="u-ipt captcha_input" placeholder="请输入验证码">
+				<button type="button" class="u-btn z-scs captcha_button" id="j_send_captcha">获取验证码</button>
+			</div>
+		</li>
+		<li class="m-frm-itm">
+			<input type="password" name="payPassword" class="u-ipt" placeholder="请输入交易密码" required>
+		</li>
+		<li class="m-frm-itm--btn">
+			<button class="u-btn z-prm z-fll z-ldg" type="submit">确 认</button>
+		</li>
+	</ul>
+	<input type="hidden" name="numCash" value="$!{numCash}">
+	<input type="hidden" name="numCashFee" value="$!{numCashFee}">
+	<input type="hidden" name="actualCash" value="$!{actualCash}">
+	<input type="hidden" name="bankCardId" value="$!{bankCardId}">
+	<input type="hidden" name="cardNo" value="$!{cardNo}">
+	<input type="hidden" name="requestid">
+</form>
+

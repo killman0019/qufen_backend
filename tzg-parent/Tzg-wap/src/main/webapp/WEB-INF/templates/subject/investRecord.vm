@@ -1,0 +1,39 @@
+#set($layout = "/layout/azalea.vm")
+#set($pageScript = "'pages/invest-record'")
+
+#set($pageTitle = "投资记录-当前网贷理财产品投资人投资时间与金额 - 铜掌柜")
+#set($pageKeywords = "")
+#set($pageDescription = "")
+
+#set($topbar = { "title": "$!{subject.projectName} $!{subject.vcName}", "backLink": "$!{basePath}/subject/detail?subjectId=$!{subject.id}" })
+#parse("/include/titleBar.vm")
+
+<ul class="tab2 -col3">
+	<li><a href="$!{basePath}/subject/projectInfo/page?isubjectId=$!{subject.id}" class="item-inner">项目信息</a></li>
+	##<li><a href="$!{basePath}/subject/safety/page?isubjectId=$!{subject.id}" class="item-inner">安全保障</a></li>
+	<li class="-on"><span class="item-inner">投资记录</span></li>
+	<li><a href="$!{basePath}/subject/repayPlan/page?isubjectId=$!{subject.id}" class="item-inner">还款计划</a></li></li>
+</ul>
+
+<script type="text/template" id="j_list_template">
+[@each rows as item]
+	<tr>
+		<td>$[item.loginAccountName]</td>
+		<td>$[item.dtInvestStr]</td>
+		<td>$[item.numInvest]元</td>
+	</tr>
+[@/each]
+</script>
+
+<table class="record-list">
+	<thead>
+		<tr>
+			<th>投资人</th>
+			<th>投资时间</th>
+			<th>投资金额</th>
+		</tr>
+	</thead>
+	<tbody id="j_list_container"></tbody>
+</table>
+
+<div class="load-more" id="j_load_more" style="display:none">点击查看更多</div>

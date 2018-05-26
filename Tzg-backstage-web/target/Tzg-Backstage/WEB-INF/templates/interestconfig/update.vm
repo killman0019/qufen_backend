@@ -1,0 +1,86 @@
+<div class="main-content">
+    <div class="breadcrumbs" id="breadcrumbs">
+        <script type="text/javascript">
+            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+        </script>
+
+        <ul class="breadcrumb">
+            <li>
+                <i class="icon-home home-icon"></i>
+                <a href="${www}/main">主页</a>
+            </li>
+
+            <li>
+                <a href="${www}/interestconfig/list">利率配置</a>
+            </li>
+            <li class="active">修改分类</li>
+        </ul><!-- .breadcrumb -->
+
+        <div class="nav-search" id="nav-search">
+            <form class="form-search">
+						<span class="input-icon">
+							<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+							<i class="icon-search nav-search-icon"></i>
+						</span>
+            </form>
+        </div><!-- #nav-search -->
+    </div>
+
+    <div class="page-content">
+        <div class="page-header">
+            <h1>修改分类</h1>
+        </div>
+        <form action="${www}/interestconfig/update?id=$!{param.id}" method="post" class="form-horizontal" id="inputForm_interestconfig">
+            <div class="row">
+                <div class="col-xs-12 col-md-4">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">分类名称：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" id="vcName" name="vcName" value="$!{param.vcName}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">是否有效 ：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	<select id="ivalid" name="ivalid">
+                        		<option value="">--请选择--</option>
+                        		<option #if($!{param.ivalid}==1) selected="selected" #end value="1">是</option>
+                        		<option #if($!{param.ivalid}==2) selected="selected" #end value="2">否</option>
+                        	</select>
+                        </div>
+                    </div>
+                    <div class="red">$!{msg}</div>
+                 </div>
+            </div>
+            <div class="clearfix form-actions">
+                <div class="col-sm-offset-2 col-md-9">
+                    <button class="btn btn-info" type="submit">
+                        <i class="icon-ok bigger-110"></i>提交
+                    </button>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		            <button class="btn btn-info" type="button" onclick="javascript:history.go(-1);">
+		                <i class="icon-arrow-left bigger-110"></i>返回
+		            </button>
+                </div>
+            </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+function checkSubmit(){
+				var vcName = document.getElementById("vcName");
+				var ivalid = document.getElementById("ivalid");
+				if(vcName.value == ""){
+					alert("分类名称不能为空");
+					vcName.focus();
+					return false;
+				}
+				
+				if(ivalid.value==""){
+					alert("请选择是否有效");
+					return false;
+				}
+				var inputForm_subject = document.getElementById("inputForm_interestconfig");
+				inputForm_interestconfig.submit();
+			}
+ </script>

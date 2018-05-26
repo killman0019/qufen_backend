@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.leopard.role.resource.RoleResourceMapper">
+    <resultMap id="RoleResource" type="com.tzg.entitys.leopard.role.resource.RoleResource">
+        <id column="Id" jdbcType="INTEGER" property="id" />
+        <result column="iRoleinfoID" jdbcType="INTEGER" property="iRoleinfoID" />
+        <result column="iResourceID" jdbcType="INTEGER" property="iResourceID" />
+    </resultMap>
+
+    <insert id="insertList" parameterType="java.util.List">
+        insert into tbconsoleroleresource (iRoleinfoID,iResourceID) values
+        <foreach collection="list" item="item" index="index"
+                 separator=",">
+            (#{item.iRoleinfoID,jdbcType=INTEGER},#{item.iResourceID,jdbcType=INTEGER})
+        </foreach>
+    </insert>
+    
+    <!-- 根据角色编号，查询该角色拥有的资源记录列表 -->
+    <select id="queryResourceListByRoleID" parameterType="java.lang.Integer"
+            resultType="java.lang.Integer">
+    	select iResourceID
+    	from tbconsoleroleresource a
+		where a.iRoleinfoID = #{iRoleinfoID,jdbcType=INTEGER}
+    </select>
+    
+    <!-- 根据资源编号，查询该资源拥有的角色记录列表-->
+    <select id="queryRoleListByResourceID" parameterType="java.lang.Integer"
+            resultType="java.lang.Integer">
+    	select iRoleinfoID
+    	from tbconsoleroleresource a
+		where a.iResourceID = #{iResourceID,jdbcType=INTEGER}
+    </select>
+    
+    <!-- 根据角色编号，查询该角色没有的资源记录列表 -->
+    <select id="queryNotResourceListByRoleinfoID" parameterType="java.lang.Integer" resultType="com.tzg.entitys.leopard.role.resource.RoleResource">
+    	select a.* from tbresource a
+		where a.id != (	
+			select b.iResourceID from tbconsoleroleresource b
+		  where b.iRoleinfoID = #{iRoleinfoID,jdbcType=INTEGER}
+		)
+    </select>
+    
+    <!-- 根据角色编号，删除对应的记录 -->
+    <delete id="deleteByRoleID" parameterType="java.lang.Integer">
+    	delete from tbconsoleroleresource
+    	where iRoleinfoID = #{iRoleinfoID,jdbcType=INTEGER}
+    </delete>
+    
+    
+    <!-- 根据资源编号，删除对应的记录 -->
+    <delete id="deleteByResourceID" parameterType="java.lang.Integer">
+    	delete from tbconsoleroleresource
+    	where iResourceID =#{iResourceID,jdbcType=INTEGER}
+    </delete>
+    
+    
+</mapper>

@@ -1,0 +1,200 @@
+#set($layout = "/layout/blank.vm")
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>下载铜掌柜APP</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="renderer" content="webkit">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+<style type="text/css">
+html{height:100%;}
+body{
+	position:relative;
+	margin:0 auto;
+	max-width:640px;
+	min-width: 320px;
+	min-height:100%;
+	background:#fff
+}
+.container{
+	position: relative;
+	overflow: hidden;
+	padding-bottom:30px;
+}
+.img{
+	background: #1ba6e7;
+}
+.img img{
+	width: 100%;
+	vertical-align: top;
+}
+.img .phone {
+	margin-top: -42%;
+	margin-bottom: -23%;
+	width:104.72%;
+	margin-left: -10%;
+
+	-webkit-animation: phone 5s ease-in-out infinite;
+	   -moz-animation: phone 5s ease-in-out infinite;
+		-ms-animation: phone 5s ease-in-out infinite;
+			animation: phone 5s ease-in-out infinite; 
+}
+.img .tag {
+	position: relative;
+	float: right;
+	margin-top: -56%;
+	margin-right: 8%;
+	width: 35.6875%;
+}
+.img .cloud {
+	margin-top: 3%;
+	-webkit-animation: cloud 5s ease-in-out infinite;
+	   -moz-animation: cloud 5s ease-in-out infinite;
+		-ms-animation: cloud 5s ease-in-out infinite;
+			animation: cloud 5s ease-in-out infinite; 
+}
+.download{
+	margin-top:20%;
+	text-align:center;
+}
+.download a{
+	display:inline-block;
+	width:70%;
+	line-height:50px;
+	text-decoration:none;
+	font-size:24px;
+	color:#fff;
+	background:#f87482;
+}
+.copyright{
+	margin-top: 5%;
+	padding: 0 10%;
+	text-align: center;
+	color:#ababab;
+	font-size:12px;
+	line-height: 1.5;
+}
+.hint-layer{
+	display: none;
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 2;
+	background-color: rgba(0,0,0,0.5);
+}
+.hint-layer .inner{
+	padding: 20px 30px;
+	min-height: 50px;
+	border-bottom-left-radius: 20px;
+	border-bottom-right-radius: 20px;
+	line-height: 1.5;
+	font-size: 14px;
+	background: #fff;
+}
+.hint-layer .inner em {
+	font-style: normal;
+	color: #f87482;
+}
+.hint-layer .inner .content{
+	position: relative;
+	z-index: 2;
+}
+.hint-layer .inner img {
+	display: block;
+	position: absolute;
+	top: 0;
+	right: 5px;
+	z-index: 1;
+	width:80px;
+}
+
+@-webkit-keyframes cloud {
+	0%,100% {
+		-webkit-transform: translate(0);
+		-moz-transform: translate(0);
+		-ms-transform: translate(0);
+		transform: translate(0)
+	}
+	25% {
+		-webkit-transform: translate(5%,0);
+		-moz-transform: translate(5%,0);
+		-ms-transform: translate(5%,0);
+		transform: translate(5%,0)
+	}
+	75% {
+		-webkit-transform: translate(-5%,0);
+		-moz-transform: translate(-5%,0);
+		-ms-transform: translate(-5%,0);
+		transform: translate(-5%,0)
+	}
+}
+
+@-webkit-keyframes phone {
+	0%,100% {
+		-webkit-transform: translate(0);
+		-moz-transform: translate(0);
+		-ms-transform: translate(0);
+		transform: translate(0)
+	}
+	50% {
+		-webkit-transform: translate(-6%,0);
+		-moz-transform: translate(-6%,0);
+		-ms-transform: translate(-6%,0);
+		transform: translate(-6%,0)
+	}
+}
+</style>
+</head>
+<body>
+	<div class="container">
+		<div class="img">
+			<img src="$!{staticPath}/pics/topics/app-landingpage/ban.png" alt="下载铜掌柜APP">
+			<img src="$!{staticPath}/pics/topics/app-landingpage/ban2.gif" alt="下载铜掌柜APP 云" class="cloud">
+			<img src="$!{staticPath}/pics/topics/app-landingpage/ban1.png?v=3" alt="下载铜掌柜APP 手机" class="phone">
+			<img src="$!{staticPath}/pics/topics/app-landingpage/ban3.png?v=1" alt="30元红包" class="tag">
+		</div>
+		<div class="download">
+		<a href="$!{basePath}/down/download" id="j_layer_btn">马上下载</a>
+		</div>
+		<div class="copyright">
+			河北融佰通金融服务有限公司 版权所有<br>
+			www.tzg.cn
+		</div>
+	</div>
+
+	<div class="hint-layer" id="hint_layer">
+		<div class="inner">
+			<div class="content">
+				哎呀！微信不让跳。<br>
+				烦请抬眼，点击右上角选择<em>在浏览器(或Safari)打开</em><br>
+				该怎么下，还怎么下
+			</div>
+			<img src="$!{staticPath}/pics/topics/app-landingpage/arr.png" alt="下载铜掌柜APP">
+		</div>
+	</div>
+	<script>
+		if (navigator.userAgent.toLowerCase().indexOf("micromessenger") > -1)
+		(function() {
+			var button = document.getElementById("j_layer_btn");
+			var layer = document.getElementById("hint_layer");
+			if (button) {
+				button.onclick = function (e) {
+					layer.style.display = "block";
+					return false;
+				};
+
+				layer.onclick = function () {
+					layer.style.display = "none";
+				}
+			}
+		})()
+	</script>
+##百度统计
+<img src="$sc.getBaidu($request,$response,'b274beec7e93e435fc242fc634bb5c73')" width="0" height="0" />
+##cnzz统计
+<img src="$sc.getCnzz($request,$response,1254699603)" width="0" height="0" />
+</body>
+</html>

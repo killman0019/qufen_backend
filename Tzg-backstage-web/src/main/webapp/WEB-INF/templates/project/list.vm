@@ -1,0 +1,113 @@
+<div class="main-content">
+    <div class="breadcrumbs" id="breadcrumbs">
+        <script type="text/javascript">
+            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+        </script>
+
+        <ul class="breadcrumb">
+            <li>
+                <i class="icon-home home-icon"></i>
+                <a href="${www}/main">主页</a>
+            </li>
+
+            <li class="active">项目信息列表</li>
+        </ul><!-- .breadcrumb -->
+
+        <div class="nav-search" id="nav-search">
+            <form class="form-search">
+						<span class="input-icon">
+							<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+							<i class="icon-search nav-search-icon"></i>
+						</span>
+            </form>
+        </div><!-- #nav-search -->
+    </div>
+	<div class="page-content">
+		<div class="page-header">
+		    <h1>项目信息列表</h1>
+		</div>
+		<div class="container-fluid">
+		    <div class="dataTables_wrapper">
+		        <div class="row">
+		            <div class="col-sm-11">
+		                <form class="form-inline" role="form">
+		                    <div class="form-group">
+		                        <label>代币名称：</label>
+		                        <input type="text" name="projectCode" value="">
+		                    </div>
+		                    <div class="form-group">
+		                        <label>英文名称：</label>
+		                        <input type="text" name="projectEnglishName" value="">
+		                    </div>
+		                    <div class="form-group">
+		                        <button class="btn btn-xs btn-primary" type="submit">查询</button>
+		                    </div>
+		                </form>
+		            </div>
+                    <div class="col-sm-1">
+                        <a href="$!{www}/project/new" class="btn btn-success btn-xs">添加</a>
+                    </div>
+		        </div>
+		        <table class="table table-striped table-bordered table-hover dataTable">
+		            <thead>
+		            <tr>
+		                <th>项目ID</th>
+		                <th>代币名称</th>
+		                <th>英文名称</th>
+		                <th>中文名称</th>
+		                <th>是否上市</th>
+		                <th>发行时间</th>
+		                <th>发行量</th>    
+		                <th>审核状态</th>           		             
+		                <th>操作</th>
+		               
+		            </tr>
+		            </thead>
+		            <tbody>
+		                #foreach($row in $result.rows)
+		                <tr>
+		                	<td> $!{row.projectId} </td>
+		                	<td> $!{row.projectCode} </td>
+		                	<td> $!{row.projectEnglishName} </td>
+		                	<td> $!{row.projectChineseName} </td>
+		                	#if($!{row.listed} == 1)		                	
+		                	<td>是</td>
+		                	#else
+		                	<td>否</td>
+		                	#end
+		                	<td> $!{row.issueDateStr} </td>
+		                	<td> $!{row.issueNum} </td>	
+		                	#if($!{row.state}==1)
+		                	<td>待审核</td>	
+		                	#elseif($!{row.state}==2)
+		                	<td>审核通过</td>
+		                	#elseif($!{row.state}==3)
+		                	<td>已拒绝</td>
+		                	#end
+		                		                	
+		                    <td><a href="$!{www}/project/find?id=$!{row.projectId}">查看</a>   ｜
+		                        #if($!{row.state}==1) 
+		                        <a href="$!{www}/project/approve?id=$!{row.projectId}">审核通过</a>
+		                        <a href="$!{www}/project/reject?id=$!{row.projectId}">拒绝</a>
+		                        #end
+		                        <a href="$!{www}/project/delete?id=$!{row.projectId}">删除</a>
+		                    </td>
+		                </tr>
+		                #end
+		            </tbody>
+		        </table>
+		        <div class="row">
+		            <div class="col-sm-12">
+		                <div class="dataTables_paginate paging_bootstrap">
+		                    <ul class="pagination">
+		                    	#set($pageRequestURL="$!{www}/project?pageIndex=[PAGINATION_PAGE_INDEX]#if($!{result.queryParameters})&$!{result.queryParameters}#end")
+		                    	#paginationHelper($result $pageRequestURL)
+		                    </ul>
+		                </div>
+		            </div>
+		       </div>
+		       
+		    </div>
+		</div>
+    </div><!-- /.page-content -->
+</div><!-- /.main-content -->

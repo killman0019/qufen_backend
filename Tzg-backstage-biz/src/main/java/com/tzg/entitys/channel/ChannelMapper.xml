@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.channel.ChannelMapper">	
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.channel.Channel">
+		<result property="id" jdbcType="INTEGER" column="id"/>
+		<result property="vcName" jdbcType="VARCHAR" column="vcName"/>
+		<result property="itype" jdbcType="INTEGER" column="iType"/>
+		<result property="vcArea" jdbcType="VARCHAR" column="vcArea"/>
+		<result property="ibusinessAreaId" jdbcType="INTEGER" column="iBusinessAreaID"/>
+		<result property="vcBusinessArea" jdbcType="VARCHAR" column="vcBusinessArea"/>
+		<result property="numCredit" jdbcType="DECIMAL" column="numCredit"/>
+		<result property="dtRegister" jdbcType="TIMESTAMP" column="dtRegister"/>
+		<result property="vcRegister" jdbcType="VARCHAR" column="vcRegister"/>
+		<result property="vcCapital" jdbcType="VARCHAR" column="vcCapital"/>
+		<result property="vcScale" jdbcType="VARCHAR" column="vcScale"/>
+		<result property="vcState" jdbcType="VARCHAR" column="vcState"/>
+		<result property="vcRate" jdbcType="VARCHAR" column="vcRate"/>
+		<result property="vcLegalPerson" jdbcType="VARCHAR" column="vcLegalPerson"/>
+		<result property="vcChairman" jdbcType="VARCHAR" column="vcChairman"/>
+		<result property="vcCompanyTel" jdbcType="VARCHAR" column="vcCompanyTel"/>
+		<result property="vcIntroduction" jdbcType="VARCHAR" column="vcIntroduction"/>
+		<result property="vcComplain" jdbcType="VARCHAR" column="vcComplain"/>
+		<result property="vcManageGroup" jdbcType="VARCHAR" column="vcManageGroup"/>
+		<result property="vcContractName" jdbcType="VARCHAR" column="vcContractName"/>
+		<result property="vcContractLevel" jdbcType="VARCHAR" column="vcContractLevel"/>
+		<result property="vcContractTel" jdbcType="VARCHAR" column="vcContractTel"/>
+		<result property="vcContractPhone" jdbcType="CHAR" column="vcContractPhone"/>
+		<result property="vcContractEmail" jdbcType="VARCHAR" column="vcContractEmail"/>
+		<result property="ivalid" jdbcType="INTEGER" column="iValid"/>
+		<result property="dtCreate" jdbcType="TIMESTAMP" column="dtCreate"/>
+		<result property="dtModify" jdbcType="TIMESTAMP" column="dtModify"/>
+    </resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+        id ,vcName ,iType ,vcArea ,iBusinessAreaID ,vcBusinessArea ,numCredit ,dtRegister ,vcRegister ,vcCapital ,vcScale ,vcState ,vcRate ,vcLegalPerson ,vcChairman ,vcCompanyTel ,vcIntroduction ,vcComplain ,vcManageGroup ,vcContractName ,vcContractLevel ,vcContractTel ,vcContractPhone ,vcContractEmail ,iValid ,dtCreate ,dtModify 
+	    ]]>
+	</sql>
+	
+	<insert id="save" parameterType="com.tzg.entitys.channel.Channel" useGeneratedKeys="true" keyProperty="id">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+	<![CDATA[
+		INSERT INTO tbchannel (
+        	vcName ,
+        	itype ,
+        	vcArea ,
+        	iBusinessAreaID ,
+        	vcBusinessArea ,
+        	numCredit ,
+        	dtRegister ,
+        	vcRegister ,
+        	vcCapital ,
+        	vcScale ,
+        	vcState ,
+        	vcRate ,
+        	vcLegalPerson ,
+        	vcChairman ,
+        	vcCompanyTel ,
+        	vcIntroduction ,
+        	vcComplain ,
+        	vcManageGroup ,
+        	vcContractName ,
+        	vcContractLevel ,
+        	vcContractTel ,
+        	vcContractPhone ,
+        	vcContractEmail ,
+        	iValid ,
+        	dtCreate ,
+        	dtModify 
+		) VALUES (
+        	#{vcName,jdbcType=VARCHAR} ,
+        	#{itype,jdbcType=INTEGER} ,
+        	#{vcArea,jdbcType=VARCHAR} ,
+        	#{ibusinessAreaId,jdbcType=INTEGER} ,
+        	#{vcBusinessArea,jdbcType=VARCHAR} ,
+        	#{numCredit,jdbcType=DECIMAL} ,
+        	#{dtRegister,jdbcType=TIMESTAMP} ,
+        	#{vcRegister,jdbcType=VARCHAR} ,
+        	#{vcCapital,jdbcType=VARCHAR} ,
+        	#{vcScale,jdbcType=VARCHAR} ,
+        	#{vcState,jdbcType=VARCHAR} ,
+        	#{vcRate,jdbcType=VARCHAR} ,
+        	#{vcLegalPerson,jdbcType=VARCHAR} ,
+        	#{vcChairman,jdbcType=VARCHAR} ,
+        	#{vcCompanyTel,jdbcType=VARCHAR} ,
+        	#{vcIntroduction,jdbcType=VARCHAR} ,
+        	#{vcComplain,jdbcType=VARCHAR} ,
+        	#{vcManageGroup,jdbcType=VARCHAR} ,
+        	#{vcContractName,jdbcType=VARCHAR} ,
+        	#{vcContractLevel,jdbcType=VARCHAR} ,
+        	#{vcContractTel,jdbcType=VARCHAR} ,
+        	#{vcContractPhone,jdbcType=CHAR} ,
+        	#{vcContractEmail,jdbcType=VARCHAR} ,
+        	#{ivalid,jdbcType=INTEGER} ,
+        	#{dtCreate,jdbcType=TIMESTAMP} ,
+        	#{dtModify,jdbcType=TIMESTAMP} 
+		)
+	]]>
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.channel.Channel">
+		UPDATE tbchannel
+		<set>
+			<if test="vcName != null">
+	        vcName = #{vcName,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="itype != null">
+	        iType = #{itype,jdbcType=INTEGER} ,
+	        </if>
+			<if test="vcArea != null">
+	        vcArea = #{vcArea,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="ibusinessAreaId != null">
+	        iBusinessAreaID = #{ibusinessAreaId,jdbcType=INTEGER} ,
+	        </if>
+			<if test="vcBusinessArea != null">
+	        vcBusinessArea = #{vcBusinessArea,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="numCredit != null">
+	        numCredit = #{numCredit,jdbcType=DECIMAL} ,
+	        </if>
+			<if test="dtRegister != null">
+	        dtRegister = #{dtRegister,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="vcRegister != null">
+	        vcRegister = #{vcRegister,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcCapital != null">
+	        vcCapital = #{vcCapital,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcScale != null">
+	        vcScale = #{vcScale,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcState != null">
+	        vcState = #{vcState,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcRate != null">
+	        vcRate = #{vcRate,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcLegalPerson != null">
+	        vcLegalPerson = #{vcLegalPerson,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcChairman != null">
+	        vcChairman = #{vcChairman,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcCompanyTel != null">
+	        vcCompanyTel = #{vcCompanyTel,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcIntroduction != null">
+	        vcIntroduction = #{vcIntroduction,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcComplain != null">
+	        vcComplain = #{vcComplain,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcManageGroup != null">
+	        vcManageGroup = #{vcManageGroup,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcContractName != null">
+	        vcContractName = #{vcContractName,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcContractLevel != null">
+	        vcContractLevel = #{vcContractLevel,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcContractTel != null">
+	        vcContractTel = #{vcContractTel,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcContractPhone != null">
+	        vcContractPhone = #{vcContractPhone,jdbcType=CHAR} ,
+	        </if>
+			<if test="vcContractEmail != null">
+	        vcContractEmail = #{vcContractEmail,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="ivalid != null">
+	        iValid = #{ivalid,jdbcType=INTEGER} ,
+	        </if>
+			<if test="dtCreate != null">
+	        dtCreate = #{dtCreate,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="dtModify != null">
+	        dtModify = #{dtModify,jdbcType=TIMESTAMP}
+	        </if>
+	    </set>
+		WHERE 
+	        id = #{id,jdbcType=INTEGER} 
+	</update>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		update tbchannel set ivalid=2 WHERE id = #{id} 
+	]]>
+	</delete>
+    
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbchannel 
+		WHERE 
+        id = #{id} 
+	]]>
+	</select>
+	
+		<select id="findByName" resultMap="BaseResultMap" parameterType="java.lang.String">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbchannel 
+		WHERE 
+        vcName = #{vcName} 
+        and iValid = 1
+	]]>
+	</select>
+	 
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from tbchannel where ivalid=1
+		<if test="id != null">
+		and id = #{id}
+		</if>
+		<if test="vcName != null">
+		and vcName like "%"#{vcName}"%"
+		</if>
+		<if test="name != null">
+		and vcName = #{name}
+		</if>
+		<if test="itype != null">
+		and iType = #{itype}
+		</if>
+		<if test="vcArea != null">
+		and vcArea = #{vcArea}
+		</if>
+		<if test="ibusinessAreaId != null">
+		and iBusinessAreaID = #{ibusinessAreaId}
+		</if>
+		<if test="vcBusinessArea != null">
+		and vcBusinessArea = #{vcBusinessArea}
+		</if>
+		<if test="numCredit != null">
+		and numCredit = #{numCredit}
+		</if>
+		<if test="dtRegisterBegin != null">
+		and dtRegister >= #{dtRegisterBegin}
+		</if>
+		<if test="dtRegisterEnd != null">
+		and dtRegister &lt;= #{dtRegisterEnd}
+		</if>
+		<if test="vcRegister != null">
+		and vcRegister = #{vcRegister}
+		</if>
+		<if test="vcCapital != null">
+		and vcCapital = #{vcCapital}
+		</if>
+		<if test="vcScale != null">
+		and vcScale = #{vcScale}
+		</if>
+		<if test="vcState != null">
+		and vcState = #{vcState}
+		</if>
+		<if test="vcRate != null">
+		and vcRate = #{vcRate}
+		</if>
+		<if test="vcLegalPerson != null">
+		and vcLegalPerson = #{vcLegalPerson}
+		</if>
+		<if test="vcChairman != null">
+		and vcChairman = #{vcChairman}
+		</if>
+		<if test="vcCompanyTel != null">
+		and vcCompanyTel = #{vcCompanyTel}
+		</if>
+		<if test="vcIntroduction != null">
+		and vcIntroduction = #{vcIntroduction}
+		</if>
+		<if test="vcComplain != null">
+		and vcComplain = #{vcComplain}
+		</if>
+		<if test="vcManageGroup != null">
+		and vcManageGroup = #{vcManageGroup}
+		</if>
+		<if test="vcContractName != null">
+		and vcContractName = #{vcContractName}
+		</if>
+		<if test="vcContractLevel != null">
+		and vcContractLevel = #{vcContractLevel}
+		</if>
+		<if test="vcContractTel != null">
+		and vcContractTel = #{vcContractTel}
+		</if>
+		<if test="vcContractPhone != null">
+		and vcContractPhone = #{vcContractPhone}
+		</if>
+		<if test="vcContractEmail != null">
+		and vcContractEmail = #{vcContractEmail}
+		</if>
+		<if test="dtCreateBegin != null">
+		and dtCreate >= #{dtCreateBegin}
+		</if>
+		<if test="dtCreateEnd != null">
+		and dtCreate &lt;= #{dtCreateEnd}
+		</if>
+		<if test="dtModifyBegin != null">
+		and dtModify >= #{dtModifyBegin}
+		</if>
+		<if test="dtModifyEnd != null">
+		and dtModify &lt;= #{dtModifyEnd}
+		</if>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbchannel where ivalid=1
+		<if test="id != null">
+		and id = #{id}
+		</if>
+		<if test="name != null">
+		and vcName = #{name}
+		</if>
+		<if test="vcName != null">
+		and vcName like "%"#{vcName}"%"
+		</if>
+		<if test="itype != null">
+		and iType = #{itype}
+		</if>
+		<if test="vcArea != null">
+		and vcArea = #{vcArea}
+		</if>
+		<if test="ibusinessAreaId != null">
+		and iBusinessAreaID = #{ibusinessAreaId}
+		</if>
+		<if test="vcBusinessArea != null">
+		and vcBusinessArea = #{vcBusinessArea}
+		</if>
+		<if test="numCredit != null">
+		and numCredit = #{numCredit}
+		</if>
+		<if test="dtRegisterBegin != null and dtRegisterBegin != ''">
+		and dtRegister >= #{dtRegisterBegin}
+		</if>
+		<if test="dtRegisterEnd != null and dtRegisterEnd != ''">
+		and dtRegister &lt;= #{dtRegisterEnd}
+		</if>
+		<if test="vcRegister != null">
+		and vcRegister = #{vcRegister}
+		</if>
+		<if test="vcCapital != null">
+		and vcCapital = #{vcCapital}
+		</if>
+		<if test="vcScale != null">
+		and vcScale = #{vcScale}
+		</if>
+		<if test="vcState != null">
+		and vcState = #{vcState}
+		</if>
+		<if test="vcRate != null">
+		and vcRate = #{vcRate}
+		</if>
+		<if test="vcLegalPerson != null">
+		and vcLegalPerson = #{vcLegalPerson}
+		</if>
+		<if test="vcChairman != null">
+		and vcChairman = #{vcChairman}
+		</if>
+		<if test="vcCompanyTel != null">
+		and vcCompanyTel = #{vcCompanyTel}
+		</if>
+		<if test="vcIntroduction != null">
+		and vcIntroduction = #{vcIntroduction}
+		</if>
+		<if test="vcComplain != null">
+		and vcComplain = #{vcComplain}
+		</if>
+		<if test="vcManageGroup != null">
+		and vcManageGroup = #{vcManageGroup}
+		</if>
+		<if test="vcContractName != null">
+		and vcContractName = #{vcContractName}
+		</if>
+		<if test="vcContractLevel != null">
+		and vcContractLevel = #{vcContractLevel}
+		</if>
+		<if test="vcContractTel != null">
+		and vcContractTel = #{vcContractTel}
+		</if>
+		<if test="vcContractPhone != null">
+		and vcContractPhone = #{vcContractPhone}
+		</if>
+		<if test="vcContractEmail != null">
+		and vcContractEmail = #{vcContractEmail}
+		</if>
+		<if test="dtCreateBegin != null and dtCreateBegin != ''">
+		and dtCreate >= #{dtCreateBegin}
+		</if>
+		<if test="dtCreateEnd != null and dtCreateEnd != ''">
+		and dtCreate &lt;= #{dtCreateEnd}
+		</if>
+		<if test="dtModifyBegin != null and dtModifyBegin != ''">
+		and dtModify >= #{dtModifyBegin}
+		</if>
+		<if test="dtModifyEnd != null and dtModifyEnd != ''">
+		and dtModify &lt;= #{dtModifyEnd}
+		</if>
+       <if test="orderByStr != null">
+	 	  <![CDATA[ ORDER BY #{orderByStr} ]]>
+	   </if>
+       <![CDATA[ limit ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<select id="queryTbChannelAll" resultMap="BaseResultMap">
+		select id,vcName from tbchannel 
+		where iValid = 1
+	</select>
+	
+	
+</mapper>
+
+

@@ -1,0 +1,124 @@
+## 定期宝详情
+## =======================================
+#set($pageName = "掌薪计划$!{fixedbaoproject.vcName}")
+#set($bodyClass = "body--gray")
+#set($pageFootCode = '<script>seajs.use("page/dqb-detail")</script>')
+#set($topbar = { "title": $pageName })
+
+<div class="subject-detail-base m1">
+	<div class="sdb_earning">
+		<div class="sdb_earning_value">$numbers.toCurrency($!{fixedbaoproject.numIntetrestRate})<sub>%</sub></div>
+		<div class="sdb_earning_name">年化收益</div>
+	</div>
+	<div class="sdb_line"></div>
+	<div class="sdb_total">总额度
+		#if ($fixedbaoproject.numTotal >= 10000)
+			#set($formatNumTotal = $fixedbaoproject.numTotal / 10000)
+			$numbers.toCurrency($formatNumTotal)万元
+        #else
+			$numbers.toCurrency($!fixedbaoproject.numTotal)元
+    	#end
+	</div>
+	<ul class="sdb_properties">
+		<li>
+			<div class="pr-content">$!{fixedbaoproject.numMinAmount}元</div>
+			<div class="pr-label">起投金额</div>
+		</li>
+		<li>
+			<div class="pr-content">$!{fixedbaoproject.numIncrease}元</div>
+			<div class="pr-label">递增金额</div>
+		</li>
+		<li>
+			<div class="pr-content">$!{fixedbaoproject.numPeriod}天</div>
+			<div class="pr-label">锁定期</div>
+		</li>
+	</ul>
+</div>
+
+<div class="m1 b1 subject-detail-second">
+	<div class="sds_progress m-prgr2"><span class="m-prgr2-bar" style="width:$!{fixedbaoproject.percent}%"></span></div>
+	<div class="sds_progress-title">已售出$!{fixedbaoproject.percent}% 剩余可投资
+		     #if ($fixedbaoproject.restNumSales >= 10000)
+					#set($formatNumTotal = $fixedbaoproject.restNumSales / 10000)
+					$numbers.toCurrency($formatNumTotal)万元
+		        #else
+					$numbers.toCurrency($!fixedbaoproject.restNumSales)元
+	        	#end
+		</div>
+</div>
+
+<div class="m1 b1">
+	<ul class="block-progress">
+		<li class="-light">掌薪计划发布<span class="block-progress_side"></span></li>
+		<li class="-light">购买加入<span class="block-progress_side">$!{joinTime}</span></li>
+		<li>进入锁定期<span class="block-progress_side">$!{lockTime}</span></li>
+		<li>退出锁定期<span class="block-progress_side">$!{outLockTime}</span></li>
+	</ul>
+</div>
+
+## <div class="m1 b1 sd-properties-wrap">
+## 	<ul class="sd-properties u-fsH">
+## 		<li>
+## 			<div class="property-label">起息日</div>
+## 			<div class="property-content"></div>
+## 		</li>
+## 		<li>
+## 			<div class="property-label">到息日</div>
+## 			<div class="property-content"></div>
+## 		</li>
+## 		<li>
+## 			<div class="property-label">还款方式</div>
+## 			<div class="property-content">到期还本付息</div>
+## 		</li>
+## 		<li>
+## 			<div class="property-label">保障方式</div>
+## 			<div class="property-content">本息保障</div>
+## 		</li>
+## 	</ul>
+## </div>
+
+<div class="m1 b1 text-section">
+	<div class="text-section_title"><i class="ii-product-info"></i>产品介绍</div>
+	<div class="text-section_content">
+		掌薪计划是铜掌柜推出的一款具有固定收益的短期理财产品。该产品通过分散投资，在有效地降低投资风险同时兼顾着高收益，是银行存款收益20多倍。
+	</div>
+</div>
+
+<div class="m1 b1 record-section">
+	## <div class="text-section_title">其他信息</div>
+	<div class="box-view-group">
+		## <a href="$!{basePath}/subject/fixedbaoDesc?projectId=$!{fixedbaoproject.id}"><i class="ii-product-info"></i>产品详情</a>
+		<a href="$!{basePath}/subject/fixedBaoTodayinvestRecordShow?projectId=$!{fixedbaoproject.id}">
+			<i class="ii-join-record"></i>加入记录
+			<span class="other"><span class="u-clPrm">$!{investCount}</span>人次加入</span>
+		</a>
+	</div>
+</div>
+
+<div class="fixed-foot">
+	<div class="fixed-foot_inner#if($bottomState.projectStatus == 2) -investable#end" id="j_footbar">
+		#if($bottomState.projectStatus == 2)
+			<div class="invest-form">
+				<div class="earning-calc">预计收益：<span class="u-clScd" id="j_earning" data-earning-per-10000yuan="$!{investmentIncome}"></span></div>
+				<form action="$!{basePath}/user/invest/investFixedBao" method="post" class="fixed-foot_form f-mt" id="j_invest_form">
+					<input type="hidden" name="projectId" value="$!{fixedbaoproject.id}">
+					#if ($bottomState.errormsg)
+						<input type="number" name="investAmt" value="$!{bottomState.errorinvestAmt}" data-value="$!{fixedbaoproject.restNumSales}" class="u-ipt z-err" required>
+					#else
+						<input type="number" name="investAmt" value="$!{bottomState.defaultInvestAmt}" data-value="$!{fixedbaoproject.restNumSales}" class="u-ipt" required>
+					#end
+					<button type="submit" class="u-btn z-prm">立即投资</button>
+					#if ($bottomState.errormsg)
+						<label id="investAmt-error" class="z-err" for="investAmt">$!{bottomState.errormsg}</label>
+					#end
+				</form>
+			</div>
+			<div class="fixed-foot_inner_hint">起投金额：$!{fixedbaoproject.numMinAmount}元 递增金额：$!{fixedbaoproject.numIncrease}元的倍数</div>
+		#elseif ($bottomState.projectStatus == 1 || $bottomState.projectStatus == 3)
+			<div class="invest-msg"><span class="u-btn z-fll">$!{bottomState.msg}</span></div>
+		#else
+			<div class="invest-msg"><a href="$!{basePath}${bottomState.redirect_url}" class="u-btn z-prm z-fll">$!{bottomState.msg}</a></div>
+		#end
+	</div>
+</div>
+<div class="fixed-foot-placeholder#if ($subject.istate == 11) -high#end"></div>

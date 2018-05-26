@@ -1,0 +1,19 @@
+#set($pageName = "提现成功")
+#set($topbar = { "title": $pageName,"backLink":"no" })
+
+<div class="f-mtb5 f-mlr10">
+	<ul class="cash-progress">
+		<li class="-active">
+			申请提现：$!{numCash}元<br>
+			手 续 费：$!{numCashFee}元<br>
+			实际到账：$!{actualCash}元
+		</li>
+		<li>
+			预计到账时间<br>
+			在1-3个工作日内
+		</li>
+	</ul>
+</div>
+<div class="f-mtb3 f-mlr4">
+	<a href="$!{basePath}/user/financialRecord/page" class="u-btn z-prm z-fll">确认</a>
+</div>

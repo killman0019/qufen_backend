@@ -1,0 +1,177 @@
+<div class="main-content">
+    <div class="breadcrumbs" id="breadcrumbs">
+        <script type="text/javascript">
+            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+        </script>
+
+        <ul class="breadcrumb">
+            <li>
+                <i class="icon-home home-icon"></i>
+                <a href="${www}/main">主页</a>
+            </li>
+
+            <li>
+                <a href="${www}/tokenaward/new">发放代币</a>
+            </li>
+            <li class="active">发放奖励</li>
+        </ul><!-- .breadcrumb -->
+
+        <div class="nav-search" id="nav-search">
+            <form class="form-search">
+						<span class="input-icon">
+							<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+							<i class="icon-search nav-search-icon"></i>
+						</span>
+            </form>
+        </div><!-- #nav-search -->
+    </div>
+
+    <div class="page-content">
+        <div class="page-header">
+            <h1>发放奖励</h1>
+        </div>
+<form action="$!{www}/tokenaward/adds" class="form-horizontal">
+            <div class="row">
+                <div class="col-xs-12 col-md-4">
+                  <!--  <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">postId：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="postId" value="$!{param.usernam}"/>
+                        </div>
+                    </div> -->
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">用户手机号：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="mobile" value="$!{param.mobile}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">奖励数量：</label>  最多100W FIND
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="inviteRewards" value="$!{param.inviteRewards}"/> 
+                        </div>
+                    </div>
+                  <!--  <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">奖励类型：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="tokenAwardFunctionType" value="$!{param.tokenAwardFunctionType}"/>
+                        </div>
+                    </div> -->
+                    
+                     <div class="form-group">
+		                         <label class="col-md-4 col-sm-2 control-label">奖励类型：</label>
+								<select name="tokenAwardFunctionType" id="tokenAwardFunctionType" class="col-md-8 col-sm-8">  
+								<!-- '交易描述:0-充值1-评测奖励2-讨论奖励3-文章奖励4-榜单奖励5-用户赞赏6-注册奖励7-点赞奖励8-邀请好友奖励21-提现22-赞赏他人',
+10-充值11-评测奖励12-讨论奖励13-文章奖励14-榜单奖励15-用户赞赏16-注册奖励17-点赞奖励18-邀请好友奖励21-提现22-赞赏他人' -->
+                                   <option value="">全部</option> 
+                                   <option value="10">充值</option>  
+                                   <option value="11">评测奖励</option>  
+                                   <option value="12">讨论奖励</option>  
+                                   <option value="13">文章奖励</option>  
+                                   <option value="14">榜单奖励</option>  
+                                   <option value="15">用户打赏</option>  
+                                   <option value="16">注册奖励</option>  
+                                   <option value="17">点赞奖励</option>  
+                                   <option value="18">邀请好友奖励</option>  
+                                   <option value="21">提现</option>  
+                                   <option value="22">赞赏他人</option>  
+                                </select>  
+		               </div>
+                     
+            	    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">发放类型：</label>
+						<select name="distributionType" id="distributionType" class="col-md-8 col-sm-8">  
+                           <option value="">全部</option> 
+                           <option value="1">一次性发放</option>  
+                           <option value="2">线性发放</option>  
+                        </select>  
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">发放备注：</label>  
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="remark" value="$!{param.remark}"/> 
+                        </div>
+                   	 </div>
+                  <!--  <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">验证码：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="code" value="$!{param.code}"/>
+                        </div> -->
+                        
+                         <label class="block row clearfix">
+                            <div class="col-xs-7">
+								 <span class="block input-icon input-icon-right">
+									<input type="text" name="dynamicValidateCode" class="form-control" placeholder="手机动态码" />
+								</span>
+                            </div>
+                            <div class="col-xs-5">
+                                <button class="btn btn-sm" type="button" id="J_send_dynamic_verify_code" onclick="getIdentify();">获取动态码</button>
+                            </div>
+                        </label>
+                    </div>
+                    
+                    
+                    <div class="red">$!{msg}</div>
+               	</div>
+            </div>
+            <div class="clearfix form-actions">
+                <div class="col-sm-offset-2 col-md-9">
+                    <button class="btn btn-info" type="submit">
+                        <i class="icon-ok bigger-110"></i> 提交
+                    </button>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		            <button class="btn btn-info" type="button" onclick="javascript:history.go(-1);">
+		                <i class="icon-arrow-left bigger-110"></i>返回
+		            </button>
+                </div>
+            </div>
+</form>
+<script>			
+                    function getIdentify() {
+                        $('#J_send_dynamic_verify_code').prop("disabled", true);
+                        msgDown('#J_send_dynamic_verify_code',60);
+                        
+					    var sendData = {};
+					    sendData.bus = 'consoleLogin';
+					   //sendData.loginname = loginname;
+					    jQuery.ajax({
+					        url: '$!{www}'+'/tokenaward/toConsoleAccount',
+					        type: 'post',
+					        dataType: 'json',
+					        data: sendData,
+					        success: function (back) {
+					            if (!back.success) {
+					             //	msgDown('#J_send_dynamic_verify_code',60);
+					            //} else {
+					            	//$("#all_message").text(back.msg);
+					            	//$("#all_message").show();
+                                    alert(back.msg);
+					            }
+					        }
+					    });
+					}
+					function  msgDown(id,seconds){
+					    var obj = $(id);
+					    obj.attr('href', 'javascript:void(0);'); 
+						var interval = 1000;
+
+						var countdow = function(){
+							if(seconds == 0){
+								obj.text('重新获取验证码');
+								obj.attr('href','javascript:getIdentify();');
+								obj.prop("disabled", false);
+							}else if(seconds == -1){
+								clearInterval(downId);
+							}else{
+								obj.text(seconds+"秒后重试");
+								obj.prop("disabled", true);
+							}			
+							seconds = seconds -1;
+						};
+						countdow();
+						var downId = window.setInterval(countdow, interval);
+					}
+                </script>
+
+    </div><!-- /.page-content -->
+</div><!-- /.main-content -->

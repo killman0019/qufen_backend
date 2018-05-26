@@ -1,0 +1,524 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.cash.CashMapper">
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.cash.Cash">
+		<result property="id" jdbcType="INTEGER" column="id" />
+		<result property="iloginAccountId" jdbcType="INTEGER" column="iLoginAccountID" />
+		<result property="iloginAccountName" jdbcType="VARCHAR" column="iloginAccountName" />
+		<result property="numCash" jdbcType="DECIMAL" column="numCash" />
+		<result property="dtCash" jdbcType="TIMESTAMP" column="dtCash" />
+		<result property="vcCardNo" jdbcType="VARCHAR" column="vcCardNO" />
+		<result property="vcCardBank" jdbcType="VARCHAR" column="vcCardBank" />
+		<result property="cityCode" jdbcType="VARCHAR" column="city_code" />
+		<result property="brabankName" jdbcType="VARCHAR" column="brabank_name" />
+		<result property="numCashFee" jdbcType="DECIMAL" column="numCashFee" />
+		<result property="istate" jdbcType="INTEGER" column="iState" />
+		<result property="dtCreate" jdbcType="TIMESTAMP" column="dtCreate" />
+		<result property="vcBillCode" jdbcType="VARCHAR" column="vcBillCode" />
+		<result property="itype" jdbcType="INTEGER" column="iType" />
+		<result property="vcPayType" jdbcType="INTEGER" column="vcPayType" />
+		<result property="vcResultBillCode" jdbcType="VARCHAR" column="vcResultBillCode" />
+		<result property="ifinancialCashFailureId" jdbcType="INTEGER" column="iFinancialCashFailureID" />
+		<result property="iExport" jdbcType="INTEGER" column="iExport" />
+		<result property="dtExport" jdbcType="TIMESTAMP" column="dtExport" />
+		<result property="vcCashDevice" jdbcType="VARCHAR" column="vcCashDevice" />
+		<result property="iChannelType" jdbcType="INTEGER" column="iChannelType" />
+		<result property="vcUserIP" jdbcType="VARCHAR" column="vcUserIP" />
+		<result property="vcResultDesc" jdbcType="VARCHAR" column="vcResultDesc" />
+	</resultMap>
+
+	<sql id="columns">
+	    <![CDATA[
+        id ,iLoginAccountID ,numCash ,dtCash ,vcCardNO ,vcCardBank ,city_code ,brabank_name ,numCashFee ,iState ,dtCreate ,vcBillCode ,iType ,vcPayType ,vcResultBillCode  ,iFinancialCashFailureID,iExport,dtExport,vcCashDevice,iChannelType,vcUserIP,vcResultDesc 
+	    ]]>
+	</sql>
+
+	<insert id="save" parameterType="com.tzg.entitys.cash.Cash"
+		useGeneratedKeys="true" keyProperty="id">
+		<selectKey resultType="java.lang.Integer" keyProperty="id"
+			order="AFTER">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+	<![CDATA[
+		INSERT INTO tbcash (
+        	iLoginAccountID ,
+        	numCash ,
+        	dtCash ,
+        	vcCardNO ,
+        	vcCardBank ,
+        	city_code ,
+        	brabank_name ,
+        	numCashFee ,
+        	iState ,
+        	dtCreate ,
+        	vcBillCode ,
+        	iType ,
+        	vcPayType ,
+        	vcResultBillCode ,
+        	iFinancialCashFailureID,
+        	iExport,
+        	vcCashDevice,
+        	iChannelType,
+        	vcUserIP,
+        	vcResultDesc
+		) VALUES (
+        	#{iloginAccountId,jdbcType=INTEGER} ,
+        	#{numCash,jdbcType=DECIMAL} ,
+        	#{dtCash,jdbcType=TIMESTAMP} ,
+        	#{vcCardNo,jdbcType=VARCHAR} ,
+        	#{vcCardBank,jdbcType=VARCHAR} ,
+        	#{cityCode,jdbcType=VARCHAR} ,
+        	#{brabankName,jdbcType=VARCHAR} ,
+        	#{numCashFee,jdbcType=DECIMAL} ,
+        	#{istate,jdbcType=INTEGER} ,
+        	#{dtCreate,jdbcType=TIMESTAMP} ,
+        	#{vcBillCode,jdbcType=VARCHAR} ,
+        	#{itype,jdbcType=INTEGER} ,
+        	#{vcPayType,jdbcType=INTEGER} ,
+        	#{vcResultBillCode,jdbcType=VARCHAR},
+        	#{ifinancialCashFailureId,jdbcType=INTEGER},
+        	#{iExport,jdbcType=INTEGER} ,
+        	#{vcCashDevice,jdbcType=VARCHAR},
+        	#{iChannelType,jdbcType=INTEGER} ,
+        	#{vcUserIP,jdbcType=VARCHAR},
+        	#{vcResultDesc,jdbcType=VARCHAR}
+		)
+	]]>
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.cash.Cash">
+		UPDATE tbcash
+		<set>
+			<if test="iloginAccountId != null">
+				iLoginAccountID = #{iloginAccountId,jdbcType=INTEGER} ,
+			</if>
+			<if test="numCash != null">
+				numCash = #{numCash,jdbcType=DECIMAL} ,
+			</if>
+			<if test="dtCash != null">
+				dtCash = #{dtCash,jdbcType=TIMESTAMP} ,
+			</if>
+			<if test="vcCardNo != null">
+				vcCardNO = #{vcCardNo,jdbcType=VARCHAR} ,
+			</if>
+			<if test="vcCardBank != null">
+				vcCardBank = #{vcCardBank,jdbcType=VARCHAR} ,
+			</if>
+			<if test="cityCode != null">
+				city_code = #{cityCode,jdbcType=VARCHAR} ,
+			</if>
+			<if test="brabankName != null">
+				brabank_name = #{brabankName,jdbcType=VARCHAR} ,
+			</if>
+			<if test="numCashFee != null">
+				numCashFee = #{numCashFee,jdbcType=DECIMAL} ,
+			</if>
+			<if test="istate != null">
+				iState = #{istate,jdbcType=INTEGER} ,
+			</if>
+			<if test="dtCreate != null">
+				dtCreate = #{dtCreate,jdbcType=TIMESTAMP} ,
+			</if>
+			<if test="vcBillCode != null">
+				vcBillCode = #{vcBillCode,jdbcType=VARCHAR} ,
+			</if>
+			<if test="itype != null">
+				iType = #{itype,jdbcType=INTEGER} ,
+			</if>
+			<if test="vcPayType != null">
+				vcPayType = #{vcPayType,jdbcType=INTEGER} ,
+			</if>
+			<if test="vcResultBillCode != null">
+				vcResultBillCode = #{vcResultBillCode,jdbcType=VARCHAR},
+			</if>
+			<if test="vcCashDevice != null">
+				vcCashDevice = #{vcCashDevice,jdbcType=VARCHAR} ,
+			</if>
+			<if test="ifinancialCashFailureId != null">
+				iFinancialCashFailureID = #{ifinancialCashFailureId,jdbcType=INTEGER},
+			</if>
+			<if test="iChannelType != null">
+				iChannelType = #{iChannelType,jdbcType=INTEGER} ,
+			</if>
+			<if test="vcUserIP != null">
+				vcUserIP = #{vcUserIP,jdbcType=VARCHAR} ,
+			</if>
+			<if test="vcResultDesc != null">
+				vcResultDesc = #{vcResultDesc,jdbcType=VARCHAR} ,
+			</if>
+		</set>
+		WHERE
+		id = #{id,jdbcType=INTEGER}
+	</update>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbcash WHERE
+        id = #{id} 
+	]]>
+	</delete>
+
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT
+		<include refid="columns" /> 
+	<![CDATA[
+		FROM tbcash 
+		WHERE 
+        id = #{id} 
+	]]>
+	</select>
+
+	<!-- 今日 提现次数 -->
+	<select id="todayCashCount" resultType="java.lang.Integer"
+		parameterType="java.lang.Integer">
+		select count(1) from tbcash
+		where TO_DAYS(dtCreate)=TO_DAYS(NOW())
+		and iState in (1,2,4,5,7)
+		and iLoginAccountID = #{iloginAccountId}
+	</select>
+
+	<select id="findByIFinancialCashFailureID" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="columns" />
+		from tbcash where 1=1
+		<if test="_parameter != null">
+			and iFinancialCashFailureID = ${_parameter}
+		</if>
+	</select>
+
+	<update id="updateFinancialCashFailureIdByIds" parameterType="java.util.Map">
+		update tbcash set iFinancialCashFailureID = #{ifinancialCashFailureId}
+		where 1=1 and id in(${ids})
+	</update>
+
+
+	<update id="deleteFinancialCashFailureIdByIds" parameterType="java.util.Map">
+		update tbcash set iFinancialCashFailureID =null where 1=1
+		and iFinancialCashFailureID = #{ifinancialCashFailureId}
+	</update>
+
+
+	<select id="findPageCountForFailure" resultType="java.lang.Integer"
+		parameterType="java.util.Map">
+		select count(*) from(select c.*,a.vcName iloginAccountName from tbcash c,tbloginaccount a where c.iLoginAccountID=a.id ) t where 1=1
+		<if test="ids != null and ids.trim() != ''">
+			and iLoginAccountID in(${ids})
+		</if>
+		<if test="vcCardNo != null and vcCardNo.trim() != ''">
+			and vcCardNO = #{vcCardNo}
+		</if>
+		<if test="itype != null and itype.trim() != ''">
+			and iType = #{itype}
+		</if>
+		AND iFinancialCashFailureID is null
+	</select>
+
+
+
+	<select id="findPageForFailure" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		select * from(select c.*,a.vcName iloginAccountName from tbcash c,tbloginaccount a where c.iLoginAccountID=a.id ) t where 1=1
+		<if test="ids != null and ids.trim() != ''">
+			and iLoginAccountID in(${ids})
+		</if>
+		<if test="vcCardNo != null and vcCardNo.trim() != ''">
+			and vcCardNO = #{vcCardNo}
+		</if>
+		<if test="itype != null and itype.trim() != ''">
+			and iType = #{itype}
+		</if>
+		AND iFinancialCashFailureID is null
+		<choose>
+			<when test="sortField != null and sortField != ''">
+				ORDER BY ${sortField} desc
+			</when>
+			<otherwise>
+				ORDER BY id DESC
+			</otherwise>
+		</choose>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+
+
+	<select id="findPageCount" resultType="java.lang.Integer"
+		parameterType="java.util.Map">
+		select count(*) from tbcash where 1=1
+		<include refid="queryWhere" />
+	</select>
+
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select * from(select c.*,a.vcName iloginAccountName from tbcash c,tbloginaccount a where c.iLoginAccountID=a.id ) t where 1=1
+		<include refid="queryWhere" />
+		<choose>
+			<when test="sortField != null and sortField != ''">
+				ORDER BY ${sortField} desc
+			</when>
+			<otherwise>
+				ORDER BY id DESC
+			</otherwise>
+		</choose>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<select id="findSearchCount" resultType="java.lang.Integer"
+		parameterType="java.util.Map">
+		select count(1) from tbcash c left join tbloginaccount a on c.iLoginAccountID=a.id  where 1=1
+		<include refid="queryWhereSearch" />
+	</select>
+	
+	<select id="findSearch" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select c.*,a.vcName iloginAccountName,a.vcphone iloginAccountPhone, a.vcname iloginAccountName from tbcash c left join tbloginaccount a on c.iLoginAccountID=a.id  where 1=1
+		<include refid="queryWhereSearch" />
+		<choose>
+			<when test="sortField != null and sortField != ''">
+				ORDER BY ${sortField} desc
+			</when>
+			<otherwise>
+				ORDER BY id DESC
+			</otherwise>
+		</choose>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<update id="updateAllSelected" parameterType="java.util.Map">
+		update tbcash as c set c.istate = 4  where 1=1
+		<include refid="queryWhereSearch" />
+	</update>
+	
+	
+	<select id="findSumCash" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select sum(numCash) as totalnumCash ,sum(numCashFee) as totalnumCashFee  from tbcash c LEFT JOIN tbloginaccount a ON c.iLoginAccountID=a.id where 1=1
+		<include refid="queryWhereSearch" />
+	</select>
+	
+	
+
+	<!-- 投资人提现 下载 -->
+	<select id="downCashForInvestor" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select c.*,a.vcName iloginAccountName from tbcash
+		c,tbloginaccount a where c.iLoginAccountID=a.id 
+		<if test="itype != null and itype.trim() != ''">
+			and c.iType = #{itype}
+		</if>
+		<if test="iExport != null and iExport.trim() != ''">
+			and c.iExport = #{iExport}
+		</if>
+		<if test="large != null and large=='1'.toString()">
+			and (numcash-numcashfee) >= 1
+		</if>
+		<if test="large != null and large=='0'.toString()">
+			and (numcash-numcashfee) &lt;1
+		</if>
+		<if test="dtCreateBegin != null and dtCreateBegin.trim() != ''">
+			and c.dtCreate >= #{dtCreateBegin}
+		</if>
+		<if test="dtCreateEnd != null and dtCreateEnd.trim() != ''">
+			and c.dtCreate &lt;= #{dtCreateEnd}
+		</if>
+		ORDER BY id DESC
+	</select>
+	
+	<update id="updateDownCashForInvestor" parameterType="java.util.Map">
+		update tbcash set iExport =2,dtExport = now() where iExport = 1
+		<if test="large != null and large=='1'.toString()">
+			and (numcash-numcashfee) >= 1
+		</if>
+		<if test="large != null and large=='0'.toString()">
+			and (numcash-numcashfee) &lt;1
+		</if>
+		<if test="dtCreateBegin != null and dtCreateBegin.trim() != ''">
+			and dtCreate >= #{dtCreateBegin}
+		</if>
+		<if test="dtCreateEnd != null and dtCreateEnd.trim() != ''">
+			and dtCreate &lt;= #{dtCreateEnd}
+		</if>
+	</update>
+	
+	<sql id="queryWhere">
+		<if test="id != null and id.trim() != ''">
+			and id = #{id}
+		</if>
+		<if test="iloginAccountId != null and iloginAccountId.trim() != ''">
+			and iLoginAccountID = #{iloginAccountId}
+		</if>
+		<if test="numCash != null and numCash.trim() != ''">
+			and numCash = #{numCash}
+		</if>
+		<if test="dtCashBegin != null and dtCashBegin.trim() != ''">
+			and dtCash >= #{dtCashBegin}
+		</if>
+		<if test="dtCashEnd != null and dtCashEnd.trim() != ''">
+			and dtCash &lt;= #{dtCashEnd}
+		</if>
+		<if test="vcCardNo != null and vcCardNo.trim() != ''">
+			and vcCardNO = #{vcCardNo}
+		</if>
+		<if test="vcCardBank != null and vcCardBank.trim() != ''">
+			and vcCardBank = #{vcCardBank}
+		</if>
+		<if test="cityCode != null and cityCode.trim() != ''">
+			and city_code = #{cityCode}
+		</if>
+		<if test="brabankName != null and brabankName.trim() != ''">
+			and brabank_name = #{brabankName}
+		</if>
+		<if test="numCashFee != null and numCashFee.trim() != ''">
+			and numCashFee = #{numCashFee}
+		</if>
+		<if test="istate != null and istate.trim() != ''">
+			and iState = #{istate}
+		</if>
+		<if test="iChannelType != null and iChannelType.trim() != ''">
+			and iChannelType = #{iChannelType}
+		</if>
+		<if test="dtCreateBegin != null and dtCreateBegin.trim() != ''">
+			and dtCreate >= #{dtCreateBegin}
+		</if>
+		<if test="dtCreateEnd != null and dtCreateEnd.trim() != ''">
+			and dtCreate &lt;= #{dtCreateEnd}
+		</if>
+		<if test="vcBillCode != null and vcBillCode.trim() != ''">
+			and vcBillCode = #{vcBillCode}
+		</if>
+		<if test="vcBillCodeIn != null and vcBillCodeIn.trim() != ''">
+			and vcBillCode like "%"#{vcBillCodeIn}"%"
+		</if>
+		<if test="itype != null and itype.trim() != ''">
+			and iType = #{itype}
+		</if>
+		<if test="vcPayType != null and vcPayType.trim() != ''">
+			and vcPayType = #{vcPayType}
+		</if>
+		<if test="vcResultBillCode != null and vcResultBillCode.trim() != ''">
+			and vcResultBillCode = #{vcResultBillCode}
+		</if>
+		<if
+			test="ifinancialCashFailureId != null and ifinancialCashFailureId.trim() != ''">
+			and iFinancialCashFailureID = #{ifinancialCashFailureId}
+		</if>
+		<if test="iExport != null and iExport.trim() != ''">
+			and iExport = #{iExport}
+		</if>
+		<if test="dtExport != null and dtExport.trim() != ''">
+			and dtExport = #{dtExport}
+		</if>
+	</sql>
+	
+	<sql id="queryWhereSearch">
+		<if test="id != null and id.trim() != ''">
+			and c.id = #{id}
+		</if>
+		<if test="iloginAccountId != null and iloginAccountId.trim() != ''">
+			and c.iLoginAccountID = #{iloginAccountId}
+		</if>
+		<if test="numCash != null and numCash.trim() != ''">
+			and c.numCash = #{numCash}
+		</if>
+		<if test="dtCashBegin != null and dtCashBegin.trim() != ''">
+			and c.dtCash >= #{dtCashBegin}
+		</if>
+		<if test="dtCashEnd != null and dtCashEnd.trim() != ''">
+			and c.dtCash &lt;= #{dtCashEnd}
+		</if>
+		<if test="vcCardNo != null and vcCardNo.trim() != ''">
+			and c.vcCardNO = #{vcCardNo}
+		</if>
+		<if test="vcCardBank != null and vcCardBank.trim() != ''">
+			and c.vcCardBank = #{vcCardBank}
+		</if>
+		<if test="cityCode != null and cityCode.trim() != ''">
+			and c.city_code = #{cityCode}
+		</if>
+		<if test="brabankName != null and brabankName.trim() != ''">
+			and c.brabank_name = #{brabankName}
+		</if>
+		<if test="numCashFee != null and numCashFee.trim() != ''">
+			and c.numCashFee = #{numCashFee}
+		</if>
+		<if test="istate != null and istate.trim() != ''">
+			and c.iState = #{istate}
+		</if>
+		<if test="iChannelType != null and iChannelType.trim() != ''">
+			and c.iChannelType = #{iChannelType}
+		</if>
+		<if test="dtCreateBegin != null and dtCreateBegin.trim() != ''">
+			and c.dtCreate >= #{dtCreateBegin}
+		</if>
+		<if test="dtCreateEnd != null and dtCreateEnd.trim() != ''">
+			and c.dtCreate &lt;= #{dtCreateEnd}
+		</if>
+		<if test="vcBillCode != null and vcBillCode.trim() != ''">
+			and c.vcBillCode = #{vcBillCode}
+		</if>
+		<if test="vcBillCodeIn != null and vcBillCodeIn.trim() != ''">
+			and c.vcBillCode like "%"#{vcBillCodeIn}"%"
+		</if>
+		<if test="itype != null and itype.trim() != ''">
+			and c.iType = #{itype}
+		</if>
+		<if test="vcPayType != null and vcPayType.trim() != ''">
+			and c.vcPayType = #{vcPayType}
+		</if>
+		<if test="vcResultBillCode != null and vcResultBillCode.trim() != ''">
+			and c.vcResultBillCode = #{vcResultBillCode}
+		</if>
+		<if
+			test="ifinancialCashFailureId != null and ifinancialCashFailureId.trim() != ''">
+			and c.iFinancialCashFailureID = #{ifinancialCashFailureId}
+		</if>
+		<if test="iExport != null and iExport.trim() != ''">
+			and c.iExport = #{iExport}
+		</if>
+		<if test="dtExport != null and dtExport.trim() != ''">
+			and c.dtExport = #{dtExport}
+		</if>
+		<if test="iloginAccountPhone != null and iloginAccountPhone.trim() != ''">
+			and a.vcphone like "%"#{iloginAccountPhone}"%"
+		</if>
+	</sql>
+	
+	<!-- 需要提现列表-->
+	<select id="findCashScheduleList" resultMap="BaseResultMap">
+		select <include refid="columns"/>  
+		<![CDATA[
+		from tbcash where itype=2
+		and istate=4
+		and iChannelType=2
+		ORDER BY dtcreate 
+		]]>
+		 <![CDATA[ LIMIT 100 ]]>
+	</select>
+	
+	<!-- 需要查询提现结果 -->
+	<select id="findWithdrawList" resultMap="BaseResultMap">
+		select <include refid="columns"/>  
+		<![CDATA[
+		from tbcash where itype=2
+		and istate=5
+		and iChannelType=2
+		ORDER BY dtcreate 
+		]]>
+		<![CDATA[ LIMIT 100 ]]>
+	</select>
+	
+	<!-- 获取所有tbcash表内的银行卡 -->
+	<select id="findAllBankName" resultType="java.lang.String">
+		select GROUP_CONCAT(DISTINCT B.vcCardBank) from tbcash As B where 1=1;
+	</select>
+	
+	<!-- 根据银行卡号，去原有的连连绑卡信息中，获取市级code -->
+	<select id="findCityCodeByCardNO" parameterType="java.lang.String" resultType="java.util.Map">
+		SELECT DISTINCT
+			B.city_code, B.brabank_name
+		FROM
+			tbcash A,
+			tbllpaycard B
+		WHERE
+			A.vcCardNO = B.card_no
+		AND B.city_code is not null
+		AND A.vcCardNO = #{vcCardNO} <![CDATA[ LIMIT 1 ]]>;
+	</select>
+</mapper>
+
+

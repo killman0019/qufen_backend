@@ -1,0 +1,73 @@
+<div class="main-content">
+    <div class="breadcrumbs" id="breadcrumbs">
+        <script type="text/javascript">
+            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+        </script>
+
+        <ul class="breadcrumb">
+            <li>
+                <i class="icon-home home-icon"></i>
+                <a href="${www}/main">主页</a>
+            </li>
+            <li>
+                <a href="${www}/interestconfig/list">利率配置</a>
+            </li>
+        </ul><!-- .breadcrumb -->
+
+        <div class="nav-search" id="nav-search">
+            <form class="form-search">
+						<span class="input-icon">
+							<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+							<i class="icon-search nav-search-icon"></i>
+						</span>
+            </form>
+        </div><!-- #nav-search -->
+    </div>
+	<div class="page-content">
+		<div class="page-header">
+		    <h1>查看明细</h1>
+		</div>
+		<div class="container-fluid">
+		    <div class="dataTables_wrapper">
+		    	<div class="row">
+		            <div class="col-sm-11">
+		            </div>
+                    <div class="col-sm-1">
+                        <a href="$!{www}/interestconfig/list" class="btn btn-success btn-xs">返回</a>
+                    </div>
+		        </div>
+		        <table class="table table-striped table-bordered table-hover dataTable">
+		            <thead>
+		            <tr>
+		                <th>等级</th>
+		                <th>单笔投资区间</th>
+		                <th>额外利率</th>
+		                #if($!{param.ivalid}==1)
+		                <th>操作</th>
+		                #end
+		            </tr>
+		            </thead>
+		            <tbody>
+		                #foreach($row in $result.rows)
+		                <tr>
+		                	<td> $!{row.vcLevel} </td>
+		                	<td> 
+		                	#if($!{row.numMaxInvestAmt}=="0.00")
+		                		$!{row.numMinInvestAmt}以上
+		                	#else
+		                		$!{row.numMinInvestAmt}~$!{row.numMaxInvestAmt}
+		                	#end</td>
+		                	<td> $!{row.numExtraInterestRate}% </td>
+		                	 #if($!{param.ivalid}==1)
+			                    <td><a href="$!{www}/interestconfig/detailfind?id=$!{row.id}">修改</a>   ｜
+			                        <a onclick="delcfm()" href="$!{www}/interestconfig/detaildelete?id=$!{row.id}">删除</a>
+			                    </td>
+		                    #end
+		                </tr>
+		                #end
+		            </tbody>
+		        </table>
+		    </div>
+		</div>
+    </div><!-- /.page-content -->
+</div><!-- /.main-content -->

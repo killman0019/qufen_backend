@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.experiencesubject.ExperiencesubjectMapper">	
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.experiencesubject.Experiencesubject">
+		<result property="id" jdbcType="INTEGER" column="id"/>
+		<result property="vcName" jdbcType="VARCHAR" column="vcName"/>
+		<result property="vcShortDesp" jdbcType="VARCHAR" column="vcShortDesp"/>
+		<result property="vcAwardsDesp" jdbcType="VARCHAR" column="vcAwardsDesp"/>
+		<result property="numInterestRate" jdbcType="DECIMAL" column="numInterestRate"/>
+		<result property="numRewardRate" jdbcType="DECIMAL" column="numRewardRate"/>
+		<result property="iquota" jdbcType="INTEGER" column="iQuota"/>
+		<result property="iactualNum" jdbcType="INTEGER" column="iActualNum"/>
+		<result property="numPeriod" jdbcType="INTEGER" column="numPeriod"/>
+		<result property="numInvest" jdbcType="DECIMAL" column="numInvest"/>
+		<result property="dtTrailer" jdbcType="TIMESTAMP" column="dtTrailer"/>
+		<result property="dtCollectStart" jdbcType="TIMESTAMP" column="dtCollectStart"/>
+		<result property="dtCollectEnd" jdbcType="TIMESTAMP" column="dtCollectEnd"/>
+		<result property="dtActualCollectEnd" jdbcType="TIMESTAMP" column="dtActualCollectEnd"/>
+		<result property="dtRepayment" jdbcType="TIMESTAMP" column="dtRepayment"/>
+		<result property="istate" jdbcType="INTEGER" column="iState"/>
+		<result property="icontractId" jdbcType="INTEGER" column="iContractID"/>
+		<result property="dtCreate" jdbcType="TIMESTAMP" column="dtCreate"/>
+		<result property="vcCurrentFlow" jdbcType="VARCHAR" column="vcCurrentFlow"/>
+		<result property="vcApprovalFlow" jdbcType="VARCHAR" column="vcApprovalFlow"/>
+		<result property="irepayMode" jdbcType="INTEGER" column="iRepayMode"/>
+		<result property="iaccountType" jdbcType="VARCHAR" column="iAccountType"/>
+		<result property="numInterest" jdbcType="DECIMAL" column="numInterest"/>
+    </resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+        id ,vcName ,vcShortDesp ,vcAwardsDesp ,numInterestRate ,numRewardRate ,iQuota ,iActualNum ,numInvest ,dtTrailer ,dtCollectStart ,dtCollectEnd ,dtActualCollectEnd ,dtRepayment, iState ,iContractID ,dtCreate ,vcCurrentFlow ,vcApprovalFlow ,iRepayMode ,iAccountType ,numInterest,numPeriod 
+	    ]]>
+	</sql>
+	
+	<insert id="save" parameterType="com.tzg.entitys.experiencesubject.Experiencesubject" useGeneratedKeys="true" keyProperty="id">
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+	      SELECT LAST_INSERT_ID() AS id
+	    </selectKey>
+	<![CDATA[
+		INSERT INTO tbexperiencesubject (
+        	vcName ,
+        	vcShortDesp ,
+        	vcAwardsDesp ,
+        	numInterestRate ,
+        	numRewardRate ,
+        	iQuota ,
+        	iActualNum,
+        	numInvest ,
+        	dtTrailer ,
+        	dtCollectStart ,
+        	dtCollectEnd ,
+        	dtActualCollectEnd ,
+        	dtRepayment,
+        	iState ,
+        	iContractID ,
+        	dtCreate ,
+        	vcCurrentFlow ,
+        	vcApprovalFlow ,
+        	iRepayMode ,
+        	iAccountType ,
+        	numInterest,
+        	numPeriod
+		) VALUES (
+        	#{vcName,jdbcType=VARCHAR} ,
+        	#{vcShortDesp,jdbcType=VARCHAR} ,
+        	#{vcAwardsDesp,jdbcType=VARCHAR} ,
+        	#{numInterestRate,jdbcType=DECIMAL} ,
+        	#{numRewardRate,jdbcType=DECIMAL} ,
+        	#{iquota,jdbcType=INTEGER} ,
+        	#{iactualNum,jdbcType=INTEGER} ,
+        	#{numInvest,jdbcType=DECIMAL} ,
+        	#{dtTrailer,jdbcType=TIMESTAMP} ,
+        	#{dtCollectStart,jdbcType=TIMESTAMP} ,
+        	#{dtCollectEnd,jdbcType=TIMESTAMP} ,
+        	#{dtActualCollectEnd,jdbcType=TIMESTAMP} ,
+        	#{dtRepayment,jdbcType=TIMESTAMP} ,
+        	#{istate,jdbcType=INTEGER} ,
+        	#{icontractId,jdbcType=INTEGER} ,
+        	#{dtCreate,jdbcType=TIMESTAMP} ,
+        	#{vcCurrentFlow,jdbcType=VARCHAR} ,
+        	#{vcApprovalFlow,jdbcType=VARCHAR} ,
+        	#{irepayMode,jdbcType=INTEGER} ,
+        	#{iaccountType,jdbcType=VARCHAR} ,
+        	#{numInterest,jdbcType=DECIMAL},
+        	#{numPeriod,jdbcType=INTEGER}
+		)
+	]]>
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.experiencesubject.Experiencesubject">
+		UPDATE tbexperiencesubject
+		<set>
+			<if test="vcName != null">
+	        vcName = #{vcName,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcShortDesp != null">
+	        vcShortDesp = #{vcShortDesp,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcAwardsDesp != null">
+	        vcAwardsDesp = #{vcAwardsDesp,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="numInterestRate != null">
+	        numInterestRate = #{numInterestRate,jdbcType=DECIMAL} ,
+	        </if>
+			<if test="numRewardRate != null">
+	        numRewardRate = #{numRewardRate,jdbcType=DECIMAL} ,
+	        </if>
+			<if test="iquota != null">
+	        iQuota = #{iquota,jdbcType=INTEGER} ,
+	        </if>
+			<if test="iactualNum != null">
+	        iActualNum = #{iactualNum,jdbcType=INTEGER} ,
+	        </if>
+			<if test="numInvest != null">
+	        numInvest = #{numInvest,jdbcType=DECIMAL} ,
+	        </if>
+			<if test="dtTrailer != null">
+	        dtTrailer = #{dtTrailer,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="dtCollectStart != null">
+	        dtCollectStart = #{dtCollectStart,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="dtCollectEnd != null">
+	        dtCollectEnd = #{dtCollectEnd,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="dtRepayment != null">
+	        dtRepayment = #{dtRepayment,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="dtActualCollectEnd != null">
+	        dtActualCollectEnd = #{dtActualCollectEnd,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="istate != null">
+	        iState = #{istate,jdbcType=INTEGER} ,
+	        </if>
+			<if test="icontractId != null">
+	        iContractID = #{icontractId,jdbcType=INTEGER} ,
+	        </if>
+			<if test="dtCreate != null">
+	        dtCreate = #{dtCreate,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="vcCurrentFlow != null">
+	        vcCurrentFlow = #{vcCurrentFlow,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcApprovalFlow != null">
+	        vcApprovalFlow = #{vcApprovalFlow,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="irepayMode != null">
+	        iRepayMode = #{irepayMode,jdbcType=INTEGER} ,
+	        </if>
+			<if test="iaccountType != null">
+	        iAccountType = #{iaccountType,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="numInterest != null">
+	        numInterest = #{numInterest,jdbcType=DECIMAL},
+	        </if>
+	        <if test="numPeriod != null" >
+	        numPeriod = #{numPeriod, jdbcType=INTEGER}
+	        </if>
+	    </set>
+		WHERE 
+	        id = #{id,jdbcType=INTEGER} 
+	</update>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbexperiencesubject WHERE
+        id = #{id} 
+	]]>
+	</delete>
+    
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbexperiencesubject 
+		WHERE 
+        id = #{id} 
+	]]>
+	</select>
+	 
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from tbexperiencesubject where 1=1
+		<include refid="queryWhere"/>
+	</select>
+    
+	<select id="FindPageInState" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbexperiencesubject where 1=1
+		<include refid="queryWhere"/> 
+		ORDER BY 
+	    FIELD(iState,11,10,12,14,13),
+		(case iState
+		when 10 then dtCollectStart
+		when 11 then dtCollectEnd end) asc,
+		(case iState
+		when 12 then dtActualCollectEnd
+		when 14 then dtActualCollectEnd
+		when 13 then dtRepayment end) desc 
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbexperiencesubject where 1=1
+		<include refid="queryWhere"/> 
+	    <![CDATA[ ORDER BY id DESC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<sql id="queryWhere">
+		<if test="id != null and id.trim() != ''">
+		and id = #{id}
+		</if>
+		<if test="vcName != null and vcName.trim() != ''">
+		and vcName like "%"#{vcName}"%"
+		</if>
+		<if test="vcShortDesp != null and vcShortDesp.trim() != ''">
+		and vcShortDesp = #{vcShortDesp}
+		</if>
+		<if test="vcAwardsDesp != null and vcAwardsDesp.trim() != ''">
+		and vcAwardsDesp = #{vcAwardsDesp}
+		</if>
+		<if test = "numPeriod != null and numPeriod.trim() != ''">
+			and numPeriod=#{numPeriod}
+		</if>
+		<if test="numPeriodBegin != null and numPeriodBegin.trim() != ''">
+			and numPeriod >= #{numPeriodBegin}
+		</if>
+		<if test="numPeriodEnd != null and numPeriodEnd.trim() != ''">
+			and numPeriod &lt;= #{numPeriodEnd}
+		</if>
+		<if test="rateBegin != null and rateBegin.trim() != ''">
+			and numInterestRate+numRewardRate >= #{rateBegin}
+		</if>
+		<if test="rateEnd != null and rateEnd.trim() != ''">
+			and numInterestRate+numRewardRate &lt;= #{rateEnd}
+		</if>
+		<if test="numInterestRate != null and numInterestRate.trim() != ''">
+		and numInterestRate = #{numInterestRate}
+		</if>
+		<if test="numRewardRate != null and numRewardRate.trim() != ''">
+		and numRewardRate = #{numRewardRate}
+		</if>
+		<if test="iquota != null and iquota.trim() != ''">
+		and iQuota = #{iquota}
+		</if>
+		<if test="numInvest != null and numInvest.trim() != ''">
+		and numInvest = #{numInvest}
+		</if>
+		<if test="dtTrailerBegin != null and dtTrailerBegin.trim() != ''">
+		and dtTrailer >= #{dtTrailerBegin}
+		</if>
+		<if test="dtTrailerEnd != null and dtTrailerEnd.trim() != ''">
+		and dtTrailer &lt;= #{dtTrailerEnd}
+		</if>
+		<if test="dtCollectStartBegin != null and dtCollectStartBegin.trim() != ''">
+		and dtCollectStart >= #{dtCollectStartBegin}
+		</if>
+		<if test="dtCollectStartEnd != null and dtCollectStartEnd.trim() != ''">
+		and dtCollectStart &lt;= #{dtCollectStartEnd}
+		</if>
+		<if test="dtCollectEndBegin != null and dtCollectEndBegin.trim() != ''">
+		and dtCollectEnd >= #{dtCollectEndBegin}
+		</if>
+		<if test="dtCollectEndEnd != null and dtCollectEndEnd.trim() != ''">
+		and dtCollectEnd &lt;= #{dtCollectEndEnd}
+		</if>
+		<if test="dtActualCollectEndBegin != null and dtActualCollectEndBegin.trim() != ''">
+		and dtActualCollectEnd >= #{dtActualCollectEndBegin}
+		</if>
+		<if test="dtActualCollectEndEnd != null and dtActualCollectEndEnd.trim() != ''">
+		and dtActualCollectEnd &lt;= #{dtActualCollectEndEnd}
+		</if>
+		<if test="dtRepayment != null and dtRepayment.trim() != ''">
+		and dtRepayment = #{dtRepayment}
+		</if>
+		<if test="istate != null and istate.trim() != ''">
+		and iState = #{istate}
+		</if>
+		<if test="istateIn != null and istateIn.trim() != ''">
+		and iState in(${istateIn})
+		</if>
+		<if test="icontractId != null and icontractId.trim() != ''">
+		and iContractID = #{icontractId}
+		</if>
+		<if test="dtCreateBegin != null and dtCreateBegin.trim() != ''">
+		and dtCreate >= #{dtCreateBegin}
+		</if>
+		<if test="dtCreateEnd != null and dtCreateEnd.trim() != ''">
+		and dtCreate &lt;= #{dtCreateEnd}
+		</if>
+		<if test="vcCurrentFlow != null and vcCurrentFlow.trim() != ''">
+		and vcCurrentFlow = #{vcCurrentFlow}
+		</if>
+		<if test="vcApprovalFlow != null and vcApprovalFlow.trim() != ''">
+		and vcApprovalFlow = #{vcApprovalFlow}
+		</if>
+		<if test="irepayMode != null and irepayMode.trim() != ''">
+		and iRepayMode = #{irepayMode}
+		</if>
+		<if test="iaccountType != null and iaccountType.trim() != ''">
+		and iAccountType = #{iaccountType}
+		</if>
+		<if test="numInterest != null and numInterest.trim() != ''">
+		and numInterest = #{numInterest}
+		</if>
+	</sql>
+	
+	<!-- 首页及标的列表 含排序规则 -->
+	<select id="findSubjectListInStateCount" resultType="com.tzg.entitys.subject.SubjectCountVO" parameterType="java.util.Map">
+    	select count(*) count,
+			 IFNULL(SUM(CASE WHEN iState=10 THEN 1 ELSE 0 END),0) waitingCount,
+	         IFNULL(SUM(CASE WHEN iState=11 THEN 1 ELSE 0 END),0) investingCount,
+	         IFNULL(SUM(CASE WHEN iState in (12,14) THEN 1 ELSE 0 END),0) repayCount,
+	         IFNULL(SUM(CASE WHEN iState=13 THEN 1 ELSE 0 END),0) overCount
+    	from tbexperiencesubject s 
+		where 1=1
+		<include refid="queryWhereInState"/>
+	</select>
+	<!-- 首页及标的列表 含排序规则 -->
+	<select id="findSubjectListInState" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select   <include refid="columns"/>
+		from tbexperiencesubject s 
+		where 1 = 1
+		<include refid="queryWhereInState"/>
+	    ORDER BY 
+	    FIELD(s.iState,11,10,12,14,13),
+		(case s.iState
+		when 10 then s.dtCollectStart
+		when 11 then s.dtCollectEnd end) asc,
+		(case s.iState
+		when 12 then s.dtActualCollectEnd
+		when 14 then s.dtActualCollectEnd
+		when 13 then s.dtRepayment end) desc 
+				
+       <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	<sql id="queryWhereInState">
+		<if test="istate != null and istate.trim() != ''">
+			and s.iState in (${istate})
+		</if>
+		<if test="itype != null and itype.trim() != ''">
+			and s.iType in (${itype})
+		</if>
+		<if test="numPeriodBegin != null and numPeriodBegin.trim() != ''">
+			and s.numPeriod >= #{numPeriodBegin}
+		</if>
+		<if test="numPeriodEnd != null and numPeriodEnd.trim() != ''">
+			and s.numPeriod &lt;= #{numPeriodEnd}
+		</if>
+		<if test="rateBegin != null and rateBegin.trim() != ''">
+			and s.numInterestRate+s.numRewardRate >= #{rateBegin}
+		</if>
+		<if test="rateEnd != null and rateEnd.trim() != ''">
+			and s.numInterestRate+s.numRewardRate &lt;= #{rateEnd}
+		</if>
+		<if test="dtTrailer != null and dtTrailer.trim() != ''">
+			and date_format(s.dtTrailer,'%Y-%m-%d') = #{dtTrailer}
+		</if>
+		<if test="dtActualCollectEnd != null and dtActualCollectEnd.trim() != ''">
+			and date_format(s.dtActualCollectEnd,'%Y-%m-%d') = #{dtActualCollectEnd}
+		</if>
+		<if test="dtCollectStartBegin != null and dtCollectStartBegin.trim() != ''">
+			and dtCollectStart >= #{dtCollectStartBegin}
+		</if>
+		<if test="dtCollectStartEnd != null and dtCollectStartEnd.trim() != ''">
+			and dtCollectStart &lt;= #{dtCollectStartEnd}
+		</if>	
+	</sql>
+	
+	
+	<select id="findSubjectByState" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+          select <include refid="columns"/>  from tbexperiencesubject where  iState = #{state,jdbcType=INTEGER}
+    </select>
+	
+	<select id="findState5" resultMap="BaseResultMap">
+          SELECT
+			<include refid = "columns" />
+		FROM
+			tbexperiencesubject
+		WHERE
+			iState = 5
+		AND dtTrailer &lt;= now()
+    </select>    
+    
+	<select id="findState10" resultMap="BaseResultMap">
+          SELECT
+			<include refid = "columns" />
+		FROM
+			tbexperiencesubject
+		WHERE
+			iState = 10
+		AND dtCollectStart &lt;= now()
+    </select>     
+    
+	<update id="finishState11" >
+		UPDATE tbexperiencesubject
+		SET iState = 14,
+		 dtActualCollectEnd = dtCollectEnd
+		WHERE
+			iState = 11
+		AND dtCollectEnd &lt;= now()
+    </update>   
+</mapper>
+
+

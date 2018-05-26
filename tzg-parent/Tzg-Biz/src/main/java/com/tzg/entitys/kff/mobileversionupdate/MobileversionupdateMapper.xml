@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.kff.mobileversionupdate.MobileversionupdateMapper">	
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.kff.mobileversionupdate.Mobileversionupdate">
+		<result property="id" jdbcType="INTEGER" column="id"/>
+		<result property="mtype" jdbcType="VARCHAR" column="m_type"/>
+		<result property="baseVersion" jdbcType="INTEGER" column="base_version"/>
+		<result property="alphaVersion" jdbcType="INTEGER" column="alpha_version"/>
+		<result property="betaVersion" jdbcType="INTEGER" column="beta_version"/>
+		<result property="fbaseVersion" jdbcType="INTEGER" column="f_base_version"/>
+		<result property="falphaVersion" jdbcType="INTEGER" column="f_alpha_version"/>
+		<result property="fbetaVersion" jdbcType="INTEGER" column="f_beta_version"/>
+		<result property="upgradeUrl" jdbcType="VARCHAR" column="upgrade_url"/>
+		<result property="guideUrl" jdbcType="VARCHAR" column="guide_url"/>
+		<result property="upexplain" jdbcType="VARCHAR" column="upexplain"/>
+		<result property="menable" jdbcType="INTEGER" column="m_enable"/>
+		<result property="memo" jdbcType="VARCHAR" column="memo"/>
+    </resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+        id ,m_type ,base_version ,alpha_version ,beta_version ,f_base_version ,f_alpha_version ,f_beta_version ,upgrade_url ,guide_url ,upexplain ,m_enable ,memo 
+	    ]]>
+	</sql>
+	
+	<insert id="save" parameterType="com.tzg.entitys.kff.mobileversionupdate.Mobileversionupdate" useGeneratedKeys="true" keyProperty="id">
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+	      SELECT LAST_INSERT_ID() AS id
+	    </selectKey>
+	<![CDATA[
+		INSERT INTO tbmobileversionupdate (
+        	m_type ,
+        	base_version ,
+        	alpha_version ,
+        	beta_version ,
+        	f_base_version ,
+        	f_alpha_version ,
+        	f_beta_version ,
+        	upgrade_url ,
+        	guide_url ,
+        	upexplain ,
+        	m_enable ,
+        	memo 
+		) VALUES (
+        	#{mtype,jdbcType=VARCHAR} ,
+        	#{baseVersion,jdbcType=INTEGER} ,
+        	#{alphaVersion,jdbcType=INTEGER} ,
+        	#{betaVersion,jdbcType=INTEGER} ,
+        	#{fbaseVersion,jdbcType=INTEGER} ,
+        	#{falphaVersion,jdbcType=INTEGER} ,
+        	#{fbetaVersion,jdbcType=INTEGER} ,
+        	#{upgradeUrl,jdbcType=VARCHAR} ,
+        	#{guideUrl,jdbcType=VARCHAR} ,
+        	#{upexplain,jdbcType=VARCHAR} ,
+        	#{menable,jdbcType=INTEGER} ,
+        	#{memo,jdbcType=VARCHAR} 
+		)
+	]]>
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.kff.mobileversionupdate.Mobileversionupdate">
+		UPDATE tbmobileversionupdate
+		<set>
+			<if test="mtype != null">
+	        m_type = #{mtype,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="baseVersion != null">
+	        base_version = #{baseVersion,jdbcType=INTEGER} ,
+	        </if>
+			<if test="alphaVersion != null">
+	        alpha_version = #{alphaVersion,jdbcType=INTEGER} ,
+	        </if>
+			<if test="betaVersion != null">
+	        beta_version = #{betaVersion,jdbcType=INTEGER} ,
+	        </if>
+			<if test="fbaseVersion != null">
+	        f_base_version = #{fbaseVersion,jdbcType=INTEGER} ,
+	        </if>
+			<if test="falphaVersion != null">
+	        f_alpha_version = #{falphaVersion,jdbcType=INTEGER} ,
+	        </if>
+			<if test="fbetaVersion != null">
+	        f_beta_version = #{fbetaVersion,jdbcType=INTEGER} ,
+	        </if>
+			<if test="upgradeUrl != null">
+	        upgrade_url = #{upgradeUrl,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="guideUrl != null">
+	        guide_url = #{guideUrl,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="upexplain != null">
+	        upexplain = #{upexplain,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="menable != null">
+	        m_enable = #{menable,jdbcType=INTEGER} ,
+	        </if>
+			<if test="memo != null">
+	        memo = #{memo,jdbcType=VARCHAR} 
+	        </if>
+	    </set>
+		WHERE 
+	        id = #{id,jdbcType=INTEGER} 
+	</update>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbmobileversionupdate WHERE
+        id = #{id} 
+	]]>
+	</delete>
+    
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbmobileversionupdate 
+		WHERE 
+        id = #{id} 
+	]]>
+	</select>
+	 
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from tbmobileversionupdate where 1=1
+		<include refid="queryWhere"/>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbmobileversionupdate where 1=1
+		<include refid="queryWhere"/> 
+	    <![CDATA[ ORDER BY id DESC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<sql id="queryWhere">
+		<if test="id != null and id.trim() != ''">
+		and id = #{id}
+		</if>
+		<if test="mtype != null and mtype.trim() != ''">
+		and m_type = #{mtype}
+		</if>
+		<if test="baseVersion != null and baseVersion.trim() != ''">
+		and base_version = #{baseVersion}
+		</if>
+		<if test="alphaVersion != null and alphaVersion.trim() != ''">
+		and alpha_version = #{alphaVersion}
+		</if>
+		<if test="betaVersion != null and betaVersion.trim() != ''">
+		and beta_version = #{betaVersion}
+		</if>
+		<if test="fbaseVersion != null and fbaseVersion.trim() != ''">
+		and f_base_version = #{fbaseVersion}
+		</if>
+		<if test="falphaVersion != null and falphaVersion.trim() != ''">
+		and f_alpha_version = #{falphaVersion}
+		</if>
+		<if test="fbetaVersion != null and fbetaVersion.trim() != ''">
+		and f_beta_version = #{fbetaVersion}
+		</if>
+		<if test="upgradeUrl != null and upgradeUrl.trim() != ''">
+		and upgrade_url = #{upgradeUrl}
+		</if>
+		<if test="guideUrl != null and guideUrl.trim() != ''">
+		and guide_url = #{guideUrl}
+		</if>
+		<if test="upexplain != null and upexplain.trim() != ''">
+		and upexplain = #{upexplain}
+		</if>
+		<if test="menable != null and menable.trim() != ''">
+		and m_enable = #{menable}
+		</if>
+		<if test="memo != null and memo.trim() != ''">
+		and memo = #{memo}
+		</if>
+	</sql>
+</mapper>
+
+

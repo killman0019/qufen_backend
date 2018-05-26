@@ -1,0 +1,164 @@
+<div class="main-content">
+    <div class="breadcrumbs" id="breadcrumbs">
+        <script type="text/javascript">
+            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+        </script>
+
+        <ul class="breadcrumb">
+            <li>
+                <i class="icon-home home-icon"></i>
+                <a href="${www}/main">主页</a>
+            </li>
+
+            <li class="active">代币管理</li>
+        </ul><!-- .breadcrumb -->
+
+        <div class="nav-search" id="nav-search">
+            <form class="form-search">
+						<span class="input-icon">
+							<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+							<i class="icon-search nav-search-icon"></i>
+						</span>
+            </form>
+        </div><!-- #nav-search -->
+    </div>
+	<div class="page-content">
+		<div class="page-header">
+		    <h1>发放代币</h1>
+		</div>
+		<div class="container-fluid">
+		    <div class="dataTables_wrapper">
+		        <div class="row">
+		            <div class="col-sm-11">
+		                <form class="form-inline" role="form" action="$!{www}/tokenaward/grantFind">
+		                    <div class="form-group">
+		                        <label>用户名：</label>
+		                        <input type="text" name="userName" value="">
+		                    </div>
+							 <div class="form-group">
+		                        <label>手机号：</label>
+		                        <input type="text" name="mobile" value="">
+		                    </div>
+							<!-- <div class="form-group">
+		                        <label>奖励数量：</label>
+		                        <input type="text" name="inviteRewards" value="">
+		                    </div> -->
+		                    
+		                     <div class="form-group">
+		                        <label>奖励类型：</label>
+								<select name="tokenAwardFunctionType" id="tokenAwardFunctionType" class="form-control">  
+								<!-- '交易描述:0-充值1-评测奖励2-讨论奖励3-文章奖励4-榜单奖励5-用户赞赏6-注册奖励7-点赞奖励8-邀请好友奖励21-提现22-赞赏他人',
+10-充值11-评测奖励12-讨论奖励13-文章奖励14-榜单奖励15-用户赞赏16-注册奖励17-点赞奖励18-邀请好友奖励21-提现22-赞赏他人' -->
+                                   <option value="">全部</option> 
+                                   <option value="10">充值</option>  
+                                   <option value="11">评测奖励</option>  
+                                   <option value="12">讨论奖励</option>  
+                                   <option value="13">文章奖励</option>  
+                                   <option value="14">榜单奖励</option>  
+                                   <option value="15">用户打赏</option>  
+                                   <option value="16">注册奖励</option>  
+                                   <option value="17">点赞奖励</option>  
+                                   <option value="18">邀请好友奖励</option>  
+                                   <option value="21">提现</option>  
+                                   <option value="22">赞赏他人</option>  
+                                </select>  
+		                    </div>
+							 <div class="form-group">
+		                        <label>发放类型：</label>
+								<select name="distributionType" id="distributionType" class="form-control">  
+                                   <option value="">全部</option> 
+                                   <option value="1">一次性发放</option>  
+                                   <option value="2">线性发放</option>  
+                                </select>  
+		                    </div>
+							<!-- <div class="form-group">
+		                        <label>奖励时间：</label>
+		                        <input type="Date" name="createTime" value="">---
+		                        <input type="Date" name="createTime1" value="">
+		                    </div> -->
+		                    <div class="form-group">
+		                        <button class="btn btn-xs btn-primary" type="submit">搜索</button>
+		                    </div>
+		                </form>
+		            </div>
+		             <div class="col-sm-1" text-align:right>
+             		  <a href="$!{www}/tokenaward/add" class="btn btn-success btn-xs">发放奖励</a>
+           			 </div>
+                    <div class="col-sm-1">
+                       <!-- <a href="$!{www}/post/evaluation/new" class="btn btn-success btn-xs">添加</a> -->
+                    </div>
+		        </div>
+		        <table class="table table-striped table-bordered table-hover dataTable">
+		            <thead>
+		            <tr>
+		                <th>用户</th>
+		                <th>手机号</th>
+		                <th>奖励数量</th>
+		                <th>奖励类型</th>
+		                <th>发放类型</th>
+		                <th>发放备注</th>
+		                <th>发放人</th>
+		                <th>发放时间</th>
+		            </tr>
+		            </thead>
+		            <tbody>
+		                #foreach($row in $result.rows)
+		                <tr>
+							<td> $!{row.userName}</td>
+		                	<td> $!{row.mobile} </td>		           
+		                	<td> $!{row.inviteRewards} </td>		           
+							#if($!{row.tokenAwardFunctionType}==10)
+		                	<td>充值</td>
+							#elseif($!{row.tokenAwardFunctionType}==11)
+								<td>评测奖励</td>
+							#elseif($!{row.tokenAwardFunctionType}==12)
+								<td>讨论奖励</td>
+							#elseif($!{row.tokenAwardFunctionType}==13)
+								<td>文章奖励</td>
+							#elseif($!{row.tokenAwardFunctionType}==14)
+								<td>榜单奖励</td>
+							#elseif($!{row.tokenAwardFunctionType}==15)
+								<td>用户打赏</td>
+							#elseif($!{row.tokenAwardFunctionType}==16)
+								<td>注册奖励</td>
+							#elseif($!{row.tokenAwardFunctionType}==17)
+								<td>点赞奖励</td>
+							#elseif($!{row.tokenAwardFunctionType}==18)
+								<td>邀请好友奖励</td>
+							#elseif($!{row.tokenAwardFunctionType}==21)
+								<td>提现</td>
+							#elseif($!{row.tokenAwardFunctionType}==22)
+								<td>赞赏他人</td>
+							#else
+								<td>其他奖励</td>
+							#end
+							#if($!{row.distributionType}==1)
+		                	<td>一次性发放</td>
+							#elseif($!{row.distributionType}==2)
+								<td>线性发放</td>
+							#else
+								<td>其他类型发放</td>
+							#end
+		                	<td> $!{row.remark} </td>
+		                	<td> $!{row.issuer} </td>
+		                	<td> $!{row.createTimeStr} </td>
+		                	 <!-- $!date.format('yyyy-MM-dd HH:mm:ss ',$!user.time)	 -->	                	
+		                </tr>
+		                #end
+		            </tbody>
+		        </table>
+		        <div class="row">
+		            <div class="col-sm-12">
+		                <div class="dataTables_paginate paging_bootstrap">
+		                    <ul class="pagination">
+		                    	#set($pageRequestURL="$!{www}/tokenaward/list?pageIndex=[PAGINATION_PAGE_INDEX]#if($!{result.queryParameters})&$!{result.queryParameters}#end")
+		                    	#paginationHelper($result $pageRequestURL)
+		                    </ul>
+		                </div>
+		            </div>
+		       </div>
+		       
+		    </div>
+		</div>
+    </div><!-- /.page-content -->
+</div><!-- /.main-content -->

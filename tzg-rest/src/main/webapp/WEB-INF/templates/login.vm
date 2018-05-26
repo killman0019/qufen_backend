@@ -1,0 +1,22 @@
+#set( $pageFootCode = '<script src="$!{basePath}/assets/js/login.js"></script>' )
+<script>var baseHost="$!{basePath}";</script>
+<div class="tit">
+    <a href="$!{basePath}" class="return"></a>
+    <span class="title">登 录</span>
+</div>
+<div class="login">
+   <div class="clear">
+    <div class="loginicon1"></div>
+    <div class="logininput"><input id="loginName" type="text" placeholder="用户名/手机号码/邮箱"/></div>
+   </div>
+   <div class="clear">
+    <div class="loginicon2"></div>
+    <div class="logininput"><input id="password" type="password" placeholder="密码为8-20位"/></div>
+   </div>
+   <div id="point"></div>
+   <input type="hidden" name="redirectURL" value="$!{redirectURL}" id="J_redirectURL">
+   <a class="btn260" href="javascript:login()">登 录</a>
+   <div class="loginbz">
+    <span><a href="$!{basePath}/register.htm">新用户注册</a></span><a href="$!{basePath}/forgetPassword.htm">忘记密码?</a>
+   </div>
+</div>

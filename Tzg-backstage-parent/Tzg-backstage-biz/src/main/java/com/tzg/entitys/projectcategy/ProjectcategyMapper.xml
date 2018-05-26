@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzg.entitys.projectcategy.ProjectcategyMapper" >
+  <resultMap id="BaseResultMap" type="com.tzg.entitys.projectcategy.Projectcategy" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="vcName" property="vcName" jdbcType="VARCHAR" />
+    <result column="iSort" property="isort" jdbcType="INTEGER" />
+    <result column="iState" property="istate" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="columns" >
+    id, vcName, iSort, iState
+  </sql>
+  
+  <select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="columns" />
+    from tbprojectcategy
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <insert id="save" parameterType="com.tzg.entitys.projectcategy.Projectcategy" useGeneratedKeys="true" keyProperty="id">
+   	<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+	      SELECT LAST_INSERT_ID() AS id
+	</selectKey>
+	<![CDATA[
+		 insert into tbprojectcategy (
+		 vcName, 
+		 iSort, 
+         iState)
+    values ( 
+             #{vcName,jdbcType=VARCHAR}, 
+             #{isort,jdbcType=INTEGER}, 
+             #{istate,jdbcType=INTEGER}
+           )
+	]]>
+  </insert>
+ 
+  <update id="update" parameterType="com.tzg.entitys.projectcategy.Projectcategy" >
+    update tbprojectcategy
+    <set >
+      <if test="vcName != null" >
+        vcName = #{vcName,jdbcType=VARCHAR},
+      </if>
+      <if test="isort != null" >
+        iSort = #{isort,jdbcType=INTEGER},
+      </if>
+      <if test="istate != null" >
+        iState = #{istate,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from tbprojectcategy where 1=1
+		<include refid="queryWhere"/>
+	</select>
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbprojectcategy where 1=1
+		<include refid="queryWhere"/> 
+	    ORDER BY iSort ASC 
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+  	<sql id="queryWhere">
+		<if test="id != null and id.trim() != ''">
+		and id = #{id}
+		</if>
+		<if test="vcName != null and vcName.trim() != ''">
+		and vcName like "%"#{vcName}"%"
+		</if>
+		<if test="isort != null and isort.trim() != ''">
+		and iSort = #{isort}
+		</if>
+		<if test="istate != null and istate.trim() != ''">
+		and iState = #{istate}
+		</if>
+	</sql>
+	
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbprojectcategy WHERE
+        id = #{id} 
+	]]>
+	</delete>
+  	
+</mapper>

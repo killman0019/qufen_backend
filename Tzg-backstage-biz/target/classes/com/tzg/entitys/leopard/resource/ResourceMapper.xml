@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.leopard.resource.ResourceMapper">
+    <resultMap id="Resource" type="com.tzg.entitys.leopard.resource.Resource">
+        <id column="Id" jdbcType="INTEGER" property="id" />
+        <result column="iParentId" jdbcType="INTEGER" property="iParentId" />
+        <result column="vcName" jdbcType="VARCHAR" property="vcName" />
+        <result column="vcUrl" jdbcType="VARCHAR" property="vcUrl" />
+        <result column="vcButtonName" jdbcType="VARCHAR" property="vcButtonName" />
+        <result column="iType" jdbcType="INTEGER" property="iType" />
+        <result property="vcIcon" jdbcType="VARCHAR" column="vcIcon"/>
+		<result property="isort" jdbcType="INTEGER" column="isort"/>
+        <result column="iValid" jdbcType="INTEGER" property="iValid" />
+        <result column="dtCreate" jdbcType="TIMESTAMP" property="dtCreate" />
+        <result column="dtModify" jdbcType="TIMESTAMP" property="dtModify" />
+    </resultMap>
+    
+    <sql id="columns">
+	    <![CDATA[
+        id ,iParentId ,vcName ,vcUrl ,iType ,vcButtonName ,vcIcon ,isort ,iValid ,dtCreate ,dtModify 
+	    ]]>
+	</sql>
+	
+    <!-- 记录插入 -->
+    <insert id="save" parameterType="com.tzg.entitys.leopard.resource.Resource">
+    	<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+    	insert into tbconsoleresource
+    		(id,
+    		iParentId ,
+        	vcName ,
+        	vcUrl ,
+        	iType ,
+        	vcButtonName ,
+        	vcIcon ,
+        	isort ,
+        	iValid ,
+        	dtCreate ,
+        	dtModify )
+    	values(  #{id,jdbcType=INTEGER},
+    	         #{iParentId,jdbcType=INTEGER},
+    			 #{vcName,jdbcType=VARCHAR},
+    			 #{vcUrl,jdbcType=VARCHAR},
+    			 #{iType,jdbcType=INTEGER},
+    			 #{vcButtonName,jdbcType=VARCHAR},
+    			 #{vcIcon,jdbcType=VARCHAR} ,
+        		 #{isort,jdbcType=INTEGER} ,
+    			 #{iValid,jdbcType=INTEGER},
+    			 #{dtCreate,jdbcType=TIMESTAMP},
+    			 #{dtModify,jdbcType=TIMESTAMP}
+    	)
+    </insert>
+    
+    <!-- 数据更新 -->
+    <update id="update" parameterType="com.tzg.entitys.leopard.resource.Resource">
+    	update tbconsoleresource
+    	set 
+    	<if test="iParentId != null">
+    	 	 iParentId = #{iParentId,jdbcType=INTEGER} ,
+    	</if>
+    	<if test="vcName != null">
+    	 	 vcName = #{vcName,jdbcType=VARCHAR} ,
+    	</if>
+    	<if test="vcUrl != null">
+    	 	 vcUrl = #{vcUrl,jdbcType=VARCHAR} ,
+    	</if>
+    	<if test="iType != null">
+    	 	 iType = #{iType,jdbcType=INTEGER} ,
+    	</if>
+    	<if test="vcButtonName != null">
+    	 	 vcButtonName = #{vcButtonName,jdbcType=VARCHAR} ,
+    	</if>
+    	<if test="vcIcon != null">
+        	vcIcon = #{vcIcon,jdbcType=VARCHAR} ,
+        </if>
+		<if test="isort != null">
+        	isort = #{isort,jdbcType=INTEGER} ,
+        </if>
+    	<if test="iValid != null">
+    	 	 iValid = #{iValid,jdbcType=INTEGER} ,
+    	</if>
+    	<if test="dtModify != null">
+    	 	 dtModify = #{dtModify,jdbcType=TIMESTAMP}
+    	</if>
+   	    where id = #{id,jdbcType=INTEGER}
+    </update>
+    
+    <!-- 数据删除 -->
+    <delete id="delete" parameterType="java.lang.Integer">
+    	delete from tbconsoleresource
+    	where id = #{id,jdbcType=INTEGER}
+    </delete>
+    
+    <!-- 根据id,查询记录 -->
+    <select id="findById" parameterType="java.lang.Integer" resultMap="Resource">
+    	select <include refid="columns"/> from tbconsoleresource
+    	where id = #{id,jdbcType=INTEGER}
+    </select>
+    
+    <!-- 分页查询 -->
+     <select id="queryResourcesCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT count(*) 
+        from  tbconsoleresource 
+        where iValid = 1
+        <if test="vcName != null and vcName.trim() != ''">
+           and  vcName like "%"#{vcName}"%"
+        </if>
+        <if test="iType != null and iType.trim() != ''">
+           and  iType = #{iType,jdbcType=INTEGER}
+        </if>
+        <if test="iParentId != null and iParentId.trim() != ''">
+           and  iParentId = #{iParentId,jdbcType=INTEGER}
+        </if>
+    </select>
+    
+    <select id="queryResourcesList" parameterType="java.util.Map" resultMap="Resource">
+        SELECT * 
+        from  tbconsoleresource  
+        where iValid = 1
+        <if test="vcName != null and vcName.trim() != ''">
+            and  vcName like "%"#{vcName}"%"
+        </if>
+        <if test="iType != null and iType.trim() != ''">
+           and  iType = #{iType,jdbcType=INTEGER}
+        </if>
+         <if test="iParentId != null and iParentId.trim() != ''">
+           and  iParentId = #{iParentId,jdbcType=INTEGER}
+        </if>
+        ORDER BY iParentId ASC,isort ASC
+        <![CDATA[ limit ${startRecord},${endRecord} ]]>
+    </select>
+    
+      <select id="queryResourcesAllList" parameterType="java.util.Map" resultMap="Resource">
+        SELECT * 
+        from  tbconsoleresource  
+        where iValid = 1
+        <if test="vcName != null and vcName.trim() != ''">
+            and  vcName like "%"#{vcName}"%"
+        </if>
+        <if test="iType != null and iType.trim() != ''">
+           and  iType = #{iType,jdbcType=INTEGER}
+        </if>
+         <if test="iParentId != null and iParentId.trim() != ''">
+           and  iParentId = #{iParentId,jdbcType=INTEGER}
+           or  id = #{iParentId,jdbcType=INTEGER}
+        </if>
+        ORDER BY iParentId ASC,isort ASC
+    </select>
+
+    <select id="getAllResource" resultMap="Resource">
+        select * from tbconsoleresource where iValid = 1
+    </select>
+
+	<!-- 获取后台用户的所有资源 -->
+    <select id="findResourcesByAccount" parameterType="java.lang.Integer"  resultType="java.lang.String">
+		<![CDATA[
+			select vcUrl
+			from tbconsoleresource
+			where iValid = 1
+			and iParentId != 0
+			and id in (select DISTINCT s.iResourceID
+			                  from tbconsolepersonalrole w, tbconsoleroleresource s
+			                  where w.iConsoleLoginAccountID = #{id} and w.iRoleinfoID = s.iRoleinfoID)
+		]]>
+    </select>
+    
+    <!-- 获取一级菜单 -->
+	<select id="getFirstResourceByAccountId" parameterType="java.lang.Integer" resultMap="Resource">
+			select <include refid="columns"/>
+		<![CDATA[
+			from tbconsoleresource
+			where iValid = 1
+			and iParentId = 0
+			and id in (select DISTINCT s.iResourceID
+			                  from tbconsolepersonalrole w, tbconsoleroleresource s
+			                  where w.iConsoleLoginAccountID = #{id} and w.iRoleinfoID = s.iRoleinfoID)
+			ORDER BY isort ASC
+		]]>
+	</select>
+	
+	
+	<!-- 获取二级菜单 -->
+	<select id="getSecondResourceByAccountId" parameterType="java.util.Map" resultMap="Resource">
+		select <include refid="columns"/>
+		<![CDATA[
+			from tbconsoleresource
+			where iValid = 1
+			and iParentId = #{parentID}
+			and id in (select DISTINCT s.iResourceID
+			                  from tbconsolepersonalrole w, tbconsoleroleresource s
+			                  where w.iConsoleLoginAccountID = #{accountId} and w.iRoleinfoID = s.iRoleinfoID)
+			ORDER BY isort ASC
+		]]>
+	</select>
+	
+	<!-- 查询父级资源记录 -->
+	<select id="queryParentVcNameAll" resultMap="Resource">
+		select a.id,a.vcName from tbconsoleresource a 
+		where id in (select iParentId from tbconsoleresource)
+	</select>
+	
+	<!-- 查询所有的顶级记录 -->
+	<select id="queryFirstLevelResourceAll" resultMap="Resource">
+		select * from tbconsoleresource 
+		where iValid = 1 and iParentId='0'
+		ORDER BY isort ASC
+	</select>
+
+    <select id="getSecondResourceAll" parameterType="java.util.Map" resultMap="Resource">
+        	select <include refid="columns"/>
+        <![CDATA[
+			from tbconsoleresource
+			where iValid = 1
+			and iParentId = #{parentID}
+			ORDER BY isort ASC
+		]]>
+    </select>
+    
+    
+    
+</mapper>

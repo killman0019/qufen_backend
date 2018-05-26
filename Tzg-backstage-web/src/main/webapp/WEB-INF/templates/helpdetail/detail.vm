@@ -1,0 +1,126 @@
+<div class="main-content">
+    <div class="breadcrumbs" id="breadcrumbs">
+        <script type="text/javascript">
+            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}           
+        </script>
+
+        <ul class="breadcrumb">
+            <li>
+                <i class="icon-home home-icon"></i>
+                <a href="${www}/main">主页</a>
+            </li>
+
+            <li>
+                <a href="${www}/helpdetail">帮助明细列表</a>
+            </li>
+            <li class="active">帮助明细详情</li>
+        </ul><!-- .breadcrumb -->
+
+        <div class="nav-search" id="nav-search">
+            <form class="form-search">
+						<span class="input-icon">
+							<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+							<i class="icon-search nav-search-icon"></i>
+						</span>
+            </form>
+        </div><!-- #nav-search -->
+    </div>
+
+    <div class="page-content">
+        <div class="page-header">
+            <h1>帮助明细详情</h1>
+        </div>
+        
+       #if(${msg})
+        	<div>
+			#if(${success})
+        		<li class="text-success">$!{msg}</li>
+   			 #else
+        		<li class="text-danger">$!{msg}</li>
+   			 #end    	
+   			</div>
+   		#end	        
+         <form id="inputForm"  class="form-horizontal">       
+        	<div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">类别：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	#foreach($!helpcategy in $!helpcategyList)
+                        		#if($!helpcategy.id == $!{helpdetail.ihelpCategyId})
+                        			$!{helpcategy.vcName}
+                        		#end
+                        	#end
+                        </div>
+                    </div>
+                </div>
+             </div>
+             <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">问题：</label>
+                        <div class="col-md-8 col-sm-8">
+                            $!{helpdetail.vcQuestion}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">答复：</label>
+                        <div class="col-md-8 col-sm-8">
+                            $!{helpdetail.vcAnswer}
+                        </div>
+                    </div>
+                </div>
+            </div> 
+             <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">状态：</label>
+                        <div class="col-md-8 col-sm-8">
+                            #if($helpdetail.istate ==1)
+                            	有效
+                            #elseif($helpdetail.istate ==2)
+                            	无效
+                            #end
+                        </div>
+                    </div>
+                </div>
+             </div>
+             <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">创建时间：</label>
+                        <div class="col-md-8 col-sm-8">
+								$!{helpdetail.dtCreateStr}
+                        </div>
+                    </div>
+                </div>
+             </div>
+             <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">顺序：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	$!{helpdetail.iSort}
+                        </div>
+                    </div>
+                </div>
+             </div>  
+            <div class="clearfix form-actions">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="col-sm-offset-4 col-md-9">
+                            <button class="btn" type="button" onclick="javascript:history.go(-1);">
+                                <i class="icon-arrow-left bigger-110"></i>返回
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>    
+     </div>           
+</div><!-- /.page-content -->
+</div><!-- /.main-content -->

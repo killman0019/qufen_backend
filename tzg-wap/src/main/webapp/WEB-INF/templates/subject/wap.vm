@@ -1,0 +1,92 @@
+#set($layout = "/layout/azalea.vm")
+#set($pageHeadCode = '<link type="text/css" rel="stylesheet" href="'+$!{basePath}+'/assets2/components/magnific-popup/magnific-popup.css">')
+#set($bodyClass = "body-gray")
+#set($pageScript = "'pages/project-info'")
+
+## 还款方式
+#if($project.iRepayMode==1)#set($repayMode = "到期还本付息")
+#elseif($project.iRepayMode==2)#set($repayMode = "每日付息 到期还本")
+#elseif($project.iRepayMode==3)#set($repayMode = "每月付息 到期还本")
+#elseif($project.iRepayMode==4)#set($repayMode = "等额本息")
+#end
+
+#set($pageTitle = "项目信息-当前$!{project.vcName}$!{repayMode}网贷理财产品项目信息 - 铜掌柜")
+#set($pageKeywords = "")
+#set($pageDescription = "")
+
+#set($topbar = { "title": "$!{project.vcName} $!{subject.vcName}", "backLink": "$!{basePath}/subject/detail?subjectId=$!{subject.id}" })
+#parse("/include/titleBar.vm")
+<style>
+    body.body-gray{
+        background-color: #fff;
+        padding-bottom: 40px;
+    }
+    .experience-ct{
+        padding: 0 5%;
+    }
+    .experience-ct h2{
+        margin: 40px 0 30px 0;
+    }
+    .experience-ct h2 img{
+        display: block;
+        width: 89%;
+        margin: 0 auto;
+    }
+    .experience-ct h3 img{
+        display: block;
+        width: 89.6%;
+        margin: 0 auto;
+    }
+    .experience-list p{
+        padding: 0;
+        margin: 0;
+        font-size: 16px;
+        color: #606060;
+        font-family: "Microsoft YaHei",SimSun;
+    }
+    .experience-list strong{
+        color: #fa344a;
+    }
+    .experience-list .experience-word-gray{
+        font-size: 16px;
+        color: #b9b9b9;
+        font-family: "Microsoft YaHei",SimSun;
+    }
+</style>
+<div class="experience-ct">
+    <h2>
+        <img src="$!{staticPath}/pics/topics/experience/ex-title.png" alt="我出本金，您拿收益"/>
+    </h2>
+    <div class="experience-list">
+        <h3>
+            <img src="$!{staticPath}/pics/topics/experience/ex-desc1.png" alt="1.项目描述"/>
+        </h3>
+        <p>
+            “我出本金，您拿收益 ”体验标是铜掌柜平台为用户提供的体验项目。让新用户更熟悉流程，让老用户享更多福利！
+        </p>
+        <p class="experience-word-gray">
+            （体验标投资金额仅限计算收益基数，不能视为任何形式的现金或者等价物。到期后获得利息归用户，平台扣除体验金。）
+        </p>
+    </div>
+    <div class="experience-list">
+        <h3>
+            <img src="$!{staticPath}/pics/topics/experience/ex-desc2.png" alt="2.参与资格"/>
+        </h3>
+        <p>
+            体验标仅限未投资的新用户或老用户。用户只需进行账户充值，确保账户余额大于等于1元，即可投资体验标。
+        </p>
+    </div>
+    <div class="experience-list">
+        <h3>
+            <img src="$!{staticPath}/pics/topics/experience/ex-desc3.png" alt="3.到期收益"/>
+        </h3>
+        <p>
+            <strong>10000元</strong>体验金，<strong>5天</strong>到期后收益<strong>10000*10%/365*5=13.50元</strong>。体验标到期后，收益转入用户资金账户的可用余额中
+        </p>
+    </div>
+
+
+</div>
+
+##parse("/include/investToolbar.vm")
+

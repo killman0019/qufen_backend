@@ -1,0 +1,89 @@
+## 标的列表项 juicer 模板
+## =====================================
+[@if item.istate == 10 || item.istate == 11]
+	[@if item.itype==2]
+	<a href="$!{basePath}/subject/detail?subjectId=$[item.id]" class="m-sbjItm z-new">
+	[@else if item.itype == 3]
+	<a href="$!{basePath}/subject/detail?subjectId=$[item.id]" class="m-sbjItm z-activity">
+	[@else if item.itype == 4]
+	<a href="$!{basePath}/subject/detail?subjectId=$[item.id]" class="m-sbjItm z-activityNew">
+	[@else if item.itype == 5]
+	<a href="$!{basePath}/subject/detail?subjectId=$[item.id]" class="m-sbjItm z-seckill">
+	[@else if item.itype == 6]
+	<a href="$!{basePath}/subject/detail?subjectId=$[item.id]" class="m-sbjItm z-hotSales">
+	[@else]
+	<a href="$!{basePath}/subject/detail?subjectId=$[item.id]" class="m-sbjItm">
+	[@/if]
+[@else]
+	[@if item.itype == 2]
+	<a href="$!{basePath}/subject/detail?subjectId=$[item.id]" class="m-sbjItm z-newGray">
+	[@else if item.itype == 3]
+	<a href="$!{basePath}/subject/detail?subjectId=$[item.id]" class="m-sbjItm z-activityGray">
+	[@else if item.itype == 4]
+	<a href="$!{basePath}/subject/detail?subjectId=$[item.id]" class="m-sbjItm z-activityNewGray">
+	[@else if item.itype == 5]
+	<a href="$!{basePath}/subject/detail?subjectId=$[item.id]" class="m-sbjItm z-seckillGray">
+	[@else if item.itype == 6]
+	<a href="$!{basePath}/subject/detail?subjectId=$[item.id]" class="m-sbjItm z-hotSalesGray">
+	[@else]
+	<a href="$!{basePath}/subject/detail?subjectId=$[item.id]" class="m-sbjItm">
+	[@/if]
+[@/if]
+	<div class="m-sbjItm-ttl">$[item.id]-$[item.istate]-$[item.itype]-$[item.projectName]</div>
+	<div class="m-sbjItm-n">$[item.vcName]</div>
+	<div class="m-sbjItm-icos">
+		[@if item.istate ==10 || item.istate ==11]
+			[@if item.projectType.indexOf("00")>=0 || item.projectType.indexOf("02")>=0]
+			<i class="u-icoMortgage">押</i>
+			[@/if]
+			[@if item.projectType.indexOf("01")>=0]
+			<i class="u-icoGuarantee">保</i>
+			[@/if]
+		[@else if item.istate ==12 || item.istate ==13]
+			[@if item.projectType.indexOf("00")>=0 || item.projectType.indexOf("02")>=0]
+			<i class="u-icoMortgage--gray">押</i>
+			[@/if]
+			[@if item.projectType.indexOf("01")>=0]
+			<i class="u-icoMortgage--gray">保</i>
+			[@/if]
+		[@/if]
+	</div>
+
+	<div class="m-sbjItm-prgr">
+		<div class="m-SP-hnt">
+			[@if item.irepayMode==1]到期还本付息
+			[@else if item.irepayMode==2]每日付息到期还本
+			[@else if item.irepayMode==3]每月付息到期还本
+			[@else if item.irepayMode==4]等额本息
+			[@else if item.irepayMode==5]按季付息到期还本
+			[@/if]
+		</div>
+		[@if item.idisplayState == 1]
+		<div class="m-prgr2"><span class="m-prgr2-bar" style="width:100%"></span></div>
+		[@else]
+		<div class="m-prgr2"><span class="m-prgr2-bar" style="width:$[item.percent]%"></span></div>
+		[@/if]
+	</div>
+
+	<div class="m-sbjItm-prps g-3c-n">
+		<span class="g-3c-n_left">
+			<span class="u-clScd">$[item.totalRate]%</span>
+		</span>
+		<span class="g-3c-n_middle">$[item.numPeriod] <span class="u-fsSml u-clGrayLgt">天</span></span>
+		<span class="g-3c-n_right">$[item.numTotalFinancingStr]</span>
+	</div>
+	<div class="m-sbjItm-sd">
+	[@if item.istate == 10]
+		[@if item.itype == 2 || item.itype == 3 || item.itype == 4 || item.itype == 5 || item.itype == 6]
+			<div class="m-IS-date">$[item.dtCollectStartStr|substr,0,10]</div>
+			<span class="u-btn z-prm z-sml">$[item.dtCollectStartStr|substr,11,5]开标</span>
+		[@/if]
+	[@else if item.istate == 11]
+		<span class="u-btn z-prm z-sml">立即投资</span>
+	[@else if item.istate == 12]
+		<span class="u-btn z-sml">还款中</span>
+	[@else if item.istate == 13]
+		<span class="u-btn z-sml">已结束</span>
+	[@/if]
+	</div>
+</a>

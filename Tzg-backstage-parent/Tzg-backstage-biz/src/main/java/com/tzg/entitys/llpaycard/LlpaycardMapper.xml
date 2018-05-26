@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.llpaycard.LlpaycardMapper">	
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.llpaycard.Llpaycard">
+		<result property="id" jdbcType="INTEGER" column="id"/>
+		<result property="userId" jdbcType="VARCHAR" column="user_id"/>
+		<result property="ibankId" jdbcType="INTEGER" column="iBankID"/>
+		<result property="oidUserno" jdbcType="VARCHAR" column="oid_userno"/>
+		<result property="cardNo" jdbcType="VARCHAR" column="card_no"/>
+		<result property="prcptcd" jdbcType="VARCHAR" column="prcptcd"/>
+		<result property="cityCode" jdbcType="VARCHAR" column="city_code"/>
+		<result property="brabankName" jdbcType="VARCHAR" column="brabank_name"/>
+		<result property="withdrawNo" jdbcType="VARCHAR" column="withdraw_no"/>
+		<result property="numTotalRecharge" jdbcType="DECIMAL" column="numTotalRecharge"/>
+		<result property="numTotalWithdraw" jdbcType="DECIMAL" column="numTotalWithdraw"/>
+		<result property="numTotalProfit" jdbcType="DECIMAL" column="numTotalProfit"/>
+		<result property="dtCreate" jdbcType="TIMESTAMP" column="dtCreate"/>
+		<result property="dtResult" jdbcType="TIMESTAMP" column="dtResult"/>
+		<result property="istate" jdbcType="INTEGER" column="iState"/>
+		<result property="ichannelType" jdbcType="INTEGER" column="iChannelType"/>
+		<result property="vcRequestCode" jdbcType="VARCHAR" column="vcRequestCode"/>
+		
+		<result property="vcName" jdbcType="VARCHAR" column="vcName"/>
+		<result property="vcBankCode" jdbcType="VARCHAR" column="vcBankCode"/>
+		<result property="vcLimiteDescription" jdbcType="VARCHAR" column="vcLimiteDescription"/>
+		<result property="vcMemo" jdbcType="VARCHAR" column="vcMemo"/>
+    </resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+        id ,user_id ,iBankID ,oid_userno ,card_no ,prcptcd ,city_code ,brabank_name ,withdraw_no ,numTotalRecharge ,numTotalWithdraw ,numTotalProfit ,dtCreate ,dtResult ,iState ,iChannelType 
+	    ]]>
+	</sql>
+	
+	<insert id="save" parameterType="com.tzg.entitys.llpaycard.Llpaycard" useGeneratedKeys="true" keyProperty="id">
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+	      SELECT LAST_INSERT_ID() AS id
+	    </selectKey>
+	<![CDATA[
+		INSERT INTO tbllpaycard (
+        	user_id ,
+        	iBankID ,
+        	oid_userno ,
+        	card_no ,
+        	prcptcd ,
+        	city_code ,
+        	brabank_name ,
+        	withdraw_no ,
+        	numTotalRecharge ,
+        	numTotalWithdraw ,
+        	numTotalProfit ,
+        	dtCreate ,
+        	dtResult ,
+        	iState ,
+        	iChannelType,
+        	vcRequestCode
+		) VALUES (
+        	#{userId,jdbcType=VARCHAR} ,
+        	#{ibankId,jdbcType=INTEGER} ,
+        	#{oidUserno,jdbcType=VARCHAR} ,
+        	#{cardNo,jdbcType=VARCHAR} ,
+        	#{prcptcd,jdbcType=VARCHAR} ,
+        	#{cityCode,jdbcType=VARCHAR} ,
+        	#{brabankName,jdbcType=VARCHAR} ,
+        	#{withdrawNo,jdbcType=VARCHAR} ,
+        	#{numTotalRecharge,jdbcType=DECIMAL} ,
+        	#{numTotalWithdraw,jdbcType=DECIMAL} ,
+        	#{numTotalProfit,jdbcType=DECIMAL} ,
+        	#{dtCreate,jdbcType=TIMESTAMP} ,
+        	#{dtResult,jdbcType=TIMESTAMP} ,
+        	#{istate,jdbcType=INTEGER} ,
+        	#{ichannelType,jdbcType=INTEGER} ,
+        	#{vcRequestCode,jdbcType=VARCHAR} 
+		)
+	]]>
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.llpaycard.Llpaycard">
+		UPDATE tbllpaycard
+		<set>
+			<if test="userId != null">
+	        user_id = #{userId,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="ibankId != null">
+	        iBankID = #{ibankId,jdbcType=INTEGER} ,
+	        </if>
+			<if test="oidUserno != null">
+	        oid_userno = #{oidUserno,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="cardNo != null">
+	        card_no = #{cardNo,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="prcptcd != null">
+	        prcptcd = #{prcptcd,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="cityCode != null">
+	        city_code = #{cityCode,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="brabankName != null">
+	        brabank_name = #{brabankName,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="withdrawNo != null">
+	        withdraw_no = #{withdrawNo,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="numTotalRecharge != null">
+	        numTotalRecharge = IFNULL(numTotalRecharge,0) + #{numTotalRecharge,jdbcType=DECIMAL} ,
+	        </if>
+			<if test="numTotalWithdraw != null">
+			numTotalWithdraw = IFNULL(numTotalWithdraw,0) + #{numTotalWithdraw,jdbcType=DECIMAL} ,
+	        </if>
+			
+			<if test="dtCreate != null">
+	        dtCreate = #{dtCreate,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="dtResult != null">
+	        dtResult = #{dtResult,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="istate != null">
+	        iState = #{istate,jdbcType=INTEGER} ,
+	        </if>
+	        <if test="ichannelType != null">
+	        iChannelType = #{ichannelType,jdbcType=INTEGER} ,
+	        </if>
+	        <if test="vcRequestCode != null">
+	        vcRequestCode = #{vcRequestCode,jdbcType=VARCHAR} 
+	        </if>
+	    </set>
+		WHERE 
+	        id = #{id,jdbcType=INTEGER} 
+	</update>
+	
+	<!-- 连连回调后 更新绑卡状态 及 累计充值金额-->
+	<update id="updateStateByCardNo" parameterType="com.tzg.entitys.llpaycard.Llpaycard">
+		UPDATE tbllpaycard
+		SET iState = 2,
+			numTotalRecharge = IFNULL(numTotalRecharge,0) + #{numTotalRecharge,jdbcType=DECIMAL}
+		WHERE id = (
+			select t.id from (select MIN(ID) id 
+			from tbllpaycard 
+			where user_id = #{userId,jdbcType=VARCHAR}
+			AND  card_no = #{cardNo,jdbcType=VARCHAR} ) t
+		)
+	</update>
+	
+	<!-- 提现失败 更新累计提现金额 -->
+	<update id="cashFailedUpdateAmtByCardNo" parameterType="com.tzg.entitys.llpaycard.Llpaycard">
+		UPDATE tbllpaycard
+		SET numTotalWithdraw = IFNULL(numTotalWithdraw,0) - #{numTotalWithdraw,jdbcType=DECIMAL}
+		WHERE user_id = #{userId,jdbcType=VARCHAR}
+		AND  card_no = #{cardNo,jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 需保留的提现金额 -->
+	<select id="getCanCashAmt" resultType="BigDecimal" parameterType="java.util.Map">
+	    SELECT IFNULL(sum(IFNULL(t.numTotalRecharge,0)-IFNULL(t.numTotalWithdraw,0)),0) cashAmt 
+	<![CDATA[
+		FROM tbllpaycard t  
+		WHERE t.iState=2 
+		AND IFNULL(t.numTotalRecharge,0)>IFNULL(t.numTotalWithdraw,0) 
+		AND t.id !=  #{id,jdbcType=INTEGER} 
+		AND t.user_id = #{userId,jdbcType=VARCHAR}
+	]]>
+	</select>
+	
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbllpaycard WHERE
+        id = #{id} 
+	]]>
+	</delete>
+    
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT c.*,b.vcName,b.vcLimiteDescription,b.vcBankCode,b.iType
+	<![CDATA[
+		from tbllpaycard c,tbbankinfo b 
+		where c.iBankID = b.id 
+        and c.id = #{id} 
+	]]>
+	</select>
+	
+	<select id="findBankList" resultMap="BaseResultMap" parameterType="java.util.Map">
+	    select c.*,b.vcName,b.vcLimiteDescription,b.vcBankCode,b.iType  
+		from tbllpaycard c,tbbankinfo b where c.iBankID = b.id 
+        <include refid="queryWhere"/> 
+		 <choose>
+	            <when test="sortField != null and sortField != ''">
+	               ORDER BY ${sortField} desc
+	            </when>
+	            <otherwise>
+	                 ORDER BY id DESC 
+	            </otherwise>
+	        </choose>
+	</select>	
+	 
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) 
+    	from tbllpaycard c,tbbankinfo b 
+		where c.iBankID = b.id
+		<include refid="queryWhere"/>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select distinct c.*,b.vcName,b.vcLimiteDescription,b.vcMemo,b.vcBankCode,b.iType  
+		from tbllpaycard c,tbbankinfo b 
+		where c.iBankID = b.id
+		<include refid="queryWhere"/> 
+	    <![CDATA[ ORDER BY c.id DESC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<sql id="queryWhere">
+		
+		<if test="id != null and id.trim() != ''">
+		and c.id = #{id}
+		</if>
+		<if test="userId != null and userId.trim() != ''">
+		and c.user_id = #{userId}
+		</if>
+		<if test="ibankId != null and ibankId.trim() != ''">
+		and c.iBankID = #{ibankId}
+		</if>
+		<if test="oidUserno != null and oidUserno.trim() != ''">
+		and c.oid_userno = #{oidUserno}
+		</if>
+		<if test="cardNo != null and cardNo.trim() != ''">
+		and c.card_no = #{cardNo}
+		</if>
+		<if test="prcptcd != null and prcptcd.trim() != ''">
+		and c.prcptcd = #{prcptcd}
+		</if>
+		<if test="cityCode != null and cityCode.trim() != ''">
+		and c.city_code = #{cityCode}
+		</if>
+		<if test="brabankName != null and brabankName.trim() != ''">
+		and c.brabank_name = #{brabankName}
+		</if>
+		<if test="withdrawNo != null and withdrawNo.trim() != ''">
+		and c.withdraw_no = #{withdrawNo}
+		</if>
+		<if test="dtCreateBegin != null and dtCreateBegin.trim() != ''">
+		and c.dtCreate >= #{dtCreateBegin}
+		</if>
+		<if test="dtCreateEnd != null and dtCreateEnd.trim() != ''">
+		and c.dtCreate &lt;= #{dtCreateEnd}
+		</if>
+		<if test="dtResultBegin != null and dtResultBegin.trim() != ''">
+		and c.dtResult >= #{dtResultBegin}
+		</if>
+		<if test="dtResultEnd != null and dtResultEnd.trim() != ''">
+		and c.dtResult &lt;= #{dtResultEnd}
+		</if>
+		<if test="istate != null and istate.trim() != ''">
+		and c.iState = #{istate}
+		</if>
+		<if test="ichannelType != null and ichannelType.trim() != ''">
+		and c.iChannelType = #{ichannelType}
+		</if>
+		<if test="vcRequestCode != null and vcRequestCode.trim() != ''">
+		and c.vcRequestCode = #{vcRequestCode}
+		</if>
+	</sql>
+	
+	<!-- 绑卡成功后将状态置为2.处理成功 -->
+	<update id="updateStateByRequestCode" parameterType="com.tzg.entitys.llpaycard.Llpaycard">
+		UPDATE tbllpaycard
+		SET iState = 2
+		WHERE vcRequestCode = #{vcRequestCode,jdbcType=VARCHAR} 
+	</update>
+	
+	<!-- 易宝回调后 更新绑卡状态 及 累计充值金额-->
+	<update id="updateStateByCardNoAndChannelType" parameterType="com.tzg.entitys.llpaycard.Llpaycard">
+		UPDATE tbllpaycard
+		SET iState = 2,
+			numTotalRecharge = IFNULL(numTotalRecharge,0) + #{numTotalRecharge,jdbcType=DECIMAL}
+		WHERE id = (
+			select t.id from (select MIN(ID) id 
+			from tbllpaycard 
+			where user_id = #{userId,jdbcType=VARCHAR}
+			AND  card_no = #{cardNo,jdbcType=VARCHAR} 
+			AND  iChannelType = #{ichannelType,jdbcType=VARCHAR}) t
+		)
+	</update>
+	
+	<select id="findByCardNo" resultMap="BaseResultMap" parameterType="java.lang.String">
+	    SELECT *
+	<![CDATA[
+		from tbllpaycard c
+		where c.card_no = #{cardNo,jdbcType=VARCHAR} 
+	]]>
+	</select>
+	
+	<select id="findLlpaycardByChannel" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select c.*,d.vcName as vcName from tbllpaycard c,tbbankinfo d where 1=1 and c.iBankID=d.id
+		<include refid="queryWhere"/> 
+		<![CDATA[ ORDER BY id DESC ]]>
+		<![CDATA[ LIMIT 1 ]]>
+	</select>
+	
+	<select id="findByBankCardId" resultMap="BaseResultMap" parameterType="java.util.Map">
+		SELECT c.*,e.vcName as vcName FROM tbllpaycard c, tbbankinfo e  WHERE 1 = 1  AND c.iBankID=e.id 
+		AND c.iBankID = #{id} 
+		AND c.user_id = #{userId,jdbcType=VARCHAR}
+		AND c.iChannelType = #{ichannelType,jdbcType=VARCHAR}
+		AND c.iState=2 
+		AND c.card_no = #{cardNo,jdbcType=VARCHAR} 
+		group by c.id
+	</select>
+	
+	<select id="findBindCardByLoginAccountId" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select distinct c.*,b.vcName,b.vcLimiteDescription,b.vcMemo,b.vcBankCode,b.iType  
+		from tbllpaycard c,tbbankinfo b ,tbbindbankcard d
+		where c.`card_no` = d.`vcBankCardNo` 
+		  AND d.`iState` = 2 
+		  and c.iBankID = b.id
+		  and d.`iLoginAccountID` =  #{userId,jdbcType=VARCHAR}
+		GROUP BY c.card_no
+	    <![CDATA[ ORDER BY c.id DESC ]]>
+	</select>
+</mapper>
+
+

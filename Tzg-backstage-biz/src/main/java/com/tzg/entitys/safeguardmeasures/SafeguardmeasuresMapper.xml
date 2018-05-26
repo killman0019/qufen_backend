@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.safeguardmeasures.SafeguardmeasuresMapper">	
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.safeguardmeasures.Safeguardmeasures">
+		<result property="id" jdbcType="INTEGER" column="id"/>
+		<result property="vcCode" jdbcType="VARCHAR" column="vcCode"/>
+		<result property="vcName" jdbcType="VARCHAR" column="vcName"/>
+		<result property="vcURL" jdbcType="VARCHAR" column="vcURL"/>
+		<result property="iSort" jdbcType="INTEGER" column="iSort"/>
+		<result property="iState" jdbcType="INTEGER" column="iState"/>
+    </resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+        id ,vcCode ,vcName ,vcURL ,iSort ,iState 
+	    ]]>
+	</sql>
+	
+	<insert id="save" parameterType="com.tzg.entitys.safeguardmeasures.Safeguardmeasures" useGeneratedKeys="true" keyProperty="id">
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+	      SELECT LAST_INSERT_ID() AS id
+	    </selectKey>
+	<![CDATA[
+		INSERT INTO tbsafeguardmeasures (
+        	vcCode ,
+        	vcName ,
+        	vcURL ,
+        	iSort ,
+        	iState 
+		) VALUES (
+        	#{vcCode,jdbcType=VARCHAR} ,
+        	#{vcName,jdbcType=VARCHAR} ,
+        	#{vcURL,jdbcType=VARCHAR} ,
+        	#{iSort,jdbcType=INTEGER} ,
+        	#{iState,jdbcType=INTEGER} 
+		)
+	]]>
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.safeguardmeasures.Safeguardmeasures">
+		UPDATE tbsafeguardmeasures
+		<set>
+			<if test="vcCode != null">
+	        vcCode = #{vcCode,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcName != null">
+	        vcName = #{vcName,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcURL != null">
+	        vcURL = #{vcURL,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="iSort != null">
+	        iSort = #{iSort,jdbcType=INTEGER} ,
+	        </if>
+			<if test="iState != null">
+	        iState = #{iState,jdbcType=INTEGER} 
+	        </if>
+	    </set>
+		WHERE 
+	        id = #{id,jdbcType=INTEGER} 
+	</update>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbsafeguardmeasures WHERE
+        id = #{id} 
+	]]>
+	</delete>
+    
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbsafeguardmeasures 
+		WHERE 
+        id = #{id} 
+	]]>
+	</select>
+	 
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from tbsafeguardmeasures where 1=1
+		<include refid="queryWhere"/>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbsafeguardmeasures where 1=1
+		<include refid="queryWhere"/> 
+	    <![CDATA[ ORDER BY iSort ASC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<sql id="queryWhere">
+		<if test="id != null and id.trim() != ''">
+		and id = #{id}
+		</if>
+		<if test="vcCode != null and vcCode.trim() != ''">
+		and vcCode = #{vcCode}
+		</if>
+		<if test="vcName != null and vcName.trim() != ''">
+		and vcName like "%"#{vcName}"%"
+		</if>
+		<if test="vcURL != null and vcURL.trim() != ''">
+		and vcURL = #{vcURL}
+		</if>
+		<if test="iSort != null and iSort.trim() != ''">
+		and iSort = #{iSort}
+		</if>
+		<if test="iState != null and iState.trim() != ''">
+		and iState = #{iState}
+		</if>
+	</sql>
+	
+	<select id="queryByIstate" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbsafeguardmeasures 
+		WHERE 
+		iState = #{iState}
+        order by iSort;
+	]]>
+	</select>	
+</mapper>
+
+

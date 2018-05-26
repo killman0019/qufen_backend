@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.leopard.person.PersonalRoleMapper">
+    <resultMap id="PersonalRole" type="com.tzg.entitys.leopard.person.PersonalRole">
+        <id column="Id" jdbcType="INTEGER" property="id" />
+        <result column="iConsoleLoginAccountID" jdbcType="INTEGER" property="iConsoleLoginAccountID" />
+        <result column="iRoleinfoID" jdbcType="INTEGER" property="iRoleinfoID" />
+    </resultMap>
+
+    <select id="findRoleByAccountId" parameterType="java.lang.Integer" resultType="java.lang.String">
+         select iRoleinfoID from tbconsolepersonalrole where iConsoleLoginAccountID = #{id,jdbcType=INTEGER}
+    </select>
+
+    <insert id="insertByList" parameterType="java.util.List">
+        insert into tbconsolepersonalrole (iConsoleLoginAccountID,iRoleinfoID) values
+        <foreach collection="list" item="item" index="index"
+                 separator=",">
+            (#{item.iConsoleLoginAccountID,jdbcType=INTEGER},#{item.iRoleinfoID,jdbcType=INTEGER})
+        </foreach>
+    </insert>
+
+    <delete id="deleteByAccount" parameterType="java.lang.Integer">
+        delete from  tbconsolepersonalrole where iConsoleLoginAccountID = #{id,jdbcType=INTEGER}
+    </delete>
+</mapper>

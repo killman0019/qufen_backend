@@ -1,0 +1,72 @@
+#set($layout = "/layout/azalea.vm")
+#set($pageTitle = "我的红包_我的账户_投资人")
+#set($bodyClass = "body-gray")
+#set($pageScript = "'pages/red-record'")
+
+#set($topbar = {"title": "我的红包", "backLink": "$!{basePath}/user/home"})
+#parse("/include/titleBar.vm")
+
+
+<div class="top-tab-container">
+	<ul class="tab" id="j_red_tabs">
+		<li><a href="#itypes=0">全部红包</a></li>
+		<li><a href="#itypes=1">获得红包</a></li>
+		<li><a href="#itypes=2,3">支出红包</a></li>
+	</ul>
+</div>
+
+<div class="red-timeline" id="j_list_container"></div>
+
+<script type="text/template" id="j_list_template">
+[@each rows as item]
+	<div class="red-year">$[item.year]</div>
+	<div class="red-date">$[item.month]-$[item.day]</div>
+	<ul class="red-items">
+		[@each item.awardsdisplayList as display]
+		[@if display.itype==1]
+		<li class="-income">
+		[@else if display.itype==2]
+		<li class="-expend">
+		[@else if display.itype==3]
+		<li class="-expire">
+		[@else]
+		<li>
+		[@/if]
+			<div class="red-time">$[display.dtTimeStr|toTime]</div>
+			<div class="red-title">$[display.vcDesp]</div>
+			<div class="red-amount">￥$[display.numAmt|toCurrency]</div>
+			[@if display.itype==1]
+			<div class="red-deadline">有效期：$[display.dtExpiredStr]</div>
+			[@/if]
+		</li>
+		[@/each]
+	</ul>
+[@/each]
+</script>
+
+<div class="load-more" id="j_load_more" style="display:none">点击查看更多</div>
+
+
+##=====================================================================================
+<a href="#" class="topbar-red-exchange-btn" id="j_open_exchange_btn">兑换</a>
+
+<div class="win-wrapper red-exchange-wrapper -hidden" id="j_win_wrapper">
+	<div class="win-box">
+		<div class="win">
+			<div class="win_hd">
+				输入兑换码
+				<a href="javascript:void(0)" class="win_close"></a>
+			</div>
+			<div class="win_bd">
+				<ul class="red-ex-form-items">
+					<li><input type="text" name="redcode" class="ipt -full" id="j_redcode_ipt"></li>
+					<li class="msg" id="j_form_msg"></li>
+				</ul>
+				<div class="result-msg">恭喜！您已成功兑换一个红包！</div>
+			</div>
+			<div class="win_ft">
+				<button type="button" class="btn -primary" id="j_exchange_btn">确定</button>
+			</div>
+		</div>
+	</div>
+</div>

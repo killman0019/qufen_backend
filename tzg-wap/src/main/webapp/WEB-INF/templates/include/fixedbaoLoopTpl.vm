@@ -1,0 +1,28 @@
+## 掌薪计划(定期宝) 列表项juicer模板
+## =====================================
+<a class="m-sbjItm z-dqb" href="$!{basePath}/subject/fixedbaodetail?projectId=$[item.id]">
+	<div class="m-sbjItm-ttl">掌薪计划$[item.vcName]</div>
+	<div class="m-sbjItm-prgr">
+		<div class="m-SP-hnt">锁定期<em>$[item.numPeriod]天</em></div>
+		<div class="m-prgr2">
+			<span style="width:$[item.percent]%" class="m-prgr2-bar"></span>
+		</div>
+	</div>
+	<div class="m-sbjItm-prps g-3c-n">
+		<span class="g-3c-n_left"><span class="u-clScd">$[item.numIntetrestRate|toCurrency]%</span></span>
+		[@if item.numTotal >= 10000]
+			<span class="g-3c-n_right">项目规模 $[item.numTotal / 10000|toCurrency]万元</span>
+		[@else]
+			<span class="g-3c-n_right">项目规模 $[item.numTotal|toCurrency]元</span>
+		[@/if]
+	</div>
+	<div class="m-sbjItm-sd">
+	[@if item.iProjectState == 1]
+		<span class="u-btn z-sml">清算中</span>
+	[@else if item.iProjectState == 3]
+		<span class="u-btn z-sml">已结束</span>
+	[@else]
+		<span class="u-btn z-prm z-sml">立即投资</span>
+	[@/if]
+	</div>
+</a>

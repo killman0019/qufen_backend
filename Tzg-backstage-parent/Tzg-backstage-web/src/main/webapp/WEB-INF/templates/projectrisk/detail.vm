@@ -1,0 +1,1351 @@
+<div class="main-content">
+    <div class="breadcrumbs" id="breadcrumbs">
+        <script type="text/javascript">
+        
+        </script>
+        
+         <ul class="breadcrumb">
+            <li>
+                <i class="icon-home home-icon"></i>
+                <a href="${www}/main">主页</a>
+            </li>
+
+            <li>
+                <a href="${www}/projectrisk">项目风控列表</a>
+            </li>
+            <li class="active">
+            	项目风控详情
+            </li>
+        </ul><!-- .breadcrumb -->
+
+        <div class="nav-search" id="nav-search">
+            <form class="form-search">
+						<span class="input-icon">
+							<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+							<i class="icon-search nav-search-icon"></i>
+						</span>
+            </form>
+        </div><!-- #nav-search -->
+    </div>
+        
+    <div class="page-content">
+	        <div class="page-header">   
+	        	<h1>项目风控详情
+	        </h1>	
+	</div>
+	    	<div class="container-fluid">
+	      
+<div class="tabbable">
+   <ul class="nav nav-tabs" id="myTab">
+		<li class="active">
+			<a data-toggle="tab" href="#risk-01">
+					<i class="green icon-home bigger-110"></i>
+						项目信息
+					</a>
+		</li>
+		#if($!{project.iBorrowerType}==1) 
+		<li>
+			<a data-toggle="tab" href="#risk-02">
+						个人风控信息
+				#if(${riskpersonal})
+					<span class="badge badge-info">有</span>	
+				#else
+					<span class="badge badge-danger">无</span>
+				#end				
+			</a>
+		</li>
+		#end
+		#if($!{project.iBorrowerType}==2) 
+		<li >
+			<a data-toggle="tab" href="#risk-03">
+						企业风控信息
+				#if(${riskenterprise})
+					<span class="badge badge-info">有</span>	
+				#else
+					<span class="badge badge-danger">无</span>
+				#end
+			</a>
+		</li>	
+		#end	
+		<li >
+			<a data-toggle="tab" href="#risk-04">
+						风控意见
+				#if(${projectsuggestions})
+					<span class="badge badge-info">有</span>	
+				#else
+					<span class="badge badge-danger">无</span>
+				#end
+			</a>
+		</li>	
+		<li >
+			<a data-toggle="tab" href="#risk-05">
+						风控附件(PC适配)
+				#if(${hasPCProjectattachList})		
+					<span class="badge badge-info">$!{hasPCProjectattachList}</span>	
+				#else
+					<span class="badge badge-danger">无</span>
+				#end						
+			</a>
+		</li>	
+		<li >
+			<a data-toggle="tab" href="#risk-06">
+						风控附件(移动适配)
+				#if(${hasMobileProjectattachList})		
+					<span class="badge badge-info">$!{hasMobileProjectattachList}</span>	
+				#else
+					<span class="badge badge-danger">无</span>
+				#end						
+			</a>
+		</li>		
+		<li >
+			<a data-toggle="tab" href="#risk-07">
+						风控清单
+				#if(${hasProjectcataloglist})		
+					<span class="badge badge-info">$!{hasProjectcataloglist}</span>	
+				#else
+					<span class="badge badge-danger">无</span>
+				#end	
+			</a>
+		</li>			
+		<li >
+			<a data-toggle="tab" href="#risk-08">
+						保障措施
+				#if(${hasProjectsafeguardList})		
+					<span class="badge badge-info">$!{hasProjectsafeguardList}</span>	
+				#else
+					<span class="badge badge-danger">无</span>
+				#end	
+			</a>
+		</li>	
+
+	</ul>
+
+	<div class="tab-content">
+	
+		<div id="risk-01" class="tab-pane ) in active ">
+		<!-- 项目基本信息 开始-->
+       <form id="inputForm" class="form-horizontal">
+          <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">借款人类型：</label>
+                        <div class="col-md-8 col-sm-8">
+                                #if($project.iBorrowerType ==1) 个人
+                                #elseif($project.iBorrowerType ==2)  企业
+                                #end
+                        </div>
+                    </div>
+                </div>
+            </div>        
+        
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">借款人：</label>
+                        <div class="col-md-8 col-sm-8">
+									$!{iLoginAccountName}
+                        </div>
+                    </div>
+                </div>
+             </div>
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">担保机构：</label>
+                        <div class="col-md-8 col-sm-8">
+                        		$!{guaranteeName}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">渠道：</label>
+                        <div class="col-md-8 col-sm-8">
+                          $!{channelName}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">编号：</label>
+                        <div class="col-md-8 col-sm-8">
+                            $!{project.vcCode}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">名称：</label>
+                        <div class="col-md-8 col-sm-8">
+                            $!{project.vcName}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">类型：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	    #foreach( $vcTypeStr in $project.vcTypeList)
+                                 	#if($vcTypeStr == "00") 抵押&nbsp;&nbsp;
+                                 	#elseif($vcTypeStr == "01") 担保&nbsp;&nbsp;
+                                 	#elseif($vcTypeStr == "02") 质押&nbsp;&nbsp;
+                                 	#elseif($vcTypeStr == "03") 信用&nbsp;&nbsp;
+                                 	#end
+                                #end 	                      
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">简介：</label>
+                        <div class="col-md-8 col-sm-8">
+                            $!{project.vcIntroduce}
+                        </div>
+                    </div>
+                </div>
+            </div>            
+            
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">融资模式：</label>
+                        <div class="col-md-8 col-sm-8">
+                                #if($project.iMode ==1) 直融
+                                #elseif($project.iMode ==2) 债权转让
+                                #end
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">融资金额：</label>
+                        <div class="col-md-8 col-sm-8">
+                            $!{project.numTotalFinancing}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">还款日期：</label>
+                        <div class="col-md-8 col-sm-8">
+                            $!{project.dtRepaymentStr}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">还款方式：</label>
+                        <div class="col-md-8 col-sm-8">
+                                 #if($project.iRepayMode ==1)  到期还本付息
+                                 #elseif($project.iRepayMode ==2) 每日付息到期还本
+                                 #elseif($project.iRepayMode ==3) 每月付息到期还本
+                                 #elseif($project.iRepayMode ==4) 等额本息
+                                 #elseif($project.iRepayMode ==5) 按季付息到期还本
+                                 #end
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">出借转账方式：</label>
+                        <div class="col-md-8 col-sm-8">
+                                #if($project.iTransferMode ==1) 项目募集完成转账
+                                #elseif($project.iTransferMode ==2) 单标募集完成转账
+                                #end
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">每月还款日 ：</label>
+                        <div class="col-md-8 col-sm-8">
+								$!{project.iRepayDay}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">项目合同模板：</label>
+                        <div class="col-md-8 col-sm-8">
+								$!{contracttemplateName}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">项目介绍：</label>
+                        <div class="col-md-8 col-sm-8">
+                            $!{project.vcPurpose}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">保障措施：</label>
+                        <div class="col-md-8 col-sm-8">
+                            $!{project.vcRepaymentSource}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            #if($!{project.dtAssignmentOfDebtStr})
+             <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">债权生效日：</label>
+                        <div class="col-md-8 col-sm-8">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            #end
+            #if($!{project.numAgreementInterestRate})
+             <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">投资人基准利率 ：</label>
+                        <div class="col-md-8 col-sm-8">
+                            $!{project.numAgreementInterestRate}%
+                        </div>
+                    </div>
+                </div>
+            </div>
+			#end
+            <div class="clearfix form-actions">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="col-sm-offset-4 col-md-9">
+                            <button class="btn" type="button" onclick="javascript:history.go(-1);">
+                                <i class="icon-arrow-left bigger-110"></i>返回
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </form>
+		</div><!-- 项目基本信息 结束-->
+		<!-- 个人风控  开始-->
+#if($!{project.iBorrowerType}==1) 		
+		<div id="risk-02" class="tab-pane">
+			<form id="inputForm" class="form-horizontal">
+									<div class="row">
+										 <div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">姓名：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.vcName}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>	
+									<div class="row">
+										 <div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">显示姓名：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.vcDisplayName}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>		
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">性别：</label>
+						                        <div class="col-md-8 col-sm-8">
+													$!{riskpersonal.vcSex}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">年龄：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.numAge}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										 <div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">学历：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                            $!{riskpersonal.vcEducation}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">婚姻状况：</label>
+						                        <div class="col-md-8 col-sm-8">
+														$!{riskpersonal.vcMarital}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">子女状况：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.vcChildren}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">户籍城市：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.vcRegion}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">身份证号码：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.vcCertNO}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>	
+									<h3 class="header smaller lighter green">
+											资产情况 
+									</h3>				
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">是否有房产：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	#if($!{riskpersonal.isHouseType} == '1')  有房
+						                        	#elseif($!{riskpersonal.isHouseType} == '2')  无房
+						                        	#end
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">房产情况：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.vcHouseDesc}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">房产所在地：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.vcHouseArea}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">小区名称：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.vcHoouseQuarter}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">使用年限：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.numHouseAge}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">参考价格（元）：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.numHouseRefPrice}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">评估价格（元）：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.numHouseAssPrice}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										 <div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">银行批单：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.vcHouseBankEndorsement}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										 <div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">是否有车：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	#if($!{riskpersonal.iCarType} == '1')  有车
+						                        	#elseif($!{riskpersonal.iCarType} == '2')  无车
+						                        	#end
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">汽车品牌：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.vcCarBrand}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">汽车型号：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.vcCarModel}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">购买日期：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.dtCarPurchaseStr}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">使用年限：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.numCarAge}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">参考价格（元）：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.numCarRefPrice}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">评估价格（元）：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.numCarAssPrice}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">其它资产：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.vcOtherAssets}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">其它贷款：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.vcOtherLoans}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										 <div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">信用卡使用额度（元）：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.numCreditUsed}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">信用卡总额度（元）：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.numCreditLimit}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">资产估值（元）：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.numAssetValuation}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">征信信息：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.vcCreditStatus}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										 <div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">涉诉情况：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.vcLawsuit}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">抵押物现状：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.vcMortgageStatus}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">抵押物类型：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	#if($!{riskpersonal.iMortgageType} == '1')  房产
+						                        	#elseif($!{riskpersonal.iMortgageType} == '2')  汽车
+						                        	#end
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">抵押物类型描述：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.vcMortgageDesc}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">抵押物价值（元）：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.numMortgageWorth}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">抵押率：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.numMortgageRate}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>		
+									<h3 class="header smaller lighter green">
+											工作状况
+									</h3>											
+									<div class="row">
+										 <div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">工作所在地区：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.vcCompanyArea}
+						                        </div>
+						                    </div>
+						                  </div>
+									</div>
+									<div class="row">
+										 <div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">公司名称：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.vcCompanyName}
+						                        </div>
+						                    </div>
+						                 </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">公司显示名称：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.vcCompanyDisplayName}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										 <div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">公司行业：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.vcCompanyIndustry}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">公司性质：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.vcCompanyNature}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										 <div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">现公司工作时间：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.vcCompanyTimes}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">职务：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskpersonal.vcCompanyPost}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">月收入（元/月）：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        $!{riskpersonal.numMonthlyIncome}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>																																															
+			</form>	
+		</div>
+#end		
+		<!-- 个人风控  结束-->
+#if($!{project.iBorrowerType}==2) 		
+		<!-- 企业风控  开始-->
+		<div id="risk-03" class="tab-pane ">
+			<form id="inputForm" class="form-horizontal">
+									<div class="row">
+										 <div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">企业名称：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskenterprise.vcName}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">企业前台显示名称：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskenterprise.vcDisplayName}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>									
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">企业介绍：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskenterprise.vcIntroduction}
+						                        </div>
+						                    </div>
+						                </div>	
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">注册日期：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskenterprise.dtRegistrationStr}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">注册资本（万）：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskenterprise.numRegisteredCapital}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										 <div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">企业所在地：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskenterprise.vcArea}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">企业性质：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskenterprise.vcNature}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">净资产值（万）：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskenterprise.numNetAsset}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										 <div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">企业规模（人）：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskenterprise.vcScale}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">所属行业：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskenterprise.vcIndustrial}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										 <div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">主营业务：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskenterprise.vcPrimaryBusiness}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">经营状况：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskenterprise.vcOperationState}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">征信情况：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskenterprise.vcCreditStatus}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">涉诉情况：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskenterprise.vcLawsuit}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">抵押物现状：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskenterprise.vcMortgageStatus}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">抵押物类型：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	 #if($!{riskenterprise.iMortgageType} == '1')  房产
+						                        	 #elseif($!{riskenterprise.iMortgageType} == '2')  汽车
+						                        	 #end
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										 <div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">抵押物类型描述：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskenterprise.vcMortgageDesc}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">抵押物价值：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskenterprise.numMortgageWorth}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										 <div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">抵押率：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskenterprise.numMortgageRate}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>			
+									<h3 class="header smaller lighter green">
+											企业主信息
+									</h3>		
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">姓名：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskenterprise.vcOwnerName}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										 <div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">性别：</label>
+						                        <div class="col-md-8 col-sm-8">
+														$!{riskenterprise.vcOwnerSex}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">学历：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskenterprise.vcOwnerEducation}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">婚姻状况：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskenterprise.vcOwnerMarital} 
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										 <div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">户籍所在地：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskenterprise.vcOwnerRegion}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">显示姓名：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskenterprise.vcOwnerDisplayName}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										 <div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">身份证号：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskenterprise.vcOwnerCertNO}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">职务：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskenterprise.vcOwnerPost}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">月收入（元/月）：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskenterprise.vcOwnerMonthIncome}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										 <div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">征信信息：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskenterprise.vcOwnerCredit}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">涉诉情况：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskenterprise.vcOwnerLawsuit}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										 <div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">是否有房：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	#if($!{riskenterprise.iHouseType} == '1') 有房
+						                        	#elseif($!{riskenterprise.iHouseType} == '2') 无房
+						                        	#end
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">房产描述：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskenterprise.vcHouseDesc}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">是否有车：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	#if($!{riskenterprise.iCartType} == '1') 有车
+						                        	#elseif($!{riskenterprise.iCartType} == '2') 无车
+						                        	#end
+						                        </div>
+						                    </div>
+						                </div>
+									</div>
+									<div class="row">
+										 <div class="col-xs-12 col-md-8">
+						                    <div class="form-group">
+						                        <label class="col-md-4 col-sm-2 control-label">车辆描述：</label>
+						                        <div class="col-md-8 col-sm-8">
+						                        	$!{riskenterprise.vcCartDesc}
+						                        </div>
+						                    </div>
+						                </div>
+									</div>																						
+			</form>	
+		</div>
+#end		
+		<!-- 企业风控  结束-->
+		
+		<!-- 风控意见 开始-->
+		<div id="risk-04" class="tab-pane ">
+			<form id="inputForm"  class="form-horizontal">
+       			<div class="row">
+                	<div class="col-xs-12 col-md-8">
+                    	<div class="form-group">
+                        	<label class="col-md-4 col-sm-2 control-label">担保方意见：</label>
+                       		 <div class="col-md-8 col-sm-8">
+                            		$!{projectsuggestions.vcOpinionGuarantee}
+                        	</div>
+                    	</div>
+               		 </div>
+               	</div> 
+       			<div class="row">
+                	<div class="col-xs-12 col-md-8">
+                    	<div class="form-group">
+                        	<label class="col-md-4 col-sm-2 control-label">风控意见：</label>
+                       		 <div class="col-md-8 col-sm-8">
+                           		 $!{projectsuggestions.vcOpinionControl}
+                        		</div>
+                    		</div>
+               		 </div>
+               	</div>	 
+       			<div class="row">
+                	<div class="col-xs-12 col-md-8">
+                    	<div class="form-group">
+                        	<label class="col-md-4 col-sm-2 control-label">法律意见：</label>
+                       		 <div class="col-md-8 col-sm-8">
+                         		   $!{projectsuggestions.vcOpinionLawyer}
+                        		</div>
+                   		 </div>
+               		 </div>
+               	</div>	 
+		 </form>
+		</div>
+		<!-- 风控意见  结束-->		
+
+		<!-- 风控附件PC端适配 开始-->
+		<div id="risk-05" class="tab-pane">	
+			<ul class="ace-thumbnails">			
+				#foreach($!projectattach in $!PCprojectattachList)
+							<li>
+								<a href="$!{www}$!{projectattach.vcFilePath}" title="$!{projectattach.vcAttachName}" data-rel="colorbox">
+									<img style="width:150px;height:150px;" src="$!{staticUploadUrl}$!{projectattach.vcFilePath}" />
+										<div class="tags">
+												<span class="label-holder">
+														<span class="label label-info">$!{projectattach.vcAttachName}</span>
+												</span>
+
+												<span class="label-holder">
+														<span class="label label-success">$!{projectattach.iSort}</span>
+												</span>
+											</div>
+								</a>
+						</li>
+				#end
+			</ul>				
+		</div>
+		<!-- 风控附件PC端适配  结束-->	
+
+		<!-- 风控附件移动端适配 开始-->
+		<div id="risk-06" class="tab-pane">
+			<ul class="ace-thumbnails">		
+				#foreach($!projectattach in $!MobileprojectattachList)
+							<li>
+								<a href="$!{www}$!{projectattach.vcFilePath}" title="$!{projectattach.vcAttachName}" data-rel="colorbox">
+									<img style="width:150px;height:150px;" src="$!{staticUploadUrl}$!{projectattach.vcFilePath}" />
+										<div class="tags">
+												<span class="label-holder">
+														<span class="label label-info">$!{projectattach.vcAttachName}</span>
+												</span>
+
+												<span class="label-holder">
+														<span class="label label-success">$!{projectattach.iSort}</span>
+												</span>
+											</div>
+								</a>
+						</li>
+				#end
+			</ul>				
+		</div>
+		<!-- 风控附件移动端适配  结束-->	
+		
+		<!-- 风控清单 开始-->		
+		<div id="risk-07" class="tab-pane ">
+			<ul class="ace-thumbnails">		
+			#foreach($!projectcatalog in $!projectcataloglist)
+							<li>
+								<a href="$!{www}$!{projectcatalog.vcCatalogIconURL}" title="$!{projectcatalog.vcCatalogName}" data-rel="colorbox">
+									<img style="width:150px;height:150px;" src="$!{staticUploadUrl}$!{projectcatalog.vcCatalogIconURL}" />
+										<div class="tags">
+												<span class="label-holder">
+														<span class="label label-info">$!{projectcatalog.vcCatalogTypeName}</span>
+												</span>
+
+												<span class="label-holder">
+														<span class="label label-success">$!{projectcatalog.vcCatalogName}</span>
+												</span>
+											</div>
+								</a>
+						</li>	
+				#end	
+			</ul>								
+		</div>
+		<!-- 风控清单  结束-->			
+
+		<!-- 保障措施 开始-->
+		<div id="risk-08" class="tab-pane">
+			<ul class="ace-thumbnails">
+			#foreach($!projectsafeguard in $!projectsafeguardList)     		
+							<li>
+								<a href="$!{www}$!{projectsafeguard.vcUrl}" title="$!{projectsafeguard.vcName}" data-rel="colorbox">
+									<img style="width:150px;height:150px;" src="$!{staticUploadUrl}$!{projectsafeguard.vcUrl}" />
+										<div class="tags">
+												<span class="label-holder">
+														<span class="label label-info">$!{projectsafeguard.vcName}</span>
+												</span>
+
+												<span class="label-holder">
+														<span class="label label-success">$!{projectsafeguard.iSort}</span>
+												</span>
+											</div>
+								</a>
+						</li>
+			#end 
+			</ul>	
+		</div>
+		<!-- 保障措施  结束-->	
+
+
+	</div>
+</div>			      
+		      
+	 
+     </div><!-- /.page-content -->
+</div><!-- /.main-content -->  
+
+<link rel="stylesheet" href="$!{www}/css/colorbox.css" />
+<script src="$!{www}/js/jquery.colorbox-min.js"></script>
+<script type="text/javascript">
+			jQuery(function($) {
+	var colorbox_params = {
+		reposition:true,
+		scalePhotos:true,
+		scrolling:false,
+		previous:'<i class="icon-arrow-left"></i>',
+		next:'<i class="icon-arrow-right"></i>',
+		close:'&times;',
+		current:'{current} of {total}',
+		maxWidth:'100%',
+		maxHeight:'100%',
+		onOpen:function(){
+			document.body.style.overflow = 'hidden';
+		},
+		onClosed:function(){
+			document.body.style.overflow = 'auto';
+		},
+		onComplete:function(){
+			$('.colorbox').resize();
+		}
+	};
+
+	$('.ace-thumbnails [data-rel="colorbox"]').colorbox(colorbox_params);
+	$("#cboxLoadingGraphic").append("<i class='icon-spinner orange'></i>");//let's add a custom loading icon
+
+	/**$(window).on('resize.colorbox', function() {
+		try {
+			//this function has been changed in recent versions of colorbox, so it won't work
+			$.fn.colorbox.load();//to redraw the current frame
+		} catch(e){}
+	});*/
+})
+		</script>

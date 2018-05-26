@@ -1,0 +1,178 @@
+<div class="main-content">
+    <div class="breadcrumbs" id="breadcrumbs">
+        <script type="text/javascript">
+            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+            
+            function tijiao(){
+				var reg = new RegExp("^[0-9]*$");  
+				/*var iheight = document.getElementById("iheight");
+				if(!reg.test(iheight.value)){
+					alert("请填写正整数");
+					iheight.focus();
+					return false;
+				}
+				
+				var iwidth = document.getElementById("iwidth");
+				if(!reg.test(iwidth.value)){
+					alert("请填写正整数");
+					iwidth.focus();
+					return false;
+				}*/
+				
+				var isortNo = document.getElementById("isortNo");
+				if(!reg.test(isortNo.value)){
+					alert("请填写正整数");
+					isortNo.focus();
+					return false;
+				}
+				var new_appImage = document.getElementById("new_appImage");
+				new_appImage.submit();
+            }
+        </script>
+
+        <ul class="breadcrumb">
+            <li>
+                <i class="icon-home home-icon"></i>
+                <a href="${www}/main">主页</a>
+            </li>
+
+            <li>
+                <a href="${www}/appwelcomeimage">App欢迎页</a>
+            </li>
+            <li class="active">新增</li>
+        </ul><!-- .breadcrumb -->
+
+        <div class="nav-search" id="nav-search">
+            <form class="form-search">
+						<span class="input-icon">
+							<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+							<i class="icon-search nav-search-icon"></i>
+						</span>
+            </form>
+        </div><!-- #nav-search -->
+    </div>
+
+    <div class="page-content">
+        <div class="page-header">
+            <h1>新增</h1>
+        </div>
+        <form action="${www}/appwelcomeimage/save" method="post" class="form-horizontal" id="new_appImage">
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">别名：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="vcFileName" value="$!{param.vcFileName}"/>
+                        </div>
+                    </div>
+					<div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">APP系统类型：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <select class="col-sm-12" name="iplatform">
+                                <option value="1">ios</option>
+                                <option value="2">android</option>
+                            </select>
+                        </div>
+                    </div>
+                  <!--  <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">图片高度：</label>
+                        <div class="col-md-8 col-sm-8">
+	                        <div class="row">
+		                        <div class="col-md-11">
+                            		<input type="text" class="col-sm-12" name="iheight" id="iheight" value="$!{param.iheight}"/>
+                       			 </div>
+		                        <div class="col-md-1">
+		                        	px
+		                        </div>
+		                    </div>	
+	                    </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">图片宽度：</label>
+                        <div class="col-md-8 col-sm-8">
+	                        <div class="row">
+		                        <div class="col-md-11">
+                            		<input type="text" class="col-sm-12" name="iwidth" id="iwidth" value="$!{param.iwidth}"/>
+                       			 </div>
+		                        <div class="col-md-1">
+		                        	px
+		                        </div>
+		                    </div>	
+	                    </div>
+                    </div>-->
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">链接地址：</label>
+                        <div class="col-md-8 col-sm-8">
+	                        <div class="row">
+		                        <div class="col-md-11">
+		                        	<input type="text" class="col-sm-12" id="paramPath" value="$!{param.vcUrl}"  readonly/>
+		                        	<input type="hidden" id="vcUrl" name="vcUrl" value="$!{param.vcUrl}">
+		                        </div>
+		                        <div class="col-md-1">
+		                        	<button type="button" id="select_focus_path_btn" class="btn btn-xs">选择链接地址</button>
+		                        </div>
+		                    </div>	
+	                    </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">顺序：</label>
+                        <div class="col-md-8 col-sm-8">
+                            <input type="text" class="col-sm-12" name="isortNo" value="$!{param.isortNo}" id="isortNo"/>
+                        </div>
+                    </div>
+                    <div class="red">$!{msg}</div>
+               	</div>
+            </div>
+            <div class="clearfix form-actions">
+                <div class="col-sm-offset-2 col-md-9">
+                    <button class="btn btn-info" type="button" onclick="tijiao()">
+                        <i class="icon-ok bigger-110"></i> 提交
+                    </button>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		            <button class="btn btn-info" type="button" onclick="javascript:history.go(-1);">
+		                <i class="icon-arrow-left bigger-110"></i>返回
+		            </button>
+                </div>
+            </div>
+</form>
+    </div><!-- /.page-content -->
+</div><!-- /.main-content -->
+
+<script src="${www}/js/sea.js" id="seajsnode"></script>
+<script type="text/javascript">
+seajs.use(['dialog'], function(dialog) {
+    var vcUrl = $("#vcUrl");
+    var paramPath = $("#paramPath");
+    var showDialog = function () {
+        dialog.alert({
+            title: 'App欢迎页列表',
+            content: '<iframe id="js_selector" frameborder="0" width="800" height="400" src="${www}/uploadfile/filePathList?itype=14"></iframe>',
+            ok: function() {
+                var checkedRadio = $(":radio:checked", document.getElementById("js_selector").contentDocument);
+                if (checkedRadio.size()) {
+                    vcUrl.val(checkedRadio.val());
+                    paramPath.val(checkedRadio.attr("data-name"));
+                }
+            }
+        });
+    };
+    paramPath.click(showDialog);
+    $("#select_focus_path_btn").click(showDialog);
+});
+
+(function(){
+    $(".tag-type").change(function(){
+        var type = $(".tag-type  option:selected").text();
+
+        $.post("${www}/focus/getChannel",{plat:type},function(data){
+            $(".vc-type").empty();
+			$(".vc-type").append('<option value="">请选择渠道</option>');
+            for(var i=0;i<data.list.length;i++){
+			var row = data.list[i];
+                $(".vc-type").append("<option value='"+ row.vcCode +"'>"+ row.vcCode +"</option>");
+            }
+        });
+
+    })
+})();
+</script>

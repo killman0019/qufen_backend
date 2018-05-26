@@ -1,0 +1,22 @@
+#set($bodyClass = "body--gray")
+
+<div class="m-adv f-mtb">
+	<img src="$!{staticPath}/pics/banner1.jpg" alt="">
+</div>
+
+<div class="l-mn">
+	<div class="m-smpObj">
+		新标即将上线<br>
+		敬请期待！
+	</div>
+
+	<div class="m-vwBtnWrp">
+		<a href="#" class="u-cclBtn--rps">立即查看</a>
+	</div>
+
+	<div class="m-hmeTxt">
+		本站100%本息担保
+	</div>
+
+	<a class="m-boxVwMr" href="#">查看更多 <i class="m-boxVwMr-arr u-ico-arrPrv"></i></a>
+</div>

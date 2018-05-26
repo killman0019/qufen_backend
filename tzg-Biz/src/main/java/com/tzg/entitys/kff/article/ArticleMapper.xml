@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.kff.article.ArticleMapper">	
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.kff.article.Article">
+		<result property="articleId" jdbcType="INTEGER" column="article_id"/>
+		<result property="postId" jdbcType="INTEGER" column="post_id"/>
+		<result property="postUuid" jdbcType="INTEGER" column="post_uuid"/>
+		<result property="articleContents" jdbcType="LONGVARCHAR" column="article_contents"/>
+    </resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+        article_id ,post_id ,post_uuid,article_contents 
+	    ]]>
+	</sql>
+	
+	<insert id="save" parameterType="com.tzg.entitys.kff.article.Article" useGeneratedKeys="true" keyProperty="articleId">
+		<selectKey resultType="java.lang.Integer" keyProperty="articleId" order="AFTER" >
+	      SELECT LAST_INSERT_ID() AS articleId
+	    </selectKey>
+	<![CDATA[
+		INSERT INTO tbarticle (
+        	post_id ,
+        	post_uuid,
+        	article_contents 
+		) VALUES (
+        	#{postId,jdbcType=INTEGER} ,
+        	#{postUuid,jdbcType=VARCHAR} ,
+        	#{articleContents,jdbcType=LONGVARCHAR} 
+		)
+	]]>
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.kff.article.Article">
+		UPDATE tbarticle
+		<set>
+			<if test="postId != null">
+	        post_id = #{postId,jdbcType=INTEGER} ,
+	        </if>
+			<if test="articleContents != null">
+	        article_contents = #{articleContents,jdbcType=LONGVARCHAR} 
+	        </if>
+	    </set>
+		WHERE 
+	        article_id = #{articleId,jdbcType=INTEGER} 
+	</update>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbarticle WHERE
+        article_id = #{articleId} 
+	]]>
+	</delete>
+    
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbarticle 
+		WHERE 
+        article_id = #{articleId} 
+	]]>
+	</select>
+
+	<select id="findByPostId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbarticle 
+		WHERE 
+        post_id = #{postId} 
+        order by articleId desc limit 1
+	]]>
+	</select>	
+	 
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from tbarticle where 1=1
+		<include refid="queryWhere"/>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbarticle where 1=1
+		<include refid="queryWhere"/> 
+	    <![CDATA[ ORDER BY article_id DESC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<sql id="queryWhere">
+		<if test="articleId != null and articleId.trim() != ''">
+		and article_id = #{articleId}
+		</if>
+		<if test="postId != null and postId.trim() != ''">
+		and post_id = #{postId}
+		</if>
+		<if test="postUuid != null and postUuid.trim() != ''">
+		and post_uuid = #{postUuid}
+		</if>
+		<if test="articleContents != null and articleContents.trim() != ''">
+		and article_contents = #{articleContents}
+		</if>
+	</sql>
+</mapper>
+
+

@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.bankpaymanage.BankpaymanageMapper">	
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.bankpaymanage.Bankpaymanage">
+		<result property="id" jdbcType="INTEGER" column="ID"/>
+		<result property="ibankInfoId" jdbcType="INTEGER" column="iBankInfoID"/>
+		<result property="ichannelType" jdbcType="INTEGER" column="iChannelType"/>
+		<result property="iterminalType" jdbcType="INTEGER" column="iTerminalType"/>
+		<result property="ipayType" jdbcType="INTEGER" column="iPayType"/>
+		<result property="ipriority" jdbcType="INTEGER" column="iPriority"/>
+		<result property="irateType" jdbcType="INTEGER" column="iRateType"/>
+		<result property="numRate" jdbcType="DECIMAL" column="numRate"/>
+		<result property="numSingleLimit" jdbcType="DECIMAL" column="numSingleLimit"/>
+		<result property="numDayLimit" jdbcType="DECIMAL" column="numDayLimit"/>
+		<result property="numMonthLimit" jdbcType="DECIMAL" column="numMonthLimit"/>
+		<result property="vcMemo" jdbcType="VARCHAR" column="vcMemo"/>
+		<result property="isort" jdbcType="INTEGER" column="iSort"/>
+		<result property="istate" jdbcType="INTEGER" column="iState"/>
+    </resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+        ID ,iBankInfoID ,iChannelType ,iTerminalType ,iPayType ,iPriority ,iRateType ,numRate ,numSingleLimit ,numDayLimit ,numMonthLimit ,vcMemo ,iSort ,iState 
+	    ]]>
+	</sql>
+	
+	<insert id="save" parameterType="com.tzg.entitys.bankpaymanage.Bankpaymanage" useGeneratedKeys="true" keyProperty="id">
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+	      SELECT LAST_INSERT_ID() AS id
+	    </selectKey>
+	<![CDATA[
+		INSERT INTO tbbankpaymanage (
+        	iBankInfoID ,
+        	iChannelType ,
+        	iTerminalType ,
+        	iPayType ,
+        	iPriority ,
+        	iRateType ,
+        	numRate ,
+        	numSingleLimit ,
+        	numDayLimit ,
+        	numMonthLimit ,
+        	vcMemo ,
+        	iSort ,
+        	iState 
+		) VALUES (
+        	#{ibankInfoId,jdbcType=INTEGER} ,
+        	#{ichannelType,jdbcType=INTEGER} ,
+        	#{iterminalType,jdbcType=INTEGER} ,
+        	#{ipayType,jdbcType=INTEGER} ,
+        	#{ipriority,jdbcType=INTEGER} ,
+        	#{irateType,jdbcType=INTEGER} ,
+        	#{numRate,jdbcType=DECIMAL} ,
+        	#{numSingleLimit,jdbcType=DECIMAL} ,
+        	#{numDayLimit,jdbcType=DECIMAL} ,
+        	#{numMonthLimit,jdbcType=DECIMAL} ,
+        	#{vcMemo,jdbcType=VARCHAR} ,
+        	#{isort,jdbcType=INTEGER} ,
+        	#{istate,jdbcType=INTEGER} 
+		)
+	]]>
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.bankpaymanage.Bankpaymanage">
+		UPDATE tbbankpaymanage
+		<set>
+			<if test="ibankInfoId != null">
+	        iBankInfoID = #{ibankInfoId,jdbcType=INTEGER} ,
+	        </if>
+			<if test="ichannelType != null">
+	        iChannelType = #{ichannelType,jdbcType=INTEGER} ,
+	        </if>
+			<if test="iterminalType != null">
+	        iTerminalType = #{iterminalType,jdbcType=INTEGER} ,
+	        </if>
+			<if test="ipayType != null">
+	        iPayType = #{ipayType,jdbcType=INTEGER} ,
+	        </if>
+			<if test="ipriority != null">
+	        iPriority = #{ipriority,jdbcType=INTEGER} ,
+	        </if>
+			<if test="irateType != null">
+	        iRateType = #{irateType,jdbcType=INTEGER} ,
+	        </if>
+			<if test="numRate != null">
+	        numRate = #{numRate,jdbcType=DECIMAL} ,
+	        </if>
+			<if test="numSingleLimit != null">
+	        numSingleLimit = #{numSingleLimit,jdbcType=DECIMAL} ,
+	        </if>
+	        <if test="numSingleLimit == null">
+	        numSingleLimit = null ,
+	        </if>
+			<if test="numDayLimit != null">
+	        numDayLimit = #{numDayLimit,jdbcType=DECIMAL} ,
+	        </if>
+	        <if test="numDayLimit == null">
+	        numDayLimit = null ,
+	        </if>
+			<if test="numMonthLimit != null">
+	        numMonthLimit = #{numMonthLimit,jdbcType=DECIMAL} ,
+	        </if>
+	        <if test="numMonthLimit == null">
+	        numMonthLimit = null,	
+	        </if>
+			<if test="vcMemo != null">
+	        vcMemo = #{vcMemo,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="isort != null">
+	        iSort = #{isort,jdbcType=INTEGER} ,
+	        </if>
+			<if test="istate != null">
+	        iState = #{istate,jdbcType=INTEGER} 
+	        </if>
+	    </set>
+		WHERE 
+	        ID = #{id,jdbcType=INTEGER} 
+	</update>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbbankpaymanage WHERE
+        ID = #{id} 
+	]]>
+	</delete>
+    
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbbankpaymanage 
+		WHERE 
+        ID = #{id} 
+	]]>
+	</select>
+	 
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="Integer">
+    	select count(*) from tbbankpaymanage where 1=1
+		<include refid="queryWhere"/>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbbankpaymanage where 1=1
+		<include refid="queryWhere"/> 
+	    <![CDATA[ ORDER BY id DESC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<sql id="queryWhere">
+		<if test="id != null and id.trim() != ''">
+		and ID = #{id}
+		</if>
+		<if test="ibankInfoId != null and ibankInfoId.trim() != ''">
+		and iBankInfoID = #{ibankInfoId}
+		</if>
+		<if test="ichannelType != null and ichannelType.trim() != ''">
+		and iChannelType = #{ichannelType}
+		</if>
+		<if test="iterminalType != null and iterminalType.trim() != ''">
+		and iTerminalType = #{iterminalType}
+		</if>
+		<if test="ipayType != null and ipayType.trim() != ''">
+		and iPayType = #{ipayType}
+		</if>
+		<if test="ipriority != null and ipriority.trim() != ''">
+		and iPriority = #{ipriority}
+		</if>
+		<if test="irateType != null and irateType.trim() != ''">
+		and iRateType = #{irateType}
+		</if>
+		<if test="numRate != null and numRate.trim() != ''">
+		and numRate = #{numRate}
+		</if>
+		<if test="numSingleLimit != null and numSingleLimit.trim() != ''">
+		and numSingleLimit = #{numSingleLimit}
+		</if>
+		<if test="numDayLimit != null and numDayLimit.trim() != ''">
+		and numDayLimit = #{numDayLimit}
+		</if>
+		<if test="numMonthLimit != null and numMonthLimit.trim() != ''">
+		and numMonthLimit = #{numMonthLimit}
+		</if>
+		<if test="vcMemo != null and vcMemo.trim() != ''">
+		and vcMemo = #{vcMemo}
+		</if>
+		<if test="isort != null and isort.trim() != ''">
+		and iSort = #{isort}
+		</if>
+		<if test="istate != null and istate.trim() != ''">
+		and iState = #{istate}
+		</if>
+		<if test="vcName != null and vcName.trim() != ''">
+		and iBankInfoID in(select B.id from tbbankinfo as B WHERE B.vcName= #{vcName})
+		</if>
+	</sql>
+	
+	<select id="getBankNameById" resultType="java.lang.String" parameterType="java.lang.Integer">
+		<![CDATA[select vcname from tbbankinfo where id=#{id}]]>
+	</select>
+	
+	<select id="findPayBankCard"  resultMap="BaseResultMap" parameterType="java.util.Map">
+		select a.*,b.vcName as vcName,b.vcShortName as vcShortName,b.vcBankCode as vcBankCode from tbbankpaymanage as a LEFT JOIN tbbankinfo as b on b.id=a.iBankInfoID  where a.iPriority = (select min(iPriority) from tbbankpaymanage where iBankInfoID= a.iBankInfoID 
+		<if test="iterminalType != null and iterminalType.trim() != ''">
+		and iTerminalType = #{iterminalType}
+		</if>
+		<if test="istate != null and istate.trim() != ''">
+		and iState = #{istate}
+		</if>
+		<if test="ipayType != null and ipayType.trim() != ''">
+		and iPayType = #{ipayType}
+		</if>
+		 ) 
+		<if test="iterminalType != null and iterminalType.trim() != ''">
+		and a.iTerminalType = #{iterminalType}
+		</if>
+		<if test="istate != null and istate.trim() != ''">
+		and a.iState = #{istate}
+		</if>
+		<if test="ipayType != null and ipayType.trim() != ''">
+		and a.iPayType = #{ipayType}
+		</if>
+	    <![CDATA[ ORDER BY a.iSort ,a.id ]]>
+	</select>
+	
+	<select id="findPayBankCardByBank"  resultMap="BaseResultMap" parameterType="java.util.Map">
+		SELECT  a.* FROM tbbankpaymanage a WHERE 1=1
+		<if test="iterminalType != null and iterminalType.trim() != ''">
+		and a.iTerminalType = #{iterminalType}
+		</if>
+		<if test="istate != null and istate.trim() != ''">
+		and a.iState = #{istate}
+		</if>
+		<if test="ibankInfoId != null and ibankInfoId.trim() != ''">
+		and a.iBankInfoID = #{ibankInfoId}
+		</if>
+		<if test="ipayType != null and ipayType.trim() != ''">
+		and a.iPayType = #{ipayType}
+		</if>
+		<![CDATA[ ORDER BY a.iPriority ASC LIMIT 1 ]]>
+	</select>
+	
+	<select id="getAllBankNames" resultType="java.lang.String">
+		select GROUP_CONCAT(DISTINCT B.vcName) from tbbankinfo As B where 1=1;
+	</select>
+</mapper>
+
+

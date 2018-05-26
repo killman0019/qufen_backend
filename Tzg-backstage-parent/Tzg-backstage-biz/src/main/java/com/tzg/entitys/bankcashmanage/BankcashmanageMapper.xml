@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.bankcashmanage.BankcashmanageMapper">	
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.bankcashmanage.Bankcashmanage">
+		<result property="id" jdbcType="INTEGER" column="ID"/>
+		<result property="ibankInfoId" jdbcType="INTEGER" column="iBankInfoID"/>
+		<result property="ichannelType" jdbcType="INTEGER" column="iChannelType"/>
+		<result property="irateType" jdbcType="INTEGER" column="iRateType"/>
+		<result property="numRate" jdbcType="DECIMAL" column="numRate"/>
+		<result property="vcMemo" jdbcType="VARCHAR" column="vcMemo"/>
+    </resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+        ID ,iBankInfoID ,iChannelType ,iRateType ,numRate ,vcMemo 
+	    ]]>
+	</sql>
+	
+	<insert id="save" parameterType="com.tzg.entitys.bankcashmanage.Bankcashmanage" useGeneratedKeys="true" keyProperty="id">
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+	      SELECT LAST_INSERT_ID() AS id
+	    </selectKey>
+	<![CDATA[
+		INSERT INTO tbbankcashmanage (
+        	iBankInfoID ,
+        	iChannelType ,
+        	iRateType ,
+        	numRate ,
+        	vcMemo 
+		) VALUES (
+        	#{ibankInfoId,jdbcType=INTEGER} ,
+        	#{ichannelType,jdbcType=INTEGER} ,
+        	#{irateType,jdbcType=INTEGER} ,
+        	#{numRate,jdbcType=DECIMAL} ,
+        	#{vcMemo,jdbcType=VARCHAR} 
+		)
+	]]>
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.bankcashmanage.Bankcashmanage">
+		UPDATE tbbankcashmanage
+		<set>
+			<if test="ibankInfoId != null">
+	        iBankInfoID = #{ibankInfoId,jdbcType=INTEGER} ,
+	        </if>
+			<if test="ichannelType != null">
+	        iChannelType = #{ichannelType,jdbcType=INTEGER} ,
+	        </if>
+			<if test="irateType != null">
+	        iRateType = #{irateType,jdbcType=INTEGER} ,
+	        </if>
+			<if test="numRate != null">
+	        numRate = #{numRate,jdbcType=DECIMAL} ,
+	        </if>
+			<if test="vcMemo != null">
+	        vcMemo = #{vcMemo,jdbcType=VARCHAR} 
+	        </if>
+	    </set>
+		WHERE 
+	        ID = #{id,jdbcType=INTEGER} 
+	</update>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbbankcashmanage WHERE
+        ID = #{id} 
+	]]>
+	</delete>
+    
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbbankcashmanage 
+		WHERE 
+        ID = #{id} 
+	]]>
+	</select>
+	 
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from tbbankcashmanage where 1=1
+		<include refid="queryWhere"/>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbbankcashmanage where 1=1
+		<include refid="queryWhere"/> 
+	    <![CDATA[ ORDER BY id DESC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<sql id="queryWhere">
+		<if test="id != null and id.trim() != ''">
+		and ID = #{id}
+		</if>
+		<if test="ibankInfoId != null and ibankInfoId.trim() != ''">
+		and iBankInfoID = #{ibankInfoId}
+		</if>
+		<if test="ichannelType != null and ichannelType.trim() != ''">
+		and iChannelType = #{ichannelType}
+		</if>
+		<if test="irateType != null and irateType.trim() != ''">
+		and iRateType = #{irateType}
+		</if>
+		<if test="numRate != null and numRate.trim() != ''">
+		and numRate = #{numRate}
+		</if>
+		<if test="vcMemo != null and vcMemo.trim() != ''">
+		and vcMemo = #{vcMemo}
+		</if>
+	</sql>
+
+	<select id="findCashBankCard"  resultMap="BaseResultMap" parameterType="java.util.Map">
+		  SELECT a.*,b.vcName as vcbankInfoId,b.vcName,b.vcShortName,b.vcBankCode FROM tbbankcashmanage a,tbbankinfo b  WHERE  1=1 and b.id=a.iBankInfoID
+		<include refid="queryWhere"/> 
+	    <![CDATA[ ORDER BY id ASC ]]>
+	</select>
+	
+	<select id="findByCardId"  resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		  SELECT l.*,c.iRateType ,c.numRate FROM tbllpaycard l, tbBankCashManage c  WHERE l.iBankID = c.iBankInfoID 
+		    AND l.id = #{id} 
+		   <![CDATA[ ORDER BY c.id ASC ]]>
+		   <![CDATA[ LIMIT 1]]>
+	</select>
+</mapper>

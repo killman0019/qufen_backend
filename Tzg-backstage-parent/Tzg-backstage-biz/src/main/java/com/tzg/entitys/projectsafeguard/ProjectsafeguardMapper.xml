@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.projectsafeguard.ProjectsafeguardMapper">	
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.projectsafeguard.Projectsafeguard">
+		<result property="id" jdbcType="INTEGER" column="id"/>
+		<result property="iprojectId" jdbcType="INTEGER" column="iProjectID"/>
+		<result property="vcName" jdbcType="VARCHAR" column="vcName"/>
+		<result property="vcUrl" jdbcType="VARCHAR" column="vcURL"/>
+		<result property="isort" jdbcType="INTEGER" column="iSort"/>
+    </resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+        id ,iProjectID ,vcName ,vcURL ,iSort 
+	    ]]>
+	</sql>
+	
+	<insert id="save" parameterType="com.tzg.entitys.projectsafeguard.Projectsafeguard" useGeneratedKeys="true" keyProperty="id">
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+	      SELECT LAST_INSERT_ID() AS id
+	    </selectKey>
+	<![CDATA[
+		INSERT INTO tbprojectsafeguard (
+        	iProjectID ,
+        	vcName ,
+        	vcURL ,
+        	iSort 
+		) VALUES (
+        	#{iprojectId,jdbcType=INTEGER} ,
+        	#{vcName,jdbcType=VARCHAR} ,
+        	#{vcUrl,jdbcType=VARCHAR} ,
+        	#{isort,jdbcType=INTEGER} 
+		)
+	]]>
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.projectsafeguard.Projectsafeguard">
+		UPDATE tbprojectsafeguard
+		<set>
+			<if test="iprojectId != null">
+	        iProjectID = #{iprojectId,jdbcType=INTEGER} ,
+	        </if>
+			<if test="vcName != null">
+	        vcName = #{vcName,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcUrl != null">
+	        vcURL = #{vcUrl,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="isort != null">
+	        iSort = #{isort,jdbcType=INTEGER} 
+	        </if>
+	    </set>
+		WHERE 
+	        id = #{id,jdbcType=INTEGER} 
+	</update>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbprojectsafeguard WHERE
+        id = #{id} 
+	]]>
+	</delete>
+    
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbprojectsafeguard 
+		WHERE 
+        id = #{id} 
+	]]>
+	</select>
+	 
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from tbprojectsafeguard where 1=1
+		<include refid="queryWhere"/>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbprojectsafeguard where 1=1
+		<include refid="queryWhere"/> 
+	   <choose>
+	            <when test="sortField != null and sortField != ''">
+	               ORDER BY ${sortField} desc
+	            </when>
+	            <otherwise>
+	                 ORDER BY id DESC 
+	            </otherwise>
+	        </choose>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<sql id="queryWhere">
+		<if test="id != null and id.trim() != ''">
+		and id = #{id}
+		</if>
+		<if test="iprojectId != null and iprojectId.trim() != ''">
+		and iProjectID = #{iprojectId}
+		</if>
+		<if test="vcName != null and vcName.trim() != ''">
+		and vcName = #{vcName}
+		</if>
+		<if test="vcUrl != null and vcUrl.trim() != ''">
+		and vcURL = #{vcUrl}
+		</if>
+		<if test="isort != null and isort.trim() != ''">
+		and iSort = #{isort}
+		</if>
+	</sql>
+	
+	<delete id="deleteByProjectID" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbprojectsafeguard WHERE
+        iProjectID = #{iProjectID} 
+	]]>
+	</delete>
+	
+	<select id="queryByProjectID" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbprojectsafeguard 
+		WHERE 
+        iProjectID = #{iProjectID} 
+        order by iSort
+	]]>
+	</select>	
+	
+</mapper>
+
+

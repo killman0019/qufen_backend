@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.pushrecord.PushrecordMapper">	
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.pushrecord.Pushrecord">
+		<result property="id" jdbcType="INTEGER" column="id"/>
+		<result property="vcContent" jdbcType="VARCHAR" column="vcContent"/>
+		<result property="vcPagetype" jdbcType="INTEGER" column="vcPagetype"/>
+		<result property="vcPlatform" jdbcType="VARCHAR" column="vcPlatform"/>
+		<result property="vcAudience" jdbcType="VARCHAR" column="vcAudience"/>
+		<result property="dtCreate" jdbcType="TIMESTAMP" column="dtCreate"/>
+    </resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+        id ,vcContent ,vcPagetype ,vcPlatform ,vcAudience ,dtCreate 
+	    ]]>
+	</sql>
+	
+	<insert id="save" parameterType="com.tzg.entitys.pushrecord.Pushrecord" useGeneratedKeys="true" keyProperty="id">
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+	      SELECT LAST_INSERT_ID() AS id
+	    </selectKey>
+	<![CDATA[
+		INSERT INTO tbpushrecord (
+        	vcContent ,
+        	vcPagetype ,
+        	vcPlatform ,
+        	vcAudience ,
+        	dtCreate 
+		) VALUES (
+        	#{vcContent,jdbcType=VARCHAR} ,
+        	#{vcPagetype,jdbcType=INTEGER} ,
+        	#{vcPlatform,jdbcType=VARCHAR} ,
+        	#{vcAudience,jdbcType=VARCHAR} ,
+        	#{dtCreate,jdbcType=TIMESTAMP} 
+		)
+	]]>
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.pushrecord.Pushrecord">
+		UPDATE tbpushrecord
+		<set>
+			<if test="vcContent != null">
+	        vcContent = #{vcContent,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcPagetype != null">
+	        vcPagetype = #{vcPagetype,jdbcType=INTEGER} ,
+	        </if>
+			<if test="vcPlatform != null">
+	        vcPlatform = #{vcPlatform,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcAudience != null">
+	        vcAudience = #{vcAudience,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="dtCreate != null">
+	        dtCreate = #{dtCreate,jdbcType=TIMESTAMP} 
+	        </if>
+	    </set>
+		WHERE 
+	        id = #{id,jdbcType=INTEGER} 
+	</update>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbpushrecord WHERE
+        id = #{id} 
+	]]>
+	</delete>
+    
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbpushrecord 
+		WHERE 
+        id = #{id} 
+	]]>
+	</select>
+	 
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from tbpushrecord where 1=1
+		<include refid="queryWhere"/>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbpushrecord where 1=1
+		<include refid="queryWhere"/> 
+	    <![CDATA[ ORDER BY id DESC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<sql id="queryWhere">
+		<if test="id != null and id.trim() != ''">
+		and id = #{id}
+		</if>
+		<if test="vcContent != null and vcContent.trim() != ''">
+		and vcContent = #{vcContent}
+		</if>
+		<if test="vcPagetype != null and vcPagetype.trim() != ''">
+		and vcPagetype = #{vcPagetype}
+		</if>
+		<if test="vcPlatform != null and vcPlatform.trim() != ''">
+		and vcPlatform = #{vcPlatform}
+		</if>
+		<if test="vcAudience != null and vcAudience.trim() != ''">
+		and vcAudience = #{vcAudience}
+		</if>
+		<if test="dtCreateBegin != null and dtCreateBegin.trim() != ''">
+		and dtCreate >= #{dtCreateBegin}
+		</if>
+		<if test="dtCreateEnd != null and dtCreateEnd.trim() != ''">
+		and dtCreate &lt;= #{dtCreateEnd}
+		</if>
+	</sql>
+</mapper>
+
+

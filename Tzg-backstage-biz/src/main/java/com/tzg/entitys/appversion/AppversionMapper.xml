@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.appversion.AppversionMapper">	
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.appversion.Appversion">
+		<result property="id" jdbcType="INTEGER" column="id"/>
+		<result property="itype" jdbcType="INTEGER" column="iType"/>
+		<result property="vcVersion" jdbcType="VARCHAR" column="vcVersion"/>
+		<result property="ilevelType" jdbcType="INTEGER" column="iLevelType"/>
+		<result property="vcPackageUrl" jdbcType="VARCHAR" column="vcPackageURL"/>
+		<result property="vcVersionDesc" jdbcType="LONGVARCHAR" column="vcVersionDesc"/>
+		<result property="dtCreate" jdbcType="TIMESTAMP" column="dtCreate"/>
+    </resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+        id ,iType ,vcVersion ,iLevelType ,vcPackageURL ,vcVersionDesc,dtCreate 
+	    ]]>
+	</sql>
+	
+	<insert id="save" parameterType="com.tzg.entitys.appversion.Appversion" useGeneratedKeys="true" keyProperty="id">
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+	      SELECT LAST_INSERT_ID() AS id
+	    </selectKey>
+	<![CDATA[
+		INSERT INTO tbappversion (
+        	iType ,
+        	vcVersion ,
+        	iLevelType ,
+        	vcPackageURL ,
+        	vcVersionDesc,
+        	dtCreate 
+		) VALUES (
+        	#{itype,jdbcType=INTEGER} ,
+        	#{vcVersion,jdbcType=VARCHAR} ,
+        	#{ilevelType,jdbcType=INTEGER} ,
+        	#{vcPackageUrl,jdbcType=VARCHAR} ,
+        	#{vcVersionDesc,jdbcType=LONGVARCHAR} ,
+        	#{dtCreate,jdbcType=TIMESTAMP} 
+		)
+	]]>
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.appversion.Appversion">
+		UPDATE tbappversion
+		<set>
+			<if test="itype != null">
+	        iType = #{itype,jdbcType=INTEGER} ,
+	        </if>
+			<if test="vcVersion != null">
+	        vcVersion = #{vcVersion,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="ilevelType != null">
+	        iLevelType = #{ilevelType,jdbcType=INTEGER} ,
+	        </if>
+			<if test="vcPackageUrl != null">
+	        vcPackageURL = #{vcPackageUrl,jdbcType=VARCHAR} ,
+	        </if>
+	        <if test="vcVersionDesc != null">
+	        vcVersionDesc = #{vcVersionDesc,jdbcType=LONGVARCHAR} ,
+	        </if>
+			<if test="dtCreate != null">
+	        dtCreate = #{dtCreate,jdbcType=TIMESTAMP} 
+	        </if>
+	    </set>
+		WHERE 
+	        id = #{id,jdbcType=INTEGER} 
+	</update>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbappversion WHERE
+        id = #{id} 
+	]]>
+	</delete>
+    
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbappversion 
+		WHERE 
+        id = #{id} 
+	]]>
+	</select>
+	 
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from tbappversion where 1=1
+		<include refid="queryWhere"/>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbappversion where 1=1
+		<include refid="queryWhere"/> 
+	     <choose>
+	            <when test="sortField != null and sortField != ''">
+	               ORDER BY ${sortField} desc
+	            </when>
+	            <otherwise>
+	                 ORDER BY id DESC 
+	            </otherwise>
+	        </choose>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<sql id="queryWhere">
+		<if test="id != null and id.trim() != ''">
+		and id = #{id}
+		</if>
+		<if test="itype != null and itype.trim() != ''">
+		and iType = #{itype}
+		</if>
+		<if test="vcVersion != null and vcVersion.trim() != ''">
+		and vcVersion = #{vcVersion}
+		</if>
+		<if test="ilevelType != null and ilevelType.trim() != ''">
+		and iLevelType = #{ilevelType}
+		</if>
+		<if test="vcPackageUrl != null and vcPackageUrl.trim() != ''">
+		and vcPackageURL = #{vcPackageUrl}
+		</if>
+		<if test="vcVersionDesc != null and vcVersionDesc.trim() != ''">
+		and vcVersionDesc = #{vcVersionDesc}
+		</if>
+		<if test="dtCreateBegin != null and dtCreateBegin.trim() != ''">
+		and dtCreate >= #{dtCreateBegin}
+		</if>
+		<if test="dtCreateEnd != null and dtCreateEnd.trim() != ''">
+		and dtCreate &lt;= #{dtCreateEnd}
+		</if>
+	</sql>
+</mapper>
+
+

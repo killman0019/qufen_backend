@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.roleinfo.RoleInfoMapper">
+    <resultMap id="RoleInfo" type="com.tzg.entitys.roleinfo.RoleInfo">
+        <id column="Id" jdbcType="INTEGER" property="id" />
+        <result column="vcRoleName" jdbcType="VARCHAR" property="vcRoleName" />
+        <result column="iApprovalRatingID" jdbcType="INTEGER" property="iApprovalRatingID" />
+        <result column="iValid" jdbcType="INTEGER" property="iValid" />
+        <result column="dtCreate" jdbcType="TIMESTAMP" property="dtCreate" />
+        <result column="dtModify" jdbcType="TIMESTAMP" property="dtModify" />
+    </resultMap>
+    
+    <!-- 记录新增 -->
+	<insert id="save" parameterType="com.tzg.entitys.roleinfo.RoleInfo">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+		insert into tbconsoleroleinfo
+		(id,vcRoleName,iApprovalRatingID,dtCreate,iValid)
+		values(#{id,jdbcType=INTEGER},
+			#{vcRoleName,jdbcType=VARCHAR},
+			#{iApprovalRatingID,jdbcType=INTEGER},
+			#{dtCreate,jdbcType=TIMESTAMP},
+			#{iValid,jdbcType=INTEGER}
+		)
+	</insert>
+	
+	<!-- 记录更新 -->
+	<update id="update" parameterType="com.tzg.entitys.roleinfo.RoleInfo">
+		update tbconsoleroleinfo
+    	set 
+    	<if test="vcRoleName != null">
+    	 	 vcRoleName = #{vcRoleName,jdbcType=VARCHAR} ,
+    	</if>
+    	<if test="iValid != null">
+    	 	 iValid = #{iValid,jdbcType=INTEGER} ,
+    	</if>
+    	<if test="dtModify != null">
+    	 	 dtModify = #{dtModify,jdbcType=TIMESTAMP},
+    	</if>
+    	iApprovalRatingID = #{iApprovalRatingID,jdbcType=INTEGER}
+   	    where id = #{id,jdbcType=INTEGER}
+	</update>
+	
+	<!-- 记录删除 -->
+	<delete id="delete" parameterType="java.lang.Integer">
+		delete from tbconsoleroleinfo
+    	where id = #{id,jdbcType=INTEGER}
+	</delete>
+	
+	<!-- 根据主键编号，查询记录 -->
+	<select id="findById" parameterType="java.lang.Integer" resultMap="RoleInfo">
+		select 
+    	id,vcRoleName,iApprovalRatingID,iValid,dtCreate,dtModify
+    	from tbconsoleroleinfo
+    	where id = #{id,jdbcType=INTEGER}
+	</select>
+	
+		<!-- 根据角色名称，查询记录 -->
+	<select id="findByRoleName" parameterType="java.lang.String" resultMap="RoleInfo">
+		select 
+    	id,vcRoleName,iApprovalRatingID,iValid,dtCreate,dtModify
+    	from tbconsoleroleinfo
+    	where vcRoleName = #{vcRoleName,jdbcType=VARCHAR}
+    	and iValid = 1
+	</select>
+	
+	 <!-- 分页查询 -->
+     <select id="queryRoleInfoCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT count(*) 
+        from  tbconsoleroleinfo
+        where iValid=1
+        <if test="vcRoleName != null">
+           and  vcRoleName like "%"#{vcRoleName}"%"
+        </if>
+    </select>
+    
+    <select id="queryRoleInfoList" parameterType="java.util.Map" resultMap="RoleInfo">
+        SELECT * 
+        from  tbconsoleroleinfo 
+        where iValid=1
+        <if test="vcRoleName != null">
+           and  vcRoleName like "%"#{vcRoleName}"%"
+        </if>
+        ORDER BY id DESC
+        <![CDATA[ limit ${startRecord},${endRecord} ]]>
+    </select>
+
+    <select id="findAllRoleInfo" resultMap="RoleInfo">
+        select * from tbconsoleroleinfo
+    </select>
+    
+        <select id="findAllValidRoleInfo" resultMap="RoleInfo">
+        select * from tbconsoleroleinfo   where iValid=1
+    </select>
+	
+    
+</mapper>

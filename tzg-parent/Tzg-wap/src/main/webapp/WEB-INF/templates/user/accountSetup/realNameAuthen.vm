@@ -1,0 +1,29 @@
+#set($pageName = "实名认证")
+#set($pageFootCode = '<script>seajs.use("page/real-name-authen")</script>')
+#set($topbar = { "title": $pageName })
+
+
+<form method="post" action="$!{basePath}/user/realNameAuthen/realNameAuthen" id="j_real_name_authen">
+	<ul class="m-frm">
+		<li class="m-frm-itm">
+			<label class="m-frm-lbl">姓名：</label>
+			<div class="m-frm-cnt">
+				<input type="text" name="vcName" placeholder="请输入姓名" class="u-ipt">
+			</div>
+		</li>
+		<li class="m-frm-itm">
+			<label class="m-frm-lbl">身份证号：</label>
+			<div class="m-frm-cnt g-6a4 z-captcha">
+				<input type="text" name="vcCardCode" placeholder="请输入身份证号" class="u-ipt">
+			</div>
+		</li>
+		<li class="m-frm-itm--btn">
+			<button class="u-btn z-prm z-fll z-ldg" type="submit">下一步</button>
+		</li>
+	</ul>
+</form>
+
+<div class="f-clrMrg m-frm-itm--hnt">
+	<div class="f-mtb">现在完成投资前准备即可享受<span class="u-fsH">100%</span>全额本息保障及<span class="u-fsH">12%</span>年化以上的收益率！</div>
+</div>
+

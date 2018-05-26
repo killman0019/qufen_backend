@@ -1,0 +1,25 @@
+#set($pageName = "资金转出")
+#set($bodyClass = "body--gray")
+#set($topbar = { "title": $pageName })
+#set($pageFootCode = '<script>seajs.use("page/hqb-inves-ation")</script>')
+
+
+<form method="post" action="$!{basePath}/currentBao/chargeout" id="j_out-form">
+	#tokenCode
+	<div class="m1 m-movable-form">
+		<div><span class="u-clGrayLgt u-fsH">铜钱宝总金额</span><br><span class="u-clScd u-fsH1">$numbers.toCurrency($!{numCurrentBaoBalance})元</span></div>
+		<div class="f-mt u-2c-box">
+			<span class="u-fsH1">转出金额</span>
+			<input type="number" name="investAmt" class="u-ipt" placeholder="请输入转出金额" required>
+		</div>
+		<div class="u-clGrayLgt f-mth">转出的金额将转入你的账户余额中</div>
+		<div class="f-mt2"><input class="u-ipt" name="payPassword" placeholder="请输入交易密码" type="password" required></div>
+		<input name="maxOutAmt" data-value="$!{numCurrentBaoBalance}" type="hidden">
+	</div>
+	<div class="fixed-foot">
+		<div class="fixed-foot_inner f-clrFix" id="j_footbar">
+			<button class="u-btn z-prm z-fll" type="submit" defaultvalue="确定转出">确定转出</button>
+		</div>
+	</div>
+</form>
+<p class="m1 u-clGrayLgt f-tlr"><a href="$!{basePath}/user/payPassword/forgetPayPassword/page" class="u-clPrm">忘记交易密码？</a></p>

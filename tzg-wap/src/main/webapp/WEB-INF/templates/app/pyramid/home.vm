@@ -1,0 +1,250 @@
+#set($layout = "/layout/blank.vm")
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>人人赚</title>
+<meta name="keywords" content="投资理财, 铜掌柜,理财,互联网金融服务平台,p2p,网贷平台,铜掌柜">
+<meta name="description" content="铜掌柜，让理财更放心！-提供安全、高收益的网络理财服务。铜掌柜有严格的风险控制体系，给投资者100%本息担保，第三方资金托管，保障资金安全。">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="renderer" content="webkit">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no">
+<meta name="basepath" content="$!{basePath}" id="basepath">
+<meta name="staticpath" content="$!{staticPath3}" id="staticpath">
+<meta name="staticversion" content="$!{staticVersion}" id="staticversion">
+<link rel="icon" href="$!{staticPath3}/statics/images/favicon.ico">
+<link rel="shortcut icon" href="$!{staticPath3}/statics/images/favicon.ico">
+<style type="text/css">
+html{height:100%;font-size:10px;background-color:#fff}
+body{margin:0 auto;min-height:100%;font:14px/1.42857 'Hiragino Sans GB','Microsoft Yahei',arial}
+body:before{content:".";display:block;font-size:0}
+body:after{content:".";display:block;font-size:0}
+a,body{color:#222}
+a{text-decoration:none}
+a:focus{color:#1992f5}
+a:visited{color:inherit}
+ol,ul{list-style:none;margin:0;padding:0}
+
+.mtb4{margin-top:40px;margin-bottom:40px}
+.ft-popup{position:fixed;left:0;top:100%;z-index:10;width:100%;height:100%;background-color:rgba(0,0,0,.3);opacity:0}
+.ft-popup_window{position:absolute;left:0;bottom:-100%;width:100%;background-color:#f5f5f5}
+.ft-popup_window_hd{overflow:hidden}
+.ft-popup_window_hd_title{box-sizing:border-box;height:45px;margin:0;padding:4px 0;border-bottom:1px solid #ebebeb;font-size:18px;font-weight:400;line-height:2;text-align:center}
+.ft-popup_window_hd_back,.ft-popup_window_hd_close{float:left;width:44px;margin-top:-44px;line-height:44px;color:#666;text-align:center}
+.ft-popup_window_hd_back:after,.ft-popup_window_hd_close:after{content:'\ea05';font-family:fontIconBase}
+.ft-popup_window_hd_close:after{content:'\ea1e'}
+.ft-popup.-open{-webkit-animation:show-popup .3s linear forwards;animation:show-popup .3s linear forwards}
+.ft-popup.-open .ft-popup_window{-webkit-animation:show-popup-window .3s ease forwards;animation:show-popup-window .3s ease forwards}
+@-webkit-keyframes show-popup{0%{top:100%;opacity:0}
+1%{top:0}
+100%{top:0;opacity:1}
+}
+@keyframes show-popup{0%{top:100%;opacity:0}
+1%{top:0}
+100%{top:0;opacity:1}
+}
+@-webkit-keyframes show-popup-window{0%{bottom:-100%}
+100%{bottom:0}
+}
+@keyframes show-popup-window{0%{bottom:-100%}
+100%{bottom:0}
+}
+
+.associate-earning{font-size:12px;color:#999;text-align:center}
+.associate-earning em{display:block;margin-bottom:5px;font-size:45px;font-style:normal;line-height:1;color:#ff524c}
+.block-links a,.props2 li{box-sizing:border-box;float:left;width:50%}
+.props2{margin-bottom:15px;overflow:hidden}
+.props2 li{position:relative}
+.props2 li:nth-of-type(2n+1){border-right:1px solid #e6e6e6}
+.props2 li:nth-of-type(1) a,.props2 li:nth-of-type(2) a{padding-bottom:3%}
+.props2 li.-arrow:after{content:'';position:absolute;bottom:-4.8px;right:4.8%;border:8px solid transparent;border-left-color:#ccc;-webkit-transform:rotate(45deg);transform:rotate(45deg)}
+.props2 a{display:block;padding:0 0 0 4.8%}
+.props2_label{display:inline-block;padding-right:.5em;color:#999}
+.block-links{overflow:hidden;border-top:10px solid #f5f5f5;border-bottom:10px solid #f5f5f5}
+.block-links a{padding:26px 0;font-size:18px;text-align:center}
+.block-links a:first-of-type{border-right:1px solid #e6e6e6}
+.action-links{padding-left:5.3333%;border-bottom:1px solid #e6e6e6}
+.action-links a{position:relative;display:block;padding:25px 0 23px 90px}
+.action-links a:not(:last-of-type){border-bottom:1px solid #e6e6e6}
+.action-links a:before{content:'';position:absolute;top:12px;left:5px;width:70px;height:70px;background:url(/app/images/link-icons.png) 100px 0 no-repeat;-webkit-background-size:100% auto;background-size:100% auto}
+.action-links a.-redpacket:before{background-position:0 0}
+.action-links a.-face2face:before{background-position:0 -70px}
+.action-links a.-share2friend:before{background-position:0 -140px}
+.action-links a:after{content:'';display:block;position:absolute;top:50%;right:4.8%;margin-top:-8px;font-size:10px;color:#b3b3b3;width:1em;height:1em;border-right:2px solid #b3b3b3;border-top:2px solid #b3b3b3;-webkit-transform:rotate(45deg);transform:rotate(45deg);}
+.action-links_label{display:block;margin-bottom:3px;font-size:18px}
+.action-links_hint{display:block;font-size:13px;color:#999}
+.qrcode-popup-content{max-width:750px;min-width:320px;margin:auto;overflow:hidden;text-align:center;background-color:#fff}
+.qrcode-popup-content_title{margin:20px 0 0;font-size:14px}
+.qrcode-popup-content img{width:80%}
+</style>
+</head>
+<body>
+
+<div class="associate-earning mtb4"><em>$numbers.toCurrency($!{indexMap.sumProfit})</em>今日佣金(元)</div>
+
+<ul class="props2">
+	<li><a href="@app:myred"><div class="props2_label">累计红包</div>$numbers.toCurrency($!{indexMap.redRecordAll})元</a></li>
+	<li><a href="$!{basePath}/user/pyramid/investOut"><div class="props2_label">累计佣金</div>$numbers.toCurrency($!{indexMap.numTotalProfit})元</a></li>
+	<li class="-arrow"><a href="@app:myred"><div class="props2_label">今日红包</div>$numbers.toCurrency($!{indexMap.redRecordToday})元</a></li>
+	<li class="-arrow"><a href="$!{basePath}/user/pyramid/investOut"><div class="props2_label">可转佣金</div>$numbers.toCurrency($!{indexMap.numProfit})元</a></li>
+</ul>
+
+<div class="block-links">
+	<a href="$!{basePath}/user/pyramid/investRecord">佣金明细</a>
+	<a href="$!{basePath}/user/pyramid/friendsList">邀友记录</a>
+</div>
+
+<div class="action-links">
+	<a href="$!{actPath}/newawardsfission/getShareUrl?vcPhone=$!{indexMap.vcPhone}&tzgapp" class="-redpacket">
+		<span class="action-links_label">红包邀友</span>
+		<span class="action-links_hint">庆新春 掌柜狂送2000万红包</span>
+	</a>
+	<a href="#" class="-face2face" id="open_qrcode_popup">
+		<span class="action-links_label">当面邀友</span>
+		<span class="action-links_hint">您的私人邀请码$!{indexMap.recommendCode}</span>
+	</a>
+	<a href="$!{basePath}/app/pyramid/newPack?key=$!{indexMap.recommendCode}&from=timeline&isappinstalled=0&@app:sharetitle=您收到好友$!{indexMap.recommender}的邀请，领取铜掌柜10000元大礼包！&sharecontent=您的好友邀请您领取铜掌柜理财大礼包：188元红包，10000元理财金！万元收益达1508元！&imageUrl=$!{basePath}/app/images/invite-friends-logo.jpg" class="-share2friend">
+		<span class="action-links_label">分享邀友</span>
+		<span class="action-links_hint">听说这是躺着赚钱的好方法之一</span>
+	</a>
+</div>
+
+<div class="ft-popup" id="qrcode_popup">
+	<div class="ft-popup_window">
+		<div class="qrcode-popup-content">
+			<div class="qrcode-popup-content_title">你的邀请码$!{indexMap.recommendCode}</div>
+			<img src="$!{basePath}/app/subject/inviteFriendsQRcode?key=$!{indexMap.recommendCode}" alt="邀请码">
+		</div>
+	</div>
+</div>
+
+<script>
+(function() {
+	var btn = document.getElementById('open_qrcode_popup');
+	var qrcodePopup = document.getElementById('qrcode_popup');
+	
+	btn.addEventListener('click', function(e) {
+		e.preventDefault();
+		qrcodePopup.className = 'ft-popup -open';
+	}, false);
+	
+	qrcodePopup.addEventListener('click', function(e) {
+		e.preventDefault();
+		qrcodePopup.className = 'ft-popup';
+	}, false);
+})();
+</script>
+
+</body>
+</html>
+
+
+#*
+#set($layout = "/app/layout/default.vm")
+#set($pageName="人人赚")
+#set($bodyClass="gray-body")
+#set($shareTitle = "人人赚")
+#set($shareContent = "人人赚")
+<style type="text/css">html{background: #f5f5f5;}</style>
+
+<div class="py-con-top">
+	<a href="$!{basePath}/subject/pyramid/20151208?tzgapp" class="j_raiders-link"><img alt="" src="$!{staticPath}/images/rrz-banner.png" width="100%"></a>
+	<div class="py-r1 u-txt-c"><span class="u-fsH1 u-clScd">$numbers.toCurrency($!{indexMap.sumProfit})</span><span class="u-clGrayLgt">今日佣金(元)</span></div>
+	<ul class="-col2 container-r-spacing">
+		<li><span class="u-clGrayLgt">累计佣金</span>&nbsp;<span class="u-fsH1">$numbers.toCurrency($!{indexMap.numTotalProfit})</span>元</li>
+		<li><a href="$!{basePath}/user/pyramid/investOut"><span class="u-clGrayLgt">佣金转出</span>&nbsp;<span class="u-fsH1">$numbers.toCurrency($!{indexMap.numProfit})</span>元</a></li>
+	</ul>
+</div>
+<div class="py-con container-spacing container-r-spacing py-cont2 mt">
+	<ul class="-col2">
+		<li><a href="@app:myred"><span class="u-clGrayLgt">今日红包&nbsp;<span class="u-fsH1">$numbers.toCurrency($!{indexMap.redRecordToday})</span>元</span></a></li>
+		<li><a href="@app:myred"><span class="u-clGrayLgt">累计红包&nbsp;<span class="u-fsH1">$numbers.toCurrency($!{indexMap.redRecordAll})</span>元</span></a></li>
+	</ul>
+</div>
+<div class="py-con mtb">
+	<ul class="-col2">
+		<li><a href="$!{basePath}/user/pyramid/investRecord" class="u-link-btn #if($!{indexMap.newRevenue} == 1) -detali #end">明细</a></li>
+		<li><a href="$!{basePath}/user/pyramid/friendsList" class="u-link-btn">好友($!{indexMap.pyramidFriendsNum})</a></li>
+	</ul>
+</div>
+<div class="container-r-spacing mtb2"><a class="u-btn z-blue z-fll" href="$!{basePath}/subject/pyramid/20151208?tzgapp" class="j_raiders-link">赚钱攻略</a></div>
+<div class="container-r-spacing u-clGrayLgt u-fsH u-txt-c txt-dese">已有<span class="u-clScd">$!{indexMap.pyramidAllUserNum}位</span>客官在铜掌柜赚到<span class="u-clScd">$!{indexMap.allNumTotalProfit}元</span>现金，获得<span class="u-clScd">$!{indexMap.redRecordAllUser}元</span>红包</div>
+
+<div class="fix-bottm">
+	<a class="c-2-btn" href="$!{basePath}/app/pyramid/newPack?key=$!{indexMap.recommendCode}&from=timeline&isappinstalled=0&@app:sharetitle=您收到好友$!{indexMap.recommender}的邀请，领取铜掌柜10000元大礼包！&sharecontent=您的好友邀请您领取铜掌柜理财大礼包：188元红包，10000元理财金！万元收益达1508元！&imageUrl=$!{basePath}/app/images/invite-friends-logo.jpg ">分享赚</a>
+	<a class="c-2-btn" id="j-face_btn">当面邀友</a>
+</div>
+
+## 弹出框
+## -------------------------------------
+<div class="xm-dialog" id="j_xm_dialog" style="display:none">
+    <div class="xm-dialog_inner">
+        <div class="xm-dialog_win">
+            <div class="xm-dialog_content"></div>
+            <div class="container-r-spacing"><a href="javascript:;" class="xm-dialog_btn u-btn z-blueHollow z-fll">确 定</a></div>
+        </div>
+    </div>
+</div>
+<script src="$!{staticPath}/js/lib/sea.js?v=$!{staticVersion}" id="seajsnode"></script>
+<script>
+seajs.use(["$"], function($) {
+	// 模拟弹框
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    $.fn.alert = function (msg, buttonHandler, buttonText) {
+		if (this.data("alertInited") != "yes") {
+			this.on("click", function() {
+				$(this).find(".xm-dialog_win").removeClass("z-opened");
+				$(this).fadeOut();
+			});
+			this.on("click", ".xm-dialog_btn", function () {
+				var $wrapper = $(this).parents(".xm-dialog");
+				var buttonHandler = $wrapper.data("buttonHandler");
+				if (buttonHandler && buttonHandler()) {
+					buttonHandler();
+					return;
+				}
+				$wrapper.fadeOut().find(".xm-dialog_win").removeClass("z-opened");
+			});
+
+			this.on("click", ".xm-dialog_win", function (e) {
+				e.stopPropagation();
+			})
+			this.data("alertInited", "yes");
+		}
+
+		if (!msg) {
+			msg = "";
+		}
+
+		this.find(".xm-dialog_content").html(msg);
+		this.data("buttonHandler", buttonHandler && $.isFunction(buttonHandler) ? buttonHandler : false);
+		this.find(".xm-dialog_btn").text(buttonText || "确 定");
+		this.fadeIn().find(".xm-dialog_win").addClass("z-opened");
+	};
+
+    var $alert = $("#j_xm_dialog");
+
+	function alert() {
+		$alert.alert.apply($alert, arguments);
+	};
+
+	$("#j-face_btn").on("click", function(){
+		if($indexMap.recommendCode == ""){
+			alert("<div class='container-r-spacing'><div class='u-fsH1 u-txt-c'>系统正在努力生成你的邀请二维码，请稍候</div></div>");
+		}else{
+			alert("<div class='container-r-spacing'><div class='u-fsH1 u-txt-c'>你的邀请码$!{indexMap.recommendCode}</div><img alt='' src='$!{basePath}/app/subject/inviteFriendsQRcode?key=$!{indexMap.recommendCode}' width='100%'><div class='u-clGrayLgt u-txt-c mb20'>邀请好友扫描二维码即可分享人人赚</div></div>","","取消")
+		}
+	})
+
+	var key = location.search.split("&")[2];
+	var isLoginKey = key.split("=")[1];
+	window.name = isLoginKey;
+
+	$(".j_raiders-link").each(function(){
+		var t_link = $(this);
+		t_link.attr("href", t_link.attr("href")+"&source=app&key="+isLoginKey);
+	});
+});
+</script>
+*#

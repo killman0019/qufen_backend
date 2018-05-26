@@ -1,0 +1,29 @@
+#set($layout = "/app/layout/default.vm")
+#set($pageName="铜掌柜")
+
+<div class="act-box -login">
+	<form method="post" action="$!{basePath}/app/pyramid/addPyramid" id="j_actLogin-form">
+		<div class="login-form">
+			<div class="act-2c-box container-r-spacing">
+				<a class="cord-btn" href="javascript:;" id="j_send_captcha">获取验证码</a>
+				<input type="number" name="dynamicVerifyCode" class="u-ipt" placeholder="请输入验证码" required>
+			</div>
+			<div class="act-2c-box container-r-spacing mtb2">
+				<input type="password" name="password" class="u-ipt" placeholder="请设置登录密码" required>
+			</div>
+			
+			<input type="hidden" name="phoneNumber" value= "$!{registerRequest.phoneNumber}" class="u-ipt" placeholder="" required>
+			<input type="hidden" name="inviteCode"  value= "$!{registerRequest.inviteCode}" class="u-ipt" placeholder="" required>
+			
+			
+		</div>
+		<div class="container-r-spacing mt">
+			<button class="u-btn z-prm z-fll" type="submit" defaultvalue="立即领取">立即领取</button>
+		</div>
+	</form>
+	<div class="u-txt-c act-fix u-clGrayLgt">中来股份&nbsp;战略入股<br><span class="picc">PICC</span>&nbsp;账户资金盗转盗用由人保财险承保</div>
+</div>
+
+
+<script src="$!{staticPath}/js/lib/sea.js?v=$!{staticVersion}" id="seajsnode"></script>
+<script>seajs.use("page/act-form-ation")</script>

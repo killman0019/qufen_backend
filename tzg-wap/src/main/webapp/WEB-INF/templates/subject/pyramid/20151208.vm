@@ -1,0 +1,217 @@
+#set($layout = "/app/layout/default2.vm")
+#set($pageName="人人赚")
+#set($timeTag="1208")
+#set($shareTitle = "您收到好友$!{indexMap.recommender}的邀请，领取铜掌柜10000元大礼包！")
+#set($shareContent = "您的好友邀请您领取铜掌柜理财大礼包：188元红包，10000元理财金！万元收益达1508元！")
+#set($imagePath="$!{basePath}/assets/images/act")
+#set($staticPath="$!{basePath}/assets/")
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>$!{pageName}</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="renderer" content="webkit">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telphone=no,email=no" />
+<meta name="basepath" content="$!{basePath}" id="j_basepath">
+<meta name="staticpath" content="$!{staticPath}" id="j_staticpath">
+<meta name="staticversion" content="$!{staticVersion}" id="j_staticversion">
+<link rel="stylesheet" href="$!{basePath}/app/css/style.css?v=20151205">
+</head>
+<body>
+<input type="hidden" value="$!{basePath}" id="j_basePath">
+<div class="act-container">
+    <img src="$!{imagePath}/m_01.png?v=$!{timeTag}" alt=""/>
+    <div class="act-txt-bar">已有<span class="cl-org">$!{indexMap.pyramidAllUserNum}位</span>客官赚到<span class="cl-org">$!{indexMap.allNumTotalProfit}元</span>现金，<span class="cl-org">$!{indexMap.redRecordAllUser}元</span>红包</div>
+    <img src="$!{imagePath}/m_02.png?v=$!{timeTag}" alt=""/>
+    <div class="act-txt-bar">您已邀请<span class="cl-org"><span id="pyramidFriendsNum">0</span>个</span>一级用户，<span class="cl-org"><span id="pyramidTwoFriendsNum">0</span>个</span>二级用户，赚取<span class="cl-org"><span id="numTotalProfit">0.00</span>元</span></div>
+    <img src="$!{imagePath}/m_03.png?v=$!{timeTag}" alt=""/>
+    <div class="act-txt-bar">您本月已成功邀请了<span class="cl-org"><span id="monthMasterNum">0</span>个</span>有效用户，待收<span class="cl-org"><span id="monthMasterMoney">0.00</span>元</span></div>
+    <img src="$!{imagePath}/m_04.png?v=$!{timeTag}" alt=""/>
+    <div class="act-txt-bar">您累计一级好友返利:<span class="cl-org"><span id="sumOneProfit">0.00</span>元</span>，二级好友返利:<span class="cl-org"><span id="sumTwoProfit">0.00</span>元</span></div>
+    <img src="$!{imagePath}/m_05.png?v=$!{timeTag}" alt=""/>
+    <div class="act-txt-bar">您累计获得红包:<span class="cl-org"><span id="redRecordAll">0.00</span>元</span></div>
+    <img  src="$!{imagePath}/m_07.png?v=$!{timeTag}" alt=""/>
+    <img  src="$!{imagePath}/m_06.png?v=$!{timeTag}" alt=""/>
+
+	<div class="fix-bottm" id="j_login_bar" style="display:none;">
+		<div class="u-txt-c">请登录，登录后即可分享人人赚</div>
+        <a class="u-btn z-blue z-fll mt" href="$!{basePath}/login/page?toURL=$!{basePath}/subject/pyramid/20151208?&@app:waplogin">立即登录</a>
+	</div>
+	<div class="fix-bottm" id="j_action_bar" style="display:none;">
+		<a class="c-2-btn" id="j_shar_bar" style="display:none;" href="$!{basePath}/app/pyramid/newPack?key=$!{indexMap.recommendCode}&@app:sharetitle=$!{shareTitle}&sharecontent=$!{shareContent}&imageUrl=$!{basePath}/app/images/invite-friends-logo.jpg">分享邀友</a>
+		<a class="c-2-btn z-fll" href="javascript:;" id="j-face_btn">当面邀友</a>
+	</div>
+</div>
+
+
+## 弹出框
+## -------------------------------------
+<div class="xm-dialog" id="j_xm_dialog" style="display:none">
+    <div class="xm-dialog_inner">
+        <div class="xm-dialog_win">
+            <div class="xm-dialog_content"></div>
+            <div class="container-r-spacing"><a href="javascript:;" class="xm-dialog_btn u-btn z-blueHollow z-fll">确 定</a></div>
+        </div>
+    </div>
+</div>
+
+<script src="$!{staticPath}/js/lib/sea.js?v=$!{staticVersion}" id="seajsnode"></script>
+<script type="text/javascript">
+    if (window.android && window.android.getSecret) {
+        try {window.loginKey = window.android.getSecret();} catch(e) {}
+    }
+</script>
+<script>
+seajs.use(["$"], function($) {
+	// 模拟弹框
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    $.fn.alert = function (msg, buttonHandler, buttonText) {
+		if (this.data("alertInited") != "yes") {
+			this.on("click", function() {
+				$(this).find(".xm-dialog_win").removeClass("z-opened");
+				$(this).fadeOut();
+			});
+			this.on("click", ".xm-dialog_btn", function () {
+				var $wrapper = $(this).parents(".xm-dialog");
+				var buttonHandler = $wrapper.data("buttonHandler");
+				if (buttonHandler && buttonHandler()) {
+					buttonHandler();
+					return;
+				}
+				$wrapper.fadeOut().find(".xm-dialog_win").removeClass("z-opened");
+			});
+
+			this.on("click", ".xm-dialog_win", function (e) {
+				e.stopPropagation();
+			})
+			this.data("alertInited", "yes");
+		}
+
+		if (!msg) {
+			msg = "";
+		}
+
+		this.find(".xm-dialog_content").html(msg);
+		this.data("buttonHandler", buttonHandler && $.isFunction(buttonHandler) ? buttonHandler : false);
+		this.find(".xm-dialog_btn").text(buttonText || "确 定");
+		this.fadeIn().find(".xm-dialog_win").addClass("z-opened");
+	};
+
+    var $alert = $("#j_xm_dialog");
+
+	function alert() {
+		$alert.alert.apply($alert, arguments);
+	};
+
+	// 微信
+    var ua = navigator.userAgent.toLowerCase();
+    var wxqq = false;
+    if (ua.indexOf("micromessenger") > -1 || ua.indexOf("qq") > -1) {
+        wxqq = true;
+    }
+
+	if(window.location.href.indexOf("?tzgapp") >=0 && wxqq){
+        window.location.href = window.location.href.replace("?tzgapp","?tzgnoapp");
+    }
+    if(location.search.indexOf("?tzgapp")>=0 && !wxqq){
+        $("#j_shar_bar").show();
+        $("#j-face_btn").removeClass("z-fll");
+	}
+
+	//登陆逻辑
+    (function(){
+        var basePath = $("#j_basePath").val();
+        var recommendCode = "";
+
+        var isApp = false;
+        if(location.search.indexOf("?tzgapp")>=0){
+            isApp =true;
+        }
+        
+        if(isApp){
+            if(!window.loginKey){
+                $("#j_login_bar").hide();
+                $("#j_action_bar").show();
+                initPage();
+            }else{
+                $.getJSON(basePath + "/channel/page?key="+ loginKey, function (data) {
+                    if (data.success) {
+                        $("#j_login_bar").hide();
+    					$("#j_action_bar").show();
+                        initPage();
+                    }
+                });
+            }            
+        }else{
+            //先去请求一个jsonp接口
+            $.ajax({
+                type:"get",
+                url: basePath + "/jsonp",
+                dataType:"jsonp",
+                data:{
+                    m:parseInt(Math.random() * 1000000)
+                },
+                success:function(data){
+                    login2(data);
+                    
+                }
+            });
+        }
+
+        //第二次登陆接口判断
+        function login2(userid){
+            var _userid = userid;
+            if(userid == undefined){
+                _userid = "";
+            };
+            $.ajax({
+                type:"get",
+                url:basePath + "/checkredis/_WAP/" + _userid,
+                data:{
+                    m:parseInt(Math.random() * 1000000)
+                },
+                success:function(data){
+                    if(data == "success"){
+						$("#j_login_bar").hide();
+						$("#j_action_bar").show();
+                    }else{
+                        $("#j_login_bar").show();
+                    }
+                    //页面逻辑开始执行
+                    initPage();
+                }
+            });
+        }
+        function initPage(){
+	        $.getJSON("$!{basePath}/subject/pyramidDate",function(data){
+	        	$("#pyramidFriendsNum").html(data.pyramidFriendsNum);
+	        	$("#pyramidTwoFriendsNum").html(data.pyramidTwoFriendsNum);
+	        	$("#numTotalProfit").html(data.numTotalProfit);
+	        	$("#monthMasterNum").html(data.monthMasterNum);
+	        	$("#monthMasterMoney").html(data.monthMasterMoney);
+	        	$("#sumOneProfit").html(data.sumOneProfit);
+	        	$("#sumTwoProfit").html(data.sumTwoProfit);
+	        	$("#redRecordAll").html(data.redRecordAll);
+	        	recommendCode = data.recommendCode;
+	        })
+	    }
+
+        $("#j-face_btn").on("click", function(){
+            if(recommendCode == ""){
+                alert("<div class='container-r-spacing'><div class='u-fsH1 u-txt-c'>系统正在努力生成你的邀请二维码，请稍候</div></div>");
+            }else{
+                alert("<div class='container-r-spacing'><div class='u-fsH1 u-txt-c'>你的邀请码"+ recommendCode +"</div><img alt='' src='$!{basePath}/app/subject/inviteFriendsQRcode?key="+ recommendCode +"' width='100%'><div class='u-clGrayLgt u-txt-c mb20'>邀请好友扫描二维码即可分享人人赚</div></div>","","取消")
+            }
+		})
+
+    })()	
+});
+</script>
+<div style="position:fixed;left:-150px;width:100px;">
+##cnzz统计
+<img src="$sc.getCnzz($request,$response,1254699603)" width="0" height="0" />
+</div>
+</body>
+</html>

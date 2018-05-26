@@ -1,0 +1,168 @@
+<div class="main-container" id="main-container">
+    <script type="text/javascript">
+        try{ace.settings.check('main-container' , 'fixed')}catch(e){}
+    </script>
+
+    <div class="main-container-inner">
+        <a class="menu-toggler" id="menu-toggler" href="#">
+            <span class="menu-text"></span>
+        </a>
+
+        <div class="sidebar" id="sidebar">
+            <script type="text/javascript">
+                try{ace.settings.check('sidebar' , 'fixed')}catch(e){}
+            </script>
+
+            <div class="sidebar-shortcuts" id="sidebar-shortcuts">
+                <div class="sidebar-shortcuts-large" id="sidebar-shortcuts-large">
+                    <button class="btn btn-success">
+                        <i class="icon-signal"></i>
+                    </button>
+
+                    <button class="btn btn-info">
+                        <i class="icon-pencil"></i>
+                    </button>
+
+                    <button class="btn btn-warning">
+                        <i class="icon-group"></i>
+                    </button>
+
+                    <button class="btn btn-danger">
+                        <i class="icon-cogs"></i>
+                    </button>
+                </div>
+
+                <div class="sidebar-shortcuts-mini" id="sidebar-shortcuts-mini">
+                    <span class="btn btn-success"></span>
+
+                    <span class="btn btn-info"></span>
+
+                    <span class="btn btn-warning"></span>
+
+                    <span class="btn btn-danger"></span>
+                </div>
+            </div><!-- #sidebar-shortcuts -->
+
+            <ul class="nav nav-list" id="primary_nav">
+				#foreach($menu in $menuItem)
+				<li>
+                    <a href="#" class="dropdown-toggle">
+                        #if($!{menu.vcIcon}!="")
+                        	<i class="$!{menu.vcIcon}"></i>
+                        #else
+                        	<i class="icon-tasks"></i>
+                        #end
+                        <span class="menu-text1">$!{menu.vcName}</span>
+                        <b class="arrow icon-angle-down"></b>
+                    </a>
+                    #if($menu.children)
+                    <ul class="submenu">
+                    	#foreach($item in $menu.children)
+                        <li><a href="$!{www}$!{item.vcUrl}" data-url="$!{item.vcUrl}"><i class="icon-double-angle-right"></i>
+                            $!{item.vcName}</a></li>
+                    	#end
+                    </ul>
+                    #end
+                </li>
+                #end
+				<!--
+                <li class="active">
+                    <a href="form.php" class="dropdown-toggle">
+                        <i class="icon-group"></i>
+                        <span class="menu-text">渠道管理</span>
+                        <b class="arrow icon-angle-down"></b>
+                    </a>
+                    <ul class="submenu">
+                        <li><a href="#">新增机构</a></li>
+                        <li><a href="#">机构管理</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#" class="dropdown-toggle">
+                        <i class="icon-tasks"></i>
+                        <span class="menu-text">产品管理</span>
+                        <b class="arrow icon-angle-down"></b>
+                    </a>
+                    <ul class="submenu">
+                        <li><a href="#">新增产品</a></li>
+                        <li><a href="#">产品管理</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#" class="dropdown-toggle">
+                        <i class="icon-list"></i>
+                        <span class="menu-text">项目管理</span>
+                        <b class="arrow icon-angle-down"></b>
+                    </a>
+                    <ul class="submenu">
+                        <li><a href="#">发布项目</a></li>
+                        <li><a href="#">发布管理</a></li>
+                        <li><a href="#">审核管理</a></li>
+                        <li><a href="#">项目管理</a></li>
+                        <li><a href="#">审核失败</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#" class="dropdown-toggle">
+                        <i class="icon-list-alt"></i>
+                        <span class="menu-text">标的管理</span>
+                        <b class="arrow icon-angle-down"></b>
+                    </a>
+                    <ul class="submenu">
+                        <li><a href="#">待预告</a></li>
+                        <li><a href="#">标的审核</a></li>
+                        <li><a href="#">审核失败</a></li>
+                        <li><a id="J_waitOpen" href="#">待开标</a></li>
+                        <li><a href="#">投标中</a></li>
+                        <li><a href="#">待还款</a></li>
+                        <li><a id="J_repaying" href="#">还款中</a></li>
+                        <li><a href="#">已还款</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#" class="dropdown-toggle">
+                        <i class="icon-user"></i>
+                        <span class="menu-text">客户管理</span>
+                        <b class="arrow icon-angle-down"></b>
+                    </a>
+                    <ul class="submenu">
+                        <li><a href="#">投资人</a></li>
+                        <li><a href="#">借款人</a></li>
+                        <li><a href="#">添加借款人</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#" class="dropdown-toggle">
+                        <i class="icon-picture"></i>
+                        <span class="menu-text">财务管理</span>
+                        <b class="arrow icon-angle-down"></b>
+                    </a>
+                    <ul class="submenu">
+                        <li><a href="#">资金管理</a></li>
+                        <li><a href="#">红包管理</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#" class="dropdown-toggle">
+                        <i class="icon-cog"></i>
+                        <span class="menu-text">系统管理</span>
+                        <b class="arrow icon-angle-down"></b>
+                    </a>
+                    <ul class="submenu">
+                        <li><a href="${www}/systemparams">系统参数设置</a></li>
+                        <li><a href="${www}/consoleaccounts">账号管理</a></li>
+                        <li><a href="${www}/roleinfos">角色管理</a></li>
+                        <li><a href="${www}/resources">资源管理</a></li>
+                    </ul>
+                </li>
+                -->
+            </ul><!-- /.nav-list -->
+
+            <div class="sidebar-collapse" id="sidebar-collapse">
+                <i class="icon-double-angle-left" data-icon1="icon-double-angle-left" data-icon2="icon-double-angle-right"></i>
+            </div>
+
+            <script type="text/javascript">
+                try{ace.settings.check('sidebar' , 'collapsed')}catch(e){}
+            </script>
+        </div><!-- /.sidebar -->

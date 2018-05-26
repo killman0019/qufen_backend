@@ -1,0 +1,189 @@
+<script src="${www}/js/my97DatePicker/WdatePicker.js"></script>
+<div class="main-content">
+    <div class="breadcrumbs" id="breadcrumbs">
+    	<style>
+        	.tab-w{
+        		float:left;
+				display: block;
+			  	margin: 1px;
+			  	border: 1px solid #ddd;
+			  	width: 100px;
+			  	height: 40px;
+			  	line-height: 40px;
+			  	text-align: center;
+			  	cursor: pointer;
+			  	background-color: white;
+        	}
+        	.tab-w-selected{
+        		background-color: #eff3f8;
+				border-bottom: 0;
+        	}
+        	.title_w{
+        		margin-left: 20px;
+				width: 200px;
+				color: blue;
+				height: 50px;
+				line-height: 50px;
+        	}
+        	.seperate_w{
+				height: 1px;
+				border-bottom: 2px solid #ddd;
+				width: 97%;
+				margin: auto;
+        	}
+        	.table_w{
+        		width: 97%;
+				margin: auto;
+        	}
+        	.table_w table{
+        		width:100%;
+        		margin-top: 10px;
+				border-collapse: collapse;
+				text-align: center;
+				background-color: white;
+        	}
+        	.table_w table tr td{
+        		border:1px solid #ddd;
+        		height:35px;
+        	}
+        </style>
+        <script type="text/javascript">
+            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+        </script>
+        <ul class="breadcrumb">
+            <li>
+                <i class="icon-home home-icon"></i>
+                <a href="${www}/main">主页</a>
+            </li>
+			<li>
+                <a href="${www}/investor">投资人</a>
+            </li>
+            <li class="active">资金流水</li>
+        </ul><!-- .breadcrumb -->
+
+        <div class="nav-search" id="nav-search">
+            <form class="form-search">
+						<span class="input-icon">
+							<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+							<i class="icon-search nav-search-icon"></i>
+						</span>
+            </form>
+        </div><!-- #nav-search -->
+    </div>
+	<div class="page-content">
+		<div class="page-header">
+		    <h1>资金流水</h1>
+		</div>
+		<div class="container-fluid">
+		    <div class="dataTables_wrapper">
+		        <div class="row">
+		        	<div style="border-bottom: 1px solid #ddd;height: 41px;">
+		        	 	<div class="tab-w"><a href="${www}/investor/accountInfo?iloginAccountId=$!{query.iloginAccountId}">账户信息</a></div>
+			            <div class="tab-w"><a href="${www}/investor/investrecord?iloginAccountId=$!{query.iloginAccountId}">投资记录</a></div>
+			            <div class="tab-w"><a href="${www}/investor/investRepayRecord?iloginAccountId=$!{query.iloginAccountId}">回款信息</a></div>
+			            <div class="tab-w tab-w-selected">资金记录</div>
+		        		<div class="tab-w"><a href="${www}/investor/redRecord?iloginAccountId=$!{query.iloginAccountId}">红包记录</a></div>
+		        	</div>
+		        	<div class="col-sm-12" style="margin-top: 10px;">
+		                <form class="form-inline" role="form">
+		                    <div class="form-group">
+		                        <label>资金类型：</label>
+								<select  name="itradeType" id="itradeType">
+                                    <option value="">全部</option>
+                                    <option value="1" #if($query.itradeType && $query.itradeType =='1') selected #end>充值</option>
+                                    <option value="2" #if($query.itradeType && $query.itradeType =='2') selected #end>提现</option>
+                                    <option value="3" #if($query.itradeType && $query.itradeType =='3') selected #end>提现手续费</option>
+                                    <option value="4" #if($query.itradeType && $query.itradeType =='4') selected #end>投资</option>
+                                    <option value="5" #if($query.itradeType && $query.itradeType =='5') selected #end>本息回款</option>
+                                    <option value="6" #if($query.itradeType && $query.itradeType =='6') selected #end>本金回款</option>
+                                    <option value="7" #if($query.itradeType && $query.itradeType =='7') selected #end>利息回款</option>
+                                    <option value="8" #if($query.itradeType && $query.itradeType =='8') selected #end>提现失败退款</option>
+                                    <option value="9" #if($query.itradeType && $query.itradeType =='9') selected #end>捐赠</option>
+                                    <option value="10" #if($query.itradeType && $query.itradeType =='10') selected #end>充值扣款</option>
+                                    <option value="11" #if($query.itradeType && $query.itradeType =='11') selected #end>投资体验标</option>
+                                    
+                                    <option value="12" #if($query.itradeType && $query.itradeType =='12') selected #end>体验标利息回款</option>
+                                    <option value="13" #if($query.itradeType && $query.itradeType =='13') selected #end>提现手续费退款</option>
+                                    <option value="14" #if($query.itradeType && $query.itradeType =='14') selected #end>投资定期宝</option>
+                                    <option value="15" #if($query.itradeType && $query.itradeType =='15') selected #end>定期宝返还本息</option>
+                                    <option value="16" #if($query.itradeType && $query.itradeType =='16') selected #end>资金冻结</option>
+                                    <option value="17" #if($query.itradeType && $query.itradeType =='17') selected #end>资金解冻</option>
+                                    <option value="18" #if($query.itradeType && $query.itradeType =='18') selected #end>授信还款</option>
+                                    <option value="19" #if($query.itradeType && $query.itradeType =='19') selected #end>投资活期宝</option>
+                                    <option value="200" #if($query.itradeType && $query.itradeType =='200') selected #end>活期宝返还息</option>
+                                    <option value="201" #if($query.itradeType && $query.itradeType =='201') selected #end>活期宝返还本</option>
+                                </select>
+		                    </div>
+		                    <div class="form-group">
+		                    	<label>操作时间：</label>
+		                    	<input type="text" name="dtTimeBeginFuzzy" id="dtTimeBeginFuzzy"  style="width:120px;"  onFocus="WdatePicker({lang:'zh-cn'})" value="$!{query.dtTimeBeginFuzzy}" class="input-date">
+		                    </div>
+		                    <div class="form-group">——</div>
+		                    <div class="form-group">
+		                    	<input type="text" name="dtTimeEndFuzzy" id="dtTimeEndFuzzy"  style="width:120px;"  onFocus="WdatePicker({lang:'zh-cn'})" value="$!{query.dtTimeEndFuzzy}" class="input-date">
+		                    </div>
+		                    <div class="form-group">
+		                        <button class="btn btn-xs btn-primary" type="submit">搜索</button>
+		                    </div>
+		                </form>
+		            </div>
+		        </div>
+				<table class="table table-striped table-bordered table-hover dataTable">
+			    	<thead>
+			            <tr>
+			                <th>资金流水号</th>
+			                <th>操作时间</th>
+			                <th>类型</th>
+			                <th>金额</th>
+			                <th>账户余额</th>
+			            </tr>
+			      	</thead>
+			       	<tbody>
+			        	#foreach($row in $result.rows)
+			           	<tr>
+			            	<td> $!{row.vcCode}</td>
+			               	<td> $!{row.dtTradeDateStr} </td>
+			                <td>#if($row.itradeType==1)充值
+			                	#elseif($row.itradeType==2)提现
+			                	#elseif($row.itradeType==3)提现手续费
+			                	#elseif($row.itradeType==4)投资
+			                	#elseif($row.itradeType==5)本息回款
+			                	#elseif($row.itradeType==6)本金回款
+			                	#elseif($row.itradeType==7)利息回款
+			                	#elseif($row.itradeType==8)提现失败退款
+			                	#elseif($row.itradeType==9)捐赠
+			                	#elseif($row.itradeType==10)充值扣款
+			                	#elseif($row.itradeType==11)投资体验标
+			                	
+			                	#elseif($row.itradeType==12)体验标利息回款
+			                	#elseif($row.itradeType==13)提现手续费退款
+			                	#elseif($row.itradeType==14)投资定期宝
+			                	#elseif($row.itradeType==15)定期宝返还本息
+			                	#elseif($row.itradeType==16)资金冻结
+			                	#elseif($row.itradeType==17)资金解冻
+			                	#elseif($row.itradeType==18)授信还款
+			                	#elseif($row.itradeType==19)投资活期宝
+			                	#elseif($row.itradeType==200)活期宝返还息
+			                	#elseif($row.itradeType==201)活期宝返还本
+			                	#end
+			                </td>
+			                <td> $!{row.numAmount} </td>
+			                <td> $!{row.numBalance} </td>
+			          	</tr>
+			            #end
+			       	</tbody>
+			   	</table>
+			   	<div class="row">
+			       	<div class="col-sm-12">
+			        	<div class="dataTables_paginate paging_bootstrap">
+			           		<ul class="pagination">
+			               		#set($pageRequestURL="$!{www}/investor/cashRecord?pageIndex=[PAGINATION_PAGE_INDEX]#if($!{result.queryParameters})&$!{result.queryParameters}#end")
+			               		#paginationHelper($result $pageRequestURL)
+			              	</ul>
+			           	</div>
+			       	</div>
+		        </div>
+		    </div>
+		</div>
+    </div><!-- /.page-content -->
+</div><!-- /.main-content -->

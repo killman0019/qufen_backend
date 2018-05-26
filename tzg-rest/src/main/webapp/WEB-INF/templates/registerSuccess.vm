@@ -1,0 +1,18 @@
+<div class="tit">
+    <a href="$!{basePath}/register.htm" class="return"></a>
+    <span class="title">注册成功</span>
+  </div>
+  <div class="login bacfff">
+    <div class="mao">
+    </div>
+
+   <div class="point_er2">
+    <b>$!{memberLoginName}</b><br>
+恭喜您成功注册铜掌柜账号！<br>
+请登录电脑端进行充值～<br>
+   </div>
+   <div class="btnbox">
+    <a class="btn100l bacl" href="$!{basePath}/user/home.htm">我的账户</a>
+    <a class="btn100l bacl" href="$!{basePath}/invest/invest.htm">立即投资</a>
+   </div>
+  </div>

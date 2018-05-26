@@ -1,0 +1,318 @@
+<div class="main-content">
+    <div class="breadcrumbs" id="breadcrumbs">
+        <script type="text/javascript">
+            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+         
+        </script>
+
+        <ul class="breadcrumb">
+            <li>
+                <i class="icon-home home-icon"></i>
+                <a href="${www}/main">主页</a>
+            </li>
+
+            <li>
+                <a href="${www}/smstemplate">短信模板列表</a>
+            </li>
+        </ul><!-- .breadcrumb -->
+
+        <div class="nav-search" id="nav-search">
+            <form class="form-search">
+						<span class="input-icon">
+							<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+							<i class="icon-search nav-search-icon"></i>
+						</span>
+            </form>
+        </div><!-- #nav-search -->
+    </div>
+
+    <div class="page-content">
+
+        <div class="page-header">
+            <h1>短信模板列表</h1>
+        </div>
+        <div class="container-fluid">
+        
+         #if(${msg})
+        	<div>
+			#if(${success})
+        		<li class="text-success">$!{msg}</li>
+   			 #else
+        		<li class="text-danger">$!{msg}</li>
+   			 #end    	
+   			</div>
+   		#end       
+        
+            <div class="dataTables_wrapper">
+                <div class="row">
+                    <div class="col-sm-10">
+                        <form class="form-inline" role="form">
+                        	<div class="form-group">
+                                <label>短信类型：</label>
+                                <select name="itype">
+                                	<option value="" >全部</option>
+	                                <option value="1" #if($query.itype && $query.itype ==1) selected #end>注册验证码短信</option>
+	                                <option value="2" #if($query.itype && $query.itype ==2) selected #end>充值成功短信</option>
+	                            	<option value="3" #if($query.itype && $query.itype ==3) selected #end>提现验证码短信</option>
+	                                <option value="4" #if($query.itype && $query.itype ==4) selected #end>提现成功短信</option>
+	                           	    <option value="5" #if($query.itype && $query.itype ==5) selected #end>找回密码验证码短信</option>
+	                                <option value="6" #if($query.itype && $query.itype ==6) selected #end>自动投资成功短信</option>
+	                                <option value="7" #if($query.itype && $query.itype ==7) selected #end>投资成功短信</option>
+	                                <option value="8" #if($query.itype && $query.itype ==8) selected #end>投资人回款成功短信</option>
+	                                <option value="9" #if($query.itype && $query.itype ==9) selected #end>项目提交最终审核人短信</option>
+	                            	<option value="10" #if($query.itype && $query.itype ==10) selected #end>项目最终审核人审核结果短信</option>
+	                                <option value="11" #if($query.itype && $query.itype ==11) selected #end>标的提交最终审核人短信</option>
+	                           	    <option value="12" #if($query.itype && $query.itype ==12) selected #end>标的最终审核人审核结果短信</option>
+	                                <option value="13" #if($query.itype && $query.itype ==13) selected #end>提前三天催借款人短信</option>
+	                                <option value="14" #if($query.itype && $query.itype ==14) selected #end>提前两天催借款人短信</option>
+	                                <option value="15" #if($query.itype && $query.itype ==15) selected #end>提前一天上午催借款人短信</option>
+	                                <option value="16" #if($query.itype && $query.itype ==16) selected #end>提前一天下午催借款人短信</option>
+	                            	<option value="17" #if($query.itype && $query.itype ==17) selected #end>借款逾期发给借款人短信</option>
+	                                <option value="18" #if($query.itype && $query.itype ==18) selected #end>提前一天上午发给风控短信</option>
+	                           	    <option value="19" #if($query.itype && $query.itype ==19) selected #end>借款逾期发给风控短信</option>
+	                                <option value="20" #if($query.itype && $query.itype ==20) selected #end>提前两天上午发给担保方短信</option>
+	                                <option value="21" #if($query.itype && $query.itype ==21) selected #end>提前一天上午发给担保方短信</option>
+	                                <option value="22" #if($query.itype && $query.itype ==22) selected #end>还款时间当天上午发给担保方短信</option>
+	                                <option value="23" #if($query.itype && $query.itype ==23) selected #end>还款时间当天下午发给担保方短信</option>
+	                            	<option value="24" #if($query.itype && $query.itype ==24) selected #end>担保方偿还成功短信</option>
+	                                <option value="25" #if($query.itype && $query.itype ==25) selected #end>还款时间当天上午发给公司内部人员短信</option>
+	                           	    <option value="26" #if($query.itype && $query.itype ==26) selected #end>募集满分账短信</option>
+	                                <option value="27" #if($query.itype && $query.itype ==27) selected #end>还款成功短信</option>
+	                                <option value="28" #if($query.itype && $query.itype ==28) selected #end>后台登陆验证短信</option>
+	                                <option value="29" #if($query.itype && $query.itype ==29) selected #end>后台借款人账号添加成功短信</option>
+	                                <option value="30" #if($query.itype && $query.itype ==30) selected #end>修改手机号码发给原手机短信</option>
+	                                <option value="31" #if($query.itype && $query.itype ==31) selected #end>修改手机号码发给新手机短信</option>
+	                                <option value="34" #if($query.itype && $query.itype ==34) selected #end>后台账号初始化密码短信</option>
+	                                <option value="35" #if($query.itype && $query.itype ==35) selected #end>找回交易密码验证码短信</option>
+	                                <option value="36" #if($query.itype && $query.itype ==36) selected #end>财务还款审核验证码短信</option>
+	                                <option value="37" #if($query.itype && $query.itype ==37) selected #end>财务借款人提现审核验证码短信</option>
+	                                <option value="38" #if($query.itype && $query.itype ==38) selected #end>财务借款人补还审核验证码短信</option>
+	                                <option value="39" #if($query.itype && $query.itype ==39) selected #end>项目最终审核人审核结果发给担保机构</option>
+	                                <option value="40" #if($query.itype && $query.itype ==40) selected #end>项目最终审核人审核不通过短信</option>
+	                                <option value="41" #if($query.itype && $query.itype ==41) selected #end>标的最终审核人审核不通过短信</option>
+	                                <option value="42" #if($query.itype && $query.itype ==42) selected #end>标的最终审核验证码短信</option>
+	                                <option value="43" #if($query.itype && $query.itype ==43) selected #end>项目最终审核验证码短信</option>
+	                                <option value="44" #if($query.itype && $query.itype ==44) selected #end>财务投资人提现失败审核验证码短信</option>
+	                                <option value="45" #if($query.itype && $query.itype ==45) selected #end>投资人提现失败退款短信</option>
+	                                <option value="46" #if($query.itype && $query.itype ==46) selected #end>用户冻结,解冻审核验证码短信</option>
+	                                <option value="47" #if($query.itype && $query.itype ==47) selected #end>活动红包资金预警短信模板</option>
+	                                <option value="48" #if($query.itype && $query.itype ==48) selected #end>APP推送的模板</option>
+	                                <option value="49" #if($query.itype && $query.itype ==49) selected #end>投资人手机号码更换审核验证码短信</option>
+	                                <option value="50" #if($query.itype && $query.itype ==50) selected #end>投资人身份认证审核效验码短信</option>
+	                                <option value="51" #if($query.itype && $query.itype ==51) selected #end>投资人提现金额转移审核效验码短信</option>
+	                                <option value="52" #if($query.itype && $query.itype ==52) selected #end>投资人绑卡删除审核效验码短信</option>
+	                                <option value="53" #if($query.itype && $query.itype ==53) selected #end>后台重置密码短信</option>
+	                                <option value="54" #if($query.itype && $query.itype ==54) selected #end>投资人投资体验标成功短信</option>
+	                                <option value="55" #if($query.itype && $query.itype ==55) selected #end>投资人的体验标回款成功短信</option>
+	                                <option value="56" #if($query.itype && $query.itype ==56) selected #end>体验标的提交最终审核人短信</option>
+									<option value="57" #if($query.itype && $query.itype ==57) selected #end>体验标的最终审核人审核结果短信</option>
+									<option value="59" #if($query.itype && $query.itype ==59) selected #end>体验标的最终审核验证码短信 </option>
+									<option value="60" #if($query.itype && $query.itype ==60) selected #end>体验标标的最终审核人审核不通过短信</option>
+									<option value="61" #if($query.itype && $query.itype ==61) selected #end>平台充值短信</option>
+									<option value="62" #if($query.itype && $query.itype ==62) selected #end>平台提现短信</option>
+									<option value="63" #if($query.itype && $query.itype ==63) selected #end>备用金充值短信</option>
+									<option value="64" #if($query.itype && $query.itype ==64) selected #end>备用金提现短信</option>
+									<option value="64" #if($query.itype && $query.itype ==68) selected #end>加息券账户预警短信</option>
+									
+									<option value="123" #if($query.itype && $query.itype ==123) selected #end>定期宝最终审核验证码短信</option>
+									<option value="124" #if($query.itype && $query.itype ==124) selected #end>定期宝提交最终审核人短信</option>
+									<option value="125" #if($query.itype && $query.itype ==125) selected #end>定期宝最终审核人审核通过短信</option>
+									<option value="126" #if($query.itype && $query.itype ==126) selected #end>定期宝最终审核人审核不通过短信</option>
+									
+	                                <option value="99" #if($query.itype && $query.itype ==99) selected #end>邮箱认证邮件</option>
+	                            </select>
+	                          </div>   
+                            <div class="form-group">
+                                <label>状态：</label>
+                                <select name="istate">
+	                                <option value="1" #if($query.istate && $query.istate ==1) selected #end>有效</option>
+	                                <option value="2" #if($query.istate && $query.istate ==2) selected #end>无效</option>
+	                            </select>
+	                          </div>   
+                            <div class="form-group">
+                                <button class="btn btn-xs btn-primary" type="submit">查询</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-sm-2 text-right">
+                    </div>
+                </div>
+                <table class="table table-striped table-bordered table-hover dataTable">
+                    <thead>
+                    <tr>
+                        <th>短信类型</th>
+                        <th>短信模板</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        #foreach($row in $result.rows)
+                        <tr>
+                        	<td>
+                        	 	#if($row.itype == 1)
+                        	 	注册验证码短信
+                        	 	#elseif($row.itype == 2)
+                        	 	充值成功短信
+                        	 	#elseif($row.itype == 3)
+                        	 	提现验证码短信
+                        	 	#elseif($row.itype == 4)
+                        	 	提现成功短信
+                        	 	#elseif($row.itype == 5)
+                        	 	找回密码验证码短信
+                        	 	#elseif($row.itype == 6)
+                        	 	自动投资成功短信
+                        	 	#elseif($row.itype == 7)
+                        	 	投资成功短信
+                        	 	#elseif($row.itype == 8)
+                        	 	投资人回款成功短信
+                        	 	#elseif($row.itype == 9)
+                        	 	项目提交最终审核人短信
+                        	 	#elseif($row.itype == 10)
+                        	 	项目最终审核人审核结果短信
+                        	 	#elseif($row.itype == 11)
+                        	 	标的提交最终审核人短信
+                        	 	#elseif($row.itype == 12)
+                        	 	标的最终审核人审核结果短信
+                        	 	#elseif($row.itype == 13)
+                        	 	提前三天催借款人短信
+                        	 	#elseif($row.itype == 14)
+                        	 	提前两天催借款人短信
+                        	 	#elseif($row.itype == 15)
+                        	 	提前一天上午催借款人短信
+                        	 	#elseif($row.itype == 16)
+                        	 	提前一天下午催借款人短信
+                        	 	#elseif($row.itype == 17)
+                        	 	借款逾期发给借款人短信
+                        	 	#elseif($row.itype == 18)
+                        	 	提前一天上午发给风控短信
+                        	 	#elseif($row.itype == 19)
+                        	 	借款逾期发给风控短信
+                        	 	#elseif($row.itype == 20)
+                        	 	提前两天上午发给担保方短信
+                        	 	#elseif($row.itype == 21)
+                        	 	提前一天上午发给担保方短信
+                        	 	#elseif($row.itype == 22)
+                        	 	还款时间当天上午发给担保方短信
+                        	 	#elseif($row.itype == 23)
+                        	 	还款时间当天下午发给担保方短信
+                        	 	#elseif($row.itype == 24)
+                        	 	担保方偿还成功短信
+                        	 	#elseif($row.itype == 25)
+                        	 	还款时间当天上午发给公司内部人员短信
+                        	 	#elseif($row.itype == 26)
+                        	 	募集满分账短信
+                        	 	#elseif($row.itype == 27)
+                        	 	还款成功短信
+                        	 	#elseif($row.itype == 28)
+                        	 	后台登陆验证短信
+                        	 	#elseif($row.itype == 29)
+                        	 	后台借款人账号添加成功短信
+                        	 	#elseif($row.itype == 30)
+                        	 	修改手机号码发给原手机短信
+                        	 	#elseif($row.itype == 31)
+                        	 	修改手机号码发给新手机短信
+                        	 	#elseif($row.itype == 34)
+                        	 	后台账号初始化密码短信
+                        	 	#elseif($row.itype == 35)
+                        	 	找回交易密码验证码短信      
+								#elseif($row.itype == 36)
+	                            	财务还款审核验证码短信
+	                           #elseif($row.itype == 37)
+	                           	财务借款人提现审核验证码短信
+	                           #elseif($row.itype == 38)
+	                         	  财务借款人补还审核验证码短信
+	                           #elseif($row.itype == 39)
+	                           	项目最终审核人审核结果发给担保机构
+	                           #elseif($row.itype == 40)
+	                           	项目最终审核人审核不通过短信
+	                           #elseif($row.itype == 41)
+	                           	标的最终审核人审核不通过短信
+	                           #elseif($row.itype == 42)
+	                           	标的最终审核验证码短信
+	                           #elseif($row.itype == 43)
+	                           	项目最终审核验证码短信    
+	                           #elseif($row.itype == 44)
+	                           	财务投资人提现失败审核验证码短信  
+	                           #elseif($row.itype == 45)
+	                          	投资人提现失败退款短信 
+	                           #elseif($row.itype == 46)	                           	                                
+                               	 用户冻结,解冻审核验证码短信
+                               #elseif($row.itype == 47)	                           	                                
+                               	 活动红包资金预警短信模板
+                               #elseif($row.itype == 48)	                           	                                
+                               	 APP推送的模板
+                               #elseif($row.itype == 49)	                           	                                
+                               	投资人手机号码更换审核验证码短信        
+                               #elseif($row.itype == 50)	                           	                                
+                                                                                                  投资人身份认证审核效验码短信  
+                              #elseif($row.itype == 51)	                           	                                
+                               	投资人提现金额转移审核效验码短信  
+                              #elseif($row.itype == 52)	                           	                                
+                               	投资人绑卡删除审核效验码短信  
+                              #elseif($row.itype == 53)	                           	                                
+                               	后台重置密码短信   	
+                              #elseif($row.itype == 54)	                           	                                
+                               	投资人投资体验标成功短信  	
+                              #elseif($row.itype == 55)	                           	                                
+                               	投资人的体验标回款成功短信   	
+							  #elseif($row.itype == 56)	                           	                                
+                               	体验标的提交最终审核人短信
+							  #elseif($row.itype == 57)	                           	                                
+                               	体验标的最终审核人审核结果短信 
+							  #elseif($row.itype == 59)	                           	                                
+								体验标的最终审核验证码短信 
+							  #elseif($row.itype == 60)	                           	                                
+                               	体验标标的最终审核人审核不通过短信
+                              #elseif($row.itype == 61)	                           	                                
+                               	平台充值短信
+                              #elseif($row.itype == 62)	                           	                                
+                               	平台提现短信
+                              #elseif($row.itype == 63)	                           	                                
+                               	备用金充值短信
+                              #elseif($row.itype == 64)	                           	                                
+                               	备用金提现短信
+                        	  #elseif($row.itype == 99)
+                        	 	邮箱认证邮件
+                        	 	
+                        	 #elseif($row.itype == 123)
+                        	 	定期宝最终审核验证码短信
+                        	 #elseif($row.itype == 124)
+                        	 	定期宝提交最终审核人短信
+                        	 #elseif($row.itype == 125)
+                        	 	定期宝最终审核人审核通过短信
+                        	 #elseif($row.itype == 126)
+                        	 	定期宝最终审核人审核不通过短信
+                        	 	#end
+                        	</td>
+                        	<td> 
+                        		<a href="${www}/smstemplate/detail?id=${row.id}">$!{row.vcTemplate} </a>
+                        	</td>
+                        	<td>
+	                        	 #if($row.istate == 1) 
+	                        	    	有效 
+	                        	 #elseif($row.istate == 2) 
+	                        	 	无效 
+	                        	 #end
+                        	 </td>
+                            <td>
+                            	<a href="${www}/smstemplate/find?id=${row.id}">修改</a>
+                            </td>
+                        </tr>
+                        #end
+                    </tbody></table>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="dataTables_paginate paging_bootstrap">
+                            <ul class="pagination">
+                                #set($pageRequestURL="${www}/smstemplate?pageIndex=[PAGINATION_PAGE_INDEX]#if($!{result.queryParameters})&$!{result.queryParameters}#end")
+                                #paginationHelper($result $pageRequestURL)
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div><!-- /.page-content -->
+</div><!-- /.main-content -->

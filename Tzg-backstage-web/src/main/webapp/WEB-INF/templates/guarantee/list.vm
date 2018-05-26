@@ -1,0 +1,125 @@
+<div class="main-content">
+    <div class="breadcrumbs" id="breadcrumbs">
+        <script type="text/javascript">
+            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+        </script>
+
+        <ul class="breadcrumb">
+            <li>
+                <i class="icon-home home-icon"></i>
+                <a href="${www}/main">主页</a>
+            </li>
+
+            <li class="active">担保机构列表</li>
+        </ul><!-- .breadcrumb -->
+
+        <div class="nav-search" id="nav-search">
+            <form class="form-search">
+						<span class="input-icon">
+							<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+							<i class="icon-search nav-search-icon"></i>
+						</span>
+            </form>
+        </div><!-- #nav-search -->
+    </div>
+	<div class="page-content">
+		<div class="page-header">
+		    <h1>担保机构列表</h1>
+		</div>
+		<div class="container-fluid">
+		
+		        				#if(${msg})
+        	<div>
+			#if(${success})
+        		<li class="text-success">$!{msg}</li>
+   			 #else
+        		<li class="text-danger">$!{msg}</li>
+   			 #end    	
+   			</div>
+   		#end	
+		
+		    <div class="dataTables_wrapper">
+		        <div class="row">
+		            <div class="col-sm-11">
+		                <form class="form-inline" role="form">
+		                    <div class="form-group">
+		                        <label>名称：</label>
+		                        <input type="text" name="vcName" value="$!{query.vcName}">
+		                    </div>
+		                    <div class="form-group">
+		                        <label>类型：</label>
+		                        <select name="itype">
+	                        		<option value="">全部</option>
+		                            <option value="1" #if($query.itype && $query.itype =='1') selected #end>担保公司</option>
+		                            <option value="2" #if($query.itype && $query.itype =='2') selected #end>小额贷款</option>
+		                            <option value="3" #if($query.itype && $query.itype =='3') selected #end>资产管理</option>
+		                            <option value="4" #if($query.itype && $query.itype =='4') selected #end>投资公司</option>
+		                        </select>
+		                    </div>
+		                    <div class="form-group">
+		                        <button class="btn btn-xs btn-primary" type="submit">查询</button>
+		                    </div>
+		                </form>
+		            </div>
+                    <div class="col-sm-1 text-right">
+                        <a href="${www}/guarantee/new" class="btn btn-success btn-xs">添加</a>
+                    </div>
+		        </div>
+		        <table class="table table-striped table-bordered table-hover dataTable">
+		            <thead>
+		            <tr>
+		                <th>名称</th>
+		                <th>类型</th>
+		                <th>所在地区</th>
+		                <th>业务所在地区</th>
+		                <th>注册资金</th>
+		                <th>企业规模</th>
+		                <th>经营状况</th>
+		                <th>授信额度</th>
+		                <th>机构评级</th>
+		                <th>操作</th>
+		            </tr>
+		            </thead>
+		            <tbody>
+		                #foreach($row in $result.rows)
+		                <tr>
+		                    <td> <a href="${www}/guarantee/details?id=$!{row.id}">$!{row.vcName}</a></td>
+		                    <td> 
+		                    #if($row.itype =='1')担保公司 #end
+		                    #if($row.itype =='2')小额贷款 #end
+		                    #if($row.itype =='3')资产管理 #end
+		                    #if($row.itype =='4')投资公司 #end
+		                    </td>
+		                    <td> $!{row.vcArea} </td>
+		                    <td> $!{row.vcBusinessArea} </td>
+		                    <td> $!{row.vcRegister}</td>
+		                    <td> $!{row.vcScale}</td>
+		                    <td> $!{row.vcState}</td>
+		                    <td> $!{row.numCredit}</td>
+		                    <td> $!{row.vcRate}</td>
+		                    <td>
+		                    	#if(!$row.iloginAccountId)
+		                    		<a href="${www}/guarantee/guarantor/new?guaranteeId=$!{row.id}">添加登陆账号</a>   ｜
+		                    	#end   
+		                    	<a href="${www}/guarantee/find?id=$!{row.id}">修改</a>   ｜
+		                        <a onclick="delcfm()" href="${www}/guarantee/delete?id=$!{row.id}">删除</a>
+		                    </td>
+		                </tr>
+		                #end
+		            </tbody>
+		        </table>
+		        <div class="row">
+		            <div class="col-sm-12">
+		                <div class="dataTables_paginate paging_bootstrap">
+		                    <ul class="pagination">
+		                        #set($pageRequestURL="${www}/guarantee?pageIndex=[PAGINATION_PAGE_INDEX]#if($!{result.queryParameters})&$!{result.queryParameters}#end")
+		                        #paginationHelper($result $pageRequestURL)
+		                    </ul>
+		                </div>
+		            </div>
+		       </div>
+		       
+		    </div>
+		</div>
+    </div><!-- /.page-content -->
+</div><!-- /.main-content -->

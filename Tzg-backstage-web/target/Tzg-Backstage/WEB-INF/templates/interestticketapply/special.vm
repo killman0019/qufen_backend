@@ -1,0 +1,309 @@
+<script src="${www}/js/my97DatePicker/WdatePicker.js"></script>
+<div class="main-content">
+    <div class="breadcrumbs" id="breadcrumbs">
+        <script type="text/javascript">
+            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+        </script>
+
+        <ul class="breadcrumb">
+            <li>
+                <i class="icon-home home-icon"></i>
+                <a href="${www}/main">主页</a>
+            </li>
+
+            <li>
+                <a href="${www}/interestticketapply/list">加息券申请列表</a>
+            </li>
+            <li class="active">加息券申请</li>
+        </ul><!-- .breadcrumb -->
+
+        <div class="nav-search" id="nav-search">
+            <form class="form-search">
+						<span class="input-icon">
+							<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+							<i class="icon-search nav-search-icon"></i>
+						</span>
+            </form>
+        </div><!-- #nav-search -->
+    </div>
+
+    <div class="page-content">
+        <div class="page-header">
+            <h1>新增加息券申请</h1>
+        </div>
+        <form action="${www}/interestticketapply/save" method="post" class="form-horizontal" id="j_interestticketapply_form">
+            <div class="row">
+            	<input type="hidden" name="iactionType" value="$!{param.iactionType}">
+                <div class="col-xs-12 col-md-12">
+                        <div class="form-group">
+	                        <label class="col-md-2 col-sm-2 control-label">*活动名称：</label>
+	                        <div class="col-md-4 col-sm-4  ">
+	                            <input type="text" class="col-sm-8" name="vcInterestTicketAccountName" value="$!{param.vcInterestTicketAccountName}"/>
+	                        </div>
+	                        <div class="col-md-6 col-sm-6">
+	                            <label>*活动起止日期：</label>
+	                             <input type="text" class="input-mask-date"  name="dtStartStr" value="$!{param.dtStartStr}" />
+								-
+								<input type="text" class="input-mask-date"  name="dtEndStr" value="$!{param.dtEndStr}" />
+	                        </div>
+	                    </div>
+                        <div class="form-group">
+	                        <label class="col-md-2 col-sm-2 control-label">*最大预算：</label>
+	                        <div class="col-md-4 col-sm-4  ">
+	                            <input type="text" class="col-sm-8" id="numApplyAmt" name="numApplyAmt" value="$!{param.numApplyAmt}" />&nbsp; 元
+	                        </div>
+	                        <div class="col-md-6  col-sm-6">
+	                        &nbsp;&nbsp;&nbsp;
+	                        	<label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;截止日期：</label>
+	                            <input type="text" class="input-mask-date" name="dtExpireStr" value="$!{param.dtExpireStr}"/>&nbsp;
+	                        </div>
+	                    </div>
+	                    <div class="form-group">
+	                    	<label class="col-md-2 control-label">*预警金额：</label>
+	                    	<div class="col-md-4">
+	                        	<input type="text" class="col-sm-8" name="numAlertAmt" value="$!{param.numAlertAmt}"/>
+	                    	</div>
+	                    	<label class="col-md-6">
+	                      	<input type="checkbox" value="1"
+                                #if($!{param.iSuperBudget} ==1)
+                                  	checked
+                               	#end
+                                name="iSuperBudget">&nbsp;&nbsp;超预算补发
+	                    </label>
+	                    </div>
+	                    <div class="form-group">
+                    		<label class="col-md-2 control-label">*活动加息券标识：</label>
+                    		<div class="col-md-4">
+                        	<input type="text" class="col-sm-8" name="vcInterestTicketAccountLogo" value="$!{param.vcInterestTicketAccountLogo}"/>
+                    	 </div>
+                       </div>
+	                     &nbsp;&nbsp;&nbsp;
+			            
+			            <div class="panel panel-default">
+						  <div class="panel-heading">奖励细则</div>
+							  <div class="panel-body">
+					            <div id="j_rows">
+						            <div class="form-group" theindex="0">
+						             	<label class="col-md-1 control-label"></label>
+				                        <div class="col-md-10">
+				                        	利率
+				                        	<select style="width:100px;" name="rate" >
+				                        	<option value="">--请选择--</option>
+				                        	    #foreach($row in $result)
+				                        	    	<option value="$!{row.id}">$!{row.numInterestRate}</option>
+				                        	    #end
+				                        	</select>&nbsp;%&nbsp;最大投资天数
+				                        	<select style="width:100px;" name="maxTime">
+				                        	<option value="">--请选择--</option>
+				                        	</select>&nbsp;最大加息金额
+				                        	<select style="width:100px;" name="maxRate">
+				                        	<option value="">--请选择--</option>
+				                        	</select>&nbsp;元&nbsp;有效天数
+				                            <select style="width:100px;" name="days">
+				                        	<option value="">--请选择--</option>
+				                        	</select>&nbsp;
+				                        	<input type="hidden" name="ticket"  />
+				                        	<input type="button"  value="增加" class="j-add" />
+				                        	<input type="button"  value="删除" class="j-delete" style="display:none" />
+				                   		</div>
+				                    </div>
+								 </div>
+							  </div>
+						</div>
+                    <div class="red">$!{msg}</div>
+               	</div>
+            </div>
+            <div class="clearfix form-actions">
+                <div class="col-sm-offset-2 col-md-9">
+		            <button class="btn btn-info" type="button" onclick="javascript:history.go(-1);">
+		                <i class="icon-arrow-left bigger-110"></i>返回
+		            </button>
+		            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		            <button class="btn btn-info" type="submit">
+                        <i class="icon-ok bigger-110"></i> 提交
+                    </button>
+                </div>
+            </div>
+</form>
+    </div><!-- /.page-content -->
+</div><!-- /.main-content -->
+
+<script src="${www}/js/jquery.maskedinput.min.js"></script>
+		<script type="text/javascript">
+			jQuery(function($) {
+			    var j = $;
+				$('.input-mask-date').mask('9999-99-99');
+				
+				$("#j_interestticketapply_form").on("submit", function(e) {
+					var _form = $(this);
+					var _dtStartStr = _form.find("[name=dtStartStr]");
+				    var _vcName = _form.find("[name=vcInterestTicketAccountName]");
+					var _dtEndStr = _form.find("[name=dtEndStr]");
+					var _numApplyAmt = _form.find("[name=numApplyAmt]");
+					var _numAlertAmt = _form.find("[name=numAlertAmt]");
+					var _ticket = _form.find("[name=ticket]");
+					var _vcInterestTicketAccountLogo = _form.find("[name=vcInterestTicketAccountLogo]");
+					
+					if(_vcName.val()==""){
+						alert("活动名称不能为空");
+						return false;
+					}
+					if(_dtStartStr.val()==""){
+						alert("活动开始时间不能为空");
+						return false;
+					}
+					if(_dtEndStr.val()==""){
+						alert("活动结束时间不能为空");
+						return false;
+					}
+					var reg = /^[0-9]+([.]{1}[0-9]{1,2})?$/;
+					if(_numApplyAmt.val()==""){
+						alert("最大预算不能为空");
+						return false;
+					}else{
+						if(!reg.test(_numApplyAmt.val())){
+							alert("最大预算不符合规则");
+							return false;
+						}
+					}
+					var a = /^[0-9]+([.]{1}[0-9]{1,2})?$/;
+					if(_numAlertAmt.val()==""){
+					   alert("预警金额不能为空");
+					   return false;
+					}else{
+					 if(!a.test(_numAlertAmt.val())){
+							alert("预警金额不符合规则");
+							return false;
+						}
+					}
+					if(_vcInterestTicketAccountLogo.val()==""){
+						alert("活动加息券标识不能为空");
+						return false;
+					}
+					
+					if(_ticket.val() == ""){
+						 alert("加息券不能为空");
+					     return false;
+					}else{
+					   var ticket=document.getElementsByName("ticket");
+						 for(var i=0;i<ticket.length;i++){
+					          for(var j=i+1;j<ticket.length;j++){
+					            if(ticket[i].value==ticket[j].value){
+					                alert("加息券不能重复录入");
+					                return false;
+					            }
+					          }
+      					 }
+					}
+				});
+				
+				var jRows = $("#j_rows");
+				var currentIndex = 0;
+				var jOriginalRow = jRows.find(".form-group").clone();
+				function syncStatus() {
+					var jGroups = jRows.find(".form-group");
+					var count = jGroups.length;
+					jGroups.find('.j-delete')[count === 1 ? 'hide' : 'show']();
+				};
+				
+				jRows.on("click", ".j-add", function(e) {
+					e.preventDefault();
+					jOriginalRow.clone().attr("theindex", ++currentIndex).appendTo(jRows);
+					syncStatus()
+				});
+				jRows.on("click", ".j-delete", function(e) {
+					e.preventDefault();
+					var jthis = $(this);
+					jthis.parents(".form-group").remove();
+					syncStatus()
+				});
+				syncStatus()
+				jRows.on("change", "[name=rate]", function(e){
+					var jthis = $(this);
+					var id  =  jthis.val();
+					var jmaxTime = jthis.siblings("[name=maxTime]");
+					var jdays = jthis.siblings("[name=days]");
+					var jmaxRate = jthis.siblings("[name=maxRate]");
+					var jticket = jthis.siblings("[name=ticket]");
+					var option = '<option value="">--请选择--</option>';
+					jmaxTime.html(option);
+					jdays.html(option);
+					jmaxRate.html(option);
+					jticket.val("");
+					
+					j.getJSON("$!{www}/interestticketapply/rates?id="+id, function(data) {
+						if(data && data.result && data.result.length){
+							var html = [];
+							html.push('<option value="">--请选择--</option>')
+							for (var i=0,l=data.result.length; i<l; i++) {
+								html.push('<option value="'+ data.result[i].id+'">'+  data.result[i].imaxInterestTime +'</option>');
+							}
+							jmaxTime.html(html.join(""));
+							console.log(data);
+						}
+					});
+					
+				});
+				
+				jRows.on("change", "[name=maxTime]", function(e){
+					var jthis = $(this);
+				    var id  =  jthis.val();
+					var jdays = jthis.siblings("[name=days]");
+					var jmaxRate = jthis.siblings("[name=maxRate]");
+					var jticket = jthis.siblings("[name=ticket]");
+					
+					var option = '<option value="">--请选择--</option>';
+					jmaxRate.html(option);
+					jdays.html(option);
+					jticket.val("");
+					
+					j.getJSON("$!{www}/interestticketapply/interestTime?id="+id, function(data) {
+						if(data && data.result && data.result.length){
+							var html = [];
+							html.push('<option value="">--请选择--</option>')
+							for (var i=0,l=data.result.length; i<l; i++) {
+								html.push('<option value="'+ data.result[i].id+'">'+ data.result[i].numMaxInterestRate.toFixed(2) +'</option>');
+							}
+							jmaxRate.html(html.join(""));
+							console.log(data);
+						}
+					});
+				});
+				
+				jRows.on("change", "[name=maxRate]", function(e){
+					var jthis = $(this);
+				    var id  =  jthis.val();
+					var jdays = jthis.siblings("[name=days]");
+					var jticket = jthis.siblings("[name=ticket]");
+					var option = '<option value="">--请选择--</option>';
+					jdays.html(option);
+					jticket.val("");
+					
+					j.getJSON("$!{www}/interestticketapply/maxRate?id="+id, function(data) {
+							if(data && data.result && data.result.length){
+								var html = [];
+								html.push('<option value="">--请选择--</option>')
+								for (var i=0,l=data.result.length; i<l; i++) {
+									html.push('<option value="'+ data.result[i].id +'">'+ data.result[i].iexpired +'</option>');
+								}
+								jdays.html(html.join(""));
+								console.log(data);
+							}
+						});
+				});
+				
+				jRows.on("change", "[name=days]", function(e){
+					var jthis = $(this);
+					var id  =  jthis.val();
+					var jticket = jthis.siblings("[name=ticket]");
+					jticket.val("");
+					j.getJSON("$!{www}/interestticketapply/iexpired?id="+id, function(data) {
+						if(data && data.ticket){
+							jticket.val(data.ticket.id);
+						}
+					});
+				});
+				
+				
+			});
+		</script>

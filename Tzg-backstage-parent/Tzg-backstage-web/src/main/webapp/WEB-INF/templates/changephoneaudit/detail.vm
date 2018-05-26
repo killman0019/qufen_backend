@@ -1,0 +1,109 @@
+<div class="main-content">
+    <div class="breadcrumbs" id="breadcrumbs">
+        <script type="text/javascript">
+            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+        </script>
+
+        <ul class="breadcrumb">
+            <li>
+                <i class="icon-home home-icon"></i>
+                <a href="${www}/main">主页</a>
+            </li>
+
+            <li>
+                <a href="${www}/changephoneaudit">投资人手机号码更换审核列表</a>
+            </li>
+            <li class="active">投资人手机号码更换审核单</li>
+        </ul><!-- .breadcrumb -->
+
+        <div class="nav-search" id="nav-search">
+            <form class="form-search">
+						<span class="input-icon">
+							<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+							<i class="icon-search nav-search-icon"></i>
+						</span>
+            </form>
+        </div><!-- #nav-search -->
+    </div>
+
+    <div class="page-content">
+
+        <div class="page-header">
+            <h1>投资人手机号码更换审核单</h1>
+        </div>
+        <form action="${www}/changephoneaudit/update?id=$!{param.id}" method="post" class="form-horizontal">
+            <div class="row">
+                <div class="col-xs-12 col-md-4">
+
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">姓名：</label>
+                        <div class="col-md-8 col-sm-8">
+                            $!{loginaccount.vcName}
+                        </div>
+                    </div>
+                    <!--<div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">旧手机号：</label>
+                        <div class="col-md-8 col-sm-8">
+                            $!{loginaccount.vcPhone}
+                        </div>
+                    </div>-->
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">手机号：</label>
+                        <div class="col-md-8 col-sm-8">
+                            $!{param.vcPhone}
+                        </div>
+                    </div>
+                     <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">操作类型：</label>
+                        <div class="col-md-8 col-sm-8">
+                                                                                                 更换手机号码
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">当前审核流程：</label>
+                        <div class="col-md-8 col-sm-8">
+                            #if($param.vcCurrentFlow==1)总经理
+                            #elseif($param.vcCurrentFlow==2)部门经理
+                            #elseif($param.vcCurrentFlow==3)主管
+                            #elseif($param.vcCurrentFlow==4)员工
+                            #else $!{param.vcCurrentFlow}
+                            #end
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">审核状态：</label>
+                        <div class="col-md-8 col-sm-8">
+                           #if($param.istate==1) 刚录入 
+		                	#elseif($param.istate==2) 审核中
+		                	#elseif($param.istate==3) 审核通过
+		                	#elseif($param.istate==4) 审核未通过
+		                	#end
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">理由：</label>
+                        <div class="col-md-8 col-sm-8">
+                            $!{param.vcReason}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">创建时间：</label>
+                        <div class="col-md-8 col-sm-8">
+                           #if( $param.dtCreate)$dateTool.format("yyyy-MM-dd HH:mm:ss", $!{param.dtCreate}) #end 
+                        </div>
+                    </div>
+                    
+                 </div>
+            </div>
+            <div class="clearfix form-actions">
+                <div class="col-sm-offset-2 col-md-9">
+                  
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		            <button class="btn btn-info" type="button" onclick="javascript:history.go(-1);">
+		                <i class="icon-arrow-left bigger-110"></i>返回
+		            </button>
+                </div>
+            </div>
+    </div>
+</div>
+

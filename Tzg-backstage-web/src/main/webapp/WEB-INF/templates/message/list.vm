@@ -1,0 +1,95 @@
+<div class="main-content">
+    <div class="breadcrumbs" id="breadcrumbs">
+        <script type="text/javascript">
+            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+        </script>
+
+        <ul class="breadcrumb">
+            <li>
+                <i class="icon-home home-icon"></i>
+                <a href="${www}/main">主页</a>
+            </li>
+
+            <li class="active">Message列表</li>
+        </ul><!-- .breadcrumb -->
+
+        <div class="nav-search" id="nav-search">
+            <form class="form-search">
+						<span class="input-icon">
+							<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+							<i class="icon-search nav-search-icon"></i>
+						</span>
+            </form>
+        </div><!-- #nav-search -->
+    </div>
+	<div class="page-content">
+		<div class="page-header">
+		    <h1>Message列表</h1>
+		</div>
+		<div class="container-fluid">
+		    <div class="dataTables_wrapper">
+		        <div class="row">
+		            <div class="col-sm-11">
+		                <form class="form-inline" role="form">
+		                    <div class="form-group">
+		                        <label>名称：</label>
+		                        <input type="text" name="vcName" value="">
+		                    </div>
+		                    <div class="form-group">
+		                        <button class="btn btn-xs btn-primary" type="submit">查询</button>
+		                    </div>
+		                </form>
+		            </div>
+                    <div class="col-sm-1">
+                        <a href="$!{www}/message/new" class="btn btn-success btn-xs">添加</a>
+                    </div>
+		        </div>
+		        <table class="table table-striped table-bordered table-hover dataTable">
+		            <thead>
+		            <tr>
+		                <th>id</th>
+		                <th>imanageId</th>
+		                <th>iloginAccountId</th>
+		                <th>vcTitle</th>
+		                <th>vcSubTitle</th>
+		                <th>vcContent</th>
+		                <th>dtPublish</th>
+		                <th>1 -- 未读； 2 -- 已读。</th>
+		             
+		                <th>操作</th>
+		               
+		            </tr>
+		            </thead>
+		            <tbody>
+		                #foreach($row in $result.rows)
+		                <tr>
+		                	<td> $!{row.id} </td>
+		                	<td> $!{row.imanageId} </td>
+		                	<td> $!{row.iloginAccountId} </td>
+		                	<td> $!{row.vcTitle} </td>
+		                	<td> $!{row.vcSubTitle} </td>
+		                	<td> $!{row.vcContent} </td>
+		                	<td> $!{row.dtPublish} </td>
+		                	<td> $!{row.istate} </td>
+		                    <td><a href="$!{www}/message/find?id=$!{row.id}">修改</a>   ｜
+		                        <a onclick="delcfm()" href="$!{www}/message/delete?id=$!{row.id}">删除</a>
+		                    </td>
+		                </tr>
+		                #end
+		            </tbody>
+		        </table>
+		        <div class="row">
+		            <div class="col-sm-12">
+		                <div class="dataTables_paginate paging_bootstrap">
+		                    <ul class="pagination">
+		                    	#set($pageRequestURL="$!{www}/message?pageIndex=[PAGINATION_PAGE_INDEX]#if($!{result.queryParameters})&$!{result.queryParameters}#end")
+		                    	#paginationHelper($result $pageRequestURL)
+		                    </ul>
+		                </div>
+		            </div>
+		       </div>
+		       
+		    </div>
+		</div>
+    </div><!-- /.page-content -->
+</div><!-- /.main-content -->

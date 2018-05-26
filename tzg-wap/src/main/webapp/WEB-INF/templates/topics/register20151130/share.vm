@@ -1,0 +1,53 @@
+#set($layout = "/layout/blank.vm")
+#set($topicStaticPath = "$!{basePath}/assets/pics/topics/register20151130")
+#set($staticVersion = "4")
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>咳咳咳，我要发红包了！</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="renderer" content="webkit">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telphone=no,email=no">
+<meta name="basepath" content="$!{basePath}" id="j_basepath">
+<meta name="staticpath" content="$!{staticPath}" id="j_staticpath">
+<meta name="staticversion" content="$!{staticVersion}" id="j_staticversion">
+<link rel="stylesheet" href="$!{topicStaticPath}/style.css?v=$!{staticVersion}">
+</head>
+<body class="bg-gray">
+
+<div class="wxshare"><img src="$!{topicStaticPath}/images/wxshare-title.png" alt="咳咳咳，我要发红包了！"></div>
+
+<div class="topic-container">
+	<div class="topic-banner -share-page"><img src="$!{topicStaticPath}/images/bg.png?v=$!{staticVersion}" alt="铜掌柜" class="main-img"></div>
+	<div class="share-banner">
+		<div class="red-account"><em>188</em>元</div>
+		<img src="$!{topicStaticPath}/images/share-banner.png?v=$!{staticVersion}" alt="注册成功最高可领取60元红包">
+	</div>
+
+	<div class="redpacket-hint">红包已经到账，请下载APP使用</div>
+	<div class="form-items">
+		<div class="form-item"><a href="$!{basePath}/subject/page" class="btn">立即投资</a></div>
+		<div class="form-item" style="margin-top:5.6%;margin-bottom:10%"><a href="https://app.tzg.cn/down" class="btn -second">下载APP 理财更方便</a></div>
+	</div>
+
+	<div class="share-popup"><div class="share-popup-inner"><img src="$!{topicStaticPath}/images/share-popup.png?v=$!{staticVersion}" alt="分享邀请好友得20元红包"></div></div>
+</div>
+
+<script>
+if (self.location.hash == "#forShare") {
+	self.location.replace("invite" + self.location.search);
+}
+self.location.href = "#forShare";
+</script>
+
+<div style="position:fixed;left:-150px;width:100px;">
+##百度统计
+<img src="$sc.getBaidu($request,$response,'b274beec7e93e435fc242fc634bb5c73')" width="0" height="0" />
+##cnzz统计
+<img src="$sc.getCnzz($request,$response,1254699603)" width="0" height="0" />
+</div>
+
+</body>
+</html>

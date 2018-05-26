@@ -1,0 +1,114 @@
+<div class="main-content">
+    <div class="breadcrumbs" id="breadcrumbs">
+        <script type="text/javascript">
+            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+        </script>
+
+        <ul class="breadcrumb">
+            <li>
+                <i class="icon-home home-icon"></i>
+                <a href="${www}/main">主页</a>
+            </li>
+
+            <li class="active">用户信息列表</li>
+        </ul><!-- .breadcrumb -->
+
+        <div class="nav-search" id="nav-search">
+            <form class="form-search">
+						<span class="input-icon">
+							<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+							<i class="icon-search nav-search-icon"></i>
+						</span>
+            </form>
+        </div><!-- #nav-search -->
+    </div>
+	<div class="page-content">
+		<div class="page-header">
+		    <h1>用户信息列表</h1>
+		</div>
+		<div class="container-fluid">
+		    <div class="dataTables_wrapper">
+		        <div class="row">
+		            <div class="col-sm-11">
+		                <form class="form-inline" role="form">
+		                    <div class="form-group">
+		                        <label>用户昵称：</label>
+		                        <input type="text" name="userName" value="">
+		                    </div>
+		                    <div class="form-group">
+		                        <button class="btn btn-xs btn-primary" type="submit">查询</button>
+		                    </div>
+		                </form>
+		            </div>
+                    <div class="col-sm-1">
+                        <a href="$!{www}/user/new" class="btn btn-success btn-xs">添加</a>
+                    </div>
+		        </div>
+		        <table class="table table-striped table-bordered table-hover dataTable">
+		            <thead>
+		            <tr>
+		                <th>用户ID</th>
+		                <th>昵称</th>
+		                <th>手机号</th>
+		                <th>粉丝数量</th>
+		                <th>用户类型</th>
+		                <th>注册时间</th>	
+		                <th>用户状态</th>	             
+		                <th>操作</th>
+		               
+		            </tr>
+		            </thead>
+		            <tbody>
+		                #foreach($row in $result.rows)
+		                <tr>
+		                	<td> $!{row.userId} </td>
+		                	<td> $!{row.userName} </td>
+		                	<td> $!{row.mobile} </td>
+		                	<!--1-普通用户；2-项目方；3-评测机构；4-机构用户-->
+		                	#if($!{row.userType} ==1)
+		                	<td>普通用户</td>	
+		                	#elseif($!{row.userType} ==2)
+		                	<td>项目方</td>
+		                	#elseif($!{row.userType} ==3)
+		                	<td>评测机构</td>
+		                	#elseif($!{row.userType} ==4)
+		                	<td>机构用户</td>
+		                	#else
+		                	<td>普通用户</td>	
+		                	#end	                	
+		                	<td> $!{row.fansNum} </td>	
+		                	<td> $!{row.createTimeStr} </td>
+		                	#if($!{row.status}==1)
+		                	<td>有效</td>	
+		                	#else
+		                	<td>已禁用</td>	
+		                	#end
+		                	
+		                    <td><a href="$!{www}/user/find?id=$!{row.userId}">详情</a>   ｜
+		                    
+		                    #if($!{row.status}==1)
+		                	  <a  href="$!{www}/user/delete?id=$!{row.userId}">禁用</a>
+		                	#else
+		                	  <a  href="$!{www}/user/active?id=$!{row.userId}">激活</a>	
+		                	#end
+		                      
+		                    </td>
+		                </tr>
+		                #end
+		            </tbody>
+		        </table>
+		        <div class="row">
+		            <div class="col-sm-12">
+		                <div class="dataTables_paginate paging_bootstrap">
+		                    <ul class="pagination">
+		                    	#set($pageRequestURL="$!{www}/user?pageIndex=[PAGINATION_PAGE_INDEX]#if($!{result.queryParameters})&$!{result.queryParameters}#end")
+		                    	#paginationHelper($result $pageRequestURL)
+		                    </ul>
+		                </div>
+		            </div>
+		       </div>
+		       
+		    </div>
+		</div>
+    </div><!-- /.page-content -->
+</div><!-- /.main-content -->

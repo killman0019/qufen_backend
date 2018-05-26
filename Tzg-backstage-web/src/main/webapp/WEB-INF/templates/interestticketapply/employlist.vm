@@ -1,0 +1,99 @@
+<script src="${www}/js/my97DatePicker/WdatePicker.js"></script>
+<div class="main-content">
+    <div class="breadcrumbs" id="breadcrumbs">
+        <script type="text/javascript">
+            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+        </script>
+
+        <ul class="breadcrumb">
+            <li>
+                <i class="icon-home home-icon"></i>
+                <a href="${www}/main">主页</a>
+            </li>
+            <li>
+			 <a href="${www}/interestticketapply/publishlist">发放加息券</a>
+			</li>
+        </ul><!-- .breadcrumb -->
+
+        <div class="nav-search" id="nav-search">
+            <form class="form-search">
+						<span class="input-icon">
+							<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+							<i class="icon-search nav-search-icon"></i>
+						</span>
+            </form>
+        </div><!-- #nav-search -->
+    </div>
+	<div class="page-content">
+		<div class="page-header">
+		    <h1>加息券已用列表</h1>
+		</div>
+		<div class="container-fluid">
+		    <div class="dataTables_wrapper">
+		        <div class="row">
+		            <div class="col-sm-11">
+		                <form class="form-inline" role="form">
+		                	<input type="text" name="applyid"  value="$!{query.applyid}" />
+		                   <div class="form-group">
+		                        <label>手机号码：</label>
+								<input type="text" name="vcPhone"  value="$!{query.vcPhone}" />
+		                   </div>
+		                   <div class="form-group">
+		                        <label>发放日期：</label>
+		                        <input type="text" name="dtReceiveBegin"  onFocus="WdatePicker({lang:'zh-cn'})" value="$!{query.dtReceiveBegin}" class="input-date">
+								-
+								<input type="text" name="dtReceiveEnd"  onFocus="WdatePicker({lang:'zh-cn'})" value="$!{query.dtReceiveEnd}" class="input-date">
+		                    </div>
+		                    <div class="form-group">
+		                        <button class="btn btn-xs btn-primary" type="submit">查询</button>
+		                    </div>
+		                </form>
+		            </div>
+		              <div class="col-sm-1">
+                        <a href="$!{www}/interestticketapply/grantlist" class="btn btn-success btn-xs">返回</a>
+                    </div>
+		        </div>
+		        <table class="table table-striped table-bordered table-hover dataTable">
+		            <thead>
+		            <tr>
+		                <th>发放时间</th>
+		                <th>手机号码</th>
+		                <th>加息券</th>
+		                <th>发放状态</th>
+		                <th>使用时间</th>
+		            </tr>
+		            </thead>
+		            <tbody>
+		                #foreach($row in $result.rows)
+		                <tr>
+		                	<td> $!{row.dtReceiveStr} </td>
+		                	<td> $!{row.vcPhone} </td>
+		                	<td> $!{row.numInterestRate} </td>
+		                	<td> #if($row.istatus==1)
+		                			发放成功
+		                		#elseif($row.istatus==2)
+		                			已过期
+		                		#elseif($row.istatus==3)
+		                		              已使用	
+		                		#end	
+		                	 </td>
+		                	<td> $!{row.dtModifyStr} </td>
+		                </tr>
+		                #end
+		            </tbody>
+		        </table>
+		        <div class="row">
+		            <div class="col-sm-12">
+		                <div class="dataTables_paginate paging_bootstrap">
+		                    <ul class="pagination">
+		                    	#set($pageRequestURL="$!{www}/interestticketapply/employlist?applyid=$!{query.applyid}&pageIndex=[PAGINATION_PAGE_INDEX]#if($!{result.queryParameters})&$!{result.queryParameters}#end")
+		                    	#paginationHelper($result $pageRequestURL)
+		                    </ul>
+		                </div>
+		            </div>
+		       </div>
+		       
+		    </div>
+		</div>
+    </div><!-- /.page-content -->
+</div><!-- /.main-content -->

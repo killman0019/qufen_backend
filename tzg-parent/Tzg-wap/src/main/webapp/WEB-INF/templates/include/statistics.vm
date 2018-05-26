@@ -1,0 +1,7 @@
+## 统计代码
+<div style="position:fixed;left:-150px;width:100px;">
+##百度统计
+<img src="$sc.getBaidu($request,$response,'b274beec7e93e435fc242fc634bb5c73')" width="0" height="0" />
+##cnzz统计
+<img src="$sc.getCnzz($request,$response,1254699603)" width="0" height="0" />
+</div>

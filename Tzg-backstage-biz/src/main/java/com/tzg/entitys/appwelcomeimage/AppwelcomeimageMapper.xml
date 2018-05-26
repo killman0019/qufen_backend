@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.appwelcomeimage.AppwelcomeimageMapper">	
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.appwelcomeimage.Appwelcomeimage">
+		<result property="id" jdbcType="INTEGER" column="id"/>
+		<result property="vcFileName" jdbcType="VARCHAR" column="vcFileName"/>
+		<result property="iplatform" jdbcType="INTEGER" column="iPlatform"/>
+		<result property="ichannel" jdbcType="INTEGER" column="iChannel"/>
+		<result property="iheight" jdbcType="INTEGER" column="iHeight"/>
+		<result property="iwidth" jdbcType="INTEGER" column="iWidth"/>
+		<result property="vcUrl" jdbcType="VARCHAR" column="vcUrl"/>
+		<result property="isortNo" jdbcType="INTEGER" column="iSortNo"/>
+		<result property="ienable" jdbcType="INTEGER" column="iEnable"/>
+    </resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+        id ,vcFileName ,iPlatform ,iChannel ,iHeight ,iWidth ,vcUrl ,iSortNo ,iEnable 
+	    ]]>
+	</sql>
+	
+	<insert id="save" parameterType="com.tzg.entitys.appwelcomeimage.Appwelcomeimage" useGeneratedKeys="true" keyProperty="id">
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+	      SELECT LAST_INSERT_ID() AS id
+	    </selectKey>
+	<![CDATA[
+		INSERT INTO tbappwelcomeimage (
+        	vcFileName ,
+        	iPlatform ,
+        	iChannel ,
+        	iHeight ,
+        	iWidth ,
+        	vcUrl ,
+        	iSortNo ,
+        	iEnable 
+		) VALUES (
+        	#{vcFileName,jdbcType=VARCHAR} ,
+        	#{iplatform,jdbcType=INTEGER} ,
+        	#{ichannel,jdbcType=INTEGER} ,
+        	#{iheight,jdbcType=INTEGER} ,
+        	#{iwidth,jdbcType=INTEGER} ,
+        	#{vcUrl,jdbcType=VARCHAR} ,
+        	#{isortNo,jdbcType=INTEGER} ,
+        	#{ienable,jdbcType=INTEGER} 
+		)
+	]]>
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.appwelcomeimage.Appwelcomeimage">
+		UPDATE tbappwelcomeimage
+		<set>
+			<if test="vcFileName != null">
+	        vcFileName = #{vcFileName,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="iplatform != null">
+	        iPlatform = #{iplatform,jdbcType=INTEGER} ,
+	        </if>
+			<if test="ichannel != null">
+	        iChannel = #{ichannel,jdbcType=INTEGER} ,
+	        </if>
+			<if test="iheight != null">
+	        iHeight = #{iheight,jdbcType=INTEGER} ,
+	        </if>
+			<if test="iwidth != null">
+	        iWidth = #{iwidth,jdbcType=INTEGER} ,
+	        </if>
+			<if test="vcUrl != null">
+	        vcUrl = #{vcUrl,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="isortNo != null">
+	        iSortNo = #{isortNo,jdbcType=INTEGER} ,
+	        </if>
+			<if test="ienable != null">
+	        iEnable = #{ienable,jdbcType=INTEGER} 
+	        </if>
+	    </set>
+		WHERE 
+	        id = #{id,jdbcType=INTEGER} 
+	</update>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbappwelcomeimage WHERE
+        id = #{id} 
+	]]>
+	</delete>
+    
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbappwelcomeimage 
+		WHERE 
+        id = #{id} 
+	]]>
+	</select>
+	
+	<select id="findByMap" resultMap="BaseResultMap" parameterType="java.util.Map">
+	    SELECT <include refid="columns"/> 
+		FROM tbappwelcomeimage 
+		WHERE iEnable = 1
+       <include refid="queryWhere"/> 
+       ORDER BY iSortNo ASC, id DESC
+       limit 1
+	</select>
+	 
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from tbappwelcomeimage where 1=1
+		<include refid="queryWhere"/>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbappwelcomeimage where 1=1
+		<include refid="queryWhere"/> 
+	    <![CDATA[ ORDER BY id DESC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<sql id="queryWhere">
+		<if test="id != null and id.trim() != ''">
+		and id = #{id}
+		</if>
+		<if test="vcFileName != null and vcFileName.trim() != ''">
+		and vcFileName = #{vcFileName}
+		</if>
+		<if test="vcFileNameP != null and vcFileNameP.trim() != ''">
+		and vcFileName like '%${vcFileNameP}%'
+		</if>
+		<if test="iplatform != null and iplatform.trim() != ''">
+		and iPlatform = #{iplatform}
+		</if>
+		<if test="ichannel != null and ichannel.trim() != ''">
+		and iChannel = #{ichannel}
+		</if>
+		<if test="iheight != null and iheight.trim() != ''">
+		and iHeight = #{iheight}
+		</if>
+		<if test="iwidth != null and iwidth.trim() != ''">
+		and iWidth = #{iwidth}
+		</if>
+		<if test="vcUrl != null and vcUrl.trim() != ''">
+		and vcUrl = #{vcUrl}
+		</if>
+		<if test="isortNo != null and isortNo.trim() != ''">
+		and iSortNo = #{isortNo}
+		</if>
+		<if test="ienable != null and ienable.trim() != ''">
+		and iEnable = #{ienable}
+		</if>
+		<if test="iheightBegin != null and iheightBegin.trim() != ''">
+		and iHeight >= #{iheightBegin}
+		</if>
+		<if test="iheightEnd != null and iheightEnd.trim() != ''">
+		and iHeight &lt;= #{iheightEnd}
+		</if>
+	</sql>
+</mapper>
+
+

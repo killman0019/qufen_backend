@@ -1,0 +1,438 @@
+<script src="${www}/js/my97DatePicker/WdatePicker.js"></script>
+<div class="main-content">
+    <div class="breadcrumbs" id="breadcrumbs">
+        <script type="text/javascript">
+            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+        </script>
+
+        <ul class="breadcrumb">
+            <li>
+                <i class="icon-home home-icon"></i>
+                <a href="${www}/main">主页</a>
+            </li>
+
+            <li>
+                <a href="${www}/interestticketapply/list">加息券申请列表</a>
+            </li>
+            <li class="active">加息券申请</li>
+        </ul><!-- .breadcrumb -->
+
+        <div class="nav-search" id="nav-search">
+            <form class="form-search">
+						<span class="input-icon">
+							<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+							<i class="icon-search nav-search-icon"></i>
+						</span>
+            </form>
+        </div><!-- #nav-search -->
+    </div>
+
+    <div class="page-content">
+        <div class="page-header">
+            <h1>修改加息券申请</h1>
+        </div>
+        <form action="${www}/interestticketapply/update" method="post" class="form-horizontal" id="j_interestticketapply_form">
+            <div class="row">
+            	<input type="hidden" name="iactionType" value="$!{param.iactionType}">
+            	<input type="hidden" name="id" value="$!{param.id}">
+                <div class="col-xs-12 col-md-12">
+                        <div class="form-group">
+	                        <label class="col-md-2 col-sm-2 control-label">*活动名称：</label>
+	                        <div class="col-md-4 col-sm-4  ">
+	                            <input type="text" class="col-sm-8" name="vcInterestTicketAccountName" value="$!{param.vcInterestTicketAccountName}"/>
+	                        </div>
+	                        <div class="col-md-6 col-sm-6">
+	                            <label>*活动起止日期：</label>
+	                             <input type="text" class="input-mask-date"  name="dtStartStr" value="$!{param.dtStartStr}" />
+								-
+								<input type="text" class="input-mask-date"  name="dtEndStr" value="$!{param.dtEndStr}" />
+	                        </div>
+	                    </div>
+                        <div class="form-group">
+	                        <label class="col-md-2 col-sm-2 control-label">*最大预算：</label>
+	                        <div class="col-md-4 col-sm-4  ">
+	                            <input type="text" class="col-sm-8" id="numApplyAmt" name="numApplyAmt"  readonly="readonly"  value="$!{param.numApplyAmt}"/>&nbsp; 元
+	                        </div>
+	                        <div class="col-md-6  col-sm-6">
+	                        &nbsp;&nbsp;&nbsp;
+	                        	<label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;截止日期：</label>
+	                            <input type="text" class="input-mask-date" name="dtExpireStr" value="$!{param.dtExpireStr}"/>&nbsp;
+	                        </div>
+	                    </div>
+	                    <div class="form-group">
+	                    	<label class="col-md-2 control-label">*预警金额：</label>
+	                    	<div class="col-md-4">
+	                        	<input type="text" class="col-sm-8" name="numAlertAmt" value="$!{param.numAlertAmt}"/>
+	                    	</div>
+	                    	<label class="col-md-6">
+	                      	<input type="checkbox" value="1"
+                                #if($!{param.iSuperBudget} ==1)
+                                  	checked
+                               	#end
+                                name="iSuperBudget">&nbsp;&nbsp;超预算补发
+	                    </label>
+	                    </div>
+			            &nbsp;&nbsp;&nbsp;
+			                 <div class="panel panel-default">
+						  <div class="panel-heading">奖励细则</div>
+							  <div class="panel-body">
+					            <div id="j_rows">
+					             #set($num=0)
+					             #foreach($respond in $respondList)
+					            	#set($num=$num+1)
+						            <div class="form-group" theindex="${num}" maxindex="$!{maxRow}" >
+						             	<label class="col-md-1 control-label"></label>
+				                        <div class="col-md-10">
+				                                                                                                 利率
+				                        	<select style="width:100px;" name="rate" >
+				                        	<option value="">--请选择--</option>
+				                        	    #foreach($row in $resultList)
+				                        	    	<option #if($respond.iinterestTicketId ==$row.id ) selected="selected"#end value="$!{row.id}">$!{row.numInterestRate}</option>  
+				                        	    #end
+				                        	</select>&nbsp;%&nbsp;最大加息天数
+				                        	<select style="width:100px;" name="maxTime">
+				                        	<option value="">--请选择--</option>
+				                        	 #foreach($row in $resultList)
+				                        	    	<option #if($respond.iinterestTicketId ==$row.id ) selected="selected" #end value="$!{row.id}">$!{row.imaxInterestTime}</option>
+				                        	  #end
+				                        	</select>&nbsp;最大加息金额 
+				                        	<select style="width:100px;" name="maxRate">
+				                        	<option value="">--请选择--</option>
+				                        	 #foreach($row in $resultList)
+				                        	    	<option #if($respond.iinterestTicketId ==$row.id ) selected="selected" #end value="$!{row.id}">$!{row.numMaxInterestRate}</option>
+				                        	  #end
+				                        	</select>&nbsp;元&nbsp;有效天数
+				                            <select style="width:100px;" name="days">
+				                            <option value="">--请选择--</option>
+				                             #foreach($row in $resultList)
+				                        	    	<option #if($respond.iinterestTicketId ==$row.id ) selected="selected" #end value="$!{row.id}">$!{row.iexpired}</option>
+				                        	  #end
+				                        	</select>&nbsp;*
+				                            <input type="text" style="width:70px;" name="look"  value="$!{respond.itotalCount}"/> 张
+				                        	<input type="text" style="width:90px;" name="subtotal" disabled="disabled"  value="$!{respond.totalAmount}"/> 元
+				                        	<input type="hidden" name="budgetAmt" value="$!{respond.numWorth}" />
+				                        	<input type="hidden" name="ticketid" value="$!{respond.iinterestTicketId}" />
+				                        	<input type="hidden" name="ticket" value="$!{respond.iinterestTicketId}_$!{respond.itotalCount}"  />
+				                        	<input type="button"  value="增加" class="j-add" />
+				                        	<input type="button"  value="删除" class="j-delete" style="display:none" />
+				                   		</div>
+				                    </div>
+				                    #end
+								 </div>
+							  </div>
+						</div>
+			       
+                    <div class="red">$!{msg}</div>
+               	</div>
+            </div>
+            <div class="clearfix form-actions">
+                <div class="col-sm-offset-2 col-md-9">
+		            <button class="btn btn-info" type="button" onclick="javascript:history.go(-1);">
+		                <i class="icon-arrow-left bigger-110"></i>返回
+		            </button>
+		            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		            <button class="btn btn-info" type="submit">
+                        <i class="icon-ok bigger-110"></i> 提交
+                    </button>
+                </div>
+            </div>
+</form>
+    </div><!-- /.page-content -->
+</div><!-- /.main-content -->
+
+<script src="${www}/js/jquery.maskedinput.min.js"></script>
+		<script type="text/javascript">
+			jQuery(function($) {
+				var j = $;
+				$('.input-mask-date').mask('9999-99-99');
+				
+				$("#j_interestticketapply_form").on("submit", function(e) {
+					var _form = $(this);
+					var _dtStartStr = _form.find("[name=dtStartStr]");
+					var _vcName = _form.find("[name=vcInterestTicketAccountName]");
+					var _dtEndStr = _form.find("[name=dtEndStr]");
+					var _numApplyAmt = _form.find("[name=numApplyAmt]");
+					var _numAlertAmt = _form.find("[name=numAlertAmt]");
+					var _ticketid = _form.find("[name=ticketid]");
+					var _vcInterestTicketAccountLogo = _form.find("[name=vcInterestTicketAccountLogo]");
+					
+					if(_vcName.val()==""){
+						alert("活动名称不能为空");
+						return false;
+					}
+					if(_dtStartStr.val()==""){
+						alert("活动开始时间不能为空");
+						return false;
+					}
+					if(_dtEndStr.val()==""){
+						alert("活动结束时间不能为空");
+						return false;
+					}
+					if(_numApplyAmt.val()==""){
+						alert("最大预算金额不能为空");
+						return false;
+					}
+ 					var a = /^[0-9]+([.]{1}[0-9]{1,2})?$/;
+					if(_numAlertAmt.val()==""){
+					   alert("预警金额不能为空");
+					   return false;
+					}else{
+					 if(!a.test(_numAlertAmt.val())){
+							alert("预警金额不符合规则");
+							return false;
+						}
+					}
+					if(_ticketid.val() == ""){
+						 alert("加息券不能为空");
+					     return false;
+					}else{
+					   var ticketid=document.getElementsByName("ticketid");
+						 for(var i=0;i<ticketid.length;i++){
+					          for(var j=i+1;j<ticketid.length;j++){
+					            if(ticketid[i].value==ticketid[j].value){
+					                alert("加息券不能重复录入");
+					                return false;
+					            }
+					          }
+      					 }
+					}
+				});
+				var jRows = $("#j_rows");
+				var currentIndex = 0;
+				var jOriginalRow = jRows.find(".form-group:first").clone();
+				jOriginalRow.find(":text").val("");
+				jOriginalRow.find("select").html('<option value="" selected>---请选择---</option>').val('');
+				
+				function syncStatus() {
+					var jGroups = jRows.find(".form-group");
+					var count = jGroups.length;
+					jGroups.find('.j-delete')[count === 1 ? 'hide' : 'show']();
+				};
+				
+				jRows.on("click", ".j-add", function(e) {
+					e.preventDefault();
+					var jOriginalRowClone = jOriginalRow.clone();
+					jOriginalRowClone.attr("maxindex", ++currentIndex).appendTo(jRows);
+					jOriginalRowClone.find(":text, select").val("");
+					syncStatus()
+					loadSelectOptions.call(jOriginalRowClone.find("[name=rate]"))
+					
+				});
+				jRows.on("click", ".j-delete", function(e) {
+					e.preventDefault();
+					var applyAmt = $("#numApplyAmt");
+					var jthis = $(this);
+					var jsubtotal = jthis.siblings("[name=subtotal]");
+					if(jsubtotal.val() != ""){
+						var amount=  parseFloat(applyAmt.val()) - parseFloat(jsubtotal.val());
+						amount=amount.toFixed(2);
+						applyAmt.val(amount);
+					}
+					jthis.parents(".form-group").remove();
+					syncStatus()
+				});
+				syncStatus()
+				
+				
+			 function loadSelectOptions() {
+					var jthis = $(this);
+					if (jthis.data('loaded') == 'yes') {
+						return;
+					}
+					j.getJSON("$!{www}/interestticketapply/findRate?ivalid=1", function(data) {
+						if(data && data.result && data.result.length){
+							var html = [];
+							html.push('<option value="">--请选择--</option>')
+							for (var i=0,l=data.result.length; i<l; i++) {
+								html.push('<option value="'+ data.result[i].id+'">'+ data.result[i].numInterestRate.toFixed(2) +'</option>');
+							}
+							jthis.html(html.join(""));
+							jthis.data('loaded', 'yes');
+							console.log(data);
+						}
+					});
+				};
+				
+				
+				
+				jRows.on("change", "[name=rate]", function(e){
+					var jthis = $(this);
+					var id  =  jthis.val();
+					var jmaxTime = jthis.siblings("[name=maxTime]");
+					var jdays = jthis.siblings("[name=days]");
+					var jmaxRate = jthis.siblings("[name=maxRate]");
+					var jlook = jthis.siblings("[name=look]");
+					var jsubtotal = jthis.siblings("[name=subtotal]");
+					var jbudget = jthis.siblings("[name=budgetAmt]");
+					var jticketid = jthis.siblings("[name=ticketid]");
+					var jticket = jthis.siblings("[name=ticket]");
+					var applyAmt = $("#numApplyAmt");
+					if(jsubtotal.val() != "" && applyAmt.val() !="" ){
+						var amount=  parseFloat(applyAmt.val()) - parseFloat(jsubtotal.val());
+						amount=amount.toFixed(2);
+						applyAmt.val(amount);
+					}
+					var option = '<option value="">--请选择--</option>';
+					jmaxTime.html(option);
+					jdays.html(option);
+					jmaxRate.html(option);
+					jlook.val("");
+					jsubtotal.val("");
+					jbudget.val("");
+					jticketid.val("");
+					jticket.val("");
+					
+					j.getJSON("$!{www}/interestticketapply/rates?id="+id, function(data) {
+						if(data && data.result && data.result.length){
+							var html = [];
+							html.push('<option value="">--请选择--</option>')
+							for (var i=0,l=data.result.length; i<l; i++) {
+								html.push('<option value="'+ data.result[i].id+'">'+  data.result[i].imaxInterestTime +'</option>');
+							}
+							jmaxTime.html(html.join(""));
+							console.log(data);
+						}
+					});
+				});
+				
+				jRows.on("change", "[name=maxTime]", function(e){
+					var jthis = $(this);
+				    var id  =  jthis.val();
+					var jdays = jthis.siblings("[name=days]");
+					var jmaxRate = jthis.siblings("[name=maxRate]");
+					var jlook = jthis.siblings("[name=look]");
+					var jsubtotal = jthis.siblings("[name=subtotal]");
+					var jbudget = jthis.siblings("[name=budgetAmt]");
+					var jticketid = jthis.siblings("[name=ticketid]");
+					var jticket = jthis.siblings("[name=ticket]");
+					
+					var applyAmt = $("#numApplyAmt");
+					if(jsubtotal.val() != "" && applyAmt.val() !="" ){
+						var amount=  parseFloat(applyAmt.val()) - parseFloat(jsubtotal.val());
+						amount=amount.toFixed(2);
+						applyAmt.val(amount);
+					}
+					var option = '<option value="">--请选择--</option>';
+					jmaxRate.html(option);
+					jdays.html(option);
+					jlook.val("");
+					jsubtotal.val("");
+					jbudget.val("");
+					jticketid.val("");
+					jticket.val("");
+					
+					j.getJSON("$!{www}/interestticketapply/interestTime?id="+id, function(data) {
+						if(data && data.result && data.result.length){
+							var html = [];
+							html.push('<option value="">--请选择--</option>')
+							for (var i=0,l=data.result.length; i<l; i++) {
+								html.push('<option value="'+ data.result[i].id+'">'+ data.result[i].numMaxInterestRate +'</option>');
+							}
+							jmaxRate.html(html.join(""));
+							console.log(data);
+						}
+					});
+				});
+				
+				jRows.on("change", "[name=maxRate]", function(e){
+					var jthis = $(this);
+				    var id  =  jthis.val();
+					var jdays = jthis.siblings("[name=days]");
+					var jlook = jthis.siblings("[name=look]");
+					var jsubtotal = jthis.siblings("[name=subtotal]");
+					var jbudget = jthis.siblings("[name=budgetAmt]");
+					var jticketid = jthis.siblings("[name=ticketid]");
+					var jticket = jthis.siblings("[name=ticket]");
+					var applyAmt = $("#numApplyAmt");
+					if(jsubtotal.val() != "" && applyAmt.val() !=""){
+						var amount=  parseFloat(applyAmt.val()) - parseFloat(jsubtotal.val());
+						amount=amount.toFixed(2);
+						applyAmt.val(amount);
+					}
+					var option = '<option value="">--请选择--</option>';
+					jdays.html(option);
+					jlook.val("");
+					jsubtotal.val("");
+					jbudget.val("");
+					jticketid.val("");
+					jticket.val("");
+					
+					j.getJSON("$!{www}/interestticketapply/maxRate?id="+id, function(data) {
+							if(data && data.result && data.result.length){
+								var html = [];
+								html.push('<option value="">--请选择--</option>')
+								for (var i=0,l=data.result.length; i<l; i++) {
+									html.push('<option value="'+ data.result[i].id +'">'+ data.result[i].iexpired +'</option>');
+								}
+								jdays.html(html.join(""));
+								console.log(data);
+							}
+						});
+				});
+				
+				jRows.on("change", "[name=days]", function(e){
+					var jthis = $(this);
+					var id  =  jthis.val();
+					var jlook = jthis.siblings("[name=look]");
+					var jsubtotal = jthis.siblings("[name=subtotal]");
+					var jbudget = jthis.siblings("[name=budgetAmt]");
+					var jticketid = jthis.siblings("[name=ticketid]");
+					var jticket = jthis.siblings("[name=ticket]");
+					var applyAmt = $("#numApplyAmt");
+					if(jsubtotal.val() != "" && applyAmt.val() !=""){
+						var amount=  parseFloat(applyAmt.val()) - parseFloat(jsubtotal.val());
+						amount=amount.toFixed(2);
+						applyAmt.val(amount);
+					}
+					jlook.val("");
+					jsubtotal.val("");
+					jbudget.val("");
+					jticketid.val("");
+					jticket.val("");
+					j.getJSON("$!{www}/interestticketapply/iexpired?id="+id, function(data) {
+						if(data && data.ticket){
+							jbudget.val(data.ticket.numWorth);
+							jticketid.val(data.ticket.id);
+						}
+					});
+				});
+				
+				jRows.on("blur", "[name='look']", function(e){
+					var jthis = $(this);
+					var jsubtotal = jthis.siblings("[name=subtotal]");
+					var jbudget = jthis.siblings("[name=budgetAmt]");
+					var jid = jthis.siblings("[name=ticketid]");
+					var jticket = jthis.siblings("[name=ticket]");
+					var applyAmt = $("#numApplyAmt");
+					if(jsubtotal.val() != "" && applyAmt.val() !=""){
+						var amount=  parseFloat(applyAmt.val()) - parseFloat(jsubtotal.val());
+						amount=amount.toFixed(2);
+						applyAmt.val(amount);
+					}
+					
+					var look = jthis.val();
+					var a=/^[0-9]*[1-9][0-9]*$/;
+					if(look!=""){
+						if(!a.test(look)){
+							alert("请输入正整数");
+						}else{
+							var aomout = look*parseFloat(jbudget.val());
+							aomout=aomout.toFixed(2);
+							jsubtotal.val(aomout);
+							var ticket = jid.val()+"_"+look;
+							var amt=0;
+							if(applyAmt.val() != "" && applyAmt.val() !=0){
+								amt = parseFloat(applyAmt.val());
+							}
+							
+							amt = parseFloat(amt) + parseFloat(aomout);
+							amt=amt.toFixed(2);
+							applyAmt.val(amt);
+							jticket.val(ticket);
+						}
+					}
+				});
+				
+				
+			});
+		</script>

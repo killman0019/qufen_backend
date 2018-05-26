@@ -1,0 +1,394 @@
+/**
+ * 标的详情页
+ * 
+ * Author: 吴岸林
+ */
+
+.prop-item {
+	line-height: 1;
+
+	&_label {
+		color: @grayLight;
+	}
+
+	&_content {
+		color: @grayDark;
+	}
+}
+
+.project-detail-base {
+	box-sizing: border-box;
+	height: 127px;
+	padding: 25px @horizontalSpacingBase 0;
+	overflow: hidden;
+
+	color: #fff;
+
+	background: #0190f8;
+	background: -webkit-linear-gradient(top, #0190f8 0%, #0071e4 100%);
+	background: -moz-linear-gradient(top, #0190f8 0%, #0071e4 100%);
+	background: linear-gradient(to bottom, #0190f8 0%, #0071e4 100%);
+
+	&.subject-tag:before {
+		top: 45px;
+		right: -2px;
+	}
+
+	&_primary-interest {
+		display: inline-block;
+		font-size: 40px;
+		line-height: 1;
+		color: #fff;
+
+		sub {
+			font-size: 25px;
+		}
+	}
+
+	&_second-interest {
+		display: inline-block;
+		font-size: 25px;
+	}
+
+	&_title {
+		margin-top: 5px;
+		font-size: 15px;
+
+		i {
+			font-size: 35px;
+			line-height: 15px;
+			vertical-align: text-bottom;
+		}
+	}
+}
+
+.project-detail-props1 {
+	padding: 24px @horizontalSpacingBase;
+	background-color: #fff;
+
+	.pillar-progress {
+		margin-top: 24px;
+	}
+
+	&_cols1 {
+		overflow: hidden;
+
+		.prop-item {
+			float: left;
+			width: 33.33%;
+
+			&_content {
+				margin-bottom: 5px;
+				font-size: 121.43%;
+			}
+		}
+	}
+
+	&_cols2 {
+		margin-top: 8px;
+		overflow: hidden;
+
+		.prop-item {
+			float: left;
+			width: 50%;
+
+			&_label,
+			&_content {
+				display: inline-block;
+			}
+
+			&_content {
+				color: @brandSecond;
+			}
+
+			&:last-child {
+				text-align: right;
+			}
+		}
+	}
+}
+
+.project-detail-props2 {
+	margin-top: 10px;
+	padding: 0 @horizontalSpacingBase;
+	background-color: #fff;
+
+	&_group {
+		overflow: hidden;
+
+		.prop-item {
+			margin: 18px 0;
+			overflow: hidden;
+
+			&_label {
+				float: left;
+			}
+
+			&_content {
+				float: right;
+			}
+		}
+	}
+
+	&_guarantee {
+		padding: 12px 0;
+		border-top: 1px solid @devalColorSecond;
+
+		font-size: 12px;
+		line-height: 16px;
+		color: @grayLight;
+		text-align: center;
+	}
+}
+
+.project-detail-insurance {
+	padding: 13px 0;
+	border-top: 1px solid @devalColorSecond;
+	border-bottom: 1px solid @devalColorSecond;
+
+	font-size: 12px;
+	line-height: 20px;
+	color: @gray;
+	text-align: center;
+
+	&:before {
+		content: '\ea13';
+		margin-right: 3px;
+		font-family: @baseIconFont;
+		font-size: 120%;
+		color: @colorGreen;
+		vertical-align: top;
+	}
+}
+
+.project-detail-links {
+	@paddingLeft: 16%;
+
+	border-bottom: 1px solid @devalColorSecond;
+	background-color: #fff;
+
+	li {
+		margin-left: @paddingLeft;
+		font-size: 17px;
+		line-height: 30px;
+
+		&:not(:last-child) {
+			border-bottom: 1px solid @devalColorSecond;
+		}
+	}
+
+	a {
+		display: block;
+		position: relative;
+		padding: 14px 0;
+
+		@currentHorizontalSpacing: @horizontalSpacingBase / unit(100% - @horizontalSpacingBase) * 100;
+
+		&:before {
+			content: attr(sign);
+			position: absolute;
+			top: 14px;
+			left: (@horizontalSpacingBase - @paddingLeft) / unit(100% - @paddingLeft) * 100;
+
+			font-family: @baseIconFont;
+			font-size: 140%;
+			vertical-align: middle;
+		}
+
+		&:after {
+			content: '\ea19';
+			float: right;
+			margin-right: @currentHorizontalSpacing;
+
+			font-family: @baseIconFont;
+			color: #b3b3b3;
+		}
+	}
+}
+
+.invest-box {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	z-index: 2;
+
+	width: 100%;
+
+	&_inner {
+		box-sizing: border-box;
+		max-width: @viewportWide;
+		min-width: @viewportNarrow;
+		margin: 0 auto;
+		padding: 0 @horizontalSpacingBase;
+
+		background-color: @grayLighter3;
+	}
+
+	&_meta {
+		padding: 13px 0;
+		font-size: 17px;
+		line-height: 20px;
+		color: @grayLight;
+
+		em {
+			font-style: normal;
+			color: @brandSecond;
+		}
+	}
+
+	&_form {
+		padding-bottom: 16px;
+		overflow: hidden;
+
+		&_2col-ipt {
+			float: left;
+			width: 58%;
+		}
+
+		&_2col-btn {
+			float: right;
+			width: 40%;
+		}
+	}
+
+	&_state {
+		padding: 13px 0;
+	}
+
+	&-placeholder {
+		height: 110px;
+	}
+}
+
+
+.ft-popup {
+
+	position: fixed;
+	top: 100%;
+	left: 0;
+	z-index: 10;
+
+	width: 100%;
+	height: 100%;
+
+	background-color: rgba(0,0,0,.3);
+
+	opacity: 0;
+
+	&_window {
+		position: absolute;
+		left: 0;
+		bottom: -100%;
+
+		width: 100%;
+
+		background-color: @bgGray;
+
+		&_hd {
+			@height: 44px;
+			
+			overflow: hidden;
+
+			&_title {
+				box-sizing: border-box;
+
+				height: @height + 1px;
+				margin: 0;
+				padding: 4px 0;
+				border-bottom: 1px solid @devalColorSecond;
+
+				font-size: 18px;
+				font-weight: normal;
+				line-height: 2;
+				text-align: center;
+			}
+
+			&_back,
+			&_close {
+				float: left;
+				width: @height;
+				margin-top: -@height;
+
+				line-height: @height;
+				color: @gray;
+
+				text-align: center;
+
+				&:after {
+					content: '\ea05';
+					font-family: @baseIconFont;
+				}
+			}
+
+			&_close:after {
+				content: '\ea1e';
+			}
+		}
+	}
+
+	&.-open {
+		-webkit-animation: show-popup .3s linear forwards;
+				animation: show-popup .3s linear forwards;
+
+		.ft-popup_window {
+			-webkit-animation: show-popup-window .3s ease forwards;
+					animation: show-popup-window .3s ease forwards;
+		}
+	}
+}
+
+@-webkit-keyframes show-popup {
+	0% {
+		top: 100%;
+		opacity: 0;
+	}
+	1% {
+		top: 0;
+	}
+	100% {
+		top: 0;
+		opacity: 1;
+	}
+}
+@keyframes show-popup {
+	0% {
+		top: 100%;
+		opacity: 0;
+	}
+	1% {
+		top: 0;
+	}
+	100% {
+		top: 0;
+		opacity: 1;
+	}
+}
+
+@-webkit-keyframes show-popup-window {
+	0% {
+		bottom: -100%;
+	}
+	100% {
+		bottom: 0;
+	}
+}
+@keyframes show-popup-window {
+	0% {
+		bottom: -100%;
+	}
+	100% {
+		bottom: 0;
+	}
+}
+
+
+.popup-sign-success {
+	text-align: center;
+
+	&:after {
+		content: '\ea14';
+		font-family: @baseIconFont;
+		font-size: 80px;
+		color: #75c65b;
+	}
+}

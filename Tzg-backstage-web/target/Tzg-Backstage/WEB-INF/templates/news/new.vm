@@ -1,0 +1,256 @@
+<div class="main-content">
+    <div class="breadcrumbs" id="breadcrumbs">
+        <script type="text/javascript">
+            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+        </script>
+
+        <ul class="breadcrumb">
+            <li>
+                <i class="icon-home home-icon"></i>
+                <a href="${www}/main">主页</a>
+            </li>
+
+            <li>
+                <a href="${www}/news">新闻动态列表</a>
+            </li>
+            <li class="active">新增新闻动态</li>
+        </ul><!-- .breadcrumb -->
+
+        <div class="nav-search" id="nav-search">
+            <form class="form-search">
+						<span class="input-icon">
+							<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+							<i class="icon-search nav-search-icon"></i>
+						</span>
+            </form>
+        </div><!-- #nav-search -->
+    </div>
+
+    <div class="page-content">
+        <div class="page-header">
+            <h1>新增新闻动态</h1>
+        </div>
+        
+        #if(${msg})
+        	<div>
+			#if(${success})
+        		<li class="text-success">$!{msg}</li>
+   			 #else
+        		<li class="text-danger">$!{msg}</li>
+   			 #end    	
+   			</div>
+   		 #end   
+        
+        <form action="${www}/news/save" method="post" class="form-horizontal">
+        	<div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">类型：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	<select class="col-sm-12" name="itype" id="itype">
+                                <option value="">请选择</option>
+                                <option value="1" #if($news.itype && $news.itype ==1) selected #end>最新动态</option>
+                                <option value="2" #if($news.itype && $news.itype ==2) selected #end>媒体报道</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+             </div>
+        	<div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">标题：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	<input type="text" class="col-sm-12" id="vcTitle" name="vcTitle" value="$!{news.vcTitle}" />
+                        </div>
+                    </div>
+                </div>
+             </div>
+             <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">副标题：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	<input type="text" class="col-sm-12" id="vcSubtitle" name="vcSubtitle" value="$!{news.vcSubtitle}" />
+                        </div>
+                    </div>
+                </div>
+             </div>
+             <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">新闻来源：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	<input type="text" class="col-sm-12" id="vcSource" name="vcSource" value="$!{news.vcSource}" />
+                        </div>
+                    </div>
+                </div>
+             </div>
+             <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">原文链接：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	<input type="text" class="col-sm-12" id="vcOrgLink" name="vcOrgLink" value="$!{news.vcOrgLink}" />
+                        </div>
+                    </div>
+                </div>
+             </div>
+             <div class="row">
+	                <div class="col-xs-12 col-md-8">
+	                    <div class="form-group">
+	                        <label class="col-md-4 col-sm-2 control-label">文档图片地址：</label>
+	                        <div class="col-md-8 col-sm-8">
+	                        	<div class="row">
+		                        	<div class="col-md-11">
+		                        		<input type="text" class="col-sm-12" id="newsPath" value="$!{news.vcImgUrl}"  readonly/>
+		                        		<input type="hidden" id="vcImgUrl" name="vcImgUrl" value="$!{news.vcImgUrl}">
+		                        	</div>
+		                        	<div class="col-md-1">
+		                        		<button type="button" id="select_news_path_btn" class="btn btn-xs">选择文档图片地址</button>
+		                        	</div>
+		                         </div>	
+	                        </div>
+	                    </div>
+	                </div>
+	          </div>
+             <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">新闻概括：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	<textarea rows="12" cols="60" name="vcSummary">$!{news.vcSummary}</textarea>
+                        </div>
+                    </div>
+                </div>
+             </div>
+             <div class="row">
+                    <script id="editor" name="vcContent" type="text/plain" style="height:500px;"></script>
+             </div>
+             </br>
+             <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">新闻关键字：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	<input type="text" class="col-sm-12" id="vcKey" name="vcKey" value="$!{news.vcKey}" />
+                        </div>
+                    </div>
+                </div>
+             </div>
+             <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">是否首页显示：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	<select class="col-sm-12" name="ihomedisplay" id="ihomedisplay">
+                                <option value="">请选择</option>
+                                <option value="1" #if($news.ihomedisplay && $news.ihomedisplay ==1) selected #end>不显示</option>
+                                <option value="2" #if($news.ihomedisplay && $news.ihomedisplay ==2) selected #end>显示</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+             </div>
+             <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <div class="form-group">
+                        <label class="col-md-4 col-sm-2 control-label">顺序：</label>
+                        <div class="col-md-8 col-sm-8">
+                        	<select name="ihomesort">
+	                    		<option value="">请选择</option>
+	                    		<option value="1" #if($news.ihomesort && $news.ihomesort ==1) selected #end>1</option>
+	                    		<option value="2" #if($news.ihomesort && $news.ihomesort ==2) selected #end>2</option>
+	                    		<option value="3" #if($news.ihomesort && $news.ihomesort ==3) selected #end>3</option>
+	                    	</select>
+                        </div>
+                    </div>
+                </div>
+             </div>
+             
+            </hr>
+            <div class="page-header">
+            <h1>下面是已经排序过的新闻动态记录</h1>
+            </div>
+             <table class="table table-striped table-bordered table-hover dataTable">
+		            <thead>
+		            <tr>
+		                <th>顺序</th>
+		                <th>类型</th>
+		                <th>标题</th>
+		            </tr>
+		            </thead>
+		            <tbody>
+		                #foreach($news in $newsList)
+		                <tr>
+		                	<td>
+		                		$!{news.ihomesort} 
+		                	</td>
+		                	<td> 
+		                		#if($news.itype == 1)
+		                			最新动态
+		                		#elseif($news.itype == 2)
+		                			媒体报道
+		                		#end
+		                	</td>
+		                	<td> $!{news.vcTitle} </td>
+		                </tr>
+		                #end
+		            </tbody>
+		        </table>
+             
+            <div class="clearfix form-actions">
+                <div class="col-sm-offset-2 col-md-9">
+                    <button class="btn btn-info" type="submit">
+                        <i class="icon-ok bigger-110"></i> 提交
+                    </button>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		            <button class="btn" type="button" onclick="javascript:history.go(-1);">
+		                <i class="icon-arrow-left bigger-110"></i>返回
+		            </button>
+                </div>
+            </div>
+</form>
+    </div><!-- /.page-content -->
+</div><!-- /.main-content -->
+
+	<script type="text/javascript" charset="utf-8" src="${www}/ueditor/ueditor.config.js"></script>
+    <script type="text/javascript" charset="utf-8" src="${www}/ueditor/ueditor.all.min.js"> </script>
+    <!--建议手动加在语言，避免在ie下有时因为加载语言失败导致编辑器加载失败-->
+    <!--这里加载的语言文件会覆盖你在配置项目里添加的语言类型，比如你在配置项目里配置的是英文，这里加载的中文，那最后就是中文-->
+    <script type="text/javascript" charset="utf-8" src="${www}/ueditor/lang/zh-cn/zh-cn.js"></script>
+	<script type="text/javascript">
+    //实例化编辑器
+    //建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
+   		 var ue = UE.getEditor('editor');
+    		    		 ue.addListener("ready", function () {
+    	    // editor准备好之后才可以使用
+    	    //var content = $("#vcContent").val();
+       	 	UE.getEditor('editor').setContent('$!{news.vcContent}');
+		});  		 
+    </script>
+    
+    
+    <script src="${www}/js/sea.js" id="seajsnode"></script>
+	<script type="text/javascript">
+	seajs.use(['dialog'], function(dialog) {
+	    var vcImgUrl = $("#vcImgUrl");
+	    var newsPath = $("#newsPath");
+	    var showDialog = function () {
+	        dialog.alert({
+	            title: '新闻动态列表',
+	            content: '<iframe id="js_selector" frameborder="0" width="800" height="400" src="${www}/uploadfile/filePathList?itype=9"></iframe>',
+	            ok: function() {
+	                var checkedRadio = $(":radio:checked", document.getElementById("js_selector").contentDocument);
+	                if (checkedRadio.size()) {
+	                    vcImgUrl.val(checkedRadio.val());
+	                    newsPath.val(checkedRadio.attr("data-name"));
+	                }
+	            }
+	        });
+	    };
+	    newsPath.click(showDialog);
+	    $("#select_news_path_btn").click(showDialog);
+	});
+	</script>
+    

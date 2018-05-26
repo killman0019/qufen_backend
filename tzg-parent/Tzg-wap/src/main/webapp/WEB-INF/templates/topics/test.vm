@@ -1,0 +1,11 @@
+#set($layout = "/layout/v3/default.vm")
+#set($pageTitle = "投资确认")
+#set($bodyClass = 'bg-gray')
+#set($noPrimaryNav = true)
+#set($topbar = {"title": "投资确认"})
+
+<input type="radio" name="a" class="checkbox">
+<input type="radio" name="a" class="checkbox" checked>
+
+<input type="checkbox" name="b" class="checkbox">
+<input type="checkbox" name="b" class="checkbox" checked>

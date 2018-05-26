@@ -1,0 +1,200 @@
+<div class="main-content">
+    <div class="breadcrumbs" id="breadcrumbs">
+    	<style>
+        	.tab-w{
+        		float:left;
+				display: block;
+			  	margin: 1px;
+			  	border: 1px solid #ddd;
+			  	width: 100px;
+			  	height: 40px;
+			  	line-height: 40px;
+			  	text-align: center;
+			  	cursor: pointer;
+			  	background-color: white;
+        	}
+        	.tab-w-selected{
+        		background-color: #eff3f8;
+				border-bottom: 0;
+        	}
+        	.title_w{
+        		margin-left: 20px;
+				width: 200px;
+				color: blue;
+				height: 50px;
+				line-height: 50px;
+        	}
+        	.seperate_w{
+				height: 1px;
+				border-bottom: 2px solid #ddd;
+				width: 97%;
+				margin: auto;
+        	}
+        	.table_w{
+        		width: 97%;
+				margin: auto;
+        	}
+        	.table_w table{
+        		width:100%;
+        		margin-top: 10px;
+				border-collapse: collapse;
+				text-align: center;
+				background-color: white;
+        	}
+        	.table_w table tr td{
+        		border:1px solid #ddd;
+        		height:35px;
+        	}
+        </style>
+        <script type="text/javascript">
+            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+        </script>
+        <ul class="breadcrumb">
+            <li>
+                <i class="icon-home home-icon"></i>
+                <a href="${www}/main">主页</a>
+            </li>
+			<li>
+                <a href="${www}/investor">投资人</a>
+            </li>
+            <li class="active">账户信息</li>
+        </ul><!-- .breadcrumb -->
+
+        <div class="nav-search" id="nav-search">
+            <form class="form-search">
+						<span class="input-icon">
+							<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+							<i class="icon-search nav-search-icon"></i>
+						</span>
+            </form>
+        </div><!-- #nav-search -->
+    </div>
+	<div class="page-content">
+		<div class="page-header">
+		    <h1>账户信息</h1>
+		  #if(${msg})
+	      <div>
+		     #if(${success})
+	    		<li class="text-success">$!{msg}</li>
+			 #else
+	    		<li class="text-danger">$!{msg}</li>
+			 #end    	
+		 </div>
+	    #end
+		</div>
+		<div class="container-fluid">
+		    <div class="dataTables_wrapper">
+		        <div class="row">
+		        	<div style="border-bottom: 1px solid #ddd;height: 41px;">
+		        	 	<div class="tab-w  tab-w-selected"><a href="">账户信息</a></div>
+			            <div class="tab-w"><a href="${www}/investor/investrecord?iloginAccountId=$!{query.iloginAccountId}">投资记录</a></div>
+			            <div class="tab-w"><a href="${www}/investor/investRepayRecord?iloginAccountId=$!{query.iloginAccountId}">回款信息</a></div>
+			            <div class="tab-w"><a href="${www}/investor/cashRecord?iloginAccountId=$!{query.iloginAccountId}">资金记录</a></div>
+		        		<div class="tab-w"><a href="${www}/investor/redRecord?iloginAccountId=$!{query.iloginAccountId}">红包记录</a></div>
+		        	</div>
+		        	<div>
+		        		<div class="title_w">基本信息</div>
+		        		<div class="seperate_w"></div>
+		        		<div class="table_w">
+		        			<table id="baseInfo_w">
+		        				<tr>
+		        					<td>类型</td><td>资料</td><td>状态</td><td>操作</td>
+		        				</tr>
+		        				<tr>
+		        					<td>用户名</td><td>$!{baseInfo.userName}</td><td></td><td></td>
+		        				</tr>
+		        				<tr>
+		        					<td>用户ID</td><td>$!{baseInfo.userId}</td><td></td><td></td>
+		        				</tr>
+		        				<tr>
+		        					<td>手机号码</td><td>$!{baseInfo.phone}</td><td>$!{baseInfo.iverifyPhone}</td><td>#if($baseInfo.isValid!='2')<a href="${www}/changephoneaudit/toChange?iloginAccountId=$!{query.iloginAccountId}">更换号码</a>  |  <a href="$!{www}/loginaccountaudit/toFrozen?loginAccountId=$!{query.iloginAccountId}&iType=1">冻结账户</a>#else更换号码     |  冻结账户 #end</td>
+		        				</tr>
+		        				<tr>
+		        					<td>邮箱认证</td><td>$!{baseInfo.email}</td><td>$!{baseInfo.iverifyEmail}</td><td></td>
+		        				</tr>
+		        				<tr>
+		        					<td>实名认证</td><td>$!{baseInfo.cardCode}</td><td>$!{baseInfo.iverifyIdcard}</td><td>#if($baseInfo.iverifyIdcard!='已认证' && $baseInfo.isValid!='2' && $baseInfo.userName && $baseInfo.cardCode)<a href="${www}/identityaudit/toIdentity?loginAccountId=$!{query.iloginAccountId}">认证通过</a>#else认证通过#end</td>
+		        				</tr>
+		        			</table>
+		        		</div>
+		        		<div class="title_w">银行卡信息</div>
+		        		<div class="seperate_w"></div>
+		        		<div class="table_w">
+		        			<table class="table table-striped table-bordered table-hover dataTable">
+					            <thead>
+					            <tr>
+					           		<th>所属银行</th>
+					                <th>银行卡号</th>
+					                <th>充值金额</th>
+					                <th>充值次数</th>
+					                <th>已提现金额</th>
+					                <th>可提现金额</th>
+									<th>银行卡状态</th>
+					                <th>操作</th>
+					            </tr>
+					            </thead>
+					            <tbody>
+					                #foreach($bankcard in $bankcards.rows)
+					                <tr>
+					                	<td>$!{bankcard.vcbankInfoId}</td>
+					                	<td>$!{bankcard.vcBankCardNo}</td>
+					                	<td>$!{bankcard.numTotalRecharge}</td>
+					                	<td>$!{bankcard.numRechargeCount}</td>
+					                	<td>$!{bankcard.numTotalWithdraw}</td>
+					                	<td>$!{bankcard.maxCashAmt}</td>
+										<td>#if($bankcard.istate == 1)处理中#elseif($bankcard.istate == 2)绑定成功#elseif($bankcard.istate == 3)解绑成功#end</td>
+					                	<td>#if($baseInfo.isValid != '2' && $bankcard.istate != 3)<a href="${www}/carddeleteaudit/toCardDelete?iRecordId=$!{bankcard.id}&loginAccountId=$!{query.iloginAccountId}">删除</a> | <a href="${www}/cashtransferaudit/toCashTransfer?iRecordId=$!{bankcard.id}&loginAccountId=$!{query.iloginAccountId}">转移提现金额</a>#else 删除 | 转移提现金额#end</td>
+					                </tr>
+					                #end
+					            </tbody>
+					        </table>
+		        		</div>
+		        		<div class="title_w">资金信息</div>
+		        		<div class="seperate_w"></div>
+		        		<div class="table_w">
+		        			<table class="table table-striped table-bordered table-hover dataTable">
+					            <thead>
+					            <tr>
+					           		<th>总资产</th>
+					                <th>账户余额</th>
+					                <th>累计充值</th>
+					                <th>累计投资</th>
+					                <th>累计提现</th>
+					                <th>已赚收益</th>
+					                <th>已回本金</th>
+					                <th>待收收益</th>
+					                <th>待回本金</th>
+					                <th>已用红包</th>
+					                <th>可用红包</th>
+					            </tr>
+					            </thead>
+					            <tbody>
+					                <tr>
+					                	<td>$!{investInfo.numTotal}</td>
+					                	<td>$!{investInfo.numAvailable}</td>
+					                	<td>$!{investInfo.numTotalRecharge}</td>
+					                	<td>$!{investInfo.numTotalInvest}</td>
+					                	<td>$!{investInfo.numTotalCash}</td>
+					                	<td>$!{investInfo.numTotalProfit}</td>
+					                	<td>$!{investInfo.numPrincipalGetted}</td>
+					                	<td>$!{investInfo.numOutstandingProfit}</td>
+					                	<td>$!{investInfo.numOutstanding}</td>
+					                	<td>$!{investInfo.numTotalEnvelopesUsed}</td>
+					                	<td>$!{investInfo.numEnvelopes}</td>
+					                </tr>
+					            </tbody>
+					        </table>
+		        		</div>
+		      		</div>
+		        </div>
+		    </div>
+		</div>
+    </div><!-- /.page-content -->
+</div><!-- /.main-content -->
+#if($request.getParameter("msg"))
+	<script type="text/javascript">
+		$(function(){
+			alert('$!{request.getParameter("msg")}');
+		})
+	</script>
+#end

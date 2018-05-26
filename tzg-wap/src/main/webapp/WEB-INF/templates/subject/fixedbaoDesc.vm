@@ -1,0 +1,64 @@
+#set($pageName = "产品详情")
+#set($bodyClass = "body--gray")
+#set($topbar = { "title": $pageName })
+
+<div class="dqb-property-box">
+	<div class="dqb-property-title">概要</div>
+
+	<ul class="dqb-properties">
+		<li>
+			<div class="dqb-properties_label -t2">期限</div>
+			<div class="dqb-properties_content">$!{fixedbaoproject.numPeriod}天</div>
+		</li>
+		<li>
+			<div class="dqb-properties_label">年化收益率</div>
+			<div class="dqb-properties_content">$numbers.toCurrency($!{fixedbaoproject.numIntetrestRate})%</div>
+		</li>
+		<li>
+			<div class="dqb-properties_label -t4">还款方式</div>
+			<div class="dqb-properties_content">到期还本付息</div>
+		</li>
+		<li>
+			<div class="dqb-properties_label -t3">起息日</div>
+			<div class="dqb-properties_content">$!{lockTime}</div>
+		</li>
+		<li>
+			<div class="dqb-properties_label -t3">到息日</div>
+			<div class="dqb-properties_content">$!{outLockTime}</div>
+		</li>
+		<li>
+			<div class="dqb-properties_label -t4">保障方式</div>
+			<div class="dqb-properties_content">本期保障</div>
+		</li>
+	</ul>
+</div>
+
+<div class="dqb-property-box">
+	<div class="dqb-property-title">加入</div>
+
+	<ul class="dqb-properties">
+		<li>
+			<div class="dqb-properties_label -t4">加入条件</div>
+			<div class="dqb-properties_content">加入金额$!{fixedbaoproject.numMinAmount}元起，且以$!{fixedbaoproject.numIncrease}元倍数递增</div>
+		</li>
+		<li>
+			<div class="dqb-properties_label -t4">投资上限</div>
+			<div class="dqb-properties_content">无</div>
+		</li>
+	</ul>
+</div>
+
+<div class="dqb-property-box">
+	<div class="dqb-property-title">费用</div>
+
+	<ul class="dqb-properties">
+		<li>
+			<div class="dqb-properties_label -t4">加入费用率</div>
+			<div class="dqb-properties_content">0.00%</div>
+		</li>
+		<li>
+			<div class="dqb-properties_label">到期赎回费率</div>
+			<div class="dqb-properties_content">0.00%</div>
+		</li>
+	</ul>
+</div>

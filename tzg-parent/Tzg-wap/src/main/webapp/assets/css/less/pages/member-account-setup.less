@@ -1,0 +1,70 @@
+/*--------------------------*\
+	安全中心
+\*--------------------------*/
+
+
+// 安全等级
+// ------------------------------------
+
+.m-prgr2 {
+	display: inline-block;
+	width: 100%;
+	vertical-align: middle;
+	li {
+		box-sizing: border-box;
+		float: left;
+		width: 25%;
+		height: 5px;
+		border-right: 2px solid #fff;
+		background-color: @color-light;
+	}
+
+	&.z-l1 {
+		li:first-child {
+			background-color: @brand-primary;
+		}
+	}
+	&.z-l2, &.z-l3 {
+		li:nth-of-type(1) {
+			background-color: @brand-primary;
+		}
+		li:nth-of-type(2) {
+			background-color: @brand-primary;
+		}
+	}
+	&.z-l3 {
+		li:nth-of-type(3) {
+			background-color: @brand-primary;
+		}
+	}
+	&.z-l4 {
+		li {
+			background-color: @brand-primary;
+		}
+	}
+}
+
+
+
+@progress-link-width: 40px;
+.m-safetyLevel {
+	.g-2c-col:last-child {
+		padding-right: @progress-link-width;
+		width: 70%;
+		text-align: right;
+	}
+}
+.m-safetyLevel-btn {
+	float: right;
+	margin-right: -@progress-link-width;
+}
+
+
+.u-ttl1 {
+	margin: 0;
+	padding: 5px @horizontal-spacing;
+	font-weight: normal;
+	font-size: @font-size-base;
+	color: #fff;
+	background-color: @brand-primary;
+}

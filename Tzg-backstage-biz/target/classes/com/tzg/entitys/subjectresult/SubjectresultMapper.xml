@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.subjectresult.SubjectresultMapper">	
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.subjectresult.Subjectresult">
+		<result property="id" jdbcType="INTEGER" column="id"/>
+		<result property="isubjectId" jdbcType="INTEGER" column="iSubjectId"/>
+		<result property="dtCollectEnd" jdbcType="TIMESTAMP" column="dtCollectEnd"/>
+		<result property="numActualFinancing" jdbcType="DECIMAL" column="numActualFinancing"/>
+		<result property="numCollectInterest" jdbcType="DECIMAL" column="numCollectInterest"/>
+		<result property="numInterest" jdbcType="DECIMAL" column="numInterest"/>
+		<result property="numAgreementCollectInterest" jdbcType="DECIMAL" column="numAgreementCollectInterest"/>
+		<result property="numAgreementInterest" jdbcType="DECIMAL" column="numAgreementInterest"/>
+		<result property="numExtraCollectInterest" jdbcType="DECIMAL" column="numExtraCollectInterest"/>
+		<result property="numExtraInterest" jdbcType="DECIMAL" column="numExtraInterest"/>
+		<result property="numTotalAwards" jdbcType="DECIMAL" column="numTotalAwards"/>
+		<result property="numMminterestEarn" jdbcType="DECIMAL" column="numMMInterestEarn"/>
+		<result property="numMminterestLose" jdbcType="DECIMAL" column="numMMInterestLose"/>
+		<result property="dtCreate" jdbcType="TIMESTAMP" column="dtCreate"/>
+    </resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+        id ,iSubjectId ,dtCollectEnd ,numActualFinancing ,numCollectInterest ,numInterest ,numAgreementCollectInterest ,numAgreementInterest ,numExtraCollectInterest ,numExtraInterest ,numTotalAwards ,numMMInterestEarn ,numMMInterestLose ,dtCreate 
+	    ]]>
+	</sql>
+	
+	<insert id="save" parameterType="com.tzg.entitys.subjectresult.Subjectresult" useGeneratedKeys="true" keyProperty="id">
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+	      SELECT LAST_INSERT_ID() AS id
+	    </selectKey>
+	<![CDATA[
+		INSERT INTO tbsubjectresult (
+        	iSubjectId ,
+        	dtCollectEnd ,
+        	numActualFinancing ,
+        	numCollectInterest ,
+        	numInterest ,
+        	numAgreementCollectInterest ,
+        	numAgreementInterest ,
+        	numExtraCollectInterest ,
+        	numExtraInterest ,
+        	numTotalAwards ,
+        	numMMInterestEarn ,
+        	numMMInterestLose ,
+        	dtCreate 
+		) VALUES (
+        	#{isubjectId,jdbcType=INTEGER} ,
+        	#{dtCollectEnd,jdbcType=TIMESTAMP} ,
+        	#{numActualFinancing,jdbcType=DECIMAL} ,
+        	#{numCollectInterest,jdbcType=DECIMAL} ,
+        	#{numInterest,jdbcType=DECIMAL} ,
+        	#{numAgreementCollectInterest,jdbcType=DECIMAL} ,
+        	#{numAgreementInterest,jdbcType=DECIMAL} ,
+        	#{numExtraCollectInterest,jdbcType=DECIMAL} ,
+        	#{numExtraInterest,jdbcType=DECIMAL} ,
+        	#{numTotalAwards,jdbcType=DECIMAL} ,
+        	#{numMminterestEarn,jdbcType=DECIMAL} ,
+        	#{numMminterestLose,jdbcType=DECIMAL} ,
+        	#{dtCreate,jdbcType=TIMESTAMP} 
+		)
+	]]>
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.subjectresult.Subjectresult">
+		UPDATE tbsubjectresult
+		<set>
+			<if test="isubjectId != null">
+	        iSubjectId = #{isubjectId,jdbcType=INTEGER} ,
+	        </if>
+			<if test="dtCollectEnd != null">
+	        dtCollectEnd = #{dtCollectEnd,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="numActualFinancing != null">
+	        numActualFinancing = #{numActualFinancing,jdbcType=DECIMAL} ,
+	        </if>
+			<if test="numCollectInterest != null">
+	        numCollectInterest = #{numCollectInterest,jdbcType=DECIMAL} ,
+	        </if>
+			<if test="numInterest != null">
+	        numInterest = #{numInterest,jdbcType=DECIMAL} ,
+	        </if>
+			<if test="numAgreementCollectInterest != null">
+	        numAgreementCollectInterest = #{numAgreementCollectInterest,jdbcType=DECIMAL} ,
+	        </if>
+			<if test="numAgreementInterest != null">
+	        numAgreementInterest = #{numAgreementInterest,jdbcType=DECIMAL} ,
+	        </if>
+			<if test="numExtraCollectInterest != null">
+	        numExtraCollectInterest = #{numExtraCollectInterest,jdbcType=DECIMAL} ,
+	        </if>
+			<if test="numExtraInterest != null">
+	        numExtraInterest = #{numExtraInterest,jdbcType=DECIMAL} ,
+	        </if>
+			<if test="numTotalAwards != null">
+	        numTotalAwards = #{numTotalAwards,jdbcType=DECIMAL} ,
+	        </if>
+			<if test="numMminterestEarn != null">
+	        numMMInterestEarn = #{numMminterestEarn,jdbcType=DECIMAL} ,
+	        </if>
+			<if test="numMminterestLose != null">
+	        numMMInterestLose = #{numMminterestLose,jdbcType=DECIMAL} ,
+	        </if>
+			<if test="dtCreate != null">
+	        dtCreate = #{dtCreate,jdbcType=TIMESTAMP} 
+	        </if>
+	    </set>
+		WHERE 
+	        id = #{id,jdbcType=INTEGER} 
+	</update>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbsubjectresult WHERE
+        id = #{id} 
+	]]>
+	</delete>
+    
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT r.*,j.vcname as projectName, t.vcName AS vcname,
+			t.numInterestRate AS numInterestRate,
+			t.numRewardRate AS numRewardRate,
+			t.numTotalFinancing AS numTotalFinancing,
+			t.iState AS iState,t.iInterestConfigId as iInterestConfigId 
+			FROM tbsubjectresult r LEFT JOIN tbsubject t ON r.iSubjectId = t.id 
+			LEFT JOIN tbproject j on j.id=t.iProjectID 
+		   WHERE  r.id = #{id} 
+	</select>
+	 
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from tbsubjectresult r LEFT JOIN tbsubject t ON r.iSubjectId = t.id
+           LEFT JOIN tbproject j on j.id=t.iProjectID where 1=1 
+		<include refid="queryWherePage"/>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		SELECT r.*, j.vcname as projectName, t.vcName AS vcname,
+			t.numInterestRate AS numInterestRate,
+			t.numRewardRate AS numRewardRate,
+			t.numTotalFinancing AS numTotalFinancing,
+			t.iState AS iState,t.iInterestConfigId as iInterestConfigId 
+		FROM
+			tbsubjectresult r LEFT JOIN tbsubject t ON r.iSubjectId = t.id
+           LEFT JOIN tbproject j on j.id=t.iProjectID where 1=1 
+			
+		<include refid="queryWherePage"/> 
+		
+	    <![CDATA[ ORDER BY id DESC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<sql id="queryWherePage">
+		<if test="id != null and id.trim() != ''">
+		and r.id = #{id}
+		</if>
+		<if test="isubjectId != null and isubjectId.trim() != ''">
+		and r.iSubjectId = #{isubjectId}
+		</if>
+		<if test="dtCollectEndBegin != null and dtCollectEndBegin.trim() != ''">
+		and r.dtCollectEnd >= #{dtCollectEndBegin}
+		</if>
+		<if test="dtCollectEndEnd != null and dtCollectEndEnd.trim() != ''">
+		and r.dtCollectEnd &lt;= #{dtCollectEndEnd}
+		</if>
+		<if test="numActualFinancing != null and numActualFinancing.trim() != ''">
+		and r.numActualFinancing = #{numActualFinancing}
+		</if>
+		<if test="numCollectInterest != null and numCollectInterest.trim() != ''">
+		and r.numCollectInterest = #{numCollectInterest}
+		</if>
+		<if test="numInterest != null and numInterest.trim() != ''">
+		and r.numInterest = #{numInterest}
+		</if>
+		<if test="numAgreementCollectInterest != null and numAgreementCollectInterest.trim() != ''">
+		and r.numAgreementCollectInterest = #{numAgreementCollectInterest}
+		</if>
+		<if test="numAgreementInterest != null and numAgreementInterest.trim() != ''">
+		and r.numAgreementInterest = #{numAgreementInterest}
+		</if>
+		<if test="numExtraCollectInterest != null and numExtraCollectInterest.trim() != ''">
+		and r.numExtraCollectInterest = #{numExtraCollectInterest}
+		</if>
+		<if test="numExtraInterest != null and numExtraInterest.trim() != ''">
+		and r.numExtraInterest = #{numExtraInterest}
+		</if>
+		<if test="numTotalAwards != null and numTotalAwards.trim() != ''">
+		and r.numTotalAwards = #{numTotalAwards}
+		</if>
+		<if test="numMminterestEarn != null and numMminterestEarn.trim() != ''">
+		and r.numMMInterestEarn = #{numMminterestEarn}
+		</if>
+		<if test="numMminterestLose != null and numMminterestLose.trim() != ''">
+		and r.numMMInterestLose = #{numMminterestLose}
+		</if>
+		<if test="dtCreateBegin != null and dtCreateBegin.trim() != ''">
+		and r.dtCreate >= #{dtCreateBegin}
+		</if>
+		<if test="dtCreateEnd != null and dtCreateEnd.trim() != ''">
+		and r.dtCreate &lt;= #{dtCreateEnd}
+		</if>
+		<if test="vcName != null and vcName.trim() != ''">
+		and t.vcName like "%"#{vcName}"%"
+		</if>
+		<if test="iType !=null">
+		 and t.iType = #{iType} 
+		 </if>
+	</sql>
+	
+	
+	<sql id="queryWhere">
+		<if test="id != null and id.trim() != ''">
+		and id = #{id}
+		</if>
+		<if test="isubjectId != null and isubjectId.trim() != ''">
+		and iSubjectId = #{isubjectId}
+		</if>
+		<if test="dtCollectEndBegin != null and dtCollectEndBegin.trim() != ''">
+		and dtCollectEnd >= #{dtCollectEndBegin}
+		</if>
+		<if test="dtCollectEndEnd != null and dtCollectEndEnd.trim() != ''">
+		and dtCollectEnd &lt;= #{dtCollectEndEnd}
+		</if>
+		<if test="numActualFinancing != null and numActualFinancing.trim() != ''">
+		and numActualFinancing = #{numActualFinancing}
+		</if>
+		<if test="numCollectInterest != null and numCollectInterest.trim() != ''">
+		and numCollectInterest = #{numCollectInterest}
+		</if>
+		<if test="numInterest != null and numInterest.trim() != ''">
+		and numInterest = #{numInterest}
+		</if>
+		<if test="numAgreementCollectInterest != null and numAgreementCollectInterest.trim() != ''">
+		and numAgreementCollectInterest = #{numAgreementCollectInterest}
+		</if>
+		<if test="numAgreementInterest != null and numAgreementInterest.trim() != ''">
+		and numAgreementInterest = #{numAgreementInterest}
+		</if>
+		<if test="numExtraCollectInterest != null and numExtraCollectInterest.trim() != ''">
+		and numExtraCollectInterest = #{numExtraCollectInterest}
+		</if>
+		<if test="numExtraInterest != null and numExtraInterest.trim() != ''">
+		and numExtraInterest = #{numExtraInterest}
+		</if>
+		<if test="numTotalAwards != null and numTotalAwards.trim() != ''">
+		and numTotalAwards = #{numTotalAwards}
+		</if>
+		<if test="numMminterestEarn != null and numMminterestEarn.trim() != ''">
+		and numMMInterestEarn = #{numMminterestEarn}
+		</if>
+		<if test="numMminterestLose != null and numMminterestLose.trim() != ''">
+		and numMMInterestLose = #{numMminterestLose}
+		</if>
+		<if test="dtCreateBegin != null and dtCreateBegin.trim() != ''">
+		and dtCreate >= #{dtCreateBegin}
+		</if>
+		<if test="dtCreateEnd != null and dtCreateEnd.trim() != ''">
+		and dtCreate &lt;= #{dtCreateEnd}
+		</if>
+	</sql>
+</mapper>
+
+

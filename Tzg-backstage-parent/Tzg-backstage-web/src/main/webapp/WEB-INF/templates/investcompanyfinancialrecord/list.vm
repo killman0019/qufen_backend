@@ -1,0 +1,106 @@
+<script src="${www}/js/my97DatePicker/WdatePicker.js"></script>
+<div class="main-content">
+    <div class="breadcrumbs" id="breadcrumbs">
+        <script type="text/javascript">
+            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+			
+			function downloadInvestcompanyfr(){
+             window.location="$!{www}/investcompanyfinancialrecord/download/investcompanyfinancialrecord?dtTradeBeginFuzzy="+$("#dtTradeBeginFuzzy").val()+"&dtTradeEndFuzzy="+$("#dtTradeEndFuzzy").val()
+			 +"&iTradeType="+$("#iTradeType").val();
+			 }
+
+        </script>
+
+        <ul class="breadcrumb">
+            <li>
+                <i class="icon-home home-icon"></i>
+                <a href="${www}/main">主页</a>
+            </li>
+
+            <li class="active">投资公司</li>
+        </ul><!-- .breadcrumb -->
+
+        <div class="nav-search" id="nav-search">
+            <form class="form-search">
+						<span class="input-icon">
+							<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+							<i class="icon-search nav-search-icon"></i>
+						</span>
+            </form>
+        </div><!-- #nav-search -->
+    </div>
+	<div class="page-content">
+		<div class="page-header">
+		    <h1>投资公司</h1>
+		</div>
+		<div class="container-fluid">
+		    <div class="dataTables_wrapper">
+		        <div class="row">
+		            <div class="col-sm-11">
+		                <form class="form-inline" role="form">
+							<div class="form-group">
+		                        <label>交易日期：</label>
+		                         <input type="text" name="dtTradeBeginFuzzy"  id="dtTradeBeginFuzzy"  style="width:90px;"  onFocus="WdatePicker({lang:'zh-cn'})" value="$!{query.dtTradeBeginFuzzy}" class="input-date">
+								-
+								<input type="text" name="dtTradeEndFuzzy" id="dtTradeEndFuzzy"  style="width:90px;"  onFocus="WdatePicker({lang:'zh-cn'})" value="$!{query.dtTradeEndFuzzy}" class="input-date">
+		                    </div>
+		                    <div class="form-group">
+		                        <label>交易类型：</label>
+								 <select  name="iTradeType" id="iTradeType">
+                                    <option value="">请选择</option>
+                                    <option value="1" #if($query.iTradeType && $query.iTradeType =='1') selected #end>充值</option>
+                                    <option value="2" #if($query.iTradeType && $query.iTradeType =='2') selected #end>提现</option>
+    								<option value="3" #if($query.iTradeType && $query.iTradeType =='3') selected #end>借入</option>
+    								<option value="4" #if($query.iTradeType && $query.iTradeType =='4') selected #end>还款</option>
+                                </select>
+		                    </div>
+		                    <div class="form-group">
+		                        <button class="btn btn-xs btn-primary" type="submit">搜索</button>
+		                    </div>
+		                </form>
+		            </div>
+                    <div class="col-sm-1">
+                        <a  href="javascript:void(0);" onclick="downloadInvestcompanyfr()" class="btn btn-success btn-xs">下载</a>
+                    </div>
+		        </div>
+		        <table class="table table-striped table-bordered table-hover dataTable">
+		            <thead>
+		            <tr>
+						<th>交易日期</th>
+		                <th>交易类型</th>
+		                <th>交易金额</th>
+		                <th>账户余额</th>
+		            </tr>
+		            </thead>
+		            <tbody>
+						<tr>
+		                	<td>汇总</td>
+		                	<td>----</td>
+		                	<td>$!{totalTradeAmount}</td>
+		                	<td>----</td>
+		                </tr>
+		                #foreach($row in $result.rows)
+		                <tr>
+		                	<td> #if($row.dtTradeDate)$dateTool.format("yyyy-MM-dd",$!{row.dtTradeDate}) #end</td>
+		                	<td> #if(102==$row.itradeType)借入#elseif(103==$row.itradeType || 104==$row.itradeType)还款#elseif(105==$row.itradeType)充值 #elseif(106==$row.itradeType)提现#else无 #end </td>
+		                	<td> $!{row.numAmount} </td>
+		                	<td> $!{row.numBalance} </td>
+		                </tr>
+		                #end
+		            </tbody>
+		        </table>
+		        <div class="row">
+		            <div class="col-sm-12">
+		                <div class="dataTables_paginate paging_bootstrap">
+		                    <ul class="pagination">
+		                    	#set($pageRequestURL="$!{www}/investcompanyfinancialrecord?pageIndex=[PAGINATION_PAGE_INDEX]#if($!{result.queryParameters})&$!{result.queryParameters}#end")
+		                    	#paginationHelper($result $pageRequestURL)
+		                    </ul>
+		                </div>
+		            </div>
+		       </div>
+		       
+		    </div>
+		</div>
+    </div><!-- /.page-content -->
+</div><!-- /.main-content -->
