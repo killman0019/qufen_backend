@@ -70,6 +70,7 @@ public class KFFConstants {
 	public static final int PROJECT_STATE_PASS = 2;
 	public static final int PROJECT_STATE_REJECT = 3;
 	
-	
-	
+	//区分指数    初期统一设置为100
+	public static final int QUFEN_INDEX = 100;
+
 }

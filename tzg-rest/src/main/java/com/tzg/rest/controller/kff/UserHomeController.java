@@ -150,13 +150,10 @@ public class UserHomeController extends BaseController {
 
 		try {
 			BaseRequest baseRequest = getParamMapFromRequestPolicy(request, BaseRequest.class);
-			System.err.println(baseRequest.toString());
 			String token = baseRequest.getToken();
-			System.err.println("token"+  token);
 			Integer loginUserId = getUserIdByToken(token);
 			Integer userId = baseRequest.getUserId();			
 			PaginationQuery query = new PaginationQuery();
-			System.out.println("query" + query);
 			if(userId != null && userId > 0){
 	          query.addQueryData("userId", userId +"");
 			}else{
@@ -168,12 +165,10 @@ public class UserHomeController extends BaseController {
 	        query.setPageIndex(baseRequest.getPageIndex());
 	        query.setRowsPerPage(baseRequest.getPageSize());
 			PageResult<PostResponse> discusses = kffRmiService.findPageDisscussList(query);
-			System.out.println("discusses:          " +discusses);
             map.put("discusses", discusses);
 			bre.setData(map);
-			System.out.println("map:" + map);
 		} catch (RestServiceException e) {
-			logger.error("UserHomeController discussList:{}", e);// 问题是确实缺失参数
+			logger.error("UserHomeController discussList:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
 		} catch (Exception e) {
 			logger.error("UserHomeController discussList:{}", e);

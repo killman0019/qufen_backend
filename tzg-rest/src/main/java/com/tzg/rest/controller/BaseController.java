@@ -229,9 +229,9 @@ public abstract class BaseController {
 	 	
 		public <T> T getParamMapFromRequestPolicy(HttpServletRequest request,Class<T> clazz) throws IOException {
 	 		//System.out.println("--------------- 追踪线上问题2----------------"+request.getRequestURI());
+			
 			String policy = request.getParameter("policy");
 			if(StringUtils.isBlank(policy)){
-				//System.err.println(policy);
 				throw new RestServiceException(RestErrorCode.MISSING_POLICY);
 			}
 			

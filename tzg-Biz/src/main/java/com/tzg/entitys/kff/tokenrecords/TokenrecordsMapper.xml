@@ -8,19 +8,18 @@
 		<result property="tradeType" jdbcType="INTEGER" column="trade_type"/>
 		<result property="functionDesc" jdbcType="VARCHAR" column="function_desc"/>
 		<result property="functionType" jdbcType="TINYINT" column="function_type"/>
-		<result property="amount" jdbcType="REAL" column="amount"/>
+		<result property="amount" jdbcType="INTEGER" column="amount"/>
 		<result property="tradeDate" jdbcType="TIMESTAMP" column="trade_date"/>
 		<result property="balance" jdbcType="INTEGER" column="balance"/>
 		<result property="createTime" jdbcType="TIMESTAMP" column="createTime"/>
 		<result property="updateTime" jdbcType="TIMESTAMP" column="updateTime"/>
 		<result property="status" jdbcType="INTEGER" column="status"/>
 		<result property="memo" jdbcType="VARCHAR" column="memo"/>
-		<result property="rewardGrantType" jdbcType="INTEGER" column="reward_grant_type"/>
     </resultMap>
 	
 	<sql id="columns">
 	    <![CDATA[
-        token_records_id ,user_id ,trade_code ,trade_type ,function_desc ,function_type ,amount ,trade_date ,balance ,createTime ,updateTime ,status ,memo,reward_grant_type 
+        token_records_id ,user_id ,trade_code ,trade_type ,function_desc ,function_type ,amount ,trade_date ,balance ,createTime ,updateTime ,status ,memo 
 	    ]]>
 	</sql>
 	
@@ -41,22 +40,20 @@
         	createTime ,
         	updateTime ,
         	status ,
-        	memo ,
-        	reward_grant_type
+        	memo 
 		) VALUES (
         	#{userId,jdbcType=INTEGER} ,
         	#{tradeCode,jdbcType=VARCHAR} ,
         	#{tradeType,jdbcType=INTEGER} ,
         	#{functionDesc,jdbcType=VARCHAR} ,
         	#{functionType,jdbcType=TINYINT} ,
-        	#{amount,jdbcType=REAL} ,
+        	#{amount,jdbcType=INTEGER} ,
         	#{tradeDate,jdbcType=TIMESTAMP} ,
         	#{balance,jdbcType=INTEGER} ,
         	#{createTime,jdbcType=TIMESTAMP} ,
         	#{updateTime,jdbcType=TIMESTAMP} ,
         	#{status,jdbcType=INTEGER} ,
-        	#{memo,jdbcType=VARCHAR} ,
-        	#{rewardGrantType,jdbcType=INTEGER} 
+        	#{memo,jdbcType=VARCHAR} 
 		)
 	]]>
 	</insert>
@@ -80,7 +77,7 @@
 	        function_type = #{functionType,jdbcType=TINYINT} ,
 	        </if>
 			<if test="amount != null">
-	        amount = #{amount,jdbcType=REAL} ,
+	        amount = #{amount,jdbcType=INTEGER} ,
 	        </if>
 			<if test="tradeDate != null">
 	        trade_date = #{tradeDate,jdbcType=TIMESTAMP} ,
@@ -98,10 +95,7 @@
 	        status = #{status,jdbcType=INTEGER} ,
 	        </if>
 			<if test="memo != null">
-	        memo = #{memo,jdbcType=VARCHAR} ,
-	        </if>
-	        <if test="rewardGrantType != null">
-	        rewardGrantType = #{rewardGrantType,jdbcType=INTEGER} 
+	        memo = #{memo,jdbcType=VARCHAR} 
 	        </if>
 	    </set>
 		WHERE 
@@ -135,12 +129,7 @@
 	    <![CDATA[ ORDER BY token_records_id DESC ]]>
         <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
 	</select>
-	<!-- 查询rewardToken(赠送的奖励)个人总数量 -->
-	<select id="findUserSumRewardToken"  parameterType="java.lang.Float">
-	select sum(*) from tbtokenrecords where 1=1
-	<include refid="queryWhere"/>
-	</select>
-	<!-- 查询单人的邀请字段 -->
+	
 	<sql id="queryWhere">
 		<if test="tokenRecordsId != null and tokenRecordsId.trim() != ''">
 		and token_records_id = #{tokenRecordsId}
@@ -190,10 +179,6 @@
 		<if test="memo != null and memo.trim() != ''">
 		and memo = #{memo}
 		</if>
-		<if test="rewardGrantType != null and rewardToken.trim() != ''">
-		and rewardGrantType = #{rewardGrantType}
-		</if>
-		
 	</sql>
 </mapper>
 

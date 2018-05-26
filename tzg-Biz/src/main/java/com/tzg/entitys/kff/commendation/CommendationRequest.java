@@ -41,7 +41,7 @@ public class CommendationRequest extends BaseRequest implements Serializable {
     /**
      * 捐赠金额
      */ 	
-	private java.lang.Double amount;
+	private java.lang.Integer amount;
 	public java.lang.Integer getSendUserId() {
 		return sendUserId;
 	}
@@ -78,10 +78,10 @@ public class CommendationRequest extends BaseRequest implements Serializable {
 	public void setPostType(java.lang.Integer postType) {
 		this.postType = postType;
 	}
-	public java.lang.Double getAmount() {
+	public java.lang.Integer getAmount() {
 		return amount;
 	}
-	public void setAmount(java.lang.Double amount) {
+	public void setAmount(java.lang.Integer amount) {
 		this.amount = amount;
 	}
 

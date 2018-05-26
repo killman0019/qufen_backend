@@ -4,8 +4,6 @@ import com.tzg.common.base.BaseMapper;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TokenrecordsMapper extends BaseMapper<Tokenrecords, java.lang.Integer> {
-
-	Float findUserSumRewardToken();	
+public interface TokenrecordsMapper extends BaseMapper<Tokenrecords, java.lang.Integer> {	
 
 }

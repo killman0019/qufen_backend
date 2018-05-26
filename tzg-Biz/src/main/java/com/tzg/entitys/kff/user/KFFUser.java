@@ -86,7 +86,7 @@ public class KFFUser implements Serializable {
     /**
      * 账号币值
      */ 	
-	private Double kffCoinNum  = 0.000d;
+	private java.lang.Integer kffCoinNum  = 0;
     /**
      * 所在地区域名称:浙江省杭州市
      */ 	
@@ -255,11 +255,11 @@ public class KFFUser implements Serializable {
 		return this.articleNum;
 	}
 	
-	public void setKffCoinNum(java.lang.Double value) {
+	public void setKffCoinNum(java.lang.Integer value) {
 		this.kffCoinNum = value;
 	}
 	
-	public java.lang.Double getKffCoinNum() {
+	public java.lang.Integer getKffCoinNum() {
 		return this.kffCoinNum;
 	}
 	

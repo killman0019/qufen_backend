@@ -69,9 +69,5 @@ public interface BaseMapper <E,PK extends Serializable>{
 	* @return List<E> 返回数据集合   
 	*/
 	public List<E> findAllPage(Map<String,Object> map);
-	/**
-	 * 根据邀请人id,查询被邀请人的id个数
-	 * @return Integer 总id数
-	 */
-	/*public Integer findReferUserIdByUserCount(Integer referUserId);*/
+
 }

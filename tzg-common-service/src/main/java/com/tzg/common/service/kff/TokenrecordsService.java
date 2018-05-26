@@ -14,7 +14,7 @@ import com.tzg.rest.exception.rest.RestServiceException;
 
 @Service(value="KFFTokenrecordsService")
 @Transactional
-public class TokenrecordsService {
+public class TokenrecordsService   {
 
 	@Autowired
 	private TokenrecordsMapper tokenrecordsMapper;	
@@ -63,10 +63,7 @@ public class TokenrecordsService {
 		return result;
 	}
 
-	@Transactional(readOnly=true)
-	public Float findUserSumRewardToken(java.lang.Integer userId) throws RestServiceException{
-		
-		return tokenrecordsMapper.findUserSumRewardToken();
-	}
+	
+
 	
 }

@@ -21,7 +21,7 @@
 		</dependency>
 	</dependencies>
 	<build>
-		<finalName>tzg-rmi-server</finalName>
+		<finalName>rmi</finalName>
 		<plugins>
 			<!-- jetty插件 -->
 			<plugin>
@@ -40,16 +40,6 @@
 					<stopWait>10</stopWait>
 				</configuration>
 			</plugin>
-			
-			<plugin>
-				<groupId>org.apache.tomcat.maven</groupId>
-				<artifactId>tomcat7-maven-plugin</artifactId>
-				<version>2.2</version>
-				<configuration>
-					<port>8081</port>
-				</configuration>
-			</plugin>
-			
 		</plugins>
 	</build>
 </project>

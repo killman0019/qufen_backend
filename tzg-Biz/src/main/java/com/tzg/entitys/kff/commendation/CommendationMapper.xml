@@ -12,7 +12,7 @@
 		<result property="postId" jdbcType="INTEGER" column="post_id"/>
 		<result property="projectId" jdbcType="INTEGER" column="project_id"/>
 		<result property="postType" jdbcType="INTEGER" column="post_type"/>
-		<result property="amount" jdbcType="DOUBLE" column="amount"/>
+		<result property="amount" jdbcType="INTEGER" column="amount"/>
     </resultMap>
 	
 	<sql id="columns">
@@ -47,7 +47,7 @@
         	#{postId,jdbcType=INTEGER} ,
         	#{projectId,jdbcType=INTEGER} ,
         	#{postType,jdbcType=INTEGER} ,
-        	#{amount,jdbcType=DOUBLE} 
+        	#{amount,jdbcType=INTEGER} 
 		)
 	]]>
 	</insert>
@@ -83,7 +83,7 @@
 	        post_type = #{postType,jdbcType=INTEGER} ,
 	        </if>
 			<if test="amount != null">
-	        amount = #{amount,jdbcType=DOUBLE} 
+	        amount = #{amount,jdbcType=INTEGER} 
 	        </if>
 	    </set>
 		WHERE 
