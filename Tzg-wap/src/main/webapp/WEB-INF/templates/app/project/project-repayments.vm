@@ -1,0 +1,37 @@
+#set($layout = "/layout/default2.vm")
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>还款计划11122</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="renderer" content="webkit">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="stylesheet" href="$!{basePath}/app/css/style.css?v=1020">
+</head>
+<body>
+	
+<ul class="tab">
+	<li><a href="project-intro.html">项目介绍</a></li>
+	<li><a href="project-safety.html">安全保障</a></li>
+	<li><a href="project-invest-record.html">投资记录</a></li>
+	<li class="-active"><a href="project-repayments.html">还款计划</a></li>
+</ul>
+
+
+<div class="container-spacing mtb">
+	<ul class="prop-list">
+		<li><p><span class="prop-list_label">还款金额：</span>88,888,88.00元</p>
+			<p><span class="prop-list_label">还款日期：</span>2015-09-09</p>
+			<p><span class="prop-list_label">还款类型：</span>本息</p>
+			<p><span class="prop-list_label">期　　次：</span>募集期</p>
+		<li><p><span class="prop-list_label">还款金额：</span>88,888,88.00元</p>
+			<p><span class="prop-list_label">还款日期：</span>2015-09-09</p>
+			<p><span class="prop-list_label">还款类型：</span>本息</p>
+			<p><span class="prop-list_label">期　　次：</span>1/1</p>
+	</ul>
+</div>
+
+
+</body>
+</html>

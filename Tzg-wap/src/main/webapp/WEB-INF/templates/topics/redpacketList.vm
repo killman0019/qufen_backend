@@ -1,0 +1,41 @@
+#set($layout = "/layout/v3/default.vm")
+#set($topbar = {"title": "加息券", "backLink": "$!{basePath}/user/home"})
+#set($noPrimaryNav = true)
+
+<div class="ticket-base">
+	<ul class="ticket-info">
+		<li>
+			<div class="amount">10<sub>张</sub></div>
+			<div class="ticket-info_label">可用加息券 <span class="ticket-tips">使用规则</span></div>
+		</li>
+		<li>
+			<div class="amount">10<sub>张</sub></div>
+			<div class="ticket-info_label">7天内将过期加息券</div>
+		</li>
+	</ul>
+</div>## .ticket-base
+
+<ul class="tab -cc3">
+	<li class="-active"><a href="#">未使用</a></li>
+	<li><a href="#">已使用</a></li>
+	<li><a href="#">已失效</a></li>
+</ul>
+
+<div class="ticket-list">
+	<div class="ticket-list_year">2016</div>
+	<div class="ticket-list_item">
+		<div class="ticket-list_item_date">01/06</div>
+		<ul class="ticket-list_item_props">
+			<li>
+				<div class="ticket-list_item_props_label">使用方式</div>
+				<div class="ticket-list_item_props_content">xxxxxxx</div>
+			</li>
+			<li>
+				<div class="ticket-list_item_props_label">加息面值</div>
+				<div class="ticket-list_item_props_content c-green">+3.0%</div>
+			</li>
+		</ul>
+	</div>
+</div>
+
+<a href="#" class="v3-topbar-side">兑换</a>

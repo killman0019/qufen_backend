@@ -1,0 +1,156 @@
+
+
+#*
+## 定期宝详情
+## =======================================
+#set($pageName = "定期宝一月计划")
+#set($bodyClass = "body--gray")
+#set($topbar = { "title": $pageName })
+
+<div class="subject-detail-base m1">
+	<div class="sdb_earning">
+		<div class="sdb_earning_value">11.00<sub>%</sub></div>
+		<div class="sdb_earning_name">年化收益</div>
+	</div>
+	<div class="sdb_line"></div>
+	<ul class="sdb_properties -col2">
+		<li>
+			<div class="pr-content">10.00 万元</div>
+			<div class="pr-label">总额度</div>
+		</li>
+		<li>
+			<div class="pr-content">84 天</div>
+			<div class="pr-label">锁定期</div>
+		</li>
+	</ul>
+</div>
+
+<div class="m1 b1 subject-detail-second">
+	<div class="sds_progress m-prgr2"><span class="m-prgr2-bar" style="width:10%"></span></div>
+	<div class="sds_progress-title">已售出10% 剩余可投资89,900.01元</div>
+</div>
+
+<div class="m1 b1">
+	<ul class="block-progress">
+		<li class="-light">定期宝发布<span class="block-progress_side">7-17</span></li>
+		<li>购买加入<span class="block-progress_side">7-17</span></li>
+		<li>进入锁定期<span class="block-progress_side">7-17</span></li>
+		<li>退出锁定期<span class="block-progress_side">7-17</span></li>
+	</ul>
+</div>
+
+<div class="m1 b1 text-section">
+	<div class="text-section_title">产品介绍</div>
+	<div class="text-section_content">
+		床前明月光，疑是地上霜。举头望明月，低头思故乡。
+		人间四月芳菲尽，山寺桃花始盛开。长恨春归无觅处，不知转入此中来。
+	</div>
+</div>
+
+<div class="m1 b1 text-section">
+	<div class="text-section_title">其他信息</div>
+	<div class="box-view-group">
+		<a href="#"><i class="ii-product-info"></i>产品详情</a>
+		<a href="#">
+			<i class="ii-join-record"></i>加入记录
+			<span class="other"><span class="u-clPrm">100</span>人次加入</span>
+		</a>
+	</div>
+</div>
+*#
+
+#*
+## 加入记录
+## =======================================
+#set($pageName = "加入记录")
+#set($topbar = { "title": $pageName })
+
+<table class="m-tblLst">
+	<thead>
+		<tr>
+			<th>投资时间</th>
+			<th>投资人</th>
+			<th>投资金额</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>2015-09-19 15:15:15</td>
+			<td>150****9999</td>
+			<td>100.00元</td>
+		</tr>
+		<tr>
+			<td>2015-09-19 15:15:15</td>
+			<td>150****9999</td>
+			<td>100.00元</td>
+		</tr>
+	</tbody>
+</table>
+*#
+
+## 定期宝 产品详情
+## =======================================
+#set($pageName = "产品详情")
+#set($bodyClass = "body--gray")
+#set($topbar = { "title": $pageName })
+
+<div class="dqb-property-box">
+	<div class="dqb-property-title">概要</div>
+
+	<ul class="dqb-properties">
+		<li>
+			<div class="dqb-properties_label -t2">期限</div>
+			<div class="dqb-properties_content">30天</div>
+		</li>
+		<li>
+			<div class="dqb-properties_label">年化收益率</div>
+			<div class="dqb-properties_content">8.00%</div>
+		</li>
+		<li>
+			<div class="dqb-properties_label -t4">还款方式</div>
+			<div class="dqb-properties_content">到期自动回复</div>
+		</li>
+		<li>
+			<div class="dqb-properties_label -t3">起息日</div>
+			<div class="dqb-properties_content">7月18日</div>
+		</li>
+		<li>
+			<div class="dqb-properties_label -t3">到息日</div>
+			<div class="dqb-properties_content">2015年8月18日</div>
+		</li>
+		<li>
+			<div class="dqb-properties_label -t4">保障方式</div>
+			<div class="dqb-properties_content">本期保障</div>
+		</li>
+	</ul>
+</div>
+
+<div class="dqb-property-box">
+	<div class="dqb-property-title">加入</div>
+
+	<ul class="dqb-properties">
+		<li>
+			<div class="dqb-properties_label -t4">加入条件</div>
+			<div class="dqb-properties_content">加入金额100元起，且以100元倍数递增</div>
+		</li>
+		<li>
+			<div class="dqb-properties_label -t4">投资上限</div>
+			<div class="dqb-properties_content">无</div>
+		</li>
+	</ul>
+</div>
+
+<div class="dqb-property-box">
+	<div class="dqb-property-title">费用</div>
+
+	<ul class="dqb-properties">
+		<li>
+			<div class="dqb-properties_label -t4">加入费用率</div>
+			<div class="dqb-properties_content">0.00%</div>
+		</li>
+		<li>
+			<div class="dqb-properties_label">到期赎回费率</div>
+			<div class="dqb-properties_content">0.00%</div>
+		</li>
+	</ul>
+</div>

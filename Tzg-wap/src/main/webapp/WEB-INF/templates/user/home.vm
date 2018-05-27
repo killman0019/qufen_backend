@@ -1,0 +1,70 @@
+#set($pageTitle = "我的账户_投资人")
+#set($topbar = {"title": "资产", "backLink": "no"})
+#set($pageFootCode = '<script>seajs.use("page/user-home")</script>')
+
+<div class="m-topabr--welcome"><span data-current="$!{now}"></span>您好，$!{realName}</div>
+
+<div class="m-dataBoard">已赚收益：<span class="m-dataBoard_amount">￥$!{numTotalProfit} 元</span></div>
+
+<ul class="m-dataGrp l-mn f-mtb2">
+	<li>
+		<span class="m-dataGrp-lbl">累计投资</span>
+		<span class="m-dataGrp-val">$!{numTotalInvest} 元</span>
+	</li>
+	<li>
+		<span class="m-dataGrp-lbl">资产总计</span>
+		<span class="m-dataGrp-val">$!{numTotalAsset} 元</span>
+	</li>
+	<li>
+		<span class="m-dataGrp-lbl">待收本金</span>
+		<span class="m-dataGrp-val">$!{numOutstanding} 元</span>
+	</li>
+	<li>
+		<span class="m-dataGrp-lbl">待收收益</span>
+		<span class="m-dataGrp-val">$!{numOutstandingProfit}元</span>
+	</li>
+	<li>
+		<span class="m-dataGrp-lbl">可用红包</span>
+		<span class="m-dataGrp-val">$!{numEnvelopes} 元</span>
+	</li>
+	<li>
+		<a href="$!{basePath}/currentBao/project/detail" class="currentBao-link-btn">
+			<span class="m-dataGrp-lbl">铜钱宝总金额</span>
+			<span class="m-dataGrp-val">$!{numCurrentBaoBalance} 元</span>
+		</a>
+	</li>
+	<li>
+		<span class="m-dataGrp-lbl">可用余额</span>
+		<span class="m-dataGrp-val">$!{numAvailable} 元</span>
+	</li>
+	<li><input class="mui-switch mui-switch-animbg" id="j_movableauto-btn" type="checkbox"#if($currentBaoInvestState == 1) checked#end data-state="$!{currentBaoInvestState}"></li>
+</ul>
+<input type="hidden" name="CSRFToken" value="$!{CSRFToken}" id="j_input_csrftoken">
+##<input value="$!{currentBaoInvestState}" id="investState" type="hidden">
+<ul class="m-blkLnks">
+	<li><a href="$!{basePath}/user/investRecord/page"><i class="u-fntIco z-cl1">&#xe604;</i> 投资记录</a></li>
+	<li><a href="$!{basePath}/user/financialRecord/page"><i class="u-fntIco z-cl2">&#xe60e;</i> 资金记录</a></li>
+	<li><a href="$!{basePath}/user/interestTicket/redAndTicket"><img src="$!{basePath}/assets/images/icon-reward.png" alt="我的奖励" class="imgIco"> 我的奖励</a></li>
+	<li><a href="$!{basePath}/user/investRepayDetail/page"><i class="u-fntIco z-cl4">&#xe605;</i> 回款计划</a></li>
+	<li><a href="$!{basePath}/user/pyramid/wap/home"><i class="u-fntIco z-cl2">&#xe612;</i> 人人赚</a></li>
+	<li><a href="$!{basePath}/user/accountSetup/page"><i class="u-fntIco z-cl5">&#xe609;</i> 安全中心</a></li>
+	<li><a href="$!{basePath}/user/charge/page"><i class="u-fntIco z-cl7">&#xe901;</i> 充值</a></li>
+	<li><a href="$!{basePath}/user/cash/page"><i class="u-fntIco z-cl6">&#xe900;</i> 提现</a></li>	
+</ul>
+
+<div class="m-ppp" id="j_protocol_popup">
+	<div class="m-ppp-hd">《自动转入协议》</div>
+	<div class="m-ppp-bd">
+		<div class="m-ppp-bd-cnt" id="pro-content">
+			<iframe src="$!{autoTransferProtocol}" frameborder="0" width="100%" height="100%" scrolling="yes"></iframe>
+		</div>
+	</div>
+	<div class="m-ppp-ft">
+		<button type="button" class="u-btn--lnk z-fll" pppclosebtn>确 定</button>
+	</div>
+</div>
+
+## 底部导航
+## =============================
+#set($primaryNavCurrent = "assets")
+#parse("/components/primary-nav/primary-nav-v2.vm")

@@ -1,0 +1,17 @@
+.container {
+	margin: 0 auto;
+	max-width: @viewport-wider;
+	min-width: @viewport-narrower;	
+}
+
+//
+// 边框+背景容器
+//
+.mixin-box1(@border-color: #c7c7c7, @bg: #fff) {
+	border: 1px solid @border-color;
+	background: @bg;
+}
+
+.box1 {
+	.mixin-box1();
+}

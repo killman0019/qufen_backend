@@ -1,0 +1,108 @@
+#set($layout = "/layout/v3/default.vm")
+
+#set($pageTitle = "铜掌柜-小理财,大生活_移动手机投资理财首选平台_互联网金融服务平台")
+#set($pageKeywords = "投资理财,铜掌柜,网络投资,网络理财,互联网金融服务平台")
+#set($pageDescription = "铜掌柜，小理财,大生活！提供安全透明、高收益的网络投资理财服务。铜掌柜是由中来股份战略入股，浙银资本A轮入股的理财平台，风控严格，理财投资安全可靠。")
+
+#set($bodyClass = "body-home")
+#set($pageScript = "home")
+#set($primaryNavCurrent = "rec")
+
+<div class="v3-topbar -logo">
+	<a href="/" class="v3-topbar_logo">铜掌柜</a>
+	<a href="$!{basePath}/register/page" class="v3-topbar_right c-white">注册</a>
+</div>
+
+<div class="slide" id="j_main_slide">
+	<div class="slide_images" j-slide-images style="height:200px;">
+		<ul>
+			#foreach($item in $focusList)
+				#if($item.vcJumpUrl && $item.vcJumpUrl != "")
+					<li><a href="$!{item.vcJumpUrl}"><img src="$!{staticUploadUrl}$!{item.vcUrl}" alt="铜掌柜"></a></li>
+				#else
+					<li><img src="$!{staticUploadUrl}$!{item.vcUrl}" alt="铜掌柜"></li>
+				#end
+			#end
+		</ul>
+	</div>
+	<div class="slide_nav" j-slide-nav></div>
+</div>
+
+<div class="rec-products">
+	<a href="$!{basePath}/currentBao/project/detail" class="rec-products_item" sign="&#xea10;">
+		<span class="rec-products_title">铜钱宝</span>
+		<span class="rec-products_desc">1元起投 随存随取</span>
+	</a>
+	<a href="$!{basePath}/user/pyramid/wap/home" class="rec-products_item" sign="&#xea11;">
+		<span class="rec-products_title">人人赚</span>
+		<span class="rec-products_desc">邀友越多 赚越多</span>
+	</a>
+</div>## .rec-products
+
+
+#if($subject)
+	#set($chartClass = "big-sitem")
+	#if($subject.itype==2)
+		#set($chartClass = "$chartClass subject-tag -new")
+	#elseif($subject.itype==3)
+		#set($chartClass = "$chartClass subject-tag -activity")
+	#elseif($subject.itype==4)
+		#set($chartClass = "$chartClass subject-tag -activity-new")
+	#elseif($subject.itype==5)
+		#set($chartClass = "$chartClass subject-tag -seckill")
+	#elseif($subject.itype==6)
+		#set($chartClass = "$chartClass subject-tag -hot-sales")
+	#end
+
+	#if ($subject.istate != 10 && $subject.istate != 11 && $chartClass != 'big-sitem')
+		#set($chartClass = "$!{chartClass}-gray")
+	#end
+
+	#if($subject.istate==12||$subject.istate==13)
+		#set($subject.percent = 100)
+	#end
+
+	<div class="$!{chartClass}">
+		<div class="big-sitem_title">
+			<a href="$!{basePath}/subject/detail?subjectId=$!{subject.id}">$!{subject.projectName}</a>
+		</div>## .big-sitem_title
+
+		<div class="big-sitem_interest-rate">
+			<div class="percent">$!{subject.totalRate}<sub>%</sub></div>
+			<div class="big-sitem_interest-rate_title">年化收益率</div>
+		</div>## .big-sitem_interest-rate
+
+		<div class="big-sitem_progress">
+			<div class="pillar-progress">
+				<span style="width:$!{subject.totalRate}%" class="pillar-progress_bar"></span>
+			</div>
+		</div>## .big-sitem_progress
+
+		<ul class="big-sitem_props">
+			<li>项目期限 <em>$!{subject.numPeriod}天</em></li>
+			<li>万元收益 <em>$!{investmentIncome}元</em></li>
+		</ul>## .big-sitem_props
+
+		<div class="big-sitem_action">
+			<a href="$!{basePath}/subject/detail?subjectId=$!{subject.id}" class="btn -primary">
+			#if ($subject.istate == 10)
+				$!{dtCollectStartStr}开标
+			#elseif ($subject.istate == 12 || $subject.istate == 13)
+				查看详情
+			#else
+				立即投资
+			#end
+			</a>
+		</div>
+	</div>
+#else
+	<div class="m-smpNoObj">
+	 	新标即将上线<br>
+	 	敬请期待！
+	</div>
+	<div class="m-vwBtnWrp">
+		<a href="$!{basePath}/subject/page" class="u-cclBtn--rps">立即查看</a>
+	</div>
+#end
+
+	<div class="guarantee-desc mtb tac"><i class="icon-zhonglai"></i>上市公司中来股份战略入股</div>

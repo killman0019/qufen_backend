@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+ xmlns:task="http://www.springframework.org/schema/task"
+ xmlns:context="http://www.springframework.org/schema/context"
+ xmlns:p="http://www.springframework.org/schema/p"
+ xmlns:mvc="http://www.springframework.org/schema/mvc"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns:util="http://www.springframework.org/schema/util"
+ xmlns:c="http://www.springframework.org/schema/c"
+ xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+ xsi:schemaLocation="http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+      http://www.springframework.org/schema/context
+      http://www.springframework.org/schema/context/spring-context.xsd
+      http://www.springframework.org/schema/task
+      http://www.springframework.org/schema/task/spring-task-3.0.xsd
+      http://www.springframework.org/schema/mvc
+      http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+	  http://www.springframework.org/schema/util
+	  http://www.springframework.org/schema/util/spring-util.xsd
+      http://code.alibabatech.com/schema/dubbo 
+      http://code.alibabatech.com/schema/dubbo/dubbo.xsd"
+	default-lazy-init="true">
+
+	<util:properties id="sysConfig" location="file:/opt/resource/system.properties"/>
+	
+	<!--
+	<bean id="configProfile" class="com.dangdang.config.service.zookeeper.ZookeeperConfigProfile">
+		<constructor-arg name="connectStr" value="#{props['zookeeper.hosts']}" />
+		<constructor-arg name="rootNode" value="#{props['rootNode']}" />
+		<constructor-arg name="version" value="#{props['version']}" />
+	</bean>
+	<bean id="sysConfig" class="com.dangdang.config.service.zookeeper.ZookeeperConfigGroup" c:configProfile-ref="configProfile" c:node="system" />
+	-->
+  	<dubbo:application name="tzg-rest" />
+	<dubbo:registry address="#{sysConfig['dubbo.registry']}" />
+	<!--  <dubbo:monitor protocol="registry"/>  -->
+	
+  	<!-- 扫描facade包，实例化所有的facade -->
+	<context:component-scan base-package="com.tzg.facade" />
+	
+	<import resource="classpath:config/dubbo-rmi-consumer.xml"/>	
+
+</beans>

@@ -1,0 +1,36 @@
+#set( $pageFootCode = '<script src="$!{basePath}/assets/js/register.js"></script>' )
+<script>var baseHost='$!{basePath}';</script>
+ <div class="tit">
+    <a href="$!{basePath}" class="return"></a>
+    <span class="title">注 册</span>
+  </div>
+  <div class="login">
+   <div class="clear">
+    <div class="loginicon1"></div>
+    <div class="logininput"><input id="loginName" type="text" placeholder="用户名为6-20个字符" /></div>
+   </div>
+   <div class="clear">
+    <div class="loginicon2"></div>
+    <div class="logininput"><input id="password" type="password" placeholder="密码为8-20位" /></div>
+   </div>
+   <div class="clear">
+    <div class="loginicon2"></div>
+    <div class="logininput"><input id="confirmPassword" type="password" placeholder="请再次输入密码" /></div>
+   </div>
+   <div class="clear">
+    <div class="loginicon3"></div>
+    <div class="logininput"><input id="phoneNumber" type="text" placeholder="请输入手机号码" /></div>
+   </div>
+   <div class="clear">
+    <div class="loginicon4"></div>
+    <div class="logininput"><input id="dynamicVerifyCode" type="text" placeholder="请输入验证码" class="input170_30"/>
+    	<a href="javascript:getIdentify();" class="btn90" id="J_send_dynamic_verify_code">发送验证码</a>
+    </div>
+   </div>
+   <div class="clear">
+    <div class="loginicon4"></div>
+    <div class="rep"><input id="agreeProtocol" type="checkbox" checked="checked" />已阅读并同意<a href="#">《融佰通注册协议》</a></div>
+   </div>
+   <div id="point"></div>
+   <a class="btn260" href="javascript:registSubmit();">立即注册</a>
+  </div>

@@ -1,0 +1,271 @@
+#set($layout = "/layout/blank.vm")
+#set($activityCode = "jolywood-become-a-shareholder")
+#set($activityTitle = "上市公司中来股份战略入股")
+#set($imagePath = "$!{staticPath}/pics/topics/$!{activityCode}")
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>$!{activityTitle}_铜掌柜，小理财大生活_互联网金融服务平台_网络投资理财首选</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="renderer" content="webkit">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no">
+<meta name="basepath" content="$!{basePath}" id="j_basepath">
+<meta name="staticpath" content="$!{staticPath}" id="j_staticpath">
+<link rel="icon" href="$!{staticPath}/images/favicon.ico">
+<link rel="shortcut icon" href="$!{staticPath}/images/favicon.ico">
+<script src="$!{staticPath}/js/lib/sea.js" id="seajsnode"></script>
+<style type="text/css">
+html {
+	height: 100%;
+	font-size: 62.5%;
+	background: #fff;
+}
+@media screen and (max-width: 560px) {
+	html {
+		font-size: 8.75px;
+	}
+}
+@media screen and (max-width: 480px) {
+	html {
+		font-size: 7.5px;
+	}
+}
+@media screen and (max-width: 400px) {
+	html {
+		font-size: 6.25px;
+	}
+}
+body {
+	margin: 0 auto;
+	max-width: 640px;
+	min-width: 320px;
+	min-height: 100%;
+	font-family: 'Microsoft Yahei', sans-serif;
+	font-size: 2.4rem;
+	background: #041318;
+}
+input, button {
+	font-size: 2.4rem;
+	font-family: 'Microsoft Yahei', sans-serif;
+}
+.topic-container {
+}
+.topic-container img {
+	vertical-align: top;
+	width: 100%;
+}
+.formbox {
+	padding: 2.67%;
+	background: #ffae00;
+}
+.formbox_inner {
+	padding: 2.8% 5.2%;
+	background: #ffb81f url($imagePath/bg.png);
+	box-shadow: 0 -2px 8px rgba(0,0,0,0.3);
+}
+
+.m-frm2 {
+	list-style: none;
+	margin: 0;
+	padding: 1.5%;
+	background: #fff;
+	border-radius: 10px;
+	overflow: hidden;
+}
+.m-frm2 li {
+	padding: 1.28% 0;
+	border-bottom: 1px solid #e6e6e6;
+}
+.m-frm2 li:last-child {
+	border-bottom: none;
+}
+.m-frm2 input,
+.m-frm2 .btn,
+.sbmt-btn {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 3.84%;
+	width: 100%;
+	border: none;
+	vertical-align: top;
+}
+.captcha {
+	overflow: hidden;
+}
+.captcha input {
+	float: left;
+	width: 70%;
+}
+.captcha .btn {
+	float: right;
+	width: 30%;
+	padding-left: 0;
+	padding-right: 0;
+	text-align: center;
+	text-decoration: none;
+	color: #fff;
+	background: #27b6e5;
+	vertical-align: middle;
+}
+.captcha .btn.z-gray {
+	background:#999;
+}
+
+.sbmt-btn {
+	margin: 5% 0 0;
+	text-align: center;
+	border-radius: 10px;
+	font-size: 2.8rem;
+	color: #000;
+	background: #ffffff;
+	background: -moz-linear-gradient(top, #ffffff 0%, #d9d9d9 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(100%,#d9d9d9));
+	background: -webkit-linear-gradient(top, #ffffff 0%,#d9d9d9 100%);
+	background: -ms-linear-gradient(top, #ffffff 0%,#d9d9d9 100%);
+	background: linear-gradient(to bottom, #ffffff 0%,#d9d9d9 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#d9d9d9',GradientType=0 );
+	box-shadow: 0 2px 3px rgba(255,50,0,.5); 
+}
+
+.dialog {
+	display: none;
+}
+.dialog-mask,
+.dialog-inner {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+}
+.dialog-mask {
+	z-index: 2;
+	background: rgba(0,0,0,0.5);
+}
+.dialog-inner {
+	z-index: 3;
+	top: 50%;
+	margin-top: -120px;
+}
+.dialog-grid {
+	margin: auto;
+	width: 76%;
+	max-width: 486px;
+	min-width: 243px;
+	overflow: hidden;
+	font-size: 2.6rem;
+	border-radius: 5px;
+	background: #fff;
+}
+.dialog-header {
+	position: relative;
+	overflow: hidden;
+	background: #002a38;
+}
+.dialog-title {
+	float: left;
+	padding: 2.5% 5%;
+	color: #fff;
+	background: #ff4e1f;
+}
+.dialog-close {
+	display: block;
+	position: absolute;
+	top: 0;
+	right: 0;
+	padding: 1.5% 3%;
+	color: #fff;
+	text-decoration: none;
+}
+.dialog-content {
+	padding: 12.37% 0 0;
+	text-align: center;
+}
+.dialog-content:before {
+	content: "!";
+	display:inline-block;
+	width: 2.5rem;
+	height: 2.5rem;
+	overflow: hidden;
+	font-size: 2rem;
+	vertical-align: middle;
+	border-radius: 50px;
+	color: #fff;
+	background: #002a38;
+}
+.dialog-button {
+	margin: 6.8% 0;
+	text-align: center;
+}
+.dialog-button .button {
+	padding: 2.5% 0;
+	width: 53.6%;
+	border: none;
+	border-radius: 3px;
+	font-size: 2.4rem;
+	color: #fff;
+	background: #002a38;
+}
+    .lc-tip{
+        color: #212122;
+    }
+</style>
+</head>
+<body>
+	<div class="topic-container">
+		<img src="$imagePath/i_01.png?v=1" alt="$activityTitle">
+		<img src="$imagePath/i_02.png" alt="$activityTitle">
+		<div class="formbox">
+            <p class="lc-tip">
+                <span class="tag">注:</span>
+                <span class="tip">
+                     p2p理财不等同于银行存款，收益来自借款人支付的利息。过往业绩不预示其未来表现，市场有风险，投资需谨慎。
+                </span>
+            </p>
+			<div class="formbox_inner">
+				<form method="post" action="$!{basePath}/register" novalidate id="j_register_form">
+					<ul class="m-frm2">
+						<li>
+							<input type="text" name="phoneNumber" placeholder="请输入手机号" maxlength="11" required>
+						</li>
+						<li>
+							<div class="captcha">
+								<a href="javascript:;" class="btn" id="j_send_captcha">获取验证码</a>
+								<input type="number" name="dynamicVerifyCode" placeholder="请输入验证码" maxlength="6" required>
+							</div>
+						</li>
+						<li>
+							<input type="password" name="password" maxlength="20" placeholder="请设置登录密码" maxlength="20" required>
+						</li>
+					</ul>
+
+					<div class="m-frm2-sbmt"><button type="submit" name="submity" class="sbmt-btn">下一步</button></div>
+				</form>
+			</div>
+		</div>
+		<img src="$imagePath/i_04.png" alt="$activityTitle">
+	</div>
+
+	<div class="dialog" id="j_dialog">
+		<div class="dialog-inner">
+			<div class="dialog-grid" id="j_dialog_grid">
+				<div class="dialog-header">
+					<div class="dialog-title">错误</div>
+					<a href="javascript:void(0)" class="dialog-close" j-action-close id="j_dialog_close">&times;</a>
+				</div>
+				<div class="dialog-body">
+					<div class="dialog-content" id="j_dialog_content"></div>
+					<div class="dialog-button">
+						<button type="button" class="button" j-action-close>确定</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="dialog-mask" id="j_dialog_mask"></div>
+	</div>
+
+	<script>seajs.use("page/topic-$!{activityCode}")</script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+#set($pageName = "原手机号码验证")
+#set($pageFootCode = '<script>seajs.use("page/phone-change-first")</script>')
+#set($topbar = { "title": $pageName })
+
+<form method="post" action="$!{basePath}/user/phoneChange/phoneChangeFirst" id="j_phone_change_first_form">
+	<ul class="m-frm">
+		<li class="m-frm-itm">
+			<label class="m-frm-lbl">原手机号码：</label>
+			<div class="m-frm-cnt">
+				<!--<input type="hidden" name="oldPhoneNumber" value="$!{oldPhoneNumber}">-->
+				<input type="text" name="phoneNumber" placeholder="请输入原手机号码" maxlength="11" class="u-ipt">
+			</div>
+		</li>
+		<li class="m-frm-itm">
+			<label class="m-frm-lbl">输入验证码：</label>
+			<div class="m-frm-cnt g-6a4 z-captcha">
+				<a href="javascript:;" class="g-6a4-sd u-btn z-scs z-noBrdRds" id="j_send_captcha">发送验证码</a>
+				<input type="text" name="dynamicVerifyCode" class="g-6a4-mn u-ipt" placeholder="请输入手机验证码" maxlength="6" required>
+			</div>
+		</li>
+		<li class="m-frm-itm--btn">
+			<button class="u-btn z-prm z-fll z-ldg" type="submit">下一步</button>
+		</li>
+	</ul>
+</form>
+
+<div class="l-mn2">
+	<div class="m-tips f-mt5">
+		<div class="m-tips-ttl">温馨提示：</div>
+		<div class="m-tips-cnt">
+			<p>如果您绑定的手机号码因停机、注销、丢失等情况无法接收验证，请与铜掌柜客服联系，客服热线：<a href="tel:4006082233" class="u-clPrm">400-0311-798</a></p>
+		</div>
+	</div>
+</div>
+

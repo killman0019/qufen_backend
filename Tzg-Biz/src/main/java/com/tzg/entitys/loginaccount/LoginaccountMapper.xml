@@ -1,0 +1,566 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.loginaccount.LoginaccountMapper">	
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.loginaccount.Loginaccount">
+		<result property="id" jdbcType="INTEGER" column="id"/>
+		<result property="vcLoginName" jdbcType="VARCHAR" column="vcLoginName"/>
+		<result property="vcPhone" jdbcType="CHAR" column="vcPhone"/>
+		<result property="vcEmail" jdbcType="VARCHAR" column="vcEmail"/>
+		<result property="vcPassword" jdbcType="VARCHAR" column="vcPassword"/>
+		<result property="ilevel" jdbcType="INTEGER" column="iLevel"/>
+		<result property="vcPaymentcipher" jdbcType="VARCHAR" column="vcPaymentcipher"/>
+		<result property="itype" jdbcType="INTEGER" column="iType"/>
+		<result property="ioriginal" jdbcType="INTEGER" column="iOriginal"/>
+		<result property="iverifyPhone" jdbcType="INTEGER" column="iVerifyPhone"/>
+		<result property="iverifyEmail" jdbcType="INTEGER" column="iVerifyEmail"/>
+		<result property="iverifyIdcard" jdbcType="INTEGER" column="iVerifyIDCard"/>
+		<result property="vcName" jdbcType="VARCHAR" column="vcName"/>
+		<result property="icardType" jdbcType="INTEGER" column="iCardType"/>
+		<result property="vcCardCode" jdbcType="VARCHAR" column="vcCardCode"/>
+		<result property="vcSource" jdbcType="VARCHAR" column="vcSource"/>
+		<result property="dtFirstInvest" jdbcType="TIMESTAMP" column="dtFirstInvest"/>
+		<result property="numInvestTimes" jdbcType="INTEGER" column="numInvestTimes"/>
+		<result property="ivalid" jdbcType="INTEGER" column="iValid"/>
+		<result property="dtCreate" jdbcType="TIMESTAMP" column="dtCreate"/>
+		<result property="dtModify" jdbcType="TIMESTAMP" column="dtModify"/>
+		<result property="vcRegisterDevice" jdbcType="VARCHAR" column="vcRegisterDevice"/>
+		<result property="vcDeviceId" jdbcType="VARCHAR" column="vcDeviceID"/>
+		<result property="vcRecommendCode" jdbcType="VARCHAR" column="vcRecommendCode"/>
+		<result property="dtLastLogin" jdbcType="TIMESTAMP" column="dtLastLogin"/>
+		<result property="ipaymentcipherState" jdbcType="INTEGER" column="iPaymentcipherState"/>
+		<result property="numPayErrorTimes" jdbcType="INTEGER" column="numPayErrorTimes"/>
+		<result property="dtLastPayError" jdbcType="TIMESTAMP" column="dtLastPayError"/>
+		<result property="dtLastSale" jdbcType="TIMESTAMP" column="dtLastSale"/>
+		<result property="vcFastPayPassword" jdbcType="VARCHAR" column="vcFastPayPassword"/>
+		<result property="iFastPayState" jdbcType="INTEGER" column="iFastPayState"/>
+		<result property="vcIcon" jdbcType="VARCHAR" column="vcIcon"/>
+		
+		
+    </resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+        id ,vcLoginName ,vcPhone ,vcEmail ,vcPassword ,iLevel ,vcPaymentcipher ,iType ,
+        iOriginal ,iVerifyPhone ,iVerifyEmail ,iVerifyIDCard ,vcName ,iCardType ,vcCardCode ,
+        vcSource ,dtFirstInvest ,numInvestTimes,iValid ,dtCreate ,dtModify ,vcRegisterDevice ,
+        vcDeviceID ,vcRecommendCode ,dtLastLogin ,iPaymentcipherState ,numPayErrorTimes ,
+        dtLastPayError,dtLastSale,vcFastPayPassword,iFastPayState,iFastPayErrorTimes,vcIcon
+	    ]]>
+	</sql>
+	
+	<insert id="save" parameterType="com.tzg.entitys.loginaccount.Loginaccount" useGeneratedKeys="true" keyProperty="id">
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+	      SELECT LAST_INSERT_ID() AS id
+	    </selectKey>
+	<![CDATA[
+		INSERT INTO tbloginaccount (
+        	vcLoginName ,
+        	vcPhone ,
+        	vcEmail ,
+        	vcPassword ,
+        	iLevel ,
+        	vcPaymentcipher ,
+        	iType ,
+        	iOriginal ,
+        	iVerifyPhone ,
+        	iVerifyEmail ,
+        	iVerifyIDCard ,
+        	vcName ,
+        	iCardType ,
+        	vcCardCode ,
+        	vcSource ,
+        	dtFirstInvest ,
+        	numInvestTimes,
+        	iValid ,
+        	dtCreate ,
+        	dtModify ,
+        	vcRegisterDevice ,
+        	vcDeviceID ,
+        	vcRecommendCode ,
+        	dtLastLogin ,
+        	iPaymentcipherState ,
+        	numPayErrorTimes ,
+        	dtLastPayError ,
+        	vcIcon
+		) VALUES (
+        	#{vcLoginName,jdbcType=VARCHAR} ,
+        	#{vcPhone,jdbcType=CHAR} ,
+        	#{vcEmail,jdbcType=VARCHAR} ,
+        	#{vcPassword,jdbcType=VARCHAR} ,
+        	#{ilevel,jdbcType=INTEGER} ,
+        	#{vcPaymentcipher,jdbcType=VARCHAR} ,
+        	#{itype,jdbcType=INTEGER} ,
+        	#{ioriginal,jdbcType=INTEGER} ,
+        	#{iverifyPhone,jdbcType=INTEGER} ,
+        	#{iverifyEmail,jdbcType=INTEGER} ,
+        	#{iverifyIdcard,jdbcType=INTEGER} ,
+        	#{vcName,jdbcType=VARCHAR} ,
+        	#{icardType,jdbcType=INTEGER} ,
+        	UPPER(#{vcCardCode,jdbcType=VARCHAR}) ,
+        	#{vcSource,jdbcType=VARCHAR} ,
+        	#{dtFirstInvest,jdbcType=TIMESTAMP} ,
+        	#{numInvestTimes,jdbcType=INTEGER} ,
+        	#{ivalid,jdbcType=INTEGER} ,
+        	#{dtCreate,jdbcType=TIMESTAMP} ,
+        	#{dtModify,jdbcType=TIMESTAMP} ,
+        	#{vcRegisterDevice,jdbcType=VARCHAR} ,
+        	#{vcDeviceId,jdbcType=VARCHAR} ,
+        	#{vcRecommendCode,jdbcType=VARCHAR} ,
+        	#{dtLastLogin,jdbcType=TIMESTAMP} ,
+        	#{ipaymentcipherState,jdbcType=INTEGER} ,
+        	#{numPayErrorTimes,jdbcType=INTEGER} ,
+        	#{dtLastPayError,jdbcType=TIMESTAMP} ,
+        	#{vcIcon,jdbcType=VARCHAR}
+		)
+	]]>
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.loginaccount.Loginaccount">
+		UPDATE tbloginaccount
+		<set>
+			<if test="vcLoginName != null">
+	        vcLoginName = #{vcLoginName,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcPhone != null">
+	        vcPhone = #{vcPhone,jdbcType=CHAR} ,
+	        </if>
+			<if test="vcEmail != null">
+	        vcEmail = #{vcEmail,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcPassword != null">
+	        vcPassword = #{vcPassword,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="ilevel != null">
+	        iLevel = #{ilevel,jdbcType=INTEGER} ,
+	        </if>
+			<if test="vcPaymentcipher != null">
+	        vcPaymentcipher = #{vcPaymentcipher,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="itype != null">
+	        iType = #{itype,jdbcType=INTEGER} ,
+	        </if>
+			<if test="ioriginal != null">
+	        iOriginal = #{ioriginal,jdbcType=INTEGER} ,
+	        </if>
+			<if test="iverifyPhone != null">
+	        iVerifyPhone = #{iverifyPhone,jdbcType=INTEGER} ,
+	        </if>
+			<if test="iverifyEmail != null">
+	        iVerifyEmail = #{iverifyEmail,jdbcType=INTEGER} ,
+	        </if>
+			<if test="iverifyIdcard != null">
+	        iVerifyIDCard = #{iverifyIdcard,jdbcType=INTEGER} ,
+	        </if>
+			<if test="vcName != null">
+	        vcName = #{vcName,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="icardType != null">
+	        iCardType = #{icardType,jdbcType=INTEGER} ,
+	        </if>
+			<if test="vcCardCode != null">
+	        vcCardCode = UPPER(#{vcCardCode,jdbcType=VARCHAR}) ,
+	        </if>
+			<if test="vcSource != null">
+	        vcSource = #{vcSource,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="dtFirstInvest != null">
+	        dtFirstInvest = #{dtFirstInvest,jdbcType=TIMESTAMP} ,
+	        </if>
+	        <if test="numInvestTimes != null">
+	        numInvestTimes = #{numInvestTimes,jdbcType=INTEGER} ,
+	        </if>
+			<if test="ivalid != null">
+	        iValid = #{ivalid,jdbcType=INTEGER} ,
+	        </if>
+			<if test="dtCreate != null">
+	        dtCreate = #{dtCreate,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="dtModify != null">
+	        dtModify = #{dtModify,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="vcRegisterDevice != null">
+	        vcRegisterDevice = #{vcRegisterDevice,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcDeviceId != null">
+	        vcDeviceID = #{vcDeviceId,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcRecommendCode != null">
+	        vcRecommendCode = #{vcRecommendCode,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="dtLastLogin != null">
+	        dtLastLogin = now(),
+	        </if>
+			<if test="ipaymentcipherState != null">
+	        iPaymentcipherState = #{ipaymentcipherState,jdbcType=INTEGER} ,
+	        </if>
+			<if test="numPayErrorTimes != null">
+	        numPayErrorTimes = #{numPayErrorTimes,jdbcType=INTEGER} ,
+	        </if>
+			<if test="dtLastPayError != null">
+	        dtLastPayError = #{dtLastPayError,jdbcType=TIMESTAMP} ,
+	        </if>
+	        <if test="dtLastSale != null">
+	        dtLastSale = #{dtLastSale,jdbcType=TIMESTAMP},
+	        </if>
+	        <if test="vcFastPayPassword != null">
+	        vcFastPayPassword = #{vcFastPayPassword,jdbcType=VARCHAR},
+	        </if>
+	        <if test="iFastPayState != null">
+	        iFastPayState = #{iFastPayState,jdbcType=INTEGER},
+	        </if>
+	        <if test="iFastPayErrorTimes != null">
+	        iFastPayErrorTimes = #{iFastPayErrorTimes,jdbcType=INTEGER},
+	        </if>
+	        <if test="dtFastLastPayErrorTime != null">
+	        dtFastLastPayErrorTime = #{dtFastLastPayErrorTime,jdbcType=TIMESTAMP} ,
+	        </if>
+	        <if test="dtUpFastPayTime != null">
+	        dtUpFastPayTime = #{dtUpFastPayTime,jdbcType=TIMESTAMP} ,
+	        </if>
+	        <if test="vcIcon != null">
+	        vcIcon = #{vcIcon,jdbcType=VARCHAR} 
+	        </if>
+	    </set>
+		WHERE 
+	        id = #{id,jdbcType=INTEGER} 
+	</update>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbloginaccount WHERE
+        id = #{id} 
+	]]>
+	</delete>
+    
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbloginaccount 
+		WHERE 
+        iValid=1 AND id = #{id}  
+	]]>
+	</select>
+	
+	<select id="findAllValidById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbloginaccount 
+		WHERE 
+        id = #{id}  
+	]]>
+	</select>
+
+	<select id="findByUsername" resultMap="BaseResultMap" parameterType="java.util.Map">
+	    SELECT <include refid="columns"/>
+		FROM tbloginaccount 
+		WHERE iValid=1 
+        <if test="vcLoginName != null and vcLoginName.trim() != ''">
+		and vcLoginName = #{vcLoginName}
+		</if>
+		<if test="vcPhone != null and vcPhone.trim() != ''">
+		and vcPhone = #{vcPhone}
+		</if>
+		<if test="vcEmail != null and vcEmail.trim() != ''">
+		and vcEmail = #{vcEmail}
+		</if>
+		<if test="itype != null and itype.trim() != ''">
+		and iType = #{itype}
+		</if>
+	</select>
+	
+	
+	<select id="findByRecommendCode" resultMap="BaseResultMap" parameterType="java.util.Map">
+	    SELECT <include refid="columns"/>
+		FROM tbloginaccount 
+		WHERE 1=1 
+        <if test="vcRecommendCode != null and vcRecommendCode.trim() != ''">
+		and vcRecommendCode = #{vcRecommendCode}
+		</if>
+		
+	</select>
+	
+	
+	<select id="findByUsernameFuzzy" resultMap="BaseResultMap" parameterType="java.util.Map">
+	    SELECT <include refid="columns"/>
+		FROM tbloginaccount 
+		WHERE iValid=1 
+        <if test="vcLoginName != null and vcLoginName.trim() != ''">
+		and vcLoginName like concat('%',#{vcLoginName},'%') 
+		</if>
+		<if test="vcPhone != null and vcPhone.trim() != ''">
+		and vcPhone  like concat('%',#{vcPhone},'%') 
+		</if>
+		<if test="vcEmail != null and vcEmail.trim() != ''">
+		and vcEmail like concat('%',#{vcEmail},'%') 
+		</if>
+		<if test="vcName != null and vcName.trim() != ''">
+		and vcName like concat('%',#{vcName},'%') 
+		</if>
+		<if test="itype != null and itype.trim() != ''">
+		and iType = #{itype}
+		</if>
+	</select>
+	
+	<!-- 根据推荐码 查询用户ID -->
+	<select id="findIdByRecommendedCode" resultType="java.lang.Integer" parameterType="java.lang.String">
+	<![CDATA[
+		SELECT id
+		FROM tbloginaccount 
+		WHERE iValid=1 and vcRecommendCode = #{vcRecommendCode} 
+	]]>
+	</select>
+	
+	<select id="findByPhoneNumber" resultMap="BaseResultMap" parameterType="java.lang.String">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbloginaccount 
+		WHERE iValid=1 and vcPhone = #{vcPhone} 
+	]]>
+	</select>
+	
+	<select id="findByEmail" resultMap="BaseResultMap" parameterType="java.lang.String">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbloginaccount 
+		WHERE iValid=1 and vcEmail = #{vcEmail} and iVerifyEmail = 1
+	]]>
+	</select>
+	
+	<select id="findByLoginName" resultMap="BaseResultMap" parameterType="java.lang.String">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbloginaccount 
+		WHERE iValid=1 and vcLoginName = #{vcLoginName} 
+	]]>
+	</select>
+	
+	<select id="findByCardNo" resultMap="BaseResultMap" parameterType="java.lang.String">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbloginaccount 
+		WHERE iValid=1 and vcCardCode=#{vcCardCode}  group by  vcCardCode 
+	]]>
+	</select>
+	
+	<select id="login" resultMap="BaseResultMap" parameterType="java.util.Map">
+	    SELECT <include refid="columns"/>
+		FROM tbloginaccount 
+		WHERE vcPassword = #{vcPassword}
+        <if test="vcLoginName != null and vcLoginName.trim() != ''">
+		and vcLoginName = #{vcLoginName}
+		</if>
+		<if test="vcPhone != null and vcPhone.trim() != ''">
+		and vcPhone = #{vcPhone}
+		</if>
+		<if test="vcEmail != null and vcEmail.trim() != ''">
+		and vcEmail = #{vcEmail} and iVerifyEmail = 1
+		</if>
+	</select>
+	
+	<select id="verifyLoginaccount" resultType="java.lang.Integer" parameterType="java.util.Map">
+	    SELECT count(*)
+		FROM tbloginaccount 
+		WHERE iValid=1
+        <if test="vcLoginName != null and vcLoginName.trim() != ''">
+		and vcLoginName = #{vcLoginName}
+		</if>
+		<if test="vcPhone != null and vcPhone.trim() != ''">
+		and vcPhone = #{vcPhone}
+		</if>
+		<if test="vcEmail != null and vcEmail.trim() != ''">
+		and vcEmail = #{vcEmail} and iVerifyEmail = 1
+		</if>
+	</select>
+	 
+	 
+	 
+	 <select id="findBorrowerCashPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		 select count(*) from (select a.* from tbloginaccount a  
+		 where iValid=1 and  a.id not in (select f.iLoginAccountID from tbfinancialcash f where  f.iState &lt;&gt;5 group by f.iLoginAccountID )) t where 1=1
+		<include refid="queryWhere"/> 
+	</select>
+	
+	<select id="findBorrowerCashPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		
+		 select * from (select a.* from tbloginaccount a  
+		 where iValid=1 and  a.id not in (select f.iLoginAccountID from tbfinancialcash f where  f.iState&lt;&gt;5 group by f.iLoginAccountID )) t where 1=1
+		<include refid="queryWhere"/> 
+	    <![CDATA[ ORDER BY id DESC ]]>
+        <![CDATA[ LIMIT #{startRecord,jdbcType=INTEGER},#{endRecord,jdbcType=INTEGER} ]]>
+	</select>
+		 
+	<select id="findPageCountForOm" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from tbloginaccount where 1=1
+		<include refid="queryWhere"/>
+	</select>
+    
+	<select id="findPageForOm" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbloginaccount where 1=1
+		<include refid="queryWhere"/> 
+	    <![CDATA[ ORDER BY id DESC ]]>
+        <![CDATA[ LIMIT #{startRecord,jdbcType=INTEGER},#{endRecord,jdbcType=INTEGER} ]]>
+	</select>
+	
+	
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from tbloginaccount where iValid=1
+		<include refid="queryWhere"/>
+	</select>
+	
+	<!-- 查询生日的用户 -->
+	<select id="findPageForBirthday" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbloginaccount where iValid=1 and iVerifyIDCard=1
+		<include refid="queryWhere"/> 
+<!-- 		如果指定日期 -->
+		<if test="birthday != null and birthday.trim() != ''">
+			AND CONCAT(right(left(vccardcode,12),2),right(left(vccardcode,14),2)) = #{birthday} 
+		</if>
+<!-- 		未指定日期，就是今天 -->
+		<if test="birthday == null or birthday.trim() == ''">
+			AND CONCAT(right(left(vccardcode,12),2),right(left(vccardcode,14),2)) = date_format(now(),'%m%d')
+		</if>
+		
+	    <![CDATA[ ORDER BY id DESC ]]>
+        <![CDATA[ LIMIT #{startRecord,jdbcType=INTEGER},#{endRecord,jdbcType=INTEGER} ]]>
+		</select>
+	
+	
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbloginaccount where iValid=1
+		<include refid="queryWhere"/> 
+	    <![CDATA[ ORDER BY id DESC ]]>
+        <![CDATA[ LIMIT #{startRecord,jdbcType=INTEGER},#{endRecord,jdbcType=INTEGER} ]]>
+	</select>
+	
+	<sql id="queryWhere">
+		<if test="id != null and id.trim() != ''">
+		and id = #{id}
+		</if>
+		<if test="vcLoginName != null and vcLoginName.trim() != ''">
+		and vcLoginName like concat('%',#{vcLoginName},'%') 
+		</if>
+		<if test="vcPhone != null and vcPhone.trim() != ''">
+		and vcPhone like concat('%',#{vcPhone},'%') 
+		</if>
+		<if test="vcEmail != null and vcEmail.trim() != ''">
+		and vcEmail like concat('%',#{vcEmail},'%') 
+		</if>
+		<if test="ilevel != null and ilevel.trim() != ''">
+		and iLevel = #{ilevel}
+		</if>
+		<if test="itype != null and itype.trim() != ''">
+		and iType = #{itype}
+		</if>
+		<if test="ioriginal != null and ioriginal.trim() != ''">
+		and iOriginal = #{ioriginal}
+		</if>
+		<if test="iverifyPhone != null and iverifyPhone.trim() != ''">
+		and iVerifyPhone = #{iverifyPhone}
+		</if>
+		<if test="iverifyEmail != null and iverifyEmail.trim() != ''">
+		and iVerifyEmail = #{iverifyEmail}
+		</if>
+		<if test="iverifyIdcard != null and iverifyIdcard.trim() != ''">
+		and iVerifyIDCard = #{iverifyIdcard}
+		</if>
+		<if test="vcName != null and vcName.trim() != ''">
+		and vcName like concat('%',#{vcName},'%') 
+		</if>
+		<if test="icardType != null and icardType.trim() != ''">
+		and iCardType = #{icardType}
+		</if>
+		<if test="vcCardCode != null and vcCardCode.trim() != ''">
+		and vcCardCode = #{vcCardCode}
+		</if>
+		<if test="vcSource != null and vcSource.trim() != ''">
+		and vcSource = #{vcSource}
+		</if>
+		<if test="dtFirstInvestBegin != null and dtFirstInvestBegin.trim() != ''">
+		and dtFirstInvest >= #{dtFirstInvestBegin}
+		</if>
+		<if test="dtFirstInvestEnd != null and dtFirstInvestEnd.trim() != ''">
+		and dtFirstInvest &lt;= #{dtFirstInvestEnd}
+		</if>
+		<if test="numInvestTimes != null and numInvestTimes.trim() != ''">
+		and numInvestTimes = #{numInvestTimes}
+		</if>
+		<if test="ivalid != null and ivalid.trim() != ''">
+		and iValid = #{ivalid}
+		</if>
+		<if test="dtCreateFuzzy != null and dtCreateFuzzy.trim() != ''">
+		and DATE_FORMAT(dtCreate,'%Y-%m-%d') = #{dtCreateFuzzy}
+		</if>
+		<if test="dtCreateBegin != null and dtCreateBegin.trim() != ''">
+		and dtCreate >= #{dtCreateBegin}
+		</if>
+		<if test="dtCreateEnd != null and dtCreateEnd.trim() != ''">
+		and dtCreate &lt;= #{dtCreateEnd}
+		</if>
+		<if test="dtModifyBegin != null and dtModifyBegin.trim() != ''">
+		and dtModify >= #{dtModifyBegin}
+		</if>
+		<if test="dtModifyEnd != null and dtModifyEnd.trim() != ''">
+		and dtModify &lt;= #{dtModifyEnd}
+		</if>
+		<if test="vcRegisterDevice != null and vcRegisterDevice.trim() != ''">
+		and vcRegisterDevice = #{vcRegisterDevice}
+		</if>
+		<if test="vcDeviceId != null and vcDeviceId.trim() != ''">
+		and vcDeviceID = #{vcDeviceId}
+		</if>
+		<if test="vcRecommendCode != null and vcRecommendCode.trim() != ''">
+		and vcRecommendCode = #{vcRecommendCode}
+		</if>
+		<if test="dtLastLoginFuzzy != null and dtLastLoginFuzzy.trim() != ''">
+		and DATE_FORMAT(dtLastLogin,'%Y-%m-%d') = #{dtLastLoginFuzzy}
+		</if>
+		<if test="dtLastLoginBegin != null and dtLastLoginBegin.trim() != ''">
+		and dtLastLogin >= #{dtLastLoginBegin}
+		</if>
+		<if test="dtLastLoginEnd != null and dtLastLoginEnd.trim() != ''">
+		and dtLastLogin &lt;= #{dtLastLoginEnd}
+		</if>
+		<if test="ipaymentcipherState != null and ipaymentcipherState.trim() != ''">
+		and iPaymentcipherState = #{ipaymentcipherState}
+		</if>
+		<if test="numPayErrorTimes != null and numPayErrorTimes.trim() != ''">
+		and numPayErrorTimes = #{numPayErrorTimes}
+		</if>
+		<if test="dtLastPayErrorBegin != null and dtLastPayErrorBegin.trim() != ''">
+		and dtLastPayError >= #{dtLastPayErrorBegin}
+		</if>
+		<if test="dtLastPayErrorEnd != null and dtLastPayErrorEnd.trim() != ''">
+		and dtLastPayError &lt;= #{dtLastPayErrorEnd}
+		</if>
+		<if test="numPayErrorTimes != null and numPayErrorTimes.trim() != ''">
+		and numPayErrorTimes = #{numPayErrorTimes}
+		</if>
+		<if test="dtLastPayErrorBegin != null and dtLastPayErrorBegin.trim() != ''">
+		and dtLastPayError >= #{dtLastPayErrorBegin}
+		</if>
+		<if test="dtLastPayErrorEnd != null and dtLastPayErrorEnd.trim() != ''">
+		and dtLastPayError &lt;= #{dtLastPayErrorEnd}
+		</if>
+		
+		<if test="dtLastSaleBegin != null and dtLastSaleBegin != ''">
+		and dtLastSale >= #{dtLastSaleBegin}
+		</if>
+		<if test="dtLastSaleEnd != null and dtLastSaleEnd != ''">
+		and dtLastSale &lt;= #{dtLastSaleEnd}
+		</if>
+	</sql>
+	
+	<select id="queryLoginaccountAll" parameterType="com.tzg.entitys.loginaccount.Loginaccount" resultMap="BaseResultMap">
+		select
+		<include refid="columns"/>
+		from tbloginaccount
+		where iType = #{itype,jdbcType=INTEGER}
+		     and iValid = 1
+	</select>
+
+	<select id="findAllUserAmount" resultType="java.lang.Integer">
+		select count(1) FROM tbloginaccount where 1=1 and iType=2 and iValid=1;
+	</select>
+</mapper>
+
+

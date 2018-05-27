@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.rocketmqlog.RocketmqlogMapper">	
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.rocketmqlog.Rocketmqlog">
+		<result property="id" jdbcType="INTEGER" column="id"/>
+		<result property="vcTopic" jdbcType="VARCHAR" column="vcTopic"/>
+		<result property="vcTag" jdbcType="VARCHAR" column="vcTag"/>
+		<result property="vcKey" jdbcType="VARCHAR" column="vcKey"/>
+		<result property="vcBody" jdbcType="VARCHAR" column="vcBody"/>
+		<result property="dtCreate" jdbcType="TIMESTAMP" column="dtCreate"/>
+		<result property="vcSender" jdbcType="VARCHAR" column="vcSender"/>
+		<result property="dtSend" jdbcType="TIMESTAMP" column="dtSend"/>
+		<result property="vcSendState" jdbcType="VARCHAR" column="vcSendState"/>
+		<result property="vcReceiver" jdbcType="VARCHAR" column="vcReceiver"/>
+		<result property="dtReceive" jdbcType="TIMESTAMP" column="dtReceive"/>
+		<result property="vcReceiveState" jdbcType="VARCHAR" column="vcReceiveState"/>
+    </resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+        id ,vcTopic ,vcTag ,vcKey ,vcBody ,dtCreate ,vcSender ,dtSend ,vcSendState ,vcReceiver ,dtReceive ,vcReceiveState 
+	    ]]>
+	</sql>
+	
+	<insert id="save" parameterType="com.tzg.entitys.rocketmqlog.Rocketmqlog" useGeneratedKeys="true" keyProperty="id">
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+	      SELECT LAST_INSERT_ID() AS id
+	    </selectKey>
+	<![CDATA[
+		INSERT INTO tbrocketmqlog (
+        	vcTopic ,
+        	vcTag ,
+        	vcKey ,
+        	vcBody ,
+        	dtCreate ,
+        	vcSender ,
+        	dtSend ,
+        	vcSendState ,
+        	vcReceiver ,
+        	dtReceive ,
+        	vcReceiveState 
+		) VALUES (
+        	#{vcTopic,jdbcType=VARCHAR} ,
+        	#{vcTag,jdbcType=VARCHAR} ,
+        	#{vcKey,jdbcType=VARCHAR} ,
+        	#{vcBody,jdbcType=VARCHAR} ,
+        	#{dtCreate,jdbcType=TIMESTAMP} ,
+        	#{vcSender,jdbcType=VARCHAR} ,
+        	#{dtSend,jdbcType=TIMESTAMP} ,
+        	#{vcSendState,jdbcType=VARCHAR} ,
+        	#{vcReceiver,jdbcType=VARCHAR} ,
+        	#{dtReceive,jdbcType=TIMESTAMP} ,
+        	#{vcReceiveState,jdbcType=VARCHAR} 
+		)
+	]]>
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.rocketmqlog.Rocketmqlog">
+		UPDATE tbrocketmqlog
+		<set>
+			<if test="vcTopic != null">
+	        vcTopic = #{vcTopic,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcTag != null">
+	        vcTag = #{vcTag,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcKey != null">
+	        vcKey = #{vcKey,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcBody != null">
+	        vcBody = #{vcBody,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="dtCreate != null">
+	        dtCreate = #{dtCreate,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="vcSender != null">
+	        vcSender = #{vcSender,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="dtSend != null">
+	        dtSend = #{dtSend,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="vcSendState != null">
+	        vcSendState = #{vcSendState,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="vcReceiver != null">
+	        vcReceiver = #{vcReceiver,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="dtReceive != null">
+	        dtReceive = #{dtReceive,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="vcReceiveState != null">
+	        vcReceiveState = #{vcReceiveState,jdbcType=VARCHAR} 
+	        </if>
+	    </set>
+		WHERE 
+	        id = #{id,jdbcType=INTEGER} 
+	</update>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbrocketmqlog WHERE
+        id = #{id} 
+	]]>
+	</delete>
+    
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbrocketmqlog 
+		WHERE 
+        id = #{id} 
+	]]>
+	</select>
+	
+	<select id="findByKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbrocketmqlog 
+		WHERE 
+        vcKey = #{vcKey} 
+	]]>
+	</select>
+	 
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from tbrocketmqlog where 1=1
+		<include refid="queryWhere"/>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbrocketmqlog where 1=1
+		<include refid="queryWhere"/> 
+	    <![CDATA[ ORDER BY id DESC ]]>
+        <![CDATA[ LIMIT #{startRecord,jdbcType=INTEGER},#{endRecord,jdbcType=INTEGER} ]]>
+	</select>
+	
+	<sql id="queryWhere">
+		<if test="id != null and id.trim() != ''">
+		and id = #{id}
+		</if>
+		<if test="vcTopic != null and vcTopic.trim() != ''">
+		and vcTopic = #{vcTopic}
+		</if>
+		<if test="vcTag != null and vcTag.trim() != ''">
+		and vcTag = #{vcTag}
+		</if>
+		<if test="vcKey != null and vcKey.trim() != ''">
+		and vcKey = #{vcKey}
+		</if>
+		<if test="vcBody != null and vcBody.trim() != ''">
+		and vcBody = #{vcBody}
+		</if>
+		<if test="dtCreateBegin != null and dtCreateBegin.trim() != ''">
+		and dtCreate >= #{dtCreateBegin}
+		</if>
+		<if test="dtCreateEnd != null and dtCreateEnd.trim() != ''">
+		and dtCreate &lt;= #{dtCreateEnd}
+		</if>
+		<if test="vcSender != null and vcSender.trim() != ''">
+		and vcSender = #{vcSender}
+		</if>
+		<if test="dtSendBegin != null and dtSendBegin.trim() != ''">
+		and dtSend >= #{dtSendBegin}
+		</if>
+		<if test="dtSendEnd != null and dtSendEnd.trim() != ''">
+		and dtSend &lt;= #{dtSendEnd}
+		</if>
+		<if test="vcSendState != null and vcSendState.trim() != ''">
+		and vcSendState = #{vcSendState}
+		</if>
+		<if test="vcReceiver != null and vcReceiver.trim() != ''">
+		and vcReceiver = #{vcReceiver}
+		</if>
+		<if test="dtReceiveBegin != null and dtReceiveBegin.trim() != ''">
+		and dtReceive >= #{dtReceiveBegin}
+		</if>
+		<if test="dtReceiveEnd != null and dtReceiveEnd.trim() != ''">
+		and dtReceive &lt;= #{dtReceiveEnd}
+		</if>
+		<if test="vcReceiveState != null and vcReceiveState.trim() != ''">
+		and vcReceiveState = #{vcReceiveState}
+		</if>
+	</sql>
+</mapper>
+
+

@@ -1,0 +1,88 @@
+#set($pageTitle = "账户充值_我的账户_投资人")
+#set($bodyClass = "body--gray")
+#set($topbar = {"title": '充值'})
+#set($pageFootCode = '<script>seajs.use("page/charge")</script>')
+
+<form method="post" action="$!{basePath}/user/charge/chargebankchoice" id="j_charge_form">
+	<ul class="m-frm">
+		#if ($accountstate == 0)
+			<li class="m-frm-itm">
+				<label class="m-frm-lbl">请输入持卡人信息</label>
+				<div class="icon-input">
+					<input type="text" name="vcName" class="u-ipt" placeholder="姓名" required>
+					<i>&#xe616;</i>
+				</div>
+			</li>
+			<li class="m-frm-itm">
+				<div class="icon-input">
+					<input type="text" name="vcCardCode" class="u-ipt" placeholder="身份证号" required>
+					<i>&#xe618;</i>
+				</div>
+			</li>
+		#elseif ($accountstate == 1)
+			<li class="m-frm-itm">
+				<div class="box-text">持卡人：$!{vcName}</div>
+			</li>
+		#end
+		<li class="m-frm-itm">
+			<label class="m-frm-lbl">请输入银行卡信息</label>
+			<div j-bank-selected-wrapper></div>
+			<input type="hidden" name="ibankId" j-bankid-input>
+		</li>
+		<li class="m-frm-itm" style="display:none" j-cardno-input-item>
+			<div class="icon-input">
+				<input type="text" name="cardNo" class="u-ipt" placeholder="请输入银行卡号" required j-cardno-input>
+				<i>&#xe617;</i>
+			</div>
+			<div class="m-frm-itm--hnt2">请务必使用与持卡人信息一致的储蓄卡</div>
+		</li>
+		<li class="m-frm-itm">
+			<div><input type="text" name="amount" class="u-ipt" placeholder="充值金额(起充1元)" required></div>
+		</li>
+		<li class="m-frm-itm--btn">
+			<button class="u-btn z-prm z-fll z-ldg" type="submit">确 认</button>
+		</li>
+	</ul>
+	<input type="hidden" name="isNewCard" value="">
+</form>
+
+<div class="m1 f-tlc u-clScd"><img src="$!{basePath}/assets3/build/statics/images/safeguard-icon.png" style="width:16px;vertical-align:middle" alt="安全保障"> 账户资金盗转盗用由人保财险承保</div>
+
+
+<div class="selector" id="j_selector">
+	<div class="selector_operators">
+		<div class="selector_operators_left" j-operator-left></div>
+		<div class="selector_operators_right" j-operator-right></div>
+	</div>
+	<div class="selector_title" j-menu-title></div>
+	<div class="selector_menu" j-menu></div>
+</div>
+
+<textarea cols="50" id="j_bank_list" style="display:none">
+[null
+## 已绑定
+#foreach($item in $cardResult)
+,{
+	"id":"$!{item.ibankInfoId}",
+	"name":"$!{item.vcName}（尾号$!stringUtil.hideBankCard($!{item.vcBankCardNo})）",
+	"numSingleLimitStr":"$!{item.numSingleLimitStr}",
+	"numDayLimitStr":"$!{item.numDayLimitStr}",
+	"numMonthLimitStr":"$!{item.numMonthLimitStr}",
+	"bankCode":"$!{item.vcBankCode}",
+	"cardNo":"$!{item.vcBankCardNo}"
+}
+#end
+## 未绑定
+#foreach($item in $carduse)
+,{
+	"id":"$!{item.ibankInfoId}",
+	"name":"$!{item.vcName}",
+	"numSingleLimitStr":"$!{item.numSingleLimitStr}",
+	"numDayLimitStr":"$!{item.numDayLimitStr}",
+	"numMonthLimitStr":"$!{item.numMonthLimitStr}",
+	"bankCode":"$!{item.vcBankCode}"
+}
+#end
+]
+</textarea>
+

@@ -1,0 +1,132 @@
+#set($layout = "/layout/v3/default.vm")
+#set($pageTitle = "投资确认")
+#set($bodyClass = 'bg-gray')
+#set($noPrimaryNav = true)
+#set($topbar = {"title": "投资确认"})
+#set($pageScript = "invest-confirm")
+
+
+<form action="$!{basePath}/user/invest/investConfirm" method="post" class="l-mn2" id="invest_confirm_form">
+	#tokenCode
+	<ul class="props bg-white">
+		<li>
+			<div class="props_label">投资金额</div>
+			<div class="props_content">$!{investAmtStr}</div>
+		</li>
+	## 有红包
+	#if ($!redActualAmt > 0)
+		<li>
+			<label>
+				<div class="props_label">
+					<input type="radio" name="rewardType" value="redpacket" class="checkbox" id="redpacket_radio" data-amount="$!{redActualAmt}" checked> <span class="c-gray-light">红包</span>
+                    <input type="hidden" name="redAmount" value="$!{redActualAmt}">				
+               </div>
+				<div class="props_content">$!{redActualAmt}元</div>
+			</label>
+		</li>
+	#end
+	#if ($ticketList.size() > 0)
+		<li>
+			<label id="select_ticket">
+				<div class="props_label">
+					<input type="radio" name="rewardType" value="ticket" class="checkbox" id="ticket_radio"> <span class="c-gray-light">加息券</span>
+				</div>
+				#set($index = 0)
+				#foreach($ticket in $ticketList)
+					#if ($index == 0)
+						<div class="props_content"><span id="selected_ticket">$!{ticket.numInterestRate}%</span> <i class="fi vam c-gray-light">&#xea19;</i></div>
+						<input type="hidden" name="interestticketgrantId" value="$!{ticket.id}" id="selected_ticket_id">
+					#end
+					#set($index = $index + 1)
+				#end
+			</label>
+		</li>
+	#end
+	</ul>
+	<ul class="props">
+		<li>
+			<div class="props_label">实际支付</div>
+			## 有红包
+		#if ($!redActualAmt > 0)
+			#set($realAmount = $investAmt - $redActualAmt)
+			#set($realAmount = $numbers.toCurrency($realAmount))
+			<div class="props_content c-second"><span id="actual_amount" data-original="$!{investAmtStr}" data-real="$!{realAmount}">$!{realAmount}</span> 元</div>
+		#else
+			<div class="props_content c-second"><span id="actual_amount">$!{investAmtStr}</span> 元</div>
+		#end
+		</li>
+	</ul>
+	<ul class="props"><li><button type="button" class="btn -primary" id="confirm_btn">确认支付</button></li></ul>
+	<input type="hidden" name="subjectId" value="$!{subjectId}">
+	<input type="hidden" name="investAmt" value="$!{investAmt}">
+
+	<div class="ft-popup" id="popup4form">
+		<div class="ft-popup_window">
+			<div class="ft-popup_window_hd">
+				<h4 class="ft-popup_window_hd_title">请输入交易密码</h4>
+				<a href="#" class="ft-popup_window_hd_close" j-close></a>
+			</div>
+
+			<div class="password-part">
+				<input type="password" name="payPassword" class="ipt password-part_ipt">
+				<div class="mtb2"><button type="submit" name="submity" class="btn -primary">确定</button></div>
+				<div class="password-part_cols">
+					<div class="password-part_cols_left">
+						<input type="checkbox" name="agreeProtocol" value="true" checked id="agree_protocol">
+						<label for="agree_protocol">同意<a href="javascript:;" id="protocol_btn"><span class="c-primary">《铜掌柜投资咨询与管理服务协议》</span></a>
+						与<a href="javascript:;" id="protocol_btn2"><span class="c-primary">《铜掌柜投资合同》</span></a>
+						</label>
+					</div>
+					<div class="password-part_cols_right"><a href="$!{basePath}/user/payPassword/forgetPayPassword/page">忘记手机密码？</a></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>
+
+<div class="ft-popup" id="popup">
+	<div class="ft-popup_window">
+		<div class="ft-popup_window_hd">
+			<h4 class="ft-popup_window_hd_title" j-title></h4>
+			<a href="#" class="ft-popup_window_hd_close" j-close></a>
+		</div>
+
+		<div j-content style="height:270px;overflow:auto;"></div>
+	</div>
+</div>
+
+
+#if ($ticketList.size() > 1)
+<script type="text/htmlpart" id="ticket_content">
+<table class="ticket-dataset">
+	<tbody>
+	#foreach($ticket in $ticketList)
+		<tr>
+			<td width="10%" class="c-second">$!{ticket.numInterestRate}%</td>
+			<td>$!{ticket.dtExpiredStr.substring(0,10)}</td>
+			<td width="10%"><input type="radio" name="theInterestticketgrantId" value="$!{ticket.id}" class="checkbox" data-interest-rate="$!{ticket.numInterestRate}"></td>
+		</tr>
+	#end
+	</tbody>
+</table>
+</script>
+#end
+
+<div class="protocol-popup" id="protocol_popup">
+	#parse("/include/investProtocol.vm")
+	<div class="protocol-popup_ft">
+		<button type="button" class="button" j-close>确 定</button>
+	</div>
+</div>
+<div class="protocol-popup" id="protocol_popup2">
+	<div class="protocol-popup_hd">《铜掌柜投资合同》</div>
+	<div class="protocol-popup_bd">
+		<!--<div class="protocol-popup_content">
+			
+		</div>-->
+		<iframe src="$!{basePath}/user/invest/contractLook?isubjectId=$!{subjectId}" frameborder="0" width="100%" height="100%" scrolling="yes"></iframe>
+	</div>
+	<div class="protocol-popup_ft">
+		<button type="button" class="button" j-close2>确 定</button>
+	</div>
+</div>

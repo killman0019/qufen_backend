@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.guaranteeaccount.GuaranteeaccountMapper">	
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.guaranteeaccount.Guaranteeaccount">
+		<result property="id" jdbcType="INTEGER" column="id"/>
+		<result property="iloginAccountId" jdbcType="INTEGER" column="iLoginAccountID"/>
+		<result property="numAvailable" jdbcType="DECIMAL" column="numAvailable"/>
+		<result property="numTotalBorrow" jdbcType="DECIMAL" column="numTotalBorrow"/>
+		<result property="numTotalFee" jdbcType="DECIMAL" column="numTotalFee"/>
+		<result property="numTotalCash" jdbcType="DECIMAL" column="numTotalCash"/>
+		<result property="numTotalRecharge" jdbcType="DECIMAL" column="numTotalRecharge"/>
+		<result property="numInsured" jdbcType="DECIMAL" column="numInsured"/>
+		<result property="numOverdue" jdbcType="DECIMAL" column="numOverdue"/>
+		<result property="numTotalAdvance" jdbcType="DECIMAL" column="numTotalAdvance"/>
+		<result property="istatus" jdbcType="INTEGER" column="iStatus"/>
+    </resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+        id ,iLoginAccountID ,numAvailable ,numTotalBorrow ,numTotalFee ,numTotalCash ,numTotalRecharge ,numInsured ,numOverdue ,numTotalAdvance ,iStatus 
+	    ]]>
+	</sql>
+	
+	<insert id="save" parameterType="com.tzg.entitys.guaranteeaccount.Guaranteeaccount" useGeneratedKeys="true" keyProperty="id">
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+	      SELECT LAST_INSERT_ID() AS id
+	    </selectKey>
+	<![CDATA[
+		INSERT INTO tbguaranteeaccount (
+        	iLoginAccountID ,
+        	numAvailable ,
+        	numTotalBorrow ,
+        	numTotalFee ,
+        	numTotalCash ,
+        	numTotalRecharge ,
+        	numInsured ,
+        	numOverdue ,
+        	numTotalAdvance ,
+        	iStatus 
+		) VALUES (
+        	#{iloginAccountId,jdbcType=INTEGER} ,
+        	#{numAvailable,jdbcType=DECIMAL} ,
+        	#{numTotalBorrow,jdbcType=DECIMAL} ,
+        	#{numTotalFee,jdbcType=DECIMAL} ,
+        	#{numTotalCash,jdbcType=DECIMAL} ,
+        	#{numTotalRecharge,jdbcType=DECIMAL} ,
+        	#{numInsured,jdbcType=DECIMAL} ,
+        	#{numOverdue,jdbcType=DECIMAL} ,
+        	#{numTotalAdvance,jdbcType=DECIMAL} ,
+        	#{istatus,jdbcType=INTEGER} 
+		)
+	]]>
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.guaranteeaccount.Guaranteeaccount">
+		UPDATE tbguaranteeaccount
+		<set>
+			<if test="iloginAccountId != null">
+	        iLoginAccountID = #{iloginAccountId,jdbcType=INTEGER} ,
+	        </if>
+			<if test="numAvailable != null">
+	        numAvailable = #{numAvailable,jdbcType=DECIMAL} ,
+	        </if>
+			<if test="numTotalBorrow != null">
+	        numTotalBorrow = #{numTotalBorrow,jdbcType=DECIMAL} ,
+	        </if>
+			<if test="numTotalFee != null">
+	        numTotalFee = #{numTotalFee,jdbcType=DECIMAL} ,
+	        </if>
+			<if test="numTotalCash != null">
+	        numTotalCash = #{numTotalCash,jdbcType=DECIMAL} ,
+	        </if>
+			<if test="numTotalRecharge != null">
+	        numTotalRecharge = #{numTotalRecharge,jdbcType=DECIMAL} ,
+	        </if>
+			<if test="numInsured != null">
+	        numInsured = #{numInsured,jdbcType=DECIMAL} ,
+	        </if>
+			<if test="numOverdue != null">
+	        numOverdue = #{numOverdue,jdbcType=DECIMAL} ,
+	        </if>
+			<if test="numTotalAdvance != null">
+	        numTotalAdvance = #{numTotalAdvance,jdbcType=DECIMAL} ,
+	        </if>
+			<if test="istatus != null">
+	        iStatus = #{istatus,jdbcType=INTEGER} 
+	        </if>
+	    </set>
+		WHERE 
+	        id = #{id,jdbcType=INTEGER} 
+	</update>
+
+	<!-- 充值 -->
+    <update id="updateChargeAmt" parameterType="java.util.Map">
+        update tbguaranteeaccount
+        set numAvailable = IFNULL(numAvailable,0) + #{chargeAmt,jdbcType=DECIMAL},
+        	numTotalRecharge = IFNULL(numTotalRecharge,0) + #{chargeAmt,jdbcType=DECIMAL}
+        where iLoginAccountID = #{iLoginAccountID,jdbcType=INTEGER}
+    </update>
+    
+    <!-- 提现 -->
+    <update id="updateCashAmt" parameterType="java.util.Map">
+        update tbguaranteeaccount
+        set numAvailable = IFNULL(numAvailable,0) - #{cashAmt,jdbcType=DECIMAL},
+        	numTotalCash = IFNULL(numTotalCash,0) + #{cashAmt,jdbcType=DECIMAL},
+        	numTotalServiceCharge = IFNULL(numTotalServiceCharge,0) + #{serviceFee,jdbcType=DECIMAL}
+        where iLoginAccountID = #{iLoginAccountID,jdbcType=INTEGER}
+    </update>
+    
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbguaranteeaccount WHERE
+        id = #{id} 
+	]]>
+	</delete>
+    
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbguaranteeaccount 
+		WHERE 
+        id = #{id} 
+	]]>
+	</select>
+	
+	<select id="findByLoginAccountId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbguaranteeaccount 
+		WHERE 
+        iLoginAccountID = #{iLoginAccountId} 
+	]]>
+	</select>
+	 
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from tbguaranteeaccount where 1=1
+		<include refid="queryWhere"/>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbguaranteeaccount where 1=1
+		<include refid="queryWhere"/> 
+	    <![CDATA[ ORDER BY id DESC ]]>
+        <![CDATA[ LIMIT #{startRecord,jdbcType=INTEGER},#{endRecord,jdbcType=INTEGER} ]]>
+	</select>
+	
+	<sql id="queryWhere">
+		<if test="id != null and id.trim() != ''">
+		and id = #{id}
+		</if>
+		<if test="iloginAccountId != null and iloginAccountId.trim() != ''">
+		and iLoginAccountID = #{iloginAccountId}
+		</if>
+		<if test="numAvailable != null and numAvailable.trim() != ''">
+		and numAvailable = #{numAvailable}
+		</if>
+		<if test="numTotalBorrow != null and numTotalBorrow.trim() != ''">
+		and numTotalBorrow = #{numTotalBorrow}
+		</if>
+		<if test="numTotalFee != null and numTotalFee.trim() != ''">
+		and numTotalFee = #{numTotalFee}
+		</if>
+		<if test="numTotalCash != null and numTotalCash.trim() != ''">
+		and numTotalCash = #{numTotalCash}
+		</if>
+		<if test="numTotalRecharge != null and numTotalRecharge.trim() != ''">
+		and numTotalRecharge = #{numTotalRecharge}
+		</if>
+		<if test="numInsured != null and numInsured.trim() != ''">
+		and numInsured = #{numInsured}
+		</if>
+		<if test="numOverdue != null and numOverdue.trim() != ''">
+		and numOverdue = #{numOverdue}
+		</if>
+		<if test="numTotalAdvance != null and numTotalAdvance.trim() != ''">
+		and numTotalAdvance = #{numTotalAdvance}
+		</if>
+		<if test="istatus != null and istatus.trim() != ''">
+		and iStatus = #{istatus}
+		</if>
+	</sql>
+</mapper>
+
+

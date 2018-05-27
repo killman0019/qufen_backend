@@ -1,0 +1,21 @@
+#set($pageName = "投资失败")
+#set($topbar = { "title": $pageName })
+
+<div class="m-msg f-mt3">
+	<div class="m-msg-img f-mb2"><i class="u-fntIco--msg">&#xe610;</i></div>
+	<div class="m-msg-cnt">
+		客官～您下手慢了！<br>
+		该标在您支付过程中已被其他投资者抢投！<br>
+		投资金额超过剩余可投金额！<br>
+		您可以
+	</div>
+
+	<div class="m-msg-btn f-mtb3">
+		<a href="$!{basePath}/user/invest/page?subjectId=$!{subjectId}" class="u-btn z-sml z-prm">返回修改投资金额</a>
+	</div>
+
+	<div class="l-mn2 u-dsdLn"></div>
+	<div class="l-mn4 f-mtb3 f-tll u-clGrayLgt">
+		如有疑问，请联系 <a href="tel:4006082233">400-0311-798</a>
+	</div>
+</div>
