@@ -1,9 +1,11 @@
 package com.tzg.rest.controller.kff;
 
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -57,14 +59,15 @@ public class TokenController extends BaseController {
 	@ResponseBody
 	public BaseResponseEntity commendation(HttpServletRequest request) {
 		BaseResponseEntity bre = new BaseResponseEntity();
-        HashMap<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<String, Object>();
 
 		try {
 			CommendationRequest commendationRequest = getParamMapFromRequestPolicy(request, CommendationRequest.class);
 			String token = commendationRequest.getToken();
 			Integer userId = getUserIdByToken(token);
 			commendationRequest.setSendUserId(userId);
-			kffRmiService.saveCommendation(commendationRequest);
+			map = kffRmiService.saveCommendation(commendationRequest);
+			//map.put("commendationNum", commendationNum);
             bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("TokenController commendation:{}", e);

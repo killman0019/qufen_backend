@@ -31,7 +31,7 @@ public interface BaseMapper <E,PK extends Serializable>{
 	* @param entity 对象实体类
 	*     
 	*/
-	public void save(E entity);
+	public Integer save(E entity);
 	
 	/**
 	* 更新对象信息 

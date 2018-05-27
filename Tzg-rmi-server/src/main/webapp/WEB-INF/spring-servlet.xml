@@ -70,6 +70,24 @@
 		<property name="masterHost"   value="#{sysConfig['master.hosts']}" />
 		<property name="salveHost"   value="#{sysConfig['salve.hosts']}" /> 
 	</bean>
+	
+	<!-- spring thread pool executor -->
+    <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <!-- 线程池维护线程的最少数量 -->
+        <property name="corePoolSize" value="30"/>
+        <!-- 允许的空闲时间 -->
+        <property name="keepAliveSeconds" value="60"/>
+        <!-- 线程池维护线程的最大数量 -->
+        <property name="maxPoolSize" value="50"/>
+        <!-- 缓存队列 -->
+        <property name="queueCapacity" value="50"/>
+       <!--默认为ThreadPoolTaskExecutor-->
+        <!--<property name="threadNamePrefix" value="platformThread"/>-->
+        <!-- 对拒绝task的处理策略 -->
+        <property name="rejectedExecutionHandler">
+            <bean class="java.util.concurrent.ThreadPoolExecutor$CallerRunsPolicy"/>
+        </property>
+    </bean>
 	<dubbo:service interface="com.tzg.common.redis.RedisService" ref="redisService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}"  retries="0"/>
 
     <!--开封府相关服务 -->

@@ -74,16 +74,18 @@ public class PolicyUtil {
 
     public static void main(String[] args) {
 
-        String encryptStr = decryptPolicy("g%2FLBEh%2B3vndEGJK0PQ6W8lhhAgy%2BCV2cAFBwQaD87bmwrhsbzFKKBGeD7kK4SfIRrLJb5K3Sj9j94HI56ZbseCg%2F3o%2BBFi4Jl4%2BjnjacGD1V%2Fa171DRw51XQlnBQAQZsBu5JSSDZEMyOFlzAl6ivJKTRc6FrI9jCmDgL3uW4OasmA1dtMEGqa1OXnntdUcxCbo3uW1pN90%2BQED8Enl9Q7k%2B6YjPWj%2FEIw39XJRxSCn4TaobRoKw1xYEyciKUQChX");
-       System.out.println(encryptStr);
+     //   String encryptStr = decryptPolicy("EBhoQyk6p6p1aPSXxzwzi%252B3om%252FdERMY2NZZzjZTGtEGqsgWB%252FDyGz0asOw0LG%252Bk2ZXSCfnIsOxXF%250Al%252B0HSNdEwRgyaIKa8O0wxXzz%252FNOwNlViMRL7IwMlQwITcq2%252FvSq3yzeCAIX%252F8SVg2gcHbU%252B83Q%253D%253D%250A");
+      // System.out.println(encryptStr);
 //        Date date = new Date();
 //        date.setTime(1453507200000L);
 //        System.out.println(date);
 //
-        String str = "{\"userId\":\"1000110002\",\"schoolId\":\"10001\"}";
+        String str = "{\"phoneNumber\":\"15967158998\",\"password\":\"11111111\",\"dynamicVerifyCode\":\"488258\"}";
+       // String str = "{\"phone\":\"15967158998\",\"module\":\"register\"}";
+
         String a = encryptPolicy(str);
         System.out.println(encryptPolicy(str));
-
-        System.out.println(decryptAES(a));
+//
+//        System.out.println(decryptAES(a));
     }
 }

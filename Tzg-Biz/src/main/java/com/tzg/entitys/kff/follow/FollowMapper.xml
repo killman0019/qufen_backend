@@ -35,8 +35,7 @@
         	followed_user_signature ,
         	followed_user_icon ,
         	followed_user_name ,
-        	followed_project_id ,
-        	followed_post_id ,
+        	followed_id ,
         	status ,
         	createTime ,
         	updateTime 
@@ -96,6 +95,36 @@
 		WHERE 
 	        follow_id = #{followId,jdbcType=INTEGER} 
 	</update>
+
+
+	<update id="updateUserInfo" parameterType="java.util.Map">
+	UPDATE tbfollow
+		<set>			
+			<if test="followerUserName != null and followerUserName.trim() != ''">
+	        follower_user_name = #{followerUserName,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="followedUserName != null and followedUserName.trim() != ''">
+	        followed_user_name = #{followedUserName,jdbcType=VARCHAR} ,
+	        </if>						
+			<if test="followedUserIcon != null and followedUserIcon.trim() != ''">
+	        followed_user_icon = #{followedUserIcon,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="followedUserSignature != null and followedUserSignature.trim() != ''">
+	         followed_user_signature = #{followedUserSignature,jdbcType=VARCHAR} ,
+	        </if>			
+			<if test="updateTime != null">
+	        updateTime = now()
+	        </if>			
+	    </set>
+		WHERE 
+		     <if test="followedUserId != null">
+		        	followed_user_id = #{followedUserId,jdbcType=INTEGER} 
+		     </if>	
+		     <if test="followUserId != null">
+		    	 follow_user_id = #{followUserId,jdbcType=INTEGER}
+		    </if>	 	        
+	</update>
+
 
 	<delete id="deleteById" parameterType="java.lang.Integer">
 	<![CDATA[

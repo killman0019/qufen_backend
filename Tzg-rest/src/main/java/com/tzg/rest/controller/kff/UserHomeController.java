@@ -28,6 +28,7 @@ import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.utils.AccountTokenUtil;
 import com.tzg.entitys.kff.commendation.CommendationRequest;
+import com.tzg.entitys.kff.evaluation.EvaluationDetailResponse;
 import com.tzg.entitys.kff.message.KFFMessage;
 import com.tzg.entitys.kff.post.PostResponse;
 import com.tzg.entitys.kff.suggest.SuggestRequest;
@@ -109,16 +110,16 @@ public class UserHomeController extends BaseController {
 			Integer userId = baseRequest.getUserId();			
 			PaginationQuery query = new PaginationQuery();
 			if(userId != null && userId > 0){
-	          query.addQueryData("userId", userId +"");
+	          query.addQueryData("createUserId", userId +"");
 			}else{
-			  query.addQueryData("userId", loginUserId +"");	
+			  query.addQueryData("createUserId", loginUserId +"");	
 			}
 	        query.addQueryData("status", "1");
 	        //帖子类型：1-评测；2-讨论；3-文章
 	        query.addQueryData("postType", "1");
 	        query.setPageIndex(baseRequest.getPageIndex());
 	        query.setRowsPerPage(baseRequest.getPageSize());
-			PageResult<PostResponse> evaluations = kffRmiService.findPageEvaluationList(query);
+			PageResult<EvaluationDetailResponse> evaluations = kffRmiService.findPageEvaluationList(query);
             map.put("evaluations", evaluations);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -155,9 +156,9 @@ public class UserHomeController extends BaseController {
 			Integer userId = baseRequest.getUserId();			
 			PaginationQuery query = new PaginationQuery();
 			if(userId != null && userId > 0){
-	          query.addQueryData("userId", userId +"");
+	          query.addQueryData("createUserId", userId +"");
 			}else{
-			  query.addQueryData("userId", loginUserId +"");	
+			  query.addQueryData("createUserId", loginUserId +"");	
 			}
 	        query.addQueryData("status", "1");
 	        //帖子类型：1-评测；2-讨论；3-文章
@@ -165,7 +166,10 @@ public class UserHomeController extends BaseController {
 	        query.setPageIndex(baseRequest.getPageIndex());
 	        query.setRowsPerPage(baseRequest.getPageSize());
 			PageResult<PostResponse> discusses = kffRmiService.findPageDisscussList(query);
+			//20180507志远去除 我的最新讨论记录 微信群
+			//PostResponse myLatestDiscuss = kffRmiService.findMyLatestDiscuss(loginUserId);
             map.put("discusses", discusses);
+            //map.put("myLatestDiscuss", myLatestDiscuss);
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("UserHomeController discussList:{}", e);
@@ -202,9 +206,9 @@ public class UserHomeController extends BaseController {
 			Integer userId = baseRequest.getUserId();			
 			PaginationQuery query = new PaginationQuery();
 			if(userId != null && userId > 0){
-	          query.addQueryData("userId", userId +"");
+	          query.addQueryData("createUserId", userId +"");
 			}else{
-			  query.addQueryData("userId", loginUserId +"");	
+			  query.addQueryData("createUserId", loginUserId +"");	
 			}
 	        query.addQueryData("status", "1");
 	        //帖子类型：1-评测；2-讨论；3-文章

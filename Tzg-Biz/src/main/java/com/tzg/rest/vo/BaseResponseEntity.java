@@ -9,21 +9,21 @@ import org.apache.commons.lang3.StringUtils;
 public class BaseResponseEntity implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	// 0-接口正常 ，其他数字是错误码
+	//0-接口正常 ，其他数字是错误码
 	private Integer status;
-	// 返回消息
+	//返回消息
 	private String msg;
-	// 预留字段 错误码
+	//预留字段 错误码
 	private Integer code;
-	// 预留字段 错误原因
+	//预留字段 错误原因
 	private String reason;
-	// 来源uri
+	//来源uri
 	private String fromuri;
-	// 用户token
+	//用户token
 	private String token;
-	// 通用返回体
+	//通用返回体
 	private Object data;
-	private long serverDatetime; // 服务器当前时间
+	private long serverDatetime; //服务器当前时间
 
 	public long getServerDatetime() {
 		return serverDatetime;
@@ -37,10 +37,11 @@ public class BaseResponseEntity implements Serializable {
 		this.setCode(0);
 		this.setMsg("Success");
 		this.setData("");
-		this.setServerDatetime(new Date().getTime());// 设置系统当前时间
+		this.setServerDatetime(new Date().getTime());//设置系统当前时间
 	}
 
-	public BaseResponseEntity(Integer status, String msg, Integer code, String reason, String fromuri) {
+	public BaseResponseEntity(Integer status, String msg, Integer code,
+			String reason, String fromuri) {
 		super();
 		this.status = status;
 		this.msg = msg;
@@ -62,7 +63,8 @@ public class BaseResponseEntity implements Serializable {
 	}
 
 	public void setMsg(String msg) {
-		if (StringUtils.isNotBlank(msg) && (msg.indexOf("Exception") != -1 || msg.equals("null"))) {
+		if (StringUtils.isNotBlank(msg)
+				&& (msg.indexOf("Exception") != -1 || msg.equals("null"))) {
 			this.msg = "网络连接超时";
 		} else {
 			this.msg = msg;
@@ -108,11 +110,6 @@ public class BaseResponseEntity implements Serializable {
 	public void setToken(String token) {
 		this.token = token;
 	}
-
-	@Override
-	public String toString() {
-		return "BaseResponseEntity [status=" + status + ", msg=" + msg + ", code=" + code + ", reason=" + reason + ", fromuri=" + fromuri + ", token=" + token
-				+ ", data=" + data + ", serverDatetime=" + serverDatetime + "]";
-	}
-
+	
+	
 }

@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FollowMapper extends BaseMapper<Follow, java.lang.Integer> {
 
-	Follow findByWhere(Map<String, Object> map);	
+	Follow findByWhere(Map<String, Object> map);
+
+	void updateUserInfo(Map<String, Object> followMap);	
 
 }

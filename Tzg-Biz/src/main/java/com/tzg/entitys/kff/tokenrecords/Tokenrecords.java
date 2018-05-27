@@ -1,6 +1,8 @@
 package com.tzg.entitys.kff.tokenrecords;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+
 import com.tzg.common.utils.DateUtil;
 
 public class Tokenrecords implements Serializable {
@@ -36,7 +38,7 @@ public class Tokenrecords implements Serializable {
     /**
      * token数量
      */ 	
-	private java.lang.Integer amount;
+	private BigDecimal amount;
     /**
      * tradeDate
      */ 	
@@ -45,7 +47,7 @@ public class Tokenrecords implements Serializable {
     /**
      * balance
      */ 	
-	private java.lang.Integer balance;
+	private java.math.BigDecimal balance;
     /**
      * createTime
      */ 	
@@ -116,13 +118,7 @@ public class Tokenrecords implements Serializable {
 		return this.functionType;
 	}
 	
-	public void setAmount(java.lang.Integer value) {
-		this.amount = value;
-	}
-	
-	public java.lang.Integer getAmount() {
-		return this.amount;
-	}
+
 	
 	public void setTradeDate(java.util.Date value) {
 		this.tradeDateStr =DateUtil.getDate(value, "yyyy-MM-dd HH:mm:ss");
@@ -137,14 +133,24 @@ public class Tokenrecords implements Serializable {
 		return this.tradeDateStr;
 	}
 	
-	public void setBalance(java.lang.Integer value) {
-		this.balance = value;
-	}
+
 	
-	public java.lang.Integer getBalance() {
-		return this.balance;
+	public BigDecimal getAmount() {
+		return amount;
 	}
-	
+
+	public void setAmount(BigDecimal amount) {
+		this.amount = amount;
+	}
+
+	public java.math.BigDecimal getBalance() {
+		return balance;
+	}
+
+	public void setBalance(java.math.BigDecimal balance) {
+		this.balance = balance;
+	}
+
 	public void setCreateTime(java.util.Date value) {
 		this.createTimeStr =DateUtil.getDate(value, "yyyy-MM-dd HH:mm:ss");
 		this.createTime = value;

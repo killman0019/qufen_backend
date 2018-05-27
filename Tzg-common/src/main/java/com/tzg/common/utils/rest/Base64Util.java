@@ -48,10 +48,19 @@ public class Base64Util {
 
  public static void decoderBase64File(String base64Code, String targetPath)
    throws Exception {
-  byte[] buffer = new BASE64Decoder().decodeBuffer(base64Code);
-  FileOutputStream out = new FileOutputStream(targetPath);
-  out.write(buffer);
-  out.close();
+   File file = new File(targetPath);
+		if (file.exists()){
+			file.delete();
+		}
+		File dir = new File(file.getParent());
+		if (!dir.exists())
+			dir.mkdirs();
+		if (file.createNewFile()) {
+			  byte[] buffer = new BASE64Decoder().decodeBuffer(base64Code);
+			  FileOutputStream out = new FileOutputStream(targetPath);
+			  out.write(buffer);
+			  out.close();
+		}	 
 
  }
 

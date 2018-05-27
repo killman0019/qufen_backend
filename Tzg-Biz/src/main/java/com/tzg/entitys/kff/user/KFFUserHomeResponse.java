@@ -1,6 +1,8 @@
 package com.tzg.entitys.kff.user;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+
 import com.tzg.common.utils.DateUtil;
 
 public class KFFUserHomeResponse implements Serializable {
@@ -79,7 +81,7 @@ public class KFFUserHomeResponse implements Serializable {
     /**
      * 账号币值
      */ 	
-	private java.lang.Integer kffCoinNum  = 0;
+	private BigDecimal kffCoinNum  = BigDecimal.ZERO;
     /**
      * 所在地区域名称:浙江省杭州市
      */ 	
@@ -178,14 +180,16 @@ public class KFFUserHomeResponse implements Serializable {
 		return this.articleNum;
 	}
 	
-	public void setKffCoinNum(java.lang.Integer value) {
-		this.kffCoinNum = value;
-	}
+
 	
-	public java.lang.Integer getKffCoinNum() {
-		return this.kffCoinNum;
+	public BigDecimal getKffCoinNum() {
+		return kffCoinNum;
 	}
-	
+
+	public void setKffCoinNum(BigDecimal kffCoinNum) {
+		this.kffCoinNum = kffCoinNum;
+	}
+
 	public void setAreaName(java.lang.String value) {
 		this.areaName = value;
 	}

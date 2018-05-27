@@ -8,9 +8,9 @@
 		<result property="tradeType" jdbcType="INTEGER" column="trade_type"/>
 		<result property="functionDesc" jdbcType="VARCHAR" column="function_desc"/>
 		<result property="functionType" jdbcType="TINYINT" column="function_type"/>
-		<result property="amount" jdbcType="INTEGER" column="amount"/>
+		<result property="amount" jdbcType="DECIMAL" column="amount"/>
 		<result property="tradeDate" jdbcType="TIMESTAMP" column="trade_date"/>
-		<result property="balance" jdbcType="INTEGER" column="balance"/>
+		<result property="balance" jdbcType="DECIMAL" column="balance"/>
 		<result property="createTime" jdbcType="TIMESTAMP" column="createTime"/>
 		<result property="updateTime" jdbcType="TIMESTAMP" column="updateTime"/>
 		<result property="status" jdbcType="INTEGER" column="status"/>
@@ -47,9 +47,9 @@
         	#{tradeType,jdbcType=INTEGER} ,
         	#{functionDesc,jdbcType=VARCHAR} ,
         	#{functionType,jdbcType=TINYINT} ,
-        	#{amount,jdbcType=INTEGER} ,
+        	#{amount,jdbcType=DECIMAL} ,
         	#{tradeDate,jdbcType=TIMESTAMP} ,
-        	#{balance,jdbcType=INTEGER} ,
+        	#{balance,jdbcType=DECIMAL} ,
         	#{createTime,jdbcType=TIMESTAMP} ,
         	#{updateTime,jdbcType=TIMESTAMP} ,
         	#{status,jdbcType=INTEGER} ,
@@ -77,13 +77,13 @@
 	        function_type = #{functionType,jdbcType=TINYINT} ,
 	        </if>
 			<if test="amount != null">
-	        amount = #{amount,jdbcType=INTEGER} ,
+	        amount = #{amount,jdbcType=DECIMAL} ,
 	        </if>
 			<if test="tradeDate != null">
 	        trade_date = #{tradeDate,jdbcType=TIMESTAMP} ,
 	        </if>
 			<if test="balance != null">
-	        balance = #{balance,jdbcType=INTEGER} ,
+	        balance = #{balance,jdbcType=DECIMAL} ,
 	        </if>
 			<if test="createTime != null">
 	        createTime = #{createTime,jdbcType=TIMESTAMP} ,
@@ -149,7 +149,7 @@
 		<if test="functionType != null and functionType.trim() != ''">
 		and function_type = #{functionType}
 		</if>
-		<if test="amount != null and amount.trim() != ''">
+		<if test="amount != null">
 		and amount = #{amount}
 		</if>
 		<if test="tradeDateBegin != null and tradeDateBegin.trim() != ''">
@@ -158,7 +158,7 @@
 		<if test="tradeDateEnd != null and tradeDateEnd.trim() != ''">
 		and trade_date &lt;= #{tradeDateEnd}
 		</if>
-		<if test="balance != null and balance.trim() != ''">
+		<if test="balance != null ">
 		and balance = #{balance}
 		</if>
 		<if test="createTimeBegin != null and createTimeBegin.trim() != ''">

@@ -65,10 +65,16 @@ public class PostResponse implements Serializable {
      * 剪短描述
      */ 	
 	private java.lang.String postShortDesc;
+	
     /**
      * 缩略图json，目前最多三张图的url等信息
      */ 	
-	private List<PostFile> postSmallImages;
+	private List<PostFile> postSmallImagesList;
+	
+    /**
+     * 缩略图json，目前最多三张图的url等信息
+     */ 	
+	private java.lang.String postSmallImages;
     /**
      * 评论数量
      */ 	
@@ -121,8 +127,47 @@ public class PostResponse implements Serializable {
 	private java.lang.Integer status;
 
 	
+	//discuss内容
+	/**
+     * discussId
+     */ 	
+	private java.lang.Integer discussId;
+    /**
+     * 讨论内容
+     */ 	
+	private java.lang.String disscussContents;
+    /**
+     * 标签ID，名称的json串
+     */ 	
+	private java.lang.String tagInfos;
 	
 	
+	
+	
+	public java.lang.Integer getDiscussId() {
+		return discussId;
+	}
+
+	public void setDiscussId(java.lang.Integer discussId) {
+		this.discussId = discussId;
+	}
+
+	public java.lang.String getDisscussContents() {
+		return disscussContents;
+	}
+
+	public void setDisscussContents(java.lang.String disscussContents) {
+		this.disscussContents = disscussContents;
+	}
+
+	public java.lang.String getTagInfos() {
+		return tagInfos;
+	}
+
+	public void setTagInfos(java.lang.String tagInfos) {
+		this.tagInfos = tagInfos;
+	}
+
 	public java.lang.Integer getFollowStatus() {
 		return followStatus;
 	}
@@ -199,11 +244,20 @@ public class PostResponse implements Serializable {
 	
 	
 	
-	public List<PostFile> getPostSmallImages() {
+
+	public List<PostFile> getPostSmallImagesList() {
+		return postSmallImagesList;
+	}
+
+	public void setPostSmallImagesList(List<PostFile> postSmallImagesList) {
+		this.postSmallImagesList = postSmallImagesList;
+	}
+
+	public java.lang.String getPostSmallImages() {
 		return postSmallImages;
 	}
 
-	public void setPostSmallImages(List<PostFile> postSmallImages) {
+	public void setPostSmallImages(java.lang.String postSmallImages) {
 		this.postSmallImages = postSmallImages;
 	}
 
@@ -329,6 +383,7 @@ public class PostResponse implements Serializable {
 		this.projectSignature = projectSignature;
 	}
 
+	
 	public BigDecimal getTotalScore() {
 		return totalScore;
 	}

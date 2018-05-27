@@ -9,8 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PraiseMapper extends BaseMapper<Praise, java.lang.Integer> {
 
-	Praise findByPostId(Map<String, Object> map);
-
-	
+	Praise findByPostId(Map<String, Object> map);	
 
 }

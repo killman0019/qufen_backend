@@ -123,6 +123,7 @@ public class PageResult<T> implements Serializable{
 		this.rowsPerPage = rowsPerPage;
 	}
 
+	
 	public String getQueryParameters() {
 		return queryParameters;
 	}
@@ -130,5 +131,5 @@ public class PageResult<T> implements Serializable{
 	public void setQueryParameters(String queryParameters) {
 		this.queryParameters = queryParameters;
 	}
-
+    
 }

@@ -62,6 +62,14 @@ public class MessageService   {
 		}
 		return result;
 	}
+
+	public void deleteAllMessages(Integer userId) throws RestServiceException{
+		if(userId == null){
+			throw new RestServiceException("用户id不能为空");
+		}		
+		
+		messageMapper.deleteAllMessages(userId);
+	}
 	
 
 	

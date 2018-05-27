@@ -1,6 +1,7 @@
 package com.tzg.entitys.kff.article;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.tzg.common.utils.DateUtil;
@@ -52,6 +53,8 @@ public class ArticleDetailResponse implements Serializable {
      * 项目英文名称
      */ 	
 	private java.lang.String projectEnglishName;
+	
+	private java.lang.String projectChineseName;
     /**
      * 帖子标题
      */ 	
@@ -85,16 +88,20 @@ public class ArticleDetailResponse implements Serializable {
      * 浏览量
      */ 	
 	private java.lang.Integer pageviewNum  = 0;
-	
     /**
      * 捐赠人数
      */ 	
 	private java.lang.Integer donateNum = 0;
 	
 	/**
-	 * 收藏状态：0-未收藏；1-已收藏
+	 * 总捐赠金额
 	 */
-	private java.lang.Integer collectStatus;
+	private java.math.BigDecimal commendationNum = BigDecimal.ZERO;
+	
+	/**
+	 * 收藏状态：0-未收藏；1-已收藏 2不显示收藏按钮
+	 */
+	private java.lang.Integer collectStatus = 2;
     /**
      * 收藏人数
      */ 	
@@ -345,6 +352,23 @@ public class ArticleDetailResponse implements Serializable {
 	public void setPostType(java.lang.Integer postType) {
 		this.postType = postType;
 	}
+
+	public java.lang.String getProjectChineseName() {
+		return projectChineseName;
+	}
+
+	public void setProjectChineseName(java.lang.String projectChineseName) {
+		this.projectChineseName = projectChineseName;
+	}
+
+	public java.math.BigDecimal getCommendationNum() {
+		return commendationNum;
+	}
+
+	public void setCommendationNum(java.math.BigDecimal commendationNum) {
+		this.commendationNum = commendationNum;
+	}
+
 	
 	
 	

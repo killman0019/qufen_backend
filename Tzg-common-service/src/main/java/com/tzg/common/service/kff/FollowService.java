@@ -73,6 +73,12 @@ public class FollowService   {
 		return followMapper.findByWhere(map);
 	}
 
+	public void updateUserInfo(Map<String, Object> followMap) {
+		
+		followMapper.updateUserInfo(followMap);
+		
+	}
+
 
 	
 }

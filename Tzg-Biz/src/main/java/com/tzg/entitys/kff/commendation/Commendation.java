@@ -17,7 +17,7 @@ public class Commendation implements Serializable {
     /**
      * status
      */ 	
-	private java.lang.Integer status;
+	private java.lang.Integer status = 1;
     /**
      * createTime
      */ 	
@@ -55,7 +55,7 @@ public class Commendation implements Serializable {
     /**
      * 捐赠金额
      */ 	
-	private java.lang.Integer amount;
+	private java.math.BigDecimal amount;
 
 	
 	public void setCommendationId(java.lang.Integer value) {
@@ -147,14 +147,16 @@ public class Commendation implements Serializable {
 	public java.lang.Integer getPostType() {
 		return this.postType;
 	}
-	
-	public void setAmount(java.lang.Integer value) {
-		this.amount = value;
+
+	public java.math.BigDecimal getAmount() {
+		return amount;
+	}
+
+	public void setAmount(java.math.BigDecimal amount) {
+		this.amount = amount;
 	}
 	
-	public java.lang.Integer getAmount() {
-		return this.amount;
-	}
+
 
 	
 }

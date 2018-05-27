@@ -28,8 +28,8 @@ public class PraiseController extends BaseController {
 	
 	/**
 	 * 
-	* @Title: savePraise
-	* @Description: 点赞
+	* @Title: savePostPraise
+	* @Description: 对帖子进行点赞
 	* @param @param request
 	* @param @param response
 	* @param @return    
@@ -37,9 +37,9 @@ public class PraiseController extends BaseController {
 	* @see    
 	* @throws
 	 */
-	@RequestMapping(value="/savePraise",method = {RequestMethod.POST,RequestMethod.GET})
+	@RequestMapping(value="/savePostPraise",method = {RequestMethod.POST,RequestMethod.GET})
 	@ResponseBody
-	public BaseResponseEntity savePraise(HttpServletRequest request) {
+	public BaseResponseEntity savePostPraise(HttpServletRequest request) {
 		BaseResponseEntity bre = new BaseResponseEntity();
         HashMap<String, Object> map = new HashMap<String, Object>();
 
@@ -52,14 +52,14 @@ public class PraiseController extends BaseController {
 				throw new RestServiceException(RestErrorCode.MISSING_ARG_POSTID);
 			}
 	
-			kffRmiService.savePraise(userId,postId);
-            
+			int praiseNum = kffRmiService.savePraise(userId,postId);
+            map.put("praiseNum", praiseNum);
             bre.setData(map);
 		} catch (RestServiceException e) {
-			logger.error("PraiseController savePraise:{}", e);
+			logger.error("PraiseController savePostPraise:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
 		} catch (Exception e) {
-			logger.error("PraiseController savePraise:{}", e);
+			logger.error("PraiseController savePostPraise:{}", e);
 			return this.resResult(RestErrorCode.SYS_ERROR,e.getMessage());
 		}
 		return bre;
@@ -67,8 +67,8 @@ public class PraiseController extends BaseController {
 	
 	/**
 	 * 
-	* @Title: cancelPraise
-	* @Description: 取消点赞
+	* @Title: cancelPostPraise
+	* @Description: 取消对帖子的点赞
 	* @param @param request
 	* @param @param response
 	* @param @return    
@@ -76,9 +76,9 @@ public class PraiseController extends BaseController {
 	* @see    
 	* @throws
 	 */
-	@RequestMapping(value="/cancelPraise",method = {RequestMethod.POST,RequestMethod.GET})
+	@RequestMapping(value="/cancelPostPraise",method = {RequestMethod.POST,RequestMethod.GET})
 	@ResponseBody
-	public BaseResponseEntity cancelPraise(HttpServletRequest request) {
+	public BaseResponseEntity cancelPostPraise(HttpServletRequest request) {
 		BaseResponseEntity bre = new BaseResponseEntity();
         HashMap<String, Object> map = new HashMap<String, Object>();
 
@@ -91,18 +91,98 @@ public class PraiseController extends BaseController {
 				throw new RestServiceException(RestErrorCode.MISSING_ARG_POSTID);
 			}
 	
-			kffRmiService.cancelPraise(userId,postId);
-            
+			int praiseNum = kffRmiService.cancelPraise(userId,postId);
+			map.put("praiseNum", praiseNum);
             bre.setData(map);
 		} catch (RestServiceException e) {
-			logger.error("PraiseController cancelPraise:{}", e);
+			logger.error("PraiseController cancelPostPraise:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
 		} catch (Exception e) {
-			logger.error("PraiseController cancelPraise:{}", e);
+			logger.error("PraiseController cancelPostPraise:{}", e);
 			return this.resResult(RestErrorCode.SYS_ERROR,e.getMessage());
 		}
 		return bre;
 	}
+	
+	/**
+	 * 
+	* @Title: saveCommentsPraise
+	* @Description: 对评论进行点赞
+	* @param @param request
+	* @param @param response
+	* @param @return    
+	* @return BaseResponseEntity
+	* @see    
+	* @throws
+	 */
+	@RequestMapping(value="/saveCommentsPraise",method = {RequestMethod.POST,RequestMethod.GET})
+	@ResponseBody
+	public BaseResponseEntity saveCommentsPraise(HttpServletRequest request) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+        HashMap<String, Object> map = new HashMap<String, Object>();
+
+		try {
+			JSONObject params = getParamMapFromRequestPolicy(request);
+            String token = (String) params.get("token");
+            Integer commentsId = (Integer) params.get("commentsId");            
+			Integer userId = getUserIdByToken(token);
+			if(commentsId == null || commentsId <= 0){
+				throw new RestServiceException(RestErrorCode.MISSING_ARG_COMMENTSID);
+			}
+	
+			int praiseNum = kffRmiService.saveCommentsPraise(userId,commentsId);
+			map.put("praiseNum", praiseNum);
+            bre.setData(map);
+		} catch (RestServiceException e) {
+			logger.error("PraiseController saveCommentsPraise:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("PraiseController saveCommentsPraise:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR,e.getMessage());
+		}
+		return bre;
+	}
+	
+	/**
+	 * 
+	* @Title: cancelCommentsPraise
+	* @Description: 取消 对评论的点赞
+	* @param @param request
+	* @param @param response
+	* @param @return    
+	* @return BaseResponseEntity
+	* @see    
+	* @throws
+	 */
+	@RequestMapping(value="/cancelCommentsPraise",method = {RequestMethod.POST,RequestMethod.GET})
+	@ResponseBody
+	public BaseResponseEntity cancelCommentsPraise(HttpServletRequest request) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+        HashMap<String, Object> map = new HashMap<String, Object>();
+
+		try {
+			JSONObject params = getParamMapFromRequestPolicy(request);
+            String token = (String) params.get("token");
+            Integer commentsId = (Integer) params.get("commentsId");            
+			Integer userId = getUserIdByToken(token);
+			if(commentsId == null || commentsId <= 0){
+				throw new RestServiceException(RestErrorCode.MISSING_ARG_COMMENTSID);
+			}
+	
+			int praiseNum = kffRmiService.cancelCommentsPraise(userId,commentsId);
+			map.put("praiseNum", praiseNum);
+            bre.setData(map);
+		} catch (RestServiceException e) {
+			logger.error("PraiseController cancelCommentsPraise:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("PraiseController cancelCommentsPraise:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR,e.getMessage());
+		}
+		return bre;
+	}
+	
+	
 }
 
 

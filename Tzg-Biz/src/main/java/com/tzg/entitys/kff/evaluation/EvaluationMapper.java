@@ -1,23 +1,17 @@
 package com.tzg.entitys.kff.evaluation;
 
-import java.util.List;
-
 import com.tzg.common.base.BaseMapper;
+
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface EvaluationMapper extends BaseMapper<Evaluation, java.lang.Integer> {
-	/**
-	 * 根据postID 查询评测帖子
-	 * 
-	 * @param postId
-	 * @return
-	 */
-	Evaluation selectEvaluationByPostId(Integer postId);
 
-	List<Evaluation> findEvaliationByProjectId(Integer projectId);
+	Evaluation findByPostId(Integer postId);
 
-	Evaluation selectEvaluationOrNotByUserId(Evaluation evaluation);
+	List<Evaluation> findByWhere(Map<String, Object> map);	
 
 }

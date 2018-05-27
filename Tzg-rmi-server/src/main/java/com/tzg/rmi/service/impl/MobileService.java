@@ -39,7 +39,7 @@ public class MobileService {
 		MobileService.sn = sn;
 		MobileService.pwd = pwd;
 		MobileService.md5pwd = MD5Util.md5Hex(
-				MobileService.sn + MobileService.pwd).toUpperCase();
+		MobileService.sn + MobileService.pwd).toUpperCase();
 		MobileService.mtURL = mtURL;
 	}
 

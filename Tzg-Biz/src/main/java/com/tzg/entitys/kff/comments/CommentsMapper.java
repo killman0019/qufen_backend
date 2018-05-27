@@ -12,15 +12,10 @@ public interface CommentsMapper extends BaseMapper<Comments, java.lang.Integer> 
 
 	List<Comments> findAllCommentsByWhere(Map<String, Object> map);
 
-	/**
-	 * 根据点赞人数进行排序 获赞人数最后的放在首位
-	 */
-	List<Comments> findPageCountOrderBy(Map<String, Object> queryData);
+	void increasePraiseNum(Integer commentsId);
 
-	List<Comments> findBidPraiseNum(Integer postId);
+	void decreasePraiseNum(Integer commentsId);
 
-	Integer findCommentsSum();
-
-	List<Comments> findFlootOrderById(Integer postId);
+	void updateUserInfo(Map<String, Object> map);	
 
 }

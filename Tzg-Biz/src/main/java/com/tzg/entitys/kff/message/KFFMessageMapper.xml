@@ -84,6 +84,15 @@
 	        message_id = #{messageId,jdbcType=INTEGER} 
 	</update>
 
+	<update id="deleteAllMessages" parameterType="java.lang.Integer">
+		UPDATE tbmessage
+		set status = 0, state=2,updateTime=now() 
+		WHERE 
+	        user_id = #{userId,jdbcType=INTEGER}
+	</update>
+
+
+
 	<delete id="deleteById" parameterType="java.lang.Integer">
 	<![CDATA[
 		DELETE FROM tbmessage WHERE

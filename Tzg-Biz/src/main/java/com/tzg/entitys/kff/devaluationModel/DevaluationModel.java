@@ -54,7 +54,20 @@ public class DevaluationModel implements Serializable {
      */ 	
 	private java.lang.Integer batchId;
 
+	/**
+	 * 专业评测对应的维度名称集合
+	 */
+	private java.lang.String detailDesc;
 	
+	
+	public java.lang.String getDetailDesc() {
+		return detailDesc;
+	}
+
+	public void setDetailDesc(java.lang.String detailDesc) {
+		this.detailDesc = detailDesc;
+	}
+
 	public void setModelId(java.lang.Integer value) {
 		this.modelId = value;
 	}

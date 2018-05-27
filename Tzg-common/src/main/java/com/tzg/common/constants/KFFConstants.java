@@ -61,16 +61,27 @@ public class KFFConstants {
 	public static final int EVA_MODEL_TYPE_PART_PRO = 3;
 	public static final int EVA_MODEL_TYPE_CUSTOMIZED = 4;
 	
-	//1用户头像；2帖子中内容图片
+	//1用户头像；2帖子中内容图片3项目图片
 	public static final int IMGTYPE_AVATARS = 1;
 	public static final int IMGTYPE_POSTS = 2;
+	public static final int IMGTYPE_PROJECTS = 3;
 	
 	//(1；待审核；2-审核通过；3-拒绝)
 	public static final int PROJECT_STATE_PENDING = 1;
 	public static final int PROJECT_STATE_PASS = 2;
 	public static final int PROJECT_STATE_REJECT = 3;
 	
-	//区分指数    初期统一设置为100
-	public static final int QUFEN_INDEX = 100;
+	//1-关注；2-点赞；3-评论；4-赞赏；5-评论被回复；6-上榜单；7-奖励token
+	public static final int MESSAGE_TYPE_FOLLOW = 1;
+	public static final int MESSAGE_TYPE_PRAISE = 2;
+	public static final int MESSAGE_TYPE_COMMENT = 3;
+	public static final int MESSAGE_TYPE_COMMENDATION = 4;
+	public static final int MESSAGE_TYPE_COMMENT_REPLY = 5;
+	public static final int MESSAGE_TYPE_RANK = 6;
+	public static final int MESSAGE_TYPE_AWARD_TOKEN = 7;
+	
+	//消息状态 1-未读；2-已读
+	public static final int MESSAGE_STATE_UNREAD = 1;	
+	public static final int MESSAGE_STATE_READ = 2;	
 
 }

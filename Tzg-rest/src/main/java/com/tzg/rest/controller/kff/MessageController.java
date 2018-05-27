@@ -145,7 +145,7 @@ public class MessageController extends BaseController {
             String token = (String) params.get("token");
             Integer messageId = (Integer) params.get("messageId");            
 			Integer userId = getUserIdByToken(token);
-			if(messageId == null || messageId <= 0){
+			if(messageId == null || messageId < 0){
 				throw new RestServiceException(RestErrorCode.MISSING_ARG_MESSAGEID);
 			}
 	

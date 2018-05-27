@@ -27,7 +27,10 @@ public class Comments implements Serializable {
 	 */
 	private List<Comments> childCommentsList;
 	
-	
+	/**
+	 * 返回页面时用到
+	 */
+	private java.lang.Integer floor = 0;
 	/**
      * commentsId
      */ 	
@@ -260,6 +263,14 @@ public class Comments implements Serializable {
 
 	public void setProjectId(java.lang.Integer projectId) {
 		this.projectId = projectId;
+	}
+
+	public java.lang.Integer getFloor() {
+		return floor;
+	}
+
+	public void setFloor(java.lang.Integer floor) {
+		this.floor = floor;
 	}
 
 	

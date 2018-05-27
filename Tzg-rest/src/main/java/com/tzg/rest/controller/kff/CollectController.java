@@ -65,7 +65,7 @@ public class CollectController extends BaseController {
 			}
 	
 			kffRmiService.saveCollect(userId,postId);
-            
+            map.put("collectStatus", 1);
             bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("CollectController saveCollect:{}", e);
@@ -104,7 +104,7 @@ public class CollectController extends BaseController {
 			}
 	
 			kffRmiService.cancelCollect(userId,postId);
-            
+			map.put("collectStatus", 0);
             bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("CollectController cancelCollect:{}", e);

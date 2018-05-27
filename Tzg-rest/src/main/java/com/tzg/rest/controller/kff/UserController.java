@@ -11,11 +11,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import com.alibaba.fastjson.JSONObject;
 import com.tzg.common.page.PageResult;
@@ -23,6 +26,7 @@ import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.redis.RedisService;
 import com.tzg.common.utils.AccountTokenUtil;
 import com.tzg.common.utils.EnumConstant.SmsBuss;
+import com.tzg.common.utils.FileUtils;
 import com.tzg.common.utils.RegexUtil;
 import com.tzg.common.utils.SHAUtil;
 import com.tzg.common.utils.TzgConstant;
@@ -302,17 +306,19 @@ public class UserController extends BaseController {
 		 * @param file
 		 * @return
 		 */
-		@RequestMapping(value = "/uploadUserIcon",method = {RequestMethod.POST,RequestMethod.GET},
-				produces = "text/html; charset=utf-8",consumes=MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+		@RequestMapping(value = "/uploadUserIcon",method = {RequestMethod.POST})
+		@ResponseBody
 		public BaseResponseEntity uploadUserIcon(
+				String imgdata,String token,
 				HttpServletRequest request, HttpServletResponse response
 				) {
 			BaseResponseEntity bre = new BaseResponseEntity();
 			Map<String, Object> resMap = new HashMap<String, Object>();
 			try {
-				JSONObject params = getParamMapFromRequestPolicy(request);
-	        	String token = (String)params.get("token");
-	        	String imgdata = (String)params.get("imgdata");
+				//JSONObject params = getParamMapFromRequestPolicy(request);
+	        	//String token = (String)params.get("token");
+				 logger.info("token:{}"+token);
+                logger.info("imgdata:{}"+imgdata);
 	        	if(StringUtils.isBlank(token)){
 	        		throw new RestServiceException(RestErrorCode.USER_NOT_LOGIN);
 	        	}
@@ -323,6 +329,8 @@ public class UserController extends BaseController {
 	        	if(userId == null){
 	        		throw new RestServiceException(RestErrorCode.USER_NOT_EXIST);
 	        	}
+	        	
+	        	
 	        	SystemParam systemParam = systemParamRmiService.findByCode("upload_local_path");
 	        	
 	        	String path = systemParam.getVcParamValue() + "avatars/" + DateUtil.getCurrentYearMonth()+"/";
@@ -339,7 +347,8 @@ public class UserController extends BaseController {
 	        	account.setIcon(file);
 	        	kffRmiService.updateUser(account);
 				
-	        	
+	        	resMap.put("imgUrl",file);	
+	        	bre.setData(resMap);
 			} catch (RestServiceException e) {
 				logger.error("error in uploadUserIcon method:{}", e);
 				return this.resResult(e.getErrorCode(), e.getMessage());
@@ -351,31 +360,82 @@ public class UserController extends BaseController {
 			return bre;
 		}
 	 
-		/*
+	
 		 
-		@RequestMapping(value = "/uploadUserIcon",method = {RequestMethod.POST,RequestMethod.GET},
-				produces = "text/html; charset=utf-8",consumes=MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-		public BaseResponseEntity uploadUserIcon(
-				 @RequestParam("uploadfile") MultipartFile file
+		@RequestMapping(value = "/uploadUserIconFile",method = {RequestMethod.POST})
+		@ResponseBody
+		public BaseResponseEntity uploadUserIconFile(
+				HttpServletRequest request,String token,HttpServletResponse response
 				) {
 			BaseResponseEntity bre = new BaseResponseEntity();
 			Map<String, Object> resMap = new HashMap<String, Object>();
 			try {
+				// @RequestParam("uploadfile") MultipartFile file,
+				MultipartFile file = null;
+				CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver(request.getSession().getServletContext());
+				if(multipartResolver.isMultipart(request)){
+				    MultipartHttpServletRequest multiRequest = (MultipartHttpServletRequest)request;  
+				    if(multiRequest != null && multiRequest.getFileMap() != null){
+				    	file = multiRequest.getFileMap().get("uploadfile");
+				    }
+				}
+				if (file == null) {
+					throw new Exception("uploadfile不能为空");
+				}
+				if(StringUtils.isBlank(token)){
+	        		throw new RestServiceException(RestErrorCode.USER_NOT_LOGIN);
+	        	}
 				if (file.isEmpty()) {
 					throw new Exception("未选择需要上传的图标！");
 				}
+				if(file.getBytes()==null){
+					throw new Exception("文件内容不能为空");
+				}
+		     	Integer userId = AccountTokenUtil.decodeAccountToken(token);
+	        	if(userId == null){
+	        		throw new RestServiceException(RestErrorCode.USER_NOT_EXIST);
+	        	}
+	        	
+	            //文件后缀  
+	            String extention= FileUtils.getFileExtension(file.getOriginalFilename());  
+	        	if(!FileUtils.allowedExtensionSet().contains(extention)){
+	        		throw new RestServiceException("非法文件后缀"+extention);
+	        	}
+	        	
+				SystemParam systemParam = systemParamRmiService.findByCode("upload_local_path");
+	        	
+	        	String path = systemParam.getVcParamValue() + "avatars/" + DateUtil.getCurrentYearMonth()+"/";
+	        	String localPath = path + userId+"."+extention;
+	        	try{
+	        		FileUtils.createFileLocal(localPath,file.getBytes());
+	        	}catch(Exception e){
+	        		logger.warn("error in uploadUserIconFile method createFileLocal:{}", e);
+	        		//throw new RestServiceException("生成文件失败");
+	        	}
+				//更新用户头像url
+	        	systemParam = systemParamRmiService.findByCode("upload_file_path");
+	        	path = systemParam.getVcParamValue()+ "/avatars/" + DateUtil.getCurrentYearMonth()+"/";
+	        	String url = path + userId+"."+extention;
+	        	KFFUser account = new KFFUser();
+	        	account.setUserId(userId);
+	        	account.setUpdateTime(new Date());
+	        	account.setIcon(url);
+	        	kffRmiService.updateUser(account);
+				
+	        	resMap.put("imgUrl",url);	
+	        	bre.setData(resMap);
 				
 			} catch (RestServiceException e) {
-				logger.error("error in uploadUserIcon method:{}", e);
+				logger.warn("error in uploadUserIconFile method:{}", e);
 				return this.resResult(e.getErrorCode(), e.getMessage());
 			} catch (Exception e) {
-				logger.error("uncatched error in uploadUserIcon method:{}", e);
+				logger.warn("uncatched error in uploadUserIconFile method:{}", e);
 				e.printStackTrace();
 				return this.resResult(RestErrorCode.SYS_ERROR);
 			}
 			return bre;
 		}
-		 */
+		
 		
 		/**
 		 *更新用户信息 修改用户昵称或者头像
@@ -436,8 +496,10 @@ public class UserController extends BaseController {
 					account.setSex(sex);
 				}
 				account.setUpdateTime(new Date());
-				kffRmiService.updateUser(account);
+				kffRmiService.updateUserInfo(account);
 				
+				KFFUser newuser = kffRmiService.findUserById(userId);
+				map.put("user", newuser);
 				bre.setData(map);
 			} catch (RestServiceException e) {
 				logger.error("UserController updateUserInfo error,reason：{}", e);
@@ -644,6 +706,10 @@ public class UserController extends BaseController {
 	        	systemParam = systemParamRmiService.findByCode("kff_about_us_url");
 	        	map.put("aboutUsUrl", systemParam.getVcParamValue());
 				
+	        	systemParam = systemParamRmiService.findByCode("sys_static_file_server_url");
+	        	
+	        	map.put("staticUrl", systemParam.getVcParamValue());
+	        	
 				bre.setData(map);
 			} catch (RestServiceException e) {
 				logger.error("UserController getH5URLs error,reason：{}", e);

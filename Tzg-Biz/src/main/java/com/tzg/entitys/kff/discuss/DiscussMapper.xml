@@ -76,17 +76,7 @@
 		FROM tbdiscuss 
 		WHERE 
         post_id = #{postId} 
-        order by discussId desc limit 1
-	]]>
-	</select>
-	
-	<select id="selectByPostId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
-	    SELECT <include refid="columns"/> 
-	<![CDATA[
-		FROM tbdiscuss 
-		WHERE 
-        post_id = #{postId} 
-      
+        order by discuss_id desc limit 1
 	]]>
 	</select>
 		 
@@ -119,13 +109,6 @@
 		and tag_infos = #{tagInfos}
 		</if>
 	</sql>
-	 
-	<select id="findDisscussBypostId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
-		select <include refid="columns"/>  from tbdiscuss where 1=1
-		and post_id = #{postId}
-	   
-	</select>
-	
 </mapper>
 
 

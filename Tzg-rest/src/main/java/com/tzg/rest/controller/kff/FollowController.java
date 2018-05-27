@@ -69,7 +69,7 @@ public class FollowController extends BaseController {
 			}
 	
 			kffRmiService.saveFollow(userId,followType,followedId);
-            
+            map.put("followStatus", 1);
             bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("FollowController saveFollow:{}", e);
@@ -112,7 +112,7 @@ public class FollowController extends BaseController {
 			}
 	
 			kffRmiService.cancelFollow(userId,followType,followedId);
-            
+			map.put("followStatus", 0);
             bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("FollowController cancelFollow:{}", e);
