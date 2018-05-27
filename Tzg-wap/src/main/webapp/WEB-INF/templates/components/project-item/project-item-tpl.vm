@@ -1,0 +1,72 @@
+#**
+ * 普通标列表项 juicer 模板
+ * Author: 吴岸林
+ *#
+
+[@if item.itype == 0]
+<a href="$[basePath]/subject/fixedbaodetail?projectId=$[item.id]" class="pitem">
+[@else]
+<a href="$[basePath]/subject/detail?subjectId=$[item.id]" class="pitem">
+[@/if]
+
+[@if item.istate == 10]
+	<div class="pitem_start-time">距下次开标时间 <span class="pitem_start-time_time">$[item.dtCollectStartStr]</span></div>
+[@/if]
+
+[@if item.istate == 10 || item.istate == 11]
+	[@if item.itype == 2]
+		<div class="pitem_title subject-tag -new">$[item.projectName] $[item.vcName]</div>
+	[@else if item.itype == 3]
+		<div class="pitem_title subject-tag -activity">$[item.projectName] $[item.vcName]</div>
+	[@else if item.itype == 4]
+		<div class="pitem_title subject-tag -activity-new">$[item.projectName] $[item.vcName]</div>
+	[@else if item.itype == 5]
+		<div class="pitem_title subject-tag -seckill">$[item.projectName] $[item.vcName]</div>
+	[@else if item.itype == 6]
+		<div class="pitem_title subject-tag -hotsales">$[item.projectName] $[item.vcName]</div>
+	[@else]
+		<div class="pitem_title">$[item.projectName] $[item.vcName]</div>
+	[@/if]
+[@else]
+	[@if item.itype == 2]
+		<div class="pitem_title subject-tag -new-gray">$[item.projectName] $[item.vcName]</div>
+	[@else if item.itype == 3]
+		<div class="pitem_title subject-tag -activity-gray">$[item.projectName] $[item.vcName]</div>
+	[@else if item.itype == 4]
+		<div class="pitem_title subject-tag -activity-new-gray">$[item.projectName] $[item.vcName]</div>
+	[@else if item.itype == 5]
+		<div class="pitem_title subject-tag -seckill-gray">$[item.projectName] $[item.vcName]</div>
+	[@else if item.itype == 6]
+		<div class="pitem_title subject-tag -hotsales-gray">$[item.projectName] $[item.vcName]</div>
+	[@else]
+		<div class="pitem_title subject-tag">$[item.projectName] $[item.vcName]</div>
+	[@/if]
+[@/if]
+	<ul class="pitem_props">
+		<li>
+			<div class="percent">$[item.totalRate]<sub>%</sub></div>
+			<div class="pitem_props_title">年化率</div>
+		</li>
+		<li>
+
+			<div class="amount">$[item.numPeriod]<sub>天</sub></div>
+			<div class="pitem_props_title">期限</div>
+		</li>
+		<li>
+			<div class="pillar-progress">
+				<span style="width:$[item.percent]%" class="pillar-progress_bar"></span>
+			</div>
+			<div class="pitem_props_title">已投$[item.percent]%</div>
+		</li>
+	</ul>
+
+	<div class="pitem_ft">
+		<div class="pitem_ft_starting">$[item.numMinInvest]元起投</div>
+		<div class="pitem_ft_tags">
+			<i class="tag-interest-interval"></i>
+			<i class="tag-add-interest"></i>
+			<i class="tag-redpacket"></i>
+			<i class="tag-discount"></i>
+		</div>
+	</div>
+</a>

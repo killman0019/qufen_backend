@@ -1,0 +1,11 @@
+#set($pageName = "提现失败")
+#set($bodyClass = "body--gray")
+#set($topbar = { "title": $pageName })
+
+<div class="msg-sign -failed">提现失败</div>
+
+<div class="f-mt4 f-tlc u-clGrayLgt">$!{msg}</div>
+
+<div class="f-mtb3 f-mlr4">
+	<a href="$!{basePath}/user/cash/page" class="u-btn z-scs z-fll">返回</a>
+</div>

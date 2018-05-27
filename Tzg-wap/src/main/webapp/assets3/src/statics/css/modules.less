@@ -1,0 +1,350 @@
+/**
+ * 模块
+ * 模块是指一组Elemen的偶合体。
+ * 不包含其他元件或模块。
+ * 模块内只允许有下划线推进的子元素。
+ *
+ * Author: 吴岸林
+ */
+
+// 百分比
+// 一般用于利率
+// =====================================
+//
+.percent {
+	font-size: 26px;
+	color: @brandSecond;
+
+	// 百分号
+	sub {
+		font-size: 46.154%;
+		vertical-align: baseline;
+	}
+}
+
+// 带单位的金额
+// =====================================
+//
+.amount {
+	font-size: 21px;
+
+	// 单位
+	sub {
+		font-size: 57.143%;
+		vertical-align: baseline;
+	}
+}
+
+// 柱形进度条
+// =====================================
+//
+.pillar-progress {
+	@height: 4px;
+
+	height: @height;
+	overflow: hidden;
+
+	background-color: #eee;
+	border-radius: @height;
+
+	&_bar {
+		display: block;
+		height: 100%;
+		background-color: @brandSecond;
+	}
+}
+
+
+
+
+// 标的属性
+// =====================================
+//
+.subject-tag {
+	position: relative;
+
+	&.-new:before,
+	&.-new-gray:before,
+	&.-activity:before,
+	&.-activity-gray:before,
+	&.-activity-new:before,
+	&.-activity-new-gray:before,
+	&.-hot-sales:before,
+	&.-hot-sales-gray:before,
+	&.-seckill:before,
+	&.-seckill-gray:before,
+    &.-experience:before,
+    &.-experience-gray:before{
+		content: "新客";
+
+		box-sizing: border-box;
+
+		position: absolute;
+
+		padding: 0 .83em;
+		font-family: @fontFamilyBase;
+		font-size: 12px;
+		line-height: 1.83;
+		color: #fff;
+
+		border-radius: .20em;
+
+		background-color: @colorGreen;
+	}
+
+	&.-activity:before,
+	&.-activity-gray:before {
+		content: "活动";
+		background-color: #56dbc8;
+	}
+
+	&.-activity-new:before,
+	&.-activity-new-gray:before {
+		content: "新客活动";
+		padding-top: 4px;
+		line-height: 16px;
+		background-color: #30d2ba;
+	}
+
+	&.-hot-sales:before,
+	&.-hot-sales-gray:before {
+		content: "爆款";
+		background-color: #e33347;
+	}
+
+	&.-seckill:before,
+	&.-seckill-gray:before {
+		content: "秒杀";
+		background-color: #90cc3a;
+	}
+    &.-experience:before,
+    &.-experience-gray:before{
+        content: "体验";
+        background-color: #ffb843;
+    }
+	&.-new-gray:before,
+	&.-activity-gray:before,
+	&.-activity-new-gray:before,
+	&.-hot-sales-gray:before,
+	&.-seckill-gray:before ,
+    &.-experience-gray{
+		background-color: #b9b9b9;
+	}
+
+	&.-new:after,
+	&.-new-gray:after,
+	&.-activity:after,
+	&.-activity-gray:after,
+	&.-activity-new:after,
+	&.-activity-new-gray:after,
+	&.-hot-sales:after,
+	&.-hot-sales-gray:after,
+	&.-seckill:after,
+	&.-seckill-gray:after,
+    &.-experience:after,
+    &.-experience-gray:after{
+		content: "";
+
+		position: absolute;
+		top: 38px;
+		right: 5px;
+
+		width: 31px;
+		height: 20px;
+	}
+}
+
+
+
+// tab
+// =====================================
+//
+
+.tab {
+	height: 44px;
+	overflow: hidden;
+	background-color: @bgGray;
+
+	&.-cc3 li {
+		width: 33.33%;
+	}
+
+	&.-cc4 li {
+		width: 25%;
+	}
+
+	&.-cc5 li {
+		width: 20%;
+	}
+
+	&.-cc6 li {
+		width: 16.6667%;
+	}
+
+	li {
+		box-sizing: border-box;
+		float: left;
+		width: 50%;
+		height: 100%;
+		padding: 12px 0;
+		font-size: 15px;
+		line-height: 20px;
+		text-align: center;
+
+		&.-active {
+			border-bottom: 2px solid @brandPrimary;
+			color: @brandPrimary;
+
+			a {
+				color: inherit;
+			}
+		}
+	}
+
+	a {
+		display: block;
+		height: 100%;
+	}
+}
+
+// 奖励列表
+// =====================================
+//
+.reward-list {
+	margin-top: 20px;
+	padding-left: @horizontalSpacingBase;
+	border-top: 1px solid @devalColorPrimary;
+	border-bottom: 1px solid @devalColorPrimary;
+	background-color: #fff;
+
+	li {
+		&:not(:last-child) {
+			border-bottom: 1px solid @devalColorPrimary;
+		}
+
+		&.-redpacket a:before {
+			content: '\ea21';
+			background-color: #ff524c;
+		}
+
+		&.-ticket a:before {
+			content: '\ea22';
+			background-color: #f80;
+		}
+	}
+
+	a {
+		position: relative;
+		display: block;
+		padding: 20px 0 20px 65px;
+		overflow: hidden;
+
+		&:before {
+			@size: 50px;
+
+			float: left;
+			width: @size;
+			height: @size;
+			margin-left: -65px;
+
+			font-family: @baseIconFont;
+			font-size: @size * .6;
+			line-height: @size;
+			color: #fff;
+
+			text-align: center;
+
+			border-radius: 5px;
+		}
+
+		&:after {
+			content: '\ea19';
+			position: absolute;
+			top: 40%;
+			right: @horizontalSpacingBase;
+			font-family: @baseIconFont;
+			font-size: 16px;
+			color: #b3b3b3;
+		}
+	}
+
+	&_label,
+	&_content {
+		display: block;
+		line-height: 1;
+	}
+
+	&_label {
+		margin-top: 5px;
+		font-size: 16px;
+	}
+
+	&_content {
+		margin-top: 10px;
+		font-size: 12px;
+		color: @grayLight;
+	}
+}
+
+
+// 协议弹框
+// =====================================
+//
+.protocol-popup {
+	position: fixed;
+	top: 100%;
+	left: 0;
+	z-index: 20;
+	width: 100%;
+	height: 100%;
+	background-color: #fff;
+	.transition(top 0.2s ease-out);
+	-webkit-overflow-scrolling: touch;
+
+	&.-open {
+		top: 0;
+		.transition(top 0.2s ease-out);
+	}
+
+	&_hd, &_ft {
+		position: absolute;
+		left: 0;
+		z-index: 3;
+		width: 100%;
+		height: 2.5em;
+		text-align: center;
+		background-color: #fff;
+	}
+
+	&_hd {
+		top: 0;
+		line-height: 2.5;
+		.box-shadow(0 3px 3px fade(@brandPrimary, 30%));
+	}
+
+	&_ft {
+		bottom: 0;
+		text-align: center;
+		.box-shadow(0 -3px 3px fade(@brandPrimary, 30%));
+
+		.button {
+			border: none;
+			margin: 0;
+			padding: 0;
+			width: 100%;
+			height: 100%;
+			background: transparent;
+		}
+	}
+
+	&_bd {
+		position: absolute;
+		top: 2.5em;
+		right: 0;
+		bottom: 2.5em;
+		left: 0;
+		padding: 0 3%;
+		overflow: scroll;
+		-webkit-overflow-scrolling: touch;
+	}
+}

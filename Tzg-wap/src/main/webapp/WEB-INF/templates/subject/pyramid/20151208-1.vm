@@ -1,0 +1,129 @@
+#set($layout = "/layout/default2.vm")
+#set($pageName="人人赚")
+#set($timeTag="1208")
+#set($shareTitle = "我在铜掌柜赚发啦，万元收益高达1508元！")
+#set($shareContent = "您的好友邀请您一起来铜掌柜赚钱，万元收益高达1508元！送您理财大礼包：188元红包，10000元理财金！")
+#set($imagePath="$!{basePath}/assets/images/act/")
+#set($staticPath="$!{basePath}/assets/")
+<!doctype html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>$!{activityTitle}</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="format-detection" content="telphone=no,email=no" />
+    <meta name="basepath" content="$!{basePath}" id="j_basepath">
+	<meta name="staticpath" content="$!{staticPath}" id="j_staticpath">
+	<meta name="staticversion" content="$!{staticVersion}" id="j_staticversion">
+    <link rel="stylesheet" href="$!{basePath}/app/css/style.css?v=20151205">
+</head>
+<body>
+<input type="hidden" value="$!{basePath}" id="j_basepath">
+<div class="act-container">
+    <img src="$!{imagePath}/m_01.png?v=$!{timeTag}" alt=""/>
+    <div class="act-txt-bar">已有<span class="cl-org">$!{indexMap.pyramidAllUserNum}位</span>客官赚到<span class="cl-org">$!{indexMap.allNumTotalProfit}元</span>现金，<span class="cl-org">$!{indexMap.redRecordAllUser}元</span>红包</div>
+    <img src="$!{imagePath}/m_02.png?v=$!{timeTag}" alt=""/>
+    <div class="act-txt-bar">您已邀请<span class="cl-org">$!{indexMap.pyramidFriendsNum}个</span>一级用户，<span class="cl-org">$!{indexMap.pyramidTwoFriendsNum}个</span>二级用户，赚取<span class="cl-org">$!{indexMap.numTotalProfit}元</span></div>
+    <img src="$!{imagePath}/m_03.png?v=$!{timeTag}" alt=""/>
+    <div class="act-txt-bar">您本月已成功邀请了<span class="cl-org">$!{indexMap.monthMasterNum}个</span>有效用户，待收<span class="cl-org">$!{indexMap.monthMasterMoney}元</span></div>
+    <img src="$!{imagePath}/m_04.png?v=$!{timeTag}" alt=""/>
+    <div class="act-txt-bar">您累计一级好友返利:<span class="cl-org">$!{indexMap.sumOneProfit}元</span>，二级好友返利:<span class="cl-org">$!{indexMap.sumTwoProfit}元</span></div>
+    <img src="$!{imagePath}/m_05.png?v=$!{timeTag}" alt=""/>
+    <div class="act-txt-bar">您累计获得红包:<span class="cl-org">$!{indexMap.redRecordAll}元</span></div>
+    <img  src="$!{imagePath}/m_06.png?v=$!{timeTag}" alt=""/>
+	#if( $indexMap.recommendCode == "000000" )
+	<div class="container-r-spacing mtb2" id="j_shar_bar">
+		<p>请登录，登录后即可分享人人赚</p>
+		<a class="u-btn z-prm z-fll" href="$!{basePath}/login/page?toURL=$!{basePath}/subject/pyramid/wap/20151208?&@app:waplogin">立即登录</a>
+	</div>
+	#else
+    <div class="container-r-spacing mtb2">
+		<button class="u-btn z-blueHollow z-fll" id="j-face_btn" type="submit" defaultvalue="当面赚">当面赚</button>
+	</div>
+	#end
+</div>
+
+
+## 弹出框
+## -------------------------------------
+<div class="xm-dialog" id="j_xm_dialog" style="display:none">
+    <div class="xm-dialog_inner">
+        <div class="xm-dialog_win">
+            <div class="xm-dialog_content"></div>
+            <div class="container-r-spacing"><a href="javascript:;" class="xm-dialog_btn u-btn z-blueHollow z-fll">确 定</a></div>
+        </div>
+    </div>
+</div>
+
+<script src="$!{staticPath}/js/lib/sea.js?v=$!{staticVersion}" id="seajsnode"></script>
+<script>
+seajs.use(["$"], function($) {
+	// 模拟弹框
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    $.fn.alert = function (msg, buttonHandler, buttonText) {
+		if (this.data("alertInited") != "yes") {
+			this.on("click", function() {
+				$(this).find(".xm-dialog_win").removeClass("z-opened");
+				$(this).fadeOut();
+			});
+			this.on("click", ".xm-dialog_btn", function () {
+				var $wrapper = $(this).parents(".xm-dialog");
+				var buttonHandler = $wrapper.data("buttonHandler");
+				if (buttonHandler && buttonHandler()) {
+					buttonHandler();
+					return;
+				}
+				$wrapper.fadeOut().find(".xm-dialog_win").removeClass("z-opened");
+			});
+
+			this.on("click", ".xm-dialog_win", function (e) {
+				e.stopPropagation();
+			})
+			this.data("alertInited", "yes");
+		}
+
+		if (!msg) {
+			msg = "";
+		}
+
+		this.find(".xm-dialog_content").html(msg);
+		this.data("buttonHandler", buttonHandler && $.isFunction(buttonHandler) ? buttonHandler : false);
+		this.find(".xm-dialog_btn").text(buttonText || "确 定");
+		this.fadeIn().find(".xm-dialog_win").addClass("z-opened");
+	};
+
+    var $alert = $("#j_xm_dialog");
+
+	function alert() {
+		$alert.alert.apply($alert, arguments);
+	};
+
+	// 微信
+    var ua = navigator.userAgent.toLowerCase();
+    var wxqq = false;
+    if (ua.indexOf("micromessenger") > -1 || ua.indexOf("qq") > -1) {
+        wxqq = true;
+    }
+
+	if(window.location.href.indexOf("?tzgapp") >=0 && wxqq){
+        window.location.href = window.location.href.replace("?tzgapp","?tzgnoapp");
+    }
+    if(location.search.indexOf("?tzgapp")>=0 && !wxqq){
+        $("#j_shar_bar").show();
+	}
+
+	$("#j-face_btn").on("click", function(){
+	
+		if ("$!{indexMap.recommendCode}" == "000000") {
+			self.location.href = '$!{basePath}/login/page?toURL=$!{basePath}/subject/pyramid/20151208?@app:waplogin';
+		}else{
+			alert("<div class='container-r-spacing'><div class='u-fsH1 u-txt-c'>你的邀请码$!{indexMap.recommendCode}</div><img alt='' src='$!{basePath}/app/subject/inviteFriendsQRcode?key=$!{indexMap.recommendCode}' width='100%'><div class='u-clGrayLgt u-txt-c mb20'>邀请好友扫描二维码即可分享人人赚</div></div>","","取消")
+		}
+		
+	})
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,2680 @@
+package com.tzg.rmi.service.impl;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
+import com.alibaba.fastjson.JSONArray;
+import com.tzg.common.constants.KFFConstants;
+import com.tzg.common.page.PageResult;
+import com.tzg.common.page.PaginationQuery;
+import com.tzg.common.redis.RedisService;
+import com.tzg.common.service.kff.ArticleService;
+import com.tzg.common.service.kff.CollectService;
+import com.tzg.common.service.kff.CommendationService;
+import com.tzg.common.service.kff.CommentsService;
+import com.tzg.common.service.kff.DareasService;
+import com.tzg.common.service.kff.DevaluationModelDetailService;
+import com.tzg.common.service.kff.DevaluationModelService;
+import com.tzg.common.service.kff.DiscussService;
+import com.tzg.common.service.kff.DprojectTypeService;
+import com.tzg.common.service.kff.DtagsService;
+import com.tzg.common.service.kff.EvaluationService;
+import com.tzg.common.service.kff.FollowService;
+import com.tzg.common.service.kff.MessageService;
+import com.tzg.common.service.kff.MobileversionupdateService;
+import com.tzg.common.service.kff.NoticeService;
+import com.tzg.common.service.kff.PostService;
+import com.tzg.common.service.kff.PraiseService;
+import com.tzg.common.service.kff.ProjectService;
+import com.tzg.common.service.kff.ProjectevastatService;
+import com.tzg.common.service.kff.SuggestService;
+import com.tzg.common.service.kff.TokenrecordsService;
+import com.tzg.common.service.kff.UserService;
+import com.tzg.common.service.systemParam.SystemParamService;
+import com.tzg.common.utils.DateUtil;
+import com.tzg.common.utils.Numbers;
+import com.tzg.common.utils.RandomUtil;
+import com.tzg.common.zookeeper.ZKClient;
+import com.tzg.entitys.kff.article.Article;
+import com.tzg.entitys.kff.article.ArticleDetailResponse;
+import com.tzg.entitys.kff.article.ArticleRequest;
+import com.tzg.entitys.kff.collect.Collect;
+import com.tzg.entitys.kff.collect.CollectPostResponse;
+import com.tzg.entitys.kff.commendation.Commendation;
+import com.tzg.entitys.kff.commendation.CommendationRequest;
+import com.tzg.entitys.kff.comments.Comments;
+import com.tzg.entitys.kff.comments.CommentsRequest;
+import com.tzg.entitys.kff.dareas.Dareas;
+import com.tzg.entitys.kff.devaluationModel.DevaluationModel;
+import com.tzg.entitys.kff.devaluationModel.DevaluationModelRequest;
+import com.tzg.entitys.kff.devaluationModelDetail.DevaluationModelDetail;
+import com.tzg.entitys.kff.discuss.Discuss;
+import com.tzg.entitys.kff.discuss.DiscussDetailResponse;
+import com.tzg.entitys.kff.discuss.DiscussRequest;
+import com.tzg.entitys.kff.dprojectType.DprojectType;
+import com.tzg.entitys.kff.dtags.Dtags;
+import com.tzg.entitys.kff.evaluation.Evaluation;
+import com.tzg.entitys.kff.evaluation.EvaluationRequest;
+import com.tzg.entitys.kff.evaluation.EvaluationDetailResponse;
+import com.tzg.entitys.kff.follow.Follow;
+import com.tzg.entitys.kff.follow.FollowResponse;
+import com.tzg.entitys.kff.message.KFFMessage;
+import com.tzg.entitys.kff.mobileversionupdate.Mobileversionupdate;
+import com.tzg.entitys.kff.notice.KFFNotice;
+import com.tzg.entitys.kff.post.Post;
+import com.tzg.entitys.kff.post.PostFile;
+import com.tzg.entitys.kff.post.PostResponse;
+import com.tzg.entitys.kff.praise.Praise;
+import com.tzg.entitys.kff.project.KFFProject;
+import com.tzg.entitys.kff.project.ProjectResponse;
+import com.tzg.entitys.kff.project.SubmitKFFProjectRequest;
+import com.tzg.entitys.kff.projectevastat.Projectevastat;
+import com.tzg.entitys.kff.suggest.Suggest;
+import com.tzg.entitys.kff.suggest.SuggestRequest;
+import com.tzg.entitys.kff.tokenrecords.Tokenrecords;
+import com.tzg.entitys.kff.user.KFFUser;
+import com.tzg.entitys.kff.user.KFFUserHomeResponse;
+import com.tzg.entitys.loginaccount.RegisterRequest;
+import com.tzg.rest.exception.rest.RestErrorCode;
+import com.tzg.rest.exception.rest.RestServiceException;
+import com.tzg.rmi.service.KFFRmiService;
+public class KFFRmiServiceImpl implements KFFRmiService {
+	
+	private static final Log logger = LogFactory.getLog(KFFRmiServiceImpl.class);
+
+	@Autowired
+	private ArticleService kffArticleService;
+	@Autowired
+	private CollectService kffCollectService;
+	@Autowired
+	private CommentsService kffCommentsService;
+	@Autowired
+	private DiscussService kffDiscussService;
+	@Autowired
+	private EvaluationService kffEvaluationService;
+	@Autowired
+	private DevaluationModelService kffDevaluationModelService;
+	@Autowired
+	private DevaluationModelDetailService kffDevaluationModelDetailService;
+	@Autowired
+	private FollowService kffFollowService;
+	@Autowired
+	private PostService kffPostService;
+	@Autowired
+	private MessageService kffMessageService;
+	@Autowired
+	private MobileversionupdateService kffMobileversionupdateService;
+	@Autowired
+	private PraiseService kffPraiseService;
+	@Autowired
+	private ProjectService kffProjectService;
+	@Autowired
+	private TokenrecordsService kffTokenrecordsService;
+	@Autowired
+	private UserService kffUserService;
+	@Autowired
+	private NoticeService kffNoticeService;
+	@Autowired
+	private SuggestService kffSuggestService;
+	@Autowired
+	private DareasService kffDareasService;
+	@Autowired
+	private DtagsService kffDtagsService;
+	@Autowired
+	private DprojectTypeService kffDprojectTypeService;
+	@Autowired
+	private CommendationService kffCommendationService;
+	@Autowired
+	private ProjectevastatService kffProjectevastatService;
+
+    @Autowired
+    private ZKClient zkClient;
+    @Autowired
+    private SystemParamService systemParamService;
+    @Autowired
+    private RedisService redisService;
+    @Autowired
+    private ThreadPoolTaskExecutor taskExecutor;
+    
+	@Override
+	public KFFUser registerRest(RegisterRequest registerRequest) {
+		 return kffUserService.registerRest(registerRequest);
+	}
+
+	@Override
+	public boolean verifyLoginaccount(String key, String value) {
+		return kffUserService.verifyLoginaccount(key,value);
+		
+	}
+
+	@Override
+	public KFFUser login(String loginName, String password) {
+		
+		return kffUserService.login(loginName,password);
+	}
+
+	@Override
+	public Mobileversionupdate selectLastVersionByType(Integer platformType)
+			throws RestServiceException {		
+		return kffMobileversionupdateService.findById(platformType);
+	}
+
+	@Override
+	public void submitSuggest(SuggestRequest suggestRequest)
+			throws RestServiceException {
+		if(StringUtils.isBlank(suggestRequest.getContent())){
+			throw new RestServiceException("请填写建议内容");
+		}else if(suggestRequest.getContent().length() > KFFConstants.MAX_NORMAL_CONTENT_LENGTH){
+			throw new RestServiceException("建议内容请勿超过"+KFFConstants.MAX_NORMAL_CONTENT_LENGTH+"字");
+		}
+		
+		if(StringUtils.isBlank(suggestRequest.getContactInfo())){
+			throw new RestServiceException("请填写联系方式");
+		}else if(suggestRequest.getContactInfo().length() > KFFConstants.MAX_NORMAL_TITLE_LENGTH){
+			throw new RestServiceException("联系方式请勿超过"+KFFConstants.MAX_NORMAL_TITLE_LENGTH +"字");
+		}
+		
+		Suggest suggest = new Suggest();
+		Date now = new Date();
+		suggest.setContactInfo(suggestRequest.getContactInfo());
+		suggest.setContent(suggestRequest.getContent());
+		suggest.setCreateUserId(suggestRequest.getCreateUserId());
+		suggest.setCreateTime(now);
+		suggest.setUpdateTime(now);
+		suggest.setStatus(1);
+		kffSuggestService.save(suggest);
+		
+	}
+
+	@Override
+	public KFFNotice selectLatestNotice() throws RestServiceException {
+
+		return kffNoticeService.selectLatestNotice();
+	}
+	
+	@Override
+	public KFFUser findUserByPhoneNumber(String phoneNumber) throws RestServiceException{
+		
+		return kffUserService.findUserByPhoneNumber(phoneNumber);
+	}
+	
+	@Override
+	public boolean updateUser(KFFUser account) throws RestServiceException{
+		
+		return kffUserService.update(account);
+	}
+	
+	@Override
+	public KFFUser findUserById(Integer userId) throws RestServiceException{		
+		return kffUserService.findById(userId);
+	}
+
+	@Override
+	public List<Dareas> getAreaListByCode(String areacode)
+			throws RestServiceException {
+		List<Dareas> areas = new ArrayList<>();
+        if(StringUtils.isBlank(areacode)) {
+        	areas = kffDareasService.findProvinceAreas();
+        }else {
+        	areas = kffDareasService.findSubAreasByCode(areacode);
+        }
+		return areas;
+	}
+
+	@Override
+	public PageResult<Tokenrecords> findPageMyTokenRecords(PaginationQuery query)
+			throws RestServiceException {
+		
+		return kffTokenrecordsService.findPage(query);
+	}
+
+	@Override
+	public PageResult<CollectPostResponse> findPageMyCollectRecords(PaginationQuery query) throws RestServiceException {
+		PageResult<CollectPostResponse> result = new PageResult<CollectPostResponse>();
+		List<CollectPostResponse> postResponse = new ArrayList<>();		
+		PageResult<Collect> collects = kffCollectService.findPage(query);
+		if(collects != null && CollectionUtils.isNotEmpty(collects.getRows())){
+			result.setCurPageNum(collects.getCurPageNum());
+			result.setPageSize(collects.getPageSize());
+			result.setQueryParameters(collects.getQueryParameters());
+			result.setRowCount(collects.getRowCount());
+			result.setRowsPerPage(collects.getRowsPerPage());
+			for(Collect collect:collects.getRows()){
+				CollectPostResponse response = new CollectPostResponse();
+				BeanUtils.copyProperties(collect, response);
+				//查询post和project信息
+				Post post = kffPostService.findById(collect.getPostId());
+				if(post != null){
+							response.setPostShortDesc(post.getPostShortDesc());
+							if(StringUtils.isNotBlank(post.getPostSmallImages())){
+								try{
+								List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
+								response.setPostSmallImages(pfl);
+								}catch(Exception e){
+									logger.error("我的收藏列表解析帖子缩略图json出错:{}",e); 
+								}
+							}
+							response.setPostTitle(post.getPostTitle());
+							response.setCommentsNum(post.getCommentsNum());
+							response.setCollectNum(post.getCollectNum());
+							response.setPraiseNum(post.getPraiseNum());
+							response.setPageviewNum(post.getPageviewNum());
+							response.setDonateNum(post.getDonateNum());
+							response.setCreateUserIcon(post.getCreateUserIcon());
+							response.setCreateUserName(post.getCreateUserName());
+							response.setCreateUserSignature(post.getCreateUserSignature());
+							//response.setTotalScore(post.get);
+							KFFProject project = kffProjectService.findById(post.getProjectId());
+							if(project != null){
+								response.setProjectChineseName(project.getProjectChineseName());
+								response.setProjectCode(project.getProjectCode());
+								response.setProjectEnglishName(project.getProjectEnglishName());
+								response.setProjectIcon(project.getProjectIcon());
+								response.setProjectSignature(project.getProjectSignature());
+								response.setTotalScore(project.getTotalScore());
+							}
+							postResponse.add(response);
+			}
+		}
+			result.setRows(postResponse);
+	}
+		return result;
+	}
+
+	@Override
+	public PageResult<FollowResponse> findPageMyFollow(PaginationQuery query)
+			throws RestServiceException {
+		
+		PageResult<FollowResponse> result = new PageResult<FollowResponse>();
+        List<FollowResponse> followResponses = new ArrayList<>();
+		PageResult<Follow> follows = kffFollowService.findPage(query);				
+		if(follows != null && CollectionUtils.isNotEmpty(follows.getRows())){
+			result.setCurPageNum(follows.getCurPageNum());
+			result.setPageSize(follows.getPageSize());
+			result.setQueryParameters(follows.getQueryParameters());
+			result.setRowCount(follows.getRowCount());
+			result.setRowsPerPage(follows.getRowsPerPage());			
+			for(Follow follow:follows.getRows()){
+				FollowResponse response = new FollowResponse();
+				BeanUtils.copyProperties(follow, response);
+				//查询post和project信息
+				///*关注类型：1-关注项目;2-关注帖子；3-关注用户
+				if(follow.getFollowType() != null && follow.getFollowType() == 2){
+					Post post = kffPostService.findById(follow.getFollowedId());
+					if(post != null){
+						response.setPostShortDesc(post.getPostShortDesc());
+						if(StringUtils.isNotBlank(post.getPostSmallImages())){
+							try{
+							List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
+							response.setPostSmallImages(pfl);
+							}catch(Exception e){
+								logger.error("我的关注列表解析帖子缩略图json出错:{}",e); 
+							}
+						}
+						response.setPostTitle(post.getPostTitle());
+						response.setCommentsNum(post.getCommentsNum());
+						response.setCollectNum(post.getCollectNum());
+						response.setPraiseNum(post.getPraiseNum());
+						response.setPageviewNum(post.getPageviewNum());
+						response.setDonateNum(post.getDonateNum());
+						response.setCreateUserIcon(post.getCreateUserIcon());
+						response.setCreateUserName(post.getCreateUserName());
+						response.setCreateUserSignature(post.getCreateUserSignature());
+						//response.setTotalScore(post.get);
+						KFFProject project = kffProjectService.findById(post.getProjectId());
+						if(project != null){
+							response.setProjectChineseName(project.getProjectChineseName());
+							response.setProjectCode(project.getProjectCode());
+							response.setProjectEnglishName(project.getProjectEnglishName());
+							response.setProjectIcon(project.getProjectIcon());
+							response.setProjectSignature(project.getProjectSignature());
+							response.setTotalScore(project.getTotalScore());
+						}
+					}
+					
+				}else if (follow.getFollowType() != null && follow.getFollowType() == 3){
+					//被关注用户信息在follow表中已包含
+				}
+				followResponses.add(response);
+			}			
+			result.setRows(followResponses);
+		}
+		
+		return result;
+	}
+
+	@Override
+	public KFFMessage getMessageDetail(Integer userId,Integer messageId)
+			throws RestServiceException {
+		KFFMessage result = kffMessageService.findById(messageId);
+		if(result == null){
+			throw new RestServiceException("消息不存在");
+		}
+		if(result.getUserId() != userId){
+			throw new RestServiceException("不能查看他人消息");
+		}
+		return result;
+	}
+
+	@Override
+	public PageResult<KFFMessage> findPageMyMessages(PaginationQuery query) {
+
+		return kffMessageService.findPage(query);
+	}
+
+	@Override
+	public void deleteMessage(Integer userId, Integer messageId)
+			throws RestServiceException {
+		if(userId == null){
+			throw new RestServiceException("用户ID不能为空");
+		}
+		if(messageId == null){
+			throw new RestServiceException("消息ID不能为空");
+		}
+		//删除单个
+		if(messageId != 0){
+			KFFMessage result = kffMessageService.findById(messageId);
+			if(result == null){
+				throw new RestServiceException("消息不存在");
+			}
+			if(result.getUserId() != userId){
+				throw new RestServiceException("不能删除他人消息");
+			}	
+		     result.setState(2);  //已读
+		     result.setStatus(0); //删除
+		     result.setUpdateTime(new Date());
+		     kffMessageService.update(result);
+		}else{
+		//删除所有			
+			kffMessageService.deleteAllMessages(userId);			
+		}
+		
+		
+	}
+
+	@Override
+	public KFFProject submitProject(SubmitKFFProjectRequest projectRequest)
+			throws RestServiceException {
+		Date now = new Date();
+		KFFProject project = new KFFProject();
+		BeanUtils.copyProperties(projectRequest, project);
+		if(StringUtils.isBlank(project.getProjectCode())){
+			throw new RestServiceException("代币名称不能为空");
+		}
+		if(StringUtils.isBlank(project.getProjectEnglishName())){
+			throw new RestServiceException("项目英文名称不能为空");
+		}
+		if(StringUtils.isBlank(project.getWebsiteUrl())){
+			throw new RestServiceException("官网地址不能为空");
+		}
+		if(StringUtils.isBlank(project.getWhitepaperUrl())){
+			throw new RestServiceException("白皮书地址不能为空");
+		}
+		if(StringUtils.isBlank(project.getProjectTypeName())){
+			throw new RestServiceException("项目类型名称不能为空");
+		}
+		if(StringUtils.isBlank(project.getSubmitUserContactInfo())){
+			throw new RestServiceException("联系信息不能为空");
+		}
+		if(StringUtils.isBlank(project.getSubmitReason())){
+			throw new RestServiceException("推荐理由不能为空");
+		}
+		if(StringUtils.isBlank(project.getProjectDesc())){
+			throw new RestServiceException("项目描述不能为空");
+		}
+		if(project.getWhitepaperUrl().length()>255){
+			throw new RestServiceException("白皮书地址长度超限");
+		}
+		if(project.getSubmitUserContactInfo().length()>30){
+			throw new RestServiceException("联系信息长度超限");
+		}
+		if(project.getSubmitReason().length()>3000){
+			throw new RestServiceException("提交理由信息长度超限");
+		}
+		if(project.getProjectDesc().length()>3000){
+			throw new RestServiceException("项目描述信息长度超限");
+		}
+		
+		project.setCreateTime(now);
+		project.setUpdateTime(now);
+		project.setState(1);//1；待审核；2-审核通过；3-拒绝
+		project.setStatus(1);
+		project.setIssueDate(DateUtil.getDate(project.getIssueDateStr(), "YYYY-MM-dd"));
+		kffProjectService.save(project);
+		return null;
+	}
+
+	@Override
+	public List<DprojectType> findAllProjectTypes() throws RestServiceException {
+
+		return kffDprojectTypeService.findAllProjectTypes();
+	}
+
+	@Override
+	public List<ProjectResponse> findProjectByCode(int sortType,Integer userId,String projectCode)
+			throws RestServiceException {
+//	    if(StringUtils.isBlank(projectCode)){
+//	    	throw new RestServiceException("查询条件:项目关键字不能为空");
+//	    }
+		List<KFFProject> projects = new ArrayList<>();
+		List<ProjectResponse> result = new ArrayList<>();
+		Map<String,Object> map = new HashMap<>();
+		map.put("state", "2");
+		map.put("status", "1");
+		if(StringUtils.isNotBlank(projectCode)){
+			map.put("projectCode", projectCode);
+		}
+		if(sortType == 1 ){
+			map.put("sortField", "follower_num");
+		}
+//			else if(sortType == 2){
+//			map.put("sortField", "project_code");
+//		}
+		projects = kffProjectService.findProjectByCode(map);
+		if(CollectionUtils.isNotEmpty(projects)){
+			PaginationQuery query = new PaginationQuery();
+	        query.addQueryData("followUserId", userId +"");
+	        query.addQueryData("followType", "1"); //关注类型：1-关注项目;2-关注帖子；3-关注用户       
+	        query.addQueryData("status", "1");
+	        query.setPageIndex(1);
+	        query.setRowsPerPage(1000);	
+			//query.addQueryData("followedProjectId", project.getProjectId()+"");
+            PageResult<Follow> follows = kffFollowService.findPage(query); 
+            Set<Integer> followedProjectIds = new HashSet<Integer>();
+            if(follows != null && CollectionUtils.isNotEmpty(follows.getRows())){
+            	for (Follow follow:follows.getRows()){
+            		followedProjectIds.add(follow.getFollowedId());
+            	}
+            }
+            
+			for(KFFProject project:projects){
+				ProjectResponse response = new ProjectResponse();
+				BeanUtils.copyProperties(project, response); 
+				if(followedProjectIds != null && followedProjectIds.contains(project.getProjectId())){
+					response.setFollowStatus(1);
+				}
+				result.add(response);
+			}
+		}
+		
+		return result;
+	}
+
+	@Override
+	public Map<String,Object> saveCommendation(CommendationRequest commendationRequest)
+			throws RestServiceException {
+		Map<String,Object> resultMap = new HashMap<String,Object>();
+		if(commendationRequest == null){
+			throw new RestServiceException("commendationRequest can't be null");
+		}
+		if(commendationRequest.getPostId() == null){
+			throw new RestServiceException("帖子ID不能为空");
+		}
+		if(commendationRequest.getProjectId() == null){
+			throw new RestServiceException("项目ID不能为空");
+		}
+		Post post = kffPostService.findById(commendationRequest.getPostId());
+		if(post == null){
+			throw new RestServiceException("帖子不存在");
+		}
+		//帖子捐赠人数加+1
+		kffPostService.updateDonateNum(post.getPostId());
+		
+		if(commendationRequest.getSendUserId() == null){
+			throw new RestServiceException("发送用户不能为空");
+		}
+		if(commendationRequest.getAmount() == null || commendationRequest.getAmount().compareTo(BigDecimal.ZERO)<=0){
+			throw new RestServiceException("打赏金额不合法");
+		}
+		if(commendationRequest.getReceiveUserId() == null){
+			throw new RestServiceException("接收用户不能为空");
+		}
+		KFFUser receiveUser = kffUserService.findById(commendationRequest.getReceiveUserId());
+		if(receiveUser == null){
+			throw new RestServiceException("接收用户不存在");
+		}
+		KFFUser sendUser = kffUserService.findById(commendationRequest.getSendUserId());
+		
+		if(sendUser == null){
+			throw new RestServiceException("发送用户不存在");
+		}
+		if(sendUser.getKffCoinNum().compareTo(commendationRequest.getAmount())<0){
+			throw new RestServiceException("账户余额不足:捐赠数量"+commendationRequest.getAmount().intValue()+"余额数量"+sendUser.getKffCoinNum().intValue());
+		}
+		commendationRequest.setSendUserIcon(sendUser.getIcon());
+		commendationRequest.setPostType(post.getPostType());
+		
+		Commendation commendation = new Commendation();
+		BeanUtils.copyProperties(commendationRequest, commendation);
+		commendation.setStatus(1);
+		kffCommendationService.save(commendation);
+		
+		Date now = new Date();
+		Integer randomBIZCode=Integer.valueOf(RandomUtil.produceNumber(3));
+		//发送方扣减，接收方增加
+		kffUserService.updateUserKFFCoinNum(sendUser.getUserId(),commendationRequest.getAmount().multiply(new BigDecimal(-1)));
+		kffUserService.updateUserKFFCoinNum(receiveUser.getUserId(), commendationRequest.getAmount());
+		//生成流水记录
+		Tokenrecords sendTokenRecords = new Tokenrecords();
+		sendTokenRecords.setTradeType(2); //交易类型:1-收入；2-支出
+		sendTokenRecords.setAmount(commendationRequest.getAmount());
+		sendTokenRecords.setBalance(sendUser.getKffCoinNum());
+		sendTokenRecords.setCreateTime(now);
+		//交易描述:10-充值11-评测奖励12-讨论奖励13-文章奖励14-榜单奖励15-用户赞赏16-注册奖励17-点赞奖励18-邀请好友奖励21-提现22-赞赏他人'
+		sendTokenRecords.setFunctionDesc("赞赏他人");
+		sendTokenRecords.setFunctionType(22);
+		sendTokenRecords.setMemo("捐赠他人");
+		sendTokenRecords.setStatus(1);
+		//交易流水号=交易类型（2位） 交易时间年月日（8位） 业务记录ID（10位）
+		sendTokenRecords.setTradeCode(Numbers.getSerialNumber(sendTokenRecords.getTradeType(), randomBIZCode));
+		sendTokenRecords.setTradeDate(now);		
+		sendTokenRecords.setUpdateTime(now);
+		sendTokenRecords.setUserId(sendUser.getUserId());		
+		kffTokenrecordsService.save(sendTokenRecords);
+		
+		Tokenrecords receiveTokenRecords  = new Tokenrecords();	
+		receiveTokenRecords.setTradeType(1); //交易类型:1-收入；2-支出
+		receiveTokenRecords.setAmount(commendationRequest.getAmount());
+		receiveTokenRecords.setBalance(receiveUser.getKffCoinNum());
+		receiveTokenRecords.setCreateTime(now);
+		//交易描述:10-充值11-评测奖励12-讨论奖励13-文章奖励14-榜单奖励15-用户赞赏16-注册奖励17-点赞奖励18-邀请好友奖励21-提现22-赞赏他人'
+		receiveTokenRecords.setFunctionDesc("用户赞赏");
+		sendTokenRecords.setFunctionType(15);
+		receiveTokenRecords.setMemo("他人捐赠");
+		receiveTokenRecords.setStatus(1);
+		//交易流水号=交易类型（2位） 交易时间年月日（8位） 业务记录ID（10位）
+		receiveTokenRecords.setTradeCode(Numbers.getSerialNumber(sendTokenRecords.getTradeType(), randomBIZCode));
+		receiveTokenRecords.setTradeDate(now);		
+		receiveTokenRecords.setUpdateTime(now);
+		receiveTokenRecords.setUserId(receiveUser.getUserId());	
+		kffTokenrecordsService.save(receiveTokenRecords);
+		
+		//被赞赏用户消息
+		KFFMessage message = new KFFMessage();
+		message.setContent(sendUser.getUserName()+"赞赏了您" +commendationRequest.getAmount()+"个token");
+		message.setCreateTime(now);
+		message.setJumpInfo("");
+		message.setState(KFFConstants.MESSAGE_STATE_UNREAD);
+		message.setStatus(KFFConstants.STATUS_ACTIVE);
+		message.setTitle("赞赏");
+		message.setType(KFFConstants.MESSAGE_TYPE_COMMENDATION);
+		message.setUpdateTime(now);
+		message.setUserId(receiveUser.getUserId());
+		kffMessageService.save(message);
+		
+		
+		//总捐赠金额
+		Map<String,Object> totalMap = new HashMap<String,Object>();
+		totalMap.put("postId", commendationRequest.getPostId()+"");
+		totalMap.put("status", "1");
+		BigDecimal commendationNum = kffCommendationService.findCommendationNum(totalMap);
+		resultMap.put("commendationNum", commendationNum);
+		//捐赠人数
+		Post latestPost = kffPostService.findById(commendationRequest.getPostId());
+		if(latestPost != null){
+			resultMap.put("donateNum", latestPost.getDonateNum());
+		}else{
+			resultMap.put("donateNum", 0);
+		}
+		return resultMap ;
+	}
+
+	@Override
+	public KFFUserHomeResponse findUserHomeByUserId(Integer loginUserId,
+			Integer userId) throws RestServiceException {
+		KFFUserHomeResponse result = new KFFUserHomeResponse();
+		if(loginUserId == null || loginUserId <=0){
+			throw new RestServiceException("登录用户ID不能为空");
+		}
+		KFFUser user = null;
+		if(userId == null || userId <= 0){
+		//查看用户本人	
+			user = kffUserService.findById(loginUserId);
+			if(user == null){
+				throw new RestServiceException("用户不存在"+loginUserId);
+			}
+			result.setHomePageTitle("我的主页");
+			result.setShowFollow(0);
+			
+		}else{
+		//查看他人	
+			user = kffUserService.findById(userId);	
+			if(user == null){
+				throw new RestServiceException("用户不存在"+userId);
+			}
+			result.setHomePageTitle(user.getUserName()+"的主页");
+			//默认设置显示 关注
+			result.setShowFollow(1);
+			PaginationQuery query = new PaginationQuery();
+	        query.addQueryData("followUserId", loginUserId +"");
+	        query.addQueryData("followedUserId", userId +"");
+	        query.addQueryData("followType", "3"); //关注类型：1-关注项目;2-关注帖子；3-关注用户       	        
+	        query.addQueryData("status", "1");
+	        query.setPageIndex(1);
+	        query.setRowsPerPage(10);
+	        PageResult<Follow> follows = kffFollowService.findPage(query);
+		    if(follows !=null && CollectionUtils.isNotEmpty(follows.getRows())){
+		    	//默认设置显示 取消关注
+				result.setShowFollow(2);
+		    }
+		
+		}
+		BeanUtils.copyProperties(user, result);
+		result.setTotalPostNum(result.getArticleNum()+result.getDiscussNum()+result.getEvaluationNum());
+		
+		return result;
+	}
+
+	@Override
+	public PageResult<EvaluationDetailResponse> findPageEvaluationList(PaginationQuery query)
+			throws RestServiceException {
+		PageResult<EvaluationDetailResponse> result = new PageResult<EvaluationDetailResponse>();
+		List<EvaluationDetailResponse> respones = new ArrayList<>();
+		PageResult<Post> posts = kffPostService.findPage(query);
+		if(posts != null && CollectionUtils.isNotEmpty(posts.getRows())){
+			result.setCurPageNum(posts.getCurPageNum());
+			result.setPageSize(posts.getPageSize());
+			result.setQueryParameters(posts.getQueryParameters());
+			result.setRowCount(posts.getRowCount());
+			result.setRowsPerPage(posts.getRowsPerPage());
+			for(Post post:posts.getRows()){
+				EvaluationDetailResponse response = new EvaluationDetailResponse();
+				BeanUtils.copyProperties(post, response);
+				if(StringUtils.isNotBlank(post.getPostSmallImages())){
+					try{
+					List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
+					response.setPostSmallImagesList(pfl);
+					}catch(Exception e){
+						logger.error("评测列表解析帖子缩略图json出错:{}",e); 
+					}
+				}
+				
+				Evaluation eva = kffEvaluationService.findByPostId(post.getPostId());
+				if(eva == null){
+					logger.error("evaluation not find,postId:"+post.getPostId());
+				}else{
+					response.setProfessionalEvaDetail(eva.getProfessionalEvaDetail());
+					response.setEvaluationTags(eva.getEvaluationTags());
+					response.setEvaluationId(eva.getEvaluationId());
+					response.setEvauationContent(eva.getEvauationContent());
+					response.setTotalScore(eva.getTotalScore());
+				}
+				respones.add(response);
+			}
+			result.setRows(respones);
+		}
+		return result;
+	}
+
+	@Override
+	public PageResult<PostResponse> findPageDisscussList(PaginationQuery query)
+			throws RestServiceException {
+		PageResult<PostResponse> result = new PageResult<PostResponse>();
+		List<PostResponse> respones = new ArrayList<>();
+		PageResult<Post> posts = kffPostService.findPage(query);
+		if(posts != null && CollectionUtils.isNotEmpty(posts.getRows())){
+			result.setCurPageNum(posts.getCurPageNum());
+			result.setPageSize(posts.getPageSize());
+			result.setQueryParameters(posts.getQueryParameters());
+			result.setRowCount(posts.getRowCount());
+			result.setRowsPerPage(posts.getRowsPerPage());
+			for(Post post:posts.getRows()){
+				PostResponse response = new PostResponse();
+				BeanUtils.copyProperties(post, response);
+				if(StringUtils.isNotBlank(post.getPostSmallImages())){
+					try{
+					List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
+					response.setPostSmallImagesList(pfl);
+					}catch(Exception e){
+						logger.error("讨论列表解析帖子缩略图json出错:{}",e); 
+					}
+				}
+				Discuss discuss = kffDiscussService.findByPostId(post.getPostId());
+				if(discuss != null){
+					response.setDiscussId(discuss.getDiscussId());
+					response.setDisscussContents(discuss.getDisscussContents());
+					response.setTagInfos(discuss.getTagInfos());
+				}
+				respones.add(response);
+			}
+			result.setRows(respones);
+		}
+		return result;
+	}
+
+	@Override
+	public PageResult<PostResponse> findPageArticleList(PaginationQuery query)
+			throws RestServiceException {
+		PageResult<PostResponse> result = new PageResult<PostResponse>();
+		List<PostResponse> respones = new ArrayList<>();
+		PageResult<Post> posts = kffPostService.findPage(query);
+		if(posts != null && CollectionUtils.isNotEmpty(posts.getRows())){
+			result.setCurPageNum(posts.getCurPageNum());
+			result.setPageSize(posts.getPageSize());
+			result.setQueryParameters(posts.getQueryParameters());
+			result.setRowCount(posts.getRowCount());
+			result.setRowsPerPage(posts.getRowsPerPage());
+			
+			for(Post post:posts.getRows()){
+				PostResponse response = new PostResponse();
+				BeanUtils.copyProperties(post, response);
+				if(StringUtils.isNotBlank(post.getPostSmallImages())){
+					try{
+					List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
+					response.setPostSmallImagesList(pfl);
+					}catch(Exception e){
+						logger.error("文章列表解析帖子缩略图json出错:{}",e); 
+					}
+				}
+				respones.add(response);
+			}
+			result.setRows(respones);
+		}
+		return result;
+	}
+
+	@Override
+	public ProjectResponse findProjectById(Integer userId, Integer projectId)
+			throws RestServiceException {
+		ProjectResponse response = new ProjectResponse();
+		if(userId == null){
+			throw new RestServiceException("用户ID不能为空");
+		}
+		if(projectId == null){
+			throw new RestServiceException("项目ID不能为空");
+		}
+		KFFProject project = kffProjectService.findById(projectId);
+		if(project == null){
+			throw new RestServiceException("项目不存在"+projectId);
+		}
+		
+		BeanUtils.copyProperties(project, response);		
+		
+		PaginationQuery query = new PaginationQuery();
+        query.addQueryData("followUserId", userId +"");
+        query.addQueryData("followType", "1"); //关注类型：1-关注项目;2-关注帖子；3-关注用户       
+        query.addQueryData("status", "1");
+        query.addQueryData("followedProjectId", projectId+"");
+        query.setPageIndex(1);
+        query.setRowsPerPage(10);
+        PageResult<Follow> follows = kffFollowService.findPage(query);  
+		if(follows != null && CollectionUtils.isNotEmpty(follows.getRows())){
+		  response.setFollowStatus(1);
+		}else{
+		  response.setFollowStatus(0);
+		}
+		
+		List<KFFUser> activeUsers = findProjectActiveUsers(projectId);
+		
+		response.setActiveUsers(activeUsers);
+		
+		KFFUser owner = kffUserService.findById(project.getSubmitUserId());
+		response.setOwner(owner);
+				
+		return response;
+	}
+
+	@Override
+	public List<KFFUser> findProjectActiveUsers(Integer projectId)
+			throws RestServiceException {
+		List<KFFUser> activeUsers = new ArrayList<>();
+		KFFProject project = kffProjectService.findById(projectId);
+		if(project != null){
+			Map<String,Object> map = new HashMap<>();
+			map.put("projectId", projectId+"");
+			List<Post> posts = kffPostService.findProjectActiveUsers(map);
+			if(CollectionUtils.isNotEmpty(posts)){
+				for(Post post:posts){
+					KFFUser user = new KFFUser();
+					user = kffUserService.findById(post.getCreateUserId());
+					activeUsers.add(user);
+				}
+			}
+		}
+		return activeUsers;
+	}
+
+	@Override
+	public void saveComment(CommentsRequest comment)
+			throws RestServiceException {
+		if(comment == null){
+			throw new RestServiceException("参数缺失");
+		}		
+		if(comment.getCommentUserId() == null){
+			throw new RestServiceException("评论用户ID不能为空");
+		}		
+		if(StringUtils.isBlank(comment.getCommentContent())){
+			throw new RestServiceException("评论内容不能为空");
+		}
+		if(comment.getCommentContent().length() > 30000){
+			throw new RestServiceException("文章内容长度超过限制");
+		}
+		if(comment.getPostId() == null){
+			throw new RestServiceException("帖子ID不能为空");
+		}	
+		KFFUser commentUser = kffUserService.findById(comment.getCommentUserId());
+		if(commentUser == null){
+			throw new RestServiceException("用户不存在"+comment.getCommentUserId());
+		}
+		Post post = kffPostService.findById(comment.getPostId());
+		if(post == null){
+			throw new RestServiceException("帖子不存在"+comment.getPostId());
+		}
+		Comments saveComment = new Comments();
+		Date now = new Date();
+		BeanUtils.copyProperties(comment, saveComment);
+		saveComment.setCommentUserIcon(commentUser.getIcon());
+		saveComment.setCommentUserName(commentUser.getUserName());
+		
+		saveComment.setBecommentedUserId(post.getCreateUserId());
+		saveComment.setBecommentedUserIcon(post.getCreateUserIcon());
+		saveComment.setBecommentedUserName(post.getCreateUserName());
+		
+		if(comment.getParentCommentsId() != null && comment.getParentCommentsId() != 0){
+		//回复评论需要把评论的用户ID做为被评论人ID
+			Comments parentComment = kffCommentsService.findById(comment.getParentCommentsId());
+			if(parentComment == null){
+				throw new RestServiceException("错误的父帖ID"+comment.getParentCommentsId());
+			}
+			saveComment.setBecommentedUserId(parentComment.getCommentUserId());
+			saveComment.setBecommentedUserIcon(parentComment.getCommentUserIcon());
+			saveComment.setBecommentedUserName(parentComment.getCommentUserName());
+		}
+
+		saveComment.setPostId(post.getPostId());
+		saveComment.setProjectId(post.getProjectId());
+		saveComment.setPostType(post.getPostType());
+		saveComment.setCreateTime(now);
+		saveComment.setUpdateTime(now);
+		saveComment.setStatus(1);
+		kffCommentsService.save(saveComment);
+		
+		//帖子用户消息
+		KFFMessage message = new KFFMessage();
+		if(comment.getParentCommentsId() != null){
+		    message.setContent(commentUser.getUserName()+"回复了您的评论!" );
+			message.setTitle("回复被评论");
+			message.setType(KFFConstants.MESSAGE_TYPE_COMMENT_REPLY);
+
+		}else{
+			message.setContent(commentUser.getUserName()+"评论了您的帖子!" );
+			message.setTitle("评论");
+			message.setType(KFFConstants.MESSAGE_TYPE_COMMENT);
+		}
+		message.setCreateTime(now);
+		message.setJumpInfo("");
+		message.setState(KFFConstants.MESSAGE_STATE_UNREAD);
+		message.setStatus(KFFConstants.STATUS_ACTIVE);
+		
+		message.setUpdateTime(now);
+		message.setUserId(post.getCreateUserId());
+		kffMessageService.save(message);
+
+	}
+
+	@Override
+	public void saveArticle(ArticleRequest articleRequest)
+			throws RestServiceException {
+		String uuid = UUID.randomUUID().toString().replace("-", "");
+		if(articleRequest == null){
+			throw new RestServiceException("参数缺失");
+		}		
+		if(articleRequest.getCreateUserId() == null){
+			throw new RestServiceException("创建用户ID不能为空");
+		}	
+		if(articleRequest.getProjectId() == null){
+			throw new RestServiceException("项目ID不能为空");
+		}	
+		if(StringUtils.isBlank(articleRequest.getArticleContents())){
+			throw new RestServiceException("文章内容不能为空");
+		}
+		if(StringUtils.isBlank(articleRequest.getPostTitle())){
+			throw new RestServiceException("文章标题不能为空");
+		}
+		if(articleRequest.getArticleContents().length() > 30000){
+			throw new RestServiceException("文章内容长度超过限制");
+		}	
+		if(articleRequest.getPostTitle().length() > 30){
+			throw new RestServiceException("文章标题长度不能超过30字");
+		}
+		KFFUser createUser = kffUserService.findById(articleRequest.getCreateUserId());
+		if(createUser == null){
+			throw new RestServiceException("用户不存在"+articleRequest.getCreateUserId());
+		}
+		KFFProject project = kffProjectService.findById(articleRequest.getProjectId());
+		if(project == null){
+			throw new RestServiceException("项目不存在"+articleRequest.getProjectId());
+		}
+		Post post = new Post();
+		Date now = new Date();
+		post.setCollectNum(0);
+		post.setCommentsNum(0);
+		post.setCreateTime(now);
+		post.setUpdateTime(now);
+		post.setCreateUserIcon(createUser.getIcon());
+		post.setCreateUserId(createUser.getUserId());
+		post.setCreateUserName(createUser.getUserName());
+		post.setCreateUserSignature(createUser.getUserSignature());
+		post.setDonateNum(0);
+		post.setPageviewNum(0);
+		if(articleRequest.getArticleContents().length() > 300){
+		  post.setPostShortDesc(articleRequest.getArticleContents().substring(300));
+		}else{
+		  post.setPostShortDesc(articleRequest.getArticleContents());
+		}
+		post.setPostSmallImages(articleRequest.getPostSmallImages());
+		post.setPostTitle(articleRequest.getPostTitle()); 
+		post.setPostType(KFFConstants.POST_TYPE_ARTICLE);//帖子类型：1-评测；2-讨论；3-文章
+		post.setPraiseNum(0);
+		post.setProjectCode(project.getProjectCode());
+		post.setProjectEnglishName(project.getProjectEnglishName());
+		post.setProjectChineseName(project.getProjectChineseName());
+		post.setProjectIcon(project.getProjectIcon());
+		post.setProjectId(project.getProjectId());
+		post.setStatus(KFFConstants.STATUS_ACTIVE);
+		post.setUuid(uuid);
+		kffPostService.save(post);
+		
+		Post newPost = kffPostService.findByUUID(uuid);
+		if(newPost == null){
+			throw new RestServiceException("帖子不存在"+uuid);
+		}
+		Article article = new Article();
+		article.setArticleContents(articleRequest.getArticleContents());
+		article.setPostId(newPost.getPostId());
+		article.setPostUuid(uuid);
+		kffArticleService.save(article);
+		
+	}
+
+	@Override
+	public void saveDiscuss(DiscussRequest discussRequest)
+			throws RestServiceException {
+		String uuid = UUID.randomUUID().toString().replace("-", "");
+		if(discussRequest == null){
+			throw new RestServiceException("参数缺失");
+		}		
+		if(discussRequest.getCreateUserId() == null){
+			throw new RestServiceException("创建用户ID不能为空");
+		}	
+		if(discussRequest.getProjectId() == null){
+			throw new RestServiceException("项目ID不能为空");
+		}	
+		if(StringUtils.isBlank(discussRequest.getDisscussContents())){
+			throw new RestServiceException("讨论内容不能为空");
+		}
+		if(StringUtils.isBlank(discussRequest.getPostTitle())){
+			throw new RestServiceException("讨论标题不能为空");
+		}
+		if(discussRequest.getDisscussContents().length() > 30000){
+			throw new RestServiceException("讨论内容长度超过限制");
+		}	
+		if(discussRequest.getPostTitle().length() > 30){
+			throw new RestServiceException("讨论标题长度不能超过30字");
+		}
+		KFFUser createUser = kffUserService.findById(discussRequest.getCreateUserId());
+		if(createUser == null){
+			throw new RestServiceException("用户不存在"+discussRequest.getCreateUserId());
+		}
+		KFFProject project = kffProjectService.findById(discussRequest.getProjectId());
+		if(project == null){
+			throw new RestServiceException("项目不存在"+discussRequest.getProjectId());
+		}
+		Post post = new Post();
+		Date now = new Date();
+		post.setCollectNum(0);
+		post.setCommentsNum(0);
+		post.setCreateTime(now);
+		post.setUpdateTime(now);
+		post.setCreateUserIcon(createUser.getIcon());
+		post.setCreateUserId(createUser.getUserId());
+		post.setCreateUserName(createUser.getUserName());
+		post.setCreateUserSignature(createUser.getUserSignature());
+		post.setDonateNum(0);
+		post.setPageviewNum(0);
+		if(discussRequest.getDisscussContents().length() > 300){
+		  post.setPostShortDesc(discussRequest.getDisscussContents().substring(300));
+		}else{
+			post.setPostShortDesc(discussRequest.getDisscussContents());
+		}
+		post.setPostSmallImages(discussRequest.getDiscussImages());
+		post.setPostTitle(discussRequest.getPostTitle()); 
+		post.setPostType(KFFConstants.POST_TYPE_DISCUSS);//帖子类型：1-评测；2-讨论；3-文章
+		post.setPraiseNum(0);
+		post.setProjectCode(project.getProjectCode());
+		post.setProjectEnglishName(project.getProjectEnglishName());
+		post.setProjectChineseName(project.getProjectChineseName());
+		post.setProjectIcon(project.getProjectIcon());
+		post.setProjectId(project.getProjectId());
+		post.setStatus(KFFConstants.STATUS_ACTIVE);
+		post.setUuid(uuid);
+		kffPostService.save(post);
+		
+		Post newPost = kffPostService.findByUUID(uuid);
+		if(newPost == null){
+			throw new RestServiceException("帖子不存在"+uuid);
+		}
+		Discuss discuss = new Discuss();
+		discuss.setDisscussContents(discussRequest.getDisscussContents());
+		discuss.setPostId(newPost.getPostId());
+		discuss.setPostUuid(uuid);
+		discuss.setTagInfos(discussRequest.getTagInfos());
+		kffDiscussService.save(discuss);
+		
+	}
+
+	@Override
+	public List<Dtags> findAllTags() throws RestServiceException {
+		
+		return kffDtagsService.findAllTags();
+		
+	}
+
+	@Override
+	public void saveEvaluation(EvaluationRequest evaluationRequest)
+			throws RestServiceException {
+		String uuid = UUID.randomUUID().toString().replace("-", "");
+		if(evaluationRequest == null){
+			throw new RestServiceException("参数缺失");
+		}		
+		if(evaluationRequest.getCreateUserId() == null){
+			throw new RestServiceException("创建用户ID不能为空");
+		}	
+		if(evaluationRequest.getProjectId() == null){
+			throw new RestServiceException("项目ID不能为空");
+		}
+		if(evaluationRequest.getModelType() == null){
+			throw new RestServiceException("评测类型不能为空");
+		}
+		if(evaluationRequest.getModelType() != 1 &&
+		   evaluationRequest.getModelType() != 2 &&
+		   evaluationRequest.getModelType() != 3 &&
+		   evaluationRequest.getModelType() != 4){
+			throw new RestServiceException("非法评测类型");
+		}
+		if(StringUtils.isBlank(evaluationRequest.getEvauationContent())){
+			throw new RestServiceException("评测内容不能为空");
+		}
+		if(StringUtils.isBlank(evaluationRequest.getPostTitle())){
+			throw new RestServiceException("评测标题不能为空");
+		}
+		if(evaluationRequest.getEvauationContent().length() > 30000){
+			throw new RestServiceException("评测内容长度超过限制");
+		}	
+		if(evaluationRequest.getPostTitle().length() > 30){
+			throw new RestServiceException("评测标题长度不能超过30字");
+		}
+		KFFUser createUser = kffUserService.findById(evaluationRequest.getCreateUserId());
+		if(createUser == null){
+			throw new RestServiceException("用户不存在"+evaluationRequest.getCreateUserId());
+		}
+		KFFProject project = kffProjectService.findById(evaluationRequest.getProjectId());
+		if(project == null){
+			throw new RestServiceException("项目不存在"+evaluationRequest.getProjectId());
+		}
+		BigDecimal totalScore = evaluationRequest.getTotalScore();
+		
+		Post post = new Post();
+		Date now = new Date();
+		post.setCollectNum(0);
+		post.setCommentsNum(0);
+		post.setCreateTime(now);
+		post.setUpdateTime(now);
+		post.setCreateUserIcon(createUser.getIcon());
+		post.setCreateUserId(createUser.getUserId());
+		post.setCreateUserName(createUser.getUserName());
+		post.setCreateUserSignature(createUser.getUserSignature());
+		post.setDonateNum(0);
+		post.setPageviewNum(0);
+		if(evaluationRequest.getEvauationContent().length() > 300){
+		 post.setPostShortDesc(evaluationRequest.getEvauationContent().substring(300));
+		}else{
+		  post.setPostShortDesc(evaluationRequest.getEvauationContent());	
+		}
+		post.setPostSmallImages(evaluationRequest.getPostSmallImages());
+		post.setPostTitle(evaluationRequest.getPostTitle()); 
+		post.setPostType(KFFConstants.POST_TYPE_EVALUATION);//帖子类型：1-评测；2-讨论；3-文章
+		post.setPraiseNum(0);
+		post.setProjectCode(project.getProjectCode());
+		post.setProjectEnglishName(project.getProjectEnglishName());
+		post.setProjectChineseName(project.getProjectChineseName());
+		post.setProjectIcon(project.getProjectIcon());
+		post.setProjectId(project.getProjectId());
+		post.setStatus(KFFConstants.STATUS_ACTIVE);
+		post.setUuid(uuid);
+		Integer postId = kffPostService.save(post);
+		logger.warn("保存评测inserted postId is:" + postId +",and UUID is:" + uuid);
+		logger.warn("保存评测inserted post对象中的postId is:" + post.getPostId() +",and UUID is:" + uuid);
+		Post newPost = kffPostService.findByUUID(uuid);
+		if(newPost == null){
+			throw new RestServiceException("帖子不存在"+uuid);
+		}
+		Evaluation evaluation = new Evaluation();
+		evaluation.setEvauationContent(evaluationRequest.getEvauationContent());
+		evaluation.setPostId(newPost.getPostId());
+		evaluation.setProjectId(project.getProjectId());
+		evaluation.setPostUuid(uuid);
+		evaluation.setEvaluationTags(evaluationRequest.getEvaluationTags());
+		evaluation.setProfessionalEvaDetail(evaluationRequest.getProfessionalEvaDetail());
+		evaluation.setCreateTime(now);
+		evaluation.setCreateUserId(createUser.getUserId());
+		evaluation.setModelType(evaluationRequest.getModelType());
+		evaluation.setStatus(KFFConstants.STATUS_ACTIVE);
+		evaluation.setTotalScore(totalScore);
+		kffEvaluationService.save(evaluation);
+		
+	}
+
+	@Override
+	public void saveEvaluationModel(
+			DevaluationModelRequest devaluationModelRequest)
+			throws RestServiceException {
+		if(devaluationModelRequest == null){
+			throw new RestServiceException("参数缺失");
+		}	
+		if(devaluationModelRequest.getProjectId() == null){
+			throw new RestServiceException("项目ID不能为空");
+		}
+		if(StringUtils.isBlank(devaluationModelRequest.getProfessionalEvaDetail())){
+			throw new RestServiceException("模型内容不能为空");
+		}
+		
+		try{
+			
+			List<DevaluationModel> dms = JSONArray.parseArray(devaluationModelRequest.getProfessionalEvaDetail(), DevaluationModel.class);
+			if(CollectionUtils.isNotEmpty(dms)){
+				int totalWeight = 0;
+				for(DevaluationModel dm:dms){
+					if(StringUtils.isBlank(dm.getModelName())){
+						throw new RestServiceException("模型名称不能为空");
+					}
+					if(dm.getModelName().length()>30){
+						throw new RestServiceException("模型名称能超过30字符");
+					}
+					if(dm.getModelWeight()==null){
+						throw new RestServiceException("模型权重不能为空");
+					}
+					totalWeight = totalWeight + dm.getModelWeight();
+				}
+				if(totalWeight != 100){
+					throw new RestServiceException("模型权重之和不为100");
+				}
+				Integer batchId = Integer.parseInt(RandomUtil.produceNumber(8));
+				Date now = new Date();
+				for(DevaluationModel dm:dms){
+					DevaluationModel save = new DevaluationModel();
+					save.setBatchId(batchId);
+					save.setCreateTime(now);
+					save.setCreateUserId(devaluationModelRequest.getCreateUserId());
+					save.setModelDesc("用户自建模型");
+					save.setModelName(dm.getModelName());
+					save.setModelType(3);
+					save.setModelWeight(dm.getModelWeight());
+					save.setStatus(1);
+					save.setUpdateTime(now);
+					kffDevaluationModelService.save(save);
+				}
+				
+			}
+		}catch(Exception e){
+			logger.error("用户自定义模型解析json失败:{}",e);
+			throw new RestServiceException("非法模型内容"+devaluationModelRequest.getProfessionalEvaDetail());
+		}
+	}
+
+	@Override
+	public int savePraise(Integer userId, Integer postId) throws RestServiceException {
+		int result = 0;
+		if(userId == null){
+			throw new RestServiceException("用户id不能为空");
+		}
+		if(postId == null){
+			throw new RestServiceException("帖子id不能为空");
+		}
+		KFFUser user = kffUserService.findById(userId);
+		if(user == null){
+			throw new RestServiceException("用户不存在"+userId);
+		}
+		Post post = kffPostService.findById(postId);
+		if(post == null){
+			throw new RestServiceException("帖子不存在"+postId);
+		}
+	    Date now = new Date();
+	    boolean praiseNumIncrease = false;
+		Praise praise = kffPraiseService.findByPostId(userId,postId);
+		if(praise == null){
+		    Praise save = new Praise();
+		    save.setBepraiseUserId(post.getCreateUserId());
+		    save.setCreateTime(now);
+		    save.setPostId(postId);
+		    save.setPostType(post.getPostType());
+		    save.setPraiseUserId(userId);
+		    save.setProjectId(post.getProjectId());
+		    save.setStatus(KFFConstants.STATUS_ACTIVE);
+		    save.setUpdateTime(now);
+		    save.setPraiseType(KFFConstants.PRAISE_TYPE_POST);
+			kffPraiseService.save(save);
+			praiseNumIncrease = true;
+		}else{
+			if(praise.getStatus() !=null && praise.getStatus()==0){
+				praise.setUpdateTime(now);
+				praise.setStatus(KFFConstants.STATUS_ACTIVE);
+				kffPraiseService.update(praise);
+				praiseNumIncrease = true;
+			}else{
+				logger.warn("已点赞存在重复点赞");
+				//throw new RestServiceException("已点赞，请勿重复点赞");
+			}
+		}
+		//帖子点赞数加1
+		if(praiseNumIncrease){
+			kffPostService.increasePraiseNum(postId);
+			//被点赞用户消息
+			KFFMessage message = new KFFMessage();
+			message.setContent(user.getUserName()+"点赞了您!" );
+			message.setCreateTime(now);
+			message.setJumpInfo("");
+			message.setState(KFFConstants.MESSAGE_STATE_UNREAD);
+			message.setStatus(KFFConstants.STATUS_ACTIVE);
+			message.setTitle("点赞");
+			message.setType(KFFConstants.MESSAGE_TYPE_PRAISE);
+			message.setUpdateTime(now);
+			message.setUserId(post.getCreateUserId());
+			kffMessageService.save(message);
+			
+		}
+		
+		result = post.getPraiseNum()==null? 1:(post.getPraiseNum()+1);
+		return result;
+	}
+
+	@Override
+	public int cancelPraise(Integer userId, Integer postId) throws RestServiceException {
+		int result = 0;
+		if(userId == null){
+			throw new RestServiceException("用户id不能为空");
+		}
+		if(postId == null){
+			throw new RestServiceException("帖子id不能为空");
+		}
+		KFFUser user = kffUserService.findById(userId);
+		if(user == null){
+			throw new RestServiceException("用户不存在"+userId);
+		}
+		Post post = kffPostService.findById(postId);
+		if(post == null){
+			throw new RestServiceException("帖子不存在"+post);
+		}
+	    Date now = new Date();
+	    boolean praiseNumDecrese = false;
+		Praise praise = kffPraiseService.findByPostId(userId,postId);
+		if(praise == null){
+		    Praise save = new Praise();
+		    save.setBepraiseUserId(post.getCreateUserId());
+		    save.setCreateTime(now);
+		    save.setPostId(postId);
+		    save.setPostType(post.getPostType());
+		    save.setPraiseUserId(userId);
+		    save.setProjectId(post.getProjectId());
+		    save.setStatus(KFFConstants.STATUS_INACTIVE);
+		    save.setPraiseType(KFFConstants.PRAISE_TYPE_POST);
+		    save.setUpdateTime(now);;
+			kffPraiseService.save(save);
+			praiseNumDecrese = true;
+		}else{
+			if(praise.getStatus() !=null && praise.getStatus()==0){
+				logger.warn("已取消点赞存在重复取消点赞");
+				//throw new RestServiceException("已取消点赞存在重复取消点赞");
+			}else{
+				praise.setUpdateTime(now);
+				praise.setStatus(KFFConstants.STATUS_INACTIVE);
+				kffPraiseService.update(praise);
+				praiseNumDecrese = true;								
+			}
+		}
+		//帖子点赞数减1
+		if(praiseNumDecrese){
+			kffPostService.decreasePraiseNum(postId);
+		}
+		
+		result = post.getPraiseNum()==null?0:((post.getPraiseNum()-1)<0?0:(post.getPraiseNum()-1));
+		return result;
+	}
+
+	@Override
+	public void saveFollow(Integer userId, Integer followType, Integer followedId) throws RestServiceException {
+		if(userId == null){
+			throw new RestServiceException("用户id不能为空");
+		}
+		if(followedId == null){
+			throw new RestServiceException("关注id不能为空");
+		}
+		if(followType == null){
+			throw new RestServiceException("关注类型不能为空");
+		}
+		//1-关注项目;2-关注帖子；3-关注用户
+		if(followType != 1 && followType != 2 && followType != 3){
+			throw new RestServiceException("无效的关注类型");
+		}
+		KFFUser user = kffUserService.findById(userId);
+		if(user == null){
+			throw new RestServiceException("用户不存在"+userId);
+		}
+		
+		Integer followedUserId = 0;
+		String followedUserIcon = "";
+		String followedUserName = "";
+        String followedUserSignature = "";				
+		//关注项目
+		if(followType == KFFConstants.FOLLOW_TYPE_PROJECT){
+		    KFFProject followedProject = kffProjectService.findById(followedId);
+		    if(followedProject == null){
+		    	throw new RestServiceException("关注项目不存在"+followedId);
+		    }
+		    followedUserId = followedProject.getSubmitUserId();
+		    KFFUser projectCreator = kffUserService.findById(followedUserId);
+		    if(projectCreator != null){
+		    	followedUserId = projectCreator.getUserId();
+		    	followedUserIcon = projectCreator.getIcon();
+			    followedUserName = projectCreator.getUserName();
+			    followedUserSignature = projectCreator.getUserSignature();			    
+		    }
+		}else if(followType == KFFConstants.FOLLOW_TYPE_POST){
+			//2-关注帖子
+			Post followedPost = kffPostService.findById(followedId);
+			if(followedPost == null){
+				throw new RestServiceException("关注帖子不存在"+followedId);
+			}
+	    	followedUserId = followedPost.getCreateUserId();
+			followedUserIcon = followedPost.getCreateUserIcon();
+		    followedUserName = followedPost.getCreateUserName();
+		    followedUserSignature = followedPost.getCreateUserSignature();
+		    
+		}else if(followType == KFFConstants.FOLLOW_TYPE_USER){
+		 //3-关注用户
+			KFFUser followedUser = kffUserService.findById(followedId);
+            if(followedUser == null){
+            	throw new RestServiceException("关注的用户不存在"+followedId);
+            }
+            followedUserId = followedUser.getUserId();
+			followedUserIcon = followedUser.getIcon();
+		    followedUserName = followedUser.getUserName();
+		    followedUserSignature = followedUser.getUserSignature();
+            
+		}		
+		Follow existFollow = kffFollowService.findByUserIdAndFollowType(userId,followType,followedId);
+		Date now = new Date();
+	    boolean followNumIncrease = false;
+		if(existFollow == null){
+		//新增	
+				Follow save = new Follow();
+				save.setCreateTime(now);
+				save.setFollowedId(followedId);
+				save.setFollowedUserIcon(followedUserIcon);
+				save.setFollowedUserId(followedUserId);
+				save.setFollowedUserName(followedUserName);
+				save.setFollowedUserSignature(followedUserSignature);
+				save.setFollowerUserName(user.getUserName());
+				save.setFollowType(followType);
+				save.setFollowUserId(userId);
+				save.setStatus(1);
+				save.setUpdateTime(now);			    
+				kffFollowService.save(save);
+				followNumIncrease = true;
+		}else{
+		//更新状态	
+			if(existFollow.getStatus() != null && existFollow.getStatus() == 0){
+				existFollow.setStatus(1);
+				existFollow.setUpdateTime(now);
+				kffFollowService.update(existFollow);
+				followNumIncrease = true;
+			}else{
+				logger.warn("重复关注");
+			}
+		}
+		
+		//关注数量加1
+		if(followNumIncrease){
+			if(followType == KFFConstants.FOLLOW_TYPE_PROJECT){
+			   kffProjectService.increaseFollowerNum(followedId);
+			}else if(followType == KFFConstants.FOLLOW_TYPE_USER){
+			   //增加粉丝数量	
+			   kffUserService.increaseFansNum(followedUserId);
+				//被关注用户消息
+				KFFMessage message = new KFFMessage();
+				message.setContent(user.getUserName()+"关注了您!" );
+				message.setCreateTime(now);
+				message.setJumpInfo("");
+				message.setState(KFFConstants.MESSAGE_STATE_UNREAD);
+				message.setStatus(KFFConstants.STATUS_ACTIVE);
+				message.setTitle("关注");
+				message.setType(KFFConstants.MESSAGE_TYPE_FOLLOW);
+				message.setUpdateTime(now);
+				message.setUserId(followedUserId);
+				kffMessageService.save(message);
+			}
+		}
+		
+	}
+
+	@Override
+	public void cancelFollow(Integer userId, Integer followType, Integer followedId) throws RestServiceException {
+		
+		if(userId == null){
+			throw new RestServiceException("用户id不能为空");
+		}
+		if(followedId == null){
+			throw new RestServiceException("取消关注id不能为空");
+		}
+		if(followType == null){
+			throw new RestServiceException("取消关注类型不能为空");
+		}
+		//1-关注项目;2-关注帖子；3-关注用户
+		if(followType != 1 && followType != 2 && followType != 3){
+			throw new RestServiceException("无效的取消关注类型");
+		}
+		KFFUser user = kffUserService.findById(userId);
+		if(user == null){
+			throw new RestServiceException("用户不存在"+userId);
+		}
+		
+		Integer followedUserId = 0;
+		String followedUserIcon = "";
+		String followedUserName = "";
+        String followedUserSignature = "";				
+		//1-取消关注项目
+		if(followType == KFFConstants.FOLLOW_TYPE_PROJECT){
+		    KFFProject followedProject = kffProjectService.findById(followedId);
+		    if(followedProject == null){
+		    	throw new RestServiceException("取消关注项目不存在"+followedId);
+		    }
+		    followedUserId = followedProject.getSubmitUserId();
+		    KFFUser projectCreator = kffUserService.findById(followedUserId);
+		    if(projectCreator != null){
+		    	followedUserId = projectCreator.getUserId();
+		    	followedUserIcon = projectCreator.getIcon();
+			    followedUserName = projectCreator.getUserName();
+			    followedUserSignature = projectCreator.getUserSignature();			    
+		    }
+		}else if(followType == KFFConstants.FOLLOW_TYPE_POST){
+			//2-取消关注帖子
+			Post followedPost = kffPostService.findById(followedId);
+			if(followedPost == null){
+				throw new RestServiceException("取消关注帖子不存在"+followedId);
+			}
+	    	followedUserId = followedPost.getCreateUserId();
+			followedUserIcon = followedPost.getCreateUserIcon();
+		    followedUserName = followedPost.getCreateUserName();
+		    followedUserSignature = followedPost.getCreateUserSignature();
+		    
+		}else if(followType == KFFConstants.FOLLOW_TYPE_USER){
+		 //3-取消关注用户
+			KFFUser followedUser = kffUserService.findById(followedId);
+            if(followedUser == null){
+            	throw new RestServiceException("取消关注的用户不存在"+followedId);
+            }
+            followedUserId = followedUser.getUserId();
+			followedUserIcon = followedUser.getIcon();
+		    followedUserName = followedUser.getUserName();
+		    followedUserSignature = followedUser.getUserSignature();
+            
+		}		
+		Follow existFollow = kffFollowService.findByUserIdAndFollowType(userId,followType,followedId);
+		Date now = new Date();
+	    boolean followNumDecrease = false;
+		if(existFollow == null){
+		//新增	
+				Follow save = new Follow();
+				save.setCreateTime(now);
+				save.setFollowedId(followedId);
+				save.setFollowedUserIcon(followedUserIcon);
+				save.setFollowedUserId(followedUserId);
+				save.setFollowedUserName(followedUserName);
+				save.setFollowedUserSignature(followedUserSignature);
+				save.setFollowerUserName(user.getUserName());
+				save.setFollowType(followType);
+				save.setFollowUserId(userId);
+				save.setStatus(KFFConstants.STATUS_INACTIVE);
+				save.setUpdateTime(now);			    
+				kffFollowService.save(save);
+				followNumDecrease = true;
+		}else{
+		//更新状态	
+			if(existFollow.getStatus() != null && existFollow.getStatus() == KFFConstants.STATUS_ACTIVE){
+				existFollow.setStatus(KFFConstants.STATUS_INACTIVE);
+				existFollow.setUpdateTime(now);
+				kffFollowService.update(existFollow);
+				followNumDecrease = true;
+			}else{
+				logger.warn("重复取消关注");
+			}
+		}
+		
+		//关注数量减1
+		if(followNumDecrease){
+			if(followType == 1){
+			   kffProjectService.decreaseFollowerNum(followedId);
+			}else if(followType == 3){
+			   kffUserService.decreaseFansNum(followedUserId);
+			}
+		}
+	}
+
+	@Override
+	public void saveCollect(Integer userId, Integer postId) throws RestServiceException {
+		if(userId == null){
+			throw new RestServiceException("用户id不能为空");
+		}
+		if(postId == null){
+			throw new RestServiceException("帖子id不能为空");
+		}
+		KFFUser user = kffUserService.findById(userId);
+		if(user == null){
+			throw new RestServiceException("用户不存在"+userId);
+		}
+		Post post = kffPostService.findById(postId);
+		if(post == null){
+			throw new RestServiceException("帖子不存在"+postId);
+		}
+	    Date now = new Date();
+	    boolean collectNumIncrease = false;
+		Collect existCollect = kffCollectService.findByPostId(userId,postId);
+		if(existCollect == null){
+		    Collect save = new Collect();
+		    save.setCollectUserId(userId);
+		    save.setCreateTime(now);
+		    save.setPostId(postId);
+		    save.setPostType(post.getPostType());
+		    save.setProjectId(post.getProjectId());
+		    save.setStatus(KFFConstants.STATUS_ACTIVE);
+		    save.setUpdateTime(now);;
+			kffCollectService.save(save);
+			collectNumIncrease = true;
+		}else{
+			if(existCollect.getStatus() !=null && existCollect.getStatus()==KFFConstants.STATUS_INACTIVE){
+				existCollect.setUpdateTime(now);
+				existCollect.setStatus(KFFConstants.STATUS_ACTIVE);
+				kffCollectService.update(existCollect);
+				collectNumIncrease = true;
+			}else{
+				logger.warn("已收藏存在重复收藏");
+				//throw new RestServiceException("已收藏，请勿重复收藏");
+			}
+		}
+		//帖子收藏数加1
+		if(collectNumIncrease){
+			kffPostService.increaseCollectNum(postId);
+		}
+		
+	}
+
+	@Override
+	public void cancelCollect(Integer userId, Integer postId) throws RestServiceException {
+		if(userId == null){
+			throw new RestServiceException(RestErrorCode.USER_ID_BLANK);
+		}
+		if(postId == null){
+			throw new RestServiceException(RestErrorCode.POST_ID_BLANK);
+		}
+		KFFUser user = kffUserService.findById(userId);
+		if(user == null){
+			throw new RestServiceException("用户不存在"+userId);
+		}
+		Post post = kffPostService.findById(postId);
+		if(post == null){
+			throw new RestServiceException("帖子不存在"+post);
+		}
+	    Date now = new Date();
+	    boolean collectNumDecrese = false;
+		Collect existCollect = kffCollectService.findByPostId(userId,postId);
+		if(existCollect == null){
+		    Collect save = new Collect();
+		    save.setCollectUserId(userId);
+		    save.setCreateTime(now);
+		    save.setPostId(postId);
+		    save.setPostType(post.getPostType());
+		    save.setProjectId(post.getProjectId());
+		    save.setStatus(KFFConstants.STATUS_INACTIVE);
+		    save.setUpdateTime(now);;
+		    kffCollectService.save(save);
+			collectNumDecrese = true;
+		}else{
+			if(existCollect.getStatus() !=null && existCollect.getStatus()==KFFConstants.STATUS_ACTIVE){
+				existCollect.setUpdateTime(now);
+				existCollect.setStatus(KFFConstants.STATUS_INACTIVE);
+				kffCollectService.update(existCollect);
+				collectNumDecrese = true;	
+				
+			}else{
+				logger.warn("已取消收藏存在重复取消收藏");
+				//throw new RestServiceException("已取消收藏存在重复取消收藏");						
+			}
+		}
+		//帖子收藏数减1
+		if(collectNumDecrese){
+			kffPostService.decreaseCollectNum(postId);
+		}
+		
+	}
+
+	@Override
+	public PageResult<PostResponse> findPageRecommendList(Integer loginUserId,PaginationQuery query) throws RestServiceException {
+		PageResult<PostResponse> result = new PageResult<PostResponse>();
+		List<PostResponse> postResponse = new ArrayList<>();		
+		PageResult<Post> posts = kffPostService.findPage(query);
+		KFFUser loginUser = null;
+		if(loginUserId != null){
+			loginUser = kffUserService.findById(loginUserId);
+		}
+		if(posts != null && CollectionUtils.isNotEmpty(posts.getRows())){
+			result.setCurPageNum(posts.getCurPageNum());
+			result.setPageSize(posts.getPageSize());
+			result.setQueryParameters(posts.getQueryParameters());
+			result.setRowCount(posts.getRowCount());
+			result.setRowsPerPage(posts.getRowsPerPage());
+			for(Post post:posts.getRows()){
+				PostResponse response = new PostResponse();
+				response.setcreateTime(post.getCreateTime());
+				response.setCreateUserId(post.getCreateUserId());
+				response.setPostId(post.getPostId());
+				response.setPostType(post.getPostType());
+				response.setProjectId(post.getProjectId());
+				response.setStatus(post.getStatus());
+
+				//设置post和project信息
+				response.setPostShortDesc(post.getPostShortDesc());
+				response.setPostSmallImages(post.getPostSmallImages());
+				if(StringUtils.isNotBlank(post.getPostSmallImages())){
+					try{
+							List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
+							response.setPostSmallImagesList(pfl);
+					}catch(Exception e){
+							logger.error("首页推荐列表解析帖子缩略图json出错:{}",e); 
+					}
+				}
+				response.setPostTitle(post.getPostTitle());
+				response.setCommentsNum(post.getCommentsNum());
+				response.setCollectNum(post.getCollectNum());
+				response.setPraiseNum(post.getPraiseNum());
+				response.setPageviewNum(post.getPageviewNum());
+				response.setDonateNum(post.getDonateNum());
+				response.setCreateUserIcon(post.getCreateUserIcon());
+				response.setCreateUserName(post.getCreateUserName());
+				response.setCreateUserSignature(post.getCreateUserSignature());
+				KFFProject project = kffProjectService.findById(post.getProjectId());
+				if(project != null){
+						response.setProjectChineseName(project.getProjectChineseName());
+						response.setProjectCode(project.getProjectCode());
+						response.setProjectEnglishName(project.getProjectEnglishName());
+						response.setProjectIcon(project.getProjectIcon());
+						response.setProjectSignature(project.getProjectSignature());
+						response.setTotalScore(project.getTotalScore());
+				}
+				
+				//设置项目关注状态
+				if(loginUser == null){
+					response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+				}else{					
+					Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT, post.getProjectId());
+				    if(follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE){
+				    	response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+				    }else{
+				    	response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+				    }
+				}
+				
+				postResponse.add(response);
+			}
+		}		
+		result.setRows(postResponse);
+
+	return result;
+}
+	
+	@Override
+	public PageResult<PostResponse> findPageFollowList(Integer loginUserId,PaginationQuery query) throws RestServiceException {
+		PageResult<PostResponse> result = new PageResult<PostResponse>();
+		List<PostResponse> postResponse = new ArrayList<>();		
+		PageResult<Post> posts = kffPostService.findPage(query);
+		KFFUser loginUser = null;
+		if(loginUserId != null){
+			loginUser = kffUserService.findById(loginUserId);
+		}
+		if(posts != null && CollectionUtils.isNotEmpty(posts.getRows())){
+			result.setCurPageNum(posts.getCurPageNum());
+			result.setPageSize(posts.getPageSize());
+			result.setQueryParameters(posts.getQueryParameters());
+			result.setRowCount(posts.getRowCount());
+			result.setRowsPerPage(posts.getRowsPerPage());
+			for(Post post:posts.getRows()){
+				PostResponse response = new PostResponse();
+				response.setcreateTime(post.getCreateTime());
+				response.setCreateUserId(post.getCreateUserId());
+				response.setPostId(post.getPostId());
+				response.setPostType(post.getPostType());
+				response.setProjectId(post.getProjectId());
+				response.setStatus(post.getStatus());
+				//设置post和project信息
+				response.setPostShortDesc(post.getPostShortDesc());
+				response.setPostSmallImages(post.getPostSmallImages());
+				if(StringUtils.isNotBlank(post.getPostSmallImages())){
+					try{
+							List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
+							response.setPostSmallImagesList(pfl);
+					}catch(Exception e){
+							logger.error("首页关注列表解析帖子缩略图json出错:{}",e); 
+					}
+				}
+				response.setPostTitle(post.getPostTitle());
+				response.setCommentsNum(post.getCommentsNum());
+				response.setCollectNum(post.getCollectNum());
+				response.setPraiseNum(post.getPraiseNum());
+				response.setPageviewNum(post.getPageviewNum());
+				response.setDonateNum(post.getDonateNum());
+				response.setCreateUserIcon(post.getCreateUserIcon());
+				response.setCreateUserName(post.getCreateUserName());
+				response.setCreateUserSignature(post.getCreateUserSignature());
+				KFFProject project = kffProjectService.findById(post.getProjectId());
+				if(project != null){
+						response.setProjectChineseName(project.getProjectChineseName());
+						response.setProjectCode(project.getProjectCode());
+						response.setProjectEnglishName(project.getProjectEnglishName());
+						response.setProjectIcon(project.getProjectIcon());
+						response.setProjectSignature(project.getProjectSignature());
+						response.setTotalScore(project.getTotalScore());
+				}
+				
+				//设置项目关注状态
+				if(loginUser == null){
+					response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+				}else{					
+					Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT, post.getProjectId());
+				    if(follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE){
+				    	response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+				    }else{
+				    	response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+				    }
+				}
+				
+				postResponse.add(response);
+			}
+		}		
+		result.setRows(postResponse);
+
+	return result;
+	}
+
+	@Override
+	public List<ProjectResponse> findPageProjectRankList(Integer loginUserId,PaginationQuery query) throws RestServiceException {
+		//登录和非登录用户区别只有关注状态按钮显示
+		KFFUser loginUser = null;
+		if(loginUserId != null){
+			loginUser = kffUserService.findById(loginUserId);
+		}
+		List<ProjectResponse> result = new ArrayList<>();
+		PageResult<KFFProject> projects =  kffProjectService.findPage(query);
+		if(projects != null && CollectionUtils.isNotEmpty(projects.getRows())){
+			for(KFFProject project:projects.getRows()){
+				ProjectResponse response = new ProjectResponse();
+				BeanUtils.copyProperties(project, response);
+				if(loginUser == null){
+					response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+				}else{					
+					Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT, project.getProjectId());
+				    if(follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE){
+				    	response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+				    }else{
+				    	response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+				    }
+				}
+				
+				result.add(response);
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public ArticleDetailResponse findArticleDetail(Integer userId,Integer postId)
+			throws RestServiceException {
+		ArticleDetailResponse response = new ArticleDetailResponse();
+		//登录和非登录用户区别只有关注状态按钮显示
+		KFFUser loginUser = null;
+		if(userId != null){
+			loginUser = kffUserService.findById(userId);
+		}
+		if(postId == null || postId == 0){
+			throw new RestServiceException(RestErrorCode.MISSING_ARG_POSTID);
+		}
+		Post post = kffPostService.findById(postId);
+		if(post == null){
+			throw new RestServiceException(RestErrorCode.POST_NOT_EXIST);
+		}
+		BeanUtils.copyProperties(post, response);
+		
+		Article article = kffArticleService.findByPostId(postId);
+		response.setArticleContents(article == null ? "":article.getArticleContents());
+		//关注状态
+		if(loginUser == null){
+			response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+		}else{		
+			//返回对帖子用户的关注状态
+			Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER, post.getCreateUserId());
+		    if(follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE){
+		    	response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+		    }else{
+		    	response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+		    }
+		}
+		
+		//点赞状态
+		if(loginUser == null){
+			response.setPraiseStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+		}else{					
+			Praise praise = kffPraiseService.findByPostId(userId, postId);
+		    if(praise != null && praise.getStatus() != null && praise.getStatus() == KFFConstants.STATUS_ACTIVE){
+		    	response.setPraiseStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+		    }else{
+		    	response.setPraiseStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+		    }
+		}
+		
+		//收藏状态
+		if(loginUser == null){
+			response.setCollectStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+		}else{					
+			Collect collect = kffCollectService.findByPostId(userId, postId);
+		    if(collect != null && collect.getStatus() != null && collect.getStatus() == KFFConstants.STATUS_ACTIVE){
+		    	response.setCollectStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+		    }else{
+		    	response.setCollectStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+		    }
+		}
+		//赞赏用户列表最多8个
+		List<Commendation> donateUsers = new ArrayList<>();
+		PaginationQuery query = new PaginationQuery();
+		query.addQueryData("postId", postId+"");
+		query.addQueryData("status", "1");
+		query.setPageIndex(1);
+		query.setRowsPerPage(8);
+		PageResult<Commendation> pages = kffCommendationService.findPage(query);
+		if(pages != null && CollectionUtils.isNotEmpty(pages.getRows())){
+			donateUsers = pages.getRows();
+		}
+		response.setCommendationList(donateUsers);
+		//总捐赠金额
+		Map<String,Object> totalMap = new HashMap<String,Object>();
+		totalMap.put("postId", postId+"");
+		totalMap.put("status", "1");
+		BigDecimal commendationNum = kffCommendationService.findCommendationNum(totalMap);
+		response.setCommendationNum(commendationNum);
+		
+		kffPostService.increasePageviewNum(postId);
+		return response;
+	}
+
+	@Override
+	public List<Comments> findPageHotCommentsList(Integer userId,Integer postId, PaginationQuery query) throws RestServiceException {
+		KFFUser user = null;
+		if(userId != null && userId != 0){
+			user = kffUserService.findById(userId);
+		}	
+		List<Comments> result = new ArrayList<>();
+		PageResult<Comments> comments = kffCommentsService.findPage(query);
+		if(comments != null && CollectionUtils.isNotEmpty(comments.getRows())){
+			PaginationQuery childQuery = new PaginationQuery();
+			childQuery.setPageIndex(1);
+			childQuery.setRowsPerPage(2);
+			childQuery.addQueryData("postType", KFFConstants.POST_TYPE_ARTICLE+"");
+			for(Comments comment:comments.getRows()){
+				Comments finalComment = new Comments();
+				BeanUtils.copyProperties(comment, finalComment);
+				query.addQueryData("parentCommentsId", comment.getCommentsId()+"");
+				PageResult<Comments> childComments = kffCommentsService.findPage(query);
+				if(childComments != null && CollectionUtils.isNotEmpty(childComments.getRows())){
+					finalComment.setChildCommentsList(childComments.getRows());
+					finalComment.setChildCommentsNum(childComments.getRowCount());
+				}
+				
+				//登录用户判断点赞状态
+				if(user != null){
+					Praise praise = kffPraiseService.findByCommentsId(userId, comment.getCommentsId());
+					if(praise != null){
+						finalComment.setPraiseStatus(praise.getStatus());
+					}
+				}else{
+					finalComment.setPraiseStatus(KFFConstants.PRAISE_STATUS_NOSHOW);
+				}
+				result.add(finalComment);
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public PageResult<Comments> findPageNewestComments(Integer userId,Integer postId, PaginationQuery query) throws RestServiceException {
+		KFFUser user = null;
+		if(userId != null && userId != 0){
+			user = kffUserService.findById(userId);
+		}	
+		PageResult<Comments> result = new PageResult<>();
+		List<Comments> finalCommentList = new ArrayList<>();
+		PageResult<Comments> comments = kffCommentsService.findPage(query);
+		if(comments != null && CollectionUtils.isNotEmpty(comments.getRows())){
+			result.setCurPageNum(comments.getCurPageNum());
+			result.setPageSize(comments.getPageSize());
+			result.setRowCount(comments.getRowCount());
+			result.setRowsPerPage(comments.getRowsPerPage());
+			
+			PaginationQuery childQuery = new PaginationQuery();
+			childQuery.setPageIndex(1);
+			childQuery.setRowsPerPage(2);
+			childQuery.addQueryData("postType", KFFConstants.POST_TYPE_ARTICLE+"");
+			for(Comments comment:comments.getRows()){
+				Comments finalComment = new Comments();
+				BeanUtils.copyProperties(comment, finalComment);
+				childQuery.addQueryData("parentCommentsId", comment.getCommentsId()+"");
+				PageResult<Comments> childComments = kffCommentsService.findPage(childQuery);
+				if(childComments != null && CollectionUtils.isNotEmpty(childComments.getRows())){
+					finalComment.setChildCommentsList(childComments.getRows());
+					finalComment.setChildCommentsNum(childComments.getRowCount());
+				}
+				
+				//登录用户判断点赞状态
+				if(user != null){
+					Praise praise = kffPraiseService.findByCommentsId(userId, comment.getCommentsId());
+					if(praise != null){
+						finalComment.setPraiseStatus(praise.getStatus());
+					}
+				}else{
+					finalComment.setPraiseStatus(KFFConstants.PRAISE_STATUS_NOSHOW);
+				}
+				finalCommentList.add(finalComment);
+			}
+			result.setRows(finalCommentList);
+		}
+		return result;
+	}
+
+	@Override
+	public List<Comments> findAllChildCommentsList(Integer userId, Integer commentsId, PaginationQuery query)
+			throws RestServiceException {
+		KFFUser user = null;
+		if(userId != null && userId != 0){
+			user = kffUserService.findById(userId);
+		}	
+		List<Comments> result = new ArrayList<>();
+		PageResult<Comments> comments = kffCommentsService.findPage(query);
+		if(comments != null && CollectionUtils.isNotEmpty(comments.getRows())){
+			PaginationQuery childQuery = new PaginationQuery();
+			childQuery.setPageIndex(1);
+			childQuery.setRowsPerPage(2);
+			for(Comments comment:comments.getRows()){
+				Comments finalComment = new Comments();
+				BeanUtils.copyProperties(comment, finalComment);
+				childQuery.addQueryData("parentCommentsId", comment.getCommentsId()+"");
+				PageResult<Comments> childComments = kffCommentsService.findPage(childQuery);
+				if(childComments != null && CollectionUtils.isNotEmpty(childComments.getRows())){
+					finalComment.setChildCommentsList(childComments.getRows());
+					finalComment.setChildCommentsNum(childComments.getRowCount());
+				}				
+				//登录用户判断点赞状态
+				if(user != null){
+					Praise praise = kffPraiseService.findByCommentsId(userId, comment.getCommentsId());
+					if(praise != null){
+						finalComment.setPraiseStatus(praise.getStatus());
+					}
+				}else{
+					finalComment.setPraiseStatus(KFFConstants.PRAISE_STATUS_NOSHOW);
+				}
+				result.add(finalComment);
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public DiscussDetailResponse findDiscussDetail(Integer userId, Integer postId) throws RestServiceException {
+		DiscussDetailResponse response = new DiscussDetailResponse();
+		//登录和非登录用户区别只有关注状态按钮显示
+		KFFUser loginUser = null;
+		if(userId != null){
+			loginUser = kffUserService.findById(userId);
+		}
+		if(postId == null || postId == 0){
+			throw new RestServiceException(RestErrorCode.MISSING_ARG_POSTID);
+		}
+		Post post = kffPostService.findById(postId);
+		if(post == null){
+			throw new RestServiceException(RestErrorCode.POST_NOT_EXIST);
+		}
+		BeanUtils.copyProperties(post, response);
+		
+		Discuss discuss = kffDiscussService.findByPostId(postId);
+		if(discuss != null){
+			response.setDisscussContents(discuss.getDisscussContents());
+			response.setDiscussId(discuss.getDiscussId());
+			response.setTagInfos(discuss.getTagInfos());
+		}
+		if(loginUser == null){
+			response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+		}else{		
+			//返回对帖子用户的关注状态
+			Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER, post.getCreateUserId());
+		    if(follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE){
+		    	response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+		    }else{
+		    	response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+		    }
+		}
+		
+		//点赞状态
+		if(loginUser == null){
+			response.setPraiseStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+		}else{					
+			Praise follow = kffPraiseService.findByPostId(userId, postId);
+		    if(follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE){
+		    	response.setPraiseStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+		    }else{
+		    	response.setPraiseStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+		    }
+		}
+		
+		//收藏状态
+		if(loginUser == null){
+					response.setCollectStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+		}else{					
+				Collect collect = kffCollectService.findByPostId(userId, postId);
+				if(collect != null && collect.getStatus() != null && collect.getStatus() == KFFConstants.STATUS_ACTIVE){
+				    	response.setCollectStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+				}else{
+				    	response.setCollectStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+				}
+		}		
+		///2条超过20个点赞的，最高的 热门评论		
+		List<Comments> hotCommentsresult = new ArrayList<>();
+		PaginationQuery hotQuery = new PaginationQuery();
+		hotQuery.setPageIndex(1);
+		hotQuery.setRowsPerPage(2);
+		hotQuery.addQueryData("postId", postId + "");
+		hotQuery.addQueryData("status", KFFConstants.STATUS_ACTIVE + "");
+		hotQuery.addQueryData("postType", KFFConstants.POST_TYPE_DISCUSS+"");
+		hotQuery.addQueryData("praiseNum", "20");  //测试阶段可以临时注释掉
+		hotQuery.addQueryData("sortField", "praise_num");
+		PageResult<Comments> comments = kffCommentsService.findPage(hotQuery);
+		if(comments != null && CollectionUtils.isNotEmpty(comments.getRows())){
+			PaginationQuery childQuery = new PaginationQuery();
+			childQuery.setPageIndex(1);
+			childQuery.setRowsPerPage(2);
+			childQuery.addQueryData("postType", KFFConstants.POST_TYPE_DISCUSS+"");
+			for(Comments comment:comments.getRows()){
+				Comments finalComment = new Comments();
+				BeanUtils.copyProperties(comment, finalComment);
+				childQuery.addQueryData("parentCommentsId", comment.getCommentsId()+"");
+				PageResult<Comments> childComments = kffCommentsService.findPage(childQuery);
+				if(childComments != null && CollectionUtils.isNotEmpty(childComments.getRows())){
+					finalComment.setChildCommentsList(childComments.getRows());
+					finalComment.setChildCommentsNum(childComments.getRowCount());
+				}				
+				//登录用户判断点赞状态
+				if(loginUser != null){
+					Praise praise = kffPraiseService.findByCommentsId(userId, comment.getCommentsId());
+					if(praise != null){
+						finalComment.setPraiseStatus(praise.getStatus());
+					}
+				}else{
+					finalComment.setPraiseStatus(KFFConstants.PRAISE_STATUS_NOSHOW);
+				}
+				hotCommentsresult.add(finalComment);
+			}
+		}
+		
+		response.setHotComments(hotCommentsresult);
+		
+		/*
+		//赞赏用户列表最多8个
+		List<Commendation> donateUsers = new ArrayList<>();
+		PaginationQuery query = new PaginationQuery();
+		query.addQueryData("postId", postId+"");
+		query.addQueryData("status", KFFConstants.STATUS_ACTIVE + "");
+		query.setPageIndex(1);
+		query.setRowsPerPage(8);
+		PageResult<Commendation> pages = kffCommendationService.findPage(query);
+		if(pages != null && CollectionUtils.isNotEmpty(pages.getRows())){
+			donateUsers = pages.getRows();
+		}
+		response.setCommendationList(donateUsers);
+			//总捐赠金额
+		Map<String,Object> totalMap = new HashMap<String,Object>();
+		totalMap.put("postId", postId+"");
+		totalMap.put("status", "1");
+		BigDecimal commendationNum = kffCommendationService.findCommendationNum(totalMap);
+		response.setCommendationNum(commendationNum);
+		
+		*/
+		kffPostService.increasePageviewNum(postId);
+		return response;
+	}
+
+	@Override
+	public PageResult<Comments> findPageDiscussCommentsList(Integer userId, PaginationQuery query) throws RestServiceException {
+		KFFUser user = null;
+		if(userId != null && userId != 0){
+			user = kffUserService.findById(userId);
+		}	
+		List<Comments> result = new ArrayList<>();		
+		PageResult<Comments> comments = kffCommentsService.findPage(query);
+		if( comments != null && CollectionUtils.isNotEmpty(comments.getRows())){
+			PaginationQuery childQuery = new PaginationQuery();
+			childQuery.setPageIndex(1);
+			childQuery.setRowsPerPage(2);
+			childQuery.addQueryData("postType", KFFConstants.POST_TYPE_DISCUSS+"");
+			int loopCounter = 0;
+			for(Comments comment:comments.getRows()){
+				Comments finalComment = new Comments();
+				BeanUtils.copyProperties(comment, finalComment);
+				finalComment.setFloor(comments.getRowCount() - (comments.getCurPageNum()-1)*comments.getPageSize()-loopCounter);
+				childQuery.addQueryData("parentCommentsId", comment.getCommentsId()+"");
+				PageResult<Comments> childComments = kffCommentsService.findPage(childQuery);
+				if(childComments != null && CollectionUtils.isNotEmpty(childComments.getRows())){
+					finalComment.setChildCommentsList(childComments.getRows());
+					finalComment.setChildCommentsNum(childComments.getRowCount());
+				}				
+				//登录用户判断点赞状态
+				if(user != null){
+					Praise praise = kffPraiseService.findByCommentsId(userId, comment.getCommentsId());
+					if(praise != null){
+						finalComment.setPraiseStatus(praise.getStatus());
+					}
+				}else{
+					finalComment.setPraiseStatus(KFFConstants.PRAISE_STATUS_NOSHOW);
+				}
+				result.add(finalComment);
+				
+				loopCounter++;
+			}
+			comments.setRows(result);
+		}
+		return comments;
+	}
+
+	@Override
+	public EvaluationDetailResponse findEvaluationDetail(Integer userId, Integer postId)
+			throws RestServiceException {
+		EvaluationDetailResponse response = new EvaluationDetailResponse();
+		//登录和非登录用户区别只有关注状态按钮显示
+		KFFUser loginUser = null;
+		if(userId != null){
+			loginUser = kffUserService.findById(userId);
+		}
+		if(postId == null || postId == 0){
+			throw new RestServiceException(RestErrorCode.MISSING_ARG_POSTID);
+		}
+		Post post = kffPostService.findById(postId);
+		if(post == null){
+			throw new RestServiceException(RestErrorCode.POST_NOT_EXIST);
+		}
+		BeanUtils.copyProperties(post, response);
+		
+		Evaluation eva = kffEvaluationService.findByPostId(postId);
+		if(eva == null){
+			throw new RestServiceException(RestErrorCode.EVA_NOT_EXIST);
+		}
+		response.setEvauationContent(eva.getEvauationContent());
+		response.setProfessionalEvaDetail(eva.getProfessionalEvaDetail());
+		response.setModelType(eva.getModelType());
+		response.setEvaluationId(eva.getEvaluationId());
+		response.setTotalScore(eva.getTotalScore());
+		response.setEvaluationTags(eva.getEvaluationTags());
+		if(loginUser == null){
+			response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+		}else{					
+			//返回对帖子用户的关注状态
+			Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER, post.getCreateUserId());
+		    if(follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE){
+		    	response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+		    }else{
+		    	response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+		    }
+		}
+		
+		//点赞状态
+		if(loginUser == null){
+			response.setPraiseStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+		}else{					
+			Praise follow = kffPraiseService.findByPostId(userId, postId);
+		    if(follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE){
+		    	response.setPraiseStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+		    }else{
+		    	response.setPraiseStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+		    }
+		}
+		//收藏状态
+				if(loginUser == null){
+					response.setCollectStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+				}else{					
+					Collect collect = kffCollectService.findByPostId(userId, postId);
+				    if(collect != null && collect.getStatus() != null && collect.getStatus() == KFFConstants.STATUS_ACTIVE){
+				    	response.setCollectStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+				    }else{
+				    	response.setCollectStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+				    }
+		}		
+		//赞赏用户列表最多8个
+		List<Commendation> donateUsers = new ArrayList<>();
+		PaginationQuery query = new PaginationQuery();
+		query.addQueryData("postId", postId+"");
+		query.addQueryData("status", KFFConstants.STATUS_ACTIVE + "");
+		query.setPageIndex(1);
+		query.setRowsPerPage(8);
+		PageResult<Commendation> pages = kffCommendationService.findPage(query);
+		if(pages != null && CollectionUtils.isNotEmpty(pages.getRows())){
+			donateUsers = pages.getRows();
+		}
+		response.setCommendationList(donateUsers);
+		//总捐赠金额
+		Map<String,Object> totalMap = new HashMap<String,Object>();
+		totalMap.put("postId", postId+"");
+		totalMap.put("status", "1");
+		BigDecimal commendationNum = kffCommendationService.findCommendationNum(totalMap);
+		response.setCommendationNum(commendationNum);
+		
+		kffPostService.increasePageviewNum(postId);
+		
+		return response;
+	
+	}
+
+	@Override
+	public PostResponse findMyLatestDiscuss(Integer loginUserId) throws RestServiceException {
+		if(loginUserId == null)
+			return null;
+		PostResponse result = new PostResponse();
+		
+		PaginationQuery query = new PaginationQuery();
+		query.addQueryData("createUserId", loginUserId +"");			
+        query.addQueryData("status", KFFConstants.STATUS_ACTIVE + "");
+        //帖子类型：1-评测；2-讨论；3-文章
+        query.addQueryData("postType", KFFConstants.POST_TYPE_DISCUSS + "");
+        query.setPageIndex(1);
+        query.setRowsPerPage(1);
+		PageResult<Post> posts = kffPostService.findPage(query);
+		if(posts != null && CollectionUtils.isNotEmpty(posts.getRows())){
+			Post post = posts.getRows().get(0);		
+			BeanUtils.copyProperties(post, result);
+				if(StringUtils.isNotBlank(post.getPostSmallImages())){
+					try{
+					List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
+						result.setPostSmallImagesList(pfl);
+					}catch(Exception e){
+						logger.error("我的最新讨论帖子解析帖子缩略图json出错:{}",e); 
+					}
+				}
+		}		
+		return result;
+	}
+
+	@Override
+	public int saveCommentsPraise(Integer userId, Integer commentsId) throws RestServiceException {
+		int result = 0;
+		if(userId == null){
+			throw new RestServiceException("用户id不能为空");
+		}
+		if(commentsId == null){
+			throw new RestServiceException("评论id不能为空");
+		}
+		KFFUser user = kffUserService.findById(userId);
+		if(user == null){
+			throw new RestServiceException("用户不存在"+userId);
+		}
+		Comments comments = kffCommentsService.findById(commentsId);
+		if(comments == null){
+			throw new RestServiceException("评论不存在"+commentsId);
+		}
+	    Date now = new Date();
+	    boolean praiseNumIncrease = false;
+		Praise praise = kffPraiseService.findByCommentsId(userId,commentsId);
+		if(praise == null){
+		    Praise save = new Praise();
+		    save.setBepraiseUserId(comments.getCommentUserId());
+		    save.setCreateTime(now);
+		    save.setPostId(commentsId);
+		    save.setPostType(comments.getPostType());
+		    save.setPraiseUserId(userId);
+		    save.setProjectId(comments.getProjectId());
+		    save.setStatus(KFFConstants.STATUS_ACTIVE);
+		    save.setPraiseType(KFFConstants.PRAISE_TYPE_COMMENTS);
+		    save.setUpdateTime(now);
+			kffPraiseService.save(save);
+			praiseNumIncrease = true;
+		}else{
+			if(praise.getStatus() !=null && praise.getStatus()==0){
+				praise.setUpdateTime(now);
+				praise.setStatus(KFFConstants.STATUS_ACTIVE);
+				kffPraiseService.update(praise);
+				praiseNumIncrease = true;
+			}else{
+				logger.warn("已点赞存在重复点赞");
+				//throw new RestServiceException("已点赞，请勿重复点赞");
+			}
+		}
+		//帖子点赞数加1
+		if(praiseNumIncrease){
+			kffCommentsService.increasePraiseNum(commentsId);
+			//被点赞用户消息
+			KFFMessage message = new KFFMessage();
+			message.setContent(user.getUserName()+"点赞了您的评论!" );
+			message.setCreateTime(now);
+			message.setJumpInfo("");
+			message.setState(KFFConstants.MESSAGE_STATE_UNREAD);
+			message.setStatus(KFFConstants.STATUS_ACTIVE);
+			message.setTitle("评论点赞");
+			message.setType(KFFConstants.MESSAGE_TYPE_PRAISE);
+			message.setUpdateTime(now);
+			message.setUserId(comments.getCommentUserId());
+			kffMessageService.save(message);
+		}
+		result = comments.getPraiseNum()==null? 1:(comments.getPraiseNum()+1);
+		return result;
+	}
+
+	@Override
+	public int cancelCommentsPraise(Integer userId, Integer commentsId) throws RestServiceException {
+		int result = 0;
+		if(userId == null){
+			throw new RestServiceException("用户id不能为空");
+		}
+		if(commentsId == null){
+			throw new RestServiceException("评论id不能为空");
+		}
+		KFFUser user = kffUserService.findById(userId);
+		if(user == null){
+			throw new RestServiceException("用户不存在"+userId);
+		}
+		Comments comments = kffCommentsService.findById(commentsId);
+		if(comments == null){
+			throw new RestServiceException("评论不存在"+commentsId);
+		}
+	    Date now = new Date();
+	    boolean praiseNumDecrese = false;
+		Praise praise = kffPraiseService.findByCommentsId(userId,commentsId);
+		if(praise == null){
+		    Praise save = new Praise();
+		    save.setBepraiseUserId(comments.getCommentUserId());
+		    save.setCreateTime(now);
+		    save.setPostId(commentsId);
+		    save.setPostType(comments.getPostType());
+		    save.setPraiseUserId(userId);
+		    save.setProjectId(comments.getProjectId());
+		    save.setStatus(KFFConstants.STATUS_INACTIVE);
+		    save.setPraiseType(KFFConstants.PRAISE_TYPE_COMMENTS);
+		    save.setUpdateTime(now);;
+			kffPraiseService.save(save);
+			praiseNumDecrese = true;
+		}else{
+			if(praise.getStatus() !=null && praise.getStatus()==0){
+				logger.warn("已取消点赞存在重复取消点赞");
+				//throw new RestServiceException("已取消点赞存在重复取消点赞");
+			}else{
+				praise.setUpdateTime(now);
+				praise.setStatus(KFFConstants.STATUS_INACTIVE);
+				kffPraiseService.update(praise);
+				praiseNumDecrese = true;								
+			}
+		}
+		//帖子点赞数减1
+		if(praiseNumDecrese){
+			kffCommentsService.decreasePraiseNum(commentsId);
+		}
+		
+		result = comments.getPraiseNum()==null?0:((comments.getPraiseNum()-1)<0?0:(comments.getPraiseNum()-1));
+		return result;
+	}
+
+	@Override
+	public List<PostResponse> findHotDiscussList(Integer projectId) throws RestServiceException {
+		if(projectId == null){
+			throw new RestServiceException("项目id不能为空");
+		}
+		Date day7 = DateUtil.getSpecifiedDateBeforeOrAfter(7).getTime();
+		List<PostResponse> respones = new ArrayList<>();
+		PaginationQuery query = new PaginationQuery();
+		query.addQueryData("projectId", projectId + "");
+		query.addQueryData("sortField", "comments_num");
+		query.addQueryData("status", "1");
+		query.addQueryData("createTimeBegin", DateUtil.getDate(day7, "yyyy-MM-dd"));
+		query.setPageIndex(1);
+		query.setRowsPerPage(2);
+		PageResult<Post> posts = kffPostService.findPage(query);
+		if(posts != null && CollectionUtils.isNotEmpty(posts.getRows())){			
+			for(Post post:posts.getRows()){
+				PostResponse response = new PostResponse();
+				BeanUtils.copyProperties(post, response);
+				if(StringUtils.isNotBlank(post.getPostSmallImages())){
+					try{
+					List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
+					response.setPostSmallImagesList(pfl);
+					}catch(Exception e){
+						logger.error("讨论列表解析帖子缩略图json出错:{}",e); 
+					}
+				}				
+				Discuss discuss = kffDiscussService.findByPostId(post.getPostId());
+				if(discuss != null){
+					response.setDiscussId(discuss.getDiscussId());
+					response.setDisscussContents(discuss.getDisscussContents());
+					response.setTagInfos(discuss.getTagInfos());
+				}
+				respones.add(response);
+			}
+		}
+		return respones;
+	}
+
+	@Override
+	public List<DevaluationModelDetail> findProjectEvaStat(Integer projectId) throws RestServiceException {
+		// TODO 考虑一下怎么实现 临时选一个返回
+		if(projectId == null){
+			throw new RestServiceException("项目id不能为空");
+		}
+		
+		List<DevaluationModelDetail> result = new ArrayList<>();
+		
+		//List<Evaluation> evaList = kffEvaluationService.findByProjectId(projectId);
+
+		PaginationQuery query = new PaginationQuery();
+		query.addQueryData("modelId", "3");
+		query.addQueryData("sortField", "comments_num");
+		query.addQueryData("status", "1");
+		query.setPageIndex(1);
+		query.setRowsPerPage(100);
+		List<DevaluationModelDetail> details =  findSysEvaModelDetailList();
+		
+		if(details != null && CollectionUtils.isNotEmpty(details)){
+			
+			PageResult<Projectevastat> proEvaStat = kffProjectevastatService.findPage(query);	
+			Map<String,Object> evaMap = new HashMap<String,Object>();
+			if(proEvaStat != null && CollectionUtils.isNotEmpty(proEvaStat.getRows())){
+				for(Projectevastat eva:proEvaStat.getRows()){
+					
+				}
+			}
+			for (DevaluationModelDetail detail:details){
+				float x = 8.1f;
+				if(detail.getId() == 10) x = 9.1f;
+				if(detail.getId() == 13) x = 6.1f;
+				BigDecimal totalScore = BigDecimal.valueOf(x).setScale(1, BigDecimal.ROUND_HALF_DOWN);
+				
+				detail.setTotalScore(totalScore);
+				detail.setRaterNum(Integer.valueOf(RandomUtil.produceNumber(3)));
+				
+				result.add(detail);
+			}
+			
+		}
+		return result;
+	}
+
+	@Override
+	public List<DevaluationModelDetail> findSysEvaModelDetailList() throws RestServiceException {
+		List<DevaluationModelDetail> result = null;
+		PaginationQuery query = new PaginationQuery();
+		query.setPageIndex(1);
+		query.setRowsPerPage(1);
+		query.addQueryData("modelType", KFFConstants.EVA_MODEL_TYPE_FULL_PRO +"");
+		query.addQueryData("status", "1");
+		PageResult<DevaluationModel> modelPage = kffDevaluationModelService.findPage(query);
+		if(modelPage == null || CollectionUtils.isEmpty(modelPage.getRows())){
+			//throw new RestServiceException("当前不存在生效中的系统模型");
+			return result;
+		}
+		DevaluationModel activeModel = modelPage.getRows().get(0);
+		
+		PaginationQuery detailQuery = new PaginationQuery();
+		detailQuery.setPageIndex(1);
+		detailQuery.setRowsPerPage(100);
+		detailQuery.addQueryData("modelId", activeModel.getModelId() + "");
+		detailQuery.addQueryData("status", "1");
+		PageResult<DevaluationModelDetail> modelDetailList = kffDevaluationModelDetailService.findPage(detailQuery);
+		
+		if(modelDetailList != null){
+			result = modelDetailList.getRows();
+		}
+		return result;
+	
+	}
+
+	@Override
+	public KFFUser updateUserInfo(KFFUser account) throws RestServiceException {
+	    if(account == null){
+	    	throw new RestServiceException("account参数为空");
+	    }
+	    if(account.getUserId() == null||account.getUserId()==0){
+	    	throw new RestServiceException("用户id参数为空");
+	    }
+	    
+	    KFFUser existUser = kffUserService.findById(account.getUserId());
+	    if(existUser == null){
+	    	throw new RestServiceException("用户不存在"+account.getUserId());
+	    }
+	    
+	    String userName = null;
+	    String userIcon = null;
+	    String userSignature = null;
+	    boolean syncUserInfo = false;
+	    if(StringUtils.isBlank(existUser.getUserName()) ||(!existUser.getUserName().equals(account.getUserName()))){
+	    	userName = account.getUserName();
+	    	syncUserInfo = true;
+	    }
+	    if(StringUtils.isBlank(existUser.getIcon()) ||(!existUser.getIcon().equals(account.getIcon()))){
+	    	userIcon = account.getIcon();
+	    	syncUserInfo = true;
+	    }
+	    if(StringUtils.isBlank(existUser.getUserSignature()) ||(!existUser.getUserSignature().equals(account.getUserSignature()))){
+	    	userSignature = account.getUserSignature();
+	    	syncUserInfo = true;
+	    }
+		kffUserService.update(account);
+
+		if(syncUserInfo){
+			 taskExecutor.execute(new syncUserInfo(account.getUserId(),userName,userIcon,userSignature));
+		}
+		
+		return account;
+	}
+
+
+	class syncUserInfo implements Runnable {
+	        private Integer userId;
+	        private String userName;
+	        private String userIcon;
+	        private String userSignature;
+	        public syncUserInfo(Integer userId,String userName,String userIcon,String userSignature) {
+	            this.userId = userId;
+	            this.userName = userName;
+	            this.userIcon = userIcon;
+	            this.userSignature = userSignature;
+	        }
+
+	        @Override
+	        public void run() {
+	        	syncUserInfo(userId,userName,userIcon,userSignature);
+	        }
+	    }
+	 private void syncUserInfo(Integer userId,String userName,String userIcon,String userSignature){
+		if(userId == null){
+			return;
+		}
+		//更新tbcommendation send_user_icon
+		//tbcomments  comment_user_id comment_user_icon comment_user_name
+		//becommented_user_id becommented_user_name becommented_user_icon
+		//tbfollow follow_user_id follower_user_name followed_user_id followed_user_signature
+		//followed_user_icon followed_user_name
+		//tbpost create_user_id create_user_icon create_user_signature create_user_name
+		boolean update = false;
+		boolean commendationUpdate = false;
+		Map<String, Object> commentMap = new HashMap<>();
+		Map<String, Object> beCommentMap = new HashMap<>();
+		Map<String, Object> followMap = new HashMap<>();
+		Map<String, Object> followedMap = new HashMap<>();
+		Map<String, Object> postMap = new HashMap<>();
+		Map<String, Object> commendationMap = new HashMap<>();
+
+		    commentMap.put("commentUserId", userId);
+		    beCommentMap.put("becommentedUserId", userId);
+		    followMap.put("followUserId", userId);
+		    followedMap.put("followedUserId", userId);
+		    postMap.put("createUserId", userId);
+		    commendationMap.put("sendUserId", userId);
+		if(StringUtils.isNotBlank(userName)){
+			commentMap.put("commentUserName", userName);
+			beCommentMap.put("becommentedUserName", userName);
+			followMap.put("followerUserName", userName);
+			followedMap.put("followedUserName", userName);
+			postMap.put("createUserName", userName);
+			update = true;
+		}		
+		if(StringUtils.isNotBlank(userIcon)){			
+			commentMap.put("commentUserIcon", userIcon);
+			beCommentMap.put("becommentedUserIcon", userIcon);
+			followedMap.put("followedUserIcon", userIcon);
+			postMap.put("createUserIcon", userIcon);
+		    commendationMap.put("sendUserIcon", userIcon);
+			update = true;
+			commendationUpdate = true;
+		}
+		if(update){
+			kffCommentsService.updateUserInfo(commentMap);
+			kffCommentsService.updateUserInfo(beCommentMap);
+			kffFollowService.updateUserInfo(followMap);
+		}		
+		if(commendationUpdate){
+			kffCommendationService.updateUserInfo(commendationMap);
+		}		
+        if(StringUtils.isNotBlank(userSignature)){			
+        	followedMap.put("followedUserSignature", userSignature);
+        	postMap.put("createUserSignature", userSignature);
+        	update = true;
+		}
+        if(update){
+        	kffFollowService.updateUserInfo(followedMap);
+        	kffPostService.updateUserInfo(postMap);
+        }
+	     
+	}
+    
+}

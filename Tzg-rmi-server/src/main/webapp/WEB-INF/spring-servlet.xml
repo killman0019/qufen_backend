@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+ xmlns:task="http://www.springframework.org/schema/task"
+ xmlns:context="http://www.springframework.org/schema/context"
+ xmlns:p="http://www.springframework.org/schema/p"
+ xmlns:mvc="http://www.springframework.org/schema/mvc"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns:util="http://www.springframework.org/schema/util"
+ xmlns:c="http://www.springframework.org/schema/c"
+ xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+ xsi:schemaLocation="http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+      http://www.springframework.org/schema/context
+      http://www.springframework.org/schema/context/spring-context.xsd
+      http://www.springframework.org/schema/task
+      http://www.springframework.org/schema/task/spring-task-3.0.xsd
+      http://www.springframework.org/schema/mvc
+      http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+	  http://www.springframework.org/schema/util
+	  http://www.springframework.org/schema/util/spring-util.xsd
+      http://code.alibabatech.com/schema/dubbo 
+      http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+	<import resource="classpath*:config/dbsource.xml" />
+	<import resource="classpath:spring/applicationContext-service.xml" />
+
+	<!-- 启动包扫描功能，以便注册带有@Controller、@Service、@repository、@Component等注解的类成为spring的bean -->
+	<context:component-scan base-package="com.tzg.rmi.service.impl*" />
+
+	<context:annotation-config />
+	<!-- 启动注解驱动的Spring MVC功能，注册请求url和注解POJO类方法的映射 -->
+	<mvc:annotation-driven />
+
+	<util:properties id="sysConfig" location="file:/opt/resource/system.properties"/>
+	
+	<!--
+	<bean id="configProfile" class="com.dangdang.config.service.zookeeper.ZookeeperConfigProfile">
+		<constructor-arg name="connectStr" value="#{props['zookeeper.hosts']}" />
+		<constructor-arg name="rootNode" value="#{props['rootNode']}" />
+		<constructor-arg name="version" value="#{props['version']}" />
+	</bean>
+	<bean id="sysConfig" class="com.dangdang.config.service.zookeeper.ZookeeperConfigGroup" c:configProfile-ref="configProfile" c:node="system" />
+    -->
+	<!--dubbo 服务提供者应用名称 -->
+	<dubbo:application name="tzg-rmi" />
+	<!--服务提供者 端口 -->
+	<dubbo:protocol name="#{sysConfig['dubbo.protocol.name']}" port="#{sysConfig['dubbo.protocol.rmi.port']}" />
+	<!--dubbo 注册中心 -->
+	<dubbo:registry address="#{sysConfig['dubbo.registry']}" />
+<!-- 	<dubbo:monitor protocol="registry"/>   -->
+	
+	<!-- zookeeper -->
+	<bean id="zookeeperService" class="com.tzg.common.zookeeper.ZookeeperServiceImpl">
+		<property name="zookeeperHosts"     value="#{sysConfig['zookeeper.hosts']}" />  
+	</bean>
+	<dubbo:service interface="com.tzg.common.zookeeper.ZookeeperService" ref="zookeeperService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}"/>
+	
+	<!-- zookeeper 同步锁 -->
+	<bean id="zkClient" class="com.tzg.common.zookeeper.ZKClientImpl">
+		<constructor-arg value="#{sysConfig['zookeeper.hosts']}"></constructor-arg>
+		<constructor-arg value="5000"></constructor-arg>
+		<constructor-arg value="3"></constructor-arg>
+	</bean>
+	
+	<!-- redis -->
+	<bean id="redisService" class="com.tzg.common.redis.RedisServiceImpl">
+		<property name="maxActive"     value="#{sysConfig['redis.pool.maxActive']}" />  
+		<property name="maxIdle"       value="#{sysConfig['redis.pool.maxIdle']}" />  
+		<property name="maxWait"       value="#{sysConfig['redis.pool.maxWait']}" />  
+		<property name="masterHost"   value="#{sysConfig['master.hosts']}" />
+		<property name="salveHost"   value="#{sysConfig['salve.hosts']}" /> 
+	</bean>
+	
+	<!-- spring thread pool executor -->
+    <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <!-- 线程池维护线程的最少数量 -->
+        <property name="corePoolSize" value="30"/>
+        <!-- 允许的空闲时间 -->
+        <property name="keepAliveSeconds" value="60"/>
+        <!-- 线程池维护线程的最大数量 -->
+        <property name="maxPoolSize" value="50"/>
+        <!-- 缓存队列 -->
+        <property name="queueCapacity" value="50"/>
+       <!--默认为ThreadPoolTaskExecutor-->
+        <!--<property name="threadNamePrefix" value="platformThread"/>-->
+        <!-- 对拒绝task的处理策略 -->
+        <property name="rejectedExecutionHandler">
+            <bean class="java.util.concurrent.ThreadPoolExecutor$CallerRunsPolicy"/>
+        </property>
+    </bean>
+	<dubbo:service interface="com.tzg.common.redis.RedisService" ref="redisService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}"  retries="0"/>
+
+    <!--开封府相关服务 -->
+	<bean id="kffRmiService" class="com.tzg.rmi.service.impl.KFFRmiServiceImpl" />
+	<dubbo:service interface="com.tzg.rmi.service.KFFRmiService" ref="kffRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0"/>
+
+
+	<!-- 地区 -->
+	<bean id="areainfoRmiService" class="com.tzg.rmi.service.impl.AreainfoRmiServiceImpl" />
+	<dubbo:service interface="com.tzg.rmi.service.AreainfoRmiService" ref="areainfoRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}"  retries="0"/>
+
+	<!-- 短信 -->
+	<bean id="smsSendRmiService" class="com.tzg.rmi.service.impl.SmsSendRmiServiceImpl" />
+	<dubbo:service interface="com.tzg.rmi.service.SmsSendRmiService" ref="smsSendRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}"  retries="0"/>
+
+	<!-- 系统参数 -->
+	<bean id="systemParamRmiService" class="com.tzg.rmi.service.impl.SystemParamRmiServiceImpl" />
+	<dubbo:service interface="com.tzg.rmi.service.SystemParamRmiService" ref="systemParamRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}"  retries="0"/>
+
+	<!-- cms -->
+	<bean id="cmsRmiService" class="com.tzg.rmi.service.impl.CmsRmiServiceImpl" />
+	<dubbo:service interface="com.tzg.rmi.service.CmsRmiService" ref="cmsRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}"  retries="0"/>
+
+	<!-- ProducerMQService -->
+	<bean id="producerMQService" class="com.tzg.rmi.service.impl.ProducerMQServiceImpl" />
+	<dubbo:service interface="com.tzg.rmi.service.ProducerMQService" ref="producerMQService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}"  retries="0"/>
+
+	<!-- RocketMQ记录相关功能 -->
+	<bean id="rocketMQRmiService" class="com.tzg.rmi.service.impl.RocketMQRmiServiceImpl" />
+	<dubbo:service interface="com.tzg.rmi.service.RocketMQRmiService" ref="rocketMQRmiService"  timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}"  retries="0"/>
+</beans>

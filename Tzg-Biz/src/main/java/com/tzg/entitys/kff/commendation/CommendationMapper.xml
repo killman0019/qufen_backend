@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.kff.commendation.CommendationMapper">	
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.kff.commendation.Commendation">
+		<result property="commendationId" jdbcType="INTEGER" column="commendation_id"/>
+		<result property="status" jdbcType="INTEGER" column="status"/>
+		<result property="createTime" jdbcType="TIMESTAMP" column="createTime"/>
+		<result property="updateTime" jdbcType="TIMESTAMP" column="updateTime"/>
+		<result property="sendUserId" jdbcType="INTEGER" column="send_user_id"/>
+		<result property="sendUserIcon" jdbcType="VARCHAR" column="send_user_icon"/>
+		<result property="receiveUserId" jdbcType="INTEGER" column="receive_user_id"/>
+		<result property="postId" jdbcType="INTEGER" column="post_id"/>
+		<result property="projectId" jdbcType="INTEGER" column="project_id"/>
+		<result property="postType" jdbcType="INTEGER" column="post_type"/>
+		<result property="amount" jdbcType="DECIMAL" column="amount"/>
+    </resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+        commendation_id ,status ,createTime ,updateTime ,send_user_id ,send_user_icon ,receive_user_id ,post_id ,project_id ,post_type ,amount 
+	    ]]>
+	</sql>
+	
+	<insert id="save" parameterType="com.tzg.entitys.kff.commendation.Commendation" useGeneratedKeys="true" keyProperty="commendationId">
+		<selectKey resultType="java.lang.Integer" keyProperty="commendationId" order="AFTER" >
+	      SELECT LAST_INSERT_ID() AS commendationId
+	    </selectKey>
+	<![CDATA[
+		INSERT INTO tbcommendation (
+        	status ,
+        	createTime ,
+        	updateTime ,
+        	send_user_id ,
+        	send_user_icon ,
+        	receive_user_id ,
+        	post_id ,
+        	project_id ,
+        	post_type ,
+        	amount 
+		) VALUES (
+        	#{status,jdbcType=INTEGER} ,
+        	#{createTime,jdbcType=TIMESTAMP} ,
+        	#{updateTime,jdbcType=TIMESTAMP} ,
+        	#{sendUserId,jdbcType=INTEGER} ,
+        	#{sendUserIcon,jdbcType=VARCHAR} ,
+        	#{receiveUserId,jdbcType=INTEGER} ,
+        	#{postId,jdbcType=INTEGER} ,
+        	#{projectId,jdbcType=INTEGER} ,
+        	#{postType,jdbcType=INTEGER} ,
+        	#{amount,jdbcType=DECIMAL} 
+		)
+	]]>
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.kff.commendation.Commendation">
+		UPDATE tbcommendation
+		<set>
+			<if test="status != null">
+	        status = #{status,jdbcType=INTEGER} ,
+	        </if>
+			<if test="createTime != null">
+	        createTime = #{createTime,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="updateTime != null">
+	        updateTime = #{updateTime,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="sendUserId != null">
+	        send_user_id = #{sendUserId,jdbcType=INTEGER} ,
+	        </if>
+			<if test="sendUserIcon != null">
+	        send_user_icon = #{sendUserIcon,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="receiveUserId != null">
+	        receive_user_id = #{receiveUserId,jdbcType=INTEGER} ,
+	        </if>
+			<if test="postId != null">
+	        post_id = #{postId,jdbcType=INTEGER} ,
+	        </if>
+			<if test="projectId != null">
+	        project_id = #{projectId,jdbcType=INTEGER} ,
+	        </if>
+			<if test="postType != null">
+	        post_type = #{postType,jdbcType=INTEGER} ,
+	        </if>
+			<if test="amount != null">
+	        amount = #{amount,jdbcType=DECIMAL} 
+	        </if>
+	    </set>
+		WHERE 
+	        commendation_id = #{commendationId,jdbcType=INTEGER} 
+	</update>
+
+
+	 <update id="updateUserInfo" parameterType="java.util.Map">
+			UPDATE tbcommendation
+		<set>			
+										
+			<if test="sendUserIcon != null and sendUserIcon.trim() != ''">
+	          send_user_icon = #{sendUserIcon,jdbcType=VARCHAR} ,
+	        </if>					
+			<if test="updateTime != null">
+	        updateTime = now()
+	        </if>			
+	    </set>
+			WHERE 
+		   
+		     <if test="sendUserId != null">
+		    	 send_user_id = #{sendUserId,jdbcType=INTEGER}
+		    </if>	 	        
+		</update>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbcommendation WHERE
+        commendation_id = #{commendationId} 
+	]]>
+	</delete>
+    
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbcommendation 
+		WHERE 
+        commendation_id = #{commendationId} 
+	]]>
+	</select>
+	
+	
+	 
+	<select id="findCommendationNum" resultType="java.math.BigDecimal" parameterType="java.util.Map">
+    	select sum(amount) from tbcommendation where 1=1
+		<include refid="queryWhere"/>
+	</select>
+	
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from tbcommendation where 1=1
+		<include refid="queryWhere"/>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbcommendation where 1=1
+		<include refid="queryWhere"/> 
+	    <![CDATA[ ORDER BY commendation_id DESC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<sql id="queryWhere">
+		<if test="commendationId != null and commendationId.trim() != ''">
+		and commendation_id = #{commendationId}
+		</if>
+		<if test="status != null and status.trim() != ''">
+		and status = #{status}
+		</if>
+		<if test="createTimeBegin != null and createTimeBegin.trim() != ''">
+		and createTime >= #{createTimeBegin}
+		</if>
+		<if test="createTimeEnd != null and createTimeEnd.trim() != ''">
+		and createTime &lt;= #{createTimeEnd}
+		</if>
+		<if test="updateTimeBegin != null and updateTimeBegin.trim() != ''">
+		and updateTime >= #{updateTimeBegin}
+		</if>
+		<if test="updateTimeEnd != null and updateTimeEnd.trim() != ''">
+		and updateTime &lt;= #{updateTimeEnd}
+		</if>
+		<if test="sendUserId != null and sendUserId.trim() != ''">
+		and send_user_id = #{sendUserId}
+		</if>
+		<if test="sendUserIcon != null and sendUserIcon.trim() != ''">
+		and send_user_icon = #{sendUserIcon}
+		</if>
+		<if test="receiveUserId != null and receiveUserId.trim() != ''">
+		and receive_user_id = #{receiveUserId}
+		</if>
+		<if test="postId != null and postId.trim() != ''">
+		and post_id = #{postId}
+		</if>
+		<if test="projectId != null and projectId.trim() != ''">
+		and project_id = #{projectId}
+		</if>
+		<if test="postType != null and postType.trim() != ''">
+		and post_type = #{postType}
+		</if>
+		<if test="amount != null and amount.trim() != ''">
+		and amount = #{amount}
+		</if>
+	</sql>
+</mapper>
+
+

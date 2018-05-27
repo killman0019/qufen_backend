@@ -1,0 +1,54 @@
+#set($layout = "/layout/v3/default.vm")
+
+#set($pageTitle = "铜掌柜手机移动端理财贷款投资产品推荐_项目列表_P2P热门投资项目")
+#set($pageKeywords = "项目列表,小额投资理财,投资理财,理财投资产品,贷款投资,热门投资项目")
+#set($pageDescription = "铜掌柜移动端理财投资推荐项目频道提供最为全面热门的最新投资理财项目，提供全面规范化的个人及企业投资理财规划，各类最新的小额投资理财及热门投资理财项目产品推荐敬请关注本栏目最新动态。")
+#set($pageScript = "project-list")
+
+#set($bodyClass = "bg-gray")
+#set($topbar = {"title": "投资", "backLink": "no"})
+#set($primaryNavCurrent = "invest")
+
+#*
+标的状态 class:
+z-new/z-newGray: 新客专享
+z-activity/z-activityGray: 活动
+z-activityNew/z-activityNewGray: 新客活动
+z-hotSales/z-hotSalesGray: 爆款 6
+z-seckill/z-seckillGray: 秒杀 5
+[@if item.istate ==12 || item.istate ==13] z-newGray[@/if][@/if]
+*#
+
+<div id="project_list_container"></div>
+<a href="#" class="load-more" id="load_more">点击加载更多</a>
+
+
+<script type="text/tpl" id="list_template">
+[@if currentbaoresult != null]
+	#parse("/components/project-item/currentbao-item-tpl.vm")
+[@/if]
+
+[@if fixedbaoresult != null]
+<a href="#" class="hgroup -arrow">
+	<h2 class="hgroup_title">掌薪计划</h2>
+	<span class="hgroup_subtitle">定期理财　稳定收益　本息保</span>
+</a>
+[@each fixedbaoresult as item]
+	[@if item.numTotal != null && item.numTotal > 0]
+		#parse("/components/project-item/fixedbao-item-tpl.vm")
+	[@/if]
+[@/each]
+[@/if]
+
+[@if expresult != null]
+[@each expresult.rows as item]
+	#parse("/components/project-item/experience-item-tpl.vm")
+[@/each]
+[@/if]
+
+[@if result != null]
+[@each result.rows as item]
+	#parse("/components/project-item/project-item-tpl.vm")
+[@/each]
+[@/if]
+</script>

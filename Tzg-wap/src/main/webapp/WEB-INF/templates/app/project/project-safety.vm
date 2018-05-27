@@ -1,0 +1,41 @@
+#set($layout = "/layout/default2.vm")
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>安全保障</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="renderer" content="webkit">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="stylesheet" href="$!{basePath}/app/css/style.css?v=1020">
+</head>
+<body>
+	
+<ul class="tab">
+	<li><a href="project-intro.html">项目介绍</a></li>
+	<li class="-active"><a href="project-safety.html">安全保障</a></li>
+	<li><a href="project-invest-record.html">投资记录</a></li>
+	<li><a href="project-repayments.html">还款计划</a></li>
+</ul>
+
+
+<div class="container-spacing">
+	<div class="titleA mtb2">还款来源</div>
+	<div class="text-contentA">
+		1.借款企业经营状况良好，盈利稳定； 2.货款支付采用国际信用证或承兑汇票，买卖双方通过银行交接货权和货款结算，防止交易纠纷； 3.质押仓单/提单由国内500强企业或国际知名仓储/物流企业开具，其货物价值由专业评估人员评估和价格认定； 4.买卖货物时锁定价格，剔除价格波动风险； 5.其经营性回款资金受到掌控，确保资金专款专用，货款及时回笼； 6.商业保理公司承诺回购，故风险可控。 
+	</div>
+
+	<div class="titleA mt3 mb2">保障措施</div>
+	<div class="file-box">
+		<div class="title-graybg">中国人保承保</div>
+		<img src="https://upload.tzg.cn/upload/201509/20150917181010814996.jpg" alt="">
+	</div>
+	<div class="file-box mt">
+		<div class="title-graybg">风险备用金垫付</div>
+		<img src="https://upload.tzg.cn/upload/201509/20150917181010814996.jpg" alt="">
+	</div>
+</div>
+
+
+</body>
+</html>

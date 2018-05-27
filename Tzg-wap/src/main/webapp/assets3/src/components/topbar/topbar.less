@@ -1,0 +1,107 @@
+/**
+ * Topbar
+ * Author: 吴岸林
+ */
+
+.v3-topbar {
+	@height: 49px;
+	@fontSizeScale: 1.2857;	// ≈18px
+	@logoFontSize: 80px;
+
+	position: relative;
+	height: @height;
+	color: #fff;
+	text-align: center;
+	background-color: @brandPrimary;
+
+	&.-logo {
+		height: 44px;
+		text-align: center;
+		background-color: @brandPrimary;
+
+		.v3-topbar_logo {
+			display: inline-block;
+			font-size: 0;
+
+			&:after {
+				content: '\ea02';
+				font: 70px/.6 @baseIconFont;
+				color: #fff;
+			}
+		}
+
+
+		.v3-topbar_right {
+			line-height: 44px;
+		}
+	}
+
+	&_title, &_back {
+		margin: 0;
+		font-size: @fontSizeScale * 100%;
+		font-weight: normal;
+		line-height: @height;
+	}
+
+	&_back {
+		position: absolute;
+		top: 0;
+		left: 0;
+		padding: 0 3%;
+
+		&:before {
+			content: '\ea05';
+			font-family: @baseIconFont;
+			color: #fff;
+		}
+	}
+
+	&_right {
+		line-height: @height;
+	}
+
+	&_right {
+		position: absolute;
+		top: 0;
+		right: @horizontalSpacingBase;
+	}
+
+	@media screen and (max-width: @viewportMiddle) {
+		@narrowHeight: 44px;
+		@scale: @narrowHeight / @height;
+
+		height: @narrowHeight;
+
+		&_title, &_back {
+			font-size: @fontSizeScale * @scale * 100%;
+			line-height: @narrowHeight;
+		}
+
+		&_back {
+			//margin-top: -@narrowHeight;
+		}
+
+		&_right {
+			line-height: @narrowHeight;
+		}
+
+		&-side {
+			line-height: @narrowHeight;
+		}
+	}
+
+	&-side {
+		display: block;
+		
+		position: absolute;
+		top: 0;
+		right: 0;
+		z-index: 10;
+
+		padding: 0 @horizontalSpacingBase;
+
+		line-height: @height;
+		color: #fff;
+	}
+}
+

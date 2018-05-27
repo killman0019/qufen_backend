@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.kff.message.KFFMessageMapper">	
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.kff.message.KFFMessage">
+		<result property="messageId" jdbcType="INTEGER" column="message_id"/>
+		<result property="type" jdbcType="INTEGER" column="type"/>
+		<result property="status" jdbcType="INTEGER" column="status"/>
+		<result property="state" jdbcType="INTEGER" column="state"/>
+		<result property="createTime" jdbcType="TIMESTAMP" column="createTime"/>
+		<result property="updateTime" jdbcType="TIMESTAMP" column="updateTime"/>
+		<result property="userId" jdbcType="INTEGER" column="user_id"/>
+		<result property="title" jdbcType="VARCHAR" column="title"/>
+		<result property="content" jdbcType="VARCHAR" column="content"/>
+		<result property="jumpInfo" jdbcType="VARCHAR" column="jump_info"/>
+    </resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+        message_id ,type ,status ,state ,createTime ,updateTime ,user_id ,title ,content ,jump_info 
+	    ]]>
+	</sql>
+	
+	<insert id="save" parameterType="com.tzg.entitys.kff.message.KFFMessage" useGeneratedKeys="true" keyProperty="messageId">
+		<selectKey resultType="java.lang.Integer" keyProperty="messageId" order="AFTER" >
+	      SELECT LAST_INSERT_ID() AS id
+	    </selectKey>
+	<![CDATA[
+		INSERT INTO tbmessage (
+        	type ,
+        	status ,
+        	state ,
+        	createTime ,
+        	updateTime ,
+        	user_id ,
+        	title ,
+        	content ,
+        	jump_info 
+		) VALUES (
+        	#{type,jdbcType=INTEGER} ,
+        	#{status,jdbcType=INTEGER} ,
+        	#{state,jdbcType=INTEGER} ,
+        	#{createTime,jdbcType=TIMESTAMP} ,
+        	#{updateTime,jdbcType=TIMESTAMP} ,
+        	#{userId,jdbcType=INTEGER} ,
+        	#{title,jdbcType=VARCHAR} ,
+        	#{content,jdbcType=VARCHAR} ,
+        	#{jumpInfo,jdbcType=VARCHAR} 
+		)
+	]]>
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.kff.message.KFFMessage">
+		UPDATE tbmessage
+		<set>
+			<if test="type != null">
+	        type = #{type,jdbcType=INTEGER} ,
+	        </if>
+			<if test="status != null">
+	        status = #{status,jdbcType=INTEGER} ,
+	        </if>
+			<if test="state != null">
+	        state = #{state,jdbcType=INTEGER} ,
+	        </if>
+			<if test="createTime != null">
+	        createTime = #{createTime,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="updateTime != null">
+	        updateTime = #{updateTime,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="userId != null">
+	        user_id = #{userId,jdbcType=INTEGER} ,
+	        </if>
+			<if test="title != null">
+	        title = #{title,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="content != null">
+	        content = #{content,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="jumpInfo != null">
+	        jump_info = #{jumpInfo,jdbcType=VARCHAR} 
+	        </if>
+	    </set>
+		WHERE 
+	        message_id = #{messageId,jdbcType=INTEGER} 
+	</update>
+
+	<update id="deleteAllMessages" parameterType="java.lang.Integer">
+		UPDATE tbmessage
+		set status = 0, state=2,updateTime=now() 
+		WHERE 
+	        user_id = #{userId,jdbcType=INTEGER}
+	</update>
+
+
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbmessage WHERE
+        message_id = #{messageId} 
+	]]>
+	</delete>
+    
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbmessage 
+		WHERE 
+        message_id = #{messageId} 
+	]]>
+	</select>
+	 
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from tbmessage where 1=1
+		<include refid="queryWhere"/>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbmessage where 1=1
+		<include refid="queryWhere"/> 
+	    <![CDATA[ ORDER BY message_id DESC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<sql id="queryWhere">
+		<if test="messageId != null and messageId.trim() != ''">
+		and message_id = #{messageId}
+		</if>
+		<if test="type != null and type.trim() != ''">
+		and type = #{type}
+		</if>
+		<if test="status != null and status.trim() != ''">
+		and status = #{status}
+		</if>
+		<if test="state != null and state.trim() != ''">
+		and state = #{state}
+		</if>
+		<if test="createTimeBegin != null and createTimeBegin.trim() != ''">
+		and createTime >= #{createTimeBegin}
+		</if>
+		<if test="createTimeEnd != null and createTimeEnd.trim() != ''">
+		and createTime &lt;= #{createTimeEnd}
+		</if>
+		<if test="updateTimeBegin != null and updateTimeBegin.trim() != ''">
+		and updateTime >= #{updateTimeBegin}
+		</if>
+		<if test="updateTimeEnd != null and updateTimeEnd.trim() != ''">
+		and updateTime &lt;= #{updateTimeEnd}
+		</if>
+		<if test="userId != null and userId.trim() != ''">
+		and user_id = #{userId}
+		</if>
+		<if test="title != null and title.trim() != ''">
+		and title = #{title}
+		</if>
+		<if test="content != null and content.trim() != ''">
+		and content = #{content}
+		</if>
+		<if test="jumpInfo != null and jumpInfo.trim() != ''">
+		and jump_info = #{jumpInfo}
+		</if>
+	</sql>
+</mapper>
+
+

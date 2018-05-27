@@ -1,0 +1,104 @@
+#set($staticVersion = "20160131")
+#set($staticPath3 = "$!{basePath}/assets3/build")
+#set($host = $request.getHeader("host"))
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+#if ($pageTitle)
+<title>$!{pageTitle}</title>
+#else
+#if ($pageName)
+<title>$!{pageName}_铜掌柜，小理财大生活_互联网金融服务平台_网络投资理财首选</title>
+#else
+<title>铜掌柜，小理财大生活_互联网金融服务平台_网络投资理财首选</title>
+#end
+#end
+#if ($pageKeywords != "")
+#if ($pageKeywords)
+<meta name="keywords" content="$!{pageKeywords}">
+#else
+<meta name="keywords" content="投资理财, 铜掌柜,理财,互联网金融服务平台,p2p,网贷平台,铜掌柜">
+#end
+#end
+#if ($pageDescription != "")
+#if ($pageDescription)
+<meta name="description" content="$!{pageDescription}">
+#else
+<meta name="description" content="铜掌柜，让理财更放心！-提供安全、高收益的网络理财服务。铜掌柜有严格的风险控制体系，给投资者100%本息担保，第三方资金托管，保障资金安全。">
+#end
+#end
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="renderer" content="webkit">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no">
+<meta name="basepath" content="$!{basePath}" id="basepath">
+<meta name="staticpath" content="$!{staticPath3}" id="staticpath">
+<meta name="staticversion" content="$!{staticVersion}" id="staticversion">
+<link rel="icon" href="$!{staticPath3}/statics/images/favicon.ico">
+<link rel="shortcut icon" href="$!{staticPath3}/statics/images/favicon.ico">
+#if ($baseCSS != "")
+#if ($baseCSS)
+<link rel="stylesheet" href="$!{staticPath3}/statics/css/$!{baseCSS}.css?v=$!{staticVersion}">
+#else
+<link rel="stylesheet" href="$!{staticPath3}/statics/css/global.css?v=$!{staticVersion}">
+#end
+#end
+#if ($pageCSS)
+<link rel="stylesheet" href="$!{staticPath3}/statics/css/$!{pageCSS}.css?v=$!{staticVersion}">
+#end
+<script src="$!{staticPath3}/statics/js/require.js?v=$!{staticVersion}"></script>
+<script>
+(function(buildPath, host) {
+	window.basePath = '$!{basePath}';
+	var srcPath = buildPath.replace("/build", "/src");
+	requirejs.config({
+		baseUrl: host.indexOf("192.168.1") === 0 && host !== "192.168.1.70" ? srcPath : buildPath,
+		packages: [
+			{name: "page",location: "./pages"},
+			{name: "lib",location: buildPath + "/libs"},
+			{name: "com",location: "./components"},
+			{name: "jquery",location: buildPath + "/libs/jquery",main: "jquery-2.1.4.min"}
+		],
+		urlArgs: "v=$!{staticVersion}"
+	});
+})("$!{staticPath3}", window.location.host);
+</script>
+<!--[if lt IE 9]>
+<script src="$!{staticPath3}/statics/js/html5shiv.js"></script>
+<![endif]-->
+#if ($pageHeadCode)
+$!{pageHeadCode}
+#end
+</head>
+#if ($bodyClass)
+<body class="$!{bodyClass}">
+#else
+<body>
+#end
+
+<div class="pg">
+#if ($topbar)
+	#parse("/components/topbar/topbar.vm")
+#end
+
+$screen_content
+
+#if (!$noPrimaryNav)
+	#parse("/components/primary-nav/primary-nav.vm")
+#end
+</div>
+
+## 生产环境
+#if ($host.indexOf("192.168") < 0)
+	#parse("/include/statistics.vm")
+#end
+
+<script>
+#if ($pageScript)
+require(['page/$pageScript/$pageScript'])
+#end
+</script>
+
+</body>
+</html>

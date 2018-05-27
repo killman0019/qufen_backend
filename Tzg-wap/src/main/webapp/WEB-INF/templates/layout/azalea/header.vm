@@ -1,0 +1,27 @@
+<div class="hd clearfix">
+	<a href="$!{basePath}/" class="hd_logo"><img src="$!staticPath/images/logo.png" alt="铜掌柜"></a>
+	<a href="javascript:void(0)" class="hd_switch" id="j_nav_switch"></a>
+</div>
+
+<nav class="primary-nav" id="j_primary_nav">
+	<div class="primary-nav_inner">
+		#if(!$wapLoginSessionInfo)
+		<a href="$!{basePath}/login/page">登录</a>
+		<a href="$!{basePath}/register/page">注册</a>
+		#end
+		<a href="$!{basePath}/subject/page">理财专区</a>
+		<a href="$!{basePath}/user/home">我的账户</a>
+		##<a href="$!{basePath}/user/financialRecord/page">资金记录</a>
+		##<a href="$!{basePath}/user/investRecord/page">投资记录</a>
+		<a href="$!{basePath}/user/charge/page">充值</a>
+		<a href="$!{basePath}/user/cash/page">提现</a>
+		<a href="$!{basePath}/down/app?from=wap">铜掌柜APP</a>
+		<a href="$!{basePath}/aboutUs">关于铜掌柜</a>
+		<a href="$!{basePath}/topics/aboutShareholder">股东背景</a>
+		
+		
+		#if($wapLoginSessionInfo && !$wechat_token)
+		<a href="$!{basePath}/logout">退出登录</a>
+		#end
+	</div>
+</nav>

@@ -1,0 +1,20 @@
+#set($pageName = "铜钱宝介绍")
+#set($bodyClass = "body--gray")
+#set($topbar = { "title": $pageName })
+
+<div class="m-movable-box">
+	<ul class="movable-desc">
+		<li class="z-cl1">
+			高收益<br><span class="u-fsB u-clGrayLgt">年化率 $numbers.toCurrency($!{currentbaoproject.numMinInterestRate})% - $numbers.toCurrency($!{currentbaoproject.numMaxInterestrate})%</span>
+		</li>
+		<li class="z-cl2">
+			高流动性<br><span class="u-fsB u-clGrayLgt">随时买入随时卖出</span>
+		</li>
+		<li class="z-cl3">
+			到账迅速<br><span class="u-fsB u-clGrayLgt">T+1 到账</span>
+		</li>
+		<li class="z-cl4">
+			高安全性<br><span class="u-fsB u-clGrayLgt">多种产品组合，分散风险</span>
+		</li>
+	</ul>
+</div>

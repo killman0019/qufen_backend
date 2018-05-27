@@ -1,0 +1,36 @@
+#set($layout = "/app/layout/default.vm")
+
+## 定期宝加入记录
+## =======================================
+#set($pageName = "加入记录")
+#set($pageFootCode = '')
+
+<div class="container-r-spacing mb20">
+	<table class="dataset">
+		<thead>
+			<tr>
+				<th>投资人</th>
+				<th>投资金额</th>
+				<th class="-datetime">投资时间</th>
+			</tr>
+		</thead>
+		<tbody id="j_list_container" data-request-url="/app/subject/fixedBaoTodayinvestRecord?projectId=$!{projectId}"></tbody>
+	</table>
+
+	<div class="m-loadMr" id="j_load_more" style="display:none">
+		<a href="#" class="u-loadMr">点击查看更多</a>
+		<i class="u-fntIco--ldg"></i>
+	</div>
+</div>
+
+<script src="$!{staticPath}/js/lib/sea.js?v=$!{staticVersion}" id="seajsnode"></script>
+<script>seajs.use("page/dqb-invest-record")</script>
+<script type="text/tpl" id="j_list_template">
+[@each rows as item]
+<tr>
+	<td>$[item.vcPhone]</td>
+	<td>$[item.numInvest|toCurrency]元</td>
+	<td class="-datetime">$[item.dtInvestStr]</td>
+</tr>
+[@/each]
+</script>

@@ -1,0 +1,20 @@
+#set($app = "home")
+
+#set($pageTitle = "$!{news.vcTitle}-铜掌柜网络投资理财首选")
+#set($pageKeywords = "")
+#set($pageDescription = "")
+
+#parse("/include/homeArticleNav.vm")
+
+<div class="container mtb3 bg-white ofh">
+	<div class="article-hd">
+		<h1 class="article-hd_title">$!{news.vcTitle}</h1>
+		<div class="article-hd_meta">来源: $!{news.vcSource} $!{news.dtCreateStr}</div>
+	</div>
+
+	<div class="dashed-line os5"></div>
+
+	<div class="article-bd mtb5 os10">
+		$!{news.vcContent}
+	</div>
+</div>

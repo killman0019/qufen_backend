@@ -1,0 +1,17 @@
+<div class="primary-nav">
+	<div class="primary-nav_inner">
+		<nav id="j_primary_nav">
+			<a href="$!{basePath}/" class="-rec#if ($primaryNavCurrent == 'rec') -current#end">推荐</a>
+			<a href="$!{basePath}/subject/page" class="-invest#if ($primaryNavCurrent == 'invest') -current#end">投资</a>
+			<a href="$!{basePath}/user/home" class="-assets#if ($primaryNavCurrent == 'assets') -current#end">资产</a>
+			<a href="$!{basePath}/topics/morePage" class="-more#if ($primaryNavCurrent == 'more') -current#end">更多</a>
+		</nav>
+		<a href="https://app.tzg.cn/down" class="primary-nav_downapp" id="j_primary_nav_downapp" data-placeholder=".primary-nav-downapp-placeholder" style="display:none">
+			<span class="primary-nav_downapp_close" j-close-btn></span>
+			<div class="primary-nav_downapp_title">下载铜掌柜移动客户端</div>
+		</a>
+	</div>
+</div>
+<div class="primary-nav-nav-placeholder"></div>
+<div class="primary-nav-downapp-placeholder" style="display:none"></div>
+<script>require(["com/primary-nav/primary-nav"]);</script>

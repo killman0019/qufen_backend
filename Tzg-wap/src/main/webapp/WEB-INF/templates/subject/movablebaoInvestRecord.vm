@@ -1,0 +1,52 @@
+#set($pageName = "转入记录")
+#set($bodyClass = "body--gray")
+#set($topbar = { "title": $pageName })
+#set($pageFootCode = '<script>seajs.use("page/hqb-movable-invest")</script>')
+
+#set($topbar = { "title": "资金明细", "backLink": "$!{basePath}/currentBao/project/detail" })
+
+<div class="m-movable-record">
+	<ul class="movable-record-tab">
+		<li class="-active"><a href="$!{basePath}/currentBao/funddetails/invest">转入记录</a></li>
+		<li><a href="$!{basePath}/currentBao/funddetails/repay">转出记录</a></li>
+		<li><a href="$!{basePath}/currentBao/funddetails/income">收益记录</a></li>
+	</ul>
+	<div class="container-spacing">
+		<table class="dataset">
+			<thead>
+				<tr>
+					<th>时间</th>
+					<th>金额(元)</th>
+					<th width="20%" class="txt-c">状态</th>
+					<th width="20%" class="txt-r">合同</th>
+				</tr>
+			</thead>
+			<tbody id="j_list_container"></tbody>
+		</table>
+		<div class="load-more" id="j_load_more" style="display:none">点击查看更多</div>
+	</div>
+</div>
+
+<div class="m-ppp" id="j_protocol_popup">
+	<div class="m-ppp-hd">《转入合同》</div>
+	<div class="m-ppp-bd">
+		<div class="m-ppp-bd-cnt">
+			<iframe id="pop_protocol" frameborder="0" width="100%" height="100%" scrolling="yes"></iframe>
+		</div>
+	</div>
+	<div class="m-ppp-ft">
+		<button type="button" class="u-btn--lnk z-fll" pppclosebtn>确 定</button>
+	</div>
+</div>
+
+<script type="text/template" id="j_list_template">
+[@each rows as item]
+	<tr>
+		<td class="-datetime">$[item.dtInvestStr]</td>
+		<td>$[item.numInvest|toCurrency]</td>
+		<td class="txt-c">成功</td>
+		<td class="txt-r"><a href="$!{basePath}/app/investRecord/currentBaoContract?iinvestRecordId=$[item.id]&amp;accountToken=$!{accountToken}"" j-protocol-btn>查看合同</a></td>
+	</tr>
+[@/each]
+</script>
+

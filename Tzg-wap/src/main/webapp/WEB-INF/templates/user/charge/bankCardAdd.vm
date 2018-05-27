@@ -1,0 +1,52 @@
+#set($pageTitle = "账户充值_我的账户_投资人")
+#set($bodyClass = "body--gray")
+#set($topbar = {"title": '账户充值'})
+
+#set($pageFootCode = '<script>seajs.use("page/bankcard-add")</script>')
+
+<div class="m-frmBlkHnt">
+	<ul class="m-txtLst z-ul u-clScd u-fsSml">
+		<li>请使用本人银行卡进行充值</li>
+		<li>该银行卡需要在银行预留手机号</li>
+		<li>只支持借记卡充值</li>
+	</ul>
+</div>
+
+<form method="post" action="$!{basePath}/user/charge/bankCardAdd" id="j_bankcard_add_form">
+	<ul class="m-frm">
+		<li class="m-frm-itm">姓　名：$!{vcName}</li>
+		<li class="m-frm-itm">身份证：$!{vcCardCode}</li>
+		<li class="m-frm-itm">
+			<label class="m-frm-lbl">选择银行：</label>
+			<div class="m-frm-cnt">
+				<select name="ibankId" class="u-slt">
+					<option value="">请选择银行</option>
+					#foreach($item in $bankResult)
+					<option value="$!{item.id}">$!{item.vcName}</option>
+					#end
+				</select>
+			</div>
+		</li>
+		<li class="m-frm-itm">
+			<label class="m-frm-lbl">银行卡号：</label>
+			<div class="m-frm-cnt">
+				<input type="number" name="cardNo" placeholder="请输入银行卡号" maxlength="30" class="u-ipt">
+			</div>
+		</li>
+		<li class="m-frm-itm">
+			<label class="m-frm-lbl">充值金额：</label>
+			<div class="m-frm-cnt">
+				<input type="number" name="amount" placeholder="请输入充值金额" maxlength="11" class="u-ipt">
+			</div>
+		</li>
+		<li class="m-frm-itm--btn">
+			<button class="u-btn z-prm z-fll z-ldg" type="submit">确认</button>
+			<a href="$!{basePath}/user/home" class="u-btn--lnk z-fll f-mt">暂不充值</a>
+		</li>
+		<li class="m-frm-itm--hnt">充值后投资，享受年化12%以上的收益</li>
+	</ul>
+</form>
+
+
+
+

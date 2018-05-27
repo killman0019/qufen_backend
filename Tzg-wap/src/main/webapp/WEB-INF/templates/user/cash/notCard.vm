@@ -1,0 +1,16 @@
+#set($pageName = "提现")
+#set($topbar = { "title": $pageName })
+
+<div class="f-mt4 f-mlr4">
+	<div class="msg-sign2 -failed"></div>
+
+	<div class="f-mt4 f-tlc u-clGrayLgt">
+		尊敬的客官，您目前还未绑定银行卡！<br>
+		如果您是通过网上银行充值，首次提现需验证银行卡。
+	</div>
+
+	<div class="f-mt3">
+		<a href="$!{basePath}/user/bindCard/addBankCard/page" class="u-btn z-prm z-fll">立即验证银行卡</a>
+	</div>
+</div>
+<div class="f-mt2 f-tlc u-clScd"><img src="$!{basePath}/assets3/build/statics/images/safeguard-icon.png" style="width:16px;vertical-align:middle" alt="安全保障"> 账户资金盗转盗用由人保财险承保</div>

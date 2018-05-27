@@ -1,0 +1,43 @@
+#set($pageName = "多财介绍")
+#set($topbar = { "title": $pageName })
+#set($bodyClass = "interest_body")
+
+
+<div class="f-bd f-clrMgn">
+    <div class="m1 b1 dt-r-r-introduce">多财取自成语“多财善贾”，意指本钱多，生意就做的开。同样对于投资理财来说，您的投资金额越大，收益就越高。</div>
+    <div class="m1 b1 dt-r-r-list-box">
+        <table class="raise-rate-list">
+            <thead>
+            <tr>
+                <th class="raise-rate-th1">序号</th>
+                <th class="raise-rate-th2">投资金额</th>
+                <th class="raise-rate-th3">收益率</th>
+            </tr>
+            </thead>
+            <tbody class="raise_rate_tb" id="j_raise_rate_tb">
+            <tr>
+                <td>01</td>
+                <td>0≤投资金额≤5000</td>
+                <td>9.00%+0.00%</td>
+            </tr>
+            <tr>
+                <td>02</td>
+                <td>0≤投资金额≤5000
+                </td>
+                <td>9.00%+0.00%</td>
+            </tr>
+            <tr>
+                <td>03</td>
+                <td>0≤投资金额≤5000</td>
+                <td>9.00%+0.00%</td>
+            </tr>
+            <tr>
+                <td>04</td>
+                <td>0≤投资金额≤5000</td>
+                <td>9.00%+0.00%</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>

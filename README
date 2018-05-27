@@ -1,0 +1,6 @@
+### install package
+clean:clean install -Dmaven.test.skip=true
+
+### run jetty
+jetty:run
+

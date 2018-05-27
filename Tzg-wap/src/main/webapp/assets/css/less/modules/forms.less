@@ -1,0 +1,190 @@
+
+// Global form
+//------------------------------
+
+@form-horizontal-spacing: @horizontal-spacing * 2;
+.m-frm {
+}
+.m-frm-itm, .m-frm-itm--btn, .m-frm-itm--hnt {
+	padding: 0 @horizontal-spacing*2;
+}
+.m-frm-itm {
+	margin-top: @vertical-spacing * 2;
+	margin-bottom: @vertical-spacing * 2;
+}
+.m-frm-itm--btn {
+	margin: @vertical-spacing * 3 0;
+}
+.m-frm-itm--hnt {
+	padding-top: 2px;
+	padding-bottom: 2px;
+	color: #fff;
+	background-color: @brand-primary;
+}
+.m-frm-itm--hnt2 {
+	margin-top: 5px;
+	color: @color-light;
+}
+.m-frm-lbl {
+	display: block;
+	margin-bottom: @vertical-spacing;
+
+	sub {
+		vertical-align: baseline;
+		font-size: @font-size-base - 2;
+		color: @color-light;
+	}
+}
+
+// Form of Login & Register
+// ------------------------------------
+
+@form2-label-width: 40px;
+.m-frm2 {
+	margin-top: @vertical-spacing * 3;
+	margin-bottom: @vertical-spacing * 3;
+}
+.m-frm2-itm {
+	margin: @vertical-spacing @horizontal-spacing;
+	padding-left: @form2-label-width;
+	min-height: 44px;
+}
+.m-frm2-itm--fll {
+	padding-right: @horizontal-spacing;
+	padding-left: @horizontal-spacing;
+}
+.m-frm2-lbl {
+	float: left;
+	margin-left: -@form2-label-width;
+	width: @form2-label-width;
+	font-size: 30px;
+	line-height: @form2-label-width;
+	color: @brand-primary;
+}
+.m-frm2-txt {
+	line-height: 44px;
+}
+
+
+@form3-label-width: 90px;
+.m-frm3 {
+}
+.m-frm3-itm {
+	margin-top: @vertical-spacing;
+	margin-bottom: @vertical-spacing;
+	padding-left: @form3-label-width;
+}
+.m-frm3-itm--fll {
+	margin-top: @vertical-spacing;
+	margin-bottom: @vertical-spacing;
+}
+.m-frm3-lbl {
+	float: left;
+	margin-left: -@form3-label-width;
+	width: @form3-label-width;
+	color: @color-light;
+	line-height: 44px;
+}
+.m-frm3-itm--btn:extend(.m-frm3-itm--fll,.f-clrFix) {
+	margin-top: @vertical-spacing*2;
+	
+	.m-F3IB-sd, .m-F3IB-mn {
+		box-sizing: border-box;
+		float: left;
+		width: 35%;
+	}
+	.m-F3IB-mn {
+		padding-left: 5%;
+		width: 65%;
+	}
+	.u-btn {
+		width: 100%;
+	}
+}
+
+
+// 带 icon 的 input
+// 充值页面
+.icon-input {
+	position: relative;
+
+	i {
+		position: absolute;
+		top: 0;
+		left: 0;
+
+		width: 44px;
+		text-align: center;
+
+		font-family: @font-icon-family;
+		font-size: 24px;
+		line-height: 44px;
+		font-style: normal;
+		color: @color-light;
+	}
+
+	input {
+		padding-left: 40px;
+
+		&:focus + i {
+			color: #6eaaed;
+		}
+	}
+}
+
+
+.form2 {
+	margin-left: 4%;
+	margin-right: 4%;
+
+	&_item {
+		margin: 10px 0;
+	}
+
+	&_hint {
+		margin-top: 5px;
+		color: @color-light;
+	}
+}
+
+.input-box {
+	@height: 44px;
+	@label-width: 80px;
+
+	box-sizing: border-box;
+	padding-left: @label-width;
+	height: @height;
+	border: 1px solid @color-light;
+	background-color: #fff;
+
+	&_label {
+		float: left;
+		margin-left: -@label-width;
+		width: @label-width;
+		line-height: @height;
+		text-align: center;
+	}
+
+	&_input {
+		box-sizing: border-box;
+		width: 100%;
+		height: 100%;
+		line-height: @height - 2;
+		border: none;
+		background-color: transparent;
+	}
+}
+
+.captcha {
+	overflow: hidden;
+	
+	&_input {
+		float: left;
+		width: 68%;
+	}
+
+	&_button {
+		float: right;
+		width: 30%;
+	}
+}
