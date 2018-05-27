@@ -1,2 +1,0 @@
-#set($layout = "/layout/blank.vm")
-{"msg":"返回的消息","status":5,"success":true}
