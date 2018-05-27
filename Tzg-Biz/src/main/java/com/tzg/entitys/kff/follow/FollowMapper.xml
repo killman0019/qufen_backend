@@ -35,7 +35,7 @@
         	followed_user_signature ,
         	followed_user_icon ,
         	followed_user_name ,
-        	followed_id ,
+        	followed_id,
         	status ,
         	createTime ,
         	updateTime 

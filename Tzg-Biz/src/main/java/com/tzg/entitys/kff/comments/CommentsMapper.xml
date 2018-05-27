@@ -2,24 +2,24 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tzg.entitys.kff.comments.CommentsMapper">	
 	<resultMap id="BaseResultMap" type="com.tzg.entitys.kff.comments.Comments">
-		<result property="commentsId" jdbcType="INTEGER" column="comments_id"/>
-		<result property="commentUserId" jdbcType="INTEGER" column="comment_user_id"/>
-		<result property="commentUserIcon" jdbcType="VARCHAR" column="comment_user_icon"/>
-		<result property="commentUserName" jdbcType="VARCHAR" column="comment_user_name"/>
-		<result property="commentContent" jdbcType="VARCHAR" column="comment_content"/>
-		<result property="projectId" jdbcType="INTEGER" column="project_id"/>
-		<result property="postId" jdbcType="INTEGER" column="post_id"/>
-		<result property="postType" jdbcType="INTEGER" column="post_type"/>
-		<result property="praiseNum" jdbcType="INTEGER" column="praise_num"/>
-		<result property="parentCommentsId" jdbcType="INTEGER" column="parent_comments_id"/>
-		<result property="becommentedUserId" jdbcType="INTEGER" column="becommented_user_id"/>
-		<result property="becommentedUserName" jdbcType="VARCHAR" column="becommented_user_name"/>
-		<result property="becommentedUserIcon" jdbcType="VARCHAR" column="becommented_user_icon"/>
-		<result property="createTime" jdbcType="TIMESTAMP" column="createTime"/>
-		<result property="updateTime" jdbcType="TIMESTAMP" column="updateTime"/>
-		<result property="status" jdbcType="INTEGER" column="status"/>
-    </resultMap>
-	
+		<result property="commentsId" jdbcType="INTEGER" column="comments_id" />
+		<result property="commentUserId" jdbcType="INTEGER" column="comment_user_id" />
+		<result property="commentUserIcon" jdbcType="VARCHAR" column="comment_user_icon" />
+		<result property="commentUserName" jdbcType="VARCHAR" column="comment_user_name" />
+		<result property="commentContent" jdbcType="VARCHAR" column="comment_content" />
+		<result property="projectId" jdbcType="INTEGER" column="project_id" />
+		<result property="postId" jdbcType="INTEGER" column="post_id" />
+		<result property="postType" jdbcType="INTEGER" column="post_type" />
+		<result property="praiseNum" jdbcType="INTEGER" column="praise_num" />
+		<result property="parentCommentsId" jdbcType="INTEGER" column="parent_comments_id" />
+		<result property="becommentedUserId" jdbcType="INTEGER" column="becommented_user_id" />
+		<result property="becommentedUserName" jdbcType="VARCHAR" column="becommented_user_name" />
+		<result property="becommentedUserIcon" jdbcType="VARCHAR" column="becommented_user_icon" />
+		<result property="createTime" jdbcType="TIMESTAMP" column="createTime" />
+		<result property="updateTime" jdbcType="TIMESTAMP" column="updateTime" />
+		<result property="status" jdbcType="INTEGER" column="status" />
+	</resultMap>
+
 	<sql id="columns">
 	    <![CDATA[
         comments_id ,comment_user_id ,comment_user_icon ,comment_user_name ,comment_content ,project_id,post_id ,post_type ,praise_num ,parent_comments_id ,becommented_user_id ,becommented_user_name ,becommented_user_icon ,createTime ,updateTime ,status 
@@ -168,30 +168,32 @@
 	</delete>
     
 	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
-	    SELECT <include refid="columns"/> 
+		SELECT
+		<include refid="columns" /> 
 	<![CDATA[
 		FROM tbcomments 
 		WHERE 
         comments_id = #{commentsId} 
 	]]>
 	</select>
-	 
 	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
-    	select count(*) from tbcomments where 1=1
-		<include refid="queryWhere"/>
+		select count(*) from tbcomments where 1=1
+		<include refid="queryWhere" />
 	</select>
     
 	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
-		select <include refid="columns"/>  from tbcomments where 1=1
-		<include refid="queryWhere"/> 
-	     <choose>
-	            <when test="sortField != null and sortField != ''">
-	               ORDER BY ${sortField} DESC
-	            </when>
-	            <otherwise>
+		select
+		<include refid="columns" />
+		from tbcomments where 1=1
+		<include refid="queryWhere" />
+		<choose>
+			<when test="sortField != null and sortField != ''">
+				ORDER BY ${sortField} DESC
+			</when>
+			<otherwise>
 	                <![CDATA[ ORDER BY comments_id desc ]]>
-	            </otherwise>
-	        </choose>
+			</otherwise>
+		</choose>
         <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
 	</select>
 
@@ -210,18 +212,19 @@
 
 
 	<select id="findAllCommentsByWhere" resultMap="BaseResultMap" parameterType="java.util.Map">
-		select <include refid="columns"/>  from tbcomments where 1=1
-		<include refid="queryWhere"/> 
-	     <choose>
-	            <when test="sortField != null and sortField != ''">
-	               ORDER BY ${sortField} DESC
-	            </when>
-	            <otherwise>
+		select
+		<include refid="columns" />
+		from tbcomments where 1=1
+		<include refid="queryWhere" />
+		<choose>
+			<when test="sortField != null and sortField != ''">
+				ORDER BY ${sortField} DESC
+			</when>
+			<otherwise>
 	                <![CDATA[ ORDER BY comments_id desc ]]>
-	            </otherwise>
-	        </choose>
-	</select>	
-	
+			</otherwise>
+		</choose>
+	</select>
 	<sql id="queryWhere">
 		<if test="commentsId != null and commentsId.trim() != ''">
 		and comments_id = #{commentsId}
@@ -300,6 +303,15 @@
 		FROM tbcomments
 		WHERE post_id = #{postId} and parent_comments_id is NULL and `status` = 1 ORDER BY comments_id ASC
 	</select>
+	
+	<select id="findFlootOrderById1" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+
+		SELECT
+		<include refid="columns" />
+		FROM tbcomments
+		WHERE post_id = #{postId} and parent_comments_id is NULL and `status` = 1 ORDER BY comments_id ASC
+	</select>
+
 </mapper>
 
 

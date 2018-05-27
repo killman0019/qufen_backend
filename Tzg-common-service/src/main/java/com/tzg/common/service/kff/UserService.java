@@ -34,21 +34,21 @@ public class UserService   {
 	private static final Log logger = LogFactory.getLog(UserService.class);
 
 	@Autowired
-	private KFFUserMapper userMapper;	
+	private KFFUserMapper userMapper;
 	
 	@Autowired
 	private UserqfindexMapper userqfindexMapper;
-	   
-	@Transactional(readOnly=true)
-    public KFFUser findById(java.lang.Integer id) throws RestServiceException {
-    	if(id == null){
+
+	@Transactional(readOnly = true)
+	public KFFUser findById(java.lang.Integer id) throws RestServiceException {
+		if (id == null) {
 			throw new RestServiceException("id不能为空");
 		}
-        return userMapper.findById(id);
-    }
-	
-    public void delete(java.lang.Integer id) throws RestServiceException {
-    	if(id == null){
+		return userMapper.findById(id);
+	}
+
+	public void delete(java.lang.Integer id) throws RestServiceException {
+		if (id == null) {
 			throw new RestServiceException("id不能为空");
 		}
         userMapper.deleteById(id);
@@ -186,7 +186,8 @@ public class UserService   {
 	 * @param phoneNumber
 	 * @return
 	 */
-	public KFFUser findUserByPhoneNumber(String phoneNumber)  throws RestServiceException{
+	@Transactional(readOnly = true)
+	public KFFUser findUserByPhoneNumber(String phoneNumber) throws RestServiceException {
 
 		  if (StringUtils.isBlank(phoneNumber)) {
 	          throw new RestServiceException(RestErrorCode.PHONE_NULL);
@@ -226,7 +227,7 @@ public class UserService   {
 		
 		userMapper.decreaseFansNum(userId);
 	}
-
+	@Transactional(readOnly = true)
 	public String findPhoneByUserId(Integer userId) {
 		// TODO Auto-generated method stub
 		return userMapper.findPhoneByUserId(userId);
@@ -266,6 +267,8 @@ public class UserService   {
 			userMapper.save(user);
 			return findUserByPhoneNumber(phoneNumber);
 		}
+		
+		
 
 		return null;
 

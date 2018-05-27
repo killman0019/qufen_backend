@@ -63,6 +63,9 @@ public class CommentsService {
 		}
 		return result;
 	}
+	
+	
+
 
 
 	public List<Comments> findAllCommentsByWhere(Map<String, Object> map) {
@@ -79,6 +82,7 @@ public class CommentsService {
 				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
 				query.addQueryData("startRecord", Integer.toString(startRecord));
 				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
+				
 				List<Comments> list = commentsMapper.findPageCountOrderBy(query.getQueryData());
 				result = new PageResult<Comments>(list, count, query);
 			}
@@ -123,6 +127,7 @@ public class CommentsService {
 
 		return commentsMapper.findFlootOrderById(postId);
 	}
+	
 
 	
 }
