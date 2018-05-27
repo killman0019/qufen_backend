@@ -150,6 +150,7 @@
 		</if>
 		<if test="batchId != null and batchId.trim() != ''">
 			and batch_id = #{batchId}
+		</if>
 		<if test="detailDesc != null and detailDesc.trim() != ''">
 		and detail_desc = #{detailDesc}
 		</if>
