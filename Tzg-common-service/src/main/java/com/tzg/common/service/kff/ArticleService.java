@@ -68,5 +68,10 @@ public class ArticleService {
 	}
 	
 
+	public Article selectArticleByPostId(Integer postId) {
+
+		return articleMapper.findByPostId(postId);
+	}
+
 	
 }

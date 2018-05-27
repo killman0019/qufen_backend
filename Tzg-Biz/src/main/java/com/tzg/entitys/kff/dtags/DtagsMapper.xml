@@ -91,6 +91,9 @@
 	<select id="findAllTags" resultMap="BaseResultMap" >
 		select <include refid="columns"/>  from d_tags where status=1	
 	</select>
+	<select id="findAllTagsName"  >
+		select tag_name  from d_tags where status=1	
+	</select>
 	
 	
 	<sql id="queryWhere">

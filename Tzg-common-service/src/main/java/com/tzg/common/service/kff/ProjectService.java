@@ -80,5 +80,18 @@ public class ProjectService   {
 		
 		projectMapper.decreaseFollowerNum(projectId);
 	}
+	@Transactional(readOnly = true)
+	public List<KFFProject> findProjectName() {
+		// TODO Auto-generated method stub
+		return projectMapper.findProjectName();
+	}
+
+	@Transactional(readOnly = true)
+	public KFFProject findProjectIdByCodeAndChineseName(KFFProject kffProject) {
+		// TODO Auto-generated method stub
+		return projectMapper.findProjectIdByCodeAndChineseName(kffProject);
+	}
+
+	
 	
 }

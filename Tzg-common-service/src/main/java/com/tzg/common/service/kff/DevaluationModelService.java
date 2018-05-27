@@ -65,5 +65,16 @@ public class DevaluationModelService  {
 	}
 	
 
+	@Transactional(readOnly = true)
+	public List<DevaluationModel> selectEvaluationModelByModelType(Integer modelType) {
+		// TODO Auto-generated method stub
+		return devaluationModelMapper.selectEvaluationModelByModelType(modelType);
+	}
+
+	@Transactional(readOnly = true)
+	public List<DevaluationModel> findAll() {
+		// TODO Auto-generated method stub
+		return devaluationModelMapper.findAll();
+	}
 	
 }

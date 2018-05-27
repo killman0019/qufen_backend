@@ -67,7 +67,6 @@ public class TokenController extends BaseController {
 			Integer userId = getUserIdByToken(token);
 			commendationRequest.setSendUserId(userId);
 			map = kffRmiService.saveCommendation(commendationRequest);
-			//map.put("commendationNum", commendationNum);
             bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("TokenController commendation:{}", e);

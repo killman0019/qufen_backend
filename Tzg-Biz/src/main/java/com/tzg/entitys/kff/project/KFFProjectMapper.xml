@@ -359,6 +359,23 @@
 		and collect_num = #{collectNum}
 		</if>
 	</sql>
+	<select id="findProjectName" resultMap="BaseResultMap">
+		SELECT
+		DISTINCT
+		project_code , project_chinese_name
+		FROM
+		tbproject where status = 1
+	</select>
+	<select id="findProjectIdByCodeAndChineseName" resultMap="BaseResultMap">
+		SELECT
+		<include refid="columns" />
+		FROM
+		tbproject
+		WHERE
+		project_code = #{projectCode}
+		AND project_chinese_name = #{projectChineseName}
+	</select>
+
 </mapper>
 
 

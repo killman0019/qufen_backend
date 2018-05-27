@@ -227,5 +227,49 @@ public class UserService   {
 		userMapper.decreaseFansNum(userId);
 	}
 
+	public String findPhoneByUserId(Integer userId) {
+		// TODO Auto-generated method stub
+		return userMapper.findPhoneByUserId(userId);
+	}
+
+	public KFFUser saveUserByphoneNotPass(String phoneNumber, Integer invaUserId) {
+
+		Date createTime = new Date();
+		KFFUser user = new KFFUser();
+		user.setMobile(phoneNumber);
+		user.setPassword(null);
+		user.setUserName(KFFRestConstants.USER_NAME_PREFIX + RandomUtil.produceStringAndNumber(8));
+		user.setIcon(KFFRestConstants.DEFAULT_USER_ICON);
+		user.setCreateTime(createTime);
+		user.setUpdateTime(createTime);
+		user.setUserType(1);
+		user.setStatus(1);
+		// 不为null 判断邀请人是第几等级
+		if (null != invaUserId) {
+			// 根据invauserID 查询用户user表 进行查询
+			KFFUser invaUser = userMapper.findById(invaUserId);
+			//
+			if (null == invaUser) {
+				throw new RestServiceException("邀请人参数出错,请再次核实邀请人是否正确!");
+			}
+
+			user.setReferLevel(1);
+			user.setReferUserId(invaUserId);
+			userMapper.save(user);
+			return findUserByPhoneNumber(phoneNumber);
+		}
+		// 没有邀请人ID 说明此人没有推荐人
+		if (null == invaUserId) {
+			// 说明此人没有推荐人
+			user.setReferLevel(0);
+			user.setReferUserId(null);
+			userMapper.save(user);
+			return findUserByPhoneNumber(phoneNumber);
+		}
+
+		return null;
+
+	}
+
 	
 }

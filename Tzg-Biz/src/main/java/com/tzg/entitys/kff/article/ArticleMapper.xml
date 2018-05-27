@@ -97,6 +97,17 @@
 		and article_contents = #{articleContents}
 		</if>
 	</sql>
+
+	<select id="selectArticleByPostId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT
+		<include refid="columns" /> 
+	<![CDATA[
+		FROM tbarticle 
+		WHERE 
+        post_id = #{postId}      
+	]]>
+	</select>
+
 </mapper>
 
 

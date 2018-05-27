@@ -70,5 +70,10 @@ public class DtagsService  {
 	}
 	
 
+	public List<Dtags> findAllTagsName() {
+		// TODO Auto-generated method stub
+		return dtagsMapper.findAllTagsName();
+	}
+
 	
 }

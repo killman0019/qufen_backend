@@ -65,6 +65,25 @@ public class EvaluationService   {
 		return result;
 	}
 
+	@Transactional(readOnly = true)
+	public Evaluation selectEvaluationByPostId(Integer postId) {
+		if (null == postId) {
+			throw new RestServiceException("参数不能为空");
+		}
+
+		return evaluationMapper.selectEvaluationByPostId(postId);
+	}
+
+	@Transactional(readOnly = true)
+	public List<Evaluation> findEvaliationByProjectId(Integer projectId) {
+		// TODO Auto-generated method stub
+		return evaluationMapper.findEvaliationByProjectId(projectId);
+	}
+
+	public Evaluation selectEvaluationOrNotByUserId(Evaluation evaluation) {
+		// TODO Auto-generated method stub
+		return evaluationMapper.selectEvaluationOrNotByUserId(evaluation);
+	}
 	public Evaluation findByPostId(Integer postId) throws RestServiceException{
 		if(postId == null){
 			throw new RestServiceException("postId不能为空");

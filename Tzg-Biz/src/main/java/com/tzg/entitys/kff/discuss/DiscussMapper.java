@@ -8,4 +8,7 @@ public interface DiscussMapper extends BaseMapper<Discuss, java.lang.Integer> {
 
 	Discuss findByPostId(Integer postId);	
 
+	Discuss selectByPostId(Integer postId);
+
+	Discuss findDisscussBypostId(Integer postId);
 }

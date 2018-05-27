@@ -18,12 +18,16 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.google.gson.Gson;
 import com.tzg.common.constants.KFFConstants;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.redis.RedisService;
 import com.tzg.common.service.kff.ArticleService;
+import com.tzg.common.service.kff.AuthenticationService;
 import com.tzg.common.service.kff.CollectService;
 import com.tzg.common.service.kff.CommendationService;
 import com.tzg.common.service.kff.CommentsService;
@@ -44,33 +48,43 @@ import com.tzg.common.service.kff.ProjectService;
 import com.tzg.common.service.kff.ProjectevastatService;
 import com.tzg.common.service.kff.SuggestService;
 import com.tzg.common.service.kff.TokenrecordsService;
+import com.tzg.common.service.kff.UserCardService;
+import com.tzg.common.service.kff.UserInvationService;
 import com.tzg.common.service.kff.UserService;
 import com.tzg.common.service.systemParam.SystemParamService;
 import com.tzg.common.utils.DateUtil;
 import com.tzg.common.utils.Numbers;
 import com.tzg.common.utils.RandomUtil;
+import com.tzg.common.utils.RegexUtil;
 import com.tzg.common.zookeeper.ZKClient;
 import com.tzg.entitys.kff.article.Article;
 import com.tzg.entitys.kff.article.ArticleDetailResponse;
+import com.tzg.entitys.kff.article.ArticleDetailShareResponse;
 import com.tzg.entitys.kff.article.ArticleRequest;
+import com.tzg.entitys.kff.authentication.Authentication;
 import com.tzg.entitys.kff.collect.Collect;
 import com.tzg.entitys.kff.collect.CollectPostResponse;
 import com.tzg.entitys.kff.commendation.Commendation;
 import com.tzg.entitys.kff.commendation.CommendationRequest;
+import com.tzg.entitys.kff.comments.CommentShareFloot;
 import com.tzg.entitys.kff.comments.Comments;
 import com.tzg.entitys.kff.comments.CommentsRequest;
+import com.tzg.entitys.kff.comments.CommentsShareRequest;
 import com.tzg.entitys.kff.dareas.Dareas;
 import com.tzg.entitys.kff.devaluationModel.DevaluationModel;
 import com.tzg.entitys.kff.devaluationModel.DevaluationModelRequest;
 import com.tzg.entitys.kff.devaluationModelDetail.DevaluationModelDetail;
 import com.tzg.entitys.kff.discuss.Discuss;
+import com.tzg.entitys.kff.discuss.DiscussMapper;
 import com.tzg.entitys.kff.discuss.DiscussDetailResponse;
 import com.tzg.entitys.kff.discuss.DiscussRequest;
 import com.tzg.entitys.kff.dprojectType.DprojectType;
 import com.tzg.entitys.kff.dtags.Dtags;
 import com.tzg.entitys.kff.evaluation.Evaluation;
 import com.tzg.entitys.kff.evaluation.EvaluationRequest;
+import com.tzg.entitys.kff.evaluation.ProjectEvaluationDetailResponse;
 import com.tzg.entitys.kff.evaluation.EvaluationDetailResponse;
+import com.tzg.entitys.kff.evaluation.ProjectEvaluationDetailShareResponse;
 import com.tzg.entitys.kff.follow.Follow;
 import com.tzg.entitys.kff.follow.FollowResponse;
 import com.tzg.entitys.kff.message.KFFMessage;
@@ -89,10 +103,16 @@ import com.tzg.entitys.kff.suggest.SuggestRequest;
 import com.tzg.entitys.kff.tokenrecords.Tokenrecords;
 import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.entitys.kff.user.KFFUserHomeResponse;
+import com.tzg.entitys.kff.userInvation.UserInvation;
+import com.tzg.entitys.kff.usercard.UserCard;
 import com.tzg.entitys.loginaccount.RegisterRequest;
+import com.tzg.entitys.photo.PhotoIview;
+import com.tzg.entitys.photo.PhotoParams;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rmi.service.KFFRmiService;
+import com.tzg.entitys.photo.PhotoParams;
+
 public class KFFRmiServiceImpl implements KFFRmiService {
 	
 	private static final Log logger = LogFactory.getLog(KFFRmiServiceImpl.class);
@@ -141,6 +161,14 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	private CommendationService kffCommendationService;
 	@Autowired
 	private ProjectevastatService kffProjectevastatService;
+	@Autowired
+	private UserCardService userCardService;
+	@Autowired
+	private AuthenticationService authenticationService;
+
+	@Autowired
+	private UserInvationService userInvationService;
+
 
     @Autowired
     private ZKClient zkClient;
@@ -158,8 +186,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 	@Override
 	public boolean verifyLoginaccount(String key, String value) {
-		return kffUserService.verifyLoginaccount(key,value);
-		
+		System.out.println("============================");
+		return kffUserService.verifyLoginaccount(key, value);
+
 	}
 
 	@Override
@@ -1092,6 +1121,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if(evaluationRequest == null){
 			throw new RestServiceException("参数缺失");
 		}		
+		if (evaluationRequest.getTotalScore() == null) {
+			throw new RestServiceException("综合评分丢失!");
+		}
 		if(evaluationRequest.getCreateUserId() == null){
 			throw new RestServiceException("创建用户ID不能为空");
 		}	
@@ -1101,6 +1133,19 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if(evaluationRequest.getModelType() == null){
 			throw new RestServiceException("评测类型不能为空");
 		}
+		if (1 == evaluationRequest.getModelType()) {
+			evaluationRequest.setPostTitle("简单评测");
+		}
+		if (2 == evaluationRequest.getModelType()) {
+			evaluationRequest.setPostTitle("ALL-专业评测");
+		}
+		if (3 == evaluationRequest.getModelType()) {
+			evaluationRequest.setPostTitle("PART-专业评测");
+		}
+		if (4 == evaluationRequest.getModelType()) {
+			evaluationRequest.setPostTitle("ALL-专业评测");
+		}
+		
 		if(evaluationRequest.getModelType() != 1 &&
 		   evaluationRequest.getModelType() != 2 &&
 		   evaluationRequest.getModelType() != 3 &&
@@ -1141,10 +1186,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		post.setCreateUserSignature(createUser.getUserSignature());
 		post.setDonateNum(0);
 		post.setPageviewNum(0);
-		if(evaluationRequest.getEvauationContent().length() > 300){
-		 post.setPostShortDesc(evaluationRequest.getEvauationContent().substring(300));
-		}else{
-		  post.setPostShortDesc(evaluationRequest.getEvauationContent());	
+		if (evaluationRequest.getEvauationContent().length() < 200) {
+			post.setPostShortDesc(evaluationRequest.getEvauationContent());
+		} else {
+			post.setPostShortDesc(evaluationRequest.getEvauationContent().substring(0, 200));
 		}
 		post.setPostSmallImages(evaluationRequest.getPostSmallImages());
 		post.setPostTitle(evaluationRequest.getPostTitle()); 
@@ -1172,6 +1217,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		evaluation.setEvaluationTags(evaluationRequest.getEvaluationTags());
 		evaluation.setProfessionalEvaDetail(evaluationRequest.getProfessionalEvaDetail());
 		evaluation.setCreateTime(now);
+		evaluation.setUpdateTime(now);
 		evaluation.setCreateUserId(createUser.getUserId());
 		evaluation.setModelType(evaluationRequest.getModelType());
 		evaluation.setStatus(KFFConstants.STATUS_ACTIVE);
@@ -2674,7 +2720,810 @@ public class KFFRmiServiceImpl implements KFFRmiService {
         	kffFollowService.updateUserInfo(followedMap);
         	kffPostService.updateUserInfo(postMap);
         }
+@Override
+	public List<Comments> findAllDiscussCommentsList(Integer userId, Integer postId) throws RestServiceException {
+		KFFUser user = null;
+		if (userId != null && userId != 0) {
+			user = kffUserService.findById(userId);
+		}
+		List<Comments> result = new ArrayList<>();
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("postId", postId + "");
+		map.put("status", KFFConstants.STATUS_ACTIVE + "");
+		List<Comments> comments = kffCommentsService.findAllCommentsByWhere(map);
+		if (CollectionUtils.isNotEmpty(comments)) {
+			PaginationQuery childQuery = new PaginationQuery();
+			childQuery.setPageIndex(1);
+			childQuery.setRowsPerPage(2);
+			childQuery.addQueryData("postType", KFFConstants.POST_TYPE_DISCUSS + "");
+			for (Comments comment : comments) {
+				Comments finalComment = new Comments();
+				BeanUtils.copyProperties(comment, finalComment);
+				childQuery.addQueryData("parentCommentsId", comment.getCommentsId() + "");
+				PageResult<Comments> childComments = kffCommentsService.findPage(childQuery);
+				if (childComments != null && CollectionUtils.isNotEmpty(childComments.getRows())) {
+					finalComment.setChildCommentsList(childComments.getRows());
+					finalComment.setChildCommentsNum(childComments.getRowCount());
+				}
+				// 登录用户判断点赞状态
+				if (user != null) {
+					Praise praise = kffPraiseService.findByPostId(userId, comment.getCommentsId());
+					if (praise != null) {
+						finalComment.setPraiseStatus(praise.getStatus());
+					}
+				} else {
+					finalComment.setPraiseStatus(KFFConstants.PRAISE_STATUS_NOSHOW);
+				}
+				result.add(finalComment);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * 根据用户ID查询用户的身份审核信息
+	 * 
+	 * 1:审核成功 2: 审核中 3: 审核不通过 4 未进行身份审核',
+	 */
+	@Override
+	public Integer selectStatusByUserID(Integer userId) throws RestServiceException {
+		if (null == userId) {
+			throw new RestServiceException(RestErrorCode.USER_NOT_EXIST);
+		}
+		List<UserCard> userCards = userCardService.selectStatusByUserID(userId);
+		if (null == userCards) {
+			return 4;
+		}
+		return userCards.get(0).getStatus();
+	}
+
+	@Override
+	public void saveUserIdCard(UserCard userCard) throws RestServiceException {
+		userCardService.saveUserIdCard(userCard);
+
+	}
+
+	@Override
+	public List<Authentication> selectAuthenticatiobByUserId(Integer userId) throws RestServiceException {
+		if (null == userId) {
+			throw new RestServiceException(RestErrorCode.USER_NOT_EXIST);
+		}
+		return authenticationService.selectAuthenticationByUserId(userId);
+	}
+
+	/**
+	 * 根据用户ID把authentication插入审核表中
+	 */
+	@Override
+	public void saveAuthenticationByUseId(Integer userId) {
+		if (null == userId) {
+			throw new RestServiceException(RestErrorCode.USER_NOT_LOGIN);
+		}
+		Authentication authentication = new Authentication();
+		authentication.setUserid(userId);
+		authentication.setStatus(4);
+		authentication.setValid(1);
+		authentication.setCreatedata(new Date());
+		authenticationService.saveAuthenByUserId(authentication);
+
+	}
+
+	/**
+	 * 从后台获取所有项目名称
+	 */
+	@Override
+	public List<KFFProject> findProjectName() {
+
+		return kffProjectService.findProjectName();
+
+	}
+
+	@Override
+	public void selectUserIdStstus(String userRealName, String userCardNum, String photoIviews, Integer userId) {
+		String idcard = RegexUtil.IDCARD; // 判断手机是否符合标注
+		if (!userCardNum.matches(idcard)) {
+			throw new RestServiceException(RestErrorCode.USER_IDCARD_IS_FALSE);
+		}
+		// 将前台传来的数据进行转化保存在数据库
+		if (null == userRealName) {
+			throw new RestServiceException(RestErrorCode.VCNAME_NULL);
+		}
+		// 根据用户的ID查询手机手机号
+		String phone = kffUserService.findPhoneByUserId(userId);
+		if (null == phone) {
+			throw new RestServiceException(RestErrorCode.PHONE_NULL);
+		}
+		// 将URL转化成字符串对象
+		String uploadIeviw = this.uploadIeviw(photoIviews);
+		UserCard userCard = new UserCard();
+		userCard.setUserrealname(userRealName);
+		userCard.setUsercardNum(userCardNum);
+		userCard.setPositiveofcard(uploadIeviw);
+		userCard.setStatus(2);// status 1 审核成功 2 审核中 3 审核不通过 4 未审核
+		userCard.setUpdatatime(new Date());
+		userCard.setCreatetime(new Date());
+		userCard.setValid(1);
+		userCard.setPhone(phone);
+		this.updataUserIdCard(userCard);
+
+	}
+
+	public void updataUserIdCard(UserCard userCard) {
+		userCardService.updataUserIdCard(userCard);
+
+	}
+
+	public String uploadIeviw(String photoIviews) {
+		if (null == photoIviews) {
+			throw new RestServiceException(RestErrorCode.PICTURE_UPLOAD_FAIL);
+		}
+
+		// 把前台参数传输给后台
+		// 创建图片参数对象,用于存放photo参数 将URL转化字符串对象
+		// upload/Idcard/2.jpg
+		PhotoParams photoParams = new PhotoParams();
+		photoParams.setFileUrl(photoIviews);
+		// 取后缀名
+		String[] str = photoIviews.split("\\.");
+		System.out.println(str[0]);
+		System.out.println(str[1]);
+		photoParams.setExtension(str[1]);
+
+		System.out.println(str[0].lastIndexOf("/"));
+		str[0].substring(str[0].lastIndexOf("/") + 1);
+		System.out.println(str[0].substring(str[0].lastIndexOf("/") + 1));
+		// imgUrl.substring(imgUrl.lastIndexOf("/")+1);
+		/** 88888888888888888888888888 ***/
+		photoParams.setFileName(str[0].substring(str[0].lastIndexOf("/") + 1));
+		// 截取位置
+		// String
+		// 将对象转化成json字符串
+		// JSON.toJSONString(photoParams);
+		return JSON.toJSONString(photoParams);
+	}
+
+	public String uploadIeviwList(List<String> photoIviewses) {
+		if (null == photoIviewses) {
+			throw new RestServiceException(RestErrorCode.PICTURE_UPLOAD_FAIL);
+		}
+
+		// 把前台参数传输给后台
+		// 创建图片参数对象,用于存放photo参数 将URL转化字符串对象
+		// upload/Idcard/2.jpg
+		List<PhotoParams> PhotoParamses = new ArrayList<PhotoParams>();
+		for (String photoIviews : photoIviewses) {
+			PhotoParams photoParams = new PhotoParams();
+			photoParams.setFileUrl(photoIviews);
+			// 取后缀名
+			String[] str = photoIviews.split("\\.");
+			System.out.println(str[0]);
+			System.out.println(str[1]);
+			photoParams.setExtension(str[1]);
+
+			System.out.println(str[0].lastIndexOf("/"));
+			str[0].substring(str[0].lastIndexOf("/") + 1);
+			System.out.println(str[0].substring(str[0].lastIndexOf("/") + 1));
+			// imgUrl.substring(imgUrl.lastIndexOf("/")+1);
+			/** 88888888888888888888888888 ***/
+			photoParams.setFileName(str[0].substring(str[0].lastIndexOf("/") + 1));
+			// 截取位置
+			// String
+			// 将对象转化成json字符串
+			// JSON.toJSONString(photoParams);
+			photoIviewses.add(photoIviews);
+		}
+		return JSON.toJSONString(photoIviewses);
+	}
+
+	@Override
+	public void setUserCardAuthentication(Integer userId, String phone) {
+		if (null == selectAuthenticatiobByUserId(userId)) {
+			throw new RestServiceException(RestErrorCode.SYS_ERROR);
+		}
+		UserCard userCard = new UserCard();
+		userCard.setUserid(userId);
+		userCard.setPhone(phone);
+		userCard.setCreatetime(new Date());
+		userCard.setUpdatatime(new Date());
+		userCard.setValid(1);
+		userCard.setStatus(4);
+
+		this.saveUserCardOnRegister(userCard);
+	}
+
+	public void saveUserCardOnRegister(UserCard userCard) {
+		this.saveUserIdCard(userCard);
+
+	}
+
+	@Override
+	public Integer selectUserCardNum(String userCardNum) {
+
+		return userCardService.selectUserCardNum(userCardNum);
+	}
+
+	@Override
+	public Integer selectUserCardStatusByUserId(Integer userId) {
+
+		List<UserCard> userCards = userCardService.selectStatusByUserID(userId);
+		if (null == userCards) {
+			return 4;
+		}
+		UserCard userCard = userCards.get(0);
+		return userCard.getStatus();
+	}
+
+	@Override
+	public Integer selectAuthenticationStatusByUserId(Integer userId) {
+		List<Authentication> authentications = authenticationService.selectAuthenticationByUserId(userId);
+		if (null == authentications) {
+			return 4;
+		}
+		return authentications.get(0).getStatus();
+	}
+
+	@Override
+	public void updataAuthentication(Authentication authentication) {
+		if (null == authentication) {
+			throw new RestServiceException(RestErrorCode.MISSING_ARGS);
+		}
+		if (null == authentication.getType()) {
+			throw new RestServiceException(RestErrorCode.SYS_ERROR);
+		}
+		// 分类型进行参数验证begin
+		// 项目方认证
+		if (1 == authentication.getType()) {
+			if (null == authentication.getQufennickname()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getAuthinformation()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getCompany()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getRegistrationnum()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+
+			if (null == authentication.getLicencepic()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getMissivepic()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getOperatorname()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getNumber()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getMail()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			authentication.setLicencepic(uploadIeviw(authentication.getLicencepic()));
+			authentication.setMissivepic(uploadIeviw(authentication.getMissivepic()));
+		}
+		// 评测媒体认证
+		if (2 == authentication.getType()) {
+			if (null == authentication.getQufennickname()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getMediaintroduce()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getMediachannel()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getLink()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getAssistpic()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getOperatorname()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getWechat()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getMail()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			authentication.setAssistpic(uploadIeviw(authentication.getAssistpic()));
+		}
+		// 机构号认证
+		if (3 == authentication.getType()) {
+			if (null == authentication.getQufennickname()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getAuthinformation()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getCompany()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getRegistrationnum()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getRegistrationnum()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getLicencepic()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getMissivepic()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getOperatorname()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getNumber()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			if (null == authentication.getMail()) {
+				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			authentication.setLicencepic(uploadIeviw(authentication.getLicencepic()));
+			authentication.setMissivepic(uploadIeviw(authentication.getMissivepic()));
+		}
+		// 分类型进行参数判断 end
+		authentication.setCreatedata(new Date());
+		authentication.setStatus(2);
+		authentication.setValid(1);
+
+		authenticationService.updataAuthenByUserId(authentication);
+
+	}
+
+	@Override
+	public List<Dtags> findAllTagsName() {
+
+		return kffDtagsService.findAllTagsName();
+
+	}
+
+	@Override
+	public KFFProject findProjectIdByCodeAndChineseName(KFFProject kffProject) {
+		if (null == kffProject) {
+			throw new RestServiceException(RestErrorCode.SYS_ERROR);
+		}
+		return kffProjectService.findProjectIdByCodeAndChineseName(kffProject);
+	}
+
+	@Override
+	public KFFUser saveUserByphoneNotPass(String phoneNumber, Integer invaUserId) {
+		return kffUserService.saveUserByphoneNotPass(phoneNumber, invaUserId);
+
+	}
+
+	/**
+	 * 根据分享的postID 展示post相关信息
+	 */
+	@Override
+	public ArticleDetailResponse findArticleDetailForShare(Integer postId) {
+		ArticleDetailShareResponse articleDetailShareResponse = new ArticleDetailShareResponse();
+
+		if (postId == null || postId == 0) {
+			throw new RestServiceException(RestErrorCode.MISSING_ARG_POSTID);
+		}
+
+		Post post = kffPostService.findById(postId);
+
+		if (post == null) {
+			throw new RestServiceException(RestErrorCode.POST_NOT_EXIST);
+		}
+		BeanUtils.copyProperties(post, articleDetailShareResponse);
+
+		// 赞赏用户列表最多8个
+		List<Commendation> donateUsers = new ArrayList<>();
+		PaginationQuery query = new PaginationQuery();
+		query.addQueryData("postId", postId + "");
+		query.addQueryData("status", "1");
+		query.setPageIndex(1);
+		query.setRowsPerPage(6);
+		PageResult<Commendation> pages = kffCommendationService.findPage(query);
+		if (pages != null && CollectionUtils.isNotEmpty(pages.getRows())) {
+			donateUsers = pages.getRows();
+		}
+		articleDetailShareResponse.setCommendationList(donateUsers);
+
+		// 根据postID 查询文章详情
+		Article acticle = kffArticleService.selectArticleByPostId(postId);
+		articleDetailShareResponse.setArticleId(acticle.getArticleId());
+		articleDetailShareResponse.setArticle(acticle);
+		// 根据postid查询project
+		KFFProject kFFProject = kffProjectService.findById(post.getProjectId());
+		articleDetailShareResponse.setProjectIcon(kFFProject.getProjectIcon());
+		return articleDetailShareResponse;
+	}
+
+	@Override
+	public ProjectEvaluationDetailShareResponse findEvaluationDetailForShare(Integer postId) {
+		ProjectEvaluationDetailShareResponse projectEvaluationDetailShareResponse = new ProjectEvaluationDetailShareResponse();
+		if (postId == null || postId == 0) {
+			throw new RestServiceException(RestErrorCode.MISSING_ARG_POSTID);
+		}
+		Post post = kffPostService.findById(postId);
+
+		if (post == null) {
+			throw new RestServiceException(RestErrorCode.POST_NOT_EXIST);
+		}
+		post.setUuid(null);
+		post.setCreateUserId(null);
+
+		post.setPostType(null);
+		post.setUpdateTime(null);
+		post.setPostId(null);
+		post.setProjectId(null);
+		post.setStatus(null);
+		projectEvaluationDetailShareResponse.setPost(post);
+		// 根据post查询evaluation
+		Evaluation evaluation = kffEvaluationService.selectEvaluationByPostId(postId);
+
+		projectEvaluationDetailShareResponse.setEvaluation(evaluation);
+		// 根据evaluation的evaluationTags 标签查询标签库 获得对应的tag标签
+		List<Commendation> donateUsers = new ArrayList<>();
+		PaginationQuery query = new PaginationQuery();
+		query.addQueryData("postId", postId + "");
+		query.addQueryData("status", "1");
+		query.setPageIndex(1);
+		query.setRowsPerPage(6);
+		PageResult<Commendation> pages = kffCommendationService.findPage(query);
+		if (pages != null && CollectionUtils.isNotEmpty(pages.getRows())) {
+			donateUsers = pages.getRows();
+		}
+
+		for (Commendation donateUser : donateUsers) {
+			donateUser.setAmount(null);
+			donateUser.setCommendationId(null);
+			donateUser.setCreateTime(null);
+			donateUser.setPostType(null);
+			donateUser.setProjectId(null);
+			donateUser.setReceiveUserId(null);
+			donateUser.setSendUserId(null);
+			donateUser.setUpdateTime(null);
+			donateUser.setStatus(null);
+			donateUser.setPostId(null);
+		}
+		// 取权重
+		List<DevaluationModel> evaliationModel = findEvaliationModel();
+		for (DevaluationModel devaluationModel1 : evaliationModel) {
+			devaluationModel1.setModelDesc(null);
+			devaluationModel1.setCreateUserId(null);
+			devaluationModel1.setCreateTime(null);
+			devaluationModel1.setModelType(null);
+		}
+
+		projectEvaluationDetailShareResponse.setCommendationList(donateUsers);
+
+		String evaluationTags = evaluation.getEvaluationTags();
+
+		projectEvaluationDetailShareResponse.setDtags(evaluationTags);
+
+		return projectEvaluationDetailShareResponse;
+	}
+
+	@Override
+	public ProjectEvaluationDetailShareResponse findEvaluationDetailPartForShare(Integer postId) {
+		ProjectEvaluationDetailShareResponse projectEvaluationDetailShareResponse = new ProjectEvaluationDetailShareResponse();
+		if (postId == null || postId == 0) {
+			throw new RestServiceException(RestErrorCode.MISSING_ARG_POSTID);
+		}
+		Post post = kffPostService.findById(postId);
+
+		if (post == null) {
+			throw new RestServiceException(RestErrorCode.POST_NOT_EXIST);
+		}
+		projectEvaluationDetailShareResponse.setPost(post);
+		// 根据post查询evaluation
+		Evaluation evaluation = kffEvaluationService.selectEvaluationByPostId(postId);
+
+		projectEvaluationDetailShareResponse.setEvaluation(evaluation);
+
+		return projectEvaluationDetailShareResponse;
+	}
+
+	@Override
+	public void saveUserInvation(Integer userId, String userIdTo2code) {
+		if (null == userId) {
+			throw new RestServiceException("系统错误,请重新注册");
+		}
+		if (null == userIdTo2code) {
+			throw new RestServiceException("生成二维码错误,请重新注册");
+		}
+		// 将相关参数插入表中
+		userInvationService.saveUserInvation(userId, userIdTo2code);
+
+	}
+
+	@Override
+	public CommentsShareRequest findCommentMessage(Integer postId) {
+		CommentsShareRequest commentsShareRequest = new CommentsShareRequest();
+		if (null == postId) {
+			throw new RestServiceException("参数异常");
+		}
+		Post post = kffPostService.findById(postId);
+		if (null == post) {
+			throw new RestServiceException("帖子为空");
+		}
+
+		KFFProject project = kffProjectService.findById(post.getProjectId());
+		if (null == project) {
+			throw new RestServiceException("项目为空!");
+		}
+		commentsShareRequest.setProjectIcon(project.getProjectIcon());
+
+		commentsShareRequest.setProjectCode(project.getProjectCode());
+
+		commentsShareRequest.setProjectChineseName(project.getProjectChineseName());
+
+		// Map<String, Object> findMap = new HashMap<String, Object>();
+
+		// 进行排序分页查询
+		List<Comments> commentUsers = new ArrayList<>();
+		PaginationQuery query = new PaginationQuery();
+		query.addQueryData("postId", postId + "");
+		query.addQueryData("status", "1");
+		query.setPageIndex(1);
+		query.setRowsPerPage(5);// 展示三条最热门的评论
+		PageResult<Comments> pages = kffCommentsService.findPageOrderBy(query);
+		if (pages != null && CollectionUtils.isNotEmpty(pages.getRows())) {
+			commentUsers = pages.getRows();
+		}
+		if (null == commentUsers) {
+			throw new RestServiceException("当前没有评论!");
+		}
+		for (Comments commentUser : commentUsers) {
+
+		}
+		commentsShareRequest.setCommentses(commentUsers);
+		// 根据postid 查询discuss
+		Discuss discuss = kffDiscussService.findByPostId(postId);
+
+		commentsShareRequest.setDiscuss(discuss);
+
+		PaginationQuery hotQuery = new PaginationQuery();
+		hotQuery.addQueryData("status", "1");
+		hotQuery.addQueryData("postId", postId + "");
+		hotQuery.addQueryData("postType", KFFConstants.POST_TYPE_ARTICLE + "");
+		// 点赞数最多的2个评论
+		hotQuery.addQueryData("sortField", "praiseNum");
+		hotQuery.setPageIndex(1);
+		hotQuery.setRowsPerPage(2);
+		List<Comments> hotComments = this.findPageHotCommentsList(post.getCreateUserId(), postId, hotQuery);
+		commentsShareRequest.setHotComments(hotComments);
+		PaginationQuery newQuery = new PaginationQuery();
+		newQuery.addQueryData("status", "1");
+		newQuery.addQueryData("postId", postId + "");
+		newQuery.addQueryData("postType", KFFConstants.POST_TYPE_ARTICLE + "");
+		// 最新的4个评论
+		newQuery.setPageIndex(1);
+		newQuery.setRowsPerPage(4);
+		List<Comments> newestComments = this.findPageNewestComments(post.getCreateUserId(), postId, newQuery);
+		commentsShareRequest.setNewestComments(newestComments);
+		return commentsShareRequest;
+	}
+
+	@Override
+	public List<Authentication> selectAuthenticationByUserId(Integer userId) {
+
+		return authenticationService.selectAuthenticationByUserId(userId);
+	}
+
+	@Override
+	public List<Evaluation> findEvaliation(Integer projectId) {
+
+		return kffEvaluationService.findEvaliationByProjectId(projectId);
+	}
+
+	@Override
+	public KFFProject selectProjectByprojectName(String projectName) {
+		if (null == projectName) {
+			throw new RestServiceException("请选择项目名称!");
+		}
+		String[] str = projectName.split("\\/");
+		System.out.println(str[0]);
+		System.out.println(str[1]);
+		KFFProject kffProject = new KFFProject();
+		kffProject.setProjectChineseName(str[0]);
+		kffProject.setProjectCode(str[1]);
+		return findProjectIdByCodeAndChineseName(kffProject);
+
+	}
+
+	@Override
+	public List<DevaluationModel> findEvaliationModel() {
+		List<DevaluationModel> devaluationModels = kffDevaluationModelService.findAll();
+		if (devaluationModels == null) {
+			throw new RestServiceException("评测系统出错,请联系客服!");
+		}
+		return devaluationModels;
+	}
+
+	@Override
+	public Evaluation selectEvaluationByUserId(Evaluation evaluation) {
+		if (null == evaluation.getCreateUserId()) {
+			throw new RestServiceException(RestErrorCode.USER_NOT_LOGIN);
+		}
+		return kffEvaluationService.selectEvaluationOrNotByUserId(evaluation);
+	}
+
+	@Override
+	public DiscussShare findDiscussDetailWAP(Integer postId) {
+		DiscussShare discussShare = new DiscussShare();
+
+		if (postId == null || postId == 0) {
+			throw new RestServiceException(RestErrorCode.MISSING_ARG_POSTID);
+		}
+		Post post = kffPostService.findById(postId);
+		if (post == null) {
+			throw new RestServiceException(RestErrorCode.POST_NOT_EXIST);
+		}
+
+		Discuss discuss = kffDiscussService.findByPostId(postId);
+		discussShare.setTagInfo(discuss.getTagInfos());
+		// 防止post
+		post.setPostId(null);
+		post.setUpdateTime(null);
+		post.setUuid(null);
+		post.setUpdateTime(null);
+		discussShare.setPost(post);
+
+		// 赞赏用户列表最多8个
+		List<Commendation> donateUsers = new ArrayList<>();
+		PaginationQuery query = new PaginationQuery();
+		query.addQueryData("postId", postId + "");
+		query.addQueryData("status", "1");
+		query.setPageIndex(1);
+		query.setRowsPerPage(4);
+		PageResult<Commendation> pages = kffCommendationService.findPage(query);
+		if (pages != null && CollectionUtils.isNotEmpty(pages.getRows())) {
+			donateUsers = pages.getRows();
+		}
+		// 打赏
+		discussShare.setDonateUsers(donateUsers);
+		// 根据Postid 获取讨论的标签
+		// 防止热门评论
+
+		// 获得当前评论列表所在的楼层
+		/*
+		 * 
+		 * 解决思路 : 根据postID 和 parentcommentsId(为空)
+		 * 
+		 * 
+		 * 根据ID进行排序
+		 */
+		List<Comments> commentsList = kffCommentsService.findFlootOrderById(postId);
+
+		/**************** 热门评论产 *****************************/
+		/* 热门评论 */
+		// 进行排序分页查询
+		List<Comments> commentUsers = new ArrayList<>();
+		PaginationQuery queryhot = new PaginationQuery();
+		queryhot.addQueryData("postId", postId + "");
+		queryhot.addQueryData("status", "1");
+		queryhot.setPageIndex(1);
+		queryhot.setRowsPerPage(2);// 展示三条最热门的评论
+		PageResult<Comments> pageshot = kffCommentsService.findPageOrderBy(queryhot);
+		if (pageshot != null && CollectionUtils.isNotEmpty(pages.getRows())) {
+			commentUsers = pageshot.getRows();
+		}
+		if (null == commentUsers) {
+			throw new RestServiceException("当前没有评论!");
+		}
+		// 屏蔽部分参数
+		List<CommentShareFloot> commentUsersfl = new ArrayList<>();
+		for (Comments commentUser : commentUsers) {
+			commentUser.setCreateTime(null);
+			commentUser.setUpdateTime(null);
+			commentUser.setBecommentedUserIcon(null);
+			commentUser.setPostId(null);
+			commentUser.setProjectId(null);
+			CommentShareFloot commentShareFloot = new CommentShareFloot();
+			BeanUtils.copyProperties(commentUser, commentShareFloot);
+			Integer indexOf = commentsList.indexOf(commentUser);
+			commentShareFloot.setFloot(indexOf);
+			commentUsersfl.add(commentShareFloot);
+
+		}
+		// discussShare.setCommentsehot(commentUsers);
+		// 根据postid 查询discuss
+		/***************** 点赞最多的评论 ****************************/
+		// 点赞最多的评论
+		PaginationQuery hotQuery = new PaginationQuery();
+		hotQuery.addQueryData("status", "1");
+		hotQuery.addQueryData("postId", postId + "");
+		hotQuery.addQueryData("postType", KFFConstants.POST_TYPE_ARTICLE + "");
+		// 点赞数最多的2个评论
+		hotQuery.addQueryData("sortField", "praise_num");
+		hotQuery.setPageIndex(1);
+		hotQuery.setRowsPerPage(2);
+		List<Comments> hotComments = this.findPageHotCommentsListDis(post.getCreateUserId(), postId, hotQuery);
+		List<CommentShareFloot> commenthotfl = new ArrayList<>();
+
+		for (Comments commentUserHot : hotComments) {
+
+			CommentShareFloot commentShareFloot = new CommentShareFloot();
+			BeanUtils.copyProperties(commentUserHot, commentShareFloot);
+			int indexOfhot = 0;
+
+			for (Comments commentsli : commentsList) {
+				if (commentsli.getCommentsId() == commentUserHot.getCommentsId()) {
+					int indexOf = commentsList.indexOf(commentsli);
+					indexOfhot = indexOf + 1;
+				}
+			}
+
+			commentShareFloot.setFloot(indexOfhot);
+			commenthotfl.add(commentShareFloot);
+		}
+		discussShare.setCommentsehot(commenthotfl);
+
+		/******************* 新的2个评论 **************************/
+		PaginationQuery newQuery = new PaginationQuery();
+		newQuery.addQueryData("status", "1");
+		newQuery.addQueryData("postId", postId + "");
+		newQuery.addQueryData("postType", KFFConstants.POST_TYPE_ARTICLE + "");
+
+		// 最新的2个评论
+		newQuery.setPageIndex(1);
+		newQuery.setRowsPerPage(2);
+		List<Comments> newestComments = this.findPageNewestCommentsDis(post.getCreateUserId(), postId, newQuery);
+
+		List<CommentShareFloot> commentnewfl = new ArrayList<>();
+		for (Comments commentUsernew : newestComments) {
+
+			CommentShareFloot commentShareFloot = new CommentShareFloot();
+			BeanUtils.copyProperties(commentUsernew, commentShareFloot);
+
+			int indexOfnew = 0;
+
+			for (Comments commentsli : commentsList) {
+				if (commentsli.getCommentsId() == commentUsernew.getCommentsId()) {
+					int indexOf = commentsList.indexOf(commentsli);
+					indexOfnew = indexOf + 1;
+				}
+			}
+
+			commentShareFloot.setFloot(indexOfnew);
+
+			Integer indexOf = commentsList.indexOf(commentUsernew);
+			commentShareFloot.setFloot(indexOf);
+			commentnewfl.add(commentShareFloot);
+		}
+
+		discussShare.setCommentseNew(commentnewfl);
+		/*********************************************/
+		// 获得最多赞的人评论 根据praisenum 排序
+		List<Comments> commentZanDuoOnly = kffCommentsService.findBidPraiseNum(postId);
+		CommentShareFloot commentShareFlootZanDuoOnly = new CommentShareFloot();
+		BeanUtils.copyProperties(commentZanDuoOnly.get(0), commentShareFlootZanDuoOnly);
+
+		int indexOfzan = 0;
+		for (Comments commentsli : commentsList) {
+			if (commentsli.getCommentsId() == commentZanDuoOnly.get(0).getCommentsId()) {
+				int indexOf = commentsList.indexOf(commentsli);
+				indexOfzan = indexOf + 1;
+			}
+		}
+		commentShareFlootZanDuoOnly.setFloot(indexOfzan);
+		//discussShare.setCommentseZanDuoOnly(commentShareFlootZanDuoOnly);
+		// 设置评论总数
+		Integer commentsSum = kffCommentsService.findCommentsSum();
+		discussShare.setCommentseSum(commentsSum);
+		return discussShare;
+	}
+
+	@Override
+	public Discuss findDisscussBypostId(Integer postId) {
+
+		return kffDiscussService.findDisscussBypostId(postId);
+	}
+
+
+
 	     
 	}
-    
+	
 }

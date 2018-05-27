@@ -111,5 +111,10 @@ public class BaseResponseEntity implements Serializable {
 		this.token = token;
 	}
 	
-	
+	@Override
+	public String toString() {
+		return "BaseResponseEntity [status=" + status + ", msg=" + msg + ", code=" + code + ", reason=" + reason + ", fromuri=" + fromuri + ", token=" + token
+				+ ", data=" + data + ", serverDatetime=" + serverDatetime + "]";
+	}
+
 }

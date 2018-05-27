@@ -44,10 +44,12 @@
 		<property name="throwException" value="false" />
 	</bean>
 	<bean id="log-filter" class="com.alibaba.druid.filter.logging.Log4jFilter">
-		<property name="resultSetLogEnabled" value="false" />
+		<!--resultSetLogEnabled表示是否显示结果集 -->
+		<property name="resultSetLogEnabled" value="true" />
 		<!-- 输出可执行的SQL log4j里设置log4j.logger.druid.sql.Statement=DEBUG,生产环境设置为false,log级别设置为ERROR -->
+		<!-- statementExecutableSqlLogEnable 表示是否显示SQL语句 -->
 		<property name="statementExecutableSqlLogEnable" value="true" />
-		<property name="connectionConnectAfterLogEnabled" value="false"/>
+		<property name="connectionConnectAfterLogEnabled" value="true" />
 		<property name="statementLogEnabled" value="false"/>
 		<property name="statementCloseAfterLogEnabled" value="false"/>
 		<property name="statementParameterSetLogEnabled" value="false"/>

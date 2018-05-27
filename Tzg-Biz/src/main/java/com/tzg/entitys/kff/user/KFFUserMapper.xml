@@ -375,6 +375,12 @@
 		and wechat = #{wechat} 
 		</if>
 	</select>
+	<select id="findPhoneByUserId" parameterType="java.lang.Integer">
+		SELECT mobile
+		FROM tbuser
+		WHERE user_id = #{userId}
+
+	</select>
 </mapper>
 
 

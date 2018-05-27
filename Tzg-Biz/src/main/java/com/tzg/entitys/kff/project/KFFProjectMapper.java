@@ -15,4 +15,8 @@ public interface KFFProjectMapper extends BaseMapper<KFFProject, java.lang.Integ
 
 	void decreaseFollowerNum(Integer projectId);	
 
+	List<KFFProject> findProjectName();
+
+	KFFProject findProjectIdByCodeAndChineseName(KFFProject kffProject);
+
 }

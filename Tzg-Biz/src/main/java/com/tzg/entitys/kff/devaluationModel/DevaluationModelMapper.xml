@@ -124,6 +124,9 @@
 		<if test="modelDesc != null and modelDesc.trim() != ''">
 		and model_desc = #{modelDesc}
 		</if>
+		<if test="modelWeight != null and modelWeight.trim() != ''">
+			and model_weight = #{modelWeight}
+		</if>
 		<if test="createTimeBegin != null and createTimeBegin.trim() != ''">
 		and createTime >= #{createTimeBegin}
 		</if>
@@ -145,10 +148,32 @@
 		<if test="modelType != null and modelType.trim() != ''">
 		and model_type = #{modelType}
 		</if>
+		<if test="batchId != null and batchId.trim() != ''">
+			and batch_id = #{batchId}
 		<if test="detailDesc != null and detailDesc.trim() != ''">
 		and detail_desc = #{detailDesc}
 		</if>
 	</sql>
+
+	<select id="selectEvaluationModelByModelType" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT
+		<include refid="columns" /> 
+	<![CDATA[
+		FROM d_evaluation_model 
+		WHERE 
+        model_type = #{modelType} and status =1
+	]]>
+	</select>
+
+	<select id="findAll" resultMap="BaseResultMap">
+		SELECT
+		<include refid="columns" /> 
+	<![CDATA[
+		FROM d_evaluation_model 
+		WHERE 
+       status = 1
+	]]>
+	</select>
 </mapper>
 
 

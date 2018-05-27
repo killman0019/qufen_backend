@@ -11,4 +11,5 @@ public interface DtagsMapper extends BaseMapper<Dtags, java.lang.Integer> {
 
 	List<Dtags> findAllTags();	
 
+	List<Dtags> findAllTagsName();	
 }

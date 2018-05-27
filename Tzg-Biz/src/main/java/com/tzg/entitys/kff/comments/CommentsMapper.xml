@@ -28,7 +28,7 @@
 	
 	<insert id="save" parameterType="com.tzg.entitys.kff.comments.Comments" useGeneratedKeys="true" keyProperty="commentsId">
 		<selectKey resultType="java.lang.Integer" keyProperty="commentsId" order="AFTER" >
-	      SELECT LAST_INSERT_ID() AS id
+	      SELECT LAST_INSERT_ID() AS commentsId
 	    </selectKey>
 	<![CDATA[
 		INSERT INTO tbcomments (
@@ -195,6 +195,20 @@
         <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
 	</select>
 
+
+	<select id="findPageCountOrderBy" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="columns" />
+		from tbcomments where status =1
+		<include refid="queryWhere" />
+		ORDER BY praise_num DESC
+	 <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+
+
+
+
+
 	<select id="findAllCommentsByWhere" resultMap="BaseResultMap" parameterType="java.util.Map">
 		select <include refid="columns"/>  from tbcomments where 1=1
 		<include refid="queryWhere"/> 
@@ -264,6 +278,28 @@
 		and status = #{status}
 		</if>
 	</sql>
+	<select id="findBidPraiseNum" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="columns" />
+		from tbcomments where status = 1 and post_id = #{postId}
+
+
+		ORDER BY praise_num DESC
+
+	</select>
+
+	<select id="findCommentsSum" resultType="java.lang.Integer">
+		select count(*) from tbcomments where status = 1
+
+	</select>
+
+	<select id="findFlootOrderById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+
+		SELECT
+		<include refid="columns" />
+		FROM tbcomments
+		WHERE post_id = #{postId} and parent_comments_id is NULL and `status` = 1 ORDER BY comments_id ASC
+	</select>
 </mapper>
 
 

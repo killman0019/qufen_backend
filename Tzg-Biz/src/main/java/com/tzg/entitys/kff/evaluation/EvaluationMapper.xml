@@ -187,6 +187,29 @@
 		and create_user_id = #{createUserId}
 		</if>
 	</sql>
+	<select id="selectEvaluationByPostId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT
+		<include refid="columns" /> 
+		FROM tbevaluation 
+		WHERE 
+       post_id = #{postId} and status=1
+	</select>
+	
+	<select id="findEvaliationByProjectId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT
+		<include refid="columns" /> 
+		FROM tbevaluation 
+		WHERE 
+      project_id = #{projectId} and status=1
+	</select>
+	
+	<select id="selectEvaluationOrNotByUserId" resultMap="BaseResultMap" >
+		SELECT
+		<include refid="columns" /> 
+		FROM tbevaluation 
+		WHERE 
+     create_user_id = #{createUserId} and status=1  and model_type = #{modelType} and project_id = #{projectId}
+	</select>
 </mapper>
 
 

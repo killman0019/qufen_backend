@@ -125,6 +125,11 @@
 	    <![CDATA[ ORDER BY praise_id DESC ]]>
         <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
 	</select>
+	<!-- 根据传入的参数查询Parise的数量 -->
+	<select id="countPraiseByParam" resultType="java.lang.Integer" parameterType="java.util.Map">
+	select count(*) from tbpraise where 1=1
+	<include refid="queryWhere"></include>
+	</select>
 	
 	<sql id="queryWhere">
 		<if test="praiseId != null and praiseId.trim() != ''">

@@ -71,6 +71,8 @@ public class KFFConstants {
 	public static final int PROJECT_STATE_PASS = 2;
 	public static final int PROJECT_STATE_REJECT = 3;
 	
+	//区分指数    初期统一设置为100
+	public static final int QUFEN_INDEX = 100;
 	//1-关注；2-点赞；3-评论；4-赞赏；5-评论被回复；6-上榜单；7-奖励token
 	public static final int MESSAGE_TYPE_FOLLOW = 1;
 	public static final int MESSAGE_TYPE_PRAISE = 2;

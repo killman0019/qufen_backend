@@ -69,5 +69,10 @@ public class DiscussService   {
 	}
 	
 
+	public Discuss findDisscussBypostId(Integer postId) {
+
+		return discussMapper.findDisscussBypostId(postId);
+	}
+
 	
 }
