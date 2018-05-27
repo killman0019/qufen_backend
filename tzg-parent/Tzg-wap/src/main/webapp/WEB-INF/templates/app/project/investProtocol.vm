@@ -1,3 +1,0 @@
-#set($layout = "/app/layout/default.vm")
-#set($pageName="借款协议")
-<p>移动端暂不支持合同查看</p>
