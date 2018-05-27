@@ -1,8 +1,0 @@
-#set($layout = "/app/layout/default.vm")
-#set($pageName="铜掌柜")
-
-<div class="act-box">
-	<img alt="" src="/assets/images/act/m_01.jpg" width="100%">
-	<div class="container-r-spacing mtb2"><a href="$!{basePath}/subject/page?@app:plist" class="u-btn z-prm z-fll">立即投资</a></div>
-	<div class="u-txt-c act-fix u-clGrayLgt">中来股份&nbsp;战略入股<br><span class="picc">PICC</span>&nbsp;账户资金盗转盗用由人保财险承保</div>
-</div>

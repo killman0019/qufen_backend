@@ -1,2 +1,0 @@
-#set($layout = "/app/layout/default.vm")
-$!{htmlContent}

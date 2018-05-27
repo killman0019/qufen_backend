@@ -1,4 +1,0 @@
-#set($layout = "/layout/blank.vm")
-{
-	"success": true
-}
