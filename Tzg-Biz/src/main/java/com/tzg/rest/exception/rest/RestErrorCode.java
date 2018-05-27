@@ -91,7 +91,17 @@ public enum RestErrorCode {
     USER_ICON_DATA_EMPTY(11025,"头像不能为空"),
     USER_SEX_WRONG(11026,"用户性别传参非法"),
     USER_ID_BLANK(11027,"用户id不能为空"), 
-    
+	USER_CARD_POSITIVE_OF_CARD(11028, "用户手持身份证正面照不能为空"),
+
+	USER_CARD_REVERSE_OF_CARD(11029, "用户手持身份证反面照不能为空"),
+	USER_IDCARD_IS_FALSE(11030, "身份证号码不正确"),
+	USER_IDCARD_SUBMITED(11031, "身份证号码已被实名验证"),
+
+	CHECK_CODE_IS_NULL(11032, "图片验证码不能把为空"),
+
+	CHECK_CODE_FORMAT_ERROR(11033, "验证码格式不正确"),
+
+	CHECK_CODE_ERROE(11034, "验证码输入不正确"),
     /** ------------------ 用户信息相关错误码以12开头 ----------------- */
     
     VCNAME_NULL(12001, "姓名不能为空"),
@@ -131,6 +141,13 @@ public enum RestErrorCode {
     HAVE_NOT_BIND_PHONE(12020, "未绑定手机"),
 
     PHONE_INCORRECT(12021, "电话号码不正确"),
+    
+	PICTURE_UPLOAD_FAIL(12022, "图片上传失败"),
+
+	PARAMS_IS_NULL(12023, "带*为必填项,请务必全部填写"),
+	
+	SELECT_NOT_IS_EMPTY(12024, "搜索内容不能为空"),
+
     
     /** ------------------ 支付相关错误码以13开头 ----------------- */
     

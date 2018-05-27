@@ -381,6 +381,7 @@ public interface KFFRmiService {
 	public List<Comments> findAllChildCommentsList(Integer userId, Integer commentsId, PaginationQuery query) throws RestServiceException;
 
 	public DiscussDetailResponse findDiscussDetail(Integer userId, Integer postId) throws RestServiceException;
+	public List<Comments> findAllDiscussCommentsList(Integer userId, Integer postId) throws RestServiceException;
 
 	public PageResult<Comments> findPageDiscussCommentsList(Integer userId, PaginationQuery query) throws RestServiceException;
 

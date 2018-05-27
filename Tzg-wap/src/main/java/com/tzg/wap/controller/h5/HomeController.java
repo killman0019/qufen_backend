@@ -28,6 +28,7 @@ import com.tzg.common.utils.rest.Base64Util;
 import com.tzg.entitys.kff.article.ArticleDetailResponse;
 import com.tzg.entitys.kff.comments.Comments;
 import com.tzg.entitys.kff.comments.CommentsShareRequest;
+import com.tzg.entitys.kff.discuss.DiscussDetailResponse;
 import com.tzg.entitys.kff.discuss.DiscussShare;
 import com.tzg.entitys.kff.evaluation.EvaluationRequest;
 import com.tzg.entitys.kff.evaluation.ProjectEvaluationDetailResponse;
@@ -302,8 +303,8 @@ public class HomeController extends BaseController {
 			// 最新的20个评论
 			newQuery.setPageIndex(1);
 			newQuery.setRowsPerPage(20);
-			List<Comments> newestComments = kffRmiService.findPageNewestComments(userId, postId, newQuery);
-			map.put("newestComments", newestComments);
+			PageResult<Comments> newestComments = kffRmiService.findPageNewestComments(userId, postId, newQuery);
+			map.put("newestComments", newestComments==null?null:newestComments.getRows());
 
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -387,7 +388,7 @@ public class HomeController extends BaseController {
 			if (StringUtils.isNotBlank(token)) {
 				userId = getUserIdByToken(token);
 			}
-			ArticleDetailResponse discuss = kffRmiService.findDiscussDetail(userId, postId);
+			DiscussDetailResponse discuss = kffRmiService.findDiscussDetail(userId, postId);
 			map.put("discussDetail", discuss);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -498,7 +499,7 @@ public class HomeController extends BaseController {
 			if (StringUtils.isNotBlank(token)) {
 				userId = getUserIdByToken(token);
 			}
-			ArticleDetailResponse evaluationDetail = kffRmiService.findDiscussDetail(userId, postId);
+			DiscussDetailResponse evaluationDetail = kffRmiService.findDiscussDetail(userId, postId);
 			map.put("evaluationDetail", evaluationDetail);
 			bre.setData(map);
 		} catch (RestServiceException e) {

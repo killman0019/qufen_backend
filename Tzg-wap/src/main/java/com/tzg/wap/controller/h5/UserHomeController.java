@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.tzg.common.base.BaseRequest;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
+import com.tzg.entitys.kff.evaluation.EvaluationDetailResponse;
 import com.tzg.entitys.kff.post.PostResponse;
 import com.tzg.entitys.kff.user.KFFUserHomeResponse;
 import com.tzg.rest.exception.rest.RestErrorCode;
@@ -100,7 +101,7 @@ public class UserHomeController extends BaseController {
 			query.addQueryData("postType", "1");
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
-			PageResult<PostResponse> evaluations = kffRmiService
+			PageResult<EvaluationDetailResponse> evaluations = kffRmiService
 					.findPageEvaluationList(query);
 			map.put("evaluations", evaluations);
 			bre.setData(map);
