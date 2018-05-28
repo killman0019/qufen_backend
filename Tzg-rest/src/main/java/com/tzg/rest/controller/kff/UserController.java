@@ -33,11 +33,14 @@ import com.tzg.common.utils.SHAUtil;
 import com.tzg.common.utils.TzgConstant;
 import com.tzg.common.utils.rest.Base64Util;
 import com.tzg.common.utils.rest.RestConstants;
+import com.tzg.entitys.kff.coinproperty.CoinProperty;
 import com.tzg.entitys.kff.collect.CollectPostResponse;
 import com.tzg.entitys.kff.dareas.Dareas;
 import com.tzg.entitys.kff.follow.FollowResponse;
+import com.tzg.entitys.kff.tokenaward.Tokenaward;
 import com.tzg.entitys.kff.tokenrecords.Tokenrecords;
 import com.tzg.entitys.kff.user.KFFUser;
+import com.tzg.entitys.kff.userwallet.KFFUserWallet;
 import com.tzg.entitys.leopard.system.SystemParam;
 import com.tzg.entitys.loginaccount.RegisterRequest;
 import com.tzg.rest.controller.BaseController;
@@ -91,6 +94,9 @@ public class UserController extends BaseController {
 			
 			//生成account token
             String token = AccountTokenUtil.getAccountToken(user.getUserId());
+            // 根据用户id 获取用户类型跟推荐人
+            Integer userid = AccountTokenUtil.decodeAccountToken(token);
+            kffRmiService.registerAward(userid);
             map.put("token", token);
 
 		} catch (RestServiceException e) {
@@ -815,6 +821,319 @@ public class UserController extends BaseController {
 			loginaccount.setPayPassword("true");
 			return loginaccount;
 		}
+		/**
+		 * 我的资产明细列表，按照时间排序
+		 * @param request (传入一个userId)
+		 * @return
+		 */
+		 @RequestMapping(value = "/myTokenRecords", method = {RequestMethod.POST,RequestMethod.GET})
+		    @ResponseBody
+		    public BaseResponseEntity myTokenRecords(HttpServletRequest request) {
+		        BaseResponseEntity bre = new BaseResponseEntity();
+		        HashMap<String, Object> map = new HashMap<String, Object>();
+		        try {
+		            JSONObject params = getParamMapFromRequestPolicy(request); 
+		            String token = (String) params.get("token");
+		            
+		            if (StringUtils.isBlank(token)) {
+		            	throw new RestServiceException(RestErrorCode.USER_NOT_LOGIN);
+		            }
+		            Integer userId = null;
+					try{
+						userId = AccountTokenUtil.decodeAccountToken(token);
+					}catch(Exception e){
+						logger.error("updateUserInfo decodeAccountToken error:{}",e);
+						return this.resResult(RestErrorCode.PARSE_TOKEN_ERROR,e.getMessage());
+					}
+					if(userId == null){
+		        		throw new RestServiceException(RestErrorCode.USER_NOT_EXIST);
+		        	}
+
+					KFFUser loginaccount = kffRmiService.findUserById(userId);
+					
+					if(loginaccount == null){
+						return this.resResult(RestErrorCode.USER_NOT_EXIST);
+					}
+					 List<CoinProperty> result = kffRmiService.findCoinPropertyByUserId(userId);
+					
+						map.put("myTokenRecords", result);
+	  
+		            bre.setData(map);
+		        } catch (RestServiceException e) {
+		            logger.warn("myTokenRecordsList warn:{}", e);
+		            return this.resResult(e.getErrorCode(), e.getMessage());
+		        } catch (Exception e) {
+		            logger.error("myTokenRecordsList error:{}", e);
+		            return this.resResult(RestErrorCode.SYS_ERROR,e.getMessage());
+		        }
+		        return bre;
+		    }
+		 /**
+		  * 我的解锁token的操作接口
+		  * @param request
+		  * @return (必须传入参数为, token跟要解锁的token数量 coinUnlock(参数名))
+		  * 无需分页
+		  */
+		 @RequestMapping(value = "/myTokenDeBlocks", method = {RequestMethod.POST,RequestMethod.GET})
+		 @ResponseBody
+		 public BaseResponseEntity myTokenDeBlocks(HttpServletRequest request) {
+			 BaseResponseEntity bre = new BaseResponseEntity();
+			 HashMap<String, Object> map = new HashMap<String, Object>();
+			 try {
+				 JSONObject params = getParamMapFromRequestPolicy(request);
+				 String token = (String) params.get("token");
+				 Double coinUnlock = (Double) params.get("coinUnlock");
+				 if(coinUnlock == 0) {
+					 throw new RestServiceException(RestErrorCode.MISSING_POLICY);
+				 }
+				 if (StringUtils.isBlank(token)) {
+					 throw new RestServiceException(RestErrorCode.USER_NOT_LOGIN);
+				 }		         
+				 Integer userId = null;
+				 try{
+					 userId = AccountTokenUtil.decodeAccountToken(token);
+				 }catch(Exception e){
+					 logger.error("updateUserInfo decodeAccountToken error:{}",e);
+					 return this.resResult(RestErrorCode.PARSE_TOKEN_ERROR,e.getMessage());
+				 }
+				 if(userId == null){
+					 throw new RestServiceException(RestErrorCode.USER_NOT_EXIST);
+				 }
+				 
+				 KFFUser loginaccount = kffRmiService.findUserById(userId);
+				 
+				 if(loginaccount == null){
+					 return this.resResult(RestErrorCode.USER_NOT_EXIST);
+				 }
+				 List<CoinProperty> result = kffRmiService.findCoinPropertyById(userId,coinUnlock);
+				 	
+				    map.put("myTokenRecords", result);
+				 
+				 bre.setData(map);
+			 } catch (RestServiceException e) {
+				 logger.warn("myTokenRecordsList warn:{}", e);
+				 return this.resResult(e.getErrorCode(), e.getMessage());
+			 } catch (Exception e) {
+				 logger.error("myTokenRecordsList error:{}", e);
+				 return this.resResult(RestErrorCode.SYS_ERROR,e.getMessage());
+			 }
+			 return bre;
+		 }
+
+		 /**
+		  * 我的取消解锁token的操作接口
+		  * @param request  (必须传入参数为, token跟要取消解锁  token的解锁锁时间(coinUnLockTime),加锁状态coinUnlockType)
+		  * @return
+		  * 无需分页
+		  */
+		 @RequestMapping(value = "/myTokenUncoilBlocks", method = {RequestMethod.POST,RequestMethod.GET})
+		 @ResponseBody
+		 public BaseResponseEntity myTokenUncoilBlocks(HttpServletRequest request) {
+			 BaseResponseEntity bre = new BaseResponseEntity();
+			 HashMap<String, Object> map = new HashMap<String, Object>();
+			 try {
+				 JSONObject params = getParamMapFromRequestPolicy(request);
+				 String token = (String) params.get("token");
+				 Date coinUnlock = (Date) params.get("coinUnLockTime");
+				  Integer coinUnlockType = (Integer) params.get("coinUnlockType");
+				 if(coinUnlock == null) {
+					 throw new RestServiceException(RestErrorCode.MISSING_POLICY);
+				 }
+				 if (StringUtils.isBlank(token)) {
+					 throw new RestServiceException(RestErrorCode.USER_NOT_LOGIN);
+				 }		         
+				 if (coinUnlockType == 1) {
+					 throw new RestServiceException(RestErrorCode.MISSING_POLICY);
+				 }		         
+				 Integer userId = null;
+				 try{
+					 userId = AccountTokenUtil.decodeAccountToken(token);
+				 }catch(Exception e){
+					 logger.error("updateUserInfo decodeAccountToken error:{}",e);
+					 return this.resResult(RestErrorCode.PARSE_TOKEN_ERROR,e.getMessage());
+				 }
+				 if(userId == null){
+					 throw new RestServiceException(RestErrorCode.USER_NOT_EXIST);
+				 }
+				 
+				 KFFUser loginaccount = kffRmiService.findUserById(userId);
+				 
+				 if(loginaccount == null){
+					 return this.resResult(RestErrorCode.USER_NOT_EXIST);
+				 }
+				 List<CoinProperty> result = kffRmiService.findCoinPropertyById(userId,coinUnlock,coinUnlockType);
+				 	
+				    map.put("myTokenUncoilBlocks", result);
+				 
+				 bre.setData(map);
+			 } catch (RestServiceException e) {
+				 logger.warn("myTokenRecordsList warn:{}", e);
+				 return this.resResult(e.getErrorCode(), e.getMessage());
+			 } catch (Exception e) {
+				 logger.error("myTokenRecordsList error:{}", e);
+				 return this.resResult(RestErrorCode.SYS_ERROR,e.getMessage());
+			 }
+			 return bre;
+		 }
+
+		 /**
+		  * 发放中的接口
+		  * @param request
+		  * @return
+		  * 
+		  */
+		 @RequestMapping(value = "/TokenInDistributed", method = {RequestMethod.POST,RequestMethod.GET})
+		 @ResponseBody
+		 public BaseResponseEntity TokenInDistributed(HttpServletRequest request) {
+			 BaseResponseEntity bre = new BaseResponseEntity();
+			 HashMap<String, Object> map = new HashMap<String, Object>();
+			 try {
+				 JSONObject params = getParamMapFromRequestPolicy(request);
+				 String token = (String) params.get("token");
+				 if (StringUtils.isBlank(token)) {
+					 throw new RestServiceException(RestErrorCode.USER_NOT_LOGIN);
+				 }		         
+				 Integer userId = null;
+				 try{
+					 userId = AccountTokenUtil.decodeAccountToken(token);
+				 }catch(Exception e){
+					 logger.error("updateUserInfo decodeAccountToken error:{}",e);
+					 return this.resResult(RestErrorCode.PARSE_TOKEN_ERROR,e.getMessage());
+				 }
+				 if(userId == null){
+					 throw new RestServiceException(RestErrorCode.USER_NOT_EXIST);
+				 }
+				 
+				 KFFUser loginaccount = kffRmiService.findUserById(userId);
+				 
+				 if(loginaccount == null){
+					 return this.resResult(RestErrorCode.USER_NOT_EXIST);
+				 }
+				 List<Tokenaward> result = kffRmiService.findAllTokenawardUser(userId);
+				 	
+				    map.put("inDistribution", result);
+				 
+				 bre.setData(map);
+			 } catch (RestServiceException e) {
+				 logger.warn("myTokenRecordsList warn:{}", e);
+				 return this.resResult(e.getErrorCode(), e.getMessage());
+			 } catch (Exception e) {
+				 logger.error("myTokenRecordsList error:{}", e);
+				 return this.resResult(RestErrorCode.SYS_ERROR,e.getMessage());
+			 }
+			 return bre;
+		 }
+		 
+		 
+		 /**
+		  * 绑定钱包接口
+		  * @param request  (必须传入参数为, token,钱包地址 wallet)
+		  * @return
+		  * 
+		  */
+		 @RequestMapping(value = "/myPinlessWallet", method = {RequestMethod.POST,RequestMethod.GET})
+		 @ResponseBody
+		 public BaseResponseEntity myPinlessWallet(HttpServletRequest request) {
+			 BaseResponseEntity bre = new BaseResponseEntity();
+			 HashMap<String, Object> map = new HashMap<String, Object>();
+			 try {
+				 JSONObject params = getParamMapFromRequestPolicy(request);
+				 String token = (String) params.get("token");
+				  String wallet = (String) params.get("wallet");
+				 if(wallet == null) {
+					 throw new RestServiceException(RestErrorCode.MISSING_POLICY);
+				 }
+				 if (StringUtils.isBlank(token)) {
+					 throw new RestServiceException(RestErrorCode.USER_NOT_LOGIN);
+				 }		         
+				 Integer userId = null;
+				 try{
+					 userId = AccountTokenUtil.decodeAccountToken(token);
+				 }catch(Exception e){
+					 logger.error("updateUserInfo decodeAccountToken error:{}",e);
+					 return this.resResult(RestErrorCode.PARSE_TOKEN_ERROR,e.getMessage());
+				 }
+				 if(userId == null){
+					 throw new RestServiceException(RestErrorCode.USER_NOT_EXIST);
+				 }
+				 
+				 KFFUser loginaccount = kffRmiService.findUserById(userId);
+				 
+				 if(loginaccount == null){
+					 return this.resResult(RestErrorCode.USER_NOT_EXIST);
+				 }
+				 KFFUserWallet result = kffRmiService.save(userId,wallet);
+				 	
+				    map.put("myPinlessWallet", result);
+				 
+				 bre.setData(map);
+			 } catch (RestServiceException e) {
+				 logger.warn("myTokenRecordsList warn:{}", e);
+				 return this.resResult(e.getErrorCode(), e.getMessage());
+			 } catch (Exception e) {
+				 logger.error("myTokenRecordsList error:{}", e);
+				 return this.resResult(RestErrorCode.SYS_ERROR,e.getMessage());
+			 }
+			 return bre;
+		 }	 
+		 
+		 
+		 /**
+		  * 更换钱包地址接口
+		  * @param request  (必须传入参数为, token,要更换钱包的地址 wallet,更换后的钱包地址walletLater)
+		  * @return
+		  * 
+		  */
+		 @RequestMapping(value = "/myCancelWallet", method = {RequestMethod.POST,RequestMethod.GET})
+		 @ResponseBody
+		 public BaseResponseEntity myCancelWallet(HttpServletRequest request) {
+			 BaseResponseEntity bre = new BaseResponseEntity();
+			 HashMap<String, Object> map = new HashMap<String, Object>();
+			 try {
+				 JSONObject params = getParamMapFromRequestPolicy(request);
+				 String token = (String) params.get("token");
+				 String wallet = (String) params.get("wallet");
+				 String walletLater = (String) params.get("walletLater");
+				 
+				 if(wallet == null) {
+					 throw new RestServiceException(RestErrorCode.MISSING_POLICY);
+				 }
+				 if (StringUtils.isBlank(token)) {
+					 throw new RestServiceException(RestErrorCode.USER_NOT_LOGIN);
+				 }		         
+				 if (StringUtils.isBlank(walletLater)) {
+					 throw new RestServiceException(RestErrorCode.MISSING_POLICY);
+				 }		         
+				 Integer userId = null;
+				 try{
+					 userId = AccountTokenUtil.decodeAccountToken(token);
+				 }catch(Exception e){
+					 logger.error("updateUserInfo decodeAccountToken error:{}",e);
+					 return this.resResult(RestErrorCode.PARSE_TOKEN_ERROR,e.getMessage());
+				 }
+				 if(userId == null){
+					 throw new RestServiceException(RestErrorCode.USER_NOT_EXIST);
+				 }
+				 
+				 KFFUser loginaccount = kffRmiService.findUserById(userId);
+				 
+				 if(loginaccount == null){
+					 return this.resResult(RestErrorCode.USER_NOT_EXIST);
+				 }
+				 KFFUserWallet result = kffRmiService.updateWallet(userId,wallet,walletLater);
+				 	
+				    map.put("myCancelWallet", result);
+				 
+				 bre.setData(map);
+			 } catch (RestServiceException e) {
+				 logger.warn("myTokenRecordsList warn:{}", e);
+				 return this.resResult(e.getErrorCode(), e.getMessage());
+			 } catch (Exception e) {
+				 logger.error("myTokenRecordsList error:{}", e);
+				 return this.resResult(RestErrorCode.SYS_ERROR,e.getMessage());
+			 }
+			 return bre;
+		 }	 
 }
 
 
