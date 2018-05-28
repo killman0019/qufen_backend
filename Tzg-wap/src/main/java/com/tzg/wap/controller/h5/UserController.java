@@ -145,8 +145,12 @@ public class UserController extends BaseController {
 		}
 		// 手机验证码成功 保存用户信息
 		// 将邀请二维码字符进行转码转化成对应的userID
-		Integer invaUserId = HexUtil.code2ToUserId(invaUserIdHex);
-		KFFUser KffUser = kffRmiService.saveUserByphoneNotPass(phoneNumber, invaUserId);
+		Integer invaUserId = null;
+		if (null != invaUserIdHex) {
+			invaUserId = HexUtil.code2ToUserId(invaUserIdHex);
+		}
+
+		KFFUser KffUser = kffRmiService.saveUserByphonePass(phoneNumber, invaUserId, password);
 		if (null == KffUser) {
 			map.put("reStatus", 0);// 1注册成功 0 注册不成功
 			map.put("reason", "此用户已注册");
@@ -548,7 +552,7 @@ public class UserController extends BaseController {
 	@RequestMapping(value = "/uploadUserIcon", method = { RequestMethod.POST, RequestMethod.GET }, produces = "text/html; charset=utf-8")
 	public BaseResponseEntity uploadUserIcon(HttpServletRequest request, HttpServletResponse response, String imgdata) {
 		BaseResponseEntity bre = new BaseResponseEntity();
-		Map<String, Object> resMap = new HashMap<String, Object>();
+		// Map<String, Object> resMap = new HashMap<String, Object>();
 		try {
 			String token = (String) request.getSession().getAttribute("token");
 			if (StringUtils.isBlank(token)) {

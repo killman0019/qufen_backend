@@ -68,8 +68,8 @@ public interface KFFRmiService {
 	/**
 	 * 校验用户账号
 	 * 
-	 * @param string:字段类型
-	 *            如 "mobile" userName
+	 * @param string
+	 *            :字段类型 如 "mobile" userName
 	 * @param phoneNumber
 	 * @return
 	 * @throws RestServiceException
@@ -150,6 +150,7 @@ public interface KFFRmiService {
 
 	/**
 	 * 分页获取用户资产列表
+	 * 
 	 * @param query
 	 * @return
 	 * @throws RestServiceException
@@ -159,6 +160,7 @@ public interface KFFRmiService {
 	/**
 	 * 
 	 * 分页获取用户收藏记录
+	 * 
 	 * @param query
 	 * @return
 	 * @throws RestServiceException
@@ -168,6 +170,7 @@ public interface KFFRmiService {
 	/**
 	 * 
 	 * 分页获取用户关注列表
+	 * 
 	 * @param query
 	 * @return
 	 * @throws RestServiceException
@@ -175,11 +178,12 @@ public interface KFFRmiService {
 	public PageResult<FollowResponse> findPageMyFollow(PaginationQuery query) throws RestServiceException;
 
 	/**
-	 *捐赠
+	 * 捐赠
+	 * 
 	 * @param commendationRequest
 	 * @throws RestServiceException
 	 */
-	public Map<String,Object> saveCommendation(CommendationRequest commendationRequest) throws RestServiceException;
+	public Map<String, Object> saveCommendation(CommendationRequest commendationRequest) throws RestServiceException;
 
 	/**
 	 * 保存评论
@@ -188,17 +192,20 @@ public interface KFFRmiService {
 	 * @throws RestServiceException
 	 */
 	public void saveComment(CommentsRequest comment) throws RestServiceException;
-    /**
-     * 
-     * 保存文章
-     * @param articleRequest
-     * @throws RestServiceException
-     */
+
+	/**
+	 * 
+	 * 保存文章
+	 * 
+	 * @param articleRequest
+	 * @throws RestServiceException
+	 */
 	public void saveArticle(ArticleRequest articleRequest) throws RestServiceException;
 
 	/**
 	 * 
 	 * 保存讨论
+	 * 
 	 * @param discussRequest
 	 * @throws RestServiceException
 	 */
@@ -206,7 +213,8 @@ public interface KFFRmiService {
 
 	/**
 	 * 
-	 * 获取所有标签列表 
+	 * 获取所有标签列表
+	 * 
 	 * @return
 	 * @throws RestServiceException
 	 */
@@ -215,6 +223,7 @@ public interface KFFRmiService {
 	/**
 	 * 
 	 * 保存评测
+	 * 
 	 * @param evaluationRequest
 	 * @throws RestServiceException
 	 */
@@ -222,6 +231,7 @@ public interface KFFRmiService {
 
 	/**
 	 * 保存评测模型
+	 * 
 	 * @param devaluationModelRequest
 	 * @throws RestServiceException
 	 */
@@ -275,14 +285,14 @@ public interface KFFRmiService {
 	/**
 	 * 搜索项目
 	 * 
-	 * @param sortType:1-按关注排序;2-按名称排序
+	 * @param sortType
+	 *            :1-按关注排序;2-按名称排序
 	 * @param userId
 	 * @param projectCode
 	 * @return
 	 * @throws RestServiceException
 	 */
-	public List<ProjectResponse> findProjectByCode(int sortType, Integer userId, String projectCode)
-			throws RestServiceException;
+	public List<ProjectResponse> findProjectByCode(int sortType, Integer userId, String projectCode) throws RestServiceException;
 
 	/**
 	 * 更新用户信息
@@ -295,6 +305,7 @@ public interface KFFRmiService {
 	/**
 	 * 
 	 * 分页获取评测列表
+	 * 
 	 * @param query
 	 * @return
 	 * @throws RestServiceException
@@ -302,7 +313,8 @@ public interface KFFRmiService {
 	public PageResult<EvaluationDetailResponse> findPageEvaluationList(PaginationQuery query) throws RestServiceException;
 
 	/**
-	 *  分页获取讨论列表 
+	 * 分页获取讨论列表
+	 * 
 	 * @param query
 	 * @return
 	 * @throws RestServiceException
@@ -310,7 +322,8 @@ public interface KFFRmiService {
 	public PageResult<PostResponse> findPageDisscussList(PaginationQuery query) throws RestServiceException;
 
 	/**
-	 *分页获取文章列表
+	 * 分页获取文章列表
+	 * 
 	 * @param query
 	 * @return
 	 * @throws RestServiceException
@@ -319,6 +332,7 @@ public interface KFFRmiService {
 
 	/**
 	 * 获取项目信息
+	 * 
 	 * @param userId
 	 * @param projectId
 	 * @return
@@ -328,6 +342,7 @@ public interface KFFRmiService {
 
 	/**
 	 * 获取项目下活跃用户列表 --数量2 按 创建帖子数量排序
+	 * 
 	 * @param projectId
 	 * @return
 	 * @throws RestServiceException
@@ -346,27 +361,26 @@ public interface KFFRmiService {
 
 	public void cancelCollect(Integer userId, Integer postId) throws RestServiceException;
 
-	public PageResult<PostResponse> findPageRecommendList(Integer loginUserId, PaginationQuery query)
-			throws RestServiceException;
+	public PageResult<PostResponse> findPageRecommendList(Integer loginUserId, PaginationQuery query) throws RestServiceException;
 
-	public PageResult<PostResponse> findPageFollowList(Integer loginUserId, PaginationQuery query)
-			throws RestServiceException;
+	public PageResult<PostResponse> findPageFollowList(Integer loginUserId, PaginationQuery query) throws RestServiceException;
 
-	public List<ProjectResponse> findPageProjectRankList(Integer loginUserId, PaginationQuery query)
-			throws RestServiceException;
+	public List<ProjectResponse> findPageProjectRankList(Integer loginUserId, PaginationQuery query) throws RestServiceException;
 
 	/**
-     *根据帖子id获取文章详情
+	 * 根据帖子id获取文章详情
+	 * 
 	 * @param userId
 	 * @param postId
 	 * @return
 	 * @throws RestServiceException
 	 */
-	public ArticleDetailResponse findArticleDetail(Integer userId, Integer postId)throws RestServiceException;
+	public ArticleDetailResponse findArticleDetail(Integer userId, Integer postId) throws RestServiceException;
 
 	/**
 	 * 
 	 * 根据帖子id获取评测详情
+	 * 
 	 * @param userId
 	 * @param postId
 	 * @return
@@ -374,20 +388,22 @@ public interface KFFRmiService {
 	 */
 	public EvaluationDetailResponse findEvaluationDetail(Integer userId, Integer postId) throws RestServiceException;
 
-	public List<Comments> findPageHotCommentsList(Integer userId,Integer postId, PaginationQuery query) throws RestServiceException;
+	public List<Comments> findPageHotCommentsList(Integer userId, Integer postId, PaginationQuery query) throws RestServiceException;
 
-	public PageResult<Comments> findPageNewestComments(Integer userId,Integer postId, PaginationQuery query) throws RestServiceException;
+	public PageResult<Comments> findPageNewestComments(Integer userId, Integer postId, PaginationQuery query) throws RestServiceException;
 
 	public List<Comments> findAllChildCommentsList(Integer userId, Integer commentsId, PaginationQuery query) throws RestServiceException;
 
 	public DiscussDetailResponse findDiscussDetail(Integer userId, Integer postId) throws RestServiceException;
+
 	public List<Comments> findAllDiscussCommentsList(Integer userId, Integer postId) throws RestServiceException;
 
 	public PageResult<Comments> findPageDiscussCommentsList(Integer userId, PaginationQuery query) throws RestServiceException;
 
 	/**
 	 * 
-	 *查询用户发布的最新的一条讨论
+	 * 查询用户发布的最新的一条讨论
+	 * 
 	 * @param loginUserId
 	 * @return
 	 * @throws RestServiceException
@@ -397,6 +413,7 @@ public interface KFFRmiService {
 	/**
 	 * 
 	 * 对 用户某个评论进行点赞
+	 * 
 	 * @param userId
 	 * @param commentsId
 	 * @throws RestServiceException
@@ -406,6 +423,7 @@ public interface KFFRmiService {
 	/**
 	 * 
 	 * 取消对某个评论的点赞
+	 * 
 	 * @param userId
 	 * @param commentsId
 	 * @throws RestServiceException
@@ -415,6 +433,7 @@ public interface KFFRmiService {
 	/**
 	 * 
 	 * 热门讨论2条
+	 * 
 	 * @param projectId
 	 * @return
 	 * @throws RestServiceException
@@ -424,28 +443,31 @@ public interface KFFRmiService {
 	/**
 	 * 
 	 * 单个项目的专业评测统计信息
+	 * 
 	 * @param projectId
 	 * @return
 	 * @throws RestServiceException
 	 */
-	public List<DevaluationModelDetail> findProjectEvaStat(Integer projectId)throws RestServiceException;
+	public List<DevaluationModelDetail> findProjectEvaStat(Integer projectId) throws RestServiceException;
 
 	/**
 	 * 
 	 * 获取生效中的系统评测模型的详情列表
+	 * 
 	 * @return
 	 * @throws RestServiceException
 	 */
-	public List<DevaluationModelDetail> findSysEvaModelDetailList()throws RestServiceException;
+	public List<DevaluationModelDetail> findSysEvaModelDetailList() throws RestServiceException;
 
 	/**
-	 *更新用户信息  
+	 * 更新用户信息
+	 * 
 	 * @param account
 	 * @throws RestServiceException
 	 */
-	public KFFUser updateUserInfo(KFFUser account)throws RestServiceException;
+	public KFFUser updateUserInfo(KFFUser account) throws RestServiceException;
 
-/**
+	/**
 	 * 根据用户的ID 查询用户的身份审核状态 返回审核状态 (1:审核成功 2: 审核中 3 审核不通过 4 未进行身份审核)',
 	 * 
 	 * @param userId
@@ -578,7 +600,7 @@ public interface KFFRmiService {
 	 * @param invaUserId
 	 * @return
 	 */
-	public KFFUser saveUserByphoneNotPass(String phoneNumber, Integer invaUserId);
+	public KFFUser saveUserByphonePass(String phoneNumber, Integer invaUserId, String password);
 
 	/**
 	 * 通过别人分享链接打开文章详情页
@@ -693,6 +715,7 @@ public interface KFFRmiService {
 	 * @return
 	 */
 	public List<Comments> findPageHotCommentsListDis(Integer userId, Integer postId, PaginationQuery query);
+
 	/**
 	 * 根据讨论获取最新评论
 	 * 
@@ -702,5 +725,4 @@ public interface KFFRmiService {
 	 * @return
 	 */
 	public List<Comments> findPageNewestCommentsDis(Integer userId, Integer postId, PaginationQuery query);
-
 }
