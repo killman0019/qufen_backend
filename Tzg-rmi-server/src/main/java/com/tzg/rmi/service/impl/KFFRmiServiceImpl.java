@@ -83,8 +83,8 @@ import com.tzg.entitys.kff.discuss.DiscussShare;
 import com.tzg.entitys.kff.dprojectType.DprojectType;
 import com.tzg.entitys.kff.dtags.Dtags;
 import com.tzg.entitys.kff.evaluation.Evaluation;
-import com.tzg.entitys.kff.evaluation.EvaluationRequest;
 import com.tzg.entitys.kff.evaluation.EvaluationDetailResponse;
+import com.tzg.entitys.kff.evaluation.EvaluationRequest;
 import com.tzg.entitys.kff.evaluation.ProjectEvaluationDetailShareResponse;
 import com.tzg.entitys.kff.follow.Follow;
 import com.tzg.entitys.kff.follow.FollowResponse;
@@ -386,7 +386,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (result == null) {
 			throw new RestServiceException("消息不存在");
 		}
-		if (result.getUserId() != userId) {
+		if (!result.getUserId().equals(userId)) {
 			throw new RestServiceException("不能查看他人消息");
 		}
 		return result;
