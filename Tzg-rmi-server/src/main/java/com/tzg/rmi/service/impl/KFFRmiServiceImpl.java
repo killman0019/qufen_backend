@@ -3183,15 +3183,16 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		KFFUser user = kffUserService.saveUserByphonePass(phoneNumber, invaUserId, password);
 		/******************* 关注邀请人 *********************/
 		// 根据邀请人的ID查询user表
-		KFFUser invaUser = kffUserService.findById(invaUserId);
-		if (null == invaUser) {
-			throw new RestServiceException("邀请码信息有误,请检查确认邀请码是否正确!");
-		}
+
 		// 有邀请人,进行关注邀请人
 		if (null != invaUserId) {
+
+			KFFUser invaUser = kffUserService.findById(invaUserId);
+			if (null == invaUser) {
+				throw new RestServiceException("邀请码信息有误,请检查确认邀请码是否正确!");
+			}
 			// 将信息插入邀请表中
 			Follow followUser = new Follow();
-
 			followUser.setFollowUserId(user.getUserId());
 			followUser.setFollowType(3);
 			followUser.setFollowerUserName(user.getUserName());
