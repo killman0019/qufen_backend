@@ -46,6 +46,7 @@ import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
 import com.tzg.rmi.service.KFFRmiService;
 import com.tzg.rmi.service.SystemParamRmiService;
+import com.tzg.wap.utils.Create2Code;
 import com.tzg.wap.utils.DateUtil;
 import com.tzg.wap.utils.HexUtil;
 
@@ -53,7 +54,7 @@ import com.tzg.wap.utils.HexUtil;
 @RequestMapping("/kff/user")
 public class UserController extends BaseController {
 	// 前台春晓的注册链接
-	private static final String REGISTER_URL = "";
+	private static final String REGISTER_URL = "http://192.168.10.196:5000/user/registerSmp?invaUIH=";
 	private static Logger log = Logger.getLogger(UserController.class);
 
 	@Autowired
@@ -65,8 +66,7 @@ public class UserController extends BaseController {
 
 	/**
 	 * 用户注册后生成邀请链接 (免密码登陆**** 手机号码*** 图片生成验证码*** 手机验证码*** 发到手机的验证码 密码) 邀请码 app
-	 * 端注册
-	 * adasdadad
+	 * 端注册 adasdadad
 	 * 
 	 * @param phoneNumber
 	 * @param checkCode
@@ -79,7 +79,7 @@ public class UserController extends BaseController {
 	@RequestMapping(value = "/registerInva", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public BaseResponseEntity registerInva(HttpServletRequest response, HttpServletRequest request, String phoneNumber, String checkCode, String phoneCode,
-			String dynamicVerifyCode, String invaUserIdHex, String password) {
+			String dynamicVerifyCode, String invaUIH, String password) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		// 验证手机号的合法性
@@ -146,8 +146,8 @@ public class UserController extends BaseController {
 		// 手机验证码成功 保存用户信息
 		// 将邀请二维码字符进行转码转化成对应的userID
 		Integer invaUserId = null;
-		if (null != invaUserIdHex) {
-			invaUserId = HexUtil.code2ToUserId(invaUserIdHex);
+		if (null != invaUIH) {
+			invaUserId = HexUtil.code2ToUserId(invaUIH);
 		}
 
 		KFFUser KffUser = kffRmiService.saveUserByphonePass(phoneNumber, invaUserId, password);
@@ -161,10 +161,11 @@ public class UserController extends BaseController {
 		}
 		if (null != KffUser) {
 			map.put("reStatus", 1);// 注册成功
-			bre.setData(map);
 			// 根据用户的ID 生成token
 			String token = AccountTokenUtil.getAccountToken(KffUser.getUserId());
-			request.getSession().setAttribute("token", token);
+			map.put("token", token);
+			bre.setData(map);
+
 			return bre;
 		}
 		// 1是成功
@@ -220,9 +221,11 @@ public class UserController extends BaseController {
 		// 根据token获得userId
 		Integer userId = AccountTokenUtil.decodeAccountToken(token);
 		// 根据userID 的code2生成相关的海报存在相对应的位置
+
+		String posterUrl = Create2Code.createPoster(userId);
 		// 调用生成海报的方法返回
-		String posterPath = null;
-		map.put("url", posterPath);
+
+		map.put("url", posterUrl);
 		bre.setData(map);
 		return bre;
 	}

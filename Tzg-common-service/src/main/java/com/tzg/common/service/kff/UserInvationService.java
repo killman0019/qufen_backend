@@ -34,4 +34,6 @@ public class UserInvationService {
 		// TODO Auto-generated method stub
 		return userInvationMapper.selectUserInvation(userId);
 	}
+
+	
 }
