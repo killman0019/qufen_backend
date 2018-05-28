@@ -13,7 +13,7 @@
 		<result property="statusHierarchyDesc" jdbcType="VARCHAR" column="status_hierarchy_desc"/>
 		<result property="statusHierarchyType" jdbcType="INTEGER" column="status_hierarchy_type"/>
 		
-		<result property="yxPraise" jdbcType="INTEGER" column="yxPraise"/>
+		<result property="yxpraise" jdbcType="INTEGER" column="yxpraise"/>
 		<result property="createTime" jdbcType="TIMESTAMP" column="createTime"/>
 		<result property="updateTime" jdbcType="TIMESTAMP" column="updateTime"/>
 		

@@ -1417,13 +1417,13 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				// 根据点赞人的id 去查看他的有效点赞
 				QfIndex qfIndexPraiseUser = qfIndexService.findByUserId(userId);
 				Integer qfIndexId = qfIndexPraiseUser.getQfIndexId();
-				Integer yxPraise = qfIndexPraiseUser.getYxPraise();
+				Integer yxPraise = qfIndexPraiseUser.getYxpraise();
 				// 根据帖子的id 去获取内容贡献者的id
 				Post creatUserPost = kffPostService.findById(postId);
 				Integer createUserId = creatUserPost.getCreateUserId();
 				// 根据内容贡献值的id去获取本身的区分指数
 				 QfIndex qfIndex = qfIndexService.findById(createUserId);
-				 Integer createPostUserQFIndex = qfIndex.getYxPraise();
+				 Integer createPostUserQFIndex = qfIndex.getYxpraise();
 				// 发帖人赞的收益系数
 				Double createPUF = createPostUserQFIndex * 0.01d;
 				// 满足点赞条件额外送币
