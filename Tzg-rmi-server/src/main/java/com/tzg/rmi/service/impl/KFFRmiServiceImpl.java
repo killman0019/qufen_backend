@@ -309,7 +309,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					if (StringUtils.isNotBlank(post.getPostSmallImages())) {
 						try {
 							List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
-							response.setPostSmallImages(pfl);
+							response.setPostSmallImagesList(pfl);
 						} catch (Exception e) {
 							logger.error("我的收藏列表解析帖子缩略图json出错:{}", e);
 						}
