@@ -3708,7 +3708,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// 将相关参数插入表中
 		UserInvation userInvation = userInvationService.selectUserInvation(userId);
 		if (null != userInvation) {
-			throw new RestServiceException("系统警告,已经产生邀请链接");
+			return;
 		}
 		userInvationService.saveUserInvation(userId, userIdTo2code);
 
