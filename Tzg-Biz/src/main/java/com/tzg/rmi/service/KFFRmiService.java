@@ -1,16 +1,15 @@
 package com.tzg.rmi.service;
 
-import java.util.ArrayList;
-import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import com.alibaba.fastjson.JSON;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.entitys.kff.article.ArticleDetailResponse;
 import com.tzg.entitys.kff.article.ArticleRequest;
 import com.tzg.entitys.kff.authentication.Authentication;
+import com.tzg.entitys.kff.coinproperty.CoinProperty;
 import com.tzg.entitys.kff.collect.CollectPostResponse;
 import com.tzg.entitys.kff.commendation.CommendationRequest;
 import com.tzg.entitys.kff.comments.Comments;
@@ -19,17 +18,16 @@ import com.tzg.entitys.kff.comments.CommentsShareRequest;
 import com.tzg.entitys.kff.dareas.Dareas;
 import com.tzg.entitys.kff.devaluationModel.DevaluationModel;
 import com.tzg.entitys.kff.devaluationModel.DevaluationModelRequest;
-import com.tzg.entitys.kff.discuss.Discuss;
 import com.tzg.entitys.kff.devaluationModelDetail.DevaluationModelDetail;
+import com.tzg.entitys.kff.discuss.Discuss;
 import com.tzg.entitys.kff.discuss.DiscussDetailResponse;
 import com.tzg.entitys.kff.discuss.DiscussRequest;
 import com.tzg.entitys.kff.discuss.DiscussShare;
 import com.tzg.entitys.kff.dprojectType.DprojectType;
 import com.tzg.entitys.kff.dtags.Dtags;
 import com.tzg.entitys.kff.evaluation.Evaluation;
-import com.tzg.entitys.kff.evaluation.EvaluationRequest;
-import com.tzg.entitys.kff.evaluation.ProjectEvaluationDetailResponse;
 import com.tzg.entitys.kff.evaluation.EvaluationDetailResponse;
+import com.tzg.entitys.kff.evaluation.EvaluationRequest;
 import com.tzg.entitys.kff.evaluation.ProjectEvaluationDetailShareResponse;
 import com.tzg.entitys.kff.follow.FollowResponse;
 import com.tzg.entitys.kff.message.KFFMessage;
@@ -40,13 +38,13 @@ import com.tzg.entitys.kff.project.KFFProject;
 import com.tzg.entitys.kff.project.ProjectResponse;
 import com.tzg.entitys.kff.project.SubmitKFFProjectRequest;
 import com.tzg.entitys.kff.suggest.SuggestRequest;
+import com.tzg.entitys.kff.tokenaward.Tokenaward;
 import com.tzg.entitys.kff.tokenrecords.Tokenrecords;
 import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.entitys.kff.user.KFFUserHomeResponse;
-import com.tzg.entitys.kff.userInvation.UserInvation;
 import com.tzg.entitys.kff.usercard.UserCard;
+import com.tzg.entitys.kff.userwallet.KFFUserWallet;
 import com.tzg.entitys.loginaccount.RegisterRequest;
-import com.tzg.entitys.photo.PhotoIview;
 import com.tzg.rest.exception.rest.RestServiceException;
 
 /**
@@ -339,6 +337,28 @@ public interface KFFRmiService {
 	 * @throws RestServiceException
 	 */
 	public ProjectResponse findProjectById(Integer userId, Integer projectId) throws RestServiceException;
+	/**
+	 * 获取奖励表信息
+	 * @param userId
+	 * @return
+	 * @throws RestServiceException
+	public List<Tokenaward> findTokenawardById(Integer userId) throws RestServiceException;
+	 */
+	/**
+	 * 获取资产表信息
+	 * @param userId
+	 * @return
+	 * @throws RestServiceException
+	 */
+	public List<CoinProperty> findCoinPropertyById(Integer userId,Double coinUnlock) throws RestServiceException;
+	/**
+	 * 获取资产表信息
+	 * @param userId
+	 * @param coinUnlockType 
+	 * @return
+	 * @throws RestServiceException
+	 */
+	public List<CoinProperty> findCoinPropertyById(Integer userId,Date coinUnlockTime, Integer coinUnlockType) throws RestServiceException;
 
 	/**
 	 * 获取项目下活跃用户列表 --数量2 按 创建帖子数量排序
@@ -398,8 +418,7 @@ public interface KFFRmiService {
 
 	public List<Comments> findAllDiscussCommentsList(Integer userId, Integer postId) throws RestServiceException;
 
-	public PageResult<Comments> findPageDiscussCommentsList(Integer userId, PaginationQuery query) throws RestServiceException;
-
+	public void registerAward(Integer userId);
 	/**
 	 * 
 	 * 查询用户发布的最新的一条讨论
@@ -440,136 +459,17 @@ public interface KFFRmiService {
 	 */
 	public List<PostResponse> findHotDiscussList(Integer projectId) throws RestServiceException;
 
-	/**
-	 * 
-	 * 单个项目的专业评测统计信息
-	 * 
-	 * @param projectId
-	 * @return
-	 * @throws RestServiceException
-	 */
-	public List<DevaluationModelDetail> findProjectEvaStat(Integer projectId) throws RestServiceException;
+	public List<CoinProperty> findCoinPropertyByUserId(Integer userId);
 
+	public List<Tokenaward> findAllTokenawardUser(Integer userId);
 	/**
-	 * 
-	 * 获取生效中的系统评测模型的详情列表
-	 * 
-	 * @return
-	 * @throws RestServiceException
-	 */
-	public List<DevaluationModelDetail> findSysEvaModelDetailList() throws RestServiceException;
-
-	/**
-	 * 更新用户信息
-	 * 
-	 * @param account
-	 * @throws RestServiceException
-	 */
-	public KFFUser updateUserInfo(KFFUser account) throws RestServiceException;
-
-	/**
-	 * 根据用户的ID 查询用户的身份审核状态 返回审核状态 (1:审核成功 2: 审核中 3 审核不通过 4 未进行身份审核)',
+	 * 绑定钱包操作
 	 * 
 	 * @param userId
-	 * @return
-	 * @throws RestServiceException
-	 */
-	public Integer selectStatusByUserID(Integer userId) throws RestServiceException;
-
-	/**
-	 * 保存用户身份信息
-	 * 
-	 * @param userCard
-	 * @throws RestServiceException
-	 */
-	public void saveUserIdCard(UserCard userCard) throws RestServiceException;
-
-	/**
-	 * 根据用户的ID 查询申请表,判断用户是否进行申请认证的相关操作
-	 * 
-	 * @param userId
-	 * @return
-	 * @throws RestServiceException
-	 */
-	public List<Authentication> selectAuthenticatiobByUserId(Integer userId) throws RestServiceException;
-
-	/**
-	 * 根据用户ID插入审核表中
-	 * 
-	 * @param authentication
+	 * @param wallet
 	 * @return
 	 */
-	public void saveAuthenticationByUseId(Integer userId);
-
-	/**
-	 * 从后台获取所有项目名称
-	 * 
-	 * @return
-	 */
-	public List<KFFProject> findProjectName();
-
-	/**
-	 * 根据用户传来的参数 用户 真实姓名 身份证号 ,图片的URL 进行判断
-	 * 
-	 * @param userRealName
-	 * @param userCardNum
-	 * @param photoIviews
-	 * @return
-	 */
-	public void selectUserIdStstus(String userRealName, String userCardNum, String photoIviews, Integer userId);
-
-	/**
-	 * 将前台传入的参数转化成后台需要的数据
-	 * 
-	 * @param arrayLists
-	 * @return
-	 */
-	public String uploadIeviw(String str);
-
-	/**
-	 * 将在身份审核表中添加相关用户资料
-	 * 
-	 * @param userId
-	 */
-	public void setUserCardAuthentication(Integer userId, String phone);
-
-	/**
-	 * 在注册时将user的相关信息传到usercard表中
-	 * 
-	 * @param userCard
-	 */
-	public void saveUserCardOnRegister(UserCard userCard);
-
-	/**
-	 * 跟新用户usercard表
-	 * 
-	 * @param userCard
-	 */
-	public void updataUserIdCard(UserCard userCard);
-
-	/**
-	 * 根据用户身份号查询身份证号码是否重复提交
-	 * 
-	 * @param userCardNum
-	 * @return
-	 */
-	public Integer selectUserCardNum(String userCardNum);
-
-	/**
-	 * 根据用户ID查询用户的身份证审核状态
-	 * 
-	 * @param userId
-	 * @return
-	 */
-	public Integer selectUserCardStatusByUserId(Integer userId);
-
-	/**
-	 * 根据用户的ID 查询认证的审核状态
-	 * 
-	 * @param userId
-	 * @return
-	 */
-	public Integer selectAuthenticationStatusByUserId(Integer userId);
+	public KFFUserWallet save(Integer userId, String wallet);
 
 	/**
 	 * 向认证表中添加认证信息
@@ -578,37 +478,7 @@ public interface KFFRmiService {
 	 */
 	public void updataAuthentication(Authentication authentication);
 
-	/**
-	 * 返回标签名称
-	 * 
-	 * @return
-	 */
-	public List<Dtags> findAllTagsName();
-
-	/**
-	 * 根据项目的code 和ChineseName查询项目的ID
-	 * 
-	 * @param kffProject
-	 * @return
-	 */
-	public KFFProject findProjectIdByCodeAndChineseName(KFFProject kffProject);
-
-	/**
-	 * 验证码注册 根据邀请人用户的ID 进行注册
-	 * 
-	 * @param phoneNumber
-	 * @param invaUserId
-	 * @return
-	 */
-	public KFFUser saveUserByphonePass(String phoneNumber, Integer invaUserId, String password);
-
-	/**
-	 * 通过别人分享链接打开文章详情页
-	 * 
-	 * @param postId
-	 * @return
-	 */
-	public ArticleDetailResponse findArticleDetailForShare(Integer acticleId);
+	KFFUserWallet updateWallet(Integer userId, String wallet, String walletLater);
 
 	/**
 	 * 通过别人分享链接打开评测详情页
@@ -725,4 +595,43 @@ public interface KFFRmiService {
 	 * @return
 	 */
 	public List<Comments> findPageNewestCommentsDis(Integer userId, Integer postId, PaginationQuery query);
+	
+	public ArticleDetailResponse findArticleDetailForShare(Integer postId);
+	
+	public KFFProject findProjectIdByCodeAndChineseName(KFFProject kffProject);
+	public KFFUser saveUserByphonePass(String phoneNumber, Integer invaUserId, String password);
+	
+	public List<Dtags> findAllTagsName();
+	
+	public Integer selectAuthenticationStatusByUserId(Integer userId);
+	
+	public Integer selectUserCardStatusByUserId(Integer userId);
+	
+	public Integer selectUserCardNum(String userCardNum);
+	
+	public void setUserCardAuthentication(Integer userId, String phone);
+	
+	public String uploadIeviw(String photoIviews);
+	
+	public void updataUserIdCard(UserCard userCard);
+	
+	public void selectUserIdStstus(String userRealName, String userCardNum, String photoIviews, Integer userId);
+	
+	public List<KFFProject> findProjectName();
+	
+	public void saveAuthenticationByUseId(Integer userId);
+	
+	public List<Authentication> selectAuthenticatiobByUserId(Integer userId);
+	
+	public void saveUserIdCard(UserCard userCard);
+	
+	public Integer selectStatusByUserID(Integer userId);
+	
+	public KFFUser updateUserInfo(KFFUser account);
+	
+	public List<DevaluationModelDetail> findSysEvaModelDetailList();
+	
+	public List<DevaluationModelDetail> findProjectEvaStat(Integer projectId);
+	
+	public PageResult<Comments> findPageDiscussCommentsList(Integer userId, PaginationQuery query);
 }

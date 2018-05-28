@@ -15,6 +15,7 @@
 		<result property="updateTime" jdbcType="TIMESTAMP" column="updateTime"/>
 		<result property="status" jdbcType="INTEGER" column="status"/>
 		<result property="memo" jdbcType="VARCHAR" column="memo"/>
+		<result property="rewardGrantType" jdbcType="INTEGER" column="reward_grant_type"/>
     </resultMap>
 	
 	<sql id="columns">
@@ -40,7 +41,8 @@
         	createTime ,
         	updateTime ,
         	status ,
-        	memo 
+        	memo ,
+        	reward_grant_type
 		) VALUES (
         	#{userId,jdbcType=INTEGER} ,
         	#{tradeCode,jdbcType=VARCHAR} ,
@@ -53,7 +55,8 @@
         	#{createTime,jdbcType=TIMESTAMP} ,
         	#{updateTime,jdbcType=TIMESTAMP} ,
         	#{status,jdbcType=INTEGER} ,
-        	#{memo,jdbcType=VARCHAR} 
+        	#{memo,jdbcType=VARCHAR} ,
+        	#{rewardGrantType,jdbcType=INTEGER} 
 		)
 	]]>
 	</insert>
@@ -97,6 +100,9 @@
 			<if test="memo != null">
 	        memo = #{memo,jdbcType=VARCHAR} 
 	        </if>
+	        <if test="rewardGrantType != null">
+	        rewardGrantType = #{rewardGrantType,jdbcType=INTEGER} 
+	        </if>
 	    </set>
 		WHERE 
 	        token_records_id = #{tokenRecordsId,jdbcType=INTEGER} 
@@ -129,7 +135,12 @@
 	    <![CDATA[ ORDER BY token_records_id DESC ]]>
         <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
 	</select>
-	
+	<!-- 查询rewardToken(赠送的奖励)个人总数量 -->
+	<select id="findUserSumRewardToken"  parameterType="java.lang.Double">
+	select sum(*) from tbtokenrecords where 1=1
+	<include refid="queryWhere"/>
+	</select>
+	<!-- 查询单人的邀请字段 -->
 	<sql id="queryWhere">
 		<if test="tokenRecordsId != null and tokenRecordsId.trim() != ''">
 		and token_records_id = #{tokenRecordsId}
@@ -178,6 +189,9 @@
 		</if>
 		<if test="memo != null and memo.trim() != ''">
 		and memo = #{memo}
+		</if>
+		<if test="rewardGrantType != null and rewardToken.trim() != ''">
+		and rewardGrantType = #{rewardGrantType}
 		</if>
 	</sql>
 </mapper>

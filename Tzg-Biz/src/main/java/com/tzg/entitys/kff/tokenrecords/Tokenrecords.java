@@ -66,8 +66,27 @@ public class Tokenrecords implements Serializable {
      * 备注
      */ 	
 	private java.lang.String memo;
-
+	/**
+	 * 新加字段(奖励的token)
+	 * @param Wang
+	 */
+	private java.lang.Integer rewardGrantType;
 	
+	
+	public java.lang.Integer getRewardGrantType() {
+		return rewardGrantType;
+	}
+
+	public void setRewardGrantType(java.lang.Integer rewardGrantType) {
+		this.rewardGrantType = rewardGrantType;
+	}
+	public java.lang.Integer getRewardToken() {
+		return rewardGrantType;
+	}
+
+	public void setRewardToken(java.lang.Integer rewardToken) {
+		this.rewardGrantType = rewardToken;
+	}
 	public void setTokenRecordsId(java.lang.Integer value) {
 		this.tokenRecordsId = value;
 	}

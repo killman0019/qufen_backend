@@ -21,6 +21,13 @@ public interface KFFUserMapper extends BaseMapper<KFFUser, java.lang.Integer> {
 	public void decreaseFansNum(Integer userId);
 
 	public String findPhoneByUserId(Integer userId);
+	
+	// 根据用户id 去查询用户类型
+	public KFFUser findUserById(Integer userId);
 
+    public KFFUser findByMobileId(String loginName);
 
+	public KFFUser findByUserName(String loginName);
+
+	public Integer findReferCount(Integer userId);
 }
