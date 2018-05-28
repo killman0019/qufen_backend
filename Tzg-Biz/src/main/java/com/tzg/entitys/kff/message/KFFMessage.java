@@ -1,6 +1,7 @@
 package com.tzg.entitys.kff.message;
 
 import java.io.Serializable;
+
 import com.tzg.common.utils.DateUtil;
 
 public class KFFMessage implements Serializable {
@@ -37,9 +38,12 @@ public class KFFMessage implements Serializable {
 	private java.util.Date updateTime;
 	private java.lang.String updateTimeStr;
     /**
-     * userId
+     * userId 消息接受人id
      */ 	
 	private java.lang.Integer userId;
+	
+	//消息发送方icon，默认头像
+	private java.lang.String senderUserIcon = "/upload/avatars/avatar.png";
     /**
      * 标题
      */ 	
@@ -54,6 +58,16 @@ public class KFFMessage implements Serializable {
 	private java.lang.String jumpInfo;
 
 	
+	
+	
+	public java.lang.String getSenderUserIcon() {
+		return senderUserIcon;
+	}
+
+	public void setSenderUserIcon(java.lang.String senderUserIcon) {
+		this.senderUserIcon = senderUserIcon;
+	}
+
 	public void setMessageId(java.lang.Integer value) {
 		this.messageId = value;
 	}
