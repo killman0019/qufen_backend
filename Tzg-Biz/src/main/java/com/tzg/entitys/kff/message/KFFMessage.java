@@ -42,7 +42,12 @@ public class KFFMessage implements Serializable {
      */ 	
 	private java.lang.Integer userId;
 	
-	//消息发送方icon，默认头像
+	/**
+	 * 消息发送人头像
+	 */
+	private java.lang.Integer senderUserId;
+	
+	//返给前端用 消息发送方icon，默认头像
 	private java.lang.String senderUserIcon = "/upload/avatars/avatar.png";
     /**
      * 标题
@@ -58,8 +63,16 @@ public class KFFMessage implements Serializable {
 	private java.lang.String jumpInfo;
 
 	
-	
-	
+
+
+	public java.lang.Integer getSenderUserId() {
+		return senderUserId;
+	}
+
+	public void setSenderUserId(java.lang.Integer senderUserId) {
+		this.senderUserId = senderUserId;
+	}
+
 	public java.lang.String getSenderUserIcon() {
 		return senderUserIcon;
 	}

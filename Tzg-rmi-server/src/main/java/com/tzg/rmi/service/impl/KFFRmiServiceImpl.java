@@ -654,6 +654,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		message.setType(KFFConstants.MESSAGE_TYPE_COMMENDATION);
 		message.setUpdateTime(now);
 		message.setUserId(receiveUser.getUserId());
+		message.setSenderUserId(sendUser.getUserId());
 		kffMessageService.save(message);
 
 		// 总捐赠金额
@@ -954,6 +955,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 		message.setUpdateTime(now);
 		message.setUserId(post.getCreateUserId());
+		message.setSenderUserId(commentUser.getUserId());
 		kffMessageService.save(message);
 
 	}
@@ -1384,6 +1386,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			message.setType(KFFConstants.MESSAGE_TYPE_PRAISE);
 			message.setUpdateTime(now);
 			message.setUserId(post.getCreateUserId());
+			message.setSenderUserId(user.getUserId());
 			kffMessageService.save(message);
 			
 			/**
@@ -1892,6 +1895,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				message.setType(KFFConstants.MESSAGE_TYPE_FOLLOW);
 				message.setUpdateTime(now);
 				message.setUserId(followedUserId);
+				message.setSenderUserId(user.getUserId());
 				kffMessageService.save(message);
 			}
 		}
@@ -2859,6 +2863,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			message.setType(KFFConstants.MESSAGE_TYPE_PRAISE);
 			message.setUpdateTime(now);
 			message.setUserId(comments.getCommentUserId());
+			message.setSenderUserId(user.getUserId());
 			kffMessageService.save(message);
 		}
 		result = comments.getPraiseNum() == null ? 1 : (comments.getPraiseNum() + 1);
