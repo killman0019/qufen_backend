@@ -411,13 +411,30 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (!result.getUserId().equals(userId)) {
 			throw new RestServiceException("不能查看他人消息");
 		}
+		if(result.getSenderUserId() != null){
+			KFFUser user = kffUserService.findById(result.getSenderUserId());
+			if(user != null){
+				result.setSenderUserIcon(user.getIcon());
+			}
+		}
 		return result;
 	}
 
 	@Override
 	public PageResult<KFFMessage> findPageMyMessages(PaginationQuery query) {
-
-		return kffMessageService.findPage(query);
+		PageResult<KFFMessage> result = null; 
+		result = kffMessageService.findPage(query);
+		if(result != null && CollectionUtils.isNotEmpty(result.getRows())){
+			for (KFFMessage message:result.getRows()){
+				if(message.getSenderUserId() != null){
+				   KFFUser user = kffUserService.findById(message.getSenderUserId());
+				   if(user != null){
+					   message.setSenderUserIcon(user.getIcon());
+					}
+				}
+			}
+		}
+		return result;
 	}
 
 	@Override
