@@ -309,7 +309,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					if (StringUtils.isNotBlank(post.getPostSmallImages())) {
 						try {
 							List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
-							response.setPostSmallImages(pfl);
+							response.setPostSmallImagesList(pfl);
 						} catch (Exception e) {
 							logger.error("我的收藏列表解析帖子缩略图json出错:{}", e);
 						}
@@ -411,13 +411,30 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (!result.getUserId().equals(userId)) {
 			throw new RestServiceException("不能查看他人消息");
 		}
+		if(result.getSenderUserId() != null){
+			KFFUser user = kffUserService.findById(result.getSenderUserId());
+			if(user != null){
+				result.setSenderUserIcon(user.getIcon());
+			}
+		}
 		return result;
 	}
 
 	@Override
 	public PageResult<KFFMessage> findPageMyMessages(PaginationQuery query) {
-
-		return kffMessageService.findPage(query);
+		PageResult<KFFMessage> result = null; 
+		result = kffMessageService.findPage(query);
+		if(result != null && CollectionUtils.isNotEmpty(result.getRows())){
+			for (KFFMessage message:result.getRows()){
+				if(message.getSenderUserId() != null){
+				   KFFUser user = kffUserService.findById(message.getSenderUserId());
+				   if(user != null){
+					   message.setSenderUserIcon(user.getIcon());
+					}
+				}
+			}
+		}
+		return result;
 	}
 
 	@Override
@@ -434,7 +451,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			if (result == null) {
 				throw new RestServiceException("消息不存在");
 			}
-			if (result.getUserId() != userId) {
+			if (!result.getUserId().equals(userId)) {
 				throw new RestServiceException("不能删除他人消息");
 			}
 			result.setState(2); // 已读
@@ -654,6 +671,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		message.setType(KFFConstants.MESSAGE_TYPE_COMMENDATION);
 		message.setUpdateTime(now);
 		message.setUserId(receiveUser.getUserId());
+		message.setSenderUserId(sendUser.getUserId());
 		kffMessageService.save(message);
 
 		// 总捐赠金额
@@ -954,6 +972,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 		message.setUpdateTime(now);
 		message.setUserId(post.getCreateUserId());
+		message.setSenderUserId(commentUser.getUserId());
 		kffMessageService.save(message);
 
 	}
@@ -1384,6 +1403,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			message.setType(KFFConstants.MESSAGE_TYPE_PRAISE);
 			message.setUpdateTime(now);
 			message.setUserId(post.getCreateUserId());
+			message.setSenderUserId(user.getUserId());
 			kffMessageService.save(message);
 			
 			/**
@@ -1892,6 +1912,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				message.setType(KFFConstants.MESSAGE_TYPE_FOLLOW);
 				message.setUpdateTime(now);
 				message.setUserId(followedUserId);
+				message.setSenderUserId(user.getUserId());
 				kffMessageService.save(message);
 			}
 		}
@@ -2859,6 +2880,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			message.setType(KFFConstants.MESSAGE_TYPE_PRAISE);
 			message.setUpdateTime(now);
 			message.setUserId(comments.getCommentUserId());
+			message.setSenderUserId(user.getUserId());
 			kffMessageService.save(message);
 		}
 		result = comments.getPraiseNum() == null ? 1 : (comments.getPraiseNum() + 1);

@@ -57,10 +57,15 @@ public class CollectPostResponse implements Serializable {
      */ 	
 	private java.lang.String postShortDesc;
 	
-	/**
+    /**
      * 缩略图json，目前最多三张图的url等信息
      */ 	
-	private List<PostFile> postSmallImages;
+	private List<PostFile> postSmallImagesList;
+	
+    /**
+     * 缩略图json，目前最多三张图的url等信息
+     */ 	
+	private java.lang.String postSmallImages;
     /**
      * 评论数量
      */ 	
@@ -141,11 +146,21 @@ public class CollectPostResponse implements Serializable {
 
 	
 
-	public List<PostFile> getPostSmallImages() {
+	
+
+	public List<PostFile> getPostSmallImagesList() {
+		return postSmallImagesList;
+	}
+
+	public void setPostSmallImagesList(List<PostFile> postSmallImagesList) {
+		this.postSmallImagesList = postSmallImagesList;
+	}
+
+	public java.lang.String getPostSmallImages() {
 		return postSmallImages;
 	}
 
-	public void setPostSmallImages(List<PostFile> postSmallImages) {
+	public void setPostSmallImages(java.lang.String postSmallImages) {
 		this.postSmallImages = postSmallImages;
 	}
 
