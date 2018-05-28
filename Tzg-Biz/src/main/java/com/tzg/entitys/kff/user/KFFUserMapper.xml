@@ -243,12 +243,46 @@
         user_id = #{userId} 
 	]]>
 	</select>
+	<!-- 根据用户的id 去获取用户的等级  -->
+	<select id="findUserById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbuser 
+		WHERE 
+        user_id = #{userId} 
+	]]>
+	</select>
+	<!-- 根据用户的登录手机号  去获取用户的id  -->
+	<select id=" findByMobileId" resultMap="BaseResultMap" parameterType="java.lang.String">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbuser 
+		WHERE 
+        mobile = #{mobile}
+	]]>
+	</select>
+	<!-- 根据用户的登录昵称  去获取用户的id  -->
+	<select id=" findByUserName" resultMap="BaseResultMap" parameterType="java.lang.String">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbuser 
+		WHERE 
+        user_name = #{userName}
+	]]>
+	</select>
 	 
 	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
     	select count(*) from tbuser where 1=1
 		<include refid="queryWhere"/>
 	</select>
-    
+    	<select id="findReferCount" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+    	select count(*) from tbuser where 1=1
+		<![CDATA[
+		FROM tbuser 
+		WHERE 
+        refer_user_id = #{referUserId}
+	]]>
+	</select>
 	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
 		select <include refid="columns"/>  from tbuser where 1=1
 		<include refid="queryWhere"/> 
@@ -256,6 +290,11 @@
         <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
 	</select>
 	
+	<!-- 根据邀请人用户id 查询已邀请个数 -->
+	<select id="findReferUserIdByUserCount" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+    	select count(*) from tbuser where 1=1
+		<include refid="queryWhere"/>
+	</select>
 	
 	
 	<select id="findAllPage" resultMap="BaseResultMap" parameterType="java.util.Map">

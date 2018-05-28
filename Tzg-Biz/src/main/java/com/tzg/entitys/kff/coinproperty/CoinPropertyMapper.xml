@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.kff.coinproperty.CoinPropertyMapper">
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.kff.coinproperty.CoinProperty">
+		<result property="coinPropertyId" jdbcType="INTEGER" column="coin_property_id"/>
+		<result property="userId" jdbcType="INTEGER" column="user_id"/>
+		<result property="coinLock" jdbcType="DOUBLE" column="coin_lock"/>
+		<result property="coinUnlock" jdbcType="DOUBLE" column="coin_unlock"/>
+		<result property="coinUnlockTime" jdbcType="TIMESTAMP" column="coin_unlock_time"/>
+		<result property="coinUnlockType" jdbcType="INTEGER" column="coin_unlock_type"/>
+		<result property="coinDistributed" jdbcType="DOUBLE" column="coin_distributed"/>
+		<result property="coinUsable" jdbcType="DOUBLE" column="coin_usable"/>
+		<result property="coinUnlockUptime" jdbcType="TIMESTAMP" column="coin_unlock_uptime"/>
+		
+		
+    </resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+        coin_property_id ,
+        user_id ,
+        coin_lock ,
+        coin_unlock ,
+        coin_unlock_time ,
+        coin_unlock_type ,
+        coin_distributed ,
+        coin_usable ,
+        coin_unlock_uptime 
+
+	    ]]>
+	</sql>
+	
+	<insert id="save" parameterType="com.tzg.entitys.kff.coinproperty.CoinProperty" useGeneratedKeys="true" keyProperty="coinPropertyId">
+		<selectKey resultType="java.lang.Integer" keyProperty="coinPropertyId" order="AFTER" >
+	      SELECT LAST_INSERT_ID() AS id
+	    </selectKey>
+	<![CDATA[
+		INSERT INTO tbcoinproperty (
+	        user_id ,
+	        coin_lock ,
+	        coin_unlock ,
+	        coin_unlock_time ,
+	        coin_unlock_type ,
+	        coin_distributed ,
+	        coin_usable ,
+	        coin_unlock_uptime 
+		) VALUES (
+        	#{userId,jdbcType=INTEGER} ,
+        	#{coinLock,jdbcType=DOUBLE} ,
+        	#{coinUnlock,jdbcType=DOUBLE} ,
+        	#{coinUnlockTime,jdbcType=TIMESTAMP} ,
+        	#{coinUnlockType,jdbcType=INTEGER} ,
+        	#{coinDistributed,jdbcType=DOUBLE} ,
+        	#{coinUsable,jdbcType=DOUBLE} ,
+        	#{coinUnlockUptime,jdbcType=TIMESTAMP} ,
+        	
+		)
+	]]>
+	</insert>
+			
+	<update id="update" parameterType="com.tzg.entitys.kff.coinproperty.CoinProperty">
+		UPDATE tbcoinproperty
+		<set>
+			<if test="userId != null">
+	        user_id = #{userId,jdbcType=INTEGER} ,
+	        </if>
+			<if test="coinLock != null">
+	        coin_lock = #{coinLock,jdbcType=DOUBLE} ,
+	        </if>
+			<if test="coinUnlock != null">
+	        coin_unlock = #{coinUnlock,jdbcType=DOUBLE} ,
+	        </if>
+			<if test="coinUnlockTime != null">
+	        coin_unlock_time = #{coinUnlockTime,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="coinUnlockType != null">
+	        coin_unlock_type = #{coinUnlockType,jdbcType=INTEGER} ,
+	        </if>
+			<if test="coinDistributed != null">
+	        coin_distributed = #{coinDistributed,jdbcType=DOUBLE} ,
+	        </if>
+			<if test="coinUsable != null">
+	        coin_usable = #{coinUsable,jdbcType=DOUBLE} ,
+	        </if>
+	        <if test="coinUnlockUptime != null">
+	        coin_unlock_uptime = #{coinUnlockUptime,jdbcType=TIMESTAMP} ,
+	        </if>
+	      
+	    </set>
+		WHERE 
+	        coin_property_id = #{coinPropertyId,jdbcType=INTEGER} 
+	</update>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbcoinproperty WHERE
+        coin_property_id = #{coinPropertyId} 
+	]]>
+	</delete>
+    
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbcoinproperty 
+		WHERE 
+        coin_property_id = #{coinPropertyId} 
+	]]>
+	</select>
+	
+	<select id="findByUserId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbcoinproperty 
+		WHERE 
+        user_id = #{userId}
+	]]>
+	</select>
+	
+	
+	<select id="findAllCoinPropertyByWhere" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbcoinproperty where 1=1
+		<include refid="queryWhere"/> 
+	     <choose>
+	            <when test="sortField != null and sortField != ''">
+	               ORDER BY ${sortField} DESC
+	            </when>
+	            <otherwise>
+	                <![CDATA[ ORDER BY coin_property_id desc ]]>
+	            </otherwise>
+	        </choose>
+	</select>	
+	
+	
+	 
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from tbcoinproperty where 1=1
+		<include refid="queryWhere"/>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbcoinproperty where 1=1
+		<include refid="queryWhere"/> 
+	    <![CDATA[ ORDER BY coin_property_id DESC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	
+	<sql id="queryWhere">
+	
+		<if test="coinPropertyId != null and tokenAwardId.trim() != ''">
+		and coin_property_id = #{coinPropertyId}
+		</if>
+		<if test="userId != null and userId.trim() != ''">      
+		and user_id = #{userId}
+		</if>
+		<if test="coinLock != null and tokenRecordsId.trim() != ''">
+		and coin_lock = #{coinLock}									
+		</if>
+		<if test="coinUnlock != null and praiseId.trim() != ''">
+		and coin_unlock = #{coinUnlock}
+		</if>
+		<if test="coinUnlockType != null and tokenAwardFunctionDesc.trim() != ''">
+		and coin_unlock_type = #{coinUnlockType}
+		</if>
+		<if test="coinDistributed != null and tokenAwardFunctionType.trim() != ''">
+		and coin_distributed = #{coinDistributed}
+		</if>
+		<if test="coinUsable != null and inviteRewards.trim() != ''">
+		and coin_usable = #{coinUsable}
+		</if>
+		<if test="coinUnlockUptime != null and priaiseAward.trim() != ''">
+		and coin_unlock_uptime >= #{coinUnlockUptime}
+		</if>
+		<if test="coinUnlockTime != null and giveTime.trim() != ''">
+		and coin_unlock_time &lt;= #{coinUnlockTime}
+		</if>
+		
+	</sql>
+</mapper>
+
+

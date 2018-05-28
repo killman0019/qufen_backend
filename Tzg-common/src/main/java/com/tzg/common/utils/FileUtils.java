@@ -92,7 +92,7 @@ public class FileUtils {
 		}
 		int idx = fileName.lastIndexOf(".");  
         //文件后缀  
-        result= fileName.substring(idx);
+        result= fileName.substring(idx+1);
 		return result;
 	}
 	
