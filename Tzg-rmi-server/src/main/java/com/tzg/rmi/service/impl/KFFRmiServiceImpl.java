@@ -451,7 +451,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			if (result == null) {
 				throw new RestServiceException("消息不存在");
 			}
-			if (result.getUserId() != userId) {
+			if (!result.getUserId().equals(userId)) {
 				throw new RestServiceException("不能删除他人消息");
 			}
 			result.setState(2); // 已读
