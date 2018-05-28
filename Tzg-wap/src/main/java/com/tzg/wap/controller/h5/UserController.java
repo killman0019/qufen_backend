@@ -66,7 +66,7 @@ public class UserController extends BaseController {
 	/**
 	 * 用户注册后生成邀请链接 (免密码登陆**** 手机号码*** 图片生成验证码*** 手机验证码*** 发到手机的验证码 密码) 邀请码 app
 	 * 端注册
-	 * 
+	 * adasdadad
 	 * 
 	 * @param phoneNumber
 	 * @param checkCode
