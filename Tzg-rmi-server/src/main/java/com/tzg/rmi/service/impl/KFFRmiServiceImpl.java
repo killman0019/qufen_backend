@@ -3391,8 +3391,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 		List<UserCard> userCards = userCardService.selectStatusByUserID(userId);
 		if (userCards.size() == 0) {
-			return 4;
+			return 5;
 		}
+		
 		UserCard userCard = userCards.get(0);
 		return userCard.getStatus();
 	}
@@ -3401,7 +3402,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	public Integer selectAuthenticationStatusByUserId(Integer userId) {
 		List<Authentication> authentications = authenticationService.selectAuthenticationByUserId(userId);
 		if (authentications.size() == 0) {
-			return 4;
+			return 5;
 		}
 		return authentications.get(0).getStatus();
 	}

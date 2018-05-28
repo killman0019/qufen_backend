@@ -44,7 +44,7 @@ public class UploadController extends BaseController {
 
 		upfile.transferTo(new File("D:\\opt\\file\\upload\\Idcard\\" + name + "." + ext));
 
-		resMap.put("picPath", "Idcard\\" + name + "." + ext);
+		resMap.put("picPath", "upload\\Idcard\\" + name + "." + ext);
 		bre.setData(resMap);
 		return bre;
 	}
@@ -62,7 +62,7 @@ public class UploadController extends BaseController {
 		String ext = FilenameUtils.getExtension(upfile.getOriginalFilename());
 
 		upfile.transferTo(new File("D:\\opt\\file\\upload\\avatars\\" + name + "." + ext));
-		resMap.put("picPath", "avatars\\" + name + "." + ext);
+		resMap.put("picPath", "upload\\avatars\\" + name + "." + ext);
 		bre.setData(resMap);
 		return bre;
 	}
@@ -81,7 +81,7 @@ public class UploadController extends BaseController {
 
 		upfile.transferTo(new File("D:\\opt\\file\\upload\\postPic\\" + name + "." + ext));
 
-		resMap.put("picPath", "postPic\\" + name + "." + ext);
+		resMap.put("picPath", "upload\\postPic\\" + name + "." + ext);
 		log.info("图片存入成功!++++++++++++++++++++++");
 		log.info(name + "." + ext);
 		bre.setData(resMap);
@@ -129,7 +129,7 @@ public class UploadController extends BaseController {
 
 		upfile.transferTo(new File("D:\\opt\\file\\upload\\authentication\\" + name + "." + ext));
 
-		resMap.put("picPath", "authentication\\" + name + "." + ext);
+		resMap.put("picPath", "upload\\authentication\\" + name + "." + ext);
 		bre.setData(resMap);
 		return bre;
 	}

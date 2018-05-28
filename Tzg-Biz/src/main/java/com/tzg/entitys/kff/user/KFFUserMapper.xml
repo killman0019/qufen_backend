@@ -253,7 +253,7 @@
 	]]>
 	</select>
 	<!-- 根据用户的登录手机号  去获取用户的id  -->
-	<select id=" findByMobileId" resultMap="BaseResultMap" parameterType="java.lang.String">
+	<select id="findByMobileId" resultMap="BaseResultMap" parameterType="java.lang.String">
 	    SELECT <include refid="columns"/> 
 	<![CDATA[
 		FROM tbuser 
@@ -262,7 +262,7 @@
 	]]>
 	</select>
 	<!-- 根据用户的登录昵称  去获取用户的id  -->
-	<select id=" findByUserName" resultMap="BaseResultMap" parameterType="java.lang.String">
+	<select id="findByUserName" resultMap="BaseResultMap" parameterType="java.lang.String">
 	    SELECT <include refid="columns"/> 
 	<![CDATA[
 		FROM tbuser 
