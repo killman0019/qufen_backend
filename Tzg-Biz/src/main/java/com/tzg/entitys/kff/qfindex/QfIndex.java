@@ -1,7 +1,6 @@
 package com.tzg.entitys.kff.qfindex;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import com.tzg.common.utils.DateUtil;
 
@@ -54,7 +53,7 @@ public class QfIndex implements Serializable {
 	/**
 	 * 个人有效赞
 	 */
-	private java.lang.Integer yxPraise;
+	private java.lang.Integer yxpraise;
 	/**
 	 * 创建时间
 	 */
@@ -67,13 +66,12 @@ public class QfIndex implements Serializable {
 	private java.lang.String updateTimeStr;
 	
 	
-	
-	
-	public java.lang.Integer getYxPraise() {
-		return yxPraise;
+
+	public java.lang.Integer getYxpraise() {
+		return yxpraise;
 	}
-	public void setYxPraise(java.lang.Integer yxPraise) {
-		this.yxPraise = yxPraise;
+	public void setYxpraise(java.lang.Integer yxpraise) {
+		this.yxpraise = yxpraise;
 	}
 	public java.util.Date getCreateTime() {
 		return createTime;
