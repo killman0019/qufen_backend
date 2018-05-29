@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TokenawardMapper extends BaseMapper<Tokenaward, java.lang.Integer> {
 
-	Integer save(Tokenaward tokenaward);
+	//Integer saveToken(Tokenaward tokenaward);
 
 	void update(Tokenaward tokenaward);
 

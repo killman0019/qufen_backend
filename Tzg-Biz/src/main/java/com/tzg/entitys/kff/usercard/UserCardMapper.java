@@ -22,6 +22,8 @@ public interface UserCardMapper extends BaseMapper<UserCard, java.lang.Integer> 
 
 	Integer selectUserCardNum(String userCardNum);
 
+	UserCard findByUserid(Integer userId);
+
 	
 
 }

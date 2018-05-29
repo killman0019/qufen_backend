@@ -115,6 +115,14 @@
         user_id = #{userId}
 	]]>
 	</select>
+	<select id="findByUserIds" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbcoinproperty 
+		WHERE 
+        user_id = #{userId}
+	]]>
+	</select>
 	
 	
 	<select id="findAllCoinPropertyByWhere" resultMap="BaseResultMap" parameterType="java.util.Map">

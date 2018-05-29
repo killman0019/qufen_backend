@@ -223,7 +223,7 @@ public class UserController extends BaseController {
 	            //生成account token
 	            String token = AccountTokenUtil.getAccountToken(loginaccount.getUserId());
 	            map.put("token", token);
-  
+	            
 	            bre.setData(map);
 	        } catch (RestServiceException e) {
 	            logger.warn("login warn:{}", e);

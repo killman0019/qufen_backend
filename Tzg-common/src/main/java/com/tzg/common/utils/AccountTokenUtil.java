@@ -106,7 +106,7 @@ public class AccountTokenUtil {
     }
 	
 	public static void main(String[] args) {
-		System.out.println(decodeAccountToken("MzoxNTI2NDQzNzAxOTI5OjMzY2I2ZTFjMTI2NTA5NjQwZGMyZjkwMTRiYWI5NGNl"));
-        System.out.println(decodeAccountPhoneToken(getAccountPhoneToken("15868802663")));
+		System.out.println(decodeAccountToken("15e2b0d3c33891ebb0f1ef609ec419420c20e320ce94c65fbc8c3312448eb225"));
+        System.out.println(decodeAccountPhoneToken(getAccountPhoneToken("13112311231")));
     }
 }
