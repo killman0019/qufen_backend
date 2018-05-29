@@ -33,21 +33,21 @@ import com.tzg.rest.exception.rest.RestServiceException;
 
 import cn.jpush.api.report.UsersResult.User;
 
-@Service(value="KFFUserService")
+@Service(value = "KFFUserService")
 @Transactional
 public class UserService {
 	private static final Log logger = LogFactory.getLog(UserService.class);
 
 	@Autowired
-	private KFFUserMapper userMapper;	
+	private KFFUserMapper userMapper;
 	@Autowired
 	private QfIndexService qfIndexService;
 	@Autowired
 	private TokenawardService tokenawardService;
-	   
-	@Transactional(readOnly=true)
-    public KFFUser findById(java.lang.Integer id) throws RestServiceException {
-    	if(id == null){
+
+	@Transactional(readOnly = true)
+	public KFFUser findById(java.lang.Integer id) throws RestServiceException {
+		if (id == null) {
 			throw new RestServiceException("id不能为空");
 		}
 		return userMapper.findById(id);
@@ -103,13 +103,13 @@ public class UserService {
 		user.setUpdateTime(createTime);
 		user.setUserType(1);
 		user.setStatus(1);
-		
+
 		userMapper.save(user);
 		QfIndex qfIndex = new QfIndex();
 		qfIndex.setUserId(user.getUserId());
 		qfIndex.setStatusHierarchyDesc("刁民");
 		qfIndex.setStatusHierarchyType(0); // 区分指数 : 新建用户默认是100分
-		qfIndexService. save(qfIndex);
+		qfIndexService.save(qfIndex);
 		return findUserByPhoneNumber(registerRequest.getPhoneNumber());
 	}
 
@@ -137,7 +137,7 @@ public class UserService {
 			// 根据用户id去tokenaward表中获取发放状态 grantType
 			List<Tokenaward> findByUserId = tokenawardService.findByUserId(userId);
 			for (Tokenaward tokenaward : findByUserId) {
-				if (tokenaward.getGrantType()==2) {
+				if (tokenaward.getGrantType() == 2) {
 					// 调用发放接口
 					AwardPortService awardPortService = new AwardPortService();
 					awardPortService.registerAward(userId);
@@ -158,7 +158,7 @@ public class UserService {
 			// 根据用户id去tokenaward表中获取发放状态 grantType
 			List<Tokenaward> findByUserId = tokenawardService.findByUserId(userId);
 			for (Tokenaward tokenaward : findByUserId) {
-				if (tokenaward.getGrantType()==2) {
+				if (tokenaward.getGrantType() == 2) {
 					// 调用发放接口
 					AwardPortService awardPortService = new AwardPortService();
 					awardPortService.registerAward(userId);
@@ -167,7 +167,7 @@ public class UserService {
 					tokenawardService.update(tokenawardNew);
 				}
 			}
-			
+
 		}
 
 		int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
@@ -266,14 +266,16 @@ public class UserService {
 
 	public Integer findReferCount(Integer userId) {
 		return userMapper.findReferCount(userId);
-		
+
 	}
-	
-/*	public Integer findReferUserIdByUserCount(Integer referUserId) {
-		
-		return userMapper.findReferUserIdByUserCount(referUserId);
-		
-	}*/
+
+	/*
+	 * public Integer findReferUserIdByUserCount(Integer referUserId) {
+	 * 
+	 * return userMapper.findReferUserIdByUserCount(referUserId);
+	 * 
+	 * }
+	 */
 
 	public KFFUser saveUserByphonePass(String phoneNumber, Integer invaUserId, String password) {
 
@@ -313,9 +315,10 @@ public class UserService {
 		return findUserByPhoneNumber(phoneNumber);
 
 	}
+
 	public KFFUser findByUserId(Integer userId) {
-		
+
 		return userMapper.findById(userId);
-		
+
 	}
 }

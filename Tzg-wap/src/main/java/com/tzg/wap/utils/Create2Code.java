@@ -42,7 +42,7 @@ public class Create2Code {
 	/**
 	 * 邀请链接的url
 	 */
-	private static String contentself = "http://192.168.10.196:5000/#/user/register1?useId=";
+	private static String contentself = "http://192.168.10.196:5000/user/registerSmp?invaUIH=";
 	/**
 	 * 最终海报的存放路径
 	 */
@@ -51,7 +51,7 @@ public class Create2Code {
 	 * 原始海报的存放路径
 	 */
 	private static String initPosterSysPath = "D:\\opt\\file\\upload\\poster\\init\\";
-	
+
 	private static String text = "区分";
 
 	public static void main(String[] args) {
@@ -65,7 +65,6 @@ public class Create2Code {
 
 		// String str = "";// 二维码字符串
 
-	
 		// 根据用户的ID 生成2code 的数值
 
 		userId = 1;
