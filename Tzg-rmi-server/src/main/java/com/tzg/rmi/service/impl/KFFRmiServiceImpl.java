@@ -66,6 +66,7 @@ import com.tzg.common.utils.GetImgUrl;
 import com.tzg.common.utils.Numbers;
 import com.tzg.common.utils.RandomUtil;
 import com.tzg.common.utils.RegexUtil;
+import com.tzg.common.utils.WorkHtmlRegexpUtil;
 import com.tzg.common.zookeeper.ZKClient;
 import com.tzg.entitys.kff.article.Article;
 import com.tzg.entitys.kff.article.ArticleDetailResponse;
@@ -1023,22 +1024,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		post.setCreateUserSignature(createUser.getUserSignature());
 		post.setDonateNum(0);
 		post.setPageviewNum(0);
-		String str1 = articleRequest.getArticleContents();
-		String str2 = articleRequest.getArticleContents();
-		logger.info("截取字符串");
-		Document doc = Jsoup.parse(str1);
-		String text = doc.text();
-		// remove extra white space
-		StringBuilder builder = new StringBuilder(text);
-		int index = 0;
-		while (builder.length() > index) {
-			char tmp = builder.charAt(index);
-			if (Character.isSpaceChar(tmp) || Character.isWhitespace(tmp)) {
-				builder.setCharAt(index, ' ');
-			}
-			index++;
-		}
-		text = builder.toString().replaceAll(" +", " ").trim();
+
+		logger.info("开始截取字符串");
+
+		String text = WorkHtmlRegexpUtil.removeHtmlTag(articleRequest.getArticleContents());
 		logger.info("无标签文本" + text);
 		if (text.length() < 300) {
 
@@ -1048,34 +1037,61 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 			post.setPostShortDesc(text.substring(0, 300));
 		}
+		logger.info("去标签成功!");
 		// 抽取文章中的图片路径
 		/************ begin *******************/
-
 		/*
-		 * Elements imgs = Jsoup.parse(str2).select("[src]");
-		 * logger.info("开始抽取图片的全路径"); logger.info(imgs); // 截取3个图片 int i = 0;
-		 * List<PhotoParams> picList = new ArrayList<PhotoParams>(); for
-		 * (Element element : imgs) { // 获取每个img标签URL "abs:"表示绝对路径 String imgSrc
-		 * = element.attr("abs:src"); // 打印URL logger.info(imgSrc); // 下载图片到本地 i
-		 * = i + 1; String ext = imgSrc.substring(imgSrc.lastIndexOf("."));
-		 * logger.info("图片后缀:" + ext); String imgNum =
-		 * articleRequest.getCreateUserId() + DateUtil.getCurrentTimeStamp() +
-		 * i; logger.info("图片名称:" + imgNum); String filePath =
-		 * "D:\\opt\\file\\upload\\postPic\\" + imgNum + ext;
-		 * logger.info("图片保存的全路径:++++" + filePath); // 把图片下载到服务器
-		 * DownImagesUtile.downImages(filePath, imgSrc); if (i == 3) {
-		 * logger.info("三张缩略图存储成功!"); break;
-		 * 
-		 * } logger.info("缩略图存储成功!"); PhotoParams photoParams = new
-		 * PhotoParams(); photoParams.setFileName(imgNum);
-		 * photoParams.setFileUrl(imgNum + ext); photoParams.setExtension(ext);
-		 * picList.add(photoParams); }
-		 */
-		// 将图片集合转化成json
-		List<String> imgStr = GetImgUrl.getImgStr(str2);
-		String uploadIeviwList = uploadIeviwList(imgStr);
+				Elements imgs = Jsoup.parse(str2).select("[src]");
+				logger.info("开始抽取图片的全路径");
+				logger.info(imgs); // 截取3个图片
+				int i = 0;
+				List<PhotoParams> picList = new ArrayList<PhotoParams>();
+				for (Element element : imgs) { // 获取每个img标签URL "abs:"表示绝对路径
+					String imgSrc = element.attr("abs:src"); // 打印URL
+																// logger.info(imgSrc);
+					// 下载图片到本地
+					i = i + 1;
+					String ext = imgSrc.substring(imgSrc.lastIndexOf("."));
+					logger.info("图片后缀:" + ext);
+					String imgNum = articleRequest.getCreateUserId() + DateUtil.getCurrentTimeStamp() + i;
+					logger.info("图片名称:" + imgNum);
+					String filePath = "D:\\opt\\file\\upload\\postPic\\" + imgNum + ext;
+			logger.info("图片保存的全路径:++++" + filePath); // 把图片下载到服务器
+			DownImagesUtile.downImages(filePath, imgSrc);
+			if (i == 3) {
+				logger.info("三张缩略图存储成功!");
+				break;
 
-		logger.info("缩略图的json串" + uploadIeviwList);
+			}
+			logger.info("缩略图存储成功!");
+			PhotoParams photoParams = new PhotoParams();
+			photoParams.setFileName(imgNum);
+			photoParams.setFileUrl(imgNum + ext);
+			photoParams.setExtension(ext);
+			picList.add(photoParams);
+		}
+*/
+		logger.info("开始进行抽离图片");
+		List<String> imgSrc = WorkHtmlRegexpUtil.getImgSrc(articleRequest.getArticleContents());
+		List<String> imgDB = new ArrayList<String>();
+
+		int i = 0;
+		for (String img : imgSrc) {
+			logger.info("抽离的图片路径");
+			logger.info(img);
+			if (i == 3) {
+				break;
+			}
+			imgDB.add(img);
+			i = i + 1;
+
+		}
+		logger.info("图片抽离成功!");
+		// 将图片集合转化成json
+
+		String uploadIeviwList = uploadIeviwList(imgDB);
+
+		// logger.info("缩略图的json串" + uploadIeviwList);
 		/************ end *******************/
 
 		post.setPostSmallImages(uploadIeviwList);
@@ -1096,7 +1112,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			throw new RestServiceException("帖子不存在" + uuid);
 		}
 		Article article = new Article();
-		article.setArticleContents(str1);
+		article.setArticleContents(articleRequest.getArticleContents());
 		article.setPostId(newPost.getPostId());
 		article.setPostUuid(uuid);
 		kffArticleService.save(article);
@@ -3117,7 +3133,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		List<DevaluationModelDetail> result = null;
 		PaginationQuery query = new PaginationQuery();
 		query.setPageIndex(1);
-		query.setRowsPerPage(1);
+		query.setRowsPerPage(10);
 		query.addQueryData("modelType", KFFConstants.EVA_MODEL_TYPE_FULL_PRO + "");
 		query.addQueryData("status", "1");
 		PageResult<DevaluationModel> modelPage = kffDevaluationModelService.findPage(query);
@@ -3129,7 +3145,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 		PaginationQuery detailQuery = new PaginationQuery();
 		detailQuery.setPageIndex(1);
-		detailQuery.setRowsPerPage(100);
+		detailQuery.setRowsPerPage(10);
 		detailQuery.addQueryData("modelId", activeModel.getModelId() + "");
 		detailQuery.addQueryData("status", "1");
 		PageResult<DevaluationModelDetail> modelDetailList = kffDevaluationModelDetailService.findPage(detailQuery);
@@ -3330,7 +3346,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (null == userId) {
 			throw new RestServiceException(RestErrorCode.USER_NOT_EXIST);
 		}
-		return authenticationService.selectAuthenticationByUserId(userId);
+		List<Authentication> authentications = authenticationService.selectAuthenticationByUserId(userId);
+
+		return authentications;
 	}
 
 	/**
@@ -3361,7 +3379,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public void selectUserIdStstus(String userRealName, String userCardNum, String photoIviews, Integer userId) {
+	public void updataUserIdStstus(String userRealName, String userCardNum, String photoIviews, Integer userId) {
 		String idcard = RegexUtil.IDCARD; // 判断手机是否符合标注
 		if (!userCardNum.matches(idcard)) {
 			throw new RestServiceException(RestErrorCode.USER_IDCARD_IS_FALSE);
@@ -3618,6 +3636,27 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			}
 			authentication.setLicencepic(uploadIeviw(authentication.getLicencepic()));
 			authentication.setMissivepic(uploadIeviw(authentication.getMissivepic()));
+		}
+		// 添加营业执照合法性判断
+		if (authentication.getRegistrationnum().length() < 15 || authentication.getRegistrationnum().length() > 18) {
+			throw new RestServiceException("请输入正确的营业执照注册号");
+		}
+
+		// 添加手机号码合法性判断
+		if (authentication.getNumber() != null) {
+			String phonefmt = RegexUtil.PHONEREGEX;
+			// 判断手机号码手机是否符合标注
+			if (!authentication.getNumber().matches(phonefmt)) {
+				throw new RestServiceException(RestErrorCode.PHONE_FORMAT_ERROR);
+			}
+		}
+		// 添加认证信息的合法性判断
+		if (authentication.getAuthinformation().length() > 30) {
+			throw new RestServiceException("认证信息不能超过30 字!");
+		}
+		// 添加区分昵称的合法性判断
+		if (authentication.getQufennickname().length() > 10) {
+			throw new RestServiceException("区分昵称不能超过10 字!");
 		}
 		// 分类型进行参数判断 end
 		authentication.setCreatedata(new Date());
@@ -4075,12 +4114,14 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		BeanUtils.copyProperties(commentZanDuoOnly.get(0), commentShareFlootZanDuoOnly);
 
 		int indexOfzan = 0;
+
 		for (Comments commentsli : commentsList) {
 			if (commentsli.getCommentsId() == commentZanDuoOnly.get(0).getCommentsId()) {
 				int indexOf = commentsList.indexOf(commentsli);
 				indexOfzan = indexOf + 1;
 			}
 		}
+
 		commentShareFlootZanDuoOnly.setFloot(indexOfzan);
 		// discussShare.setCommentseZanDuoOnly(commentShareFlootZanDuoOnly);
 		// 设置评论总数
@@ -4320,5 +4361,15 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		userWalletService.updateWallet(findbyWallet);
 		KFFUserWallet findbyWallet2 = userWalletService.findbyWallet(kffUserWallet);
 		return findbyWallet2;
+	}
+
+	@Override
+	public UserCard selectUserCardByUserId(Integer userId) throws RestServiceException {
+		
+		List<UserCard> userCards = userCardService.selectStatusByUserID(userId);
+		if(userCards.size()==0){
+			return null;
+		}
+		return userCards.get(0);
 	}
 }

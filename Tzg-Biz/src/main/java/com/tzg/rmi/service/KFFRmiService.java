@@ -337,28 +337,34 @@ public interface KFFRmiService {
 	 * @throws RestServiceException
 	 */
 	public ProjectResponse findProjectById(Integer userId, Integer projectId) throws RestServiceException;
+
 	/**
 	 * 获取奖励表信息
+	 * 
 	 * @param userId
 	 * @return
 	 * @throws RestServiceException
-	public List<Tokenaward> findTokenawardById(Integer userId) throws RestServiceException;
+	 *             public List<Tokenaward> findTokenawardById(Integer userId) throws
+	 *             RestServiceException;
 	 */
 	/**
 	 * 获取资产表信息
+	 * 
 	 * @param userId
 	 * @return
 	 * @throws RestServiceException
 	 */
-	public List<CoinProperty> findCoinPropertyById(Integer userId,Double coinUnlock) throws RestServiceException;
+	public List<CoinProperty> findCoinPropertyById(Integer userId, Double coinUnlock) throws RestServiceException;
+
 	/**
 	 * 获取资产表信息
+	 * 
 	 * @param userId
-	 * @param coinUnlockType 
+	 * @param coinUnlockType
 	 * @return
 	 * @throws RestServiceException
 	 */
-	public List<CoinProperty> findCoinPropertyById(Integer userId,Date coinUnlockTime, Integer coinUnlockType) throws RestServiceException;
+	public List<CoinProperty> findCoinPropertyById(Integer userId, Date coinUnlockTime, Integer coinUnlockType) throws RestServiceException;
 
 	/**
 	 * 获取项目下活跃用户列表 --数量2 按 创建帖子数量排序
@@ -419,6 +425,7 @@ public interface KFFRmiService {
 	public List<Comments> findAllDiscussCommentsList(Integer userId, Integer postId) throws RestServiceException;
 
 	public void registerAward(Integer userId);
+
 	/**
 	 * 
 	 * 查询用户发布的最新的一条讨论
@@ -462,6 +469,7 @@ public interface KFFRmiService {
 	public List<CoinProperty> findCoinPropertyByUserId(Integer userId);
 
 	public List<Tokenaward> findAllTokenawardUser(Integer userId);
+
 	/**
 	 * 绑定钱包操作
 	 * 
@@ -595,43 +603,56 @@ public interface KFFRmiService {
 	 * @return
 	 */
 	public List<Comments> findPageNewestCommentsDis(Integer userId, Integer postId, PaginationQuery query);
-	
+
 	public ArticleDetailResponse findArticleDetailForShare(Integer postId);
-	
+
 	public KFFProject findProjectIdByCodeAndChineseName(KFFProject kffProject);
+
 	public KFFUser saveUserByphonePass(String phoneNumber, Integer invaUserId, String password);
-	
+
 	public List<Dtags> findAllTagsName();
-	
+
 	public Integer selectAuthenticationStatusByUserId(Integer userId);
-	
+
 	public Integer selectUserCardStatusByUserId(Integer userId);
-	
+
 	public Integer selectUserCardNum(String userCardNum);
-	
+
 	public void setUserCardAuthentication(Integer userId, String phone);
-	
+
 	public String uploadIeviw(String photoIviews);
-	
+
 	public void updataUserIdCard(UserCard userCard);
-	
-	public void selectUserIdStstus(String userRealName, String userCardNum, String photoIviews, Integer userId);
-	
+
+	// public void selectUserIdStstus(String userRealName, String userCardNum, String photoIviews,
+	// Integer userId);
+
 	public List<KFFProject> findProjectName();
-	
+
 	public void saveAuthenticationByUseId(Integer userId);
-	
+
 	public List<Authentication> selectAuthenticatiobByUserId(Integer userId);
-	
+
 	public void saveUserIdCard(UserCard userCard);
-	
+
 	public Integer selectStatusByUserID(Integer userId);
-	
+
 	public KFFUser updateUserInfo(KFFUser account);
-	
+
 	public List<DevaluationModelDetail> findSysEvaModelDetailList();
-	
+
 	public List<DevaluationModelDetail> findProjectEvaStat(Integer projectId);
-	
+
 	public PageResult<Comments> findPageDiscussCommentsList(Integer userId, PaginationQuery query);
+
+	public void updataUserIdStstus(String userRealName, String userCardNum, String photoIviews, Integer userId);
+
+	/**
+	 * 根据userId查询usercard表中是否有数据
+	 * 
+	 * @param userId
+	 * @return
+	 * @throws RestServiceException
+	 */
+	public UserCard selectUserCardByUserId(Integer userId) throws RestServiceException;
 }

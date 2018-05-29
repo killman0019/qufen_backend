@@ -65,8 +65,7 @@ public class UserController extends BaseController {
 	private RedisService redisService;
 
 	/**
-	 * 用户注册后生成邀请链接 (免密码登陆**** 手机号码*** 图片生成验证码*** 手机验证码*** 发到手机的验证码 密码) 邀请码 app
-	 * 端注册 adasdadad
+	 * 用户注册后生成邀请链接 (免密码登陆**** 手机号码*** 图片生成验证码*** 手机验证码*** 发到手机的验证码 密码) 邀请码 app 端注册 adasdadad
 	 * 
 	 * @param phoneNumber
 	 * @param checkCode
@@ -607,48 +606,64 @@ public class UserController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping(value = "/usercardStatus", method = { RequestMethod.POST, RequestMethod.GET })
-	public BaseResponseEntity usercardStatus(HttpServletRequest request, HttpServletResponse response) {
+	public BaseResponseEntity usercardStatus(HttpServletRequest request, HttpServletResponse response, String token) {
 
 		// 创建返回体
 		BaseResponseEntity bre = new BaseResponseEntity();
 		// 创建返回的map
 		HashMap<String, Object> map = new HashMap<String, Object>();
-		String token = (String) request.getSession().getAttribute("token");
+
+		// 根据用户token 查找到用户的userID
+		Integer userId = AccountTokenUtil.decodeAccountToken(token);
+		userId = 54;
+		if (userId == null) {
+			throw new RestServiceException(RestErrorCode.USER_NOT_EXIST);
+		}
+
 		if (null == token) {
 			throw new RestServiceException(RestErrorCode.USER_NOT_LOGIN);
 		}
-		UserModel userModel = (UserModel) request.getSession().getAttribute("userModel");
+
+		// 移动端登陆
+		KFFUser user = kffRmiService.findUserById(userId);
+		if (null == kffRmiService.selectUserCardByUserId(userId)) {
+			// usercard表中没有数据表示是移动端登陆
+			// 需要新建数据表
+			kffRmiService.setUserCardAuthentication(user.getUserId(), user.getMobile());
+
+		}
+		Integer statusNum = kffRmiService.selectUserCardStatusByUserId(user.getUserId());
 		// 用户没有进行审核
-		if (4 == userModel.getUserIdStatus()) {
-			// 用户信息审核通过 // 已经进行实名验证
+		if (4 == statusNum) {
+			// 未进行实名审核
 			// 就直接查询usercard表返回查询结果
-			map.put("status", userModel.getUserIdStatus());
+			map.put("status", statusNum);
 			bre.setData(map);
 			return bre;
 		}
 
-		if (3 == userModel.getUserIdStatus()) {
+		if (3 == statusNum) {
 			// 审核没有通过
 			//
-			map.put("status", userModel.getUserIdStatus());
+			map.put("status", statusNum);
 			bre.setData(map);
 			return bre;
 		}
-		if (2 == userModel.getUserIdStatus()) {
+		if (2 == statusNum) {
 			// 审核中
 			//
-			map.put("status", userModel.getUserIdStatus());
+			map.put("status", statusNum);
 			bre.setData(map);
 			return bre;
 		}
-		if (1 == userModel.getUserIdStatus()) {
+		if (1 == statusNum) {
 			// 审核成功
 			//
-			map.put("status", userModel.getUserIdStatus());
+			map.put("status", statusNum);
 			bre.setData(map);
 			return bre;
 		}
-		if (null == userModel.getUserIdStatus()) {
+		if (null == statusNum) {
 			map.put("status", 4);
 			bre.setData(map);
 			return bre;
@@ -658,8 +673,7 @@ public class UserController extends BaseController {
 	}
 
 	/**
-	 * 身份证上传(真实姓名,用户身份证号,正面身份证URL,用户token) (flag 为true 显示执行查询是否通过 false
-	 * 显示上传图片界面)
+	 * 身份证上传(真实姓名,用户身份证号,正面身份证URL,用户token) (flag 为true 显示执行查询是否通过 false 显示上传图片界面)
 	 * 
 	 * @param request
 	 * @param response
@@ -671,13 +685,13 @@ public class UserController extends BaseController {
 	 */
 	@RequestMapping(value = "/uploadUserCard", method = { RequestMethod.POST, RequestMethod.GET })
 	public BaseResponseEntity uploadUserCord(HttpServletRequest request, HttpServletResponse response, String userRealName, String userCardNum,
-			String photoIviews) {
+			String photoIviews, String token) {
 		// 创建返回体
 		BaseResponseEntity bre = new BaseResponseEntity();
 		// 创建返回的map
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		try {
-			String token = (String) request.getSession().getAttribute("token");
+
 			// 根据用户token 查找到用户的userID
 			Integer userId = AccountTokenUtil.decodeAccountToken(token);
 			if (userId == null) {
@@ -715,7 +729,7 @@ public class UserController extends BaseController {
 			}
 
 			// 并将status设置成待审核状态
-			kffRmiService.selectUserIdStstus(userRealName, userCardNum, photoIviews, userId);
+			kffRmiService.updataUserIdStstus(userRealName, userCardNum, photoIviews, userId);
 			map.put("status", 2);
 			bre.setData(map);
 		} catch (RestServiceException e) {

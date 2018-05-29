@@ -9,6 +9,8 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.coobird.thumbnailator.Thumbnails;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.tzg.common.utils.FileUtils;
+import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
 import com.tzg.rmi.service.KFFRmiService;
 import com.tzg.wap.utils.DateUtil;
@@ -36,13 +40,28 @@ public class UploadController extends BaseController {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		Map<String, Object> resMap = new HashMap<String, Object>();
 
+		if (null == upfile) {
+			throw new RestServiceException("上传图片不能为空!");
+		}
+		// 大于10M
+		if (upfile.getSize() >= 10 * 1024 * 1024) {
+			throw new RestServiceException("图片大于10M");
+		}
 		// 保存图片到
 		String name = UUID.randomUUID().toString().replaceAll("-", "");
 		name = DateUtil.getCurrentTime();
 		// jpg
 		String ext = FilenameUtils.getExtension(upfile.getOriginalFilename());
-
-		upfile.transferTo(new File("D:\\opt\\file\\upload\\Idcard\\" + name + "." + ext));
+		if (!FileUtils.allowedExtensionSet().contains(ext)) {
+			throw new RestServiceException("非法文件后缀" + ext);
+		}
+		// upfile.transferTo(new File("D:\\opt\\file\\upload\\Idcard\\" + name +"." + ext));
+		// 进行压缩 大于3m 进行压缩
+		if (upfile.getSize() >= 3 * 1024 * 1024) {
+			Thumbnails.of(upfile.getInputStream()).scale(1f).outputQuality(0.25f).toFile(new File("D:\\opt\\file\\upload\\Idcard\\" + name + "." + ext));
+		} else {
+			upfile.transferTo(new File("D:\\opt\\file\\upload\\Idcard\\" + name + "." + ext));
+		}
 
 		resMap.put("picPath", "upload\\Idcard\\" + name + "." + ext);
 		bre.setData(resMap);
@@ -54,14 +73,27 @@ public class UploadController extends BaseController {
 	public BaseResponseEntity uploadAvatars(@RequestParam(required = false) MultipartFile upfile) throws Exception, IOException {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		Map<String, Object> resMap = new HashMap<String, Object>();
-
+		if (null == upfile) {
+			throw new RestServiceException("上传图片不能为空!");
+		}
+		// 大于10M
+		if (upfile.getSize() >= 10 * 1024 * 1024) {
+			throw new RestServiceException("图片大于10M");
+		}
 		// 保存图片到
 		String name = UUID.randomUUID().toString().replaceAll("-", "");
 		name = DateUtil.getCurrentTime();
 		// jpg
 		String ext = FilenameUtils.getExtension(upfile.getOriginalFilename());
+		if (!FileUtils.allowedExtensionSet().contains(ext)) {
+			throw new RestServiceException("非法文件后缀" + ext);
+		}
+		if (upfile.getSize() >= 3 * 1024 * 1024) {
+			Thumbnails.of(upfile.getInputStream()).scale(1f).outputQuality(0.25f).toFile(new File("D:\\opt\\file\\upload\\avatars\\" + name + "." + ext));
+		} else {
+			upfile.transferTo(new File("D:\\opt\\file\\upload\\avatars\\" + name + "." + ext));
+		}
 
-		upfile.transferTo(new File("D:\\opt\\file\\upload\\avatars\\" + name + "." + ext));
 		resMap.put("picPath", "upload\\avatars\\" + name + "." + ext);
 		bre.setData(resMap);
 		return bre;
@@ -74,13 +106,26 @@ public class UploadController extends BaseController {
 		Map<String, Object> resMap = new HashMap<String, Object>();
 		log.info("图片进入接口!++++++++++++++++++++++");
 		// 保存图片到
+		if (null == upfile) {
+			throw new RestServiceException("上传图片不能为空!");
+		}
+		// 大于10M
+		if (upfile.getSize() >= 10 * 1024 * 1024) {
+			throw new RestServiceException("图片大于10M");
+		}
 		String name = UUID.randomUUID().toString().replaceAll("-", "");
 		name = DateUtil.getCurrentTime();
 		// jpg
 		String ext = FilenameUtils.getExtension(upfile.getOriginalFilename());
+		if (!FileUtils.allowedExtensionSet().contains(ext)) {
+			throw new RestServiceException("非法文件后缀" + ext);
+		}
 
-		upfile.transferTo(new File("D:\\opt\\file\\upload\\postPic\\" + name + "." + ext));
-
+		if (upfile.getSize() >= 3 * 1024 * 1024) {
+			Thumbnails.of(upfile.getInputStream()).scale(1f).outputQuality(0.25f).toFile(new File("D:\\opt\\file\\upload\\postPic\\" + name + "." + ext));
+		} else {
+			upfile.transferTo(new File("D:\\opt\\file\\upload\\postPic\\" + name + "." + ext));
+		}
 		resMap.put("picPath", "upload\\postPic\\" + name + "." + ext);
 		log.info("图片存入成功!++++++++++++++++++++++");
 		log.info(name + "." + ext);
@@ -97,13 +142,26 @@ public class UploadController extends BaseController {
 		response.setContentType("text/html;charset=gbk");
 		log.info("postPicsf图片进入接口!++++++++++++++++++++++");
 		// 保存图片到
-
+		if (null == upfile) {
+			throw new RestServiceException("上传图片不能为空!");
+		}
+		// 大于10M
+		if (upfile.getSize() >= 10 * 1024 * 1024) {
+			throw new RestServiceException("图片大于10M");
+		}
 		String name = UUID.randomUUID().toString().replaceAll("-", "");
 		name = DateUtil.getCurrentTime();
 		// jpg
 		String ext = FilenameUtils.getExtension(upfile.getOriginalFilename());
+		if (!FileUtils.allowedExtensionSet().contains(ext)) {
+			throw new RestServiceException("非法文件后缀" + ext);
+		}
 
-		upfile.transferTo(new File("D:\\opt\\file\\upload\\postPic\\" + name + "." + ext));
+		if (upfile.getSize() >= 3 * 1024 * 1024) {
+			Thumbnails.of(upfile.getInputStream()).scale(1f).outputQuality(0.25f).toFile(new File("D:\\opt\\file\\upload\\postPic\\" + name + "." + ext));
+		} else {
+			upfile.transferTo(new File("D:\\opt\\file\\upload\\postPic\\" + name + "." + ext));
+		}
 
 		resMap.put("file_path", "http://192.168.10.151:8080//postPic//" + name + "." + ext);
 		resMap.put("success", "true");
@@ -120,15 +178,32 @@ public class UploadController extends BaseController {
 	public BaseResponseEntity uploadAuthentication(@RequestParam(required = false) MultipartFile upfile) throws Exception, IOException {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		Map<String, Object> resMap = new HashMap<String, Object>();
-
+		log.info("authentication图片进入接口!++++++++++++++++++++++");
 		// 保存图片到
+		// 保存图片到
+		if (null == upfile) {
+			throw new RestServiceException("上传图片不能为空!");
+		}
+		// 大于10M
+		if (upfile.getSize() >= 10 * 1024 * 1024) {
+			throw new RestServiceException("图片大于10M");
+		}
 		String name = UUID.randomUUID().toString().replaceAll("-", "");
 		name = DateUtil.getCurrentTime();
 		// jpg
 		String ext = FilenameUtils.getExtension(upfile.getOriginalFilename());
+		if (!FileUtils.allowedExtensionSet().contains(ext)) {
+			throw new RestServiceException("非法文件后缀" + ext);
+		}
+		if (upfile.getSize() >= 3 * 1024 * 1024) {
+			Thumbnails.of(upfile.getInputStream()).scale(1f).outputQuality(0.25f)
+					.toFile(new File("D:\\opt\\file\\upload\\authentication\\" + name + "." + ext));
+		} else {
+			upfile.transferTo(new File("D:\\opt\\file\\upload\\authentication\\" + name + "." + ext));
+		}
 
-		upfile.transferTo(new File("D:\\opt\\file\\upload\\authentication\\" + name + "." + ext));
-
+		log.info("authentication +++++++图片存入成功!++++++++++++++++++++++");
+		log.info(name + "." + ext);
 		resMap.put("picPath", "upload\\authentication\\" + name + "." + ext);
 		bre.setData(resMap);
 		return bre;

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.tzg.entitys.kff.devaluationModel.DevaluationModel;
 import com.tzg.entitys.kff.devaluationModel.DevaluationModelRequest;
+import com.tzg.entitys.kff.devaluationModelDetail.DevaluationModelDetail;
 import com.tzg.entitys.kff.evaluation.Evaluation;
 import com.tzg.entitys.kff.evaluation.EvaluationRequest;
 import com.tzg.entitys.kff.project.KFFProject;
@@ -115,16 +116,8 @@ public class EvaluationController extends BaseController {
 		HashMap<String, Object> map = new HashMap<String, Object>();
 
 		// 根据评测模型表查询有效启动的评测模板
-		List<DevaluationModel> devaluationModels = kffRmiService.findEvaliationModel();
-		List<DevaluationModel> devaluationModelsNew = new ArrayList<DevaluationModel>();
-		for (DevaluationModel devaluationModel : devaluationModels) {
-			DevaluationModel devaluationModel2 = new DevaluationModel();
-			devaluationModel2.setModelId(devaluationModel.getModelId());
-			devaluationModel2.setModelName(devaluationModel.getModelName());
-			devaluationModel2.setModelWeight(devaluationModel.getModelWeight());
-			devaluationModelsNew.add(devaluationModel2);
-		}
-		map.put("devaluationModel", devaluationModelsNew);
+		List<DevaluationModelDetail> sysEvuationModel = kffRmiService.findSysEvaModelDetailList();
+		map.put("sysEvuationModel", sysEvuationModel);
 		bre.setData(map);
 		return bre;
 	}
