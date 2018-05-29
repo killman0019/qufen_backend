@@ -1389,6 +1389,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			 * 添加帖子点赞送积分功能
 			 * 
 			 */
+				Integer yxPraise = qfIndexPraiseUser.getYxpraise();
+				 Integer createPostUserQFIndex = qfIndex.getYxpraise();
+						if (evaluation.getModelType()==1) {
 				// 帖子点赞数 +1 的时候去执行以下 送积分操作
 				
 				// 根据 文章详情对象praise 获取帖子类型
@@ -1396,13 +1399,13 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				// 根据点赞人的id 去查看他的有效点赞
 				QfIndex qfIndexPraiseUser = qfIndexService.findByUserId(userId);
 				Integer qfIndexId = qfIndexPraiseUser.getQfIndexId();
-				Integer yxPraise = qfIndexPraiseUser.getYxPraise();
+				Integer yxPraise = qfIndexPraiseUser.getYxpraise();
 				// 根据帖子的id 去获取内容贡献者的id
 				Post creatUserPost = kffPostService.findById(postId);
 				Integer createUserId = creatUserPost.getCreateUserId();
 				// 根据内容贡献值的id去获取本身的区分指数
 				 QfIndex qfIndex = qfIndexService.findById(createUserId);
-				 Integer createPostUserQFIndex = qfIndex.getYxPraise();
+				 Integer createPostUserQFIndex = qfIndex.getYxpraise();
 				// 发帖人赞的收益系数
 				Double createPUF = createPostUserQFIndex * 0.01d;
 				// 满足点赞条件额外送币
@@ -2954,7 +2957,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			// 根据点赞人的id 去查看他的有效点赞
 			QfIndex qfIndexPraiseUser = qfIndexService.findByUserId(userId);
 			Integer qfIndexId = qfIndexPraiseUser.getQfIndexId();
-			Integer yxPraise = qfIndexPraiseUser.getYxPraise();
+			Integer yxPraise = qfIndexPraiseUser.getYxpraise();
 			// 根据评论的id 去获取发表评论人的id
 			Integer commentUserId = comments.getCommentUserId();
 			
@@ -2962,7 +2965,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			//Integer createUserId = creatUserPost.getCreateUserId();
 			// 根据发表评论人的id去获取本身的区分指数
 			 QfIndex qfIndex = qfIndexService.findById(commentUserId);
-			 Integer createPostUserQFIndex = qfIndex.getYxPraise();
+			 Integer createPostUserQFIndex = qfIndex.getYxpraise();
 			// 发帖人赞的收益系数
 			Double createPUF = createPostUserQFIndex * 0.01d;
 		

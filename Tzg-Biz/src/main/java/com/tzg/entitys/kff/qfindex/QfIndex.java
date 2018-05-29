@@ -69,11 +69,11 @@ public class QfIndex implements Serializable {
 	
 	
 	
-	public java.lang.Integer getYxPraise() {
+	public java.lang.Integer getYxpraise() {
 		return yxpraise;
 	}
-	public void setYxPraise(java.lang.Integer yxPraise) {
-		this.yxpraise = yxPraise;
+	public void setYxPraise(java.lang.Integer yxpraise) {
+		this.yxpraise = yxpraise;
 	}
 	public java.util.Date getCreateTime() {
 		return createTime;

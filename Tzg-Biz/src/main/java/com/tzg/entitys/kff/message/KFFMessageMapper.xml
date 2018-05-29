@@ -12,11 +12,13 @@
 		<result property="title" jdbcType="VARCHAR" column="title"/>
 		<result property="content" jdbcType="VARCHAR" column="content"/>
 		<result property="jumpInfo" jdbcType="VARCHAR" column="jump_info"/>
+		<result property="senderUserId" jdbcType="INTEGER" column="sender_user_id"/>
+
     </resultMap>
 	
 	<sql id="columns">
 	    <![CDATA[
-        message_id ,type ,status ,state ,createTime ,updateTime ,user_id ,title ,content ,jump_info 
+        message_id ,type ,status ,state ,createTime ,updateTime ,user_id ,title ,content ,jump_info ,sender_user_id
 	    ]]>
 	</sql>
 	
@@ -34,7 +36,8 @@
         	user_id ,
         	title ,
         	content ,
-        	jump_info 
+        	jump_info ,
+        	sender_user_id
 		) VALUES (
         	#{type,jdbcType=INTEGER} ,
         	#{status,jdbcType=INTEGER} ,
@@ -44,7 +47,8 @@
         	#{userId,jdbcType=INTEGER} ,
         	#{title,jdbcType=VARCHAR} ,
         	#{content,jdbcType=VARCHAR} ,
-        	#{jumpInfo,jdbcType=VARCHAR} 
+        	#{jumpInfo,jdbcType=VARCHAR} ,
+        	#{senderUserId,jdbcType=INTEGER} 
 		)
 	]]>
 	</insert>
@@ -77,7 +81,10 @@
 	        content = #{content,jdbcType=VARCHAR} ,
 	        </if>
 			<if test="jumpInfo != null">
-	        jump_info = #{jumpInfo,jdbcType=VARCHAR} 
+	        jump_info = #{jumpInfo,jdbcType=VARCHAR} ,
+	        </if>
+	        <if test="senderUserId != null">
+	        sender_user_id = #{senderUserId,jdbcType=INTEGER} ,
 	        </if>
 	    </set>
 		WHERE 
@@ -157,6 +164,9 @@
 		</if>
 		<if test="jumpInfo != null and jumpInfo.trim() != ''">
 		and jump_info = #{jumpInfo}
+		</if>
+		<if test="senderUserId != null and senderUserId.trim() != ''">
+		and sender_user_id = #{senderUserId}
 		</if>
 	</sql>
 </mapper>

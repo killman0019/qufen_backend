@@ -416,12 +416,14 @@ public class UserController extends BaseController {
 			// 把token放在session中
 			System.out.println("token" + token);
 			// 查询用户的认证表和身份认证表中的是否有数据
-			if (4 == kffRmiService.selectUserCardStatusByUserId(loginaccount.getUserId())) {
+			// 5 表示首次登陆
+			if (5 == kffRmiService.selectUserCardStatusByUserId(loginaccount.getUserId())) {
 				// 身份验证表中没有该用户
 				// 将用户是否进行身份审核等信息存放在authentication表中
 				kffRmiService.setUserCardAuthentication(loginaccount.getUserId(), loginaccount.getMobile());
 			}
-			if (4 == kffRmiService.selectAuthenticationStatusByUserId(loginaccount.getUserId())) {
+			// 5表示首次登陆
+			if (5 == kffRmiService.selectAuthenticationStatusByUserId(loginaccount.getUserId())) {
 				// 将用户信息插入认证表中
 				kffRmiService.saveAuthenticationByUseId(loginaccount.getUserId());
 			}
