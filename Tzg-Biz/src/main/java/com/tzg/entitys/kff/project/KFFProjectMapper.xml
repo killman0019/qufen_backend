@@ -244,7 +244,7 @@
 	
 	<select id="findProjectByCode" resultMap="BaseResultMap" parameterType="java.util.Map">
 		select <include refid="columns"/>  from tbproject where status=1
-		<include refid="queryWhere"/> 
+		<include refid="queryWhereByCode"/> 
 		 <choose>
 	            <when test="sortField != null and sortField != ''">
 	               ORDER BY ${sortField} DESC
@@ -262,7 +262,7 @@
 		and state = #{state}
 		</if>
 		<if test="projectCode != null and projectCode.trim() != ''">
-		and ( project_code like CONCAT('%', #{projectCode},'%') or project_english_name like CONCAT('%', #{projectCode},'%') )
+		and ( project_code like CONCAT('%', #{projectCode},'%') or project_english_name like CONCAT('%', #{projectCode},'%') or project_chinese_name like CONCAT('%', #{projectCode},'%'))
 		</if>
 		
 	</sql>
