@@ -1112,7 +1112,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			throw new RestServiceException("帖子不存在" + uuid);
 		}
 		Article article = new Article();
-		article.setArticleContents(str1);
+		article.setArticleContents(articleRequest.getArticleContents());
 		article.setPostId(newPost.getPostId());
 		article.setPostUuid(uuid);
 		kffArticleService.save(article);

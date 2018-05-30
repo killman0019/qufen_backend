@@ -43,7 +43,7 @@ public class Create2Code {
 	/**
 	 * 邀请链接的url
 	 */
-	private static String contentself = "http://192.168.10.196:5000/user/registerSmp?invaUIH=";
+	private static final String contentself = "http://192.168.10.196:5000/user/registerSmp?invaUIH=";
 	/**
 	 * 最终海报的存放路径
 	 */
@@ -53,7 +53,7 @@ public class Create2Code {
 	 */
 	private static String initPosterSysPath = "D:\\opt\\file\\upload\\poster\\init\\initpic.png";
 
-	private static String text = "区分欢迎你!";
+	private static String text = "";
 
 	public static void main(String[] args) {
 		createPoster(null);
@@ -61,7 +61,6 @@ public class Create2Code {
 
 	public static String createPoster(Integer userId) {
 
-		userId = 17;
 		String str = HexUtil.userIdTo2code(userId);
 
 		// 调用create2CodeImg 方法生成二维码
@@ -69,11 +68,12 @@ public class Create2Code {
 		// 调用createCharAtImg 方法 向图片上添加文字
 		// 返回图片的相对于服务器的绝对地址
 		String posterSysPathlast = posterSysPath + str + ".png";
+		String contentselfid = contentself + str;
 		String code2Path = createNameAndPath(str);// 二维码路径
-		create2CodeImg(code2Path);// 在制定位置生成二维码
+		create2CodeImg(code2Path, contentselfid);// 在制定位置生成二维码
 		overlapImage(initPosterSysPath, code2Path, posterSysPathlast);
 		createCharAtImg(text, posterSysPathlast);
-		return posterSysPathlast;
+		return "upload\\poster\\" + str + "." + "png";
 	}
 
 	/**
@@ -82,16 +82,16 @@ public class Create2Code {
 	 * @param str
 	 * @return
 	 */
-	public static void create2CodeImg(String str) {
+	public static void create2CodeImg(String str, String contentselfid) {
 		try {
 			// String content = "http://www.baidu.com";
 
 			MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
-			int margin = 5;// 设置白边框宽
+			int margin = 1;// 设置白边框宽
 			Map hints = new HashMap<EncodeHintType, Object>();
 			hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
 			hints.put(EncodeHintType.MARGIN, margin);
-			BitMatrix bitMatrix = multiFormatWriter.encode(contentself, BarcodeFormat.QR_CODE, 100, 100, hints);
+			BitMatrix bitMatrix = multiFormatWriter.encode(contentselfid, BarcodeFormat.QR_CODE, 128, 128, hints);
 
 			File file = new File(str);
 			MatrixToImageWriter.writeToFile(bitMatrix, "png", file);
@@ -121,8 +121,8 @@ public class Create2Code {
 			// int y = (big.getHeight() - small.getHeight()) / 2;
 			// int x = 128 * big.getWidth() / 345 + 4 - 22 + 10 - 3;
 			// int y = (164 * big.getHeight() / 183) - 90 + 3 - 25 + 3 + 2;
-			int x = big.getWidth() - 282 + 55 + 30 - 5;// 减大向左
-			int y = big.getHeight() - 188 - 30;// 减大向上
+			int x = 550;// 横
+			int y = 1125;// 竖
 			g.drawImage(small, x, y, small.getWidth(), small.getHeight(), null);
 			g.dispose();
 			ImageIO.write(big, outFile.split("\\.")[1], new File(outFile));
@@ -151,7 +151,7 @@ public class Create2Code {
 			BufferedImage image = ImageIO.read(file);
 			Graphics2D g2 = image.createGraphics();
 			// g2.setColor(Color.red);
-			Font font = new Font("微软雅黑", Font.BOLD, 28);// 添加字体的属性设置
+			Font font = new Font("宋体", Font.BOLD, 28);// 添加字体的属性设置
 			g2.setColor(Color.WHITE);
 			g2.setFont(font);
 			// g2.drawString(str, image.getWidth() - 260, image.getHeight() - 170);

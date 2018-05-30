@@ -219,7 +219,7 @@ public class UserController extends BaseController {
 		// 根据token获得userId
 		Integer userId = AccountTokenUtil.decodeAccountToken(token);
 		// 根据userID 的code2生成相关的海报存在相对应的位置
-
+		userId = 18;
 		String posterUrl = Create2Code.createPoster(userId);
 		// 调用生成海报的方法返回
 
