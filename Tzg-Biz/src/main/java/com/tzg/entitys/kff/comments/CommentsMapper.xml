@@ -311,6 +311,13 @@
 		FROM tbcomments
 		WHERE post_id = #{postId} and parent_comments_id is NULL and `status` = 1 ORDER BY comments_id ASC
 	</select>
+	<select id="findByPostId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+
+		SELECT
+		<include refid="columns" />
+		FROM tbcomments
+		WHERE comments_id = #{commentsId} and comment_user_id = #{commentUserId}
+	</select>
 
 </mapper>
 

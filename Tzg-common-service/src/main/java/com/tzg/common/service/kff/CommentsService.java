@@ -127,6 +127,11 @@ public class CommentsService {
 
 		return commentsMapper.findFlootOrderById(postId);
 	}
+
+	public Comments findByPostId(Integer commentsId, Integer userId) {
+		return commentsMapper.findByPostId(commentsId,userId);
+		
+	}
 	
 
 	

@@ -13,6 +13,7 @@ import com.tzg.entitys.kff.coinproperty.CoinProperty;
 import com.tzg.entitys.kff.tokenaward.Tokenaward;
 import com.tzg.entitys.kff.tokenrecords.Tokenrecords;
 import com.tzg.entitys.kff.user.KFFUser;
+import com.tzg.entitys.kff.usercard.UserCard;
 
 /**
  * 发放接口
@@ -31,6 +32,8 @@ public class AwardPortService  {
 	private UserService kffUserService;
 	@Autowired
 	private CoinPropertyService kffCoinPropertyService;
+	@Autowired
+	private UserCardService userCardService;
 	//创建用户对象
 	private	KFFUser user = new KFFUser();
 	//创建奖励表对象
@@ -58,6 +61,7 @@ public class AwardPortService  {
 				String formatCreateTime = format.format(createTime);
 				String formatNewDate = format.format(new Date());
 				if(formatCreateTime==formatNewDate) {
+					
 					method1(userId);
 				}else{
 					
@@ -1228,6 +1232,11 @@ public class AwardPortService  {
 	}
 
 	private void issue(Integer userId) {
+		
+		// 判断注册用户是否实名认证
+	//	UserCard findBycreateUserId = userCardService.findByUserid(userId);
+		UserCard findByUserid = userCardService.findByUserid(userId);
+		
 		List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
 		//根据用户id去获取用户资产信息
 		CoinProperty coinProperty = kffCoinPropertyService.findByUserId(userId);
@@ -1242,7 +1251,7 @@ public class AwardPortService  {
 			Integer awardFunctionType = award.getTokenAwardFunctionType();
 			// 如果奖励没有发放完毕并且是线性发放
 			CoinProperty coinProperty2 = new CoinProperty();
-			if(counter<100 && distributionType == 1 ){
+			if(counter<100 && distributionType == 1 && findByUserid != null){
 				if(award.getGrantType()==2) { // 1-今天发放一次,2-今天未发放
 					
 					Double x = rewards/100;

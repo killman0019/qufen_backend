@@ -15,7 +15,7 @@ import com.tzg.rest.exception.rest.RestServiceException;
 
 @Service(value = "UserCardService")
 @Transactional
-public class UserCardService {
+public class UserCardService  {
 	private static final Log logger = LogFactory.getLog(UserCardService.class);
 
 	@Autowired
@@ -36,6 +36,10 @@ public class UserCardService {
 	public void updataUserIdCard(UserCard userCard) {
 		userCardMapper.update(userCard);
 
+	}
+	public UserCard findByUserid(java.lang.Integer userId) {
+		return userCardMapper.findByUserid(userId);
+		
 	}
 	@Transactional(readOnly = true)
 	public Integer selectUserCardNum(String userCardNum) {

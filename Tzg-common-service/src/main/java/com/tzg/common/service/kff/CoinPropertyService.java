@@ -75,5 +75,10 @@ public class CoinPropertyService {
 		return coinPropertyMapper.findAllCoinpropertyByWhere(map);
 	}
 
+	public List<CoinProperty> findByUserIds(Integer userId) {
+		// TODO Auto-generated method stub
+		return coinPropertyMapper.findByUserIds(userId);
+	}
+
 	
 }
