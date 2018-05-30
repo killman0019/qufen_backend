@@ -209,11 +209,10 @@ public class UserController extends BaseController {
 	 */
 	@RequestMapping(value = "/createPoster", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public BaseResponseEntity createPoster(HttpServletRequest request, HttpServletResponse response) {
+	public BaseResponseEntity createPoster(HttpServletRequest request, HttpServletResponse response, String token) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
-		// 添加token
-		String token = (String) request.getSession().getAttribute("token");
+		token = "i";
 		if (null == token) {
 			throw new RestServiceException("参数错误,请重新注册!");
 		}

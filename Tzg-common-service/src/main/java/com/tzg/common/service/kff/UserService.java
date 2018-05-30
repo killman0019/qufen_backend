@@ -135,7 +135,7 @@ public class UserService {
 			KFFUser loninUser = userMapper.findByMobileId(loginName);
 			Integer userId = loninUser.getUserId();
 			// 根据用户id去tokenaward表中获取发放状态 grantType
-			List<Tokenaward> findByUserId = tokenawardService.findByUserId(userId);
+			/*List<Tokenaward> findByUserId = tokenawardService.findByUserId(userId);
 			for (Tokenaward tokenaward : findByUserId) {
 				if (tokenaward.getGrantType() == 2) {
 					// 调用发放接口
@@ -145,7 +145,7 @@ public class UserService {
 					tokenawardNew.setGrantType(1);
 					tokenawardService.update(tokenawardNew);
 				}
-			}
+			}*/
 		} else {
 			// 用户名登录
 			query.addQueryData("userName", loginName);

@@ -4365,9 +4365,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 	@Override
 	public UserCard selectUserCardByUserId(Integer userId) throws RestServiceException {
-		
+
 		List<UserCard> userCards = userCardService.selectStatusByUserID(userId);
-		if(userCards.size()==0){
+		if (userCards.size() == 0) {
 			return null;
 		}
 		return userCards.get(0);
