@@ -10,12 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
 import com.tzg.common.utils.AccountTokenUtil;
 import com.tzg.common.utils.RegexUtil;
-
 import com.tzg.entitys.kff.user.KFFUser;
+import com.tzg.entitys.kff.usercard.UserCard;
 import com.tzg.rest.controller.BaseController;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
@@ -36,6 +37,7 @@ public class UserCardController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping(value = "/usercardStatus", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
 	public BaseResponseEntity usercardStatus(HttpServletRequest request, HttpServletResponse response) {
 
 		// 创建返回体
@@ -43,9 +45,9 @@ public class UserCardController extends BaseController {
 		// 创建返回的map
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		try {
-			//JSONObject map1 = getParamMapFromRequestPolicy(request);
-			// String token = (String) map1.get("token");
-			String token = "MjUyOjE1MjY3MDc3MzU1MjQ6ZDM2Mjc4MDBkODdhYzJkYjBjOTQ5Y2NhMmVhNDViOWQ=";
+			JSONObject map1 = getParamMapFromRequestPolicy(request);
+			String token = (String) map1.get("token");
+
 			// 根据用户token 查找到用户的userID
 			Integer userId = AccountTokenUtil.decodeAccountToken(token);
 
@@ -75,6 +77,8 @@ public class UserCardController extends BaseController {
 				// 审核没有通过
 				//
 				map.put("status", 3);
+				UserCard userCard = kffRmiService.selectUserCardByUserId(userId);
+				map.put("reason", userCard.getNotPassReason());
 				bre.setData(map);
 				return bre;
 			}
@@ -89,6 +93,9 @@ public class UserCardController extends BaseController {
 				// 审核成功
 				//
 				map.put("status", 1);
+				UserCard userCard = kffRmiService.selectUserCardByUserId(userId);
+				map.put("uesrRealName", userCard.getUserrealname());
+				map.put("uesrcardNum", userCard.getUsercardNum());
 				bre.setData(map);
 				return bre;
 			}
@@ -122,6 +129,7 @@ public class UserCardController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping(value = "/uploadUserCard", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
 	public BaseResponseEntity uploadUserCord(HttpServletRequest request, HttpServletResponse response) {
 		// 创建返回体
 		BaseResponseEntity bre = new BaseResponseEntity();
@@ -158,14 +166,14 @@ public class UserCardController extends BaseController {
 				throw new RestServiceException(RestErrorCode.USER_IDCARD_IS_FALSE);
 			}
 
-			String userRealNamefmt = RegexUtil.LOGIN_NAME;
-			// 判断身份证号是否符合标准
-			if (!userRealName.matches(userRealNamefmt)) {
-				throw new RestServiceException(RestErrorCode.VCNAME_INCORRECT);
-			}
+			/*	String userRealNamefmt = RegexUtil.LOGIN_NAME;
+				// 判断身份证号是否符合标准
+				if (!userRealName.matches(userRealNamefmt)) {
+					throw new RestServiceException(RestErrorCode.VCNAME_INCORRECT);
+				}*/
 			// 判断用户传入的身份证号是否重复提交 返回 身份证号码已被实名验证
 
-			if (null == kffRmiService.selectUserCardNum(userCardNum)) {
+			if (null != kffRmiService.selectUserCardNum(userCardNum)) {
 				throw new RestServiceException(RestErrorCode.USER_IDCARD_SUBMITED);
 			}
 

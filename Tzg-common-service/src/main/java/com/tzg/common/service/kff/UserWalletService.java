@@ -1,5 +1,7 @@
 package com.tzg.common.service.kff;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -96,4 +98,32 @@ public class UserWalletService {
 		return tokenawardMapper.findUserSumRewardToken();
 	}
 	*/
+
+	public List<KFFUserWallet> findBywalletAndType(Integer userId)throws RestServiceException  {
+		if(userId == null){
+			throw new RestServiceException("id不能为空");
+		}
+		return kffUserWalletMapper.findBywalletAndType(userId);
+	}
+
+	public void updateUserWallet(Integer userId, String wallet) throws RestServiceException {
+		if(userId == null) {
+			throw new RestServiceException("userId不能为空");
+		}
+		if(wallet == null) {
+			throw new RestServiceException("钱包地址不能为空");
+		}
+		//kffUserWallet.setUserId(userId);
+		KFFUserWallet userWallet = kffUserWalletMapper.findUserId(userId);
+		userWallet.setWallet(wallet);
+		userWallet.setCreatetime(new Date());
+		userWallet.setWalletType(1);
+		 kffUserWalletMapper.update(userWallet);
+	}
+
+	public KFFUserWallet findUserId(Integer userId) {
+		
+		return kffUserWalletMapper.findUserId(userId);
+	}
+
 }

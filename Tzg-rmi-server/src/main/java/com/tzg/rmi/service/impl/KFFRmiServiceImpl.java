@@ -1,6 +1,7 @@
 package com.tzg.rmi.service.impl;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -12,9 +13,11 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ObjectUtils.Null;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.poi.xwpf.usermodel.TOC;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -25,6 +28,15 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.aliyuncs.DefaultAcsClient;
+import com.aliyuncs.IAcsClient;
+import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
+import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
+import com.aliyuncs.exceptions.ClientException;
+import com.aliyuncs.exceptions.ServerException;
+import com.aliyuncs.http.MethodType;
+import com.aliyuncs.profile.DefaultProfile;
+import com.aliyuncs.profile.IClientProfile;
 import com.tzg.common.constants.KFFConstants;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
@@ -61,11 +73,17 @@ import com.tzg.common.service.kff.UserService;
 import com.tzg.common.service.kff.UserWalletService;
 import com.tzg.common.service.systemParam.SystemParamService;
 import com.tzg.common.utils.DateUtil;
+import com.tzg.common.utils.DelHtmlAll;
 import com.tzg.common.utils.DownImagesUtile;
 import com.tzg.common.utils.GetImgUrl;
+import com.tzg.common.utils.H5AgainDeltagsUtil;
+import com.tzg.common.utils.HexUtil;
+import com.tzg.common.utils.DownImgGoodUtil;
+import com.tzg.common.utils.rest.AliyunConstant;
 import com.tzg.common.utils.Numbers;
 import com.tzg.common.utils.RandomUtil;
 import com.tzg.common.utils.RegexUtil;
+import com.tzg.common.utils.ToRemoveHtml;
 import com.tzg.common.utils.WorkHtmlRegexpUtil;
 import com.tzg.common.zookeeper.ZKClient;
 import com.tzg.entitys.kff.article.Article;
@@ -113,6 +131,8 @@ import com.tzg.entitys.kff.qfindex.QfIndex;
 import com.tzg.entitys.kff.suggest.Suggest;
 import com.tzg.entitys.kff.suggest.SuggestRequest;
 import com.tzg.entitys.kff.tokenaward.Tokenaward;
+import com.tzg.entitys.kff.tokenaward.TokenawardReturn;
+import com.tzg.entitys.kff.tokenaward.TokenawardReturn;
 import com.tzg.entitys.kff.tokenrecords.Tokenrecords;
 import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.entitys.kff.user.KFFUserHomeResponse;
@@ -124,6 +144,7 @@ import com.tzg.entitys.photo.PhotoParams;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rmi.service.KFFRmiService;
+import com.tzg.rmi.service.SmsSendRmiService;
 
 public class KFFRmiServiceImpl implements KFFRmiService {
 
@@ -177,7 +198,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	private UserCardService userCardService;
 	@Autowired
 	private AuthenticationService authenticationService;
-
+	@Autowired
+	private SmsSendRmiService smsSendRmiService;
 	@Autowired
 	private UserInvationService userInvationService;
 	@Autowired
@@ -204,7 +226,18 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 	@Override
 	public KFFUser registerRest(RegisterRequest registerRequest) {
-		return kffUserService.registerRest(registerRequest);
+
+		KFFUser user = kffUserService.registerRest(registerRequest);
+		// 查询用户的认证表和身份认证表中的是否有数据
+
+		// 身份验证表中没有该用户
+		// 将用户是否进行身份审核等信息存放在authentication表中
+		this.setUserCardAuthentication(user.getUserId(), user.getMobile());
+
+		// 将用户信息插入认证表中
+		this.saveAuthenticationByUseId(user.getUserId());
+
+		return user;
 	}
 
 	@Override
@@ -981,7 +1014,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public void saveArticle(ArticleRequest articleRequest) throws RestServiceException {
+	public Map<String, Object> saveArticle(ArticleRequest articleRequest, String toHtmlTags) throws RestServiceException {
+		Map<String, Object> result = new HashMap<>();
 		String uuid = UUID.randomUUID().toString().replace("-", "");
 		if (articleRequest == null) {
 			throw new RestServiceException("参数缺失");
@@ -1024,55 +1058,37 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		post.setCreateUserSignature(createUser.getUserSignature());
 		post.setDonateNum(0);
 		post.setPageviewNum(0);
+		if (toHtmlTags != null) {
 
-		logger.info("开始截取字符串");
+			// h5传来的
+			toHtmlTags = H5AgainDeltagsUtil.h5AgainDeltags(toHtmlTags);
+			if (toHtmlTags.length() < 300) {
 
-		String text = WorkHtmlRegexpUtil.removeHtmlTag(articleRequest.getArticleContents());
-		logger.info("无标签文本" + text);
-		if (text.length() < 300) {
+				post.setPostShortDesc(toHtmlTags);
+			} else {
+				// 去除所有HTML标签
 
-			post.setPostShortDesc(text);
-		} else {
-			// 去除所有HTML标签
-
-			post.setPostShortDesc(text.substring(0, 300));
-		}
-		logger.info("去标签成功!");
-		// 抽取文章中的图片路径
-		/************ begin *******************/
-		/*
-				Elements imgs = Jsoup.parse(str2).select("[src]");
-				logger.info("开始抽取图片的全路径");
-				logger.info(imgs); // 截取3个图片
-				int i = 0;
-				List<PhotoParams> picList = new ArrayList<PhotoParams>();
-				for (Element element : imgs) { // 获取每个img标签URL "abs:"表示绝对路径
-					String imgSrc = element.attr("abs:src"); // 打印URL
-																// logger.info(imgSrc);
-					// 下载图片到本地
-					i = i + 1;
-					String ext = imgSrc.substring(imgSrc.lastIndexOf("."));
-					logger.info("图片后缀:" + ext);
-					String imgNum = articleRequest.getCreateUserId() + DateUtil.getCurrentTimeStamp() + i;
-					logger.info("图片名称:" + imgNum);
-					String filePath = "D:\\opt\\file\\upload\\postPic\\" + imgNum + ext;
-			logger.info("图片保存的全路径:++++" + filePath); // 把图片下载到服务器
-			DownImagesUtile.downImages(filePath, imgSrc);
-			if (i == 3) {
-				logger.info("三张缩略图存储成功!");
-				break;
-
+				post.setPostShortDesc(toHtmlTags.substring(0, 300));
 			}
-			logger.info("缩略图存储成功!");
-			PhotoParams photoParams = new PhotoParams();
-			photoParams.setFileName(imgNum);
-			photoParams.setFileUrl(imgNum + ext);
-			photoParams.setExtension(ext);
-			picList.add(photoParams);
+
+			logger.info("去标签成功!");
+
 		}
-*/
+		if (toHtmlTags == null) {
+			if (articleRequest.getArticleContents().length() < 300) {
+
+				post.setPostShortDesc(articleRequest.getArticleContents());
+			} else {
+				// 去除所有HTML标签
+
+				post.setPostShortDesc(articleRequest.getArticleContents().substring(0, 300));
+			}
+
+		}
+
 		logger.info("开始进行抽离图片");
-		List<String> imgSrc = WorkHtmlRegexpUtil.getImgSrc(articleRequest.getArticleContents());
+		// List<String> imgSrc = WorkHtmlRegexpUtil.getImgSrc(articleRequest.getArticleContents());
+		List<String> imgSrc = GetImgUrl.getImgStr(articleRequest.getArticleContents());
 		List<String> imgDB = new ArrayList<String>();
 
 		int i = 0;
@@ -1082,7 +1098,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			if (i == 3) {
 				break;
 			}
-			imgDB.add(img);
+			// 生成url名称
+			String picUrlGen = "D:\\opt\\file";
+			String picName = "/upload/postPic/" + DateUtil.getCurrentTimeStamp() + articleRequest.getCreateUserId() + ".jpg";
+			String picUrl = picUrlGen + picName;
+			DownImgGoodUtil.downloadPicture(img, picUrl);
+			imgDB.add(picName);
 			i = i + 1;
 
 		}
@@ -1117,6 +1138,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		article.setPostUuid(uuid);
 		kffArticleService.save(article);
 
+		result.put("postId", newPost.getPostId());
+		return result;
 	}
 
 	@Override
@@ -1163,55 +1186,48 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		post.setCreateUserSignature(createUser.getUserSignature());
 		post.setDonateNum(0);
 		post.setPageviewNum(0);
+		// String text =
+		// WorkHtmlRegexpUtil.delHTMLTag(discussRequest.getDisscussContents()).replace("&nbsp;",
+		// " ");
 		if (discussRequest.getDisscussContents().length() > 300) {
-			post.setPostShortDesc(discussRequest.getDisscussContents().substring(300));
+			post.setPostShortDesc(discussRequest.getDisscussContents().substring(0, 300));
 		} else {
 			post.setPostShortDesc(discussRequest.getDisscussContents());
 		}
-		// 抽取文章中的图片路径
-		/************ begin *******************/
+		/*// 抽取文章中的图片路径
+		*//************ begin *******************/
+		/*
 
-		Elements imgs = Jsoup.parse(discussRequest.getDisscussContents()).select("img[src~=(?i)\\.(png|jpe?g)]");
-		logger.info("开始抽取图片的全路径");
-		logger.info(imgs);
-		// 截取3个图片
-		int i = 0;
-		List<PhotoParams> picList = new ArrayList<PhotoParams>();
-		for (Element element : imgs) {
-			// 获取每个img标签URL "abs:"表示绝对路径
-			String imgSrc = element.attr("abs:src");
-			// 打印URL
-			logger.info(imgSrc);
-			// 下载图片到本地
-			i = i + 1;
-			String ext = imgSrc.substring(imgSrc.lastIndexOf("."));
-			logger.info("图片后缀:" + ext);
-			String imgNum = discussRequest.getCreateUserId() + DateUtil.getCurrentTimeStamp() + i;
-			logger.info("图片名称:" + imgNum);
-			String filePath = "D:\\opt\\file\\upload\\postPic\\" + imgNum + ext;
-			logger.info("图片保存的全路径:++++" + filePath);
-			// 把图片下载到服务器
-			DownImagesUtile.downImages(filePath, imgSrc);
-			if (i == 3) {
-				logger.info("三张缩略图存储成功!");
-				break;
+		*//************ end *******************/
+		// 对图片进行转化
+		if (StringUtils.isNotBlank(discussRequest.getDiscussImages())) {
+			List<String> picArray = JSON.parseArray(discussRequest.getDiscussImages(), String.class);
+			List<String> picNewArray = new ArrayList<String>();
+			String jsonString = null;
+			for (String pic : picArray) {
+				// upload/Idcard/2.jpg
+				PhotoParams photoOUrl = JSON.parseObject(pic, PhotoParams.class);
+				PhotoParams photoParams = new PhotoParams();
+				photoParams.setFileUrl(photoOUrl.getFileUrl());
+				// 取后缀名
+				String[] str = photoOUrl.getFileUrl().split("\\.");
+				logger.info(str[0]);
+				logger.info(str[1]);
+				photoParams.setExtension(str[1]);
 
+				logger.info(str[0].lastIndexOf("/"));
+				str[0].substring(str[0].lastIndexOf("/") + 1);
+				logger.info(str[0].substring(str[0].lastIndexOf("/") + 1));
+
+				photoParams.setFileName(str[0].substring(str[0].lastIndexOf("/") + 1));
+
+				jsonString = JSON.toJSONString(photoParams);
+				picNewArray.add(jsonString);
 			}
-			logger.info("缩略图存储成功!");
-			PhotoParams photoParams = new PhotoParams();
-			photoParams.setFileName(imgNum);
-			photoParams.setFileUrl(imgNum + ext);
-			photoParams.setExtension(ext);
-			picList.add(photoParams);
+			String jsonString2 = JSON.toJSONString(picNewArray);
+			discussRequest.setDiscussImages(jsonString2);
 		}
-
-		// 将图片集合转化成json
-		String picjsonString = JSON.toJSONString(picList);
-
-		logger.info("缩略图的json串" + picjsonString);
-		/************ end *******************/
-
-		post.setPostSmallImages(picjsonString);
+		post.setPostSmallImages(discussRequest.getDiscussImages());
 
 		post.setPostTitle(discussRequest.getPostTitle());
 		post.setPostType(KFFConstants.POST_TYPE_DISCUSS);// 帖子类型：1-评测；2-讨论；3-文章
@@ -1247,7 +1263,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 	@Override
 	// 根据用户的ID判断用户是否对项目进行评分,如果已经进行评分了,则抛出异常
-	public void saveEvaluation(EvaluationRequest evaluationRequest) throws RestServiceException {
+	public Map<String, Object> saveEvaluation(EvaluationRequest evaluationRequest) throws RestServiceException {
+		Map<String, Object> result = new HashMap<>();
 		String uuid = UUID.randomUUID().toString().replace("-", "");
 		if (evaluationRequest == null) {
 			throw new RestServiceException("参数缺失");
@@ -1287,7 +1304,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (StringUtils.isBlank(evaluationRequest.getPostTitle())) {
 			throw new RestServiceException("评测标题不能为空");
 		}
-		if (evaluationRequest.getEvauationContent().length() > 30000) {
+		if (evaluationRequest.getEvauationContent().length() > 3000) {
 			throw new RestServiceException("评测内容长度超过限制");
 		}
 		if (evaluationRequest.getPostTitle().length() > 30) {
@@ -1315,55 +1332,47 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		post.setCreateUserSignature(createUser.getUserSignature());
 		post.setDonateNum(0);
 		post.setPageviewNum(0);
-		if (evaluationRequest.getEvauationContent().length() < 200) {
-			post.setPostShortDesc(evaluationRequest.getEvauationContent());
+		logger.info("开始截取字符串");
+		String text = WorkHtmlRegexpUtil.delHTMLTag(evaluationRequest.getEvauationContent()).replace("&nbsp;", " ");
+		logger.info("无标签文本" + text);
+		if (text.length() < 200) {
+			post.setPostShortDesc(text);
 		} else {
-			post.setPostShortDesc(evaluationRequest.getEvauationContent().substring(0, 200));
+			post.setPostShortDesc(text.substring(0, 200));
 		}
+
 		// 抽取文章中的图片路径
 		/************ begin *******************/
 
-		Elements imgs = Jsoup.parse(evaluationRequest.getEvauationContent()).select("img[src~=(?i)\\.(png|jpe?g)]");
-		logger.info("开始抽取图片的全路径");
-		logger.info(imgs);
-		// 截取3个图片
+		logger.info("开始进行抽离图片");
+
+		List<String> imgSrc = GetImgUrl.getImgStr(evaluationRequest.getEvauationContent());
+		List<String> imgDB = new ArrayList<String>();
+
 		int i = 0;
-		List<PhotoParams> picList = new ArrayList<PhotoParams>();
-		for (Element element : imgs) {
-			// 获取每个img标签URL "abs:"表示绝对路径
-			String imgSrc = element.attr("abs:src");
-			// 打印URL
-			logger.info(imgSrc);
-			// 下载图片到本地
-			i = i + 1;
-			String ext = imgSrc.substring(imgSrc.lastIndexOf("."));
-			logger.info("图片后缀:" + ext);
-			String imgNum = evaluationRequest.getCreateUserId() + DateUtil.getCurrentTimeStamp() + i;
-			logger.info("图片名称:" + imgNum);
-			String filePath = "D:\\opt\\file\\upload\\postPic\\" + imgNum + ext;
-			logger.info("图片保存的全路径:++++" + filePath);
-			// 把图片下载到服务器
-			DownImagesUtile.downImages(filePath, imgSrc);
+		for (String img : imgSrc) {
+			logger.info("抽离的图片路径");
+			logger.info(img);
 			if (i == 3) {
-				logger.info("三张缩略图存储成功!");
 				break;
-
 			}
-			logger.info("缩略图存储成功!");
-			PhotoParams photoParams = new PhotoParams();
-			photoParams.setFileName(imgNum);
-			photoParams.setFileUrl(imgNum + ext);
-			photoParams.setExtension(ext);
-			picList.add(photoParams);
+			// 生成url名称
+			String picUrlGen = "D:\\opt\\file";
+			String picName = "/upload/postPic/" + DateUtil.getCurrentTimeStamp() + evaluationRequest.getCreateUserId() + ".jpg";
+			String picUrl = picUrlGen + picName;
+			DownImgGoodUtil.downloadPicture(img, picUrl);
+			imgDB.add(picName);
+			i = i + 1;
+
 		}
-
+		logger.info("图片抽离成功!");
 		// 将图片集合转化成json
-		String picjsonString = JSON.toJSONString(picList);
 
-		logger.info("缩略图的json串" + picjsonString);
+		String uploadIeviwList = uploadIeviwList(imgDB);
+		logger.info("缩略图的json串" + uploadIeviwList);
 		/************ end *******************/
 
-		post.setPostSmallImages(picjsonString);
+		post.setPostSmallImages(uploadIeviwList);
 
 		post.setPostTitle(evaluationRequest.getPostTitle());
 		post.setPostType(KFFConstants.POST_TYPE_EVALUATION);// 帖子类型：1-评测；2-讨论；3-文章
@@ -1397,6 +1406,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		evaluation.setTotalScore(totalScore);
 		kffEvaluationService.save(evaluation);
 
+		result.put("postId", newPost.getPostId());
+		return result;
 	}
 
 	@Override
@@ -1516,338 +1527,349 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			kffMessageService.save(message);
 
 			/**
-			 * 添加点赞送积分功能
+			 * 添加帖子点赞送积分功能
 			 * 
 			 */
-			// 帖子点赞数 +1 的时候去执行以下 送积分操作
+			
+		//	Integer yxPraise = qfIndexPraiseUser.getYxpraise();
+		//	Integer createPostUserQFIndex = qfIndex.getYxpraise();
+		//	if (evaluation.getModelType() == 1) {
+				// 帖子点赞数 +1 的时候去执行以下 送积分操作
 
-			// 根据 文章详情对象praise 获取帖子类型
-			Integer postType = praise.getPostType();
-			// 根据点赞人的id 去查看他的有效点赞
-			QfIndex qfIndexPraiseUser = qfIndexService.findByUserId(userId);
-			Integer qfIndexId = qfIndexPraiseUser.getQfIndexId();
-			Integer yxPraise = qfIndexPraiseUser.getYxpraise();
-			// 根据帖子的id 去获取内容贡献者的id
-			Post creatUserPost = kffPostService.findById(postId);
-			Integer createUserId = creatUserPost.getCreateUserId();
-			// 根据内容贡献值的id去获取本身的区分指数
-			QfIndex qfIndex = qfIndexService.findById(createUserId);
-			Integer createPostUserQFIndex = qfIndex.getYxpraise();
-			// 发帖人赞的收益系数
-			Double createPUF = createPostUserQFIndex * 0.01d;
-			// 满足点赞条件额外送币
-			Double meet = 10000d;
-			// 判断所点赞的文章是不是有效(1有效,0删除,无效)
-			if (post.getStatus() == 1) {
-				/**
-				 * 有效赞
-				 * 
-				 */
-				Integer validPraise = (int) Math.floor(yxPraise);
-				// 判断 帖子类型是1-评测 , 2-讨论 , 3-文章
-				if (postType == 1) {
-					// 证明是评测的帖子
-					// 判断评测的类型 (1-简单评测, 2-全面专业评测 , 3-部分系统单项评测)
-					// 根据文章详情的id 去查询 查询评测类型 返回evaluation 对象
-					Evaluation evaluation = kffEvaluationService.findByPostId(postId);
-					if (evaluation.getModelType() == 1) {
-						// 判断点赞类型 (简单评测的 只有点赞有奖励,评论赞没有)
-						if (praise.getPraiseType() == 1) {
-							// 帖子点赞(普通1次5给代币)
-							Tokenrecords tokenrecords = new Tokenrecords();
-							Tokenaward tokenaward = new Tokenaward();
+				// 根据 文章详情对象praise 获取帖子类型
+				Integer postType = praise.getPostType();
+				System.err.println("我是帖子类型 :" + postType);
+				// 根据点赞人的id 去查看他的有效点赞
+				QfIndex qfIndexPraiseUser = qfIndexService.findByUserId(userId);
+				Integer qfIndexId = qfIndexPraiseUser.getQfIndexId();
+				Integer yxPraise = qfIndexPraiseUser.getYxpraise();
+				// 根据帖子的id 去获取内容贡献者的id
+				System.err.println("帖子的id: " + postId);
+				Post creatUserPost = kffPostService.findById(postId);
+				Integer createUserId = creatUserPost.getCreateUserId();
+				System.err.println("内容贡献者的id: " + createUserId);
+				// 根据内容贡献值的id去获取本身的区分指数
+				QfIndex qfIndex = qfIndexService.findById(createUserId);
+				Integer createPostUserQFIndex = qfIndex.getYxpraise();
+				// 发帖人赞的收益系数
+				Double createPUF = createPostUserQFIndex * 0.01d;
+				// 满足点赞条件额外送币
+				Double meet = 1000.00000000d;
+				Double meet1 = 2000.00000000d;
+				// 创建生成交易流水的交易日期
+				Date date = new Date();
+				String stringDate = DateUtil.getDate(date, "yyyy-MM-dd");
+				String replaceAllDate = stringDate.replaceAll("-", "");
+				// 创建业务记录id
+				String format = String.format("%010d", praise.getPraiseId());
+				// 判断点赞人是否实名认证
+				UserCard findBycreateUserId = userCardService.findByUserid(createUserId);// 看创建帖子的人是不是实名认证
+				UserCard findByUserid = userCardService.findByUserid(userId);
+				System.err.println("findBycreateUserId:" + findBycreateUserId);
+				System.err.println("findByUserid : " + findByUserid);
+				// 判断所点赞的文章是不是有效(1有效,0删除,无效)
+				if (post.getStatus() == 1 && findBycreateUserId != null && findByUserid != null) {
+					/**
+					 * 有效赞
+					 * 
+					 */
+					System.err.println("我终于执行了");
+					Integer validPraise = (int) Math.floor(yxPraise);
+					// 判断 帖子类型是1-评测 , 2-讨论 , 3-文章
+					Double pc = 1.00000000d; // 普通评测点赞奖励
+					Double pc2 = 10.00000000d; // 专业评测点赞奖励
+					Double pc3 = 5.00000000d; // 单项评测点赞奖励
+					Double tl = 5.00000000d; // 讨论点赞奖励
+					Double wz = 5.00000000d; // 文章点赞奖励
+					KFFUser findByUserId = kffUserService.findById(createUserId);
+					if (postType == 1) {
+						// 证明是评测的帖子
+						// 判断评测的类型 (1-简单评测, 2-全面专业评测 , 3-部分系统单项评测)
+						// 根据文章详情的id 去查询 查询评测类型 返回evaluation 对象
+						System.err.println("执行我就相当于评测的帖子");
+						Evaluation evaluation = kffEvaluationService.findByPostId(postId);
+						// KFFUser findByUserId2 =
+						// kffUserService.findByUserId(createUserId);
+						if (evaluation.getModelType() == 1) {
+							// 判断点赞类型 (简单评测的 只有点赞有奖励,评论赞没有)
+							if (praise.getPraiseType() == 1) {
+								// 帖子点赞(普通1次1个代币)
+								Tokenrecords tokenrecords = new Tokenrecords();
+								Tokenaward tokenaward = new Tokenaward();
+								
+								if (praise.getStatus() == 1 && validPraise > 0 && validPraise != 0) {
+									// 证明是有效赞
+									tokenrecords.setFunctionDesc("点赞奖励");
+									tokenrecords.setFunctionType(17);
+									tokenrecords.setAmount(new BigDecimal(pc * createPUF)); // 点赞奖励生成流水
+									tokenrecords.setUserId(createUserId);
+									tokenrecords.setTradeType(1);// 交易类型:1-收入；2-支出
+									tokenrecords.setRewardGrantType(1); // 发放类型
+																		// 1-一次性发放
+																		// 2-线性发放
+									tokenrecords.setCreateTime(new Date()); // 创建的时间
+									tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
+									tokenrecords.setMemo("用户" + user.getUserName() + "点赞奖励"); // 流水备注
 
-							if (praise.getStatus() == 1 && validPraise > 0) {
-								// 证明是有效赞
-								tokenrecords.setFunctionDesc("用户赞赏");
-								tokenrecords.setFunctionType(5);
-								tokenrecords.setAmount(new BigDecimal(5.00000000f * createPUF)); // 点赞奖励生成流水
+									BigDecimal kffCoinNum = findByUserId.getKffCoinNum();
+									KFFUser kffUser = new KFFUser();
+									kffUser.setKffCoinNum(kffCoinNum.add(new BigDecimal(pc * createPUF)));
+									kffUser.setUpdateTime(new Date());
+									kffUserService.update(kffUser);
+
+									kffTokenrecordsService.save(tokenrecords);
+									
+									tokenaward.setUserId(createUserId);
+									tokenaward.setTokenAwardFunctionDesc("点赞奖励");
+									tokenaward.setTokenAwardFunctionType(17);
+									tokenaward.setDistributionType(2);
+									Double rewardToken = tokenaward.getRewardToken();
+									Double priaiseAward = tokenaward.getPriaiseAward();
+									tokenaward.setPriaiseAward(priaiseAward + (pc * createPUF)); // 点赞奖励.
+									tokenaward.setRewardToken(rewardToken + (pc * createPUF));
+									tokenaward.setCreateTime(new Date());
+
+									kffTokenawardService.save(tokenaward);
+
+									qfIndexService.updateYxPraise(userId);
+								}
+							}
+						}
+						if (evaluation.getModelType() == 2) {
+							// 系统自定义专业完整版评测
+
+							if (praise.getPraiseType() == 1) {
+								// 点赞类型1-帖子点赞；2-评论点赞
+								// 帖子点赞(奖励50一个赞)
+								Tokenrecords tokenrecords = new Tokenrecords();
+								Tokenaward tokenaward = new Tokenaward();
+								if (praise.getStatus() == 1 && validPraise > 0 && validPraise != 0) {
+									// 证明是有效赞
+									if (kffPostService.findById(postId).getPraiseNum() == 500) {
+										tokenrecords.setFunctionDesc("点赞奖励");
+										tokenrecords.setFunctionType(17);
+										tokenrecords.setAmount(new BigDecimal(pc2 * createPUF + meet1)); // 点赞奖励生成流水
+										tokenrecords.setUserId(createUserId);
+										tokenrecords.setTradeType(1);
+										tokenrecords.setRewardGrantType(1);
+										tokenrecords.setCreateTime(new Date());
+										tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
+										tokenrecords.setMemo("用户" + user.getUserName() + "点赞奖励"); // 流水备注
+										kffTokenrecordsService.save(tokenrecords);
+
+										BigDecimal kffCoinNum = findByUserId.getKffCoinNum();
+									//	KFFUser kffUser = new KFFUser();
+										findByUserId.setKffCoinNum(kffCoinNum.add(new BigDecimal(pc2 * createPUF + meet1)));
+										findByUserId.setUpdateTime(new Date());
+										kffUserService.update(findByUserId);
+
+										tokenaward.setUserId(createUserId);
+										tokenaward.setTokenAwardFunctionDesc("点赞奖励");
+										tokenaward.setTokenAwardFunctionType(17);
+										tokenaward.setDistributionType(2);
+									//	Double rewardToken = tokenaward.getRewardToken();
+									//	Double priaiseAward = tokenaward.getPriaiseAward();
+										tokenaward.setPriaiseAward( (pc2 * createPUF) + meet1); // 点赞奖励.
+										tokenaward.setRewardToken( (pc2 * createPUF) + meet1);
+										tokenaward.setCreateTime(new Date());
+
+										kffTokenawardService.save(tokenaward);
+
+										qfIndexService.updateYxPraise(userId);
+									} else {
+										tokenrecords.setFunctionDesc("点赞奖励");
+										tokenrecords.setFunctionType(17);
+										tokenrecords.setAmount(new BigDecimal(pc2 * createPUF)); // 点赞奖励生成流水
+										tokenrecords.setUserId(createUserId);
+										tokenrecords.setTradeType(1);
+										tokenrecords.setRewardGrantType(1);
+										tokenrecords.setCreateTime(new Date());
+										tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
+										tokenrecords.setMemo("用户" + user.getUserName() + "点赞奖励"); // 流水备注
+										kffTokenrecordsService.save(tokenrecords);
+
+										BigDecimal kffCoinNum = findByUserId.getKffCoinNum();
+										//KFFUser kffUser = new KFFUser();
+										findByUserId.setKffCoinNum(kffCoinNum.add(new BigDecimal(pc2 * createPUF)));
+										findByUserId.setUpdateTime(new Date());
+										kffUserService.update(findByUserId);
+
+										tokenaward.setUserId(createUserId);
+										tokenaward.setTokenAwardFunctionDesc("点赞奖励");
+										tokenaward.setTokenAwardFunctionType(17);
+										tokenaward.setDistributionType(2);
+									//	Double rewardToken = tokenaward.getRewardToken();
+									//	Double priaiseAward = tokenaward.getPriaiseAward();
+										tokenaward.setPriaiseAward( (pc2 * createPUF)); // 点赞奖励.
+										tokenaward.setRewardToken((pc2 * createPUF));
+										tokenaward.setCreateTime(new Date());
+										kffTokenawardService.save(tokenaward);
+										qfIndexService.updateYxPraise(userId);
+									}
+								}
+							}
+
+						}
+						if (evaluation.getModelType() == 3) {
+							// 用户自定义单项评测
+							if (praise.getStatus() == 1 && validPraise > 0 && validPraise != 0) {
+								Tokenrecords tokenrecords = new Tokenrecords();
+								Tokenaward tokenaward = new Tokenaward();
+								tokenrecords.setFunctionDesc("点赞奖励");
+								tokenrecords.setFunctionType(17);
+								tokenrecords.setAmount(new BigDecimal(pc3 * createPUF)); // 点赞奖励生成流水
 								tokenrecords.setUserId(createUserId);
 								tokenrecords.setTradeType(1);
 								tokenrecords.setRewardGrantType(1);
 								tokenrecords.setCreateTime(new Date());
+								tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
+								tokenrecords.setMemo("用户 :" + user.getUserName() + "的点赞奖励"); // 流水备注
 								kffTokenrecordsService.save(tokenrecords);
-
+	
+								BigDecimal kffCoinNum = findByUserId.getKffCoinNum();
+							//	KFFUser kffUser = new KFFUser();
+								findByUserId.setKffCoinNum(kffCoinNum.add(new BigDecimal(pc3 * createPUF)));
+								findByUserId.setUpdateTime(new Date());
+								kffUserService.update(findByUserId);
+	
 								tokenaward.setUserId(createUserId);
-								tokenaward.setTokenAwardFunctionDesc("用户赞赏");
-								tokenaward.setTokenAwardFunctionType(5);
+								tokenaward.setTokenAwardFunctionDesc("点赞奖励");
+								tokenaward.setTokenAwardFunctionType(17);
 								tokenaward.setDistributionType(2);
-								Double rewardToken = tokenaward.getRewardToken();
-								Double priaiseAward = tokenaward.getPriaiseAward();
-								tokenaward.setPriaiseAward(priaiseAward + (5.00000000f * createPUF)); // 点赞奖励.
-								tokenaward.setRewardToken(rewardToken + (5.00000000f * createPUF));
+								
+						//		Double rewardToken = tokenaward.getRewardToken();
+						//		Double priaiseAward = tokenaward.getPriaiseAward();
+								tokenaward.setPriaiseAward((pc3 * createPUF)); // 点赞奖励.
+								tokenaward.setRewardToken((pc3 * createPUF));
 								tokenaward.setCreateTime(new Date());
 								kffTokenawardService.save(tokenaward);
-
-								qfIndexService.updateYxPraise(qfIndexId, userId);
+								
+								qfIndexService.updateYxPraise(userId);
 							}
 						}
 					}
-					if (evaluation.getModelType() == 2) {
-						// 系统自定义专业完整版评测
-
+					if (postType == 2) {
+						// 证明是讨论的帖子
+						System.err.println("执行我就相当于讨论的帖子");
 						if (praise.getPraiseType() == 1) {
-							// 点赞类型1-帖子点赞；2-评论点赞
-							// 帖子点赞(奖励50一个赞)
+							// 帖子点赞(普通1次五个)
 							Tokenrecords tokenrecords = new Tokenrecords();
 							Tokenaward tokenaward = new Tokenaward();
-							if (praise.getStatus() == 1 && validPraise > 0) {
+							if (praise.getStatus() ==1 && validPraise > 0 && validPraise != 0) {
 								// 证明是有效赞
-								if (kffPostService.findById(postId).getPraiseNum() == 500) {
-									tokenrecords.setFunctionDesc("用户赞赏");
-									tokenrecords.setFunctionType(5);
-									tokenrecords.setAmount(new BigDecimal(50.00000000f * createPUF + meet)); // 点赞奖励生成流水
-									tokenrecords.setUserId(createUserId);
-									tokenrecords.setTradeType(1);
-									tokenrecords.setRewardGrantType(1);
-									tokenrecords.setCreateTime(new Date());
-									kffTokenrecordsService.save(tokenrecords);
+								tokenrecords.setFunctionDesc("点赞奖励");
+								tokenrecords.setFunctionType(17);
+								tokenrecords.setAmount(new BigDecimal(tl * createPUF)); // 点赞奖励生成流水
+								tokenrecords.setUserId(createUserId);
+								tokenrecords.setTradeType(1);
+								tokenrecords.setRewardGrantType(1);
+								tokenrecords.setCreateTime(new Date());
+								tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
+								tokenrecords.setMemo("用户" + user.getUserName() + "点赞奖励"); // 流水备注
+								kffTokenrecordsService.save(tokenrecords);
 
-									tokenaward.setUserId(createUserId);
-									tokenaward.setTokenAwardFunctionDesc("用户赞赏");
-									tokenaward.setTokenAwardFunctionType(5);
-									tokenaward.setDistributionType(2);
-									Double rewardToken = tokenaward.getRewardToken();
-									Double priaiseAward = tokenaward.getPriaiseAward();
-									tokenaward.setPriaiseAward(priaiseAward + (50 * createPUF) + meet); // 点赞奖励.
-									tokenaward.setRewardToken(rewardToken + (50 * createPUF) + meet);
-									tokenaward.setCreateTime(new Date());
-									kffTokenawardService.save(tokenaward);
+								BigDecimal kffCoinNum = findByUserId.getKffCoinNum();
+							//	KFFUser kffUser = new KFFUser();
+								findByUserId.setKffCoinNum(kffCoinNum.add(new BigDecimal(tl * createPUF)));
+								findByUserId.setUpdateTime(new Date());
+								kffUserService.update(findByUserId);
 
-									qfIndexService.updateYxPraise(qfIndexId, userId);
-								} else {
-									tokenrecords.setFunctionDesc("用户赞赏");
-									tokenrecords.setFunctionType(5);
-									tokenrecords.setAmount(new BigDecimal(50.00000000f * createPUF)); // 点赞奖励生成流水
-									tokenrecords.setUserId(createUserId);
-									tokenrecords.setTradeType(1);
-									tokenrecords.setRewardGrantType(1);
-									tokenrecords.setCreateTime(new Date());
-									kffTokenrecordsService.save(tokenrecords);
-
-									tokenaward.setUserId(createUserId);
-									tokenaward.setTokenAwardFunctionDesc("用户赞赏");
-									tokenaward.setTokenAwardFunctionType(5);
-									tokenaward.setDistributionType(2);
-									Double rewardToken = tokenaward.getRewardToken();
-									Double priaiseAward = tokenaward.getPriaiseAward();
-									tokenaward.setPriaiseAward(priaiseAward + (50 * createPUF)); // 点赞奖励.
-									tokenaward.setRewardToken(rewardToken + (50 * createPUF));
-									tokenaward.setCreateTime(new Date());
-									kffTokenawardService.save(tokenaward);
-									qfIndexService.updateYxPraise(qfIndexId, userId);
-								}
+								tokenaward.setUserId(createUserId);
+								tokenaward.setTokenAwardFunctionDesc("点赞奖励");
+								tokenaward.setTokenAwardFunctionType(17);
+								tokenaward.setDistributionType(2);
+							//	Double rewardToken = tokenaward.getRewardToken();
+							//	Double priaiseAward = tokenaward.getPriaiseAward();
+								tokenaward.setPriaiseAward((tl * createPUF)); // 点赞奖励.
+								tokenaward.setRewardToken((tl * createPUF)); // 奖励总数
+								tokenaward.setCreateTime(new Date());
+								kffTokenawardService.save(tokenaward);
+								qfIndexService.updateYxPraise(userId);
 							}
 						}
-
-						if (praise.getPraiseType() == 2) {
-							// 证明是 专项完整版评测 评论点赞
+					}
+					if (postType == 3) {
+						// 证明是文章的帖子
+						System.err.println("执行我就相当于文章的帖子");
+						if (praise.getPraiseType() == 1) {
+							// 帖子点赞(普通1次二十个)
 							Tokenrecords tokenrecords = new Tokenrecords();
 							Tokenaward tokenaward = new Tokenaward();
-							tokenrecords.setFunctionDesc("用户赞赏");
-							tokenrecords.setFunctionType(5);
-							tokenrecords.setAmount(new BigDecimal(2 * createPUF)); // 点赞奖励生成流水
-							tokenrecords.setUserId(createUserId);
-							tokenrecords.setTradeType(1);
-							tokenrecords.setRewardGrantType(1);
-							tokenrecords.setCreateTime(new Date());
-							kffTokenrecordsService.save(tokenrecords);
+							if (praise.getStatus() ==1 && validPraise > 0 && validPraise != 0) {
+								// 证明是有效赞
+								if (praise.getPraiseType() == 1) {
+									if (kffPostService.findById(postId).getPraiseNum() == 500) {
+										tokenrecords.setFunctionDesc("点赞奖励");
+										tokenrecords.setFunctionType(17);
+										tokenrecords.setAmount(new BigDecimal(wz * createPUF + meet)); // 点赞奖励生成流水
+										tokenrecords.setUserId(createUserId);
+										tokenrecords.setTradeType(1);
+										tokenrecords.setRewardGrantType(1);
+										tokenrecords.setCreateTime(new Date());
+										tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
+										tokenrecords.setMemo("用户" + user.getUserName() + "点赞奖励"); // 流水备注
+										kffTokenrecordsService.save(tokenrecords);
 
-							tokenaward.setUserId(createUserId);
-							tokenaward.setTokenAwardFunctionDesc("用户赞赏");
-							tokenaward.setTokenAwardFunctionType(5);
-							tokenaward.setDistributionType(2);
-							Double rewardToken = tokenaward.getRewardToken();
-							Double priaiseAward = tokenaward.getPriaiseAward();
-							tokenaward.setPriaiseAward(priaiseAward + (2f * createPUF)); // 点赞奖励.
-							tokenaward.setRewardToken(rewardToken + (2f * createPUF));
-							tokenaward.setCreateTime(new Date());
-							kffTokenawardService.save(tokenaward);
+										BigDecimal kffCoinNum = findByUserId.getKffCoinNum();
+									//	KFFUser kffUser = new KFFUser();
+										findByUserId.setKffCoinNum(kffCoinNum.add(new BigDecimal(wz * createPUF + meet)));
+										findByUserId.setUpdateTime(new Date());
+										kffUserService.update(findByUserId);
 
-							qfIndexService.updateYxPraise(qfIndexId, userId);
-						}
-					}
-					if (evaluation.getModelType() == 3) {
-						// 用户自定义单项评测
-						Tokenrecords tokenrecords = new Tokenrecords();
-						Tokenaward tokenaward = new Tokenaward();
-						tokenrecords.setFunctionDesc("用户赞赏");
-						tokenrecords.setFunctionType(5);
-						tokenrecords.setAmount(new BigDecimal(20f * createPUF)); // 点赞奖励生成流水
-						tokenrecords.setUserId(createUserId);
-						tokenrecords.setTradeType(1);
-						tokenrecords.setRewardGrantType(1);
-						tokenrecords.setCreateTime(new Date());
-						kffTokenrecordsService.save(tokenrecords);
+										tokenaward.setUserId(createUserId);
+										tokenaward.setTokenAwardFunctionDesc("点赞奖励");
+										tokenaward.setTokenAwardFunctionType(17);
+										tokenaward.setDistributionType(2);
+									//	Double rewardToken = tokenaward.getRewardToken();
+									//	Double priaiseAward = tokenaward.getPriaiseAward();
+										tokenaward.setPriaiseAward((wz * createPUF + meet)); // 点赞奖励.
+										tokenaward.setRewardToken((wz * createPUF + meet));
+										tokenaward.setCreateTime(new Date());
+										kffTokenawardService.save(tokenaward);
+										qfIndexService.updateYxPraise(userId);
+									} else {
+										tokenrecords.setFunctionDesc("点赞奖励");
+										tokenrecords.setFunctionType(17);
+										tokenrecords.setAmount(new BigDecimal(wz * createPUF)); // 点赞奖励生成流水
+										tokenrecords.setUserId(createUserId);
+										tokenrecords.setTradeType(1);
+										tokenrecords.setRewardGrantType(1);
+										tokenrecords.setCreateTime(new Date());
+										tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
+										tokenrecords.setMemo("用户" + user.getUserName() + "点赞奖励"); // 流水备注
+										kffTokenrecordsService.save(tokenrecords);
 
-						tokenaward.setUserId(createUserId);
-						tokenaward.setTokenAwardFunctionDesc("用户赞赏");
-						tokenaward.setTokenAwardFunctionType(5);
-						tokenaward.setDistributionType(2);
-						Double rewardToken = tokenaward.getRewardToken();
-						Double priaiseAward = tokenaward.getPriaiseAward();
-						tokenaward.setPriaiseAward(priaiseAward + (20 * createPUF)); // 点赞奖励.
-						tokenaward.setRewardToken(rewardToken + (20 * createPUF));
-						tokenaward.setCreateTime(new Date());
-						kffTokenawardService.save(tokenaward);
-						qfIndexService.updateYxPraise(qfIndexId, userId);
-					}
-				}
-				if (postType == 2) {
-					// 证明是讨论的帖子
-					//
-					if (praise.getPraiseType() == 1) {
-						// 帖子点赞(普通1次五个)
-						Tokenrecords tokenrecords = new Tokenrecords();
-						Tokenaward tokenaward = new Tokenaward();
-						if (praise.getStatus() <= validPraise) {
-							// 证明是有效赞
-							tokenrecords.setFunctionDesc("用户赞赏");
-							tokenrecords.setFunctionType(5);
-							tokenrecords.setAmount(new BigDecimal(20f * createPUF)); // 点赞奖励生成流水
-							tokenrecords.setUserId(createUserId);
-							tokenrecords.setTradeType(1);
-							tokenrecords.setRewardGrantType(1);
-							tokenrecords.setCreateTime(new Date());
-							kffTokenrecordsService.save(tokenrecords);
+										BigDecimal kffCoinNum = findByUserId.getKffCoinNum();
+									//	KFFUser kffUser = new KFFUser();
+										findByUserId.setKffCoinNum(kffCoinNum.add(new BigDecimal(wz * createPUF)));
+										findByUserId.setUpdateTime(new Date());
+										kffUserService.update(findByUserId);
 
-							tokenaward.setUserId(createUserId);
-							tokenaward.setTokenAwardFunctionDesc("用户赞赏");
-							tokenaward.setTokenAwardFunctionType(5);
-							tokenaward.setDistributionType(2);
-							Double rewardToken = tokenaward.getRewardToken();
-							Double priaiseAward = tokenaward.getPriaiseAward();
-							tokenaward.setPriaiseAward(priaiseAward + (20 * createPUF)); // 点赞奖励.
-							tokenaward.setRewardToken(rewardToken + (20 * createPUF)); // 奖励总数
-							tokenaward.setCreateTime(new Date());
-							kffTokenawardService.save(tokenaward);
-							qfIndexService.updateYxPraise(qfIndexId, userId);
-						}
-					}
+										tokenaward.setUserId(createUserId);
+										tokenaward.setTokenAwardFunctionDesc("点赞奖励");
+										tokenaward.setTokenAwardFunctionType(17);
+										tokenaward.setDistributionType(2);
+								//		Double rewardToken = tokenaward.getRewardToken();
+								//		Double priaiseAward = tokenaward.getPriaiseAward();
+										tokenaward.setPriaiseAward((wz * createPUF)); // 点赞奖励.
+										tokenaward.setRewardToken((wz * createPUF)); // 奖励总额
+										tokenaward.setCreateTime(new Date());
+										kffTokenawardService.save(tokenaward);
+										qfIndexService.updateYxPraise(userId);
 
-					if (praise.getPraiseType() == 2) {
-						// 证明是评论点赞
-						Tokenrecords tokenrecords = new Tokenrecords();
-						Tokenaward tokenaward = new Tokenaward();
-						if (praise.getStatus() <= validPraise) {
-							// 证明是有效赞
-							tokenrecords.setFunctionDesc("用户赞赏");
-							tokenrecords.setFunctionType(5);
-							tokenrecords.setAmount(new BigDecimal(2f * createPUF)); // 点赞奖励生成流水
-							tokenrecords.setUserId(createUserId);
-							tokenrecords.setTradeType(1);
-							tokenrecords.setRewardGrantType(1);
-							tokenrecords.setCreateTime(new Date());
-							kffTokenrecordsService.save(tokenrecords);
-
-							tokenaward.setUserId(createUserId);
-							tokenaward.setTokenAwardFunctionDesc("用户赞赏");
-							tokenaward.setTokenAwardFunctionType(5);
-							tokenaward.setDistributionType(2);
-							Double rewardToken = tokenaward.getRewardToken();
-							Double priaiseAward = tokenaward.getPriaiseAward();
-							tokenaward.setPriaiseAward(priaiseAward + (2 * createPUF)); // 点赞奖励.
-							tokenaward.setRewardToken(rewardToken + (2 * createPUF)); // 奖励总数
-							tokenaward.setCreateTime(new Date());
-							kffTokenawardService.save(tokenaward);
-							qfIndexService.updateYxPraise(qfIndexId, userId);
-
-						}
-					}
-				}
-				if (postType == 3) {
-					// 证明是文章的帖子
-
-					if (praise.getPraiseType() == 1) {
-						// 帖子点赞(普通1次二十个)
-						Tokenrecords tokenrecords = new Tokenrecords();
-						Tokenaward tokenaward = new Tokenaward();
-						if (praise.getStatus() <= validPraise) {
-							// 证明是有效赞
-							if (praise.getPraiseType() == 1) {
-								if (kffPostService.findById(postId).getPraiseNum() == 500) {
-									tokenrecords.setFunctionDesc("用户赞赏");
-									tokenrecords.setFunctionType(5);
-									tokenrecords.setAmount(new BigDecimal(20 * createPUF + meet)); // 点赞奖励生成流水
-									tokenrecords.setUserId(createUserId);
-									tokenrecords.setTradeType(1);
-									tokenrecords.setRewardGrantType(1);
-									tokenrecords.setCreateTime(new Date());
-									kffTokenrecordsService.save(tokenrecords);
-
-									tokenaward.setUserId(createUserId);
-									tokenaward.setTokenAwardFunctionDesc("用户赞赏");
-									tokenaward.setTokenAwardFunctionType(5);
-									tokenaward.setDistributionType(2);
-									Double rewardToken = tokenaward.getRewardToken();
-									Double priaiseAward = tokenaward.getPriaiseAward();
-									tokenaward.setPriaiseAward(priaiseAward + (20 * createPUF + meet)); // 点赞奖励.
-									tokenaward.setRewardToken(rewardToken + (20 * createPUF + meet));
-									tokenaward.setCreateTime(new Date());
-									kffTokenawardService.save(tokenaward);
-									qfIndexService.updateYxPraise(qfIndexId, userId);
-								} else {
-									tokenrecords.setFunctionDesc("用户赞赏");
-									tokenrecords.setFunctionType(5);
-									tokenrecords.setAmount(new BigDecimal(20f * createPUF)); // 点赞奖励生成流水
-									tokenrecords.setUserId(createUserId);
-									tokenrecords.setTradeType(1);
-									tokenrecords.setRewardGrantType(1);
-									tokenrecords.setCreateTime(new Date());
-									kffTokenrecordsService.save(tokenrecords);
-
-									tokenaward.setUserId(createUserId);
-									tokenaward.setTokenAwardFunctionDesc("用户赞赏");
-									tokenaward.setTokenAwardFunctionType(5);
-									tokenaward.setDistributionType(2);
-									Double rewardToken = tokenaward.getRewardToken();
-									Double priaiseAward = tokenaward.getPriaiseAward();
-									tokenaward.setPriaiseAward(priaiseAward + (20 * createPUF)); // 点赞奖励.
-									tokenaward.setRewardToken(rewardToken + (20 * createPUF)); // 奖励总额
-									tokenaward.setCreateTime(new Date());
-									kffTokenawardService.save(tokenaward);
-									qfIndexService.updateYxPraise(qfIndexId, userId);
-
+									}
 								}
 							}
 						}
-					}
 
-					if (praise.getPraiseType() == 2) {
-						// 证明是评论点赞
-						Tokenrecords tokenrecords = new Tokenrecords();
-						Tokenaward tokenaward = new Tokenaward();
-						if (praise.getStatus() <= validPraise) {
-							// 证明是有效赞
-							tokenrecords.setFunctionDesc("用户赞赏");
-							tokenrecords.setFunctionType(5);
-							tokenrecords.setAmount(new BigDecimal(2f * createPUF)); // 点赞奖励生成流水
-							tokenrecords.setUserId(createUserId);
-							tokenrecords.setTradeType(1);
-							tokenrecords.setRewardGrantType(1);
-							tokenrecords.setCreateTime(new Date());
-							kffTokenrecordsService.save(tokenrecords);
-
-							tokenaward.setUserId(createUserId);
-							tokenaward.setTokenAwardFunctionDesc("用户赞赏");
-							tokenaward.setTokenAwardFunctionType(5);
-							tokenaward.setDistributionType(2);
-							Double rewardToken = tokenaward.getRewardToken();
-							Double priaiseAward = tokenaward.getPriaiseAward();
-							tokenaward.setPriaiseAward(priaiseAward + (2 * createPUF)); // 点赞奖励.
-							tokenaward.setRewardToken(rewardToken + (2 * createPUF)); // 点赞总数
-							tokenaward.setCreateTime(new Date());
-							kffTokenawardService.save(tokenaward);
-
-						}
 					}
 				}
 			}
-		}
 
-		result = post.getPraiseNum() == null ? 1 : (post.getPraiseNum() + 1);
-		return result;
-	}
+			result = post.getPraiseNum() == null ? 1 : (post.getPraiseNum() + 1);
+			return result;
+		}
+	
 
 	@Override
 	public int cancelPraise(Integer userId, Integer postId) throws RestServiceException {
@@ -2151,7 +2173,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			save.setProjectId(post.getProjectId());
 			save.setStatus(KFFConstants.STATUS_ACTIVE);
 			save.setUpdateTime(now);
-			;
 			kffCollectService.save(save);
 			collectNumIncrease = true;
 		} else {
@@ -2984,7 +3005,198 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			message.setSenderUserId(user.getUserId());
 			kffMessageService.save(message);
 		}
-		result = comments.getPraiseNum() == null ? 1 : (comments.getPraiseNum() + 1);
+
+		/**
+		 * 添加评论点赞送积分功能 评论点赞数 +1 的时候去执行以下 送积分操作
+		 */
+
+		// 根据 文章详情对象praise 获取帖子类型
+		// 根据commentsId去查询postid
+		Comments findByPostId = kffCommentsService.findByPostId(commentsId);
+		Integer postId = findByPostId.getPostId();
+		// 根据postId去获取post详情对象
+		Post post = kffPostService.findById(postId);
+		Integer postType = praise.getPostType();
+		// 根据点赞人的id 去查看他的有效点赞
+		QfIndex qfIndexPraiseUser = qfIndexService.findByUserId(userId);
+		Integer qfIndexId = qfIndexPraiseUser.getQfIndexId();
+		Integer yxPraise = qfIndexPraiseUser.getYxpraise();
+		// 根据评论的id 去获取发表评论人的id
+		Integer commentUserId = comments.getCommentUserId();
+
+		// Post creatUserPost = kffPostService.findById(postId);
+		// Integer createUserId = creatUserPost.getCreateUserId();
+		// 根据发表评论人的id去获取本身的区分指数
+		QfIndex qfIndex = qfIndexService.findByUserId(commentUserId);
+		Integer createPostUserQFIndex = qfIndex.getYxpraise();
+		// 发表评论人赞的收益系数
+		Double createPUF = createPostUserQFIndex * 0.01d;
+
+		// 创建生成交易流水的交易日期
+		Date date = new Date();
+		String stringDate = DateUtil.getDate(date, "yyyy-MM-dd");
+		String replaceAllDate = stringDate.replaceAll("-", "");
+		// 创建业务记录id
+		String format = String.format("%010d", praise.getPraiseId());
+		// 判断点赞人是否实名认证
+		UserCard findBycreateUserId = userCardService.findByUserid(commentUserId);
+		UserCard findByUserid = userCardService.findByUserid(userId);
+		// 判断所点赞的文章是不是有效(1有效,0删除,无效)
+		if (post.getStatus() == 1 && findBycreateUserId != null && findByUserid != null) {
+			/**
+			 * 有效赞
+			 * 
+			 */
+			Integer validPraise = (int) Math.floor(yxPraise);
+			// 判断 帖子类型是1-评测 , 2-讨论 , 3-文章
+
+			if (postType == 1) {
+				// 证明是评测的帖子
+				// 判断评测的类型 (1-简单评测, 2-全面专业评测 , 3-部分系统单项评测)
+				// 根据文章详情的id 去查询 查询评测类型 返回evaluation 对象
+				Evaluation evaluation = kffEvaluationService.findByPostId(postId);
+
+				if (evaluation.getModelType() == 2) {
+					// 系统自定义专业完整版评测
+
+					if (praise.getPraiseType() == 2) {
+						// 证明是 专项完整版评测 评论点赞
+						if (praise.getStatus() ==1 && validPraise > 0 && validPraise != 0) {
+							Tokenrecords tokenrecords = new Tokenrecords();
+							Tokenaward tokenaward = new Tokenaward();
+							tokenrecords.setFunctionDesc("用户赞赏");
+							tokenrecords.setFunctionType(5);
+							tokenrecords.setAmount(new BigDecimal(1.00000000d * createPUF)); // 点赞奖励生成流水
+							tokenrecords.setUserId(commentUserId);
+							tokenrecords.setTradeType(1);
+							tokenrecords.setRewardGrantType(1);
+							tokenrecords.setCreateTime(new Date());
+							kffTokenrecordsService.save(tokenrecords);
+	
+							tokenaward.setUserId(commentUserId);
+							tokenaward.setTokenAwardFunctionDesc("用户赞赏");
+							tokenaward.setTokenAwardFunctionType(5);
+							tokenaward.setDistributionType(2);
+						//	Double rewardToken = tokenaward.getRewardToken();
+						//	Double priaiseAward = tokenaward.getPriaiseAward();
+							tokenaward.setPriaiseAward(1.00000000d * createPUF); // 点赞奖励.
+							tokenaward.setRewardToken(1.00000000d * createPUF);
+							tokenaward.setCreateTime(new Date());
+							kffTokenawardService.save(tokenaward);
+	
+							qfIndexService.updateYxPraise(userId);
+						}
+					}
+				}
+				if (evaluation.getModelType() == 3) {
+					// 用户自定义单项评测
+					if (praise.getPraiseType() == 2) {
+						if (praise.getStatus() ==1 && validPraise > 0 && validPraise != 0) {
+							// 证明是用户自定义单项评测 评论点赞
+							Tokenrecords tokenrecords = new Tokenrecords();
+							Tokenaward tokenaward = new Tokenaward();
+							tokenrecords.setFunctionDesc("用户赞赏");
+							tokenrecords.setFunctionType(5);
+							tokenrecords.setAmount(new BigDecimal(1.00000000d * createPUF)); // 点赞奖励生成流水
+							tokenrecords.setUserId(commentUserId);
+							tokenrecords.setTradeType(1);
+							tokenrecords.setRewardGrantType(1);
+							tokenrecords.setCreateTime(new Date());
+							kffTokenrecordsService.save(tokenrecords);
+	
+							tokenaward.setUserId(commentUserId);
+							tokenaward.setTokenAwardFunctionDesc("用户赞赏");
+							tokenaward.setTokenAwardFunctionType(5);
+							tokenaward.setDistributionType(2);
+						//	Double rewardToken = tokenaward.getRewardToken();
+						//	Double priaiseAward = tokenaward.getPriaiseAward();
+							tokenaward.setPriaiseAward(1.00000000d * createPUF); // 点赞奖励.
+							tokenaward.setRewardToken(1.00000000d * createPUF);
+							tokenaward.setCreateTime(new Date());
+							kffTokenawardService.save(tokenaward);
+							
+							qfIndexService.updateYxPraise(userId);
+						}
+					}
+				}
+			}
+			if (postType == 2) {
+				// 证明是讨论的帖子
+				//
+				if (praise.getPraiseType() == 1) {
+					if (praise.getPraiseType() == 2) {
+						// 证明是评论点赞
+						Tokenrecords tokenrecords = new Tokenrecords();
+						Tokenaward tokenaward = new Tokenaward();
+						if (praise.getStatus() ==1 && validPraise > 0 && validPraise != 0) {
+							// 证明是有效赞
+							tokenrecords.setFunctionDesc("用户赞赏");
+							tokenrecords.setFunctionType(5);
+							tokenrecords.setAmount(new BigDecimal(1.00000000d * createPUF)); // 点赞奖励生成流水
+							tokenrecords.setUserId(commentUserId);
+							tokenrecords.setTradeType(1);
+							tokenrecords.setRewardGrantType(1);
+							tokenrecords.setCreateTime(new Date());
+							tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
+							tokenrecords.setMemo("用户" + user.getUserName() + "点赞奖励"); // 流水备注
+							kffTokenrecordsService.save(tokenrecords);
+
+							tokenaward.setUserId(commentUserId);
+							tokenaward.setTokenAwardFunctionDesc("用户赞赏");
+							tokenaward.setTokenAwardFunctionType(5);
+							tokenaward.setDistributionType(2);
+					//		Double rewardToken = tokenaward.getRewardToken();
+					//		Double priaiseAward = tokenaward.getPriaiseAward();
+							tokenaward.setPriaiseAward(1.00000000d * createPUF); // 点赞奖励.
+							tokenaward.setRewardToken(1.00000000d * createPUF); // 奖励总数
+							tokenaward.setCreateTime(new Date());
+							kffTokenawardService.save(tokenaward);
+							qfIndexService.updateYxPraise(userId);
+
+						}
+					}
+
+				}
+				if (postType == 3) {
+					// 证明是文章的帖子
+
+					if (praise.getPraiseType() == 1) {
+						if (praise.getPraiseType() == 2) {
+							// 证明是评论点赞
+							Tokenrecords tokenrecords = new Tokenrecords();
+							Tokenaward tokenaward = new Tokenaward();
+							if (praise.getStatus() ==1 && validPraise > 0 && validPraise != 0) {
+								// 证明是有效赞
+								tokenrecords.setFunctionDesc("用户赞赏");
+								tokenrecords.setFunctionType(5);
+								tokenrecords.setAmount(new BigDecimal(1.00000000f * createPUF)); // 点赞奖励生成流水
+								tokenrecords.setUserId(commentUserId);
+								tokenrecords.setTradeType(1);
+								tokenrecords.setRewardGrantType(1);
+								tokenrecords.setCreateTime(new Date());
+								kffTokenrecordsService.save(tokenrecords);
+
+								tokenaward.setUserId(commentUserId);
+								tokenaward.setTokenAwardFunctionDesc("用户赞赏");
+								tokenaward.setTokenAwardFunctionType(5);
+								tokenaward.setDistributionType(2);
+						//		Double rewardToken = tokenaward.getRewardToken();
+						//		Double priaiseAward = tokenaward.getPriaiseAward();
+								tokenaward.setPriaiseAward(1.00000000d * createPUF); // 点赞奖励.
+								tokenaward.setRewardToken(1.00000000d * createPUF); // 点赞总数
+								tokenaward.setCreateTime(new Date());
+								kffTokenawardService.save(tokenaward);
+								qfIndexService.updateYxPraise(userId);
+							}
+						}
+					}
+
+				}
+			}
+
+			result = comments.getPraiseNum() == null ? 1 : (comments.getPraiseNum() + 1);
+
+		}
 		return result;
 	}
 
@@ -3404,6 +3616,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		userCard.setCreatetime(new Date());
 		userCard.setValid(1);
 		userCard.setPhone(phone);
+		userCard.setUserid(userId);
 		this.updataUserIdCard(userCard);
 
 	}
@@ -3543,16 +3756,20 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// 分类型进行参数验证begin
 		// 项目方认证
 		if (1 == authentication.getType()) {
-			if (null == authentication.getQufennickname()) {
+			if (StringUtils.isBlank(authentication.getQufennickname())) {
 				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
 			}
-			if (null == authentication.getAuthinformation()) {
+			if (StringUtils.isBlank(authentication.getAuthinformation())) {
 				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
 			}
-			if (null == authentication.getCompany()) {
+			// 添加认证信息的合法性判断
+			if (authentication.getAuthinformation().length() > 30) {
+				throw new RestServiceException("认证信息不能超过30 字!");
+			}
+			if (StringUtils.isBlank(authentication.getCompany())) {
 				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
 			}
-			if (null == authentication.getRegistrationnum()) {
+			if (StringUtils.isBlank(authentication.getRegistrationnum())) {
 				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
 			}
 
@@ -3562,13 +3779,21 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			if (null == authentication.getMissivepic()) {
 				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
 			}
-			if (null == authentication.getOperatorname()) {
+			if (StringUtils.isBlank(authentication.getOperatorname())) {
 				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
 			}
-			if (null == authentication.getNumber()) {
+			if (StringUtils.isBlank(authentication.getNumber())) {
 				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
 			}
-			if (null == authentication.getMail()) {
+			// 添加手机号码合法性判断
+			if (authentication.getNumber() != null) {
+				String phonefmt = RegexUtil.PHONEREGEX;
+				// 判断手机号码手机是否符合标注
+				if (!authentication.getNumber().matches(phonefmt)) {
+					throw new RestServiceException(RestErrorCode.PHONE_FORMAT_ERROR);
+				}
+			}
+			if (StringUtils.isBlank(authentication.getMail())) {
 				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
 			}
 			authentication.setLicencepic(uploadIeviw(authentication.getLicencepic()));
@@ -3576,60 +3801,70 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 		// 评测媒体认证
 		if (2 == authentication.getType()) {
-			if (null == authentication.getQufennickname()) {
+			if (StringUtils.isBlank(authentication.getQufennickname())) {//
 				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
 			}
-			if (null == authentication.getMediaintroduce()) {
+			if (StringUtils.isBlank(authentication.getMedianame())) {
 				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
 			}
-			if (null == authentication.getMediachannel()) {
+			if (StringUtils.isBlank(authentication.getMediachannel())) {//
 				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
 			}
-			if (null == authentication.getLink()) {
+			if (StringUtils.isBlank(authentication.getLink())) {//
 				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
 			}
-			if (null == authentication.getAssistpic()) {
+			if (null == authentication.getAssistpic()) {//
 				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
 			}
-			if (null == authentication.getOperatorname()) {
+			if (null == authentication.getOperatorname()) {//
 				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
 			}
-			if (null == authentication.getWechat()) {
+			if (StringUtils.isBlank(authentication.getWechat())) {//
 				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
 			}
-			if (null == authentication.getMail()) {
+			if (StringUtils.isBlank(authentication.getMail())) {//
 				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
 			}
 			authentication.setAssistpic(uploadIeviw(authentication.getAssistpic()));
 		}
 		// 机构号认证
 		if (3 == authentication.getType()) {
-			if (null == authentication.getQufennickname()) {
+			if (StringUtils.isBlank(authentication.getQufennickname())) {
 				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
 			}
-			if (null == authentication.getAuthinformation()) {
+			if (StringUtils.isBlank(authentication.getAuthinformation())) {
 				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
 			}
-			if (null == authentication.getCompany()) {
+			// 添加认证信息的合法性判断
+			if (authentication.getAuthinformation().length() > 30) {
+				throw new RestServiceException("认证信息不能超过30 字!");
+			}
+			if (StringUtils.isBlank(authentication.getCompany())) {
 				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
 			}
-			if (null == authentication.getRegistrationnum()) {
+			if (StringUtils.isBlank(authentication.getRegistrationnum())) {
 				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
 			}
-			if (null == authentication.getRegistrationnum()) {
-				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
-			}
+
 			if (null == authentication.getLicencepic()) {
 				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
 			}
 			if (null == authentication.getMissivepic()) {
 				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
 			}
-			if (null == authentication.getOperatorname()) {
+			if (StringUtils.isBlank(authentication.getOperatorname())) {
 				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
 			}
-			if (null == authentication.getNumber()) {
+			if (StringUtils.isBlank(authentication.getNumber())) {
 				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
+			}
+			// 添加手机号码合法性判断
+			if (authentication.getNumber() != null) {
+				String phonefmt = RegexUtil.PHONEREGEX;
+				// 判断手机号码手机是否符合标注
+				if (!authentication.getNumber().matches(phonefmt)) {
+					throw new RestServiceException(RestErrorCode.PHONE_FORMAT_ERROR);
+				}
 			}
 			if (null == authentication.getMail()) {
 				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
@@ -3637,23 +3872,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			authentication.setLicencepic(uploadIeviw(authentication.getLicencepic()));
 			authentication.setMissivepic(uploadIeviw(authentication.getMissivepic()));
 		}
-		// 添加营业执照合法性判断
-		if (authentication.getRegistrationnum().length() < 15 || authentication.getRegistrationnum().length() > 18) {
-			throw new RestServiceException("请输入正确的营业执照注册号");
-		}
 
-		// 添加手机号码合法性判断
-		if (authentication.getNumber() != null) {
-			String phonefmt = RegexUtil.PHONEREGEX;
-			// 判断手机号码手机是否符合标注
-			if (!authentication.getNumber().matches(phonefmt)) {
-				throw new RestServiceException(RestErrorCode.PHONE_FORMAT_ERROR);
-			}
-		}
-		// 添加认证信息的合法性判断
-		if (authentication.getAuthinformation().length() > 30) {
-			throw new RestServiceException("认证信息不能超过30 字!");
-		}
 		// 添加区分昵称的合法性判断
 		if (authentication.getQufennickname().length() > 10) {
 			throw new RestServiceException("区分昵称不能超过10 字!");
@@ -3686,6 +3905,15 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	public KFFUser saveUserByphonePass(String phoneNumber, Integer invaUserId, String password) {
 
 		KFFUser user = kffUserService.saveUserByphonePass(phoneNumber, invaUserId, password);
+		// 查询用户的认证表和身份认证表中的是否有数据
+
+		// 身份验证表中没有该用户
+		// 将用户是否进行身份审核等信息存放在authentication表中
+		this.setUserCardAuthentication(user.getUserId(), user.getMobile());
+
+		// 将用户信息插入认证表中
+		this.saveAuthenticationByUseId(user.getUserId());
+
 		/******************* 关注邀请人 *********************/
 		// 根据邀请人的ID查询user表
 
@@ -3816,10 +4044,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 
 		projectEvaluationDetailShareResponse.setCommendationList(donateUsers);
+		// projectEvaluationDetailShareResponse.setDevaluationModelList(evaliationModel);
+		// String evaluationTags = evaluation.getEvaluationTags();
 
-		String evaluationTags = evaluation.getEvaluationTags();
-
-		projectEvaluationDetailShareResponse.setDtags(evaluationTags);
+		// projectEvaluationDetailShareResponse.setDtags(evaluationTags);
 
 		return projectEvaluationDetailShareResponse;
 	}
@@ -4016,64 +4244,66 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		 * 
 		 * 根据ID进行排序
 		 */
+		// 说明有评论
 		List<Comments> commentsList = kffCommentsService.findFlootOrderById(postId);
+		if (commentsList.size() != 0) {
 
-		/**************** 热门评论产 *****************************/
-		/*
-		 * 热门评论 // 进行排序分页查询 List<Comments> commentUsers = new ArrayList<>();
-		 * PaginationQuery queryhot = new PaginationQuery();
-		 * queryhot.addQueryData("postId", postId + "");
-		 * queryhot.addQueryData("status", "1"); queryhot.setPageIndex(1);
-		 * queryhot.setRowsPerPage(2);// 展示三条最热门的评论 PageResult<Comments>
-		 * pageshot = kffCommentsService.findPageOrderBy(queryhot); if (pageshot
-		 * != null && CollectionUtils.isNotEmpty(pages.getRows())) {
-		 * commentUsers = pageshot.getRows(); } if (null == commentUsers) {
-		 * throw new RestServiceException("当前没有评论!"); } // 屏蔽部分参数
-		 * List<CommentShareFloot> commentUsersfl = new ArrayList<>(); for
-		 * (Comments commentUser : commentUsers) {
-		 * commentUser.setCreateTime(null); commentUser.setUpdateTime(null);
-		 * commentUser.setBecommentedUserIcon(null);
-		 * commentUser.setPostId(null); commentUser.setProjectId(null);
-		 * CommentShareFloot commentShareFloot = new CommentShareFloot();
-		 * BeanUtils.copyProperties(commentUser, commentShareFloot); Integer
-		 * indexOf = commentsList.indexOf(commentUser);
-		 * commentShareFloot.setFloot(indexOf);
-		 * commentUsersfl.add(commentShareFloot);
-		 * 
-		 * }
-		 */
-		// discussShare.setCommentsehot(commentUsers);
-		// 根据postid 查询discuss
-		/***************** 点赞最多的评论 ****************************/
-		// 点赞最多的评论
-		PaginationQuery hotQuery = new PaginationQuery();
-		hotQuery.addQueryData("status", "1");
-		hotQuery.addQueryData("postId", postId + "");
-		hotQuery.addQueryData("postType", KFFConstants.POST_TYPE_DISCUSS + "");
-		// 点赞数最多的2个评论
-		hotQuery.addQueryData("sortField", "praise_num");
+			/**************** 热门评论产 *****************************/
+			/*
+			 * 热门评论 // 进行排序分页查询 List<Comments> commentUsers = new ArrayList<>();
+			 * PaginationQuery queryhot = new PaginationQuery();
+			 * queryhot.addQueryData("postId", postId + "");
+			 * queryhot.addQueryData("status", "1"); queryhot.setPageIndex(1);
+			 * queryhot.setRowsPerPage(2);// 展示三条最热门的评论 PageResult<Comments>
+			 * pageshot = kffCommentsService.findPageOrderBy(queryhot); if (pageshot
+			 * != null && CollectionUtils.isNotEmpty(pages.getRows())) {
+			 * commentUsers = pageshot.getRows(); } if (null == commentUsers) {
+			 * throw new RestServiceException("当前没有评论!"); } // 屏蔽部分参数
+			 * List<CommentShareFloot> commentUsersfl = new ArrayList<>(); for
+			 * (Comments commentUser : commentUsers) {
+			 * commentUser.setCreateTime(null); commentUser.setUpdateTime(null);
+			 * commentUser.setBecommentedUserIcon(null);
+			 * commentUser.setPostId(null); commentUser.setProjectId(null);
+			 * CommentShareFloot commentShareFloot = new CommentShareFloot();
+			 * BeanUtils.copyProperties(commentUser, commentShareFloot); Integer
+			 * indexOf = commentsList.indexOf(commentUser);
+			 * commentShareFloot.setFloot(indexOf);
+			 * commentUsersfl.add(commentShareFloot);
+			 * 
+			 * }
+			 */
+			// discussShare.setCommentsehot(commentUsers);
+			// 根据postid 查询discuss
+			/***************** 点赞最多的评论 ****************************/
+			// 点赞最多的评论
+			PaginationQuery hotQuery = new PaginationQuery();
+			hotQuery.addQueryData("status", "1");
+			hotQuery.addQueryData("postId", postId + "");
+			hotQuery.addQueryData("postType", KFFConstants.POST_TYPE_DISCUSS + "");
+			// 点赞数最多的2个评论
+			hotQuery.addQueryData("sortField", "praise_num");
 
-		List<Comments> hotComments = this.findPageHotCommentsListDis(post.getCreateUserId(), postId, hotQuery);
-		List<CommentShareFloot> commenthotfl = new ArrayList<>();
+			List<Comments> hotComments = this.findPageHotCommentsListDis(post.getCreateUserId(), postId, hotQuery);
+			List<CommentShareFloot> commenthotfl = new ArrayList<>();
 
-		for (Comments commentUserHot : hotComments) {
+			for (Comments commentUserHot : hotComments) {
 
-			CommentShareFloot commentShareFloot = new CommentShareFloot();
-			BeanUtils.copyProperties(commentUserHot, commentShareFloot);
-			int indexOfhot = 0;
+				CommentShareFloot commentShareFloot = new CommentShareFloot();
+				BeanUtils.copyProperties(commentUserHot, commentShareFloot);
+				int indexOfhot = 0;
 
-			for (Comments commentsli : commentsList) {
-				if (commentsli.getCommentsId() == commentUserHot.getCommentsId()) {
-					int indexOf = commentsList.indexOf(commentsli);
-					indexOfhot = indexOf + 1;
+				for (Comments commentsli : commentsList) {
+					if (commentsli.getCommentsId() == commentUserHot.getCommentsId()) {
+						int indexOf = commentsList.indexOf(commentsli);
+						indexOfhot = indexOf + 1;
+					}
 				}
+
+				commentShareFloot.setFloot(indexOfhot);
+				commenthotfl.add(commentShareFloot);
 			}
-
-			commentShareFloot.setFloot(indexOfhot);
-			commenthotfl.add(commentShareFloot);
+			discussShare.setCommentsehot(commenthotfl);
 		}
-		discussShare.setCommentsehot(commenthotfl);
-
 		/******************* 新的2个评论 目前不用 **************************/
 		/*
 		 * PaginationQuery newQuery = new PaginationQuery();
@@ -4110,19 +4340,23 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		 *//*********************************************/
 		// 获得最多赞的人评论 根据praisenum 排序
 		List<Comments> commentZanDuoOnly = kffCommentsService.findBidPraiseNum(postId);
-		CommentShareFloot commentShareFlootZanDuoOnly = new CommentShareFloot();
-		BeanUtils.copyProperties(commentZanDuoOnly.get(0), commentShareFlootZanDuoOnly);
+		// 说明有赞
+		if (commentZanDuoOnly.size() != 0) {
 
-		int indexOfzan = 0;
+			CommentShareFloot commentShareFlootZanDuoOnly = new CommentShareFloot();
+			BeanUtils.copyProperties(commentZanDuoOnly.get(0), commentShareFlootZanDuoOnly);
 
-		for (Comments commentsli : commentsList) {
-			if (commentsli.getCommentsId() == commentZanDuoOnly.get(0).getCommentsId()) {
-				int indexOf = commentsList.indexOf(commentsli);
-				indexOfzan = indexOf + 1;
+			int indexOfzan = 0;
+
+			for (Comments commentsli : commentsList) {
+				if (commentsli.getCommentsId() == commentZanDuoOnly.get(0).getCommentsId()) {
+					int indexOf = commentsList.indexOf(commentsli);
+					indexOfzan = indexOf + 1;
+				}
 			}
-		}
 
-		commentShareFlootZanDuoOnly.setFloot(indexOfzan);
+			commentShareFlootZanDuoOnly.setFloot(indexOfzan);
+		}
 		// discussShare.setCommentseZanDuoOnly(commentShareFlootZanDuoOnly);
 		// 设置评论总数
 		Integer commentsSum = kffCommentsService.findCommentsSum();
@@ -4168,10 +4402,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			user = kffUserService.findById(userId);
 		}
 		List<CoinProperty> result = new ArrayList<>();
-		// SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("userId", userId + "");
-		List<CoinProperty> coinProperty = coinPropertyService.findAllCoinpropertyByWhere(map);
+		map.put("coinUnlock", coinUnlock +"");
+		List<CoinProperty> coinProperty = coinPropertyService.findCoinPropertyByUserId(userId);
 		if (CollectionUtils.isNotEmpty(coinProperty)) {
 			CoinProperty childQuery = new CoinProperty();
 			for (CoinProperty coinPropertys : coinProperty) {
@@ -4247,43 +4482,52 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			user = kffUserService.findById(userId);
 		}
 		List<CoinProperty> result = new ArrayList<>();
-
-		Map<String, Object> map = new HashMap<String, Object>();
-
-		map.put("userId", userId + "");
+	//	 Map<String,Object> map = new HashMap<String,Object>();
+		 
+	//	 map.put("userId", userId + "");
+		
 		Double unlockSum = 0d; // 所有解锁中的 币值
 		Double coinLockSum = 0d; // 所有锁定中的 币值
 		Double coinDistributedSum = 0d; // 发放中的b值
 		Double coinUsableSum = 0d; // 可用的币值 也就是说可以提现的
 		Double totalAssets = 0d; // 账户总资产
-		List<CoinProperty> coinProperty = coinPropertyService.findAllCoinpropertyByWhere(map);
+		List<CoinProperty> coinProperty = coinPropertyService.findCoinPropertyByUserId(userId);
+	//	List<CoinProperty> coinProperty = coinPropertyService.findAllCoinpropertyByWhere(map);
 		CoinProperty childQuery = new CoinProperty();
 
-		if (CollectionUtils.isNotEmpty(coinProperty)) {
+		if (CollectionUtils.isNotEmpty(coinProperty)) { 
 
 			for (CoinProperty coinPropertys : coinProperty) {
-				if (coinPropertys.getCoinUnlockType() == 1) {
+				if (coinPropertys.getCoinUnlock() !=null && coinPropertys.getCoinUnlockType() == 1) {
 					// 证明是解锁中的
 					Double unlock = coinPropertys.getCoinUnlock(); // 解锁中的币值
 					unlockSum += unlock;
 				}
-				Double coinDistributed = coinPropertys.getCoinDistributed(); // 发放中的B
-				coinDistributedSum += coinDistributed;
-				Double unlock = coinPropertys.getCoinUnlock(); // 解锁中的币值
-				unlockSum += unlock;
-				Double coinLock = coinPropertys.getCoinLock();
-				coinLockSum += coinLock;
-				Double coinUsable = coinPropertys.getCoinUsable();
-				coinUsableSum += coinUsable;
+				if (coinPropertys.getCoinDistributed() !=null) {
+					// 证明是解锁中的
+					Double coinDistributed = coinPropertys.getCoinDistributed(); // 发放中的B
+					coinDistributedSum += coinDistributed;
+				}
+				if (coinPropertys.getCoinUnlock()!=null) {
+					Double unlock = coinPropertys.getCoinUnlock(); // 解锁中的币值
+					unlockSum += unlock;
+				}
+				if(coinPropertys.getCoinUsable()!=null) {
+					
+					Double coinUsable = coinPropertys.getCoinUsable();
+					coinUsableSum += coinUsable;
+				}
 			}
-			childQuery.setCoinLock(coinLockSum);
-			childQuery.setCoinUnlock(unlockSum);
-			childQuery.setCoinDistributed(coinDistributedSum);
-			childQuery.setCoinUsable(coinUsableSum);
-			totalAssets = unlockSum + coinLockSum + coinDistributedSum + coinUsableSum;
-			childQuery.setTotalAssets(totalAssets);
-
-			result.add(childQuery);
+				childQuery.setCoinLock(coinLockSum);
+				childQuery.setCoinUnlock(unlockSum);
+				childQuery.setCoinDistributed(coinDistributedSum);
+				childQuery.setCoinUsable(coinUsableSum);
+				totalAssets = unlockSum + coinLockSum + coinDistributedSum + coinUsableSum;
+				childQuery.setTotalAssets(totalAssets);
+				
+				result.add(childQuery);
+		}else {
+			new Exception("集合没有数据");
 		}
 
 		return result;
@@ -4303,15 +4547,15 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 		List<Tokenaward> result = new ArrayList<>();
 
-		Map<String, Object> map = new HashMap<String, Object>();
+		//Map<String, Object> map = new HashMap<String, Object>();
 
-		map.put("userId", userId + "");
+		//map.put("userId", userId + "");
 
-		List<Tokenaward> coinProperty = tokenawardService.findAllTokenawardByWhere(map);
-
-		Tokenaward tokenaward = new Tokenaward();
-		Double sumYFF = 0d; // 已发放
-
+	//	List<Tokenaward> coinProperty = tokenawardService.findAllTokenawardByWhere(map);
+		List<Tokenaward> coinProperty = tokenawardService.findByUserId(userId);
+		//Tokenaward tokenaward = new Tokenaward();
+		Double ytokensum = 0d; // 已发放
+		Double ftokensum =0d;	// 发放中
 		if (CollectionUtils.isNotEmpty(coinProperty)) {
 
 			for (Tokenaward tokenawards : coinProperty) {
@@ -4320,14 +4564,26 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				Date createTime = tokenawards.getCreateTime(); // 奖励创建的时间
 				Integer counter = tokenawards.getCounter(); // 发放的次数
 				Double awardBalance = tokenawards.getAwardBalance(); // 线性发放的余额
-				sumYFF += (inviteRewards - awardBalance); // 已经发放的总数
-				tokenaward.setTokenAwardFunctionType(tokenType);
-				tokenaward.setInviteRewards(inviteRewards);
-				tokenaward.setCounter(counter);
-				tokenaward.setCreateTime(createTime);
-				tokenaward.setGiveNext(sumYFF);
-				result.add(tokenaward);
+				Double bDouble = inviteRewards - awardBalance;
+				ytokensum += bDouble;// 已经发放的总数
+				ftokensum += awardBalance; // 发放中的
+				tokenawards.setTokenAwardFunctionType(tokenType);
+				tokenawards.setInviteRewards(inviteRewards);
+				tokenawards.setCounter(counter);
+				tokenawards.setCreateTime(createTime);
+				//tokenawards.setGiveNext(ftokensum);
+				
+				//result.add(tokenawards);
 			}
+			//coinProperty.
+				Tokenaward tokenaward = new Tokenaward();
+				// 发放中的总数
+				tokenaward.setRewardToken(ytokensum);
+				// 已发放的总数
+				tokenaward.setGiveNext(ftokensum);
+				//result.add(tokenaward);
+				result.addAll(coinProperty);
+				result.add(tokenaward);
 		}
 		return result;
 	}
@@ -4371,5 +4627,250 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			return null;
 		}
 		return userCards.get(0);
+	}
+
+	/**
+	 * 目前先用double 根据token_award_function_type=18 userID 获取invite_rewards 的值
+	 */
+	@Override
+	public Double selectInvationAward(Integer userId) throws RestServiceException {
+		List<Tokenaward> tokenawards = kffTokenawardService.selectInvationAward(userId);
+		if (tokenawards.size() == 0) {
+			return 0.0;
+		}
+		Double inviteRewardSum = 0.0;
+		for (Tokenaward tokenaward : tokenawards) {
+			Double inviteRewards = tokenaward.getInviteRewards();
+			inviteRewardSum = inviteRewardSum + inviteRewards;
+		}
+		return inviteRewardSum;
+	}
+
+	@Override
+	public Integer selectInvationM1Num(Integer userId) throws RestServiceException {
+		Integer m1Num = kffUserService.selectInvationM1Num(userId);
+		return m1Num;
+	}
+
+	@Override
+	public Integer selectInvationM2Num(Integer userId) throws RestServiceException {
+		Integer m2Num = kffUserService.selectInvationM2Num(userId);
+		return m2Num;
+	}
+
+	@Override
+	public UserInvation selectUseInvation(Integer userId) throws RestServiceException {
+
+		return userInvationService.selectUseInvation(userId);
+	}
+
+	@Override
+	public void updataUserInvation(Integer userId, String posterUrl, String code2Url) throws RestServiceException {
+		String str = HexUtil.userIdTo2code(userId);
+		code2Url = "upload\\2code\\" + str + ".png";
+		userInvationService.updataUserInvation(userId, posterUrl, code2Url);
+
+	}
+	
+	public List<KFFUserWallet> findBywalletAndType(Integer userId) {
+		
+		return userWalletService.findBywalletAndType(userId);
+	}
+
+		@Override
+	public void aLiYunSms(String phone, String module, String dynamicValidateCode, String cacheKey, String smsStormCheckKey) {
+		/*//TaobaoClient client = new DefaultTaobaoClient(AliyunConstant.SMS_URL, AliyunConstant.SMS_APP_KEY, AliyunConstant.SMS_SECRET);
+		AlibabaAliqinFcSmsNumSendRequest req = new AlibabaAliqinFcSmsNumSendRequest();
+		//req.setSmsType(AliyunConstant.SMS_TYPE);
+		//req.setSmsFreeSignName(AliyunConstant.SMS_FREE_SIGN_NAME);
+
+		Map<String, String> map = new HashMap<String, String>();
+		// 放置json串
+		map.put("code", dynamicValidateCode);// 放置code 验证码
+		req.setSmsParamString(JSON.toJSONString(map));
+		req.setRecNum(phone);
+		// 登陆
+		if (module.equals(AliyunConstant.SMS_LOGIN)) {
+			req.setSmsTemplateCode(AliyunConstant.SMS_LOGIN_TEMPLATE_CODE);
+		}
+		// 注册
+		if (module.equals(AliyunConstant.SMS_REGISTER)) {
+			req.setSmsTemplateCode(AliyunConstant.SMS_REGISTER_TEMPLATE_CODE);
+		}
+		// 忘记密码
+		if (module.equals(AliyunConstant.SMS_FORGETPASDWORD)) {
+			req.setSmsTemplateCode(AliyunConstant.SMS_SMS_FORGETPASDWORD_TEMPLATE_CODE);
+		}
+		AlibabaAliqinFcSmsNumSendResponse rsp = null;
+		try {
+			rsp = client.execute(req);
+			if (rsp.isSuccess()) {
+
+				redisService.put(cacheKey, dynamicValidateCode, 60 * 10);// 设置10分钟
+				System.out.println("短信发送成功!");
+			} else {
+				System.out.println("短信发送失败!");
+			}
+			if (StringUtils.isBlank(this.redisService.get(smsStormCheckKey))) {
+				smsSendRmiService.sendMSG(phone, dynamicValidateCode, module);
+			}
+		} catch (ApiException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}*/
+
+	}
+	
+		@Override
+	public void aLiYunSmsApi(String phone, String module, String dynamicValidateCode, String cacheKey, String smsStormCheckKey) {
+		// TaobaoClient client = new DefaultTaobaoClient(AliyunConstant.SMS_URL,
+		// AliyunConstant.SMS_APP_KEY, AliyunConstant.SMS_SECRET);
+
+		Map<String, String> map = new HashMap<String, String>();
+		// 放置json串
+		map.put("code", dynamicValidateCode);// 放置code 验证码
+		// 设置超时时间-可自行调整
+		try {
+			System.setProperty("sun.net.client.defaultConnectTimeout", "10000");
+			System.setProperty("sun.net.client.defaultReadTimeout", "10000");
+			// 初始化ascClient需要的几个参数
+			final String product = "Dysmsapi";// 短信API产品名称（短信产品名固定，无需修改）
+			final String domain = "dysmsapi.aliyuncs.com";// 短信API产品域名（接口地址固定，无需修改）
+			// 替换成你的AK
+			final String accessKeyId = AliyunConstant.SMS_APP_KEY;// 你的accessKeyId,参考本文档步骤2
+			final String accessKeySecret = AliyunConstant.SMS_SECRET;// 你的accessKeySecret，参考本文档步骤2
+			// 初始化ascClient,暂时不支持多region（请勿修改）
+			IClientProfile profile = DefaultProfile.getProfile("cn-hangzhou", accessKeyId, accessKeySecret);
+			DefaultProfile.addEndpoint("cn-hangzhou", "cn-hangzhou", product, domain);
+			IAcsClient acsClient = new DefaultAcsClient(profile);
+			// 组装请求对象
+			SendSmsRequest request = new SendSmsRequest();
+			// 使用post提交
+			request.setMethod(MethodType.POST);
+			// 必填:待发送手机号。支持以逗号分隔的形式进行批量调用，批量上限为1000个手机号码,批量调用相对于单条调用及时性稍有延迟,验证码类型的短信推荐使用单条调用的方式；发送国际/港澳台消息时，接收号码格式为00+国际区号+号码，如“0085200000000”
+			request.setPhoneNumbers(phone);
+			// 必填:短信签名-可在短信控制台中找到
+			request.setSignName(AliyunConstant.SMS_FREE_SIGN_NAME);
+			// 必填:短信模板-可在短信控制台中找到
+			// 在此添加模板类型
+			request.setTemplateCode(AliyunConstant.SMS_REGISTER_TEMPLATE_CODE);
+			// 可选:模板中的变量替换JSON串,如模板内容为"亲爱的${name},您的验证码为${code}"时,此处的值为
+			// 友情提示:如果JSON中需要带换行符,请参照标准的JSON协议对换行符的要求,比如短信内容中包含\r\n的情况在JSON中需要表示成\\r\\n,否则会导致JSON在服务端解析失败
+			String jsonString = "{\"code\":\"123\"}";
+			request.setTemplateParam(jsonString);
+			// 可选-上行短信扩展码(扩展码字段控制在7位或以下，无特殊需求用户请忽略此字段)
+			request.setSmsUpExtendCode("90997");
+			// 可选:outId为提供给业务方扩展字段,最终在短信回执消息中将此值带回给调用者
+			request.setOutId("yourOutId");
+			// 请求失败这里会抛ClientException异常
+			SendSmsResponse sendSmsResponse = acsClient.getAcsResponse(request);
+			if (sendSmsResponse.getCode() != null && sendSmsResponse.getCode().equals("OK")) {
+				System.out.println("短信发送成功!");
+				System.out.println(sendSmsResponse.getCode());
+				redisService.put(cacheKey, dynamicValidateCode, 60 * 10);// 设置10分钟
+			}
+		} catch (ServerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClientException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	@Override
+	public PageResult<Tokenaward> findPageMyTokenAwards(PaginationQuery query) {
+		
+		return tokenawardService.findPage(query);
+	}
+
+	@Override
+	public void updateUserWallet(Integer userId, String wallet) {
+		
+		 userWalletService.updateUserWallet(userId,wallet);
+	}
+
+	@Override
+	public KFFUserWallet findUserId(Integer userId) {
+
+		return userWalletService.findUserId(userId);
+	}
+
+	@Override
+	public List<Tokenaward> findByTokenAward(Integer userId) {
+		
+		return tokenawardService.findByUserId(userId);
+	}
+
+	@Override
+	public Tokenaward findToken(Integer userId) {
+		KFFUser user = null;
+		if (userId != null && userId != 0) {
+			user = kffUserService.findById(userId);
+		}
+		List<Tokenaward> result = new ArrayList<>();
+		Tokenaward tokenaward = new Tokenaward();
+	//	Map<String, Object> map = new HashMap<String, Object>();
+
+		//map.put("userId", userId + "");
+
+	//	List<Tokenaward> coinProperty = tokenawardService.findAllTokenawardByWhere(map);
+		List<Tokenaward> coinProperty = tokenawardService.findByUserId(userId);
+		//Tokenaward tokenaward = new Tokenaward();
+		Double ytokensum = 0d; // 已发放
+		Double ftokensum =0d;	// 发放中
+		if (CollectionUtils.isNotEmpty(coinProperty)) {
+
+			for (Tokenaward tokenawards : coinProperty) {
+				Integer tokenType = tokenawards.getTokenAwardFunctionType(); // 奖励类型
+				Double inviteRewards = tokenawards.getInviteRewards(); // 奖励数量
+				Date createTime = tokenawards.getCreateTime(); // 奖励创建的时间
+				Integer counter = tokenawards.getCounter(); // 发放的次数
+				Double awardBalance = tokenawards.getAwardBalance(); // 线性发放的余额
+				Double bDouble = inviteRewards - awardBalance;
+				ytokensum += bDouble;// 已经发放的总数
+				ftokensum += awardBalance;
+				tokenawards.setTokenAwardFunctionType(tokenType);
+				tokenawards.setInviteRewards(inviteRewards);
+				tokenawards.setCounter(counter);
+				tokenawards.setCreateTime(createTime);
+			//	tokenawards.setGiveNext(ftokensum);
+				
+				result.add(tokenawards);
+			}
+			//coinProperty.
+				
+				// 发放中的总数
+				tokenaward.setRewardToken(ytokensum);
+				// 已发放的总数
+				tokenaward.setGiveNext(ftokensum);
+				//result.add(tokenaward);
+				result.addAll(coinProperty);
+				result.add(tokenaward);
+		}
+		return tokenaward;
+	}
+	
+		@Override
+	public List<Tokenrecords> findAllTokenrecordsUserId(Integer userId) {
+		// TODO Auto-generated method stub
+		return kffTokenrecordsService.findAllTokenrecordsUserId(userId);
+	}
+
+	public PageResult<TokenawardReturn> findPageMyTokenawardReturn(PaginationQuery query) {
+		
+		return kffTokenrecordsService.findPageMyTokenawardReturn(query);
+	
+	}
+
+	@Override
+	public List<Tokenaward> findAllTokenawardUserId(Integer userId) {
+		// TODO Auto-generated method stub
+		return kffTokenawardService.findAllTokenawardUserId(userId);
 	}
 }

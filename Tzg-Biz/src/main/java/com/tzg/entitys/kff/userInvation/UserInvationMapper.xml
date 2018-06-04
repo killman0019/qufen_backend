@@ -123,11 +123,34 @@
 		where userInvationId =
 		#{userinvationid,jdbcType=INTEGER}
 	</update>
-	
+
 	<select id="selectUserInvation" resultMap="BaseResultMap" parameterType="java.lang.Integer">
 		select
 		<include refid="Base_Column_List" />
 		from tbuserinvation
 		where status = 1 and userId = #{userId,jdbcType=INTEGER}
 	</select>
+
+	<update id="updataUserInvation" parameterType="com.tzg.entitys.kff.userInvation.UserInvation">
+		update tbuserinvation
+		<set>
+			<if test="user2code != null">
+				user2Code = #{user2code,jdbcType=VARCHAR},
+			</if>
+			<if test="user2codepic != null">
+				user2CodePic = #{user2codepic,jdbcType=VARCHAR},
+			</if>
+			<if test="userposterpic != null">
+				userPosterPic = #{userposterpic,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=INTEGER},
+			</if>
+			<if test="createtime != null">
+				createTime = #{createtime,jdbcType=TIMESTAMP},
+			</if>
+
+		</set>
+		where userId = #{userId,jdbcType=INTEGER}
+	</update>
 </mapper>

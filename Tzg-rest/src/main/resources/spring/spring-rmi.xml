@@ -22,7 +22,7 @@
       http://code.alibabatech.com/schema/dubbo/dubbo.xsd"
 	default-lazy-init="true">
 
-	<util:properties id="sysConfig" location="file:/opt/resource/system.properties"/>
+	<util:properties id="sysConfig" location="file:c:/opt/resource/system.properties"/>
 	
 	<!--
 	<bean id="configProfile" class="com.dangdang.config.service.zookeeper.ZookeeperConfigProfile">

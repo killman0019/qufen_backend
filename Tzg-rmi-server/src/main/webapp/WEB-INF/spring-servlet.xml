@@ -31,7 +31,7 @@
 	<!-- 启动注解驱动的Spring MVC功能，注册请求url和注解POJO类方法的映射 -->
 	<mvc:annotation-driven />
 
-	<util:properties id="sysConfig" location="file:/opt/resource/system.properties"/>
+	<util:properties id="sysConfig" location="file:c:/opt/resource/system.properties"/>
 	
 	<!--
 	<bean id="configProfile" class="com.dangdang.config.service.zookeeper.ZookeeperConfigProfile">
@@ -64,11 +64,11 @@
 	
 	<!-- redis -->
 	<bean id="redisService" class="com.tzg.common.redis.RedisServiceImpl">
-		<property name="maxActive"     value="#{sysConfig['redis.pool.maxActive']}" />  
-		<property name="maxIdle"       value="#{sysConfig['redis.pool.maxIdle']}" />  
-		<property name="maxWait"       value="#{sysConfig['redis.pool.maxWait']}" />  
-		<property name="masterHost"   value="#{sysConfig['master.hosts']}" />
-		<property name="salveHost"   value="#{sysConfig['salve.hosts']}" /> 
+		<property name="maxActive"     value="1024" />  
+		<property name="maxIdle"       value="200" />  
+		<property name="maxWait"       value="2000" />  
+		<property name="masterHost"   value="127.0.0.1:6379" />
+		<property name="salveHost"   value="127.0.0.1:6379" /> 
 	</bean>
 	
 	<!-- spring thread pool executor -->

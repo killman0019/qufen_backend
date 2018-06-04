@@ -67,14 +67,12 @@ public class QfIndexService {
 		}
 		return QfIndexMapper.findByUserId(userid);
 	}
-	public void updateYxPraise(Integer qfIndexId,Integer userid)  throws RestServiceException {
+	public void updateYxPraise(Integer userid)  throws RestServiceException {
 		if(userid == null){
 			throw new RestServiceException("用户id不能为空");
 		}
-		if(qfIndexId == null){
-			throw new RestServiceException("id不能为空");
-		}
-		 QfIndexMapper.updateYxPraise(qfIndexId, userid);
+		
+		 QfIndexMapper.updateYxPraise(userid);
 	}
 
 	public void updateYxPraiseValid() {

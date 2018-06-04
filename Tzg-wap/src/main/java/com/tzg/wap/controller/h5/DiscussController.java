@@ -7,6 +7,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.druid.support.json.JSONUtils;
 import com.alibaba.fastjson.JSON;
 import com.tzg.common.base.BaseRequest;
 import com.tzg.entitys.discussImages.DiscussImages;
@@ -41,15 +43,19 @@ public class DiscussController extends BaseController {
 	@RequestMapping(value = "/saveDiscuss", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public BaseResponseEntity saveDiscuss(HttpServletRequest request, HttpServletResponse response, String projectName, String disscussContents,
-			DiscussImages name, String tagInfos, String token) {
+			String tagInfos, String token, String discussImages, String postTitle) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
+
+		// 进行json转换
+		String discussImagesl = StringEscapeUtils.unescapeHtml(discussImages);
+		String tagInfosl = StringEscapeUtils.unescapeHtml(tagInfos);
 		if (null == token) {
 			throw new RestServiceException(RestErrorCode.USER_NOT_LOGIN);
 		}
 
 		try {
-
+			// List<String> name = JSON.parseObject(pic, ArrayList.class);
 			DiscussRequest discussRequest = new DiscussRequest();
 			Integer userId = getUserIdByToken(token);
 			discussRequest.setCreateUserId(userId);
@@ -60,19 +66,31 @@ public class DiscussController extends BaseController {
 			discussRequest.setToken(token);
 			discussRequest.setProjectId(subProject.getProjectId());
 			discussRequest.setDisscussContents(disscussContents);
-			discussRequest.setTagInfos(tagInfos);
-			if (name == null) {
+			discussRequest.setTagInfos(tagInfosl);
+			discussRequest.setDiscussImages(discussImagesl);
+			discussRequest.setPostTitle(postTitle);
+			// name是个图片数组
+			/*if (null == name) {
 				discussRequest.setDiscussImages(null);
-			} else {
-				// 将URL转化成相对应的格式
-				/*List<String> url = JSON.parseArray(name, String.class);
-				if (url.size() > 9) {
-					throw new RestServiceException("请注意:最多上传9张图片!");
-				}*/
-				//discussRequest.setDisscussContents(kffRmiService.uploadIeviwList(url));
-
 			}
+			if (name.size() <= 3) {
+				String uploadIeviwList = kffRmiService.uploadIeviwList(name);
+				discussRequest.setDiscussImages(uploadIeviwList);
+			} else {
+				int i = 0;
+				List<String> strl = new ArrayList<String>();
+				for (String nameStr : name) {
+					i = i + 1;
+					if (i == 4) {
+						break;
+					}
+					strl.add(nameStr);
 
+				}
+				String uploadIeviwList = kffRmiService.uploadIeviwList(strl);
+				discussRequest.setDiscussImages(uploadIeviwList);
+			}
+			*/
 			kffRmiService.saveDiscuss(discussRequest);
 			bre.setData(map);
 		} catch (RestServiceException e) {

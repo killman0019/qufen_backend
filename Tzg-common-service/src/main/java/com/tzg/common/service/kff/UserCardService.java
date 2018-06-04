@@ -34,8 +34,12 @@ public class UserCardService {
 	}
 
 	public void updataUserIdCard(UserCard userCard) {
-		userCardMapper.update(userCard);
+		userCardMapper.updateUserCard(userCard);
 
+	}
+	public UserCard findByUserid(java.lang.Integer userId) {
+		return userCardMapper.findByUserid(userId);
+		
 	}
 	@Transactional(readOnly = true)
 	public Integer selectUserCardNum(String userCardNum) {

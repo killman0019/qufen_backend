@@ -245,12 +245,12 @@
 	</select>
 	<!-- 根据用户的id 去获取用户的等级  -->
 	<select id="findUserById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
-	    SELECT <include refid="columns"/> 
-	<![CDATA[
+	    SELECT *
+
 		FROM tbuser 
 		WHERE 
         user_id = #{userId} 
-	]]>
+	
 	</select>
 	<!-- 根据用户的登录手机号  去获取用户的id  -->
 	<select id="findByMobileId" resultMap="BaseResultMap" parameterType="java.lang.String">
@@ -419,6 +419,17 @@
 		FROM tbuser
 		WHERE user_id = #{userId}
 
+	</select>
+	
+	<select id="selectInvationM1Num" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+		SELECT
+		<include refid="columns" />
+		FROM
+		tbuser
+		WHERE
+		refer_user_id = #{referUserId}
+		AND refer_level = 1
+		AND STATUS = 1
 	</select>
 </mapper>
 

@@ -9,8 +9,8 @@
 		<result property="tokenAwardFunctionDesc" jdbcType="VARCHAR" column="token_award_function_desc"/>
 		<result property="tokenAwardFunctionType" jdbcType="INTEGER" column="token_award_function_type"/>
 		<result property="inviteRewards" jdbcType="DOUBLE" column="invite_rewards"/>
-		<result property="priaiseAward" jdbcType="DOUBLE" column="priaise_award"/>
 		<result property="giveTime" jdbcType="TIMESTAMP" column="give_time"/>
+		<result property="priaiseAward" jdbcType="DOUBLE" column="priaise_award"/>
 		<result property="containerAward" jdbcType="DOUBLE" column="container_award"/>
 		<result property="createTime" jdbcType="TIMESTAMP" column="createTime"/>
 		<result property="updateTime" jdbcType="TIMESTAMP" column="updateTime"/>
@@ -29,10 +29,29 @@
 	
 	<sql id="columns">
 	    <![CDATA[
-        token_award_id ,user_id ,token_records_id ,praise_id ,token_award_function_desc ,token_award_function_type ,invite_rewards ,priaise_award
-         ,give_time ,container_award ,createTime,updateTime ,give_next ,reward_token,award_balance,invite_number ,distribution_type,counter,grant_type,
-         user_name,mobile,remark,issuer
-         
+        token_award_id ,
+        user_id ,
+        token_records_id ,
+        praise_id ,
+        token_award_function_desc ,
+        token_award_function_type ,
+        invite_rewards ,
+        give_time ,
+        priaise_award ,
+        container_award ,
+        createTime,
+        updateTime ,
+        give_next ,
+        reward_token ,
+        award_balance ,
+        invite_number ,
+        distribution_type ,
+        counter ,
+        grant_type ,
+        user_name ,
+         mobile ,
+         issuer ,
+         remark 
 	    ]]>
 	</sql>
 	
@@ -48,8 +67,8 @@
         	token_award_function_desc ,
         	token_award_function_type ,
         	invite_rewards ,
-        	priaise_award ,
         	give_time ,
+        	priaise_award ,
         	container_award ,
         	createTime,
         	updateTime ,
@@ -62,8 +81,8 @@
         	grant_type,
         	user_name,
         	mobile,
-        	remark ,
-        	issuer
+        	issuer ,
+        	remark 
 		) VALUES (
 		
         	#{userId,jdbcType=INTEGER} ,
@@ -72,15 +91,15 @@
         	#{tokenAwardFunctionDesc,jdbcType=VARCHAR} ,
         	#{tokenAwardFunctionType,jdbcType=INTEGER} ,
         	#{inviteRewards,jdbcType=DOUBLE} ,
-        	#{priaiseAward,jdbcType=DOUBLE} ,
         	#{giveTime,jdbcType=TIMESTAMP} ,
+        	#{priaiseAward,jdbcType=DOUBLE} ,
         	#{containerAward,jdbcType=DOUBLE} ,
         	#{createTime,jdbcType=TIMESTAMP} ,
         	#{updateTime,jdbcType=TIMESTAMP} ,
         	#{giveNext,jdbcType=DOUBLE} ,
         	#{rewardToken,jdbcType=DOUBLE} ,
         	#{awardBalance,jdbcType=DOUBLE} ,
-        	#{inviteNumber,jdbcType=INTEGER}
+        	#{inviteNumber,jdbcType=INTEGER} ,
         	#{distributionType,jdbcType=INTEGER} ,
         	#{counter,jdbcType=INTEGER},
         	#{grantType,jdbcType=INTEGER},
@@ -114,7 +133,7 @@
 	        praise_id = #{praiseId,jdbcType=INTEGER} ,
 	        </if>
 			<if test="tokenAwardFunctionDesc != null">
-	        token_award_function_type = #{tokenAwardFunctionDesc,jdbcType=VARCHAR} ,
+	        token_award_function_Desc = #{tokenAwardFunctionDesc,jdbcType=VARCHAR} ,
 	        </if>
 			<if test="tokenAwardFunctionType != null">
 	        token_award_function_type = #{tokenAwardFunctionType,jdbcType=INTEGER} ,
@@ -122,17 +141,17 @@
 			<if test="inviteRewards != null">
 	        invite_rewards = #{inviteRewards,jdbcType=DOUBLE} ,
 	        </if>
-			<if test="priaiseAward != null">
-	        priaise_award = #{priaiseAward,jdbcType=DOUBLE} ,
-	        </if>
 	        <if test="giveTime != null">
 	        give_time = #{giveTime,jdbcType=TIMESTAMP} ,
 	        </if>
+			<if test="priaiseAward != null">
+	        priaise_award = #{priaiseAward,jdbcType=DOUBLE} ,
+	        </if>
 			<if test="createTime != null">
-	        create_time = #{createTime,jdbcType=TIMESTAMP} ,
+	        createTime = #{createTime,jdbcType=TIMESTAMP} ,
 	        </if>
 			<if test="updateTime != null">
-	        update_time = #{updateTime,jdbcType=TIMESTAMP} ,
+	        updateTime = #{updateTime,jdbcType=TIMESTAMP} ,
 	        </if>
 	        <if test="containerAward != null">
 	        container_award = #{containerAward,jdbcType=DOUBLE} ,
@@ -191,8 +210,26 @@
         token_award_id = #{tokenAwardId}
 	]]>
 	</select>
+	<select id="findPraiseAwardByType" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbtokenaward 
+		WHERE 1=1
+		and
+        user_id = #{userId},
+        token_award_function_type = 17
+	]]>
+	</select>
 	
 	<select id="findByUserId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbtokenaward 
+		WHERE 
+        user_id = #{userId} 
+	]]>
+	</select>
+	<select id="findAllTokenawardUserId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
 		SELECT <include refid="columns"/> 
 	<![CDATA[
 		FROM tbtokenaward 
@@ -259,7 +296,7 @@
 		and user_id = #{userId}
 		</if>
 		<if test="tokenRecordsId != null and tokenRecordsId.trim() != ''">
-		and token_award_function_desc = #{tokenAwardFunctionDesc}
+		and token_records_id = #{tokenRecordsId}
 		</if>
 		<if test="praiseId != null and praiseId.trim() != ''">
 		and praise_id = #{praiseId}
@@ -273,11 +310,11 @@
 		<if test="inviteRewards != null and inviteRewards.trim() != ''">
 		and invite_rewards = #{inviteRewards}
 		</if>
-		<if test="priaiseAward != null and priaiseAward.trim() != ''">
-		and priaise_award >= #{priaiseAward}
-		</if>
 		<if test="giveTime != null and giveTime.trim() != ''">
 		and give_time &lt;= #{giveTime}
+		</if>
+		<if test="priaiseAward != null and priaiseAward.trim() != ''">
+		and priaise_award >= #{priaiseAward}
 		</if>
 		<if test="containerAward != null and containerAward.trim() != ''">
 		and container_award = #{containerAward}
@@ -321,13 +358,23 @@
 		<if test="mobile != null and awardBalance.trim() != ''">
 		and mobile = #{mobile}
 		</if>
-		<if test="remark != null and remark.trim() != ''">
-		and remark = #{remark}
-		</if>
 		<if test="issuer != null and issuer.trim() != ''">
 		and issuer = #{issuer}
 		</if>
+		<if test="remark != null and remark.trim() != ''">
+		and remark = #{remark}
+		</if>
 	</sql>
+	
+	<select id="selectInvationAward" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+		SELECT
+		<include refid="columns" /> 
+		FROM
+		tbtokenaward
+		WHERE
+		token_award_function_type = 18
+		AND user_id = #{userId}
+	</select>
 </mapper>
 
 

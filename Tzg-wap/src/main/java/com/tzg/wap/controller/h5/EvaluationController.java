@@ -3,10 +3,12 @@ package com.tzg.wap.controller.h5;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +50,8 @@ public class EvaluationController extends BaseController {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		try {
+			evaluationRequest.setProfessionalEvaDetail(StringEscapeUtils.unescapeHtml(evaluationRequest.getProfessionalEvaDetail()));
+			evaluationRequest.setEvauationContent(StringEscapeUtils.unescapeHtml(evaluationRequest.getEvauationContent()));
 			Integer userId = getUserIdByToken(token);
 			evaluationRequest.setCreateUserId(userId);
 			KFFProject project = kffRmiService.selectProjectByprojectName(projectName);
@@ -63,8 +67,8 @@ public class EvaluationController extends BaseController {
 					throw new RestServiceException("不能对此项目进行重复评测!");
 				}
 			}
-			kffRmiService.saveEvaluation(evaluationRequest);
-			bre.setData(map);
+			Map<String, Object> saveEvaluation = kffRmiService.saveEvaluation(evaluationRequest);
+			bre.setData(saveEvaluation);
 		} catch (RestServiceException e) {
 			logger.error("EvaluationController saveEvaluation:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TokenawardMapper extends BaseMapper<Tokenaward, java.lang.Integer> {
 
-	Integer save(Tokenaward tokenaward);
+	//Integer saveToken(Tokenaward tokenaward);
 
 	void update(Tokenaward tokenaward);
 
@@ -29,4 +29,13 @@ public interface TokenawardMapper extends BaseMapper<Tokenaward, java.lang.Integ
 	List<Tokenaward> findAllTokenawardByWhere(Map<String, Object> map);
 
 	void updateByGrantType(Integer a);
+
+	Tokenaward findPraiseAwardByType(Integer createUserId);
+	
+	List<Tokenaward> selectInvationAward(Integer userId);
+	List<Tokenaward> findAllTokenawardUserId(Integer userId);
+
+	Integer findPageCounts(Map<String, Object> queryData);
+
+	List<TokenawardReturn> findPageToken(Map<String, Object> queryData);
 }

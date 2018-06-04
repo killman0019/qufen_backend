@@ -2,6 +2,7 @@ package com.tzg.entitys.kff.user;
 
 import com.tzg.common.base.BaseMapper;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Repository;
@@ -30,4 +31,6 @@ public interface KFFUserMapper extends BaseMapper<KFFUser, java.lang.Integer> {
 	public KFFUser findByUserName(String loginName);
 
 	public Integer findReferCount(Integer userId);
+	
+	public List<KFFUser> selectInvationM1Num(Integer userId);
 }

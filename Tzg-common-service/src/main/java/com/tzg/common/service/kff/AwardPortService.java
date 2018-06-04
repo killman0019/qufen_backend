@@ -5,6 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,104 +14,124 @@ import org.springframework.transaction.annotation.Transactional;
 import com.tzg.entitys.kff.coinproperty.CoinProperty;
 import com.tzg.entitys.kff.tokenaward.Tokenaward;
 import com.tzg.entitys.kff.tokenrecords.Tokenrecords;
+import com.tzg.entitys.kff.tokenrecords.TokenrecordsMapper;
 import com.tzg.entitys.kff.user.KFFUser;
+import com.tzg.entitys.kff.usercard.UserCard;
 
 /**
  * 发放接口
+ * 
  * @author Wang
  *
  * @date 2018年5月10日
  */
-@Service(value="KFFAwardPortService")
+@Service(value = "AwardPortService")
 @Transactional
-public class AwardPortService  {
-	@Autowired 
+public class AwardPortService {
+	@Autowired
 	private TokenrecordsService kffTokenrecordsService;
-	@Autowired 
+	@Autowired
 	private TokenawardService kffTokenawardService;
 	@Autowired
 	private UserService kffUserService;
 	@Autowired
 	private CoinPropertyService kffCoinPropertyService;
-	//创建用户对象
-	private	KFFUser user = new KFFUser();
-	//创建奖励表对象
-	private	Tokenaward tokenaward = new Tokenaward();
-	//创建用户流水表对象
+	@Autowired
+	private UserCardService userCardService;
+	@Autowired
+	private TokenrecordsMapper tokenrecordsMapper;
+	// 创建用户对象
+//	private KFFUser user = new KFFUser();
+	// 创建奖励表对象
+	private Tokenaward tokenaward = new Tokenaward();
+	// 创建用户流水表对象
 	private Tokenrecords tokenrecords = new Tokenrecords();
-	//创建资产统计表的对象
+	// 创建资产统计表的对象
 	private CoinProperty coinProperty = new CoinProperty();
-	
-	//创建三个变量
+
+	// 创建三个变量
 	private Double m0 = 0.0d;
 	private Double m1 = 0.0d;
 	private Double m2 = 0.0d;
-	//格式化时间
+	// 格式化时间
 	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-	//注册的奖励发放
-	public void registerAward(Integer userId){
-		
-		
-		user=kffUserService.findById(userId);
-		if(userId != null && userId != 0){
-			//判断注册用户在哪个区间
-			if(userId>0 && userId <= 50000){
-				Date createTime = user.getCreateTime();
-				String formatCreateTime = format.format(createTime);
-				String formatNewDate = format.format(new Date());
-				if(formatCreateTime==formatNewDate) {
+
+	// 注册的奖励发放
+	public void registerAward(Integer userId) {
+		System.err.println("registerAward类的" + userId);
+
+		KFFUser user = kffUserService.findByUserId(userId);
+		System.err.println("测试我是注册人id :" + user.getUserId());
+		System.err.println("userIdRegisterAward : " + userId);
+		if (userId != null && userId != 0) {
+			// 判断注册用户在哪个区间
+			if (userId > 0 && userId <= 50000) {
+
+				List<Tokenaward> findByUserId = kffTokenawardService.findByUserId(userId);
+				
+				if (findByUserId.size() == 0) {
+					System.err.println("我是发放奖励");
 					method1(userId);
-				}else{
-					
+
+				} else {
+
 					issue(userId);
+					System.err.println("我是账单生成");
 				}
 				
-			}else
-			if(userId>50000 && userId <= 100000){
-				Date createTime = user.getCreateTime();
-				String formatCreateTime = format.format(createTime);
-				String formatNewDate = format.format(new Date());
-				if(formatCreateTime==formatNewDate) {
+
+			} 
+			if (userId > 50000 && userId <= 100000) {
+				List<Tokenaward> findByUserId = kffTokenawardService.findByUserId(userId);
+			
+				if (findByUserId.size() == 0) {
+					System.err.println("我是发放奖励");
 					method2(userId);
-				}else{
-					
+
+				} else {
+
 					issue(userId);
-				}
-			}else
-			if(userId>100000 && userId <= 500000){
-				Date createTime = user.getCreateTime();
-				String formatCreateTime = format.format(createTime);
-				String formatNewDate = format.format(new Date());
-				if(formatCreateTime==formatNewDate) {
+					System.err.println("我是账单生成");
+			}
+			} if (userId > 100000 && userId <= 500000) {
+				List<Tokenaward> findByUserId = kffTokenawardService.findByUserId(userId);
+				
+				if (findByUserId.size() == 0) {
+					System.err.println("我是发放奖励");
 					method3(userId);
-				}else{
-					
+
+				} else {
+
 					issue(userId);
+					System.err.println("我是账单生成");
 				}
-			}else
-			if(userId>5000000 && userId < 1000000){
-				Date createTime = user.getCreateTime();
-				String formatCreateTime = format.format(createTime);
-				String formatNewDate = format.format(new Date());
-				if(formatCreateTime==formatNewDate) {
+			}
+			if (userId > 5000000 && userId < 1000000) {
+				List<Tokenaward> findByUserId = kffTokenawardService.findByUserId(userId);
+
+				if (findByUserId.size() == 0) {
+					System.err.println("我是发放奖励");
 					method4(userId);
-				}else{
-					
+
+				} else {
+
 					issue(userId);
+					System.err.println("我是账单生成");
 				}
 			}
 		}
-		
-	}
-	
-	//邀请奖励的发放
 
-	private void method1(Integer userId) {
-		//判断如果用户没有被邀请 并且是普通用户
-		if(user.getReferLevel()==0 && (user.getUserType()==1 || user.getUserType()==4)){
-			m0=5000d;
-			//没有邀请人
-			//将用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+	}
+
+	// 邀请奖励的发放
+
+	public void method1(Integer userId) {
+		KFFUser user = kffUserService.findByUserId(userId);
+		// 判断如果用户没有被邀请 并且是普通用户
+		if (user.getReferLevel() == 0 && (user.getUserType() == 1 || user.getUserType() == 4)) {
+			m0 = 5000d;
+			// 没有邀请人
+			// 将用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 			tokenaward.setUserId(userId);
 			tokenaward.setTokenAwardFunctionType(16);
 			tokenaward.setTokenAwardFunctionDesc("注册奖励");
@@ -119,143 +141,139 @@ public class AwardPortService  {
 			tokenaward.setAwardBalance(m0); // 奖励余额初始化 是注册奖励
 			tokenaward.setUserName(user.getUserName());
 			tokenaward.setMobile(user.getMobile());
+			tokenaward.setCounter(0);
+			tokenaward.setGrantType(2);
 			
 			kffTokenawardService.save(tokenaward);
 			coinProperty.setUserId(userId);
 			coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
 			coinProperty.setCoinDistributed(m0);
 			kffCoinPropertyService.save(coinProperty);
-			//将用户的信息同时存入流水表单中
+			// 将用户的信息同时存入流水表单中
 			tokenrecords.setUserId(userId);
 			tokenrecords.setFunctionDesc("注册奖励");
 			tokenrecords.setFunctionType(16);
 			tokenrecords.setTradeType(1);
 			tokenrecords.setCreateTime(new Date());
 			kffTokenrecordsService.save(tokenrecords);
-			
-			//从数据表中获取所有该用户的奖励数据
-		//	issue(userId);
-		}else if(user.getReferLevel()==0 && (user.getUserType()==2||user.getUserType()==3)){ // 有邀请人并且是项目方
-			m0 = 5000d*150/100;
-			
-			//将用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+
+			// 从数据表中获取所有该用户的奖励数据
+			// issue(userId);
+		} else if (user.getReferLevel() == 0 && (user.getUserType() == 2 || user.getUserType() == 3)) { // 有邀请人并且是项目方
+			m0 = 5000d * 150 / 100;
+			// 将用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 			tokenaward.setUserId(userId);
 			tokenaward.setTokenAwardFunctionType(16);
 			tokenaward.setTokenAwardFunctionDesc("注册奖励");
 			tokenaward.setInviteRewards(m0);
 			tokenaward.setCreateTime(new Date());
 			tokenaward.setDistributionType(1);
+			tokenaward.setAwardBalance(m0); // 奖励余额初始化 是注册奖励
 			tokenaward.setUserName(user.getUserName());
 			tokenaward.setMobile(user.getMobile());
+			tokenaward.setCounter(0);
+			tokenaward.setGrantType(2);
 			
-			tokenaward.setAwardBalance(m0);  // 奖励余额初始化 是注册奖励
 			kffTokenawardService.save(tokenaward);
 			coinProperty.setUserId(userId);
 			coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
 			coinProperty.setCoinDistributed(m0);
 			kffCoinPropertyService.save(coinProperty);
-			
-			
-			//将用户的信息同时存入流水表单中
+			// 将用户的信息同时存入流水表单中
 			tokenrecords.setUserId(userId);
 			tokenrecords.setFunctionDesc("注册奖励");
 			tokenrecords.setFunctionType(16);
 			tokenrecords.setTradeType(1);
 			tokenrecords.setCreateTime(new Date());
 			kffTokenrecordsService.save(tokenrecords);
-			
-			//从数据表中获取所有该用户的奖励数据
-			List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
-			//根据用户id去获取用户资产信息
-			CoinProperty coinProperty = kffCoinPropertyService.findByUserId(userId);
-			
-			/*for (Tokenaward award : list) {
-				//获取每个奖励已经奖励的次数
-				Integer counter = award.getCounter();
-				//获取发放的类型
-				Integer distributionType = award.getDistributionType();
-				//获取每个发放的金额
-				Double rewards = award.getInviteRewards();
-				//获取奖励的类型
-				Integer awardFunctionType = award.getTokenAwardFunctionType();
-				//如果奖励没有发放完毕并且是线性发放
-				CoinProperty coinProperty2 = new CoinProperty();
-				KFFUser user2 = kffUserService.findById(userId);
-				if(counter<100 && distributionType == 1 ){
-					if(award.getGrantType()==2) { 
-					Double x = rewards/100f;
-					//如果是注册奖励
-					
-					if(awardFunctionType == 16){ 
-						tokenrecords.setUserId(userId);
-						tokenrecords.setFunctionDesc("注册奖励");
-						tokenrecords.setFunctionType(awardFunctionType);
-						tokenrecords.setAmount(x);
-						tokenrecords.setUpdateTime(new Date());
-						kffTokenrecordsService.update(tokenrecords);
-						tokenaward.setUserId(userId);
-						tokenaward.setTokenAwardFunctionType(awardFunctionType);
-						tokenaward.setCounter(counter+1);
-						Double awardBalance = award.getAwardBalance();
-						tokenaward.setAwardBalance(awardBalance-x);
-						
-						kffTokenrecordsService.update(tokenrecords);
-						kffTokenawardService.update(tokenaward);
-						
-						KFFUser kffUser = kffUserService.findById(userId);
-						Double kffCoinNum = kffUser.getKffCoinNum();
-						kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-						
-						
-						Double coinLock = coinProperty.getCoinLock();
-						Double coinDistributed = coinProperty.getCoinDistributed();
-						coinProperty2.setCoinLock(coinLock + x);
-						coinProperty2.setCoinDistributed(coinDistributed - x);
-						kffCoinPropertyService.update(coinProperty2);
-						
-					}else if(awardFunctionType == 18){//如果是邀请好友的奖励
-						
-						tokenrecords.setUserId(user2.getUserId());
-						tokenrecords.setFunctionDesc("邀请奖励");
-						tokenrecords.setFunctionType(awardFunctionType);
-						tokenrecords.setAmount(x); // 发放奖励数
-						tokenrecords.setUpdateTime(new Date());
-						kffTokenrecordsService.update(tokenrecords);
-						tokenaward.setUserId(user2.getUserId());
-						tokenaward.setTokenAwardFunctionType(awardFunctionType);
-						tokenaward.setCounter(counter+1);
-						
-						Double awardBalance = award.getAwardBalance();
-						tokenaward.setAwardBalance(awardBalance-x);
-						
-						kffTokenawardService.update(tokenaward);
-						
-						KFFUser kffUser = kffUserService.findByUserId(user2.getUserId());
-						Double kffCoinNum = kffUser.getKffCoinNum();
-						kffUserService.updateUserKFFCoinNum(user2.getUserId(), kffCoinNum+=x);
-						
-						Double coinLock = coinProperty.getCoinLock();
-						Double coinDistributed = coinProperty.getCoinDistributed();
-						coinProperty2.setCoinLock(coinLock + x);
-						coinProperty2.setCoinDistributed(coinDistributed - x);
-						kffCoinPropertyService.update(coinProperty2);
-						
-						}
-					}
-				}
-			}*/
+
+			// 从数据表中获取所有该用户的奖励数据
+			// issue(userId);
+		
+
+			// 从数据表中获取所有该用户的奖励数据
+			//List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
+			// 根据用户id去获取用户资产信息
+			//CoinProperty coinProperty = kffCoinPropertyService.findByUserId(userId);
+
+			/*
+			 * for (Tokenaward award : list) { //获取每个奖励已经奖励的次数 Integer counter =
+			 * award.getCounter(); //获取发放的类型 Integer distributionType =
+			 * award.getDistributionType(); //获取每个发放的金额 Double rewards =
+			 * award.getInviteRewards(); //获取奖励的类型 Integer awardFunctionType =
+			 * award.getTokenAwardFunctionType(); //如果奖励没有发放完毕并且是线性发放
+			 * CoinProperty coinProperty2 = new CoinProperty(); KFFUser user2 =
+			 * kffUserService.findById(userId); if(counter<100 &&
+			 * distributionType == 1 ){ if(award.getGrantType()==2) { Double x =
+			 * rewards/100f; //如果是注册奖励
+			 * 
+			 * if(awardFunctionType == 16){ tokenrecords.setUserId(userId);
+			 * tokenrecords.setFunctionDesc("注册奖励");
+			 * tokenrecords.setFunctionType(awardFunctionType);
+			 * tokenrecords.setAmount(x); tokenrecords.setUpdateTime(new
+			 * Date()); kffTokenrecordsService.update(tokenrecords);
+			 * tokenaward.setUserId(userId);
+			 * tokenaward.setTokenAwardFunctionType(awardFunctionType);
+			 * tokenaward.setCounter(counter+1); Double awardBalance =
+			 * award.getAwardBalance();
+			 * tokenaward.setAwardBalance(awardBalance-x);
+			 * 
+			 * kffTokenrecordsService.update(tokenrecords);
+			 * kffTokenawardService.update(tokenaward);
+			 * 
+			 * KFFUser kffUser = kffUserService.findById(userId); Double
+			 * kffCoinNum = kffUser.getKffCoinNum();
+			 * kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
+			 * 
+			 * 
+			 * Double coinLock = coinProperty.getCoinLock(); Double
+			 * coinDistributed = coinProperty.getCoinDistributed();
+			 * coinProperty2.setCoinLock(coinLock + x);
+			 * coinProperty2.setCoinDistributed(coinDistributed - x);
+			 * kffCoinPropertyService.update(coinProperty2);
+			 * 
+			 * }else if(awardFunctionType == 18){//如果是邀请好友的奖励
+			 * 
+			 * tokenrecords.setUserId(user2.getUserId());
+			 * tokenrecords.setFunctionDesc("邀请奖励");
+			 * tokenrecords.setFunctionType(awardFunctionType);
+			 * tokenrecords.setAmount(x); // 发放奖励数
+			 * tokenrecords.setUpdateTime(new Date());
+			 * kffTokenrecordsService.update(tokenrecords);
+			 * tokenaward.setUserId(user2.getUserId());
+			 * tokenaward.setTokenAwardFunctionType(awardFunctionType);
+			 * tokenaward.setCounter(counter+1);
+			 * 
+			 * Double awardBalance = award.getAwardBalance();
+			 * tokenaward.setAwardBalance(awardBalance-x);
+			 * 
+			 * kffTokenawardService.update(tokenaward);
+			 * 
+			 * KFFUser kffUser = kffUserService.findByUserId(user2.getUserId());
+			 * Double kffCoinNum = kffUser.getKffCoinNum();
+			 * kffUserService.updateUserKFFCoinNum(user2.getUserId(),
+			 * kffCoinNum+=x);
+			 * 
+			 * Double coinLock = coinProperty.getCoinLock(); Double
+			 * coinDistributed = coinProperty.getCoinDistributed();
+			 * coinProperty2.setCoinLock(coinLock + x);
+			 * coinProperty2.setCoinDistributed(coinDistributed - x);
+			 * kffCoinPropertyService.update(coinProperty2);
+			 * 
+			 * } } } }
+			 */
 			// 有邀请人,并且注册的是普通用户
-		}else if(user.getReferLevel()==1 && (user.getUserType()==1 || user.getUserType()==4)){
-			//获取邀请人的id
+		} else if (user.getReferLevel() == 1 && (user.getUserType() == 1 || user.getUserType() == 4)) {
+			// 获取邀请人的id
 			Integer referUserId = user.getReferUserId();
-			//获取邀请人的对象
+			// 获取邀请人的对象
 			KFFUser user2 = kffUserService.findById(referUserId);
-			
-			//判断邀请人是普通用户，并且没有上一级邀请
-			if((user2.getUserType()==1||user2.getUserType()==4) && user2.getReferLevel() ==0){
-				m0=5000d;
-				m1=250d;
-				//将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+
+			// 判断邀请人是普通用户，并且没有上一级邀请
+			if ((user2.getUserType() == 1 || user2.getUserType() == 4) && user2.getReferLevel() == 0) {
+				m0 = 5000d;
+				m1 = 250d;
+				// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 				tokenaward.setUserId(userId);
 				tokenaward.setTokenAwardFunctionType(16);
 				tokenaward.setTokenAwardFunctionDesc("注册奖励");
@@ -264,149 +282,71 @@ public class AwardPortService  {
 				tokenaward.setDistributionType(1);
 				tokenaward.setUserName(user.getUserName());
 				tokenaward.setMobile(user.getMobile());
-				
+				tokenaward.setCounter(0);
+				tokenaward.setGrantType(2);
+
 				tokenaward.setAwardBalance(m0);
 				kffTokenawardService.save(tokenaward);
-				
+
 				coinProperty.setUserId(userId);
 				coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
 				coinProperty.setCoinDistributed(m0);
 				kffCoinPropertyService.save(coinProperty);
-				
-				//将注册用户的信息同时存入流水表单中
+
+				// 将注册用户的信息同时存入流水表单中
 				tokenrecords.setUserId(userId);
 				tokenrecords.setFunctionDesc("注册奖励");
 				tokenrecords.setFunctionType(16);
 				tokenrecords.setTradeType(1);
 				tokenrecords.setCreateTime(new Date());
 				kffTokenrecordsService.save(tokenrecords);
-				
-				//从数据表中获取所有注册用户的奖励数据
+
+				// 从数据表中获取所有注册用户的奖励数据
 				List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
-				//List<Tokenaward> findByUserId2 = kffTokenawardService.findByUserId(user2.getUserId());
-				//获取邀请人邀请的钱数的总额
-				Double sum = kffTokenawardService.reawardSum(user2.getUserId(),18);
-				if(sum <= 5000){         
-					//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+				// List<Tokenaward> findByUserId2 =
+				// kffTokenawardService.findByUserId(user2.getUserId());
+				// 获取邀请人邀请的钱数的总额
+				Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
+				if (sum <= 5000) {
+					// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 					Tokenaward tokenaward2 = new Tokenaward();
 					tokenaward2.setUserId(user2.getUserId());
-					tokenaward2.setTokenAwardFunctionType(16);
+					tokenaward2.setTokenAwardFunctionType(18);
 					tokenaward2.setTokenAwardFunctionDesc("邀请奖励");
 					tokenaward2.setInviteRewards(m1);
 					tokenaward2.setCreateTime(new Date());
 					tokenaward2.setDistributionType(1);
-					
-					
+					tokenaward2.setCounter(0);
+					tokenaward2.setGrantType(2);
 					tokenaward2.setAwardBalance(m1);
 					kffTokenawardService.save(tokenaward2);
-					
+
 					coinProperty.setUserId(user2.getUserId());
 					coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
 					coinProperty.setCoinDistributed(m1);
-					
+
 					kffCoinPropertyService.save(coinProperty);
-					
-					//将注册用户的信息同时存入流水表单中
+
+					// 将注册用户的信息同时存入流水表单中
 					Tokenrecords tokenrecords2 = new Tokenrecords();
 					tokenrecords2.setUserId(user2.getUserId());
 					tokenrecords2.setFunctionDesc("邀请奖励");
-					tokenrecords2.setFunctionType(16);
+					tokenrecords2.setFunctionType(18);
 					tokenrecords2.setTradeType(1);
 					tokenrecords2.setCreateTime(new Date());
 					kffTokenrecordsService.save(tokenrecords2);
-					
+
 				}
-				/*for (Tokenaward award : list) {
-					//获取每个奖励已经奖励的次数
-					Integer counter = award.getCounter();
-					//获取发放的类型
-					Integer distributionType = award.getDistributionType();
-					//获取每个发放的金额
-					Double rewards = award.getInviteRewards();
-					//获取奖励的类型
-					Integer awardFunctionType = award.getTokenAwardFunctionType();
-					//如果奖励没有发放完毕并且是线性发放
-					
-					CoinProperty coinProperty2 = new CoinProperty();
-					if(counter<100 && distributionType == 1 ){
-						if(award.getGrantType()==2) { 
-							Double x = rewards/100;
-							//如果是注册奖励
-							if(awardFunctionType == 16){
-								tokenrecords.setUserId(userId);
-								tokenrecords.setFunctionDesc("注册奖励");
-								tokenrecords.setFunctionType(awardFunctionType);
-								tokenrecords.setAmount(x);
-								tokenrecords.setUpdateTime(new Date());
-								kffTokenrecordsService.update(tokenrecords);
-								tokenaward.setUserId(userId);
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								
-								
-								Double awardBalance = award.getAwardBalance();
-								tokenaward.setAwardBalance(awardBalance-x);
-								
-								kffTokenrecordsService.update(tokenrecords);
-								kffTokenawardService.update(tokenaward);
-								
-								
-								KFFUser kffUser = kffUserService.findByUserId(userId);
-								Double kffCoinNum = kffUser.getKffCoinNum();
-								kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-								
-								Double coinLock = coinProperty.getCoinLock();
-								Double coinDistributed = coinProperty.getCoinDistributed();
-								coinProperty2.setCoinLock(coinLock + x);
-								coinProperty2.setCoinDistributed(coinDistributed - x);
-								kffCoinPropertyService.update(coinProperty2);
-								
-								
-							}else if(awardFunctionType == 18){// 如果是邀请好友的奖励
-								
-								tokenrecords.setUserId(user2.getUserId());
-								tokenrecords.setFunctionDesc("邀请奖励");
-								tokenrecords.setFunctionType(awardFunctionType);
-								tokenrecords.setAmount(x); // 发放奖励数
-								tokenrecords.setUpdateTime(new Date());
-								
-								tokenaward.setUserId(user2.getUserId());
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								
-								Double awardBalance = award.getAwardBalance();
-								tokenaward.setAwardBalance(awardBalance-x);
-								
-								kffTokenawardService.update(award);
-								
-								
-								kffTokenrecordsService.update(tokenrecords);
-								
-								
-								tokenaward.setUserId(user2.getUserId());
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								kffTokenawardService.update(tokenaward);
-								
-								KFFUser kffUser = kffUserService.findByUserId(user2.getUserId());
-								Double kffCoinNum = kffUser.getKffCoinNum();
-								kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-							}
-						}
-					}
-				}*/
-				//判断邀请人是项目方用户，并且没有上一级邀请
-			}else if((user2.getUserType()==2||user2.getUserType()==3) && user2.getReferLevel() ==0){
+			} else if ((user2.getUserType() == 2 || user2.getUserType() == 3) && user2.getReferLevel() == 0) {
 				Integer findReferCount = kffUserService.findReferCount(user2.getUserId());
-				if(findReferCount<=1000) {
-					m0=5000d*150/100;
-					m1=250d*150/100;
+				if (findReferCount <= 1000) {
+					m0 = 5000d * 150 / 100;
+					m1 = 250d * 150 / 100;
+				} else {
+					m0 = 5000d;
+					m1 = 250d;
 				}
-				else {
-					m0=5000d;
-					m1=250d;
-				}
-				//将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+				// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 				tokenaward.setUserId(userId);
 				tokenaward.setTokenAwardFunctionType(16);
 				tokenaward.setTokenAwardFunctionDesc("注册奖励");
@@ -416,137 +356,66 @@ public class AwardPortService  {
 				tokenaward.setAwardBalance(m0);
 				tokenaward.setUserName(user.getUserName());
 				tokenaward.setMobile(user.getMobile());
+				tokenaward.setCounter(0);
+				tokenaward.setGrantType(2);
 				kffTokenawardService.save(tokenaward);
-				
-				
-				//将注册用户的信息同时存入流水表单中
+
+				// 将注册用户的信息同时存入流水表单中
 				tokenrecords.setUserId(userId);
 				tokenrecords.setFunctionDesc("注册奖励");
 				tokenrecords.setFunctionType(16);
 				tokenrecords.setTradeType(1);
 				tokenrecords.setCreateTime(new Date());
 				kffTokenrecordsService.save(tokenrecords);
-				
-				
+
 				coinProperty.setUserId(userId);
 				coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
 				coinProperty.setCoinDistributed(m0);
 				kffCoinPropertyService.save(coinProperty);
-				
-				//从数据表中获取所有注册用户的奖励数据
+
+				// 从数据表中获取所有注册用户的奖励数据
 				List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
-				//获取邀请人邀请的钱数的总额
-				Double sum = kffTokenawardService.reawardSum(user2.getUserId(),18);
-				if(sum <= 500000){
-					//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+				// 获取邀请人邀请的钱数的总额
+				Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
+				if (sum <= 500000) {
+					// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 					Tokenaward tokenaward2 = new Tokenaward();
 					tokenaward2.setUserId(user2.getUserId());
-					tokenaward2.setTokenAwardFunctionType(16);
+					tokenaward2.setTokenAwardFunctionType(18);
 					tokenaward2.setTokenAwardFunctionDesc("邀请奖励");
 					tokenaward2.setInviteRewards(m1);
 					tokenaward2.setCreateTime(new Date());
 					tokenaward2.setDistributionType(1);
-					
+					tokenaward2.setCounter(0);
+					tokenaward2.setGrantType(2);
 					tokenaward2.setAwardBalance(m1);
-					
+
 					kffTokenawardService.save(tokenaward2);
-					
+
 					coinProperty.setUserId(userId);
 					coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
 					coinProperty.setCoinDistributed(m0);
-					kffCoinPropertyService.save(coinProperty); 
-					
-					//将注册用户的信息同时存入流水表单中
+					kffCoinPropertyService.save(coinProperty);
+
+					// 将注册用户的信息同时存入流水表单中
 					Tokenrecords tokenrecords2 = new Tokenrecords();
 					tokenrecords2.setUserId(user2.getUserId());
 					tokenrecords2.setFunctionDesc("邀请奖励");
-					tokenrecords2.setFunctionType(16);
+					tokenrecords2.setFunctionType(18);
 					tokenrecords2.setTradeType(1);
 					tokenrecords2.setCreateTime(new Date());
 					kffTokenrecordsService.save(tokenrecords2);
-					
+
 				}
-			/*	for (Tokenaward award : list) {
-					//获取每个奖励已经奖励的次数
-					Integer counter = award.getCounter();
-					//获取发放的类型
-					Integer distributionType = award.getDistributionType();
-					//获取每个发放的金额
-					Double rewards = award.getInviteRewards();
-					//获取奖励的类型
-					Integer awardFunctionType = award.getTokenAwardFunctionType();
-					//如果奖励没有发放完毕并且是线性发放
-					CoinProperty coinProperty2 = new CoinProperty();
-					if(counter<100 && distributionType == 1 ){
-						if(award.getGrantType()==2) { 
-							Double x = rewards/100;
-							//如果是注册奖励
-							if(awardFunctionType == 16){
-								tokenrecords.setUserId(userId);
-								tokenrecords.setFunctionDesc("注册奖励");
-								tokenrecords.setFunctionType(awardFunctionType);
-								tokenrecords.setAmount(x);
-								tokenrecords.setUpdateTime(new Date());
-								tokenaward.setUserId(userId);
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								
-								Double awardBalance = award.getAwardBalance();
-								tokenaward.setAwardBalance(awardBalance-x);
-								kffTokenrecordsService.update(tokenrecords);
-								kffTokenawardService.update(tokenaward);
-								
-								KFFUser kffUser = kffUserService.findById(userId);
-								Double kffCoinNum = kffUser.getKffCoinNum();
-								kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-								
-								Double coinLock = coinProperty.getCoinLock();
-								Double coinDistributed = coinProperty.getCoinDistributed();
-								coinProperty2.setCoinLock(coinLock + x);
-								coinProperty2.setCoinDistributed(coinDistributed - x);
-								kffCoinPropertyService.update(coinProperty2);
-								
-							}else if(awardFunctionType == 18){//如果是邀请好友的奖励
-								
-								tokenrecords.setUserId(user2.getUserId());
-								tokenrecords.setFunctionDesc("邀请奖励");
-								tokenrecords.setFunctionType(awardFunctionType);
-								tokenrecords.setAmount(x); // 发放奖励数
-								tokenrecords.setUpdateTime(new Date());
-								kffTokenrecordsService.update(tokenrecords);
-								tokenaward.setUserId(user2.getUserId());
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								
-								Double awardBalance = award.getAwardBalance();
-								tokenaward.setAwardBalance(awardBalance-x);
-								
-								kffTokenawardService.update(tokenaward);
-								
-								KFFUser kffUser = kffUserService.findByUserId(user2.getUserId());
-								Double kffCoinNum = kffUser.getKffCoinNum();
-								kffUserService.updateUserKFFCoinNum(user2.getUserId(), kffCoinNum+=x);
-								
-								Double coinLock = coinProperty.getCoinLock();
-								Double coinDistributed = coinProperty.getCoinDistributed();
-								coinProperty2.setCoinLock(coinLock + x);
-								coinProperty2.setCoinDistributed(coinDistributed - x);
-								kffCoinPropertyService.update(coinProperty2);
-								
-							}
-						}
-					}
-				}*/
-				//判断邀请人是普通用户，并且有上一级邀请
-			}else if((user2.getUserType()==1||user2.getUserType()==4) && user2.getReferLevel() ==1){
-				//获取上上级的用户表
+			} else if ((user2.getUserType() == 1 || user2.getUserType() == 4) && user2.getReferLevel() == 1) {
+				// 获取上上级的用户表
 				KFFUser user3 = kffUserService.findById(user2.getReferUserId());
-				//判断注册用户的上上级是普通用户
-				if((user3.getUserType()==1||user3.getUserType()==4)){
-					m0=5000d;
-					m1=250d;
-					m2=50d;
-					//将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+				// 判断注册用户的上上级是普通用户
+				if ((user3.getUserType() == 1 || user3.getUserType() == 4)) {
+					m0 = 5000d;
+					m1 = 250d;
+					m2 = 50d;
+					// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 					tokenaward.setUserId(userId);
 					tokenaward.setTokenAwardFunctionType(16);
 					tokenaward.setTokenAwardFunctionDesc("注册奖励");
@@ -556,30 +425,32 @@ public class AwardPortService  {
 					tokenaward.setAwardBalance(m0);
 					tokenaward.setUserName(user.getUserName());
 					tokenaward.setMobile(user.getMobile());
+					tokenaward.setCounter(0);
+					tokenaward.setGrantType(2);
 					kffTokenawardService.save(tokenaward);
-					
+
 					coinProperty.setUserId(userId);
 					coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
 					coinProperty.setCoinDistributed(m0);
 					kffCoinPropertyService.save(coinProperty);
-					
-					//将注册用户的信息同时存入流水表单中
+
+					// 将注册用户的信息同时存入流水表单中
 					tokenrecords.setUserId(userId);
 					tokenrecords.setFunctionDesc("注册奖励");
 					tokenrecords.setFunctionType(16);
 					tokenrecords.setTradeType(1);
 					tokenrecords.setCreateTime(new Date());
 					kffTokenrecordsService.save(tokenrecords);
-					
-					//从数据表中获取所有注册用户的奖励数据
+
+					// 从数据表中获取所有注册用户的奖励数据
 					List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
-					//获取上级邀请人邀请的钱数的总额
-					Double sum = kffTokenawardService.reawardSum(user2.getUserId(),18);
-					//获取上上级邀请人邀请的钱数的总额
-					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(),18);
-					//kffTokenawardService.findByUserId(user2.getUserId());
-					if(sum <= 5000){
-						//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+					// 获取上级邀请人邀请的钱数的总额
+					Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
+					// 获取上上级邀请人邀请的钱数的总额
+					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(), 18);
+					// kffTokenawardService.findByUserId(user2.getUserId());
+					if (sum <= 5000) {
+						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenaward2 = new Tokenaward();
 						tokenaward2.setUserId(user2.getUserId());
 						tokenaward2.setTokenAwardFunctionType(18);
@@ -588,345 +459,28 @@ public class AwardPortService  {
 						tokenaward2.setCreateTime(new Date());
 						tokenaward2.setDistributionType(1);
 						tokenaward2.setAwardBalance(m1);
-						
+						tokenaward2.setCounter(0);
+						tokenaward2.setGrantType(2);
 						kffTokenawardService.save(tokenaward2);
-						//将注册用户的信息同时存入流水表单中
+						// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
 						tokenrecords2.setUserId(user2.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
-						tokenrecords2.setFunctionType(16);
+						tokenrecords2.setFunctionType(18);
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
 						kffTokenrecordsService.save(tokenrecords2);
-						
-						coinProperty.setUserId(user2.getUserId());
-						coinProperty.setCoinLock(kffUserService.findById(user2.getUserId()).getKffCoinNum().doubleValue());
-						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-						coinProperty.setCoinDistributed(m1+coinProperty.getCoinDistributed());
-						kffCoinPropertyService.save(coinProperty);
-						
-					}
-					if(sum2 <= 5000){
-						//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-						Tokenaward tokenawarde3 = new Tokenaward();
-						tokenawarde3.setUserId(user3.getUserId());
-						tokenawarde3.setTokenAwardFunctionType(18);
-						tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
-						tokenawarde3.setInviteRewards(m2);
-						tokenawarde3.setCreateTime(new Date());
-						tokenawarde3.setDistributionType(1);
-						tokenawarde3.setAwardBalance(m2);
-						kffTokenawardService.save(tokenawarde3);
-						//将注册用户的信息同时存入流水表单中
-						Tokenrecords tokenrecords2 = new Tokenrecords();
-						tokenrecords2.setUserId(user3.getUserId());
-						tokenrecords2.setFunctionDesc("邀请奖励");
-						tokenrecords2.setFunctionType(16);
-						tokenrecords2.setTradeType(1);
-						tokenrecords2.setCreateTime(new Date());
-						kffTokenrecordsService.save(tokenrecords2);
-						
-						coinProperty.setUserId(user3.getUserId());
-						coinProperty.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-						coinProperty.setCoinDistributed(m2+coinProperty.getCoinDistributed());
-						kffCoinPropertyService.save(coinProperty);
-						
-					}
-				/*	for (Tokenaward award : list) {
-						//获取每个奖励已经奖励的次数
-						Integer counter = award.getCounter();
-						//获取发放的类型
-						Integer distributionType = award.getDistributionType();
-						//获取每个发放的金额
-						Double rewards = award.getInviteRewards();
-						//获取奖励的类型
-						Integer awardFunctionType = award.getTokenAwardFunctionType();
-						//如果奖励没有发放完毕并且是线性发放
-						if(counter<100 && distributionType == 1 ){
-							if(award.getGrantType()==2) { 
-								Double x = rewards/100;
-								//如果是注册奖励
-								if(awardFunctionType == 16){
-									tokenrecords.setUserId(userId);
-									tokenrecords.setFunctionDesc("注册奖励");
-									tokenrecords.setFunctionType(awardFunctionType);
-									tokenrecords.setAmount(x);
-									tokenrecords.setUpdateTime(new Date());
-									kffTokenrecordsService.update(tokenrecords);
-									tokenaward.setUserId(userId);
-									tokenaward.setTokenAwardFunctionType(awardFunctionType);
-									tokenaward.setCounter(counter+1);
-									Double awardBalance = award.getAwardBalance();
-									kffTokenawardService.update(award);
-									tokenaward.setAwardBalance(awardBalance-x);
-									
-									KFFUser kffUser = kffUserService.findByUserId(userId);
-									Double kffCoinNum = kffUser.getKffCoinNum();
-									kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-									
-									Double coinLock = coinProperty.getCoinLock();
-									CoinProperty coinProperty2 = new CoinProperty();
-									Double coinDistributed = coinProperty.getCoinDistributed();
-									coinProperty2.setCoinLock(coinLock + x);
-									coinProperty2.setCoinDistributed(coinDistributed - x);
-									kffCoinPropertyService.update(coinProperty2);
-									
-								}else if(awardFunctionType == 18){//如果是邀请好友的奖励
-								
-									tokenrecords.setUserId(user2.getUserId());
-									tokenrecords.setFunctionDesc("邀请奖励");
-									tokenrecords.setFunctionType(awardFunctionType);
-									tokenrecords.setAmount(x); // 发放奖励数
-									tokenrecords.setUpdateTime(new Date());
-									
-									tokenaward.setUserId(user2.getUserId());
-									tokenaward.setTokenAwardFunctionType(awardFunctionType);
-									tokenaward.setCounter(counter+1);
-									
-									Double awardBalance = award.getAwardBalance();
-									tokenaward.setAwardBalance(awardBalance-x);
-									
-									kffTokenawardService.update(award);
-									
-									
-									kffTokenrecordsService.update(tokenrecords);
-									
-									
-									tokenaward.setUserId(user2.getUserId());
-									tokenaward.setTokenAwardFunctionType(awardFunctionType);
-									tokenaward.setCounter(counter+1);
-									kffTokenawardService.update(tokenaward);
-									
-									KFFUser kffUser = kffUserService.findByUserId(user2.getUserId());
-									Double kffCoinNum = kffUser.getKffCoinNum();
-									kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-									
-								}
-							}
-						}
-					}*/
-					//如果注册用户的上上级用户是项目方
-				}
-				
-				else if((user3.getUserType()==2||user3.getUserType()==3)){
-					Integer findReferCount = kffUserService.findReferCount(user3.getUserId());
-					if(findReferCount<=1000) {
-						m0=5000d;
-						m1=250d;
-						m2=50d*150/100;
-					}
-					else {
-						m0=5000d;
-						m1=250d;
-						m2=50d;
-					}
-					
-					//将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-					tokenaward.setUserId(userId);
-					tokenaward.setTokenAwardFunctionType(16);
-					tokenaward.setTokenAwardFunctionDesc("注册奖励");
-					tokenaward.setInviteRewards(m0);
-					tokenaward.setCreateTime(new Date());
-					tokenaward.setDistributionType(1);
-					tokenaward.setAwardBalance(m0);
-					tokenaward.setUserName(user.getUserName());
-					tokenaward.setMobile(user.getMobile());
-					kffTokenawardService.save(tokenaward);
-					
-					coinProperty.setUserId(userId);
-					coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
-					coinProperty.setCoinDistributed(m0);
-					kffCoinPropertyService.save(coinProperty);
-					
-					//将注册用户的信息同时存入流水表单中
-					tokenrecords.setUserId(userId);
-					tokenrecords.setFunctionDesc("注册奖励");
-					tokenrecords.setFunctionType(16);
-					tokenrecords.setTradeType(1);
-					tokenrecords.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords);
-					
-					//从数据表中获取所有注册用户的奖励数据
-					List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
-					//获取上级邀请人邀请的钱数的总额
-					Double sum = kffTokenawardService.reawardSum(user2.getUserId(),18);
-					//获取上上级邀请人邀请的钱数的总额
-					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(),18);
-					
-					if(sum <= 5000){
-						//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-						Tokenaward tokenaward2 = new Tokenaward();
-						tokenaward2.setUserId(user2.getUserId());
-						tokenaward2.setTokenAwardFunctionType(18);
-						tokenaward2.setTokenAwardFunctionDesc("邀请奖励");
-						tokenaward2.setInviteRewards(m1);
-						tokenaward2.setCreateTime(new Date());
-						tokenaward2.setDistributionType(1);
-						kffTokenawardService.save(tokenaward2);
-						//将注册用户的信息同时存入流水表单中
-						Tokenrecords tokenrecords2 = new Tokenrecords();
-						tokenrecords2.setUserId(user2.getUserId());
-						tokenrecords2.setFunctionDesc("邀请奖励");
-						tokenrecords2.setFunctionType(16);
-						tokenrecords2.setTradeType(1);
-						tokenrecords2.setCreateTime(new Date());
-						kffTokenrecordsService.save(tokenrecords2);
-						
-					}
-					if(sum2 <= 5000){
-						//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-						Tokenaward tokenawarde3 = new Tokenaward();
-						tokenawarde3.setUserId(user3.getUserId());
-						tokenawarde3.setTokenAwardFunctionType(18);
-						tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
-						tokenawarde3.setInviteRewards(m2);
-						tokenawarde3.setCreateTime(new Date());
-						tokenawarde3.setDistributionType(1);
-						tokenawarde3.setAwardBalance(m2);
-						kffTokenawardService.save(tokenawarde3);
-						//将注册用户的信息同时存入流水表单中
-						Tokenrecords tokenrecords2 = new Tokenrecords();
-						tokenrecords2.setUserId(user3.getUserId());
-						tokenrecords2.setFunctionDesc("邀请奖励");
-						tokenrecords2.setFunctionType(16);
-						tokenrecords2.setTradeType(1);
-						tokenrecords2.setCreateTime(new Date());
-						kffTokenrecordsService.save(tokenrecords2);
-						
-						coinProperty.setUserId(user3.getUserId());
-						coinProperty.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-						coinProperty.setCoinDistributed(m2+coinProperty.getCoinDistributed());
-						kffCoinPropertyService.save(coinProperty);
-						
-					}
-				/*	for (Tokenaward award : list) {
-						//获取每个奖励已经奖励的次数
-						Integer counter = award.getCounter();
-						//获取发放的类型
-						Integer distributionType = award.getDistributionType();
-						//获取每个发放的金额
-						Double rewards = award.getInviteRewards();
-						//获取奖励的类型
-						Integer awardFunctionType = award.getTokenAwardFunctionType();
-						//如果奖励没有发放完毕并且是线性发放
-						if(counter<100 && distributionType == 1 ){
-							if(award.getGrantType()==2) { 
-								Double x = rewards/100f;
-								//如果是注册奖励
-								if(awardFunctionType == 16){
-									tokenrecords.setUserId(userId);
-									tokenrecords.setFunctionDesc("注册奖励");
-									tokenrecords.setFunctionType(awardFunctionType);
-									tokenrecords.setAmount(x);
-									tokenrecords.setUpdateTime(new Date());
-									kffTokenrecordsService.update(tokenrecords);
-									tokenaward.setUserId(userId);
-									tokenaward.setTokenAwardFunctionType(awardFunctionType);
-									tokenaward.setCounter(counter+1);
-									Double awardBalance = award.getAwardBalance();
-									kffTokenawardService.update(award);
-									tokenaward.setAwardBalance(awardBalance-x);
-									
-									KFFUser kffUser = kffUserService.findByUserId(userId);
-									Double kffCoinNum = kffUser.getKffCoinNum();
-									kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-									
-									Double coinLock = coinProperty.getCoinLock();
-									CoinProperty coinProperty2 = new CoinProperty();
-									Double coinDistributed = coinProperty.getCoinDistributed();
-									coinProperty2.setCoinLock(coinLock + x);
-									coinProperty2.setCoinDistributed(coinDistributed - x);
-									kffCoinPropertyService.update(coinProperty2);
-									
-								}else if(awardFunctionType == 18){//如果是邀请好友的奖励
-									
-									tokenrecords.setUserId(user2.getUserId());
-									tokenrecords.setFunctionDesc("邀请奖励");
-									tokenrecords.setFunctionType(awardFunctionType);
-									tokenrecords.setAmount(x); // 发放奖励数
-									tokenrecords.setUpdateTime(new Date());
-									
-									tokenaward.setUserId(user2.getUserId());
-									tokenaward.setTokenAwardFunctionType(awardFunctionType);
-									tokenaward.setCounter(counter+1);
-									
-									Double awardBalance = award.getAwardBalance();
-									tokenaward.setAwardBalance(awardBalance-x);
-									
-									kffTokenawardService.update(award);
-									
-									
-									kffTokenrecordsService.update(tokenrecords);
-									
-									
-									tokenaward.setUserId(user2.getUserId());
-									tokenaward.setTokenAwardFunctionType(awardFunctionType);
-									tokenaward.setCounter(counter+1);
-									kffTokenawardService.update(tokenaward);
-									
-									KFFUser kffUser = kffUserService.findByUserId(user2.getUserId());
-									Double kffCoinNum = kffUser.getKffCoinNum();
-									kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-									
-									
-								}
-							}
-						}
-					}*/
-				}
-				//如果上级邀请人是是项目方，并且有上级邀请人
-			}else if((user2.getUserType()==2||user2.getUserType()==3) && user2.getReferLevel() ==1){
 
-				//获取上上级的用户表
-				KFFUser user3 = kffUserService.findById(user2.getReferUserId());
-				//判断注册用户的上上级是普通用户
-				if((user3.getUserType()==1||user3.getUserType()==4)){
-					Integer findReferCount = kffUserService.findReferCount(user2.getUserId());
-					if(findReferCount<=1000) {
-						m0=5000d;
-						m1=250d;
-						m2=50d*150/100;
+						coinProperty.setUserId(user2.getUserId());
+						coinProperty
+								.setCoinLock(kffUserService.findById(user2.getUserId()).getKffCoinNum().doubleValue());
+						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
+						coinProperty.setCoinDistributed(m1 + coinProperty.getCoinDistributed());
+						kffCoinPropertyService.save(coinProperty);
+
 					}
-					else {
-						m0=5000d;
-						m1=250d;
-						m2=50d;
-					}
-					//将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-					tokenaward.setUserId(userId);
-					tokenaward.setTokenAwardFunctionType(16);
-					tokenaward.setTokenAwardFunctionDesc("注册奖励");
-					tokenaward.setInviteRewards(m0);
-					tokenaward.setCreateTime(new Date());
-					tokenaward.setDistributionType(1);
-					tokenaward.setAwardBalance(m0);
-					tokenaward.setUserName(user.getUserName());
-					tokenaward.setMobile(user.getMobile());
-					kffTokenawardService.save(tokenaward);
-					
-					coinProperty.setUserId(userId);
-					coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
-					coinProperty.setCoinDistributed(m0);
-					kffCoinPropertyService.save(coinProperty);
-					
-					//将注册用户的信息同时存入流水表单中
-					tokenrecords.setUserId(userId);
-					tokenrecords.setFunctionDesc("注册奖励");
-					tokenrecords.setFunctionType(16);
-					tokenrecords.setTradeType(1);
-					tokenrecords.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords);
-					
-					//从数据表中获取所有注册用户的奖励数据
-					List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
-					//获取上级邀请人邀请的钱数的总额
-					Double sum = kffTokenawardService.reawardSum(user2.getUserId(),18);
-					//获取上上级邀请人邀请的钱数的总额
-					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(),18);
-					if(sum <= 5000){
-						//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+					if (sum2 <= 5000) {
+						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenawarde3 = new Tokenaward();
 						tokenawarde3.setUserId(user3.getUserId());
 						tokenawarde3.setTokenAwardFunctionType(18);
@@ -935,137 +489,42 @@ public class AwardPortService  {
 						tokenawarde3.setCreateTime(new Date());
 						tokenawarde3.setDistributionType(1);
 						tokenawarde3.setAwardBalance(m2);
+						tokenawarde3.setCounter(0);
+						tokenawarde3.setGrantType(2);
 						kffTokenawardService.save(tokenawarde3);
-						//将注册用户的信息同时存入流水表单中
+						// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
 						tokenrecords2.setUserId(user3.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
-						tokenrecords2.setFunctionType(16);
+						tokenrecords2.setFunctionType(18);
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
 						kffTokenrecordsService.save(tokenrecords2);
-						
+
 						coinProperty.setUserId(user3.getUserId());
-						coinProperty.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
+						coinProperty
+								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
 						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-						coinProperty.setCoinDistributed(m2+coinProperty.getCoinDistributed());
+						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
 						kffCoinPropertyService.save(coinProperty);
-						
-						
+
 					}
-					if(sum2 <= 5000){
-						//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-						Tokenaward tokenawarde3 = new Tokenaward();
-						tokenawarde3.setUserId(user3.getUserId());
-						tokenawarde3.setTokenAwardFunctionType(18);
-						tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
-						tokenawarde3.setInviteRewards(m2);
-						tokenawarde3.setCreateTime(new Date());
-						tokenawarde3.setDistributionType(1);
-						tokenawarde3.setAwardBalance(m2);
-						kffTokenawardService.save(tokenawarde3);
-						//将注册用户的信息同时存入流水表单中
-						Tokenrecords tokenrecords2 = new Tokenrecords();
-						tokenrecords2.setUserId(user3.getUserId());
-						tokenrecords2.setFunctionDesc("邀请奖励");
-						tokenrecords2.setFunctionType(16);
-						tokenrecords2.setTradeType(1);
-						tokenrecords2.setCreateTime(new Date());
-						kffTokenrecordsService.save(tokenrecords2);
-						
-						coinProperty.setUserId(user3.getUserId());
-						coinProperty.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-						coinProperty.setCoinDistributed(m2+coinProperty.getCoinDistributed());
-						kffCoinPropertyService.save(coinProperty);
-						
-					}
-				/*	for (Tokenaward award : list) {
-						//获取每个奖励已经奖励的次数
-						Integer counter = award.getCounter();
-						//获取发放的类型
-						Integer distributionType = award.getDistributionType();
-						//获取每个发放的金额
-						Double rewards = award.getInviteRewards();
-						//获取奖励的类型
-						Integer awardFunctionType = award.getTokenAwardFunctionType();
-						//如果奖励没有发放完毕并且是线性发放
-						if(counter<100 && distributionType == 1 ){
-							if(award.getGrantType()==2) { 
-								Double x = rewards/100;
-								//如果是注册奖励
-								if(awardFunctionType == 16){
-									tokenrecords.setUserId(userId);
-									tokenrecords.setFunctionDesc("注册奖励");
-									tokenrecords.setFunctionType(awardFunctionType);
-									tokenrecords.setAmount(x);
-									tokenrecords.setUpdateTime(new Date());
-									kffTokenrecordsService.update(tokenrecords);
-									tokenaward.setUserId(userId);
-									tokenaward.setTokenAwardFunctionType(awardFunctionType);
-									tokenaward.setCounter(counter+1);
-									Double awardBalance = award.getAwardBalance();
-									kffTokenawardService.update(award);
-									tokenaward.setAwardBalance(awardBalance-x);
-									
-									KFFUser kffUser = kffUserService.findByUserId(userId);
-									Double kffCoinNum = kffUser.getKffCoinNum();
-									kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-									
-									Double coinLock = coinProperty.getCoinLock();
-									CoinProperty coinProperty2 = new CoinProperty();
-									Double coinDistributed = coinProperty.getCoinDistributed();
-									coinProperty2.setCoinLock(coinLock + x);
-									coinProperty2.setCoinDistributed(coinDistributed - x);
-									kffCoinPropertyService.update(coinProperty2);
-								}else if(awardFunctionType == 18){//如果是邀请好友的奖励
-									
-									tokenrecords.setUserId(user2.getUserId());
-									tokenrecords.setFunctionDesc("邀请奖励");
-									tokenrecords.setFunctionType(awardFunctionType);
-									tokenrecords.setAmount(x); // 发放奖励数
-									tokenrecords.setUpdateTime(new Date());
-									
-									tokenaward.setUserId(user2.getUserId());
-									tokenaward.setTokenAwardFunctionType(awardFunctionType);
-									tokenaward.setCounter(counter+1);
-									
-									Double awardBalance = award.getAwardBalance();
-									tokenaward.setAwardBalance(awardBalance-x);
-									
-									kffTokenawardService.update(award);
-									
-									
-									kffTokenrecordsService.update(tokenrecords);
-									
-									
-									tokenaward.setUserId(user2.getUserId());
-									tokenaward.setTokenAwardFunctionType(awardFunctionType);
-									tokenaward.setCounter(counter+1);
-									kffTokenawardService.update(tokenaward);
-									
-									KFFUser kffUser = kffUserService.findByUserId(user2.getUserId());
-									Double kffCoinNum = kffUser.getKffCoinNum();
-									kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-									
-								}
-							}
-						}
-					}*/
-					//如果注册用户的上上级用户是项目方
-				}else if((user3.getUserType()==2||user3.getUserType()==3)){	//将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+					
+				}
+
+				else if ((user3.getUserType() == 2 || user3.getUserType() == 3)) {
 					Integer findReferCount = kffUserService.findReferCount(user3.getUserId());
-					if(findReferCount<=1000) {
-						m0=5000d;
-						m1=250d*150/100;
-						m2=50d*150/100;
+					if (findReferCount <= 1000) {
+						m0 = 5000d;
+						m1 = 250d;
+						m2 = 50d * 150 / 100;
+					} else {
+						m0 = 5000d;
+						m1 = 250d;
+						m2 = 50d;
 					}
-					else {
-						m0=5000d;
-						m1=250d;
-						m2=50d;
-					}
-					
+
+					// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 					tokenaward.setUserId(userId);
 					tokenaward.setTokenAwardFunctionType(16);
 					tokenaward.setTokenAwardFunctionDesc("注册奖励");
@@ -1075,30 +534,32 @@ public class AwardPortService  {
 					tokenaward.setAwardBalance(m0);
 					tokenaward.setUserName(user.getUserName());
 					tokenaward.setMobile(user.getMobile());
+					tokenaward.setCounter(0);
+					tokenaward.setGrantType(2);
 					kffTokenawardService.save(tokenaward);
-					
+
 					coinProperty.setUserId(userId);
 					coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
 					coinProperty.setCoinDistributed(m0);
 					kffCoinPropertyService.save(coinProperty);
-					
-					//将注册用户的信息同时存入流水表单中
+
+					// 将注册用户的信息同时存入流水表单中
 					tokenrecords.setUserId(userId);
 					tokenrecords.setFunctionDesc("注册奖励");
 					tokenrecords.setFunctionType(16);
 					tokenrecords.setTradeType(1);
 					tokenrecords.setCreateTime(new Date());
 					kffTokenrecordsService.save(tokenrecords);
-					
-					//从数据表中获取所有注册用户的奖励数据
+
+					// 从数据表中获取所有注册用户的奖励数据
 					List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
-					//获取上级邀请人邀请的钱数的总额
-					Double sum = kffTokenawardService.reawardSum(user2.getUserId(),18);
-					//获取上上级邀请人邀请的钱数的总额
-					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(),18);
-					
-					if(sum <= 500000){
-						//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+					// 获取上级邀请人邀请的钱数的总额
+					Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
+					// 获取上上级邀请人邀请的钱数的总额
+					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(), 18);
+
+					if (sum <= 5000) {
+						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenaward2 = new Tokenaward();
 						tokenaward2.setUserId(user2.getUserId());
 						tokenaward2.setTokenAwardFunctionType(18);
@@ -1106,19 +567,21 @@ public class AwardPortService  {
 						tokenaward2.setInviteRewards(m1);
 						tokenaward2.setCreateTime(new Date());
 						tokenaward2.setDistributionType(1);
+						tokenaward2.setCounter(0);
+						tokenaward2.setGrantType(2);
 						kffTokenawardService.save(tokenaward2);
-						//将注册用户的信息同时存入流水表单中
+						// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
 						tokenrecords2.setUserId(user2.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
-						tokenrecords2.setFunctionType(16);
+						tokenrecords2.setFunctionType(18);
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
 						kffTokenrecordsService.save(tokenrecords2);
-						
+
 					}
-					if(sum2 <= 500000){
-						//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+					if (sum2 <= 5000) {
+						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenawarde3 = new Tokenaward();
 						tokenawarde3.setUserId(user3.getUserId());
 						tokenawarde3.setTokenAwardFunctionType(18);
@@ -1127,173 +590,406 @@ public class AwardPortService  {
 						tokenawarde3.setCreateTime(new Date());
 						tokenawarde3.setDistributionType(1);
 						tokenawarde3.setAwardBalance(m2);
+						tokenawarde3.setCounter(0);
+						tokenawarde3.setGrantType(2);
 						kffTokenawardService.save(tokenawarde3);
-						//将注册用户的信息同时存入流水表单中
+						// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
 						tokenrecords2.setUserId(user3.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
-						tokenrecords2.setFunctionType(16);
+						tokenrecords2.setFunctionType(18);
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
 						kffTokenrecordsService.save(tokenrecords2);
-						
+
 						coinProperty.setUserId(user3.getUserId());
-						coinProperty.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
+						coinProperty
+								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
 						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-						coinProperty.setCoinDistributed(m2+coinProperty.getCoinDistributed());
+						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
 						kffCoinPropertyService.save(coinProperty);
-						
+
 					}
-				/*	for (Tokenaward award : list) {
-						//获取每个奖励已经奖励的次数
-						Integer counter = award.getCounter();
-						//获取发放的类型
-						Integer distributionType = award.getDistributionType();
-						//获取每个发放的金额
-						Double rewards = award.getInviteRewards();
-						//获取奖励的类型
-						Integer awardFunctionType = award.getTokenAwardFunctionType();
-						//如果奖励没有发放完毕并且是线性发放
-						if(counter<100 && distributionType == 1 ){
-							if(award.getGrantType()==2) { 
-								Double x = rewards/100f;
-								//如果是注册奖励
-								if(awardFunctionType == 16){
-									tokenrecords.setUserId(userId);
-									tokenrecords.setFunctionDesc("注册奖励");
-									tokenrecords.setFunctionType(awardFunctionType);
-									tokenrecords.setAmount(x);
-									tokenrecords.setUpdateTime(new Date());
-									kffTokenrecordsService.update(tokenrecords);
-									tokenaward.setUserId(userId);
-									tokenaward.setTokenAwardFunctionType(awardFunctionType);
-									tokenaward.setCounter(counter+1);
-									Double awardBalance = award.getAwardBalance();
-									kffTokenawardService.update(award);
-									tokenaward.setAwardBalance(awardBalance-x);
-									
-									KFFUser kffUser = kffUserService.findByUserId(userId);
-									Double kffCoinNum = kffUser.getKffCoinNum();
-									kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-									
-									Double coinLock = coinProperty.getCoinLock();
-									CoinProperty coinProperty2 = new CoinProperty();
-									Double coinDistributed = coinProperty.getCoinDistributed();
-									coinProperty2.setCoinLock(coinLock + x);
-									coinProperty2.setCoinDistributed(coinDistributed - x);
-									kffCoinPropertyService.update(coinProperty2);
-									
-								}else if(awardFunctionType == 18){//如果是邀请好友的奖励
-									
-									tokenrecords.setUserId(user2.getUserId());
-									tokenrecords.setFunctionDesc("邀请奖励");
-									tokenrecords.setFunctionType(awardFunctionType);
-									tokenrecords.setAmount(x); // 发放奖励数
-									tokenrecords.setUpdateTime(new Date());
-									
-									tokenaward.setUserId(user2.getUserId());
-									tokenaward.setTokenAwardFunctionType(awardFunctionType);
-									tokenaward.setCounter(counter+1);
-									
-									Double awardBalance = award.getAwardBalance();
-									tokenaward.setAwardBalance(awardBalance-x);
-									
-									kffTokenawardService.update(award);
-									
-									
-									kffTokenrecordsService.update(tokenrecords);
-									
-									
-									tokenaward.setUserId(user2.getUserId());
-									tokenaward.setTokenAwardFunctionType(awardFunctionType);
-									tokenaward.setCounter(counter+1);
-									kffTokenawardService.update(tokenaward);
-									
-									KFFUser kffUser = kffUserService.findByUserId(user2.getUserId());
-									Double kffCoinNum = kffUser.getKffCoinNum();
-									kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-									
-									
-								}
-							}
-						}
-					}*/
+					/*
+					 * for (Tokenaward award : list) { //获取每个奖励已经奖励的次数 Integer
+					 * counter = award.getCounter(); //获取发放的类型 Integer
+					 * distributionType = award.getDistributionType();
+					 * //获取每个发放的金额 Double rewards = award.getInviteRewards();
+					 * //获取奖励的类型 Integer awardFunctionType =
+					 * award.getTokenAwardFunctionType(); //如果奖励没有发放完毕并且是线性发放
+					 * if(counter<100 && distributionType == 1 ){
+					 * if(award.getGrantType()==2) { Double x = rewards/100f;
+					 * //如果是注册奖励 if(awardFunctionType == 16){
+					 * tokenrecords.setUserId(userId);
+					 * tokenrecords.setFunctionDesc("注册奖励");
+					 * tokenrecords.setFunctionType(awardFunctionType);
+					 * tokenrecords.setAmount(x); tokenrecords.setUpdateTime(new
+					 * Date()); kffTokenrecordsService.update(tokenrecords);
+					 * tokenaward.setUserId(userId);
+					 * tokenaward.setTokenAwardFunctionType(awardFunctionType);
+					 * tokenaward.setCounter(counter+1); Double awardBalance =
+					 * award.getAwardBalance();
+					 * kffTokenawardService.update(award);
+					 * tokenaward.setAwardBalance(awardBalance-x);
+					 * 
+					 * KFFUser kffUser = kffUserService.findByUserId(userId);
+					 * Double kffCoinNum = kffUser.getKffCoinNum();
+					 * kffUserService.updateUserKFFCoinNum(userId,
+					 * kffCoinNum+=x);
+					 * 
+					 * Double coinLock = coinProperty.getCoinLock();
+					 * CoinProperty coinProperty2 = new CoinProperty(); Double
+					 * coinDistributed = coinProperty.getCoinDistributed();
+					 * coinProperty2.setCoinLock(coinLock + x);
+					 * coinProperty2.setCoinDistributed(coinDistributed - x);
+					 * kffCoinPropertyService.update(coinProperty2);
+					 * 
+					 * }else if(awardFunctionType == 18){//如果是邀请好友的奖励
+					 * 
+					 * tokenrecords.setUserId(user2.getUserId());
+					 * tokenrecords.setFunctionDesc("邀请奖励");
+					 * tokenrecords.setFunctionType(awardFunctionType);
+					 * tokenrecords.setAmount(x); // 发放奖励数
+					 * tokenrecords.setUpdateTime(new Date());
+					 * 
+					 * tokenaward.setUserId(user2.getUserId());
+					 * tokenaward.setTokenAwardFunctionType(awardFunctionType);
+					 * tokenaward.setCounter(counter+1);
+					 * 
+					 * Double awardBalance = award.getAwardBalance();
+					 * tokenaward.setAwardBalance(awardBalance-x);
+					 * 
+					 * kffTokenawardService.update(award);
+					 * 
+					 * 
+					 * kffTokenrecordsService.update(tokenrecords);
+					 * 
+					 * 
+					 * tokenaward.setUserId(user2.getUserId());
+					 * tokenaward.setTokenAwardFunctionType(awardFunctionType);
+					 * tokenaward.setCounter(counter+1);
+					 * kffTokenawardService.update(tokenaward);
+					 * 
+					 * KFFUser kffUser =
+					 * kffUserService.findByUserId(user2.getUserId()); Double
+					 * kffCoinNum = kffUser.getKffCoinNum();
+					 * kffUserService.updateUserKFFCoinNum(userId,
+					 * kffCoinNum+=x);
+					 * 
+					 * 
+					 * } } } }
+					 */
+				}
+				// 如果上级邀请人是是项目方，并且有上级邀请人
+			} else if ((user2.getUserType() == 2 || user2.getUserType() == 3) && user2.getReferLevel() == 1) {
+
+				// 获取上上级的用户表
+				KFFUser user3 = kffUserService.findById(user2.getReferUserId());
+				// 判断注册用户的上上级是普通用户
+				if ((user3.getUserType() == 1 || user3.getUserType() == 4)) {
+					Integer findReferCount = kffUserService.findReferCount(user2.getUserId());
+					if (findReferCount <= 1000) {
+						m0 = 5000d;
+						m1 = 250d;
+						m2 = 50d * 150 / 100;
+					} else {
+						m0 = 5000d;
+						m1 = 250d;
+						m2 = 50d;
+					}
+					// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+					tokenaward.setUserId(userId);
+					tokenaward.setTokenAwardFunctionType(16);
+					tokenaward.setTokenAwardFunctionDesc("注册奖励");
+					tokenaward.setInviteRewards(m0);
+					tokenaward.setCreateTime(new Date());
+					tokenaward.setDistributionType(1);
+					tokenaward.setAwardBalance(m0);
+					tokenaward.setUserName(user.getUserName());
+					tokenaward.setMobile(user.getMobile());
+					tokenaward.setCounter(0);
+					tokenaward.setGrantType(2);
+					kffTokenawardService.save(tokenaward);
+
+					coinProperty.setUserId(userId);
+					coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
+					coinProperty.setCoinDistributed(m0);
+					kffCoinPropertyService.save(coinProperty);
+
+					// 将注册用户的信息同时存入流水表单中
+					tokenrecords.setUserId(userId);
+					tokenrecords.setFunctionDesc("注册奖励");
+					tokenrecords.setFunctionType(16);
+					tokenrecords.setTradeType(1);
+					tokenrecords.setCreateTime(new Date());
+					kffTokenrecordsService.save(tokenrecords);
+
+					// 从数据表中获取所有注册用户的奖励数据
+					List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
+					// 获取上级邀请人邀请的钱数的总额
+					Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
+					// 获取上上级邀请人邀请的钱数的总额
+					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(), 18);
+					if (sum <= 5000) {
+						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+						Tokenaward tokenawarde3 = new Tokenaward();
+						tokenawarde3.setUserId(user3.getUserId());
+						tokenawarde3.setTokenAwardFunctionType(18);
+						tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
+						tokenawarde3.setInviteRewards(m2);
+						tokenawarde3.setCreateTime(new Date());
+						tokenawarde3.setDistributionType(1);
+						tokenawarde3.setAwardBalance(m2);
+						tokenawarde3.setCounter(0);
+						tokenawarde3.setGrantType(2);
+						kffTokenawardService.save(tokenawarde3);
+						// 将注册用户的信息同时存入流水表单中
+						Tokenrecords tokenrecords2 = new Tokenrecords();
+						tokenrecords2.setUserId(user3.getUserId());
+						tokenrecords2.setFunctionDesc("邀请奖励");
+						tokenrecords2.setFunctionType(18);
+						tokenrecords2.setTradeType(1);
+						tokenrecords2.setCreateTime(new Date());
+						kffTokenrecordsService.save(tokenrecords2);
+
+						coinProperty.setUserId(user3.getUserId());
+						coinProperty
+								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
+						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
+						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
+						kffCoinPropertyService.save(coinProperty);
+
+					}
+					if (sum2 <= 5000) {
+						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+						Tokenaward tokenawarde3 = new Tokenaward();
+						tokenawarde3.setUserId(user3.getUserId());
+						tokenawarde3.setTokenAwardFunctionType(18);
+						tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
+						tokenawarde3.setInviteRewards(m2);
+						tokenawarde3.setCreateTime(new Date());
+						tokenawarde3.setDistributionType(1);
+						tokenawarde3.setAwardBalance(m2);
+						tokenawarde3.setCounter(0);
+						tokenawarde3.setGrantType(2);
+						kffTokenawardService.save(tokenawarde3);
+						// 将注册用户的信息同时存入流水表单中
+						Tokenrecords tokenrecords2 = new Tokenrecords();
+						tokenrecords2.setUserId(user3.getUserId());
+						tokenrecords2.setFunctionDesc("邀请奖励");
+						tokenrecords2.setFunctionType(18);
+						tokenrecords2.setTradeType(1);
+						tokenrecords2.setCreateTime(new Date());
+						kffTokenrecordsService.save(tokenrecords2);
+
+						coinProperty.setUserId(user3.getUserId());
+						coinProperty
+								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
+						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
+						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
+						kffCoinPropertyService.save(coinProperty);
+
+					}
+				} else if ((user3.getUserType() == 2 || user3.getUserType() == 3)) { // 将注册用户id
+																						// 奖励类型
+																						// 奖励金额
+																						// 当前时间
+																						// 发放的方式存入奖励表中
+					Integer findReferCount = kffUserService.findReferCount(user3.getUserId());
+					if (findReferCount <= 1000) {
+						m0 = 5000d;
+						m1 = 250d * 150 / 100;
+						m2 = 50d * 150 / 100;
+					} else {
+						m0 = 5000d;
+						m1 = 250d;
+						m2 = 50d;
+					}
+
+					tokenaward.setUserId(userId);
+					tokenaward.setTokenAwardFunctionType(16);
+					tokenaward.setTokenAwardFunctionDesc("注册奖励");
+					tokenaward.setInviteRewards(m0);
+					tokenaward.setCreateTime(new Date());
+					tokenaward.setDistributionType(1);
+					tokenaward.setAwardBalance(m0);
+					tokenaward.setUserName(user.getUserName());
+					tokenaward.setMobile(user.getMobile());
+					tokenaward.setCounter(0);
+					tokenaward.setGrantType(2);
+					kffTokenawardService.save(tokenaward);
+
+					coinProperty.setUserId(userId);
+					coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
+					coinProperty.setCoinDistributed(m0);
+					kffCoinPropertyService.save(coinProperty);
+
+					// 将注册用户的信息同时存入流水表单中
+					tokenrecords.setUserId(userId);
+					tokenrecords.setFunctionDesc("注册奖励");
+					tokenrecords.setFunctionType(16);
+					tokenrecords.setTradeType(1);
+					tokenrecords.setCreateTime(new Date());
+					kffTokenrecordsService.save(tokenrecords);
+
+					// 从数据表中获取所有注册用户的奖励数据
+					List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
+					// 获取上级邀请人邀请的钱数的总额
+					Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
+					// 获取上上级邀请人邀请的钱数的总额
+					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(), 18);
+
+					if (sum <= 500000) {
+						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+						Tokenaward tokenaward2 = new Tokenaward();
+						tokenaward2.setUserId(user2.getUserId());
+						tokenaward2.setTokenAwardFunctionType(18);
+						tokenaward2.setTokenAwardFunctionDesc("邀请奖励");
+						tokenaward2.setInviteRewards(m1);
+						tokenaward2.setCreateTime(new Date());
+						tokenaward2.setDistributionType(1);
+						tokenaward2.setCounter(0);
+						tokenaward2.setGrantType(2);
+						kffTokenawardService.save(tokenaward2);
+						// 将注册用户的信息同时存入流水表单中
+						Tokenrecords tokenrecords2 = new Tokenrecords();
+						tokenrecords2.setUserId(user2.getUserId());
+						tokenrecords2.setFunctionDesc("邀请奖励");
+						tokenrecords2.setFunctionType(18);
+						tokenrecords2.setTradeType(1);
+						tokenrecords2.setCreateTime(new Date());
+						kffTokenrecordsService.save(tokenrecords2);
+
+					}
+					if (sum2 <= 500000) {
+						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+						Tokenaward tokenawarde3 = new Tokenaward();
+						tokenawarde3.setUserId(user3.getUserId());
+						tokenawarde3.setTokenAwardFunctionType(18);
+						tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
+						tokenawarde3.setInviteRewards(m2);
+						tokenawarde3.setCreateTime(new Date());
+						tokenawarde3.setDistributionType(1);
+						tokenawarde3.setAwardBalance(m2);
+						tokenawarde3.setCounter(0);
+						tokenawarde3.setGrantType(2);
+						kffTokenawardService.save(tokenawarde3);
+						// 将注册用户的信息同时存入流水表单中
+						Tokenrecords tokenrecords2 = new Tokenrecords();
+						tokenrecords2.setUserId(user3.getUserId());
+						tokenrecords2.setFunctionDesc("邀请奖励");
+						tokenrecords2.setFunctionType(18);
+						tokenrecords2.setTradeType(1);
+						tokenrecords2.setCreateTime(new Date());
+						kffTokenrecordsService.save(tokenrecords2);
+
+						coinProperty.setUserId(user3.getUserId());
+						coinProperty
+								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
+						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
+						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
+						kffCoinPropertyService.save(coinProperty);
+
+					}
 				}
 			}
-		}else if(true){
-			
+		} else if (true) {
+
 		}
-		
-		
+
 	}
 
-	private void issue(Integer userId) {
+	public void issue(Integer userId) {
+
+		// 判断注册用户是否实名认证
+		// UserCard findBycreateUserId = userCardService.findByUserid(userId);
+		UserCard findByUserid = userCardService.findByUserid(userId);
+
 		List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
-		//根据用户id去获取用户资产信息
+		// 根据用户id去获取用户资产信息
 		CoinProperty coinProperty = kffCoinPropertyService.findByUserId(userId);
+		KFFUser finduser = kffUserService.findById(userId);
+		
 		for (Tokenaward award : list) {
-			//获取每个奖励已经奖励的次数
+			// 获取每个奖励已经奖励的次数
 			Integer counter = award.getCounter();
-			//获取发放的类型
+			// 获取发放的类型
 			Integer distributionType = award.getDistributionType();
-			//获取每个发放的金额
+			// 获取每个发放的金额
 			Double rewards = award.getInviteRewards();
-			//获取奖励的类型
+			// 获取奖励的类型
 			Integer awardFunctionType = award.getTokenAwardFunctionType();
 			// 如果奖励没有发放完毕并且是线性发放
-			CoinProperty coinProperty2 = new CoinProperty();
-			if(counter<100 && distributionType == 1 ){
-				if(award.getGrantType()==2) { // 1-今天发放一次,2-今天未发放
-					
-					Double x = rewards/100;
+			// CoinProperty coinProperty2 = new CoinProperty();
+			CoinProperty coinProperty2 = kffCoinPropertyService.findByUserId(userId);
+			if (counter < 100 && distributionType == 1 && findByUserid != null) {
+				if (award.getGrantType() == 2) { // 1-今天发放一次,2-今天未发放
+
+					Double x = rewards / 100;
 					// 如果是注册奖励
-					if(awardFunctionType == 16){
-						tokenrecords.setUserId(userId);
-						tokenrecords.setFunctionDesc("注册奖励");
-						tokenrecords.setFunctionType(awardFunctionType);
-						tokenrecords.setAmount(new BigDecimal(x));
-						tokenrecords.setUpdateTime(new Date());
-						tokenaward.setUserId(userId);
-						tokenaward.setTokenAwardFunctionType(awardFunctionType);
-						tokenaward.setCounter(counter+1);
+					if (awardFunctionType == 16) {
+						Tokenrecords tokenrecords1 = tokenrecordsMapper.findByUserIdAndFunctionType(userId);
+						tokenrecords1.setUserId(userId);
+						tokenrecords1.setFunctionDesc("注册奖励");
+						tokenrecords1.setFunctionType(awardFunctionType);
+						tokenrecords1.setAmount(new BigDecimal(x));
+						tokenrecords1.setUpdateTime(new Date());
+						tokenrecords1.setRewardGrantType(2);
+						award.setUserId(userId);
+						award.setTokenAwardFunctionType(awardFunctionType);
+						award.setCounter(counter + 1);
 						Double awardBalance = award.getAwardBalance();
-						tokenaward.setAwardBalance(awardBalance-x);
+						award.setAwardBalance(awardBalance - x);
 						
-						kffTokenrecordsService.update(tokenrecords);
-						kffTokenawardService.update(tokenaward);
+						BigDecimal tokenNum = finduser.getKffCoinNum();
+						tokenNum = tokenNum.add(new BigDecimal(x));
+						finduser.setKffCoinNum(tokenNum);
+						finduser.setUpdateTime(new Date());
+						kffUserService.update(finduser);
 						
+						kffTokenrecordsService.update(tokenrecords1);
+						System.err.println(award.getTokenAwardFunctionDesc());
+
+						kffTokenawardService.update(award);
+
 						KFFUser kffUser = kffUserService.findById(userId);
 						BigDecimal kffCoinNum = kffUser.getKffCoinNum();
 						kffUserService.updateUserKFFCoinNum(userId, kffCoinNum.add(new BigDecimal(x)));
-						
+
 						Double coinLock = coinProperty.getCoinLock();
 						Double coinDistributed = coinProperty.getCoinDistributed();
 						coinProperty2.setCoinLock(coinLock + x);
 						coinProperty2.setCoinDistributed(coinDistributed - x);
+						coinProperty2.setUserId(userId);
+
 						kffCoinPropertyService.update(coinProperty2);
-						
-						
-						
-					}else if(awardFunctionType == 18){// 如果是邀请好友的奖励
-						
+
+					} else if (awardFunctionType == 18) {// 如果是邀请好友的奖励
+
 						tokenrecords.setUserId(userId);
 						tokenrecords.setFunctionDesc("邀请奖励");
 						tokenrecords.setFunctionType(awardFunctionType);
 						tokenrecords.setAmount(new BigDecimal(x)); // 发放奖励数
 						tokenrecords.setUpdateTime(new Date());
+						tokenrecords.setRewardGrantType(2);
 						kffTokenrecordsService.update(tokenrecords);
 						tokenaward.setUserId(userId);
 						tokenaward.setTokenAwardFunctionType(awardFunctionType);
-						tokenaward.setCounter(counter+1);
-						
+						tokenaward.setCounter(counter + 1);
+
 						Double awardBalance = award.getAwardBalance();
-						tokenaward.setAwardBalance(awardBalance-x);
+						tokenaward.setAwardBalance(awardBalance - x);
+						
+						BigDecimal tokenNum = finduser.getKffCoinNum();
+						tokenNum = tokenNum.add(new BigDecimal(x));
+						finduser.setUpdateTime(new Date());
+						kffUserService.update(finduser);
 						
 						kffTokenawardService.update(award);
 						KFFUser kffUser = kffUserService.findById(userId);
 						BigDecimal kffCoinNum = kffUser.getKffCoinNum();
 						kffUserService.updateUserKFFCoinNum(userId, kffCoinNum.add(new BigDecimal(x)));
-						
+
 						Double coinLock = coinProperty.getCoinLock();
 						Double coinDistributed = coinProperty.getCoinDistributed();
 						coinProperty2.setCoinLock(coinLock + x);
@@ -1304,342 +1000,112 @@ public class AwardPortService  {
 			}
 		}
 	}
-	
-	private void method2(Integer userId) {
-		//获取邀请人的id
-		Integer referUserId = user.getReferUserId();
-		//获取邀请人的对象
-		KFFUser user2 = kffUserService.findById(referUserId);
-		
-		//判断邀请人是普通用户，并且没有上一级邀请
-		if((user2.getUserType()==1||user2.getUserType()==4) && user2.getReferLevel() ==0){
-			
-			m0=3000d;
-			m1=150d;
-			//将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+
+	public void method2(Integer userId) {
+		KFFUser user = kffUserService.findByUserId(userId);
+		// 判断如果用户没有被邀请 并且是普通用户
+		if (user.getReferLevel() == 0 && (user.getUserType() == 1 || user.getUserType() == 4)) {
+			m0 = 3000d;
+			// 没有邀请人
+			// 将用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 			tokenaward.setUserId(userId);
 			tokenaward.setTokenAwardFunctionType(16);
 			tokenaward.setTokenAwardFunctionDesc("注册奖励");
 			tokenaward.setInviteRewards(m0);
 			tokenaward.setCreateTime(new Date());
 			tokenaward.setDistributionType(1);
+			tokenaward.setAwardBalance(m0); // 奖励余额初始化 是注册奖励
 			tokenaward.setUserName(user.getUserName());
 			tokenaward.setMobile(user.getMobile());
-			tokenaward.setAwardBalance(m0);
+			tokenaward.setCounter(0);
+			tokenaward.setGrantType(2);
 			kffTokenawardService.save(tokenaward);
-			
 			coinProperty.setUserId(userId);
 			coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
 			coinProperty.setCoinDistributed(m0);
 			kffCoinPropertyService.save(coinProperty);
-			
-			//将注册用户的信息同时存入流水表单中
+			// 将用户的信息同时存入流水表单中
 			tokenrecords.setUserId(userId);
 			tokenrecords.setFunctionDesc("注册奖励");
 			tokenrecords.setFunctionType(16);
 			tokenrecords.setTradeType(1);
 			tokenrecords.setCreateTime(new Date());
 			kffTokenrecordsService.save(tokenrecords);
-			
-			//从数据表中获取所有注册用户的奖励数据
-			List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
-			//List<Tokenaward> findByUserId2 = kffTokenawardService.findByUserId(user2.getUserId());
-			//获取邀请人邀请的钱数的总额
-			Double sum = kffTokenawardService.reawardSum(user2.getUserId(),18);
-			if(sum <= 3000){         
-				//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-				Tokenaward tokenaward2 = new Tokenaward();
-				tokenaward2.setUserId(user2.getUserId());
-				tokenaward2.setTokenAwardFunctionType(16);
-				tokenaward2.setTokenAwardFunctionDesc("邀请奖励");
-				tokenaward2.setInviteRewards(m1);
-				tokenaward2.setCreateTime(new Date());
-				tokenaward2.setDistributionType(1);
-				
-				tokenaward2.setAwardBalance(m1);
-				kffTokenawardService.save(tokenaward2);
-				
-				coinProperty.setUserId(user2.getUserId());
-				coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
-				coinProperty.setCoinDistributed(m1);
-				
-				kffCoinPropertyService.save(coinProperty);
-				
-				//将注册用户的信息同时存入流水表单中
-				Tokenrecords tokenrecords2 = new Tokenrecords();
-				tokenrecords2.setUserId(user2.getUserId());
-				tokenrecords2.setFunctionDesc("邀请奖励");
-				tokenrecords2.setFunctionType(16);
-				tokenrecords2.setTradeType(1);
-				tokenrecords2.setCreateTime(new Date());
-				kffTokenrecordsService.save(tokenrecords2);
-				
-			}
-			/*for (Tokenaward award : list) {
-				//获取每个奖励已经奖励的次数
-				Integer counter = award.getCounter();
-				//获取发放的类型
-				Integer distributionType = award.getDistributionType();
-				//获取每个发放的金额
-				Double rewards = award.getInviteRewards();
-				//获取奖励的类型
-				Integer awardFunctionType = award.getTokenAwardFunctionType();
-				//如果奖励没有发放完毕并且是线性发放
-				
-				CoinProperty coinProperty2 = new CoinProperty();
-				if(counter<100 && distributionType == 1 ){
-					if(award.getGrantType()==2) { 
-						Double x = rewards/100;
-						//如果是注册奖励
-						if(awardFunctionType == 16){
-							tokenrecords.setUserId(userId);
-							tokenrecords.setFunctionDesc("注册奖励");
-							tokenrecords.setFunctionType(awardFunctionType);
-							tokenrecords.setAmount(x);
-							tokenrecords.setUpdateTime(new Date());
-							kffTokenrecordsService.update(tokenrecords);
-							tokenaward.setUserId(userId);
-							tokenaward.setTokenAwardFunctionType(awardFunctionType);
-							tokenaward.setCounter(counter+1);
-							
-							
-							Double awardBalance = award.getAwardBalance();
-							tokenaward.setAwardBalance(awardBalance-x);
-							
-							kffTokenrecordsService.update(tokenrecords);
-							kffTokenawardService.update(tokenaward);
-							
-							
-							KFFUser kffUser = kffUserService.findByUserId(userId);
-							Double kffCoinNum = kffUser.getKffCoinNum();
-							kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-							
-							Double coinLock = coinProperty.getCoinLock();
-							Double coinDistributed = coinProperty.getCoinDistributed();
-							coinProperty2.setCoinLock(coinLock + x);
-							coinProperty2.setCoinDistributed(coinDistributed - x);
-							kffCoinPropertyService.update(coinProperty2);
-							
-							
-						}else if(awardFunctionType == 18){// 如果是邀请好友的奖励
-							
-							tokenrecords.setUserId(user2.getUserId());
-							tokenrecords.setFunctionDesc("邀请奖励");
-							tokenrecords.setFunctionType(awardFunctionType);
-							tokenrecords.setAmount(x); // 发放奖励数
-							tokenrecords.setUpdateTime(new Date());
-							
-							tokenaward.setUserId(user2.getUserId());
-							tokenaward.setTokenAwardFunctionType(awardFunctionType);
-							tokenaward.setCounter(counter+1);
-							
-							Double awardBalance = award.getAwardBalance();
-							tokenaward.setAwardBalance(awardBalance-x);
-							
-							kffTokenawardService.update(award);
-							
-							
-							kffTokenrecordsService.update(tokenrecords);
-							
-							
-							tokenaward.setUserId(user2.getUserId());
-							tokenaward.setTokenAwardFunctionType(awardFunctionType);
-							tokenaward.setCounter(counter+1);
-							kffTokenawardService.update(tokenaward);
-							
-							KFFUser kffUser = kffUserService.findByUserId(user2.getUserId());
-							Double kffCoinNum = kffUser.getKffCoinNum();
-							kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-						}
-					}
-				}
-			}*/
-			//判断邀请人是项目方用户，并且没有上一级邀请
-		}else if((user2.getUserType()==2||user2.getUserType()==3) && user2.getReferLevel() ==0){
-			Integer findReferCount = kffUserService.findReferCount(user2.getUserId());
-			if(findReferCount<=1000) {
-				m0=3000d*150/100;
-				m1=150d*150/100;
-			}
-			else {
-				m0=3000d;
-				m1=150d;
-			}
-			
-			//将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+
+			// 从数据表中获取所有该用户的奖励数据
+			// issue(userId);
+		} else if (user.getReferLevel() == 0 && (user.getUserType() == 2 || user.getUserType() == 3)) { // 有邀请人并且是项目方
+			m0 = 3000d * 150 / 100;
+			// 将用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 			tokenaward.setUserId(userId);
 			tokenaward.setTokenAwardFunctionType(16);
 			tokenaward.setTokenAwardFunctionDesc("注册奖励");
 			tokenaward.setInviteRewards(m0);
 			tokenaward.setCreateTime(new Date());
 			tokenaward.setDistributionType(1);
-			tokenaward.setAwardBalance(m0);
+			tokenaward.setAwardBalance(m0); // 奖励余额初始化 是注册奖励
 			tokenaward.setUserName(user.getUserName());
 			tokenaward.setMobile(user.getMobile());
+			tokenaward.setCounter(0);
+			tokenaward.setGrantType(2);
 			kffTokenawardService.save(tokenaward);
-			
-			
-			//将注册用户的信息同时存入流水表单中
+			coinProperty.setUserId(userId);
+			coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
+			coinProperty.setCoinDistributed(m0);
+			kffCoinPropertyService.save(coinProperty);
+			// 将用户的信息同时存入流水表单中
 			tokenrecords.setUserId(userId);
 			tokenrecords.setFunctionDesc("注册奖励");
 			tokenrecords.setFunctionType(16);
 			tokenrecords.setTradeType(1);
 			tokenrecords.setCreateTime(new Date());
 			kffTokenrecordsService.save(tokenrecords);
-			
-			
-			coinProperty.setUserId(userId);
-			coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
-			coinProperty.setCoinDistributed(m0);
-			kffCoinPropertyService.save(coinProperty);
-			
-			//从数据表中获取所有注册用户的奖励数据
-			List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
-			//获取邀请人邀请的钱数的总额
-			Double sum = kffTokenawardService.reawardSum(user2.getUserId(),18);
-			if(sum <= 500000){
-				//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-				Tokenaward tokenaward2 = new Tokenaward();
-				tokenaward2.setUserId(user2.getUserId());
-				tokenaward2.setTokenAwardFunctionType(16);
-				tokenaward2.setTokenAwardFunctionDesc("邀请奖励");
-				tokenaward2.setInviteRewards(m1);
-				tokenaward2.setCreateTime(new Date());
-				tokenaward2.setDistributionType(1);
-				
-				tokenaward2.setAwardBalance(m1);
-				
-				kffTokenawardService.save(tokenaward2);
-				
-				coinProperty.setUserId(userId);
-				coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
-				coinProperty.setCoinDistributed(m0);
-				kffCoinPropertyService.save(coinProperty); 
-				
-				//将注册用户的信息同时存入流水表单中
-				Tokenrecords tokenrecords2 = new Tokenrecords();
-				tokenrecords2.setUserId(user2.getUserId());
-				tokenrecords2.setFunctionDesc("邀请奖励");
-				tokenrecords2.setFunctionType(16);
-				tokenrecords2.setTradeType(1);
-				tokenrecords2.setCreateTime(new Date());
-				kffTokenrecordsService.save(tokenrecords2);
-				
-			}
-		/*	for (Tokenaward award : list) {
-				//获取每个奖励已经奖励的次数
-				Integer counter = award.getCounter();
-				//获取发放的类型
-				Integer distributionType = award.getDistributionType();
-				//获取每个发放的金额
-				Double rewards = award.getInviteRewards();
-				//获取奖励的类型
-				Integer awardFunctionType = award.getTokenAwardFunctionType();
-				//如果奖励没有发放完毕并且是线性发放
-				CoinProperty coinProperty2 = new CoinProperty();
-				if(counter<100 && distributionType == 1 ){
-					if(award.getGrantType()==2) { 
-						Double x = rewards/100;
-						//如果是注册奖励
-						if(awardFunctionType == 16){
-							tokenrecords.setUserId(userId);
-							tokenrecords.setFunctionDesc("注册奖励");
-							tokenrecords.setFunctionType(awardFunctionType);
-							tokenrecords.setAmount(x);
-							tokenrecords.setUpdateTime(new Date());
-							tokenaward.setUserId(userId);
-							tokenaward.setTokenAwardFunctionType(awardFunctionType);
-							tokenaward.setCounter(counter+1);
-							
-							Double awardBalance = award.getAwardBalance();
-							tokenaward.setAwardBalance(awardBalance-x);
-							kffTokenrecordsService.update(tokenrecords);
-							kffTokenawardService.update(tokenaward);
-							
-							KFFUser kffUser = kffUserService.findById(userId);
-							Double kffCoinNum = kffUser.getKffCoinNum();
-							kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-							
-							Double coinLock = coinProperty.getCoinLock();
-							Double coinDistributed = coinProperty.getCoinDistributed();
-							coinProperty2.setCoinLock(coinLock + x);
-							coinProperty2.setCoinDistributed(coinDistributed - x);
-							kffCoinPropertyService.update(coinProperty2);
-							
-						}else if(awardFunctionType == 18){//如果是邀请好友的奖励
-							
-							tokenrecords.setUserId(user2.getUserId());
-							tokenrecords.setFunctionDesc("邀请奖励");
-							tokenrecords.setFunctionType(awardFunctionType);
-							tokenrecords.setAmount(x); // 发放奖励数
-							tokenrecords.setUpdateTime(new Date());
-							kffTokenrecordsService.update(tokenrecords);
-							tokenaward.setUserId(user2.getUserId());
-							tokenaward.setTokenAwardFunctionType(awardFunctionType);
-							tokenaward.setCounter(counter+1);
-							
-							Double awardBalance = award.getAwardBalance();
-							tokenaward.setAwardBalance(awardBalance-x);
-							
-							kffTokenawardService.update(tokenaward);
-							
-							KFFUser kffUser = kffUserService.findByUserId(user2.getUserId());
-							Double kffCoinNum = kffUser.getKffCoinNum();
-							kffUserService.updateUserKFFCoinNum(user2.getUserId(), kffCoinNum+=x);
-							
-							Double coinLock = coinProperty.getCoinLock();
-							Double coinDistributed = coinProperty.getCoinDistributed();
-							coinProperty2.setCoinLock(coinLock + x);
-							coinProperty2.setCoinDistributed(coinDistributed - x);
-							kffCoinPropertyService.update(coinProperty2);
-							
-						}
-					}
-				}
-			}*/
-			//判断邀请人是普通用户，并且有上一级邀请
-		}else if((user2.getUserType()==1||user2.getUserType()==4) && user2.getReferLevel() ==1){
-			//获取上上级的用户表
-			KFFUser user3 = kffUserService.findById(user2.getReferUserId());
-			//判断注册用户的上上级是普通用户
-			if((user3.getUserType()==1||user3.getUserType()==4)){
-				m0=3000d;
-				m1=150d;
-				m2=30d;
-				//将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+
+		} else if (user.getReferLevel() == 1 && (user.getUserType() == 1 || user.getUserType() == 4)) {
+			// 获取邀请人的id
+			Integer referUserId = user.getReferUserId();
+			// 获取邀请人的对象
+			KFFUser user2 = kffUserService.findById(referUserId);
+
+			// 判断邀请人是普通用户，并且没有上一级邀请
+			if ((user2.getUserType() == 1 || user2.getUserType() == 4) && user2.getReferLevel() == 0) {
+				m0 = 3000d;
+				m1 = 150d;
+				// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 				tokenaward.setUserId(userId);
 				tokenaward.setTokenAwardFunctionType(16);
 				tokenaward.setTokenAwardFunctionDesc("注册奖励");
 				tokenaward.setInviteRewards(m0);
 				tokenaward.setCreateTime(new Date());
 				tokenaward.setDistributionType(1);
-				tokenaward.setAwardBalance(m0);
 				tokenaward.setUserName(user.getUserName());
 				tokenaward.setMobile(user.getMobile());
+				tokenaward.setCounter(0);
+				tokenaward.setGrantType(2);
+				tokenaward.setAwardBalance(m0);
 				kffTokenawardService.save(tokenaward);
-				
+
 				coinProperty.setUserId(userId);
 				coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
 				coinProperty.setCoinDistributed(m0);
 				kffCoinPropertyService.save(coinProperty);
-				
-				//将注册用户的信息同时存入流水表单中
+
+				// 将注册用户的信息同时存入流水表单中
 				tokenrecords.setUserId(userId);
 				tokenrecords.setFunctionDesc("注册奖励");
 				tokenrecords.setFunctionType(16);
 				tokenrecords.setTradeType(1);
 				tokenrecords.setCreateTime(new Date());
 				kffTokenrecordsService.save(tokenrecords);
-				
-				//从数据表中获取所有注册用户的奖励数据
+
+				// 从数据表中获取所有注册用户的奖励数据
 				List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
-				//获取上级邀请人邀请的钱数的总额
-				Double sum = kffTokenawardService.reawardSum(user2.getUserId(),18);
-				//获取上上级邀请人邀请的钱数的总额
-				Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(),18);
-				//kffTokenawardService.findByUserId(user2.getUserId());
-				if(sum <= 3000){
-					//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+				// List<Tokenaward> findByUserId2 =
+				// kffTokenawardService.findByUserId(user2.getUserId());
+				// 获取邀请人邀请的钱数的总额
+				Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
+				if (sum <= 3000) {
+					// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 					Tokenaward tokenaward2 = new Tokenaward();
 					tokenaward2.setUserId(user2.getUserId());
 					tokenaward2.setTokenAwardFunctionType(18);
@@ -1647,306 +1113,37 @@ public class AwardPortService  {
 					tokenaward2.setInviteRewards(m1);
 					tokenaward2.setCreateTime(new Date());
 					tokenaward2.setDistributionType(1);
+					tokenaward2.setCounter(0);
+					tokenaward2.setGrantType(2);
 					tokenaward2.setAwardBalance(m1);
-					
 					kffTokenawardService.save(tokenaward2);
-					//将注册用户的信息同时存入流水表单中
-					Tokenrecords tokenrecords2 = new Tokenrecords();
-					tokenrecords2.setUserId(user2.getUserId());
-					tokenrecords2.setFunctionDesc("邀请奖励");
-					tokenrecords2.setFunctionType(16);
-					tokenrecords2.setTradeType(1);
-					tokenrecords2.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords2);
-					
+
 					coinProperty.setUserId(user2.getUserId());
-					coinProperty.setCoinLock(kffUserService.findById(user2.getUserId()).getKffCoinNum().doubleValue());
-					CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-					coinProperty.setCoinDistributed(m1+coinProperty.getCoinDistributed());
+					coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
+					coinProperty.setCoinDistributed(m1);
+
 					kffCoinPropertyService.save(coinProperty);
-					
-				}
-				if(sum2 <= 3000){
-					//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-					Tokenaward tokenawarde3 = new Tokenaward();
-					tokenawarde3.setUserId(user3.getUserId());
-					tokenawarde3.setTokenAwardFunctionType(18);
-					tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
-					tokenawarde3.setInviteRewards(m2);
-					tokenawarde3.setCreateTime(new Date());
-					tokenawarde3.setDistributionType(1);
-					tokenawarde3.setAwardBalance(m2);
-					kffTokenawardService.save(tokenawarde3);
-					//将注册用户的信息同时存入流水表单中
-					Tokenrecords tokenrecords2 = new Tokenrecords();
-					tokenrecords2.setUserId(user3.getUserId());
-					tokenrecords2.setFunctionDesc("邀请奖励");
-					tokenrecords2.setFunctionType(16);
-					tokenrecords2.setTradeType(1);
-					tokenrecords2.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords2);
-					
-					coinProperty.setUserId(user3.getUserId());
-					coinProperty.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-					CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-					coinProperty.setCoinDistributed(m2+coinProperty.getCoinDistributed());
-					kffCoinPropertyService.save(coinProperty);
-					
-				}
-			/*	for (Tokenaward award : list) {
-					//获取每个奖励已经奖励的次数
-					Integer counter = award.getCounter();
-					//获取发放的类型
-					Integer distributionType = award.getDistributionType();
-					//获取每个发放的金额
-					Double rewards = award.getInviteRewards();
-					//获取奖励的类型
-					Integer awardFunctionType = award.getTokenAwardFunctionType();
-					//如果奖励没有发放完毕并且是线性发放
-					if(counter<100 && distributionType == 1 ){
-						if(award.getGrantType()==2) { 
-							Double x = rewards/100;
-							//如果是注册奖励
-							if(awardFunctionType == 16){
-								tokenrecords.setUserId(userId);
-								tokenrecords.setFunctionDesc("注册奖励");
-								tokenrecords.setFunctionType(awardFunctionType);
-								tokenrecords.setAmount(x);
-								tokenrecords.setUpdateTime(new Date());
-								kffTokenrecordsService.update(tokenrecords);
-								tokenaward.setUserId(userId);
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								Double awardBalance = award.getAwardBalance();
-								kffTokenawardService.update(award);
-								tokenaward.setAwardBalance(awardBalance-x);
-								
-								KFFUser kffUser = kffUserService.findByUserId(userId);
-								Double kffCoinNum = kffUser.getKffCoinNum();
-								kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-								
-								Double coinLock = coinProperty.getCoinLock();
-								CoinProperty coinProperty2 = new CoinProperty();
-								Double coinDistributed = coinProperty.getCoinDistributed();
-								coinProperty2.setCoinLock(coinLock + x);
-								coinProperty2.setCoinDistributed(coinDistributed - x);
-								kffCoinPropertyService.update(coinProperty2);
-								
-							}else if(awardFunctionType == 18){//如果是邀请好友的奖励
-							
-								tokenrecords.setUserId(user2.getUserId());
-								tokenrecords.setFunctionDesc("邀请奖励");
-								tokenrecords.setFunctionType(awardFunctionType);
-								tokenrecords.setAmount(x); // 发放奖励数
-								tokenrecords.setUpdateTime(new Date());
-								
-								tokenaward.setUserId(user2.getUserId());
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								
-								Double awardBalance = award.getAwardBalance();
-								tokenaward.setAwardBalance(awardBalance-x);
-								
-								kffTokenawardService.update(award);
-								
-								
-								kffTokenrecordsService.update(tokenrecords);
-								
-								
-								tokenaward.setUserId(user2.getUserId());
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								kffTokenawardService.update(tokenaward);
-								
-								KFFUser kffUser = kffUserService.findByUserId(user2.getUserId());
-								Double kffCoinNum = kffUser.getKffCoinNum();
-								kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-								
-							}
-						}
-					}
-				}*/
-				//如果注册用户的上上级用户是项目方
-			}
-			
-			else if((user3.getUserType()==2||user3.getUserType()==3)){
-				m0=3000d;
-				m1=150d;
-				m2=30d*150/100;
-				//将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-				tokenaward.setUserId(userId);
-				tokenaward.setTokenAwardFunctionType(16);
-				tokenaward.setTokenAwardFunctionDesc("注册奖励");
-				tokenaward.setInviteRewards(m0);
-				tokenaward.setCreateTime(new Date());
-				tokenaward.setDistributionType(1);
-				tokenaward.setAwardBalance(m0);
-				tokenaward.setUserName(user.getUserName());
-				tokenaward.setMobile(user.getMobile());
-				kffTokenawardService.save(tokenaward);
-				
-				coinProperty.setUserId(userId);
-				coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
-				coinProperty.setCoinDistributed(m0);
-				kffCoinPropertyService.save(coinProperty);
-				
-				//将注册用户的信息同时存入流水表单中
-				tokenrecords.setUserId(userId);
-				tokenrecords.setFunctionDesc("注册奖励");
-				tokenrecords.setFunctionType(16);
-				tokenrecords.setTradeType(1);
-				tokenrecords.setCreateTime(new Date());
-				kffTokenrecordsService.save(tokenrecords);
-				
-				//从数据表中获取所有注册用户的奖励数据
-				List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
-				//获取上级邀请人邀请的钱数的总额
-				Double sum = kffTokenawardService.reawardSum(user2.getUserId(),18);
-				//获取上上级邀请人邀请的钱数的总额
-				Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(),18);
-				
-				if(sum <= 3000){
-					//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-					Tokenaward tokenaward2 = new Tokenaward();
-					tokenaward2.setUserId(user2.getUserId());
-					tokenaward2.setTokenAwardFunctionType(18);
-					tokenaward2.setTokenAwardFunctionDesc("邀请奖励");
-					tokenaward2.setInviteRewards(m1);
-					tokenaward2.setCreateTime(new Date());
-					tokenaward2.setDistributionType(1);
-					kffTokenawardService.save(tokenaward2);
-					//将注册用户的信息同时存入流水表单中
+
+					// 将注册用户的信息同时存入流水表单中
 					Tokenrecords tokenrecords2 = new Tokenrecords();
 					tokenrecords2.setUserId(user2.getUserId());
 					tokenrecords2.setFunctionDesc("邀请奖励");
-					tokenrecords2.setFunctionType(16);
+					tokenrecords2.setFunctionType(18);
 					tokenrecords2.setTradeType(1);
 					tokenrecords2.setCreateTime(new Date());
 					kffTokenrecordsService.save(tokenrecords2);
-					
-				}
-				if(sum2 <= 3000){
-					//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-					Tokenaward tokenawarde3 = new Tokenaward();
-					tokenawarde3.setUserId(user3.getUserId());
-					tokenawarde3.setTokenAwardFunctionType(18);
-					tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
-					tokenawarde3.setInviteRewards(m2);
-					tokenawarde3.setCreateTime(new Date());
-					tokenawarde3.setDistributionType(1);
-					tokenawarde3.setAwardBalance(m2);
-					kffTokenawardService.save(tokenawarde3);
-					//将注册用户的信息同时存入流水表单中
-					Tokenrecords tokenrecords2 = new Tokenrecords();
-					tokenrecords2.setUserId(user3.getUserId());
-					tokenrecords2.setFunctionDesc("邀请奖励");
-					tokenrecords2.setFunctionType(16);
-					tokenrecords2.setTradeType(1);
-					tokenrecords2.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords2);
-					
-					coinProperty.setUserId(user3.getUserId());
-					coinProperty.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-					CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-					coinProperty.setCoinDistributed(m2+coinProperty.getCoinDistributed());
-					kffCoinPropertyService.save(coinProperty);
-					
-				}
-				/*for (Tokenaward award : list) {
-					//获取每个奖励已经奖励的次数
-					Integer counter = award.getCounter();
-					//获取发放的类型
-					Integer distributionType = award.getDistributionType();
-					//获取每个发放的金额
-					Double rewards = award.getInviteRewards();
-					//获取奖励的类型
-					Integer awardFunctionType = award.getTokenAwardFunctionType();
-					//如果奖励没有发放完毕并且是线性发放
-					if(counter<100 && distributionType == 1 ){
-						if(award.getGrantType()==2) { 
-							Double x = rewards/100f;
-							//如果是注册奖励
-							if(awardFunctionType == 16){
-								tokenrecords.setUserId(userId);
-								tokenrecords.setFunctionDesc("注册奖励");
-								tokenrecords.setFunctionType(awardFunctionType);
-								tokenrecords.setAmount(x);
-								tokenrecords.setUpdateTime(new Date());
-								kffTokenrecordsService.update(tokenrecords);
-								tokenaward.setUserId(userId);
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								Double awardBalance = award.getAwardBalance();
-								kffTokenawardService.update(award);
-								tokenaward.setAwardBalance(awardBalance-x);
-								
-								KFFUser kffUser = kffUserService.findByUserId(userId);
-								Double kffCoinNum = kffUser.getKffCoinNum();
-								kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-								
-								Double coinLock = coinProperty.getCoinLock();
-								CoinProperty coinProperty2 = new CoinProperty();
-								Double coinDistributed = coinProperty.getCoinDistributed();
-								coinProperty2.setCoinLock(coinLock + x);
-								coinProperty2.setCoinDistributed(coinDistributed - x);
-								kffCoinPropertyService.update(coinProperty2);
-								
-							}else if(awardFunctionType == 18){//如果是邀请好友的奖励
-								
-								tokenrecords.setUserId(user2.getUserId());
-								tokenrecords.setFunctionDesc("邀请奖励");
-								tokenrecords.setFunctionType(awardFunctionType);
-								tokenrecords.setAmount(x); // 发放奖励数
-								tokenrecords.setUpdateTime(new Date());
-								
-								tokenaward.setUserId(user2.getUserId());
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								
-								Double awardBalance = award.getAwardBalance();
-								tokenaward.setAwardBalance(awardBalance-x);
-								
-								kffTokenawardService.update(award);
-								
-								
-								kffTokenrecordsService.update(tokenrecords);
-								
-								
-								tokenaward.setUserId(user2.getUserId());
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								kffTokenawardService.update(tokenaward);
-								
-								KFFUser kffUser = kffUserService.findByUserId(user2.getUserId());
-								Double kffCoinNum = kffUser.getKffCoinNum();
-								kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-								
-								
-							}
-						}
-					}
-				}*/
-			}
-			//如果上级邀请人是是项目方，并且有上级邀请人
-		}else if((user2.getUserType()==2||user2.getUserType()==3) && user2.getReferLevel() ==1){
 
-			//获取上上级的用户表
-			KFFUser user3 = kffUserService.findById(user2.getReferUserId());
-			//判断注册用户的上上级是普通用户
-			if((user3.getUserType()==1||user3.getUserType()==4)){
+				}
+			} else if ((user2.getUserType() == 2 || user2.getUserType() == 3) && user2.getReferLevel() == 0) {
 				Integer findReferCount = kffUserService.findReferCount(user2.getUserId());
-				if(findReferCount<=1000) {
-					m0=3000d*150/100;
-					m1=150d*150/100;
-					m2=30d;
+				if (findReferCount <= 1000) {
+					m0 = 3000d * 150 / 100;
+					m1 = 150d * 150 / 100;
+				} else {
+					m0 = 3000d;
+					m1 = 150d;
 				}
-				else {
-					m0=3000d;
-					m1=150d;
-					m2=30d;
-				}
-				
-				//将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+				// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 				tokenaward.setUserId(userId);
 				tokenaward.setTokenAwardFunctionType(16);
 				tokenaward.setTokenAwardFunctionDesc("注册奖励");
@@ -1956,201 +1153,30 @@ public class AwardPortService  {
 				tokenaward.setAwardBalance(m0);
 				tokenaward.setUserName(user.getUserName());
 				tokenaward.setMobile(user.getMobile());
+				tokenaward.setCounter(0);
+				tokenaward.setGrantType(2);
 				kffTokenawardService.save(tokenaward);
-				
-				coinProperty.setUserId(userId);
-				coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
-				coinProperty.setCoinDistributed(m0);
-				kffCoinPropertyService.save(coinProperty);
-				
-				//将注册用户的信息同时存入流水表单中
+
+				// 将注册用户的信息同时存入流水表单中
 				tokenrecords.setUserId(userId);
 				tokenrecords.setFunctionDesc("注册奖励");
 				tokenrecords.setFunctionType(16);
 				tokenrecords.setTradeType(1);
 				tokenrecords.setCreateTime(new Date());
+				
 				kffTokenrecordsService.save(tokenrecords);
-				
-				//从数据表中获取所有注册用户的奖励数据
-				List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
-				//获取上级邀请人邀请的钱数的总额
-				Double sum = kffTokenawardService.reawardSum(user2.getUserId(),18);
-				//获取上上级邀请人邀请的钱数的总额
-				Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(),18);
-				if(sum <= 3000){
-					//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-					Tokenaward tokenawarde3 = new Tokenaward();
-					tokenawarde3.setUserId(user3.getUserId());
-					tokenawarde3.setTokenAwardFunctionType(18);
-					tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
-					tokenawarde3.setInviteRewards(m2);
-					tokenawarde3.setCreateTime(new Date());
-					tokenawarde3.setDistributionType(1);
-					tokenawarde3.setAwardBalance(m2);
-					kffTokenawardService.save(tokenawarde3);
-					//将注册用户的信息同时存入流水表单中
-					Tokenrecords tokenrecords2 = new Tokenrecords();
-					tokenrecords2.setUserId(user3.getUserId());
-					tokenrecords2.setFunctionDesc("邀请奖励");
-					tokenrecords2.setFunctionType(16);
-					tokenrecords2.setTradeType(1);
-					tokenrecords2.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords2);
-					
-					coinProperty.setUserId(user3.getUserId());
-					coinProperty.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-					CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-					coinProperty.setCoinDistributed(m2+coinProperty.getCoinDistributed());
-					kffCoinPropertyService.save(coinProperty);
-					
-					
-				}
-				if(sum2 <= 3000){
-					//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-					Tokenaward tokenawarde3 = new Tokenaward();
-					tokenawarde3.setUserId(user3.getUserId());
-					tokenawarde3.setTokenAwardFunctionType(18);
-					tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
-					tokenawarde3.setInviteRewards(m2);
-					tokenawarde3.setCreateTime(new Date());
-					tokenawarde3.setDistributionType(1);
-					tokenawarde3.setAwardBalance(m2);
-					kffTokenawardService.save(tokenawarde3);
-					//将注册用户的信息同时存入流水表单中
-					Tokenrecords tokenrecords2 = new Tokenrecords();
-					tokenrecords2.setUserId(user3.getUserId());
-					tokenrecords2.setFunctionDesc("邀请奖励");
-					tokenrecords2.setFunctionType(16);
-					tokenrecords2.setTradeType(1);
-					tokenrecords2.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords2);
-					
-					coinProperty.setUserId(user3.getUserId());
-					coinProperty.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-					CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-					coinProperty.setCoinDistributed(m2+coinProperty.getCoinDistributed());
-					kffCoinPropertyService.save(coinProperty);
-					
-				}
-				/*for (Tokenaward award : list) {
-					//获取每个奖励已经奖励的次数
-					Integer counter = award.getCounter();
-					//获取发放的类型
-					Integer distributionType = award.getDistributionType();
-					//获取每个发放的金额
-					Double rewards = award.getInviteRewards();
-					//获取奖励的类型
-					Integer awardFunctionType = award.getTokenAwardFunctionType();
-					//如果奖励没有发放完毕并且是线性发放
-					if(counter<100 && distributionType == 1 ){
-						if(award.getGrantType()==2) { 
-							Double x = rewards/100;
-							//如果是注册奖励
-							if(awardFunctionType == 16){
-								tokenrecords.setUserId(userId);
-								tokenrecords.setFunctionDesc("注册奖励");
-								tokenrecords.setFunctionType(awardFunctionType);
-								tokenrecords.setAmount(x);
-								tokenrecords.setUpdateTime(new Date());
-								kffTokenrecordsService.update(tokenrecords);
-								tokenaward.setUserId(userId);
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								Double awardBalance = award.getAwardBalance();
-								kffTokenawardService.update(award);
-								tokenaward.setAwardBalance(awardBalance-x);
-								
-								KFFUser kffUser = kffUserService.findByUserId(userId);
-								Double kffCoinNum = kffUser.getKffCoinNum();
-								kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-								
-								Double coinLock = coinProperty.getCoinLock();
-								CoinProperty coinProperty2 = new CoinProperty();
-								Double coinDistributed = coinProperty.getCoinDistributed();
-								coinProperty2.setCoinLock(coinLock + x);
-								coinProperty2.setCoinDistributed(coinDistributed - x);
-								kffCoinPropertyService.update(coinProperty2);
-							}else if(awardFunctionType == 18){//如果是邀请好友的奖励
-								
-								tokenrecords.setUserId(user2.getUserId());
-								tokenrecords.setFunctionDesc("邀请奖励");
-								tokenrecords.setFunctionType(awardFunctionType);
-								tokenrecords.setAmount(x); // 发放奖励数
-								tokenrecords.setUpdateTime(new Date());
-								
-								tokenaward.setUserId(user2.getUserId());
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								
-								Double awardBalance = award.getAwardBalance();
-								tokenaward.setAwardBalance(awardBalance-x);
-								
-								kffTokenawardService.update(award);
-								
-								
-								kffTokenrecordsService.update(tokenrecords);
-								
-								
-								tokenaward.setUserId(user2.getUserId());
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								kffTokenawardService.update(tokenaward);
-								
-								KFFUser kffUser = kffUserService.findByUserId(user2.getUserId());
-								Double kffCoinNum = kffUser.getKffCoinNum();
-								kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-								
-							}
-						}
-					}
-				}*/
-				//如果注册用户的上上级用户是项目方
-			}else if((user3.getUserType()==2||user3.getUserType()==3)){	//将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-				Integer findReferCount = kffUserService.findReferCount(user3.getUserId());
-				if(findReferCount<=1000) {
-					m0=3000d;
-					m1=150d*150/100;
-					m2=30d*150/100;
-				}
-				else {
-					m0=3000d;
-					m1=150d;
-					m2=30d;
-				}
-				
-				tokenaward.setUserId(userId);
-				tokenaward.setTokenAwardFunctionType(16);
-				tokenaward.setTokenAwardFunctionDesc("注册奖励");
-				tokenaward.setInviteRewards(m0);
-				tokenaward.setCreateTime(new Date());
-				tokenaward.setDistributionType(1);
-				tokenaward.setAwardBalance(m0);
-				tokenaward.setUserName(user.getUserName());
-				tokenaward.setMobile(user.getMobile());
-				kffTokenawardService.save(tokenaward);
-				
+
 				coinProperty.setUserId(userId);
 				coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
 				coinProperty.setCoinDistributed(m0);
 				kffCoinPropertyService.save(coinProperty);
-				
-				//将注册用户的信息同时存入流水表单中
-				tokenrecords.setUserId(userId);
-				tokenrecords.setFunctionDesc("注册奖励");
-				tokenrecords.setFunctionType(16);
-				tokenrecords.setTradeType(1);
-				tokenrecords.setCreateTime(new Date());
-				kffTokenrecordsService.save(tokenrecords);
-				
-				//从数据表中获取所有注册用户的奖励数据
+
+				// 从数据表中获取所有注册用户的奖励数据
 				List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
-				//获取上级邀请人邀请的钱数的总额
-				Double sum = kffTokenawardService.reawardSum(user2.getUserId(),18);
-				//获取上上级邀请人邀请的钱数的总额
-				Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(),18);
-				
-				if(sum <= 500000){
-					//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+				// 获取邀请人邀请的钱数的总额
+				Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
+				if (sum <= 500000) {
+					// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 					Tokenaward tokenaward2 = new Tokenaward();
 					tokenaward2.setUserId(user2.getUserId());
 					tokenaward2.setTokenAwardFunctionType(18);
@@ -2158,1442 +1184,558 @@ public class AwardPortService  {
 					tokenaward2.setInviteRewards(m1);
 					tokenaward2.setCreateTime(new Date());
 					tokenaward2.setDistributionType(1);
-					kffTokenawardService.save(tokenaward2);
-					//将注册用户的信息同时存入流水表单中
-					Tokenrecords tokenrecords2 = new Tokenrecords();
-					tokenrecords2.setUserId(user2.getUserId());
-					tokenrecords2.setFunctionDesc("邀请奖励");
-					tokenrecords2.setFunctionType(16);
-					tokenrecords2.setTradeType(1);
-					tokenrecords2.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords2);
-					
-				}
-				if(sum2 <= 500000){
-					//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-					Tokenaward tokenawarde3 = new Tokenaward();
-					tokenawarde3.setUserId(user3.getUserId());
-					tokenawarde3.setTokenAwardFunctionType(18);
-					tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
-					tokenawarde3.setInviteRewards(m2);
-					tokenawarde3.setCreateTime(new Date());
-					tokenawarde3.setDistributionType(1);
-					tokenawarde3.setAwardBalance(m2);
-					kffTokenawardService.save(tokenawarde3);
-					//将注册用户的信息同时存入流水表单中
-					Tokenrecords tokenrecords2 = new Tokenrecords();
-					tokenrecords2.setUserId(user3.getUserId());
-					tokenrecords2.setFunctionDesc("邀请奖励");
-					tokenrecords2.setFunctionType(16);
-					tokenrecords2.setTradeType(1);
-					tokenrecords2.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords2);
-					
-					coinProperty.setUserId(user3.getUserId());
-					coinProperty.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-					CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-					coinProperty.setCoinDistributed(m2+coinProperty.getCoinDistributed());
-					kffCoinPropertyService.save(coinProperty);
-					
-				}
-				/*for (Tokenaward award : list) {
-					//获取每个奖励已经奖励的次数
-					Integer counter = award.getCounter();
-					//获取发放的类型
-					Integer distributionType = award.getDistributionType();
-					//获取每个发放的金额
-					Double rewards = award.getInviteRewards();
-					//获取奖励的类型
-					Integer awardFunctionType = award.getTokenAwardFunctionType();
-					//如果奖励没有发放完毕并且是线性发放
-					if(counter<100 && distributionType == 1 ){
-						if(award.getGrantType()==2) { 
-							Double x = rewards/100f;
-							//如果是注册奖励
-							if(awardFunctionType == 16){
-								tokenrecords.setUserId(userId);
-								tokenrecords.setFunctionDesc("注册奖励");
-								tokenrecords.setFunctionType(awardFunctionType);
-								tokenrecords.setAmount(x);
-								tokenrecords.setUpdateTime(new Date());
-								kffTokenrecordsService.update(tokenrecords);
-								tokenaward.setUserId(userId);
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								Double awardBalance = award.getAwardBalance();
-								kffTokenawardService.update(award);
-								tokenaward.setAwardBalance(awardBalance-x);
-								
-								KFFUser kffUser = kffUserService.findByUserId(userId);
-								Double kffCoinNum = kffUser.getKffCoinNum();
-								kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-								
-								Double coinLock = coinProperty.getCoinLock();
-								CoinProperty coinProperty2 = new CoinProperty();
-								Double coinDistributed = coinProperty.getCoinDistributed();
-								coinProperty2.setCoinLock(coinLock + x);
-								coinProperty2.setCoinDistributed(coinDistributed - x);
-								kffCoinPropertyService.update(coinProperty2);
-								
-							}else if(awardFunctionType == 18){//如果是邀请好友的奖励
-								
-								tokenrecords.setUserId(user2.getUserId());
-								tokenrecords.setFunctionDesc("邀请奖励");
-								tokenrecords.setFunctionType(awardFunctionType);
-								tokenrecords.setAmount(x); // 发放奖励数
-								tokenrecords.setUpdateTime(new Date());
-								
-								tokenaward.setUserId(user2.getUserId());
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								
-								Double awardBalance = award.getAwardBalance();
-								tokenaward.setAwardBalance(awardBalance-x);
-								
-								kffTokenawardService.update(award);
-								
-								
-								kffTokenrecordsService.update(tokenrecords);
-								
-								
-								tokenaward.setUserId(user2.getUserId());
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								kffTokenawardService.update(tokenaward);
-								
-								KFFUser kffUser = kffUserService.findByUserId(user2.getUserId());
-								Double kffCoinNum = kffUser.getKffCoinNum();
-								kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-								
-								
-							}
-						}
-					}
-				}*/
-			}
-		}
-	}
-	
-	
-	private void method3(Integer userId) {
-		//获取邀请人的id
-		Integer referUserId = user.getReferUserId();
-		//获取邀请人的对象
-		KFFUser user2 = kffUserService.findByUserId(referUserId);
-		
-		//判断邀请人是普通用户，并且没有上一级邀请
-		if((user2.getUserType()==1||user2.getUserType()==4) && user2.getReferLevel() ==0){
-			m0=1000d;
-			m1=50d;
-			//将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-			tokenaward.setUserId(userId);
-			tokenaward.setTokenAwardFunctionType(16);
-			tokenaward.setTokenAwardFunctionDesc("注册奖励");
-			tokenaward.setInviteRewards(m0);
-			tokenaward.setCreateTime(new Date());
-			tokenaward.setDistributionType(1);
-			tokenaward.setUserName(user.getUserName());
-			tokenaward.setMobile(user.getMobile());
-			tokenaward.setAwardBalance(m0);
-			kffTokenawardService.save(tokenaward);
-			
-			coinProperty.setUserId(userId);
-			coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
-			coinProperty.setCoinDistributed(m0);
-			kffCoinPropertyService.save(coinProperty);
-			
-			//将注册用户的信息同时存入流水表单中
-			tokenrecords.setUserId(userId);
-			tokenrecords.setFunctionDesc("注册奖励");
-			tokenrecords.setFunctionType(16);
-			tokenrecords.setTradeType(1);
-			tokenrecords.setCreateTime(new Date());
-			kffTokenrecordsService.save(tokenrecords);
-			
-			//从数据表中获取所有注册用户的奖励数据
-			List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
-			//List<Tokenaward> findByUserId2 = kffTokenawardService.findByUserId(user2.getUserId());
-			//获取邀请人邀请的钱数的总额
-			Double sum = kffTokenawardService.reawardSum(user2.getUserId(),18);
-			if(sum <= 1000){         
-				//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-				Tokenaward tokenaward2 = new Tokenaward();
-				tokenaward2.setUserId(user2.getUserId());
-				tokenaward2.setTokenAwardFunctionType(16);
-				tokenaward2.setTokenAwardFunctionDesc("邀请奖励");
-				tokenaward2.setInviteRewards(m1);
-				tokenaward2.setCreateTime(new Date());
-				tokenaward2.setDistributionType(1);
-				
-				tokenaward2.setAwardBalance(m1);
-				kffTokenawardService.save(tokenaward2);
-				
-				coinProperty.setUserId(user2.getUserId());
-				coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
-				coinProperty.setCoinDistributed(m1);
-				
-				kffCoinPropertyService.save(coinProperty);
-				
-				//将注册用户的信息同时存入流水表单中
-				Tokenrecords tokenrecords2 = new Tokenrecords();
-				tokenrecords2.setUserId(user2.getUserId());
-				tokenrecords2.setFunctionDesc("邀请奖励");
-				tokenrecords2.setFunctionType(16);
-				tokenrecords2.setTradeType(1);
-				tokenrecords2.setCreateTime(new Date());
-				kffTokenrecordsService.save(tokenrecords2);
-				
-			}
-			/*for (Tokenaward award : list) {
-				//获取每个奖励已经奖励的次数
-				Integer counter = award.getCounter();
-				//获取发放的类型
-				Integer distributionType = award.getDistributionType();
-				//获取每个发放的金额
-				Double rewards = award.getInviteRewards();
-				//获取奖励的类型
-				Integer awardFunctionType = award.getTokenAwardFunctionType();
-				//如果奖励没有发放完毕并且是线性发放
-				
-				CoinProperty coinProperty2 = new CoinProperty();
-				if(counter<100 && distributionType == 1 ){
-					if(award.getGrantType()==2) { 
-						Double x = rewards/100;
-						//如果是注册奖励
-						if(awardFunctionType == 16){
-							tokenrecords.setUserId(userId);
-							tokenrecords.setFunctionDesc("注册奖励");
-							tokenrecords.setFunctionType(awardFunctionType);
-							tokenrecords.setAmount(x);
-							tokenrecords.setUpdateTime(new Date());
-							kffTokenrecordsService.update(tokenrecords);
-							tokenaward.setUserId(userId);
-							tokenaward.setTokenAwardFunctionType(awardFunctionType);
-							tokenaward.setCounter(counter+1);
-							
-							
-							Double awardBalance = award.getAwardBalance();
-							tokenaward.setAwardBalance(awardBalance-x);
-							
-							kffTokenrecordsService.update(tokenrecords);
-							kffTokenawardService.update(tokenaward);
-							
-							
-							KFFUser kffUser = kffUserService.findByUserId(userId);
-							Double kffCoinNum = kffUser.getKffCoinNum();
-							kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-							
-							Double coinLock = coinProperty.getCoinLock();
-							Double coinDistributed = coinProperty.getCoinDistributed();
-							coinProperty2.setCoinLock(coinLock + x);
-							coinProperty2.setCoinDistributed(coinDistributed - x);
-							kffCoinPropertyService.update(coinProperty2);
-							
-							
-						}else if(awardFunctionType == 18){// 如果是邀请好友的奖励
-							
-							tokenrecords.setUserId(user2.getUserId());
-							tokenrecords.setFunctionDesc("邀请奖励");
-							tokenrecords.setFunctionType(awardFunctionType);
-							tokenrecords.setAmount(x); // 发放奖励数
-							tokenrecords.setUpdateTime(new Date());
-							
-							tokenaward.setUserId(user2.getUserId());
-							tokenaward.setTokenAwardFunctionType(awardFunctionType);
-							tokenaward.setCounter(counter+1);
-							
-							Double awardBalance = award.getAwardBalance();
-							tokenaward.setAwardBalance(awardBalance-x);
-							
-							kffTokenawardService.update(award);
-							
-							
-							kffTokenrecordsService.update(tokenrecords);
-							
-							
-							tokenaward.setUserId(user2.getUserId());
-							tokenaward.setTokenAwardFunctionType(awardFunctionType);
-							tokenaward.setCounter(counter+1);
-							kffTokenawardService.update(tokenaward);
-							
-							KFFUser kffUser = kffUserService.findByUserId(user2.getUserId());
-							Double kffCoinNum = kffUser.getKffCoinNum();
-							kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-						}
-					}
-				}
-			}*/
-			//判断邀请人是项目方用户，并且没有上一级邀请
-		}else if((user2.getUserType()==2||user2.getUserType()==3) && user2.getReferLevel() ==0){
-			Integer findReferCount = kffUserService.findReferCount(user2.getUserId());
-			if(findReferCount<=1000) {
-
-				m0=1000d*150/100;
-				m1=50d*150/100;
-			}
-			else {
-
-				m0=1000d;
-				m1=50d;
-			}
-			
-			//将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-			tokenaward.setUserId(userId);
-			tokenaward.setTokenAwardFunctionType(16);
-			tokenaward.setTokenAwardFunctionDesc("注册奖励");
-			tokenaward.setInviteRewards(m0);
-			tokenaward.setCreateTime(new Date());
-			tokenaward.setDistributionType(1);
-			tokenaward.setAwardBalance(m0);
-			tokenaward.setUserName(user.getUserName());
-			tokenaward.setMobile(user.getMobile());
-			kffTokenawardService.save(tokenaward);
-			
-			
-			//将注册用户的信息同时存入流水表单中
-			tokenrecords.setUserId(userId);
-			tokenrecords.setFunctionDesc("注册奖励");
-			tokenrecords.setFunctionType(16);
-			tokenrecords.setTradeType(1);
-			tokenrecords.setCreateTime(new Date());
-			kffTokenrecordsService.save(tokenrecords);
-			
-			
-			coinProperty.setUserId(userId);
-			coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
-			coinProperty.setCoinDistributed(m0);
-			kffCoinPropertyService.save(coinProperty);
-			
-			//从数据表中获取所有注册用户的奖励数据
-			List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
-			//获取邀请人邀请的钱数的总额
-			Double sum = kffTokenawardService.reawardSum(user2.getUserId(),18);
-			if(sum <= 500000){
-				//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-				Tokenaward tokenaward2 = new Tokenaward();
-				tokenaward2.setUserId(user2.getUserId());
-				tokenaward2.setTokenAwardFunctionType(16);
-				tokenaward2.setTokenAwardFunctionDesc("邀请奖励");
-				tokenaward2.setInviteRewards(m1);
-				tokenaward2.setCreateTime(new Date());
-				tokenaward2.setDistributionType(1);
-				
-				tokenaward2.setAwardBalance(m1);
-				
-				kffTokenawardService.save(tokenaward2);
-				
-				coinProperty.setUserId(userId);
-				coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
-				coinProperty.setCoinDistributed(m0);
-				kffCoinPropertyService.save(coinProperty); 
-				
-				//将注册用户的信息同时存入流水表单中
-				Tokenrecords tokenrecords2 = new Tokenrecords();
-				tokenrecords2.setUserId(user2.getUserId());
-				tokenrecords2.setFunctionDesc("邀请奖励");
-				tokenrecords2.setFunctionType(16);
-				tokenrecords2.setTradeType(1);
-				tokenrecords2.setCreateTime(new Date());
-				kffTokenrecordsService.save(tokenrecords2);
-				
-			}
-			/*for (Tokenaward award : list) {
-				//获取每个奖励已经奖励的次数
-				Integer counter = award.getCounter();
-				//获取发放的类型
-				Integer distributionType = award.getDistributionType();
-				//获取每个发放的金额
-				Double rewards = award.getInviteRewards();
-				//获取奖励的类型
-				Integer awardFunctionType = award.getTokenAwardFunctionType();
-				//如果奖励没有发放完毕并且是线性发放
-				CoinProperty coinProperty2 = new CoinProperty();
-				if(counter<100 && distributionType == 1 ){
-					if(award.getGrantType()==2) { 
-						Double x = rewards/100;
-						//如果是注册奖励
-						if(awardFunctionType == 16){
-							tokenrecords.setUserId(userId);
-							tokenrecords.setFunctionDesc("注册奖励");
-							tokenrecords.setFunctionType(awardFunctionType);
-							tokenrecords.setAmount(x);
-							tokenrecords.setUpdateTime(new Date());
-							tokenaward.setUserId(userId);
-							tokenaward.setTokenAwardFunctionType(awardFunctionType);
-							tokenaward.setCounter(counter+1);
-							
-							Double awardBalance = award.getAwardBalance();
-							tokenaward.setAwardBalance(awardBalance-x);
-							kffTokenrecordsService.update(tokenrecords);
-							kffTokenawardService.update(tokenaward);
-							
-							KFFUser kffUser = kffUserService.findById(userId);
-							Double kffCoinNum = kffUser.getKffCoinNum();
-							kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-							
-							Double coinLock = coinProperty.getCoinLock();
-							Double coinDistributed = coinProperty.getCoinDistributed();
-							coinProperty2.setCoinLock(coinLock + x);
-							coinProperty2.setCoinDistributed(coinDistributed - x);
-							kffCoinPropertyService.update(coinProperty2);
-							
-						}else if(awardFunctionType == 18){//如果是邀请好友的奖励
-							
-							tokenrecords.setUserId(user2.getUserId());
-							tokenrecords.setFunctionDesc("邀请奖励");
-							tokenrecords.setFunctionType(awardFunctionType);
-							tokenrecords.setAmount(x); // 发放奖励数
-							tokenrecords.setUpdateTime(new Date());
-							kffTokenrecordsService.update(tokenrecords);
-							tokenaward.setUserId(user2.getUserId());
-							tokenaward.setTokenAwardFunctionType(awardFunctionType);
-							tokenaward.setCounter(counter+1);
-							
-							Double awardBalance = award.getAwardBalance();
-							tokenaward.setAwardBalance(awardBalance-x);
-							
-							kffTokenawardService.update(tokenaward);
-							
-							KFFUser kffUser = kffUserService.findByUserId(user2.getUserId());
-							Double kffCoinNum = kffUser.getKffCoinNum();
-							kffUserService.updateUserKFFCoinNum(user2.getUserId(), kffCoinNum+=x);
-							
-							Double coinLock = coinProperty.getCoinLock();
-							Double coinDistributed = coinProperty.getCoinDistributed();
-							coinProperty2.setCoinLock(coinLock + x);
-							coinProperty2.setCoinDistributed(coinDistributed - x);
-							kffCoinPropertyService.update(coinProperty2);
-							
-						}
-					}
-				}
-			}*/
-			//判断邀请人是普通用户，并且有上一级邀请
-		}else if((user2.getUserType()==1||user2.getUserType()==4) && user2.getReferLevel() ==1){
-			//获取上上级的用户表
-			KFFUser user3 = kffUserService.findById(user2.getReferUserId());
-			//判断注册用户的上上级是普通用户
-			if((user3.getUserType()==1||user3.getUserType()==4)){
-				m0=1000d;
-				m1=50d;
-				m2=10d;
-				//将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-				tokenaward.setUserId(userId);
-				tokenaward.setTokenAwardFunctionType(16);
-				tokenaward.setTokenAwardFunctionDesc("注册奖励");
-				tokenaward.setInviteRewards(m0);
-				tokenaward.setCreateTime(new Date());
-				tokenaward.setDistributionType(1);
-				tokenaward.setAwardBalance(m0);
-				tokenaward.setUserName(user.getUserName());
-				tokenaward.setMobile(user.getMobile());
-				kffTokenawardService.save(tokenaward);
-				
-				coinProperty.setUserId(userId);
-				coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
-				coinProperty.setCoinDistributed(m0);
-				kffCoinPropertyService.save(coinProperty);
-				
-				//将注册用户的信息同时存入流水表单中
-				tokenrecords.setUserId(userId);
-				tokenrecords.setFunctionDesc("注册奖励");
-				tokenrecords.setFunctionType(16);
-				tokenrecords.setTradeType(1);
-				tokenrecords.setCreateTime(new Date());
-				kffTokenrecordsService.save(tokenrecords);
-				
-				//从数据表中获取所有注册用户的奖励数据
-				List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
-				//获取上级邀请人邀请的钱数的总额
-				Double sum = kffTokenawardService.reawardSum(user2.getUserId(),18);
-				//获取上上级邀请人邀请的钱数的总额
-				Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(),18);
-				//kffTokenawardService.findByUserId(user2.getUserId());
-				if(sum <= 1000){
-					//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-					Tokenaward tokenaward2 = new Tokenaward();
-					tokenaward2.setUserId(user2.getUserId());
-					tokenaward2.setTokenAwardFunctionType(18);
-					tokenaward2.setTokenAwardFunctionDesc("邀请奖励");
-					tokenaward2.setInviteRewards(m1);
-					tokenaward2.setCreateTime(new Date());
-					tokenaward2.setDistributionType(1);
+					tokenaward2.setCounter(0);
+					tokenaward2.setGrantType(2);
 					tokenaward2.setAwardBalance(m1);
-					
+
 					kffTokenawardService.save(tokenaward2);
-					//将注册用户的信息同时存入流水表单中
+
+					coinProperty.setUserId(userId);
+					coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
+					coinProperty.setCoinDistributed(m0);
+					kffCoinPropertyService.save(coinProperty);
+
+					// 将注册用户的信息同时存入流水表单中
 					Tokenrecords tokenrecords2 = new Tokenrecords();
 					tokenrecords2.setUserId(user2.getUserId());
 					tokenrecords2.setFunctionDesc("邀请奖励");
-					tokenrecords2.setFunctionType(16);
+					tokenrecords2.setFunctionType(18);
 					tokenrecords2.setTradeType(1);
 					tokenrecords2.setCreateTime(new Date());
 					kffTokenrecordsService.save(tokenrecords2);
-					
-					coinProperty.setUserId(user2.getUserId());
-					coinProperty.setCoinLock(kffUserService.findById(user2.getUserId()).getKffCoinNum().doubleValue());
-					CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-					coinProperty.setCoinDistributed(m1+coinProperty.getCoinDistributed());
-					kffCoinPropertyService.save(coinProperty);
-					
+
 				}
-				if(sum2 <= 1000){
-					//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-					Tokenaward tokenawarde3 = new Tokenaward();
-					tokenawarde3.setUserId(user3.getUserId());
-					tokenawarde3.setTokenAwardFunctionType(18);
-					tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
-					tokenawarde3.setInviteRewards(m2);
-					tokenawarde3.setCreateTime(new Date());
-					tokenawarde3.setDistributionType(1);
-					tokenawarde3.setAwardBalance(m2);
-					kffTokenawardService.save(tokenawarde3);
-					//将注册用户的信息同时存入流水表单中
-					Tokenrecords tokenrecords2 = new Tokenrecords();
-					tokenrecords2.setUserId(user3.getUserId());
-					tokenrecords2.setFunctionDesc("邀请奖励");
-					tokenrecords2.setFunctionType(16);
-					tokenrecords2.setTradeType(1);
-					tokenrecords2.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords2);
-					
-					coinProperty.setUserId(user3.getUserId());
-					coinProperty.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-					CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-					coinProperty.setCoinDistributed(m2+coinProperty.getCoinDistributed());
+			} else if ((user2.getUserType() == 1 || user2.getUserType() == 4) && user2.getReferLevel() == 1) {
+				// 获取上上级的用户表
+				KFFUser user3 = kffUserService.findById(user2.getReferUserId());
+				// 判断注册用户的上上级是普通用户
+				if ((user3.getUserType() == 1 || user3.getUserType() == 4)) {
+					m0 = 3000d;
+					m1 = 150d;
+					m2 = 30d;
+					// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+					tokenaward.setUserId(userId);
+					tokenaward.setTokenAwardFunctionType(16);
+					tokenaward.setTokenAwardFunctionDesc("注册奖励");
+					tokenaward.setInviteRewards(m0);
+					tokenaward.setCreateTime(new Date());
+					tokenaward.setDistributionType(1);
+					tokenaward.setAwardBalance(m0);
+					tokenaward.setUserName(user.getUserName());
+					tokenaward.setMobile(user.getMobile());
+					tokenaward.setCounter(0);
+					tokenaward.setGrantType(2);
+					kffTokenawardService.save(tokenaward);
+
+					coinProperty.setUserId(userId);
+					coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
+					coinProperty.setCoinDistributed(m0);
 					kffCoinPropertyService.save(coinProperty);
-					
-				}
-				/*for (Tokenaward award : list) {
-					//获取每个奖励已经奖励的次数
-					Integer counter = award.getCounter();
-					//获取发放的类型
-					Integer distributionType = award.getDistributionType();
-					//获取每个发放的金额
-					Double rewards = award.getInviteRewards();
-					//获取奖励的类型
-					Integer awardFunctionType = award.getTokenAwardFunctionType();
-					//如果奖励没有发放完毕并且是线性发放
-					if(counter<100 && distributionType == 1 ){
-						if(award.getGrantType()==2) { 
-							Double x = rewards/100;
-							//如果是注册奖励
-							if(awardFunctionType == 16){
-								tokenrecords.setUserId(userId);
-								tokenrecords.setFunctionDesc("注册奖励");
-								tokenrecords.setFunctionType(awardFunctionType);
-								tokenrecords.setAmount(x);
-								tokenrecords.setUpdateTime(new Date());
-								kffTokenrecordsService.update(tokenrecords);
-								tokenaward.setUserId(userId);
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								Double awardBalance = award.getAwardBalance();
-								kffTokenawardService.update(award);
-								tokenaward.setAwardBalance(awardBalance-x);
-								
-								KFFUser kffUser = kffUserService.findByUserId(userId);
-								Double kffCoinNum = kffUser.getKffCoinNum();
-								kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-								
-								Double coinLock = coinProperty.getCoinLock();
-								CoinProperty coinProperty2 = new CoinProperty();
-								Double coinDistributed = coinProperty.getCoinDistributed();
-								coinProperty2.setCoinLock(coinLock + x);
-								coinProperty2.setCoinDistributed(coinDistributed - x);
-								kffCoinPropertyService.update(coinProperty2);
-								
-							}else if(awardFunctionType == 18){//如果是邀请好友的奖励
-							
-								tokenrecords.setUserId(user2.getUserId());
-								tokenrecords.setFunctionDesc("邀请奖励");
-								tokenrecords.setFunctionType(awardFunctionType);
-								tokenrecords.setAmount(x); // 发放奖励数
-								tokenrecords.setUpdateTime(new Date());
-								
-								tokenaward.setUserId(user2.getUserId());
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								
-								Double awardBalance = award.getAwardBalance();
-								tokenaward.setAwardBalance(awardBalance-x);
-								
-								kffTokenawardService.update(award);
-								
-								
-								kffTokenrecordsService.update(tokenrecords);
-								
-								
-								tokenaward.setUserId(user2.getUserId());
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								kffTokenawardService.update(tokenaward);
-								
-								KFFUser kffUser = kffUserService.findByUserId(user2.getUserId());
-								Double kffCoinNum = kffUser.getKffCoinNum();
-								kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-								
-							}
-						}
+
+					// 将注册用户的信息同时存入流水表单中
+					tokenrecords.setUserId(userId);
+					tokenrecords.setFunctionDesc("注册奖励");
+					tokenrecords.setFunctionType(16);
+					tokenrecords.setTradeType(1);
+					tokenrecords.setCreateTime(new Date());
+					kffTokenrecordsService.save(tokenrecords);
+
+					// 从数据表中获取所有注册用户的奖励数据
+					List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
+					// 获取上级邀请人邀请的钱数的总额
+					Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
+					// 获取上上级邀请人邀请的钱数的总额
+					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(), 18);
+					// kffTokenawardService.findByUserId(user2.getUserId());
+					if (sum <= 3000) {
+						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+						Tokenaward tokenaward2 = new Tokenaward();
+						tokenaward2.setUserId(user2.getUserId());
+						tokenaward2.setTokenAwardFunctionType(18);
+						tokenaward2.setTokenAwardFunctionDesc("邀请奖励");
+						tokenaward2.setInviteRewards(m1);
+						tokenaward2.setCreateTime(new Date());
+						tokenaward2.setDistributionType(1);
+						tokenaward2.setAwardBalance(m1);
+						tokenaward2.setCounter(0);
+						tokenaward2.setGrantType(2);
+
+						kffTokenawardService.save(tokenaward2);
+						// 将注册用户的信息同时存入流水表单中
+						Tokenrecords tokenrecords2 = new Tokenrecords();
+						tokenrecords2.setUserId(user2.getUserId());
+						tokenrecords2.setFunctionDesc("邀请奖励");
+						tokenrecords2.setFunctionType(18);
+						tokenrecords2.setTradeType(1);
+						tokenrecords2.setCreateTime(new Date());
+						kffTokenrecordsService.save(tokenrecords2);
+
+						coinProperty.setUserId(user2.getUserId());
+						coinProperty
+								.setCoinLock(kffUserService.findById(user2.getUserId()).getKffCoinNum().doubleValue());
+						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
+						coinProperty.setCoinDistributed(m1 + coinProperty.getCoinDistributed());
+						kffCoinPropertyService.save(coinProperty);
+
 					}
-				}*/
-				//如果注册用户的上上级用户是项目方
+					if (sum2 <= 3000) {
+						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+						Tokenaward tokenawarde3 = new Tokenaward();
+						tokenawarde3.setUserId(user3.getUserId());
+						tokenawarde3.setTokenAwardFunctionType(18);
+						tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
+						tokenawarde3.setInviteRewards(m2);
+						tokenawarde3.setCreateTime(new Date());
+						tokenawarde3.setDistributionType(1);
+						tokenawarde3.setAwardBalance(m2);
+						tokenawarde3.setCounter(0);
+						tokenawarde3.setGrantType(2);
+						kffTokenawardService.save(tokenawarde3);
+						// 将注册用户的信息同时存入流水表单中
+						Tokenrecords tokenrecords2 = new Tokenrecords();
+						tokenrecords2.setUserId(user3.getUserId());
+						tokenrecords2.setFunctionDesc("邀请奖励");
+						tokenrecords2.setFunctionType(18);
+						tokenrecords2.setTradeType(1);
+						tokenrecords2.setCreateTime(new Date());
+						kffTokenrecordsService.save(tokenrecords2);
+
+						coinProperty.setUserId(user3.getUserId());
+						coinProperty
+								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
+						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
+						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
+						kffCoinPropertyService.save(coinProperty);
+
+					}
+				}
+
+				else if ((user3.getUserType() == 2 || user3.getUserType() == 3)) {
+					Integer findReferCount = kffUserService.findReferCount(user3.getUserId());
+					if (findReferCount <= 1000) {
+						m0 = 3000d;
+						m1 = 150d;
+						m2 = 30d * 150 / 100;
+					} else {
+						m0 = 3000d;
+						m1 = 150d;
+						m2 = 30d;
+					}
+
+					// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+					tokenaward.setUserId(userId);
+					tokenaward.setTokenAwardFunctionType(16);
+					tokenaward.setTokenAwardFunctionDesc("注册奖励");
+					tokenaward.setInviteRewards(m0);
+					tokenaward.setCreateTime(new Date());
+					tokenaward.setDistributionType(1);
+					tokenaward.setAwardBalance(m0);
+					tokenaward.setUserName(user.getUserName());
+					tokenaward.setMobile(user.getMobile());
+					tokenaward.setCounter(0);
+					tokenaward.setGrantType(2);
+					kffTokenawardService.save(tokenaward);
+
+					coinProperty.setUserId(userId);
+					coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
+					coinProperty.setCoinDistributed(m0);
+					kffCoinPropertyService.save(coinProperty);
+
+					// 将注册用户的信息同时存入流水表单中
+					tokenrecords.setUserId(userId);
+					tokenrecords.setFunctionDesc("注册奖励");
+					tokenrecords.setFunctionType(16);
+					tokenrecords.setTradeType(1);
+					tokenrecords.setCreateTime(new Date());
+					kffTokenrecordsService.save(tokenrecords);
+
+					// 从数据表中获取所有注册用户的奖励数据
+					List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
+					// 获取上级邀请人邀请的钱数的总额
+					Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
+					// 获取上上级邀请人邀请的钱数的总额
+					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(), 18);
+
+					if (sum <= 3000) {
+						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+						Tokenaward tokenaward2 = new Tokenaward();
+						tokenaward2.setUserId(user2.getUserId());
+						tokenaward2.setTokenAwardFunctionType(18);
+						tokenaward2.setTokenAwardFunctionDesc("邀请奖励");
+						tokenaward2.setInviteRewards(m1);
+						tokenaward2.setCreateTime(new Date());
+						tokenaward2.setDistributionType(1);
+						tokenaward2.setCounter(0);
+						tokenaward2.setGrantType(2);
+						kffTokenawardService.save(tokenaward2);
+						// 将注册用户的信息同时存入流水表单中
+						Tokenrecords tokenrecords2 = new Tokenrecords();
+						tokenrecords2.setUserId(user2.getUserId());
+						tokenrecords2.setFunctionDesc("邀请奖励");
+						tokenrecords2.setFunctionType(18);
+						tokenrecords2.setTradeType(1);
+						tokenrecords2.setCreateTime(new Date());
+						kffTokenrecordsService.save(tokenrecords2);
+
+					}
+					if (sum2 <= 3000) {
+						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+						Tokenaward tokenawarde3 = new Tokenaward();
+						tokenawarde3.setUserId(user3.getUserId());
+						tokenawarde3.setTokenAwardFunctionType(18);
+						tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
+						tokenawarde3.setInviteRewards(m2);
+						tokenawarde3.setCreateTime(new Date());
+						tokenawarde3.setDistributionType(1);
+						tokenawarde3.setAwardBalance(m2);
+						tokenawarde3.setCounter(0);
+						tokenawarde3.setGrantType(2);
+						kffTokenawardService.save(tokenawarde3);
+						// 将注册用户的信息同时存入流水表单中
+						Tokenrecords tokenrecords2 = new Tokenrecords();
+						tokenrecords2.setUserId(user3.getUserId());
+						tokenrecords2.setFunctionDesc("邀请奖励");
+						tokenrecords2.setFunctionType(18);
+						tokenrecords2.setTradeType(1);
+						tokenrecords2.setCreateTime(new Date());
+						kffTokenrecordsService.save(tokenrecords2);
+
+						coinProperty.setUserId(user3.getUserId());
+						coinProperty
+								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
+						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
+						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
+						kffCoinPropertyService.save(coinProperty);
+
+					}
+				}
+				// 如果上级邀请人是是项目方，并且有上级邀请人
+			} else if ((user2.getUserType() == 2 || user2.getUserType() == 3) && user2.getReferLevel() == 1) {
+
+				// 获取上上级的用户表
+				KFFUser user3 = kffUserService.findById(user2.getReferUserId());
+				// 判断注册用户的上上级是普通用户
+				if ((user3.getUserType() == 1 || user3.getUserType() == 4)) {
+					Integer findReferCount = kffUserService.findReferCount(user2.getUserId());
+					if (findReferCount <= 1000) {
+						m0 = 3000d;
+						m1 = 150d;
+						m2 = 30d * 150 / 100;
+					} else {
+						m0 = 3000d;
+						m1 = 150d;
+						m2 = 30d;
+					}
+					// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+					tokenaward.setUserId(userId);
+					tokenaward.setTokenAwardFunctionType(16);
+					tokenaward.setTokenAwardFunctionDesc("注册奖励");
+					tokenaward.setInviteRewards(m0);
+					tokenaward.setCreateTime(new Date());
+					tokenaward.setDistributionType(1);
+					tokenaward.setAwardBalance(m0);
+					tokenaward.setUserName(user.getUserName());
+					tokenaward.setMobile(user.getMobile());
+					tokenaward.setCounter(0);
+					tokenaward.setGrantType(2);
+					kffTokenawardService.save(tokenaward);
+
+					coinProperty.setUserId(userId);
+					coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
+					coinProperty.setCoinDistributed(m0);
+					kffCoinPropertyService.save(coinProperty);
+
+					// 将注册用户的信息同时存入流水表单中
+					tokenrecords.setUserId(userId);
+					tokenrecords.setFunctionDesc("注册奖励");
+					tokenrecords.setFunctionType(16);
+					tokenrecords.setTradeType(1);
+					tokenrecords.setCreateTime(new Date());
+					kffTokenrecordsService.save(tokenrecords);
+
+					// 从数据表中获取所有注册用户的奖励数据
+					List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
+					// 获取上级邀请人邀请的钱数的总额
+					Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
+					// 获取上上级邀请人邀请的钱数的总额
+					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(), 18);
+					if (sum <= 3000) {
+						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+						Tokenaward tokenawarde3 = new Tokenaward();
+						tokenawarde3.setUserId(user3.getUserId());
+						tokenawarde3.setTokenAwardFunctionType(18);
+						tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
+						tokenawarde3.setInviteRewards(m2);
+						tokenawarde3.setCreateTime(new Date());
+						tokenawarde3.setDistributionType(1);
+						tokenawarde3.setAwardBalance(m2);
+						tokenawarde3.setCounter(0);
+						tokenawarde3.setGrantType(2);
+						kffTokenawardService.save(tokenawarde3);
+						// 将注册用户的信息同时存入流水表单中
+						Tokenrecords tokenrecords2 = new Tokenrecords();
+						tokenrecords2.setUserId(user3.getUserId());
+						tokenrecords2.setFunctionDesc("邀请奖励");
+						tokenrecords2.setFunctionType(18);
+						tokenrecords2.setTradeType(1);
+						tokenrecords2.setCreateTime(new Date());
+						kffTokenrecordsService.save(tokenrecords2);
+
+						coinProperty.setUserId(user3.getUserId());
+						coinProperty
+								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
+						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
+						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
+						kffCoinPropertyService.save(coinProperty);
+
+					}
+					if (sum2 <= 3000) {
+						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+						Tokenaward tokenawarde3 = new Tokenaward();
+						tokenawarde3.setUserId(user3.getUserId());
+						tokenawarde3.setTokenAwardFunctionType(18);
+						tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
+						tokenawarde3.setInviteRewards(m2);
+						tokenawarde3.setCreateTime(new Date());
+						tokenawarde3.setDistributionType(1);
+						tokenawarde3.setAwardBalance(m2);
+						tokenawarde3.setCounter(0);
+						tokenawarde3.setGrantType(2);
+						kffTokenawardService.save(tokenawarde3);
+						// 将注册用户的信息同时存入流水表单中
+						Tokenrecords tokenrecords2 = new Tokenrecords();
+						tokenrecords2.setUserId(user3.getUserId());
+						tokenrecords2.setFunctionDesc("邀请奖励");
+						tokenrecords2.setFunctionType(18);
+						tokenrecords2.setTradeType(1);
+						tokenrecords2.setCreateTime(new Date());
+						kffTokenrecordsService.save(tokenrecords2);
+
+						coinProperty.setUserId(user3.getUserId());
+						coinProperty
+								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
+						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
+						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
+						kffCoinPropertyService.save(coinProperty);
+
+					}
+					
+				} else if ((user3.getUserType() == 2 || user3.getUserType() == 3)) { // 将注册用户id
+																						// 奖励类型
+																						// 奖励金额
+																						// 当前时间
+																						// 发放的方式存入奖励表中
+					Integer findReferCount = kffUserService.findReferCount(user3.getUserId());
+					if (findReferCount <= 1000) {
+						m0 = 3000d;
+						m1 = 150d * 150 / 100;
+						m2 = 30d * 150 / 100;
+					} else {
+						m0 = 3000d;
+						m1 = 150d;
+						m2 = 30d;
+					}
+
+					tokenaward.setUserId(userId);
+					tokenaward.setTokenAwardFunctionType(16);
+					tokenaward.setTokenAwardFunctionDesc("注册奖励");
+					tokenaward.setInviteRewards(m0);
+					tokenaward.setCreateTime(new Date());
+					tokenaward.setDistributionType(1);
+					tokenaward.setAwardBalance(m0);
+					tokenaward.setUserName(user.getUserName());
+					tokenaward.setMobile(user.getMobile());
+					tokenaward.setCounter(0);
+					tokenaward.setGrantType(2);
+					kffTokenawardService.save(tokenaward);
+
+					coinProperty.setUserId(userId);
+					coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
+					coinProperty.setCoinDistributed(m0);
+					kffCoinPropertyService.save(coinProperty);
+
+					// 将注册用户的信息同时存入流水表单中
+					tokenrecords.setUserId(userId);
+					tokenrecords.setFunctionDesc("注册奖励");
+					tokenrecords.setFunctionType(16);
+					tokenrecords.setTradeType(1);
+					tokenrecords.setCreateTime(new Date());
+					kffTokenrecordsService.save(tokenrecords);
+
+					// 从数据表中获取所有注册用户的奖励数据
+					List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
+					// 获取上级邀请人邀请的钱数的总额
+					Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
+					// 获取上上级邀请人邀请的钱数的总额
+					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(), 18);
+
+					if (sum <= 500000) {
+						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+						Tokenaward tokenaward2 = new Tokenaward();
+						tokenaward2.setUserId(user2.getUserId());
+						tokenaward2.setTokenAwardFunctionType(18);
+						tokenaward2.setTokenAwardFunctionDesc("邀请奖励");
+						tokenaward2.setInviteRewards(m1);
+						tokenaward2.setCreateTime(new Date());
+						tokenaward2.setDistributionType(1);
+						tokenaward2.setCounter(0);
+						tokenaward2.setGrantType(2);
+						kffTokenawardService.save(tokenaward2);
+						// 将注册用户的信息同时存入流水表单中
+						Tokenrecords tokenrecords2 = new Tokenrecords();
+						tokenrecords2.setUserId(user2.getUserId());
+						tokenrecords2.setFunctionDesc("邀请奖励");
+						tokenrecords2.setFunctionType(18);
+						tokenrecords2.setTradeType(1);
+						tokenrecords2.setCreateTime(new Date());
+						kffTokenrecordsService.save(tokenrecords2);
+
+					}
+					if (sum2 <= 500000) {
+						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+						Tokenaward tokenawarde3 = new Tokenaward();
+						tokenawarde3.setUserId(user3.getUserId());
+						tokenawarde3.setTokenAwardFunctionType(18);
+						tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
+						tokenawarde3.setInviteRewards(m2);
+						tokenawarde3.setCreateTime(new Date());
+						tokenawarde3.setDistributionType(1);
+						tokenawarde3.setAwardBalance(m2);
+						tokenawarde3.setCounter(0);
+						tokenawarde3.setGrantType(2);
+						kffTokenawardService.save(tokenawarde3);
+						// 将注册用户的信息同时存入流水表单中
+						Tokenrecords tokenrecords2 = new Tokenrecords();
+						tokenrecords2.setUserId(user3.getUserId());
+						tokenrecords2.setFunctionDesc("邀请奖励");
+						tokenrecords2.setFunctionType(18);
+						tokenrecords2.setTradeType(1);
+						tokenrecords2.setCreateTime(new Date());
+						kffTokenrecordsService.save(tokenrecords2);
+
+						coinProperty.setUserId(user3.getUserId());
+						coinProperty
+								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
+						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
+						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
+						kffCoinPropertyService.save(coinProperty);
+
+					}
+					
+				}
 			}
-			
-			else if((user3.getUserType()==2||user3.getUserType()==3)){
-				Integer findReferCount = kffUserService.findReferCount(user3.getUserId());
-				if(findReferCount<=1000) {
-					m0=1000d;
-					m1=50d*150/100;
-					m2=10d*150/100;
-				}
-				else {
+		} else if (true) {
 
-					m0=1000d;
-					m1=50d;
-					m2=10d;
-				}
-				
-				//将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-				tokenaward.setUserId(userId);
-				tokenaward.setTokenAwardFunctionType(16);
-				tokenaward.setTokenAwardFunctionDesc("注册奖励");
-				tokenaward.setInviteRewards(m0);
-				tokenaward.setCreateTime(new Date());
-				tokenaward.setDistributionType(1);
-				tokenaward.setAwardBalance(m0);
-				tokenaward.setUserName(user.getUserName());
-				tokenaward.setMobile(user.getMobile());
-				kffTokenawardService.save(tokenaward);
-				
-				coinProperty.setUserId(userId);
-				coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
-				coinProperty.setCoinDistributed(m0);
-				kffCoinPropertyService.save(coinProperty);
-				
-				//将注册用户的信息同时存入流水表单中
-				tokenrecords.setUserId(userId);
-				tokenrecords.setFunctionDesc("注册奖励");
-				tokenrecords.setFunctionType(16);
-				tokenrecords.setTradeType(1);
-				tokenrecords.setCreateTime(new Date());
-				kffTokenrecordsService.save(tokenrecords);
-				
-				//从数据表中获取所有注册用户的奖励数据
-				List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
-				//获取上级邀请人邀请的钱数的总额
-				Double sum = kffTokenawardService.reawardSum(user2.getUserId(),18);
-				//获取上上级邀请人邀请的钱数的总额
-				Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(),18);
-				
-				if(sum <= 1000){
-					//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-					Tokenaward tokenaward2 = new Tokenaward();
-					tokenaward2.setUserId(user2.getUserId());
-					tokenaward2.setTokenAwardFunctionType(18);
-					tokenaward2.setTokenAwardFunctionDesc("邀请奖励");
-					tokenaward2.setInviteRewards(m1);
-					tokenaward2.setCreateTime(new Date());
-					tokenaward2.setDistributionType(1);
-					kffTokenawardService.save(tokenaward2);
-					//将注册用户的信息同时存入流水表单中
-					Tokenrecords tokenrecords2 = new Tokenrecords();
-					tokenrecords2.setUserId(user2.getUserId());
-					tokenrecords2.setFunctionDesc("邀请奖励");
-					tokenrecords2.setFunctionType(16);
-					tokenrecords2.setTradeType(1);
-					tokenrecords2.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords2);
-					
-				}
-				if(sum2 <= 1000){
-					//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-					Tokenaward tokenawarde3 = new Tokenaward();
-					tokenawarde3.setUserId(user3.getUserId());
-					tokenawarde3.setTokenAwardFunctionType(18);
-					tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
-					tokenawarde3.setInviteRewards(m2);
-					tokenawarde3.setCreateTime(new Date());
-					tokenawarde3.setDistributionType(1);
-					tokenawarde3.setAwardBalance(m2);
-					kffTokenawardService.save(tokenawarde3);
-					//将注册用户的信息同时存入流水表单中
-					Tokenrecords tokenrecords2 = new Tokenrecords();
-					tokenrecords2.setUserId(user3.getUserId());
-					tokenrecords2.setFunctionDesc("邀请奖励");
-					tokenrecords2.setFunctionType(16);
-					tokenrecords2.setTradeType(1);
-					tokenrecords2.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords2);
-					
-					coinProperty.setUserId(user3.getUserId());
-					coinProperty.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-					CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-					coinProperty.setCoinDistributed(m2+coinProperty.getCoinDistributed());
-					kffCoinPropertyService.save(coinProperty);
-					
-				}
-				/*for (Tokenaward award : list) {
-					//获取每个奖励已经奖励的次数
-					Integer counter = award.getCounter();
-					//获取发放的类型
-					Integer distributionType = award.getDistributionType();
-					//获取每个发放的金额
-					Double rewards = award.getInviteRewards();
-					//获取奖励的类型
-					Integer awardFunctionType = award.getTokenAwardFunctionType();
-					//如果奖励没有发放完毕并且是线性发放
-					if(counter<100 && distributionType == 1 ){
-						if(award.getGrantType()==2) { 
-							Double x = rewards/100f;
-							//如果是注册奖励
-							if(awardFunctionType == 16){
-								tokenrecords.setUserId(userId);
-								tokenrecords.setFunctionDesc("注册奖励");
-								tokenrecords.setFunctionType(awardFunctionType);
-								tokenrecords.setAmount(x);
-								tokenrecords.setUpdateTime(new Date());
-								kffTokenrecordsService.update(tokenrecords);
-								tokenaward.setUserId(userId);
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								Double awardBalance = award.getAwardBalance();
-								kffTokenawardService.update(award);
-								tokenaward.setAwardBalance(awardBalance-x);
-								
-								KFFUser kffUser = kffUserService.findByUserId(userId);
-								Double kffCoinNum = kffUser.getKffCoinNum();
-								kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-								
-								Double coinLock = coinProperty.getCoinLock();
-								CoinProperty coinProperty2 = new CoinProperty();
-								Double coinDistributed = coinProperty.getCoinDistributed();
-								coinProperty2.setCoinLock(coinLock + x);
-								coinProperty2.setCoinDistributed(coinDistributed - x);
-								kffCoinPropertyService.update(coinProperty2);
-								
-							}else if(awardFunctionType == 18){//如果是邀请好友的奖励
-								
-								tokenrecords.setUserId(user2.getUserId());
-								tokenrecords.setFunctionDesc("邀请奖励");
-								tokenrecords.setFunctionType(awardFunctionType);
-								tokenrecords.setAmount(x); // 发放奖励数
-								tokenrecords.setUpdateTime(new Date());
-								
-								tokenaward.setUserId(user2.getUserId());
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								
-								Double awardBalance = award.getAwardBalance();
-								tokenaward.setAwardBalance(awardBalance-x);
-								
-								kffTokenawardService.update(award);
-								
-								
-								kffTokenrecordsService.update(tokenrecords);
-								
-								
-								tokenaward.setUserId(user2.getUserId());
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								kffTokenawardService.update(tokenaward);
-								
-								KFFUser kffUser = kffUserService.findByUserId(user2.getUserId());
-								Double kffCoinNum = kffUser.getKffCoinNum();
-								kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-								
-								
-							}
-						}
-					}
-				}*/
-			}
-			//如果上级邀请人是是项目方，并且有上级邀请人
-		}else if((user2.getUserType()==2||user2.getUserType()==3) && user2.getReferLevel() ==1){
-
-			//获取上上级的用户表
-			KFFUser user3 = kffUserService.findById(user2.getReferUserId());
-			//判断注册用户的上上级是普通用户
-			if((user3.getUserType()==1||user3.getUserType()==4)){
-				Integer findReferCount = kffUserService.findReferCount(user2.getUserId());
-				if(findReferCount<=1000) {
-					m0=1000d;
-					m1=50d*150/100;
-					m2=10d;
-				}
-				else {
-
-					m0=1000d;
-					m1=50d;
-					m2=10d;
-				}
-				
-				//将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-				tokenaward.setUserId(userId);
-				tokenaward.setTokenAwardFunctionType(16);
-				tokenaward.setTokenAwardFunctionDesc("注册奖励");
-				tokenaward.setInviteRewards(m0);
-				tokenaward.setCreateTime(new Date());
-				tokenaward.setDistributionType(1);
-				tokenaward.setAwardBalance(m0);
-				tokenaward.setUserName(user.getUserName());
-				tokenaward.setMobile(user.getMobile());
-				kffTokenawardService.save(tokenaward);
-				
-				coinProperty.setUserId(userId);
-				coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
-				coinProperty.setCoinDistributed(m0);
-				kffCoinPropertyService.save(coinProperty);
-				
-				//将注册用户的信息同时存入流水表单中
-				tokenrecords.setUserId(userId);
-				tokenrecords.setFunctionDesc("注册奖励");
-				tokenrecords.setFunctionType(16);
-				tokenrecords.setTradeType(1);
-				tokenrecords.setCreateTime(new Date());
-				kffTokenrecordsService.save(tokenrecords);
-				
-				//从数据表中获取所有注册用户的奖励数据
-				List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
-				//获取上级邀请人邀请的钱数的总额
-				Double sum = kffTokenawardService.reawardSum(user2.getUserId(),18);
-				//获取上上级邀请人邀请的钱数的总额
-				Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(),18);
-				if(sum <= 1000){
-					//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-					Tokenaward tokenawarde3 = new Tokenaward();
-					tokenawarde3.setUserId(user3.getUserId());
-					tokenawarde3.setTokenAwardFunctionType(18);
-					tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
-					tokenawarde3.setInviteRewards(m2);
-					tokenawarde3.setCreateTime(new Date());
-					tokenawarde3.setDistributionType(1);
-					tokenawarde3.setAwardBalance(m2);
-					kffTokenawardService.save(tokenawarde3);
-					//将注册用户的信息同时存入流水表单中
-					Tokenrecords tokenrecords2 = new Tokenrecords();
-					tokenrecords2.setUserId(user3.getUserId());
-					tokenrecords2.setFunctionDesc("邀请奖励");
-					tokenrecords2.setFunctionType(16);
-					tokenrecords2.setTradeType(1);
-					tokenrecords2.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords2);
-					
-					coinProperty.setUserId(user3.getUserId());
-					coinProperty.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-					CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-					coinProperty.setCoinDistributed(m2+coinProperty.getCoinDistributed());
-					kffCoinPropertyService.save(coinProperty);
-					
-					
-				}
-				if(sum2 <= 1000){
-					//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-					Tokenaward tokenawarde3 = new Tokenaward();
-					tokenawarde3.setUserId(user3.getUserId());
-					tokenawarde3.setTokenAwardFunctionType(18);
-					tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
-					tokenawarde3.setInviteRewards(m2);
-					tokenawarde3.setCreateTime(new Date());
-					tokenawarde3.setDistributionType(1);
-					tokenawarde3.setAwardBalance(m2);
-					kffTokenawardService.save(tokenawarde3);
-					//将注册用户的信息同时存入流水表单中
-					Tokenrecords tokenrecords2 = new Tokenrecords();
-					tokenrecords2.setUserId(user3.getUserId());
-					tokenrecords2.setFunctionDesc("邀请奖励");
-					tokenrecords2.setFunctionType(16);
-					tokenrecords2.setTradeType(1);
-					tokenrecords2.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords2);
-					
-					coinProperty.setUserId(user3.getUserId());
-					coinProperty.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-					CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-					coinProperty.setCoinDistributed(m2+coinProperty.getCoinDistributed());
-					kffCoinPropertyService.save(coinProperty);
-					
-				}
-				/*for (Tokenaward award : list) {
-					//获取每个奖励已经奖励的次数
-					Integer counter = award.getCounter();
-					//获取发放的类型
-					Integer distributionType = award.getDistributionType();
-					//获取每个发放的金额
-					Double rewards = award.getInviteRewards();
-					//获取奖励的类型
-					Integer awardFunctionType = award.getTokenAwardFunctionType();
-					//如果奖励没有发放完毕并且是线性发放
-					if(counter<100 && distributionType == 1 ){
-						if(award.getGrantType()==2) { 
-							Double x = rewards/100;
-							//如果是注册奖励
-							if(awardFunctionType == 16){
-								tokenrecords.setUserId(userId);
-								tokenrecords.setFunctionDesc("注册奖励");
-								tokenrecords.setFunctionType(awardFunctionType);
-								tokenrecords.setAmount(x);
-								tokenrecords.setUpdateTime(new Date());
-								kffTokenrecordsService.update(tokenrecords);
-								tokenaward.setUserId(userId);
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								Double awardBalance = award.getAwardBalance();
-								kffTokenawardService.update(award);
-								tokenaward.setAwardBalance(awardBalance-x);
-								
-								KFFUser kffUser = kffUserService.findByUserId(userId);
-								Double kffCoinNum = kffUser.getKffCoinNum();
-								kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-								
-								Double coinLock = coinProperty.getCoinLock();
-								CoinProperty coinProperty2 = new CoinProperty();
-								Double coinDistributed = coinProperty.getCoinDistributed();
-								coinProperty2.setCoinLock(coinLock + x);
-								coinProperty2.setCoinDistributed(coinDistributed - x);
-								kffCoinPropertyService.update(coinProperty2);
-							}else if(awardFunctionType == 18){//如果是邀请好友的奖励
-								
-								tokenrecords.setUserId(user2.getUserId());
-								tokenrecords.setFunctionDesc("邀请奖励");
-								tokenrecords.setFunctionType(awardFunctionType);
-								tokenrecords.setAmount(x); // 发放奖励数
-								tokenrecords.setUpdateTime(new Date());
-								
-								tokenaward.setUserId(user2.getUserId());
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								
-								Double awardBalance = award.getAwardBalance();
-								tokenaward.setAwardBalance(awardBalance-x);
-								
-								kffTokenawardService.update(award);
-								
-								
-								kffTokenrecordsService.update(tokenrecords);
-								
-								
-								tokenaward.setUserId(user2.getUserId());
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								kffTokenawardService.update(tokenaward);
-								
-								KFFUser kffUser = kffUserService.findByUserId(user2.getUserId());
-								Double kffCoinNum = kffUser.getKffCoinNum();
-								kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-								
-							}
-						}
-					}
-				}*/
-				//如果注册用户的上上级用户是项目方
-			}else if((user3.getUserType()==2||user3.getUserType()==3)){	//将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-				Integer findReferCount = kffUserService.findReferCount(user3.getUserId());
-				if(findReferCount<=1000) {
-					m0=1000d;
-					m1=50d*150/100;
-					m2=10d*150/100;
-				}
-				else {
-
-					m0=1000d;
-					m1=50d;
-					m2=10d;
-				}
-				
-				tokenaward.setUserId(userId);
-				tokenaward.setTokenAwardFunctionType(16);
-				tokenaward.setTokenAwardFunctionDesc("注册奖励");
-				tokenaward.setInviteRewards(m0);
-				tokenaward.setCreateTime(new Date());
-				tokenaward.setDistributionType(1);
-				tokenaward.setAwardBalance(m0);
-				tokenaward.setUserName(user.getUserName());
-				tokenaward.setMobile(user.getMobile());
-				kffTokenawardService.save(tokenaward);
-				
-				coinProperty.setUserId(userId);
-				coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
-				coinProperty.setCoinDistributed(m0);
-				kffCoinPropertyService.save(coinProperty);
-				
-				//将注册用户的信息同时存入流水表单中
-				tokenrecords.setUserId(userId);
-				tokenrecords.setFunctionDesc("注册奖励");
-				tokenrecords.setFunctionType(16);
-				tokenrecords.setTradeType(1);
-				tokenrecords.setCreateTime(new Date());
-				kffTokenrecordsService.save(tokenrecords);
-				
-				//从数据表中获取所有注册用户的奖励数据
-				List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
-				//获取上级邀请人邀请的钱数的总额
-				Double sum = kffTokenawardService.reawardSum(user2.getUserId(),18);
-				//获取上上级邀请人邀请的钱数的总额
-				Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(),18);
-				
-				if(sum <= 500000){
-					//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-					Tokenaward tokenaward2 = new Tokenaward();
-					tokenaward2.setUserId(user2.getUserId());
-					tokenaward2.setTokenAwardFunctionType(18);
-					tokenaward2.setTokenAwardFunctionDesc("邀请奖励");
-					tokenaward2.setInviteRewards(m1);
-					tokenaward2.setCreateTime(new Date());
-					tokenaward2.setDistributionType(1);
-					kffTokenawardService.save(tokenaward2);
-					//将注册用户的信息同时存入流水表单中
-					Tokenrecords tokenrecords2 = new Tokenrecords();
-					tokenrecords2.setUserId(user2.getUserId());
-					tokenrecords2.setFunctionDesc("邀请奖励");
-					tokenrecords2.setFunctionType(16);
-					tokenrecords2.setTradeType(1);
-					tokenrecords2.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords2);
-					
-				}
-				if(sum2 <= 500000){
-					//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-					Tokenaward tokenawarde3 = new Tokenaward();
-					tokenawarde3.setUserId(user3.getUserId());
-					tokenawarde3.setTokenAwardFunctionType(18);
-					tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
-					tokenawarde3.setInviteRewards(m2);
-					tokenawarde3.setCreateTime(new Date());
-					tokenawarde3.setDistributionType(1);
-					tokenawarde3.setAwardBalance(m2);
-					kffTokenawardService.save(tokenawarde3);
-					//将注册用户的信息同时存入流水表单中
-					Tokenrecords tokenrecords2 = new Tokenrecords();
-					tokenrecords2.setUserId(user3.getUserId());
-					tokenrecords2.setFunctionDesc("邀请奖励");
-					tokenrecords2.setFunctionType(16);
-					tokenrecords2.setTradeType(1);
-					tokenrecords2.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords2);
-					
-					coinProperty.setUserId(user3.getUserId());
-					coinProperty.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-					CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-					coinProperty.setCoinDistributed(m2+coinProperty.getCoinDistributed());
-					kffCoinPropertyService.save(coinProperty);
-					
-				}
-				/*for (Tokenaward award : list) {
-					//获取每个奖励已经奖励的次数
-					Integer counter = award.getCounter();
-					//获取发放的类型
-					Integer distributionType = award.getDistributionType();
-					//获取每个发放的金额
-					Double rewards = award.getInviteRewards();
-					//获取奖励的类型
-					Integer awardFunctionType = award.getTokenAwardFunctionType();
-					//如果奖励没有发放完毕并且是线性发放
-					if(counter<100 && distributionType == 1 ){
-						if(award.getGrantType()==2) { 
-							Double x = rewards/100f;
-							//如果是注册奖励
-							if(awardFunctionType == 16){
-								tokenrecords.setUserId(userId);
-								tokenrecords.setFunctionDesc("注册奖励");
-								tokenrecords.setFunctionType(awardFunctionType);
-								tokenrecords.setAmount(x);
-								tokenrecords.setUpdateTime(new Date());
-								kffTokenrecordsService.update(tokenrecords);
-								tokenaward.setUserId(userId);
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								Double awardBalance = award.getAwardBalance();
-								kffTokenawardService.update(award);
-								tokenaward.setAwardBalance(awardBalance-x);
-								
-								KFFUser kffUser = kffUserService.findByUserId(userId);
-								Double kffCoinNum = kffUser.getKffCoinNum();
-								kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-								
-								Double coinLock = coinProperty.getCoinLock();
-								CoinProperty coinProperty2 = new CoinProperty();
-								Double coinDistributed = coinProperty.getCoinDistributed();
-								coinProperty2.setCoinLock(coinLock + x);
-								coinProperty2.setCoinDistributed(coinDistributed - x);
-								kffCoinPropertyService.update(coinProperty2);
-								
-							}else if(awardFunctionType == 18){//如果是邀请好友的奖励
-								
-								tokenrecords.setUserId(user2.getUserId());
-								tokenrecords.setFunctionDesc("邀请奖励");
-								tokenrecords.setFunctionType(awardFunctionType);
-								tokenrecords.setAmount(x); // 发放奖励数
-								tokenrecords.setUpdateTime(new Date());
-								
-								tokenaward.setUserId(user2.getUserId());
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								
-								Double awardBalance = award.getAwardBalance();
-								tokenaward.setAwardBalance(awardBalance-x);
-								
-								kffTokenawardService.update(award);
-								
-								
-								kffTokenrecordsService.update(tokenrecords);
-								
-								
-								tokenaward.setUserId(user2.getUserId());
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								kffTokenawardService.update(tokenaward);
-								
-								KFFUser kffUser = kffUserService.findByUserId(user2.getUserId());
-								Double kffCoinNum = kffUser.getKffCoinNum();
-								kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-								
-								
-							}
-						}
-					}
-				}*/
-			}
 		}
-	}
-	
-	
-	private void method4(Integer userId) {
-		//获取邀请人的id
-		Integer referUserId = user.getReferUserId();
-		//获取邀请人的对象
-		KFFUser user2 = kffUserService.findByUserId(referUserId);
-		
-		//判断邀请人是普通用户，并且没有上一级邀请
-		if((user2.getUserType()==1||user2.getUserType()==4) && user2.getReferLevel() ==0){
-			m0=0.0000d;
-			m1=25d;
-			//将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-			tokenaward.setUserId(userId);
-			tokenaward.setTokenAwardFunctionType(16);
-			tokenaward.setTokenAwardFunctionDesc("注册奖励");
-			tokenaward.setInviteRewards(m0);
-			tokenaward.setCreateTime(new Date());
-			tokenaward.setDistributionType(1);
-			tokenaward.setUserName(user.getUserName());
-			tokenaward.setMobile(user.getMobile());
-			tokenaward.setAwardBalance(m0);
-			kffTokenawardService.save(tokenaward);
-			
-			coinProperty.setUserId(userId);
-			coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
-			coinProperty.setCoinDistributed(m0);
-			kffCoinPropertyService.save(coinProperty);
-			
-			//将注册用户的信息同时存入流水表单中
-			tokenrecords.setUserId(userId);
-			tokenrecords.setFunctionDesc("注册奖励");
-			tokenrecords.setFunctionType(16);
-			tokenrecords.setTradeType(1);
-			tokenrecords.setCreateTime(new Date());
-			kffTokenrecordsService.save(tokenrecords);
-			
-			//从数据表中获取所有注册用户的奖励数据
-			List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
-			//List<Tokenaward> findByUserId2 = kffTokenawardService.findByUserId(user2.getUserId());
-			//获取邀请人邀请的钱数的总额
-			Double sum = kffTokenawardService.reawardSum(user2.getUserId(),18);
-			if(sum <= 1000){         
-				//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-				Tokenaward tokenaward2 = new Tokenaward();
-				tokenaward2.setUserId(user2.getUserId());
-				tokenaward2.setTokenAwardFunctionType(16);
-				tokenaward2.setTokenAwardFunctionDesc("邀请奖励");
-				tokenaward2.setInviteRewards(m1);
-				tokenaward2.setCreateTime(new Date());
-				tokenaward2.setDistributionType(1);
-				
-				tokenaward2.setAwardBalance(m1);
-				kffTokenawardService.save(tokenaward2);
-				
-				coinProperty.setUserId(user2.getUserId());
-				coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
-				coinProperty.setCoinDistributed(m1);
-				
-				kffCoinPropertyService.save(coinProperty);
-				
-				//将注册用户的信息同时存入流水表单中
-				Tokenrecords tokenrecords2 = new Tokenrecords();
-				tokenrecords2.setUserId(user2.getUserId());
-				tokenrecords2.setFunctionDesc("邀请奖励");
-				tokenrecords2.setFunctionType(16);
-				tokenrecords2.setTradeType(1);
-				tokenrecords2.setCreateTime(new Date());
-				kffTokenrecordsService.save(tokenrecords2);
-				
-			}
-			/*for (Tokenaward award : list) {
-				//获取每个奖励已经奖励的次数
-				Integer counter = award.getCounter();
-				//获取发放的类型
-				Integer distributionType = award.getDistributionType();
-				//获取每个发放的金额
-				Double rewards = award.getInviteRewards();
-				//获取奖励的类型
-				Integer awardFunctionType = award.getTokenAwardFunctionType();
-				//如果奖励没有发放完毕并且是线性发放
-				
-				CoinProperty coinProperty2 = new CoinProperty();
-				if(counter<100 && distributionType == 1 ){
-					if(award.getGrantType()==2) { 
-						Double x = rewards/100;
-						//如果是注册奖励
-						if(awardFunctionType == 16){
-							tokenrecords.setUserId(userId);
-							tokenrecords.setFunctionDesc("注册奖励");
-							tokenrecords.setFunctionType(awardFunctionType);
-							tokenrecords.setAmount(x);
-							tokenrecords.setUpdateTime(new Date());
-							kffTokenrecordsService.update(tokenrecords);
-							tokenaward.setUserId(userId);
-							tokenaward.setTokenAwardFunctionType(awardFunctionType);
-							tokenaward.setCounter(counter+1);
-							
-							
-							Double awardBalance = award.getAwardBalance();
-							tokenaward.setAwardBalance(awardBalance-x);
-							
-							kffTokenrecordsService.update(tokenrecords);
-							kffTokenawardService.update(tokenaward);
-							
-							
-							KFFUser kffUser = kffUserService.findByUserId(userId);
-							Double kffCoinNum = kffUser.getKffCoinNum();
-							kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-							
-							Double coinLock = coinProperty.getCoinLock();
-							Double coinDistributed = coinProperty.getCoinDistributed();
-							coinProperty2.setCoinLock(coinLock + x);
-							coinProperty2.setCoinDistributed(coinDistributed - x);
-							kffCoinPropertyService.update(coinProperty2);
-							
-							
-						}else if(awardFunctionType == 18){// 如果是邀请好友的奖励
-							
-							tokenrecords.setUserId(user2.getUserId());
-							tokenrecords.setFunctionDesc("邀请奖励");
-							tokenrecords.setFunctionType(awardFunctionType);
-							tokenrecords.setAmount(x); // 发放奖励数
-							tokenrecords.setUpdateTime(new Date());
-							
-							tokenaward.setUserId(user2.getUserId());
-							tokenaward.setTokenAwardFunctionType(awardFunctionType);
-							tokenaward.setCounter(counter+1);
-							
-							Double awardBalance = award.getAwardBalance();
-							tokenaward.setAwardBalance(awardBalance-x);
-							
-							kffTokenawardService.update(award);
-							
-							
-							kffTokenrecordsService.update(tokenrecords);
-							
-							
-							tokenaward.setUserId(user2.getUserId());
-							tokenaward.setTokenAwardFunctionType(awardFunctionType);
-							tokenaward.setCounter(counter+1);
-							kffTokenawardService.update(tokenaward);
-							
-							KFFUser kffUser = kffUserService.findByUserId(user2.getUserId());
-							Double kffCoinNum = kffUser.getKffCoinNum();
-							kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-						}
-					}
-				}
-			}*/
-			//判断邀请人是项目方用户，并且没有上一级邀请
-		}else if((user2.getUserType()==2||user2.getUserType()==3) && user2.getReferLevel() ==0){
-			Integer findReferCount = kffUserService.findReferCount(user2.getUserId());
-			if(findReferCount<=1000) {
-				m0=0.0000d;
-				m1=25d*150/100;
-			}
-			else {
 
-				m0=0.0000d;
-				m1=25d;
-			}
-			
-			//将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+	}
+
+	public void method3(Integer userId) {
+		KFFUser user = kffUserService.findByUserId(userId);
+		// 判断如果用户没有被邀请 并且是普通用户
+		if (user.getReferLevel() == 0 && (user.getUserType() == 1 || user.getUserType() == 4)) {
+			m0 = 1000d;
+			// 没有邀请人
+			// 将用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 			tokenaward.setUserId(userId);
 			tokenaward.setTokenAwardFunctionType(16);
 			tokenaward.setTokenAwardFunctionDesc("注册奖励");
 			tokenaward.setInviteRewards(m0);
 			tokenaward.setCreateTime(new Date());
 			tokenaward.setDistributionType(1);
-			tokenaward.setAwardBalance(m0);
+			tokenaward.setAwardBalance(m0); // 奖励余额初始化 是注册奖励
 			tokenaward.setUserName(user.getUserName());
 			tokenaward.setMobile(user.getMobile());
+			tokenaward.setCounter(0);
+			tokenaward.setGrantType(2);
+
 			kffTokenawardService.save(tokenaward);
-			
-			
-			//将注册用户的信息同时存入流水表单中
+			coinProperty.setUserId(userId);
+			coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
+			coinProperty.setCoinDistributed(m0);
+			kffCoinPropertyService.save(coinProperty);
+			// 将用户的信息同时存入流水表单中
 			tokenrecords.setUserId(userId);
 			tokenrecords.setFunctionDesc("注册奖励");
 			tokenrecords.setFunctionType(16);
 			tokenrecords.setTradeType(1);
 			tokenrecords.setCreateTime(new Date());
 			kffTokenrecordsService.save(tokenrecords);
-			
-			
+
+			// 从数据表中获取所有该用户的奖励数据
+			// issue(userId);
+		} else if (user.getReferLevel() == 0 && (user.getUserType() == 2 || user.getUserType() == 3)) { // 有邀请人并且是项目方
+			m0 = 1000d * 150 / 100;
+			// 将用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+			tokenaward.setUserId(userId);
+			tokenaward.setTokenAwardFunctionType(16);
+			tokenaward.setTokenAwardFunctionDesc("注册奖励");
+			tokenaward.setInviteRewards(m0);
+			tokenaward.setCreateTime(new Date());
+			tokenaward.setDistributionType(1);
+			tokenaward.setAwardBalance(m0); // 奖励余额初始化 是注册奖励
+			tokenaward.setUserName(user.getUserName());
+			tokenaward.setMobile(user.getMobile());
+			tokenaward.setCounter(0);
+			tokenaward.setGrantType(2);
+			kffTokenawardService.save(tokenaward);
 			coinProperty.setUserId(userId);
 			coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
 			coinProperty.setCoinDistributed(m0);
 			kffCoinPropertyService.save(coinProperty);
-			
-			//从数据表中获取所有注册用户的奖励数据
-			List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
-			//获取邀请人邀请的钱数的总额
-			Double sum = kffTokenawardService.reawardSum(user2.getUserId(),18);
-			if(sum <= 500000){
-				//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-				Tokenaward tokenaward2 = new Tokenaward();
-				tokenaward2.setUserId(user2.getUserId());
-				tokenaward2.setTokenAwardFunctionType(16);
-				tokenaward2.setTokenAwardFunctionDesc("邀请奖励");
-				tokenaward2.setInviteRewards(m1);
-				tokenaward2.setCreateTime(new Date());
-				tokenaward2.setDistributionType(1);
-				
-				tokenaward2.setAwardBalance(m1);
-				
-				kffTokenawardService.save(tokenaward2);
-				
-				coinProperty.setUserId(userId);
-				coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
-				coinProperty.setCoinDistributed(m0);
-				kffCoinPropertyService.save(coinProperty); 
-				
-				//将注册用户的信息同时存入流水表单中
-				Tokenrecords tokenrecords2 = new Tokenrecords();
-				tokenrecords2.setUserId(user2.getUserId());
-				tokenrecords2.setFunctionDesc("邀请奖励");
-				tokenrecords2.setFunctionType(16);
-				tokenrecords2.setTradeType(1);
-				tokenrecords2.setCreateTime(new Date());
-				kffTokenrecordsService.save(tokenrecords2);
-				
-			}
-			/*for (Tokenaward award : list) {
-				//获取每个奖励已经奖励的次数
-				Integer counter = award.getCounter();
-				//获取发放的类型
-				Integer distributionType = award.getDistributionType();
-				//获取每个发放的金额
-				Double rewards = award.getInviteRewards();
-				//获取奖励的类型
-				Integer awardFunctionType = award.getTokenAwardFunctionType();
-				//如果奖励没有发放完毕并且是线性发放
-				CoinProperty coinProperty2 = new CoinProperty();
-				if(counter<100 && distributionType == 1 ){
-					if(award.getGrantType()==2) { 
-						Double x = rewards/100;
-						//如果是注册奖励
-						if(awardFunctionType == 16){
-							tokenrecords.setUserId(userId);
-							tokenrecords.setFunctionDesc("注册奖励");
-							tokenrecords.setFunctionType(awardFunctionType);
-							tokenrecords.setAmount(x);
-							tokenrecords.setUpdateTime(new Date());
-							tokenaward.setUserId(userId);
-							tokenaward.setTokenAwardFunctionType(awardFunctionType);
-							tokenaward.setCounter(counter+1);
-							
-							Double awardBalance = award.getAwardBalance();
-							tokenaward.setAwardBalance(awardBalance-x);
-							kffTokenrecordsService.update(tokenrecords);
-							kffTokenawardService.update(tokenaward);
-							
-							KFFUser kffUser = kffUserService.findById(userId);
-							Double kffCoinNum = kffUser.getKffCoinNum();
-							kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-							
-							Double coinLock = coinProperty.getCoinLock();
-							Double coinDistributed = coinProperty.getCoinDistributed();
-							coinProperty2.setCoinLock(coinLock + x);
-							coinProperty2.setCoinDistributed(coinDistributed - x);
-							kffCoinPropertyService.update(coinProperty2);
-							
-						}else if(awardFunctionType == 18){//如果是邀请好友的奖励
-							
-							tokenrecords.setUserId(user2.getUserId());
-							tokenrecords.setFunctionDesc("邀请奖励");
-							tokenrecords.setFunctionType(awardFunctionType);
-							tokenrecords.setAmount(x); // 发放奖励数
-							tokenrecords.setUpdateTime(new Date());
-							kffTokenrecordsService.update(tokenrecords);
-							tokenaward.setUserId(user2.getUserId());
-							tokenaward.setTokenAwardFunctionType(awardFunctionType);
-							tokenaward.setCounter(counter+1);
-							
-							Double awardBalance = award.getAwardBalance();
-							tokenaward.setAwardBalance(awardBalance-x);
-							
-							kffTokenawardService.update(tokenaward);
-							
-							KFFUser kffUser = kffUserService.findByUserId(user2.getUserId());
-							Double kffCoinNum = kffUser.getKffCoinNum();
-							kffUserService.updateUserKFFCoinNum(user2.getUserId(), kffCoinNum+=x);
-							
-							Double coinLock = coinProperty.getCoinLock();
-							Double coinDistributed = coinProperty.getCoinDistributed();
-							coinProperty2.setCoinLock(coinLock + x);
-							coinProperty2.setCoinDistributed(coinDistributed - x);
-							kffCoinPropertyService.update(coinProperty2);
-							
-						}
-					}
-				}
-			}*/
-			//判断邀请人是普通用户，并且有上一级邀请
-		}else if((user2.getUserType()==1||user2.getUserType()==4) && user2.getReferLevel() ==1){
-			//获取上上级的用户表
-			KFFUser user3 = kffUserService.findById(user2.getReferUserId());
-			//判断注册用户的上上级是普通用户
-			if((user3.getUserType()==1||user3.getUserType()==4)){
-				
-				m0=0.0000d;
-				m1=25d;
-				m2=5d;
-				//将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+			// 将用户的信息同时存入流水表单中
+			tokenrecords.setUserId(userId);
+			tokenrecords.setFunctionDesc("注册奖励");
+			tokenrecords.setFunctionType(16);
+			tokenrecords.setTradeType(1);
+			tokenrecords.setCreateTime(new Date());
+			kffTokenrecordsService.save(tokenrecords);
+
+		} else if (user.getReferLevel() == 1 && (user.getUserType() == 1 || user.getUserType() == 4)) {
+			// 获取邀请人的id
+			Integer referUserId = user.getReferUserId();
+			// 获取邀请人的对象
+			KFFUser user2 = kffUserService.findById(referUserId);
+
+			// 判断邀请人是普通用户，并且没有上一级邀请
+			if ((user2.getUserType() == 1 || user2.getUserType() == 4) && user2.getReferLevel() == 0) {
+				m0 = 1000d;
+				m1 = 50d;
+				// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 				tokenaward.setUserId(userId);
 				tokenaward.setTokenAwardFunctionType(16);
 				tokenaward.setTokenAwardFunctionDesc("注册奖励");
 				tokenaward.setInviteRewards(m0);
 				tokenaward.setCreateTime(new Date());
 				tokenaward.setDistributionType(1);
-				tokenaward.setAwardBalance(m0);
 				tokenaward.setUserName(user.getUserName());
 				tokenaward.setMobile(user.getMobile());
+				tokenaward.setCounter(0);
+				tokenaward.setGrantType(2);
+				tokenaward.setAwardBalance(m0);
 				kffTokenawardService.save(tokenaward);
-				
+
 				coinProperty.setUserId(userId);
 				coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
 				coinProperty.setCoinDistributed(m0);
 				kffCoinPropertyService.save(coinProperty);
-				
-				//将注册用户的信息同时存入流水表单中
+
+				// 将注册用户的信息同时存入流水表单中
 				tokenrecords.setUserId(userId);
 				tokenrecords.setFunctionDesc("注册奖励");
 				tokenrecords.setFunctionType(16);
 				tokenrecords.setTradeType(1);
 				tokenrecords.setCreateTime(new Date());
 				kffTokenrecordsService.save(tokenrecords);
-				
-				//从数据表中获取所有注册用户的奖励数据
+
+				// 从数据表中获取所有注册用户的奖励数据
 				List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
-				//获取上级邀请人邀请的钱数的总额
-				Double sum = kffTokenawardService.reawardSum(user2.getUserId(),18);
-				//获取上上级邀请人邀请的钱数的总额
-				Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(),18);
-				//kffTokenawardService.findByUserId(user2.getUserId());
-				if(sum <= 1000){
-					//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+				// List<Tokenaward> findByUserId2 =
+				// kffTokenawardService.findByUserId(user2.getUserId());
+				// 获取邀请人邀请的钱数的总额
+				Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
+				if (sum <= 1000) {
+					// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 					Tokenaward tokenaward2 = new Tokenaward();
 					tokenaward2.setUserId(user2.getUserId());
 					tokenaward2.setTokenAwardFunctionType(18);
@@ -3601,315 +1743,37 @@ public class AwardPortService  {
 					tokenaward2.setInviteRewards(m1);
 					tokenaward2.setCreateTime(new Date());
 					tokenaward2.setDistributionType(1);
+					tokenaward2.setCounter(0);
+					tokenaward2.setGrantType(2);
 					tokenaward2.setAwardBalance(m1);
-					
 					kffTokenawardService.save(tokenaward2);
-					//将注册用户的信息同时存入流水表单中
-					Tokenrecords tokenrecords2 = new Tokenrecords();
-					tokenrecords2.setUserId(user2.getUserId());
-					tokenrecords2.setFunctionDesc("邀请奖励");
-					tokenrecords2.setFunctionType(16);
-					tokenrecords2.setTradeType(1);
-					tokenrecords2.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords2);
-					
-					coinProperty.setUserId(user2.getUserId());
-					coinProperty.setCoinLock(kffUserService.findById(user2.getUserId()).getKffCoinNum().doubleValue());
-					CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-					coinProperty.setCoinDistributed(m1+coinProperty.getCoinDistributed());
-					kffCoinPropertyService.save(coinProperty);
-					
-				}
-				if(sum2 <= 1000){
-					//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-					Tokenaward tokenawarde3 = new Tokenaward();
-					tokenawarde3.setUserId(user3.getUserId());
-					tokenawarde3.setTokenAwardFunctionType(18);
-					tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
-					tokenawarde3.setInviteRewards(m2);
-					tokenawarde3.setCreateTime(new Date());
-					tokenawarde3.setDistributionType(1);
-					tokenawarde3.setAwardBalance(m2);
-					kffTokenawardService.save(tokenawarde3);
-					//将注册用户的信息同时存入流水表单中
-					Tokenrecords tokenrecords2 = new Tokenrecords();
-					tokenrecords2.setUserId(user3.getUserId());
-					tokenrecords2.setFunctionDesc("邀请奖励");
-					tokenrecords2.setFunctionType(16);
-					tokenrecords2.setTradeType(1);
-					tokenrecords2.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords2);
-					
-					coinProperty.setUserId(user3.getUserId());
-					coinProperty.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-					CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-					coinProperty.setCoinDistributed(m2+coinProperty.getCoinDistributed());
-					kffCoinPropertyService.save(coinProperty);
-					
-				}
-				/*for (Tokenaward award : list) {
-					//获取每个奖励已经奖励的次数
-					Integer counter = award.getCounter();
-					//获取发放的类型
-					Integer distributionType = award.getDistributionType();
-					//获取每个发放的金额
-					Double rewards = award.getInviteRewards();
-					//获取奖励的类型
-					Integer awardFunctionType = award.getTokenAwardFunctionType();
-					//如果奖励没有发放完毕并且是线性发放
-					if(counter<100 && distributionType == 1 ){
-						if(award.getGrantType()==2) { 
-							Double x = rewards/100;
-							//如果是注册奖励
-							if(awardFunctionType == 16){
-								tokenrecords.setUserId(userId);
-								tokenrecords.setFunctionDesc("注册奖励");
-								tokenrecords.setFunctionType(awardFunctionType);
-								tokenrecords.setAmount(x);
-								tokenrecords.setUpdateTime(new Date());
-								kffTokenrecordsService.update(tokenrecords);
-								tokenaward.setUserId(userId);
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								Double awardBalance = award.getAwardBalance();
-								kffTokenawardService.update(award);
-								tokenaward.setAwardBalance(awardBalance-x);
-								
-								KFFUser kffUser = kffUserService.findByUserId(userId);
-								Double kffCoinNum = kffUser.getKffCoinNum();
-								kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-								
-								Double coinLock = coinProperty.getCoinLock();
-								CoinProperty coinProperty2 = new CoinProperty();
-								Double coinDistributed = coinProperty.getCoinDistributed();
-								coinProperty2.setCoinLock(coinLock + x);
-								coinProperty2.setCoinDistributed(coinDistributed - x);
-								kffCoinPropertyService.update(coinProperty2);
-								
-							}else if(awardFunctionType == 18){//如果是邀请好友的奖励
-							
-								tokenrecords.setUserId(user2.getUserId());
-								tokenrecords.setFunctionDesc("邀请奖励");
-								tokenrecords.setFunctionType(awardFunctionType);
-								tokenrecords.setAmount(x); // 发放奖励数
-								tokenrecords.setUpdateTime(new Date());
-								
-								tokenaward.setUserId(user2.getUserId());
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								
-								Double awardBalance = award.getAwardBalance();
-								tokenaward.setAwardBalance(awardBalance-x);
-								
-								kffTokenawardService.update(award);
-								
-								
-								kffTokenrecordsService.update(tokenrecords);
-								
-								
-								tokenaward.setUserId(user2.getUserId());
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								kffTokenawardService.update(tokenaward);
-								
-								KFFUser kffUser = kffUserService.findByUserId(user2.getUserId());
-								Double kffCoinNum = kffUser.getKffCoinNum();
-								kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-								
-							}
-						}
-					}
-				}*/
-				//如果注册用户的上上级用户是项目方
-			}
-			
-			else if((user3.getUserType()==2||user3.getUserType()==3)){
-				Integer findReferCount = kffUserService.findReferCount(user3.getUserId());
-				if(findReferCount<=1000) {
-					m0=0.0000d;
-					m1=25d;
-					m2=5d*150/100;
-				}
-				else {
-					m0=0.0000d;
-					m1=25d;
-					m2=5d;
-				}
-				
-				//将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-				tokenaward.setUserId(userId);
-				tokenaward.setTokenAwardFunctionType(16);
-				tokenaward.setTokenAwardFunctionDesc("注册奖励");
-				tokenaward.setInviteRewards(m0);
-				tokenaward.setCreateTime(new Date());
-				tokenaward.setDistributionType(1);
-				tokenaward.setAwardBalance(m0);
-				tokenaward.setUserName(user.getUserName());
-				tokenaward.setMobile(user.getMobile());
-				kffTokenawardService.save(tokenaward);
-				
-				coinProperty.setUserId(userId);
-				coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
-				coinProperty.setCoinDistributed(m0);
-				kffCoinPropertyService.save(coinProperty);
-				
-				//将注册用户的信息同时存入流水表单中
-				tokenrecords.setUserId(userId);
-				tokenrecords.setFunctionDesc("注册奖励");
-				tokenrecords.setFunctionType(16);
-				tokenrecords.setTradeType(1);
-				tokenrecords.setCreateTime(new Date());
-				kffTokenrecordsService.save(tokenrecords);
-				
-				//从数据表中获取所有注册用户的奖励数据
-				List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
-				//获取上级邀请人邀请的钱数的总额
-				Double sum = kffTokenawardService.reawardSum(user2.getUserId(),18);
-				//获取上上级邀请人邀请的钱数的总额
-				Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(),18);
-				
-				if(sum <= 1000){
-					//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-					Tokenaward tokenaward2 = new Tokenaward();
-					tokenaward2.setUserId(user2.getUserId());
-					tokenaward2.setTokenAwardFunctionType(18);
-					tokenaward2.setTokenAwardFunctionDesc("邀请奖励");
-					tokenaward2.setInviteRewards(m1);
-					tokenaward2.setCreateTime(new Date());
-					tokenaward2.setDistributionType(1);
-					kffTokenawardService.save(tokenaward2);
-					//将注册用户的信息同时存入流水表单中
-					Tokenrecords tokenrecords2 = new Tokenrecords();
-					tokenrecords2.setUserId(user2.getUserId());
-					tokenrecords2.setFunctionDesc("邀请奖励");
-					tokenrecords2.setFunctionType(16);
-					tokenrecords2.setTradeType(1);
-					tokenrecords2.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords2);
-					
-				}
-				if(sum2 <= 1000){
-					//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-					Tokenaward tokenawarde3 = new Tokenaward();
-					tokenawarde3.setUserId(user3.getUserId());
-					tokenawarde3.setTokenAwardFunctionType(18);
-					tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
-					tokenawarde3.setInviteRewards(m2);
-					tokenawarde3.setCreateTime(new Date());
-					tokenawarde3.setDistributionType(1);
-					tokenawarde3.setAwardBalance(m2);
-					kffTokenawardService.save(tokenawarde3);
-					//将注册用户的信息同时存入流水表单中
-					Tokenrecords tokenrecords2 = new Tokenrecords();
-					tokenrecords2.setUserId(user3.getUserId());
-					tokenrecords2.setFunctionDesc("邀请奖励");
-					tokenrecords2.setFunctionType(16);
-					tokenrecords2.setTradeType(1);
-					tokenrecords2.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords2);
-					
-					coinProperty.setUserId(user3.getUserId());
-					coinProperty.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-					CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-					coinProperty.setCoinDistributed(m2+coinProperty.getCoinDistributed());
-					kffCoinPropertyService.save(coinProperty);
-					
-				}
-				/*for (Tokenaward award : list) {
-					//获取每个奖励已经奖励的次数
-					Integer counter = award.getCounter();
-					//获取发放的类型
-					Integer distributionType = award.getDistributionType();
-					//获取每个发放的金额
-					Double rewards = award.getInviteRewards();
-					//获取奖励的类型
-					Integer awardFunctionType = award.getTokenAwardFunctionType();
-					//如果奖励没有发放完毕并且是线性发放
-					if(counter<100 && distributionType == 1 ){
-						if(award.getGrantType()==2) { 
-							Double x = rewards/100f;
-							//如果是注册奖励
-							if(awardFunctionType == 16){
-								tokenrecords.setUserId(userId);
-								tokenrecords.setFunctionDesc("注册奖励");
-								tokenrecords.setFunctionType(awardFunctionType);
-								tokenrecords.setAmount(x);
-								tokenrecords.setUpdateTime(new Date());
-								kffTokenrecordsService.update(tokenrecords);
-								tokenaward.setUserId(userId);
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								Double awardBalance = award.getAwardBalance();
-								kffTokenawardService.update(award);
-								tokenaward.setAwardBalance(awardBalance-x);
-								
-								KFFUser kffUser = kffUserService.findByUserId(userId);
-								Double kffCoinNum = kffUser.getKffCoinNum();
-								kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-								
-								Double coinLock = coinProperty.getCoinLock();
-								CoinProperty coinProperty2 = new CoinProperty();
-								Double coinDistributed = coinProperty.getCoinDistributed();
-								coinProperty2.setCoinLock(coinLock + x);
-								coinProperty2.setCoinDistributed(coinDistributed - x);
-								kffCoinPropertyService.update(coinProperty2);
-								
-							}else if(awardFunctionType == 18){//如果是邀请好友的奖励
-								
-								tokenrecords.setUserId(user2.getUserId());
-								tokenrecords.setFunctionDesc("邀请奖励");
-								tokenrecords.setFunctionType(awardFunctionType);
-								tokenrecords.setAmount(x); // 发放奖励数
-								tokenrecords.setUpdateTime(new Date());
-								
-								tokenaward.setUserId(user2.getUserId());
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								
-								Double awardBalance = award.getAwardBalance();
-								tokenaward.setAwardBalance(awardBalance-x);
-								
-								kffTokenawardService.update(award);
-								
-								
-								kffTokenrecordsService.update(tokenrecords);
-								
-								
-								tokenaward.setUserId(user2.getUserId());
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								kffTokenawardService.update(tokenaward);
-								
-								KFFUser kffUser = kffUserService.findByUserId(user2.getUserId());
-								Double kffCoinNum = kffUser.getKffCoinNum();
-								kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-								
-								
-							}
-						}
-					}
-				}*/
-			}
-			//如果上级邀请人是是项目方，并且有上级邀请人
-		}else if((user2.getUserType()==2||user2.getUserType()==3) && user2.getReferLevel() ==1){
 
-			//获取上上级的用户表
-			KFFUser user3 = kffUserService.findById(user2.getReferUserId());
-			//判断注册用户的上上级是普通用户
-			if((user3.getUserType()==1||user3.getUserType()==4)){
+					coinProperty.setUserId(user2.getUserId());
+					coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
+					coinProperty.setCoinDistributed(m1);
+
+					kffCoinPropertyService.save(coinProperty);
+
+					// 将注册用户的信息同时存入流水表单中
+					Tokenrecords tokenrecords2 = new Tokenrecords();
+					tokenrecords2.setUserId(user2.getUserId());
+					tokenrecords2.setFunctionDesc("邀请奖励");
+					tokenrecords2.setFunctionType(18);
+					tokenrecords2.setTradeType(1);
+					tokenrecords2.setCreateTime(new Date());
+					kffTokenrecordsService.save(tokenrecords2);
+
+				}
+			} else if ((user2.getUserType() == 2 || user2.getUserType() == 3) && user2.getReferLevel() == 0) {
 				Integer findReferCount = kffUserService.findReferCount(user2.getUserId());
-				if(findReferCount<=1000) {
-					m0=0.0000d;
-					m1=25d*150/100;
-					m2=5d;
+				if (findReferCount <= 1000) {
+					m0 = 1000d * 150 / 100;
+					m1 = 50d * 150 / 100;
+				} else {
+					m0 = 1000d;
+					m1 = 50d;
 				}
-				else {
-					m0=0.0000d;
-					m1=25d;
-					m2=5d;
-				}
-				
-				//将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+				// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 				tokenaward.setUserId(userId);
 				tokenaward.setTokenAwardFunctionType(16);
 				tokenaward.setTokenAwardFunctionDesc("注册奖励");
@@ -3919,201 +1783,29 @@ public class AwardPortService  {
 				tokenaward.setAwardBalance(m0);
 				tokenaward.setUserName(user.getUserName());
 				tokenaward.setMobile(user.getMobile());
+				tokenaward.setCounter(0);
+				tokenaward.setGrantType(2);
 				kffTokenawardService.save(tokenaward);
-				
-				coinProperty.setUserId(userId);
-				coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
-				coinProperty.setCoinDistributed(m0);
-				kffCoinPropertyService.save(coinProperty);
-				
-				//将注册用户的信息同时存入流水表单中
+
+				// 将注册用户的信息同时存入流水表单中
 				tokenrecords.setUserId(userId);
 				tokenrecords.setFunctionDesc("注册奖励");
 				tokenrecords.setFunctionType(16);
 				tokenrecords.setTradeType(1);
 				tokenrecords.setCreateTime(new Date());
 				kffTokenrecordsService.save(tokenrecords);
-				
-				//从数据表中获取所有注册用户的奖励数据
-				List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
-				//获取上级邀请人邀请的钱数的总额
-				Double sum = kffTokenawardService.reawardSum(user2.getUserId(),18);
-				//获取上上级邀请人邀请的钱数的总额
-				Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(),18);
-				if(sum <= 1000){
-					//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-					Tokenaward tokenawarde3 = new Tokenaward();
-					tokenawarde3.setUserId(user3.getUserId());
-					tokenawarde3.setTokenAwardFunctionType(18);
-					tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
-					tokenawarde3.setInviteRewards(m2);
-					tokenawarde3.setCreateTime(new Date());
-					tokenawarde3.setDistributionType(1);
-					tokenawarde3.setAwardBalance(m2);
-					kffTokenawardService.save(tokenawarde3);
-					//将注册用户的信息同时存入流水表单中
-					Tokenrecords tokenrecords2 = new Tokenrecords();
-					tokenrecords2.setUserId(user3.getUserId());
-					tokenrecords2.setFunctionDesc("邀请奖励");
-					tokenrecords2.setFunctionType(16);
-					tokenrecords2.setTradeType(1);
-					tokenrecords2.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords2);
-					
-					coinProperty.setUserId(user3.getUserId());
-					coinProperty.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-					CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-					coinProperty.setCoinDistributed(m2+coinProperty.getCoinDistributed());
-					kffCoinPropertyService.save(coinProperty);
-					
-					
-				}
-				if(sum2 <= 1000){
-					//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-					Tokenaward tokenawarde3 = new Tokenaward();
-					tokenawarde3.setUserId(user3.getUserId());
-					tokenawarde3.setTokenAwardFunctionType(18);
-					tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
-					tokenawarde3.setInviteRewards(m2);
-					tokenawarde3.setCreateTime(new Date());
-					tokenawarde3.setDistributionType(1);
-					tokenawarde3.setAwardBalance(m2);
-					kffTokenawardService.save(tokenawarde3);
-					//将注册用户的信息同时存入流水表单中
-					Tokenrecords tokenrecords2 = new Tokenrecords();
-					tokenrecords2.setUserId(user3.getUserId());
-					tokenrecords2.setFunctionDesc("邀请奖励");
-					tokenrecords2.setFunctionType(16);
-					tokenrecords2.setTradeType(1);
-					tokenrecords2.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords2);
-					
-					coinProperty.setUserId(user3.getUserId());
-					coinProperty.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-					CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-					coinProperty.setCoinDistributed(m2+coinProperty.getCoinDistributed());
-					kffCoinPropertyService.save(coinProperty);
-					
-				}
-				/*for (Tokenaward award : list) {
-					//获取每个奖励已经奖励的次数
-					Integer counter = award.getCounter();
-					//获取发放的类型
-					Integer distributionType = award.getDistributionType();
-					//获取每个发放的金额
-					Double rewards = award.getInviteRewards();
-					//获取奖励的类型
-					Integer awardFunctionType = award.getTokenAwardFunctionType();
-					//如果奖励没有发放完毕并且是线性发放
-					if(counter<100 && distributionType == 1 ){
-						if(award.getGrantType()==2) { 
-							Double x = rewards/100;
-							//如果是注册奖励
-							if(awardFunctionType == 16){
-								tokenrecords.setUserId(userId);
-								tokenrecords.setFunctionDesc("注册奖励");
-								tokenrecords.setFunctionType(awardFunctionType);
-								tokenrecords.setAmount(x);
-								tokenrecords.setUpdateTime(new Date());
-								kffTokenrecordsService.update(tokenrecords);
-								tokenaward.setUserId(userId);
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								Double awardBalance = award.getAwardBalance();
-								kffTokenawardService.update(award);
-								tokenaward.setAwardBalance(awardBalance-x);
-								
-								KFFUser kffUser = kffUserService.findByUserId(userId);
-								Double kffCoinNum = kffUser.getKffCoinNum();
-								kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-								
-								Double coinLock = coinProperty.getCoinLock();
-								CoinProperty coinProperty2 = new CoinProperty();
-								Double coinDistributed = coinProperty.getCoinDistributed();
-								coinProperty2.setCoinLock(coinLock + x);
-								coinProperty2.setCoinDistributed(coinDistributed - x);
-								kffCoinPropertyService.update(coinProperty2);
-							}else if(awardFunctionType == 18){//如果是邀请好友的奖励
-								
-								tokenrecords.setUserId(user2.getUserId());
-								tokenrecords.setFunctionDesc("邀请奖励");
-								tokenrecords.setFunctionType(awardFunctionType);
-								tokenrecords.setAmount(x); // 发放奖励数
-								tokenrecords.setUpdateTime(new Date());
-								
-								tokenaward.setUserId(user2.getUserId());
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								
-								Double awardBalance = award.getAwardBalance();
-								tokenaward.setAwardBalance(awardBalance-x);
-								
-								kffTokenawardService.update(award);
-								
-								
-								kffTokenrecordsService.update(tokenrecords);
-								
-								
-								tokenaward.setUserId(user2.getUserId());
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								kffTokenawardService.update(tokenaward);
-								
-								KFFUser kffUser = kffUserService.findByUserId(user2.getUserId());
-								Double kffCoinNum = kffUser.getKffCoinNum();
-								kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-								
-							}
-						}
-					}
-				}*/
-				//如果注册用户的上上级用户是项目方
-			}else if((user3.getUserType()==2||user3.getUserType()==3)){	//将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-				Integer findReferCount = kffUserService.findReferCount(user3.getUserId());
-				if(findReferCount<=1000) {
-					m0=0.0000d;
-					m1=25d*150/100;
-					m2=5d*150/100;
-				}
-				else {
-					m0=0.0000d;
-					m1=25d;
-					m2=5d;
-				}
-				
-				tokenaward.setUserId(userId);
-				tokenaward.setTokenAwardFunctionType(16);
-				tokenaward.setTokenAwardFunctionDesc("注册奖励");
-				tokenaward.setInviteRewards(m0);
-				tokenaward.setCreateTime(new Date());
-				tokenaward.setDistributionType(1);
-				tokenaward.setAwardBalance(m0);
-				tokenaward.setUserName(user.getUserName());
-				tokenaward.setMobile(user.getMobile());
-				kffTokenawardService.save(tokenaward);
-				
+
 				coinProperty.setUserId(userId);
 				coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
 				coinProperty.setCoinDistributed(m0);
 				kffCoinPropertyService.save(coinProperty);
-				
-				//将注册用户的信息同时存入流水表单中
-				tokenrecords.setUserId(userId);
-				tokenrecords.setFunctionDesc("注册奖励");
-				tokenrecords.setFunctionType(16);
-				tokenrecords.setTradeType(1);
-				tokenrecords.setCreateTime(new Date());
-				kffTokenrecordsService.save(tokenrecords);
-				
-				//从数据表中获取所有注册用户的奖励数据
+
+				// 从数据表中获取所有注册用户的奖励数据
 				List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
-				//获取上级邀请人邀请的钱数的总额
-				Double sum = kffTokenawardService.reawardSum(user2.getUserId(),18);
-				//获取上上级邀请人邀请的钱数的总额
-				Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(),18);
-				
-				if(sum <= 500000){
-					//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+				// 获取邀请人邀请的钱数的总额
+				Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
+				if (sum <= 500000) {
+					// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 					Tokenaward tokenaward2 = new Tokenaward();
 					tokenaward2.setUserId(user2.getUserId());
 					tokenaward2.setTokenAwardFunctionType(18);
@@ -4121,127 +1813,1077 @@ public class AwardPortService  {
 					tokenaward2.setInviteRewards(m1);
 					tokenaward2.setCreateTime(new Date());
 					tokenaward2.setDistributionType(1);
+					tokenaward2.setCounter(0);
+					tokenaward2.setGrantType(2);
+					tokenaward2.setAwardBalance(m1);
+
 					kffTokenawardService.save(tokenaward2);
-					//将注册用户的信息同时存入流水表单中
+
+					coinProperty.setUserId(userId);
+					coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
+					coinProperty.setCoinDistributed(m0);
+					kffCoinPropertyService.save(coinProperty);
+
+					// 将注册用户的信息同时存入流水表单中
 					Tokenrecords tokenrecords2 = new Tokenrecords();
 					tokenrecords2.setUserId(user2.getUserId());
 					tokenrecords2.setFunctionDesc("邀请奖励");
-					tokenrecords2.setFunctionType(16);
+					tokenrecords2.setFunctionType(18);
 					tokenrecords2.setTradeType(1);
 					tokenrecords2.setCreateTime(new Date());
 					kffTokenrecordsService.save(tokenrecords2);
-					
+
 				}
-				if(sum2 <= 500000){
-					//将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
-					Tokenaward tokenawarde3 = new Tokenaward();
-					tokenawarde3.setUserId(user3.getUserId());
-					tokenawarde3.setTokenAwardFunctionType(18);
-					tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
-					tokenawarde3.setInviteRewards(m2);
-					tokenawarde3.setCreateTime(new Date());
-					tokenawarde3.setDistributionType(1);
-					tokenawarde3.setAwardBalance(m2);
-					kffTokenawardService.save(tokenawarde3);
-					//将注册用户的信息同时存入流水表单中
-					Tokenrecords tokenrecords2 = new Tokenrecords();
-					tokenrecords2.setUserId(user3.getUserId());
-					tokenrecords2.setFunctionDesc("邀请奖励");
-					tokenrecords2.setFunctionType(16);
-					tokenrecords2.setTradeType(1);
-					tokenrecords2.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords2);
-					
-					coinProperty.setUserId(user3.getUserId());
-					coinProperty.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-					CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-					coinProperty.setCoinDistributed(m2+coinProperty.getCoinDistributed());
+			} else if ((user2.getUserType() == 1 || user2.getUserType() == 4) && user2.getReferLevel() == 1) {
+				// 获取上上级的用户表
+				KFFUser user3 = kffUserService.findById(user2.getReferUserId());
+				// 判断注册用户的上上级是普通用户
+				if ((user3.getUserType() == 1 || user3.getUserType() == 4)) {
+					m0 = 1000d;
+					m1 = 50d;
+					m2 = 10d;
+					// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+					tokenaward.setUserId(userId);
+					tokenaward.setTokenAwardFunctionType(16);
+					tokenaward.setTokenAwardFunctionDesc("注册奖励");
+					tokenaward.setInviteRewards(m0);
+					tokenaward.setCreateTime(new Date());
+					tokenaward.setDistributionType(1);
+					tokenaward.setAwardBalance(m0);
+					tokenaward.setUserName(user.getUserName());
+					tokenaward.setMobile(user.getMobile());
+					tokenaward.setCounter(0);
+					tokenaward.setGrantType(2);
+					kffTokenawardService.save(tokenaward);
+
+					coinProperty.setUserId(userId);
+					coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
+					coinProperty.setCoinDistributed(m0);
 					kffCoinPropertyService.save(coinProperty);
-					
-				}
-				/*for (Tokenaward award : list) {
-					//获取每个奖励已经奖励的次数
-					Integer counter = award.getCounter();
-					//获取发放的类型
-					Integer distributionType = award.getDistributionType();
-					//获取每个发放的金额
-					Double rewards = award.getInviteRewards();
-					//获取奖励的类型
-					Integer awardFunctionType = award.getTokenAwardFunctionType();
-					//如果奖励没有发放完毕并且是线性发放
-					if(counter<100 && distributionType == 1 ){
-						if(award.getGrantType()==2) { 
-							Double x = rewards/100f;
-							//如果是注册奖励
-							if(awardFunctionType == 16){
-								tokenrecords.setUserId(userId);
-								tokenrecords.setFunctionDesc("注册奖励");
-								tokenrecords.setFunctionType(awardFunctionType);
-								tokenrecords.setAmount(x);
-								tokenrecords.setUpdateTime(new Date());
-								kffTokenrecordsService.update(tokenrecords);
-								tokenaward.setUserId(userId);
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								Double awardBalance = award.getAwardBalance();
-								kffTokenawardService.update(award);
-								tokenaward.setAwardBalance(awardBalance-x);
-								
-								KFFUser kffUser = kffUserService.findByUserId(userId);
-								Double kffCoinNum = kffUser.getKffCoinNum();
-								kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-								
-								Double coinLock = coinProperty.getCoinLock();
-								CoinProperty coinProperty2 = new CoinProperty();
-								Double coinDistributed = coinProperty.getCoinDistributed();
-								coinProperty2.setCoinLock(coinLock + x);
-								coinProperty2.setCoinDistributed(coinDistributed - x);
-								kffCoinPropertyService.update(coinProperty2);
-								
-							}else if(awardFunctionType == 18){//如果是邀请好友的奖励
-								
-								tokenrecords.setUserId(user2.getUserId());
-								tokenrecords.setFunctionDesc("邀请奖励");
-								tokenrecords.setFunctionType(awardFunctionType);
-								tokenrecords.setAmount(x); // 发放奖励数
-								tokenrecords.setUpdateTime(new Date());
-								
-								tokenaward.setUserId(user2.getUserId());
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								
-								Double awardBalance = award.getAwardBalance();
-								tokenaward.setAwardBalance(awardBalance-x);
-								
-								kffTokenawardService.update(award);
-								
-								
-								kffTokenrecordsService.update(tokenrecords);
-								
-								
-								tokenaward.setUserId(user2.getUserId());
-								tokenaward.setTokenAwardFunctionType(awardFunctionType);
-								tokenaward.setCounter(counter+1);
-								kffTokenawardService.update(tokenaward);
-								
-								KFFUser kffUser = kffUserService.findByUserId(user2.getUserId());
-								Double kffCoinNum = kffUser.getKffCoinNum();
-								kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-								
-								
-							}
-						}
+
+					// 将注册用户的信息同时存入流水表单中
+					tokenrecords.setUserId(userId);
+					tokenrecords.setFunctionDesc("注册奖励");
+					tokenrecords.setFunctionType(16);
+					tokenrecords.setTradeType(1);
+					tokenrecords.setCreateTime(new Date());
+					kffTokenrecordsService.save(tokenrecords);
+
+					// 从数据表中获取所有注册用户的奖励数据
+					List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
+					// 获取上级邀请人邀请的钱数的总额
+					Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
+					// 获取上上级邀请人邀请的钱数的总额
+					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(), 18);
+					// kffTokenawardService.findByUserId(user2.getUserId());
+					if (sum <= 1000) {
+						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+						Tokenaward tokenaward2 = new Tokenaward();
+						tokenaward2.setUserId(user2.getUserId());
+						tokenaward2.setTokenAwardFunctionType(18);
+						tokenaward2.setTokenAwardFunctionDesc("邀请奖励");
+						tokenaward2.setInviteRewards(m1);
+						tokenaward2.setCreateTime(new Date());
+						tokenaward2.setDistributionType(1);
+						tokenaward2.setAwardBalance(m1);
+						tokenaward2.setCounter(0);
+						tokenaward2.setGrantType(2);
+						kffTokenawardService.save(tokenaward2);
+						// 将注册用户的信息同时存入流水表单中
+						Tokenrecords tokenrecords2 = new Tokenrecords();
+						tokenrecords2.setUserId(user2.getUserId());
+						tokenrecords2.setFunctionDesc("邀请奖励");
+						tokenrecords2.setFunctionType(18);
+						tokenrecords2.setTradeType(1);
+						tokenrecords2.setCreateTime(new Date());
+						kffTokenrecordsService.save(tokenrecords2);
+
+						coinProperty.setUserId(user2.getUserId());
+						coinProperty
+								.setCoinLock(kffUserService.findById(user2.getUserId()).getKffCoinNum().doubleValue());
+						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
+						coinProperty.setCoinDistributed(m1 + coinProperty.getCoinDistributed());
+						kffCoinPropertyService.save(coinProperty);
+
 					}
-				}*/
+					if (sum2 <= 1000) {
+						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+						Tokenaward tokenawarde3 = new Tokenaward();
+						tokenawarde3.setUserId(user3.getUserId());
+						tokenawarde3.setTokenAwardFunctionType(18);
+						tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
+						tokenawarde3.setInviteRewards(m2);
+						tokenawarde3.setCreateTime(new Date());
+						tokenawarde3.setDistributionType(1);
+						tokenawarde3.setAwardBalance(m2);
+						tokenawarde3.setCounter(0);
+						tokenawarde3.setGrantType(2);
+						kffTokenawardService.save(tokenawarde3);
+						// 将注册用户的信息同时存入流水表单中
+						Tokenrecords tokenrecords2 = new Tokenrecords();
+						tokenrecords2.setUserId(user3.getUserId());
+						tokenrecords2.setFunctionDesc("邀请奖励");
+						tokenrecords2.setFunctionType(18);
+						tokenrecords2.setTradeType(1);
+						tokenrecords2.setCreateTime(new Date());
+						kffTokenrecordsService.save(tokenrecords2);
+
+						coinProperty.setUserId(user3.getUserId());
+						coinProperty
+								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
+						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
+						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
+						kffCoinPropertyService.save(coinProperty);
+
+					}
+				}
+
+				else if ((user3.getUserType() == 2 || user3.getUserType() == 3)) {
+					Integer findReferCount = kffUserService.findReferCount(user3.getUserId());
+					if (findReferCount <= 1000) {
+						m0 = 1000d;
+						m1 = 50d;
+						m2 = 10d * 150 / 100;
+					} else {
+						m0 = 1000d;
+						m1 = 50d;
+						m2 = 10d;
+					}
+
+					// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+					tokenaward.setUserId(userId);
+					tokenaward.setTokenAwardFunctionType(16);
+					tokenaward.setTokenAwardFunctionDesc("注册奖励");
+					tokenaward.setInviteRewards(m0);
+					tokenaward.setCreateTime(new Date());
+					tokenaward.setDistributionType(1);
+					tokenaward.setAwardBalance(m0);
+					tokenaward.setUserName(user.getUserName());
+					tokenaward.setMobile(user.getMobile());
+					tokenaward.setCounter(0);
+					tokenaward.setGrantType(2);
+					kffTokenawardService.save(tokenaward);
+
+					coinProperty.setUserId(userId);
+					coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
+					coinProperty.setCoinDistributed(m0);
+					kffCoinPropertyService.save(coinProperty);
+
+					// 将注册用户的信息同时存入流水表单中
+					tokenrecords.setUserId(userId);
+					tokenrecords.setFunctionDesc("注册奖励");
+					tokenrecords.setFunctionType(16);
+					tokenrecords.setTradeType(1);
+					tokenrecords.setCreateTime(new Date());
+					kffTokenrecordsService.save(tokenrecords);
+
+					// 从数据表中获取所有注册用户的奖励数据
+					List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
+					// 获取上级邀请人邀请的钱数的总额
+					Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
+					// 获取上上级邀请人邀请的钱数的总额
+					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(), 18);
+
+					if (sum <= 1000) {
+						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+						Tokenaward tokenaward2 = new Tokenaward();
+						tokenaward2.setUserId(user2.getUserId());
+						tokenaward2.setTokenAwardFunctionType(18);
+						tokenaward2.setTokenAwardFunctionDesc("邀请奖励");
+						tokenaward2.setInviteRewards(m1);
+						tokenaward2.setCreateTime(new Date());
+						tokenaward2.setDistributionType(1);
+						tokenaward2.setCounter(0);
+						tokenaward2.setGrantType(2);
+						kffTokenawardService.save(tokenaward2);
+						// 将注册用户的信息同时存入流水表单中
+						Tokenrecords tokenrecords2 = new Tokenrecords();
+						tokenrecords2.setUserId(user2.getUserId());
+						tokenrecords2.setFunctionDesc("邀请奖励");
+						tokenrecords2.setFunctionType(18);
+						tokenrecords2.setTradeType(1);
+						tokenrecords2.setCreateTime(new Date());
+						kffTokenrecordsService.save(tokenrecords2);
+
+					}
+					if (sum2 <= 1000) {
+						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+						Tokenaward tokenawarde3 = new Tokenaward();
+						tokenawarde3.setUserId(user3.getUserId());
+						tokenawarde3.setTokenAwardFunctionType(18);
+						tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
+						tokenawarde3.setInviteRewards(m2);
+						tokenawarde3.setCreateTime(new Date());
+						tokenawarde3.setDistributionType(1);
+						tokenawarde3.setAwardBalance(m2);
+						tokenawarde3.setCounter(0);
+						tokenawarde3.setGrantType(2);
+						kffTokenawardService.save(tokenawarde3);
+						// 将注册用户的信息同时存入流水表单中
+						Tokenrecords tokenrecords2 = new Tokenrecords();
+						tokenrecords2.setUserId(user3.getUserId());
+						tokenrecords2.setFunctionDesc("邀请奖励");
+						tokenrecords2.setFunctionType(18);
+						tokenrecords2.setTradeType(1);
+						tokenrecords2.setCreateTime(new Date());
+						kffTokenrecordsService.save(tokenrecords2);
+
+						coinProperty.setUserId(user3.getUserId());
+						coinProperty
+								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
+						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
+						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
+						kffCoinPropertyService.save(coinProperty);
+
+					}
+				}
+				// 如果上级邀请人是是项目方，并且有上级邀请人
+			} else if ((user2.getUserType() == 2 || user2.getUserType() == 3) && user2.getReferLevel() == 1) {
+
+				// 获取上上级的用户表
+				KFFUser user3 = kffUserService.findById(user2.getReferUserId());
+				// 判断注册用户的上上级是普通用户
+				if ((user3.getUserType() == 1 || user3.getUserType() == 4)) {
+					Integer findReferCount = kffUserService.findReferCount(user2.getUserId());
+					if (findReferCount <= 1000) {
+						m0 = 1000d;
+						m1 = 50d;
+						m2 = 10d * 150 / 100;
+					} else {
+						m0 = 1000d;
+						m1 = 50d;
+						m2 = 10d;
+					}
+					// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+					tokenaward.setUserId(userId);
+					tokenaward.setTokenAwardFunctionType(16);
+					tokenaward.setTokenAwardFunctionDesc("注册奖励");
+					tokenaward.setInviteRewards(m0);
+					tokenaward.setCreateTime(new Date());
+					tokenaward.setDistributionType(1);
+					tokenaward.setAwardBalance(m0);
+					tokenaward.setUserName(user.getUserName());
+					tokenaward.setMobile(user.getMobile());
+					tokenaward.setCounter(0);
+					tokenaward.setGrantType(2);
+					kffTokenawardService.save(tokenaward);
+
+					coinProperty.setUserId(userId);
+					coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
+					coinProperty.setCoinDistributed(m0);
+					kffCoinPropertyService.save(coinProperty);
+
+					// 将注册用户的信息同时存入流水表单中
+					tokenrecords.setUserId(userId);
+					tokenrecords.setFunctionDesc("注册奖励");
+					tokenrecords.setFunctionType(16);
+					tokenrecords.setTradeType(1);
+					tokenrecords.setCreateTime(new Date());
+					kffTokenrecordsService.save(tokenrecords);
+
+					// 从数据表中获取所有注册用户的奖励数据
+					List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
+					// 获取上级邀请人邀请的钱数的总额
+					Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
+					// 获取上上级邀请人邀请的钱数的总额
+					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(), 18);
+					if (sum <= 1000) {
+						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+						Tokenaward tokenawarde3 = new Tokenaward();
+						tokenawarde3.setUserId(user3.getUserId());
+						tokenawarde3.setTokenAwardFunctionType(18);
+						tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
+						tokenawarde3.setInviteRewards(m2);
+						tokenawarde3.setCreateTime(new Date());
+						tokenawarde3.setDistributionType(1);
+						tokenawarde3.setAwardBalance(m2);
+						tokenawarde3.setCounter(0);
+						tokenawarde3.setGrantType(2);
+						kffTokenawardService.save(tokenawarde3);
+						// 将注册用户的信息同时存入流水表单中
+						Tokenrecords tokenrecords2 = new Tokenrecords();
+						tokenrecords2.setUserId(user3.getUserId());
+						tokenrecords2.setFunctionDesc("邀请奖励");
+						tokenrecords2.setFunctionType(18);
+						tokenrecords2.setTradeType(1);
+						tokenrecords2.setCreateTime(new Date());
+						kffTokenrecordsService.save(tokenrecords2);
+
+						coinProperty.setUserId(user3.getUserId());
+						coinProperty
+								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
+						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
+						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
+						kffCoinPropertyService.save(coinProperty);
+
+					}
+					if (sum2 <= 1000) {
+						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+						Tokenaward tokenawarde3 = new Tokenaward();
+						tokenawarde3.setUserId(user3.getUserId());
+						tokenawarde3.setTokenAwardFunctionType(18);
+						tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
+						tokenawarde3.setInviteRewards(m2);
+						tokenawarde3.setCreateTime(new Date());
+						tokenawarde3.setDistributionType(1);
+						tokenawarde3.setAwardBalance(m2);
+						tokenawarde3.setCounter(0);
+						tokenawarde3.setGrantType(2);
+						kffTokenawardService.save(tokenawarde3);
+						// 将注册用户的信息同时存入流水表单中
+						Tokenrecords tokenrecords2 = new Tokenrecords();
+						tokenrecords2.setUserId(user3.getUserId());
+						tokenrecords2.setFunctionDesc("邀请奖励");
+						tokenrecords2.setFunctionType(18);
+						tokenrecords2.setTradeType(1);
+						tokenrecords2.setCreateTime(new Date());
+						kffTokenrecordsService.save(tokenrecords2);
+
+						coinProperty.setUserId(user3.getUserId());
+						coinProperty
+								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
+						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
+						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
+						kffCoinPropertyService.save(coinProperty);
+
+					}
+				} else if ((user3.getUserType() == 2 || user3.getUserType() == 3)) { // 将注册用户id
+																						// 奖励类型
+																						// 奖励金额
+																						// 当前时间
+																						// 发放的方式存入奖励表中
+					Integer findReferCount = kffUserService.findReferCount(user3.getUserId());
+					if (findReferCount <= 1000) {
+						m0 = 15000d;
+						m1 = 50d * 150 / 100;
+						m2 = 10d * 150 / 100;
+					} else {
+						m0 = 1000d;
+						m1 = 50d;
+						m2 = 10d;
+					}
+
+					tokenaward.setUserId(userId);
+					tokenaward.setTokenAwardFunctionType(16);
+					tokenaward.setTokenAwardFunctionDesc("注册奖励");
+					tokenaward.setInviteRewards(m0);
+					tokenaward.setCreateTime(new Date());
+					tokenaward.setDistributionType(1);
+					tokenaward.setAwardBalance(m0);
+					tokenaward.setUserName(user.getUserName());
+					tokenaward.setMobile(user.getMobile());
+					tokenaward.setCounter(0);
+					tokenaward.setGrantType(2);
+					kffTokenawardService.save(tokenaward);
+
+					coinProperty.setUserId(userId);
+					coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
+					coinProperty.setCoinDistributed(m0);
+					kffCoinPropertyService.save(coinProperty);
+
+					// 将注册用户的信息同时存入流水表单中
+					tokenrecords.setUserId(userId);
+					tokenrecords.setFunctionDesc("注册奖励");
+					tokenrecords.setFunctionType(16);
+					tokenrecords.setTradeType(1);
+					tokenrecords.setCreateTime(new Date());
+					kffTokenrecordsService.save(tokenrecords);
+
+					// 从数据表中获取所有注册用户的奖励数据
+					List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
+					// 获取上级邀请人邀请的钱数的总额
+					Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
+					// 获取上上级邀请人邀请的钱数的总额
+					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(), 18);
+
+					if (sum <= 500000) {
+						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+						Tokenaward tokenaward2 = new Tokenaward();
+						tokenaward2.setUserId(user2.getUserId());
+						tokenaward2.setTokenAwardFunctionType(18);
+						tokenaward2.setTokenAwardFunctionDesc("邀请奖励");
+						tokenaward2.setInviteRewards(m1);
+						tokenaward2.setCreateTime(new Date());
+						tokenaward2.setDistributionType(1);
+						tokenaward2.setCounter(0);
+						tokenaward2.setGrantType(2);
+						kffTokenawardService.save(tokenaward2);
+						// 将注册用户的信息同时存入流水表单中
+						Tokenrecords tokenrecords2 = new Tokenrecords();
+						tokenrecords2.setUserId(user2.getUserId());
+						tokenrecords2.setFunctionDesc("邀请奖励");
+						tokenrecords2.setFunctionType(18);
+						tokenrecords2.setTradeType(1);
+						tokenrecords2.setCreateTime(new Date());
+						kffTokenrecordsService.save(tokenrecords2);
+
+					}
+					if (sum2 <= 500000) {
+						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+						Tokenaward tokenawarde3 = new Tokenaward();
+						tokenawarde3.setUserId(user3.getUserId());
+						tokenawarde3.setTokenAwardFunctionType(18);
+						tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
+						tokenawarde3.setInviteRewards(m2);
+						tokenawarde3.setCreateTime(new Date());
+						tokenawarde3.setDistributionType(1);
+						tokenawarde3.setAwardBalance(m2);
+						tokenawarde3.setCounter(0);
+						tokenawarde3.setGrantType(2);
+						kffTokenawardService.save(tokenawarde3);
+						// 将注册用户的信息同时存入流水表单中
+						Tokenrecords tokenrecords2 = new Tokenrecords();
+						tokenrecords2.setUserId(user3.getUserId());
+						tokenrecords2.setFunctionDesc("邀请奖励");
+						tokenrecords2.setFunctionType(18);
+						tokenrecords2.setTradeType(1);
+						tokenrecords2.setCreateTime(new Date());
+						kffTokenrecordsService.save(tokenrecords2);
+
+						coinProperty.setUserId(user3.getUserId());
+						coinProperty
+								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
+						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
+						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
+						kffCoinPropertyService.save(coinProperty);
+
+					}
+				}
 			}
+		} else if (true) {
+
 		}
+
 	}
-	
+
+	public void method4(Integer userId) {
+		KFFUser user = kffUserService.findByUserId(userId);
+		// 判断如果用户没有被邀请 并且是普通用户
+		if (user.getReferLevel() == 0 && (user.getUserType() == 1 || user.getUserType() == 4)) {
+			m0 = 0.00d;
+			// 没有邀请人
+			// 将用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+			tokenaward.setUserId(userId);
+			tokenaward.setTokenAwardFunctionType(16);
+			tokenaward.setTokenAwardFunctionDesc("注册奖励");
+			tokenaward.setInviteRewards(m0);
+			tokenaward.setCreateTime(new Date());
+			tokenaward.setDistributionType(1);
+			tokenaward.setAwardBalance(m0); // 奖励余额初始化 是注册奖励
+			tokenaward.setUserName(user.getUserName());
+			tokenaward.setMobile(user.getMobile());
+			tokenaward.setCounter(0);
+			tokenaward.setGrantType(2);
+
+			kffTokenawardService.save(tokenaward);
+			coinProperty.setUserId(userId);
+			coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
+			coinProperty.setCoinDistributed(m0);
+			kffCoinPropertyService.save(coinProperty);
+			// 将用户的信息同时存入流水表单中
+			tokenrecords.setUserId(userId);
+			tokenrecords.setFunctionDesc("注册奖励");
+			tokenrecords.setFunctionType(16);
+			tokenrecords.setTradeType(1);
+			tokenrecords.setCreateTime(new Date());
+			kffTokenrecordsService.save(tokenrecords);
+
+			// 从数据表中获取所有该用户的奖励数据
+			// issue(userId);
+		} else if (user.getReferLevel() == 0 && (user.getUserType() == 2 || user.getUserType() == 3)) { // 有邀请人并且是项目方
+			m0 = 0.00d;
+			// 将用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+			tokenaward.setUserId(userId);
+			tokenaward.setTokenAwardFunctionType(16);
+			tokenaward.setTokenAwardFunctionDesc("注册奖励");
+			tokenaward.setInviteRewards(m0);
+			tokenaward.setCreateTime(new Date());
+			tokenaward.setDistributionType(1);
+			tokenaward.setAwardBalance(m0); // 奖励余额初始化 是注册奖励
+			tokenaward.setUserName(user.getUserName());
+			tokenaward.setMobile(user.getMobile());
+			tokenaward.setCounter(0);
+			tokenaward.setGrantType(2);
+			kffTokenawardService.save(tokenaward);
+			coinProperty.setUserId(userId);
+			coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
+			coinProperty.setCoinDistributed(m0);
+			kffCoinPropertyService.save(coinProperty);
+			// 将用户的信息同时存入流水表单中
+			tokenrecords.setUserId(userId);
+			tokenrecords.setFunctionDesc("注册奖励");
+			tokenrecords.setFunctionType(16);
+			tokenrecords.setTradeType(1);
+			tokenrecords.setCreateTime(new Date());
+			kffTokenrecordsService.save(tokenrecords);
+
+			// 从数据表中获取所有该用户的奖励数据
+			// issue(userId);
+		
+		} else if (user.getReferLevel() == 1 && (user.getUserType() == 1 || user.getUserType() == 4)) {
+			// 获取邀请人的id
+			Integer referUserId = user.getReferUserId();
+			// 获取邀请人的对象
+			KFFUser user2 = kffUserService.findById(referUserId);
+
+			// 判断邀请人是普通用户，并且没有上一级邀请
+			if ((user2.getUserType() == 1 || user2.getUserType() == 4) && user2.getReferLevel() == 0) {
+				m0 = 0.00d;
+				m1 = 25d;
+				// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+				tokenaward.setUserId(userId);
+				tokenaward.setTokenAwardFunctionType(16);
+				tokenaward.setTokenAwardFunctionDesc("注册奖励");
+				tokenaward.setInviteRewards(m0);
+				tokenaward.setCreateTime(new Date());
+				tokenaward.setDistributionType(1);
+				tokenaward.setUserName(user.getUserName());
+				tokenaward.setMobile(user.getMobile());
+				tokenaward.setCounter(0);
+				tokenaward.setGrantType(2);
+				tokenaward.setAwardBalance(m0);
+				kffTokenawardService.save(tokenaward);
+
+				coinProperty.setUserId(userId);
+				coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
+				coinProperty.setCoinDistributed(m0);
+				kffCoinPropertyService.save(coinProperty);
+
+				// 将注册用户的信息同时存入流水表单中
+				tokenrecords.setUserId(userId);
+				tokenrecords.setFunctionDesc("注册奖励");
+				tokenrecords.setFunctionType(16);
+				tokenrecords.setTradeType(1);
+				tokenrecords.setCreateTime(new Date());
+				kffTokenrecordsService.save(tokenrecords);
+
+				// 从数据表中获取所有注册用户的奖励数据
+				List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
+				// List<Tokenaward> findByUserId2 =
+				// kffTokenawardService.findByUserId(user2.getUserId());
+				// 获取邀请人邀请的钱数的总额
+				Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
+				if (sum <= 1000) {
+					// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+					Tokenaward tokenaward2 = new Tokenaward();
+					tokenaward2.setUserId(user2.getUserId());
+					tokenaward2.setTokenAwardFunctionType(18);
+					tokenaward2.setTokenAwardFunctionDesc("邀请奖励");
+					tokenaward2.setInviteRewards(m1);
+					tokenaward2.setCreateTime(new Date());
+					tokenaward2.setDistributionType(1);
+					tokenaward2.setCounter(0);
+					tokenaward2.setGrantType(2);
+					tokenaward2.setAwardBalance(m1);
+					kffTokenawardService.save(tokenaward2);
+
+					coinProperty.setUserId(user2.getUserId());
+					coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
+					coinProperty.setCoinDistributed(m1);
+
+					kffCoinPropertyService.save(coinProperty);
+
+					// 将注册用户的信息同时存入流水表单中
+					Tokenrecords tokenrecords2 = new Tokenrecords();
+					tokenrecords2.setUserId(user2.getUserId());
+					tokenrecords2.setFunctionDesc("邀请奖励");
+					tokenrecords2.setFunctionType(18);
+					tokenrecords2.setTradeType(1);
+					tokenrecords2.setCreateTime(new Date());
+					kffTokenrecordsService.save(tokenrecords2);
+
+				}
+			} else if ((user2.getUserType() == 2 || user2.getUserType() == 3) && user2.getReferLevel() == 0) {
+				Integer findReferCount = kffUserService.findReferCount(user2.getUserId());
+				if (findReferCount <= 1000) {
+					m0 = 0.00d;
+					m1 = 25d * 150 / 100;
+				} else {
+					m0 = 0.00d;
+					m1 = 25d;
+				}
+				// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+				tokenaward.setUserId(userId);
+				tokenaward.setTokenAwardFunctionType(16);
+				tokenaward.setTokenAwardFunctionDesc("注册奖励");
+				tokenaward.setInviteRewards(m0);
+				tokenaward.setCreateTime(new Date());
+				tokenaward.setDistributionType(1);
+				tokenaward.setAwardBalance(m0);
+				tokenaward.setUserName(user.getUserName());
+				tokenaward.setMobile(user.getMobile());
+				tokenaward.setCounter(0);
+				tokenaward.setGrantType(2);
+				kffTokenawardService.save(tokenaward);
+
+				// 将注册用户的信息同时存入流水表单中
+				tokenrecords.setUserId(userId);
+				tokenrecords.setFunctionDesc("注册奖励");
+				tokenrecords.setFunctionType(16);
+				tokenrecords.setTradeType(1);
+				tokenrecords.setCreateTime(new Date());
+				kffTokenrecordsService.save(tokenrecords);
+
+				coinProperty.setUserId(userId);
+				coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
+				coinProperty.setCoinDistributed(m0);
+				kffCoinPropertyService.save(coinProperty);
+
+				// 从数据表中获取所有注册用户的奖励数据
+				List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
+				// 获取邀请人邀请的钱数的总额
+				Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
+				if (sum <= 500000) {
+					// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+					Tokenaward tokenaward2 = new Tokenaward();
+					tokenaward2.setUserId(user2.getUserId());
+					tokenaward2.setTokenAwardFunctionType(18);
+					tokenaward2.setTokenAwardFunctionDesc("邀请奖励");
+					tokenaward2.setInviteRewards(m1);
+					tokenaward2.setCreateTime(new Date());
+					tokenaward2.setDistributionType(1);
+					tokenaward2.setCounter(0);
+					tokenaward2.setGrantType(2);
+					tokenaward2.setAwardBalance(m1);
+
+					kffTokenawardService.save(tokenaward2);
+
+					coinProperty.setUserId(userId);
+					coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
+					coinProperty.setCoinDistributed(m0);
+					kffCoinPropertyService.save(coinProperty);
+
+					// 将注册用户的信息同时存入流水表单中
+					Tokenrecords tokenrecords2 = new Tokenrecords();
+					tokenrecords2.setUserId(user2.getUserId());
+					tokenrecords2.setFunctionDesc("邀请奖励");
+					tokenrecords2.setFunctionType(18);
+					tokenrecords2.setTradeType(1);
+					tokenrecords2.setCreateTime(new Date());
+					kffTokenrecordsService.save(tokenrecords2);
+
+				}
+			} else if ((user2.getUserType() == 1 || user2.getUserType() == 4) && user2.getReferLevel() == 1) {
+				// 获取上上级的用户表
+				KFFUser user3 = kffUserService.findById(user2.getReferUserId());
+				// 判断注册用户的上上级是普通用户
+				if ((user3.getUserType() == 1 || user3.getUserType() == 4)) {
+					m0 = 0.00d;
+					m1 = 25d;
+					m2 = 5d;
+					// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+					tokenaward.setUserId(userId);
+					tokenaward.setTokenAwardFunctionType(16);
+					tokenaward.setTokenAwardFunctionDesc("注册奖励");
+					tokenaward.setInviteRewards(m0);
+					tokenaward.setCreateTime(new Date());
+					tokenaward.setDistributionType(1);
+					tokenaward.setAwardBalance(m0);
+					tokenaward.setUserName(user.getUserName());
+					tokenaward.setMobile(user.getMobile());
+					tokenaward.setCounter(0);
+					tokenaward.setGrantType(2);
+					kffTokenawardService.save(tokenaward);
+
+					coinProperty.setUserId(userId);
+					coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
+					coinProperty.setCoinDistributed(m0);
+					kffCoinPropertyService.save(coinProperty);
+
+					// 将注册用户的信息同时存入流水表单中
+					tokenrecords.setUserId(userId);
+					tokenrecords.setFunctionDesc("注册奖励");
+					tokenrecords.setFunctionType(16);
+					tokenrecords.setTradeType(1);
+					tokenrecords.setCreateTime(new Date());
+					kffTokenrecordsService.save(tokenrecords);
+
+					// 从数据表中获取所有注册用户的奖励数据
+					List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
+					// 获取上级邀请人邀请的钱数的总额
+					Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
+					// 获取上上级邀请人邀请的钱数的总额
+					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(), 18);
+					// kffTokenawardService.findByUserId(user2.getUserId());
+					if (sum <= 1000) {
+						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+						Tokenaward tokenaward2 = new Tokenaward();
+						tokenaward2.setUserId(user2.getUserId());
+						tokenaward2.setTokenAwardFunctionType(18);
+						tokenaward2.setTokenAwardFunctionDesc("邀请奖励");
+						tokenaward2.setInviteRewards(m1);
+						tokenaward2.setCreateTime(new Date());
+						tokenaward2.setDistributionType(1);
+						tokenaward2.setAwardBalance(m1);
+						tokenaward2.setCounter(0);
+						tokenaward2.setGrantType(2);
+						kffTokenawardService.save(tokenaward2);
+						// 将注册用户的信息同时存入流水表单中
+						Tokenrecords tokenrecords2 = new Tokenrecords();
+						tokenrecords2.setUserId(user2.getUserId());
+						tokenrecords2.setFunctionDesc("邀请奖励");
+						tokenrecords2.setFunctionType(18);
+						tokenrecords2.setTradeType(1);
+						tokenrecords2.setCreateTime(new Date());
+						kffTokenrecordsService.save(tokenrecords2);
+
+						coinProperty.setUserId(user2.getUserId());
+						coinProperty
+								.setCoinLock(kffUserService.findById(user2.getUserId()).getKffCoinNum().doubleValue());
+						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
+						coinProperty.setCoinDistributed(m1 + coinProperty.getCoinDistributed());
+						kffCoinPropertyService.save(coinProperty);
+
+					}
+					if (sum2 <= 1000) {
+						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+						Tokenaward tokenawarde3 = new Tokenaward();
+						tokenawarde3.setUserId(user3.getUserId());
+						tokenawarde3.setTokenAwardFunctionType(18);
+						tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
+						tokenawarde3.setInviteRewards(m2);
+						tokenawarde3.setCreateTime(new Date());
+						tokenawarde3.setDistributionType(1);
+						tokenawarde3.setAwardBalance(m2);
+						
+						tokenawarde3.setCounter(0);
+						tokenawarde3.setGrantType(2);
+						kffTokenawardService.save(tokenawarde3);
+						// 将注册用户的信息同时存入流水表单中
+						Tokenrecords tokenrecords2 = new Tokenrecords();
+						tokenrecords2.setUserId(user3.getUserId());
+						tokenrecords2.setFunctionDesc("邀请奖励");
+						tokenrecords2.setFunctionType(18);
+						tokenrecords2.setTradeType(1);
+						tokenrecords2.setCreateTime(new Date());
+						kffTokenrecordsService.save(tokenrecords2);
+
+						coinProperty.setUserId(user3.getUserId());
+						coinProperty
+								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
+						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
+						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
+						kffCoinPropertyService.save(coinProperty);
+
+					}
+				}
+
+				else if ((user3.getUserType() == 2 || user3.getUserType() == 3)) {
+					Integer findReferCount = kffUserService.findReferCount(user3.getUserId());
+					if (findReferCount <= 1000) {
+						m0 = 0.00d;
+						m1 = 25d;
+						m2 = 5d * 150 / 100;
+					} else {
+						m0 = 0.00d;
+						m1 = 25d;
+						m2 = 5d;
+					}
+
+					// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+					tokenaward.setUserId(userId);
+					tokenaward.setTokenAwardFunctionType(16);
+					tokenaward.setTokenAwardFunctionDesc("注册奖励");
+					tokenaward.setInviteRewards(m0);
+					tokenaward.setCreateTime(new Date());
+					tokenaward.setDistributionType(1);
+					tokenaward.setAwardBalance(m0);
+					tokenaward.setUserName(user.getUserName());
+					tokenaward.setMobile(user.getMobile());
+					tokenaward.setCounter(0);
+					tokenaward.setGrantType(2);
+					kffTokenawardService.save(tokenaward);
+
+					coinProperty.setUserId(userId);
+					coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
+					coinProperty.setCoinDistributed(m0);
+					kffCoinPropertyService.save(coinProperty);
+
+					// 将注册用户的信息同时存入流水表单中
+					tokenrecords.setUserId(userId);
+					tokenrecords.setFunctionDesc("注册奖励");
+					tokenrecords.setFunctionType(16);
+					tokenrecords.setTradeType(1);
+					tokenrecords.setCreateTime(new Date());
+					kffTokenrecordsService.save(tokenrecords);
+
+					// 从数据表中获取所有注册用户的奖励数据
+					List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
+					// 获取上级邀请人邀请的钱数的总额
+					Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
+					// 获取上上级邀请人邀请的钱数的总额
+					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(), 18);
+
+					if (sum <= 1000) {
+						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+						Tokenaward tokenaward2 = new Tokenaward();
+						tokenaward2.setUserId(user2.getUserId());
+						tokenaward2.setTokenAwardFunctionType(18);
+						tokenaward2.setTokenAwardFunctionDesc("邀请奖励");
+						tokenaward2.setInviteRewards(m1);
+						tokenaward2.setCreateTime(new Date());
+						tokenaward2.setDistributionType(1);
+						tokenaward2.setCounter(0);
+						tokenaward2.setGrantType(2);
+						kffTokenawardService.save(tokenaward2);
+						// 将注册用户的信息同时存入流水表单中
+						Tokenrecords tokenrecords2 = new Tokenrecords();
+						tokenrecords2.setUserId(user2.getUserId());
+						tokenrecords2.setFunctionDesc("邀请奖励");
+						tokenrecords2.setFunctionType(18);
+						tokenrecords2.setTradeType(1);
+						tokenrecords2.setCreateTime(new Date());
+						kffTokenrecordsService.save(tokenrecords2);
+
+					}
+					if (sum2 <= 1000) {
+						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+						Tokenaward tokenawarde3 = new Tokenaward();
+						tokenawarde3.setUserId(user3.getUserId());
+						tokenawarde3.setTokenAwardFunctionType(18);
+						tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
+						tokenawarde3.setInviteRewards(m2);
+						tokenawarde3.setCreateTime(new Date());
+						tokenawarde3.setDistributionType(1);
+						tokenawarde3.setAwardBalance(m2);
+						tokenawarde3.setCounter(0);
+						tokenawarde3.setGrantType(2);
+						kffTokenawardService.save(tokenawarde3);
+						// 将注册用户的信息同时存入流水表单中
+						Tokenrecords tokenrecords2 = new Tokenrecords();
+						tokenrecords2.setUserId(user3.getUserId());
+						tokenrecords2.setFunctionDesc("邀请奖励");
+						tokenrecords2.setFunctionType(18);
+						tokenrecords2.setTradeType(1);
+						tokenrecords2.setCreateTime(new Date());
+						kffTokenrecordsService.save(tokenrecords2);
+
+						coinProperty.setUserId(user3.getUserId());
+						coinProperty
+								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
+						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
+						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
+						kffCoinPropertyService.save(coinProperty);
+
+					}
+				}
+				// 如果上级邀请人是是项目方，并且有上级邀请人
+			} else if ((user2.getUserType() == 2 || user2.getUserType() == 3) && user2.getReferLevel() == 1) {
+
+				// 获取上上级的用户表
+				KFFUser user3 = kffUserService.findById(user2.getReferUserId());
+				// 判断注册用户的上上级是普通用户
+				if ((user3.getUserType() == 1 || user3.getUserType() == 4)) {
+					Integer findReferCount = kffUserService.findReferCount(user2.getUserId());
+					if (findReferCount <= 1000) {
+						m0 = 0.00d;
+						m1 = 25d;
+						m2 = 5d * 150 / 100;
+					} else {
+						m0 = 0.00d;
+						m1 = 25d;
+						m2 = 5d;
+					}
+					// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+					tokenaward.setUserId(userId);
+					tokenaward.setTokenAwardFunctionType(16);
+					tokenaward.setTokenAwardFunctionDesc("注册奖励");
+					tokenaward.setInviteRewards(m0);
+					tokenaward.setCreateTime(new Date());
+					tokenaward.setDistributionType(1);
+					tokenaward.setAwardBalance(m0);
+					tokenaward.setUserName(user.getUserName());
+					tokenaward.setMobile(user.getMobile());
+					tokenaward.setCounter(0);
+					tokenaward.setGrantType(2);
+					kffTokenawardService.save(tokenaward);
+
+					coinProperty.setUserId(userId);
+					coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
+					coinProperty.setCoinDistributed(m0);
+					kffCoinPropertyService.save(coinProperty);
+
+					// 将注册用户的信息同时存入流水表单中
+					tokenrecords.setUserId(userId);
+					tokenrecords.setFunctionDesc("注册奖励");
+					tokenrecords.setFunctionType(16);
+					tokenrecords.setTradeType(1);
+					tokenrecords.setCreateTime(new Date());
+					kffTokenrecordsService.save(tokenrecords);
+
+					// 从数据表中获取所有注册用户的奖励数据
+					List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
+					// 获取上级邀请人邀请的钱数的总额
+					Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
+					// 获取上上级邀请人邀请的钱数的总额
+					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(), 18);
+					if (sum <= 1000) {
+						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+						Tokenaward tokenawarde3 = new Tokenaward();
+						tokenawarde3.setUserId(user3.getUserId());
+						tokenawarde3.setTokenAwardFunctionType(18);
+						tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
+						tokenawarde3.setInviteRewards(m2);
+						tokenawarde3.setCreateTime(new Date());
+						tokenawarde3.setDistributionType(1);
+						tokenawarde3.setAwardBalance(m2);
+						tokenawarde3.setCounter(0);
+						tokenawarde3.setGrantType(2);
+						kffTokenawardService.save(tokenawarde3);
+						// 将注册用户的信息同时存入流水表单中
+						Tokenrecords tokenrecords2 = new Tokenrecords();
+						tokenrecords2.setUserId(user3.getUserId());
+						tokenrecords2.setFunctionDesc("邀请奖励");
+						tokenrecords2.setFunctionType(18);
+						tokenrecords2.setTradeType(1);
+						tokenrecords2.setCreateTime(new Date());
+						kffTokenrecordsService.save(tokenrecords2);
+
+						coinProperty.setUserId(user3.getUserId());
+						coinProperty
+								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
+						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
+						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
+						kffCoinPropertyService.save(coinProperty);
+
+					}
+					if (sum2 <= 1000) {
+						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+						Tokenaward tokenawarde3 = new Tokenaward();
+						tokenawarde3.setUserId(user3.getUserId());
+						tokenawarde3.setTokenAwardFunctionType(18);
+						tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
+						tokenawarde3.setInviteRewards(m2);
+						tokenawarde3.setCreateTime(new Date());
+						tokenawarde3.setDistributionType(1);
+						tokenawarde3.setAwardBalance(m2);
+						tokenawarde3.setCounter(0);
+						tokenawarde3.setGrantType(2);
+						kffTokenawardService.save(tokenawarde3);
+						// 将注册用户的信息同时存入流水表单中
+						Tokenrecords tokenrecords2 = new Tokenrecords();
+						tokenrecords2.setUserId(user3.getUserId());
+						tokenrecords2.setFunctionDesc("邀请奖励");
+						tokenrecords2.setFunctionType(18);
+						tokenrecords2.setTradeType(1);
+						tokenrecords2.setCreateTime(new Date());
+						kffTokenrecordsService.save(tokenrecords2);
+
+						coinProperty.setUserId(user3.getUserId());
+						coinProperty
+								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
+						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
+						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
+						kffCoinPropertyService.save(coinProperty);
+
+					}
+				} else if ((user3.getUserType() == 2 || user3.getUserType() == 3)) { // 将注册用户id
+																						// 奖励类型
+																						// 奖励金额
+																						// 当前时间
+																						// 发放的方式存入奖励表中
+					Integer findReferCount = kffUserService.findReferCount(user3.getUserId());
+					if (findReferCount <= 1000) {
+						m0 = 0.00d;
+						m1 = 25d * 150 / 100;
+						m2 = 5d * 150 / 100;
+					} else {
+						m0 = 0.00d;
+						m1 = 25d;
+						m2 = 5d;
+					}
+
+					tokenaward.setUserId(userId);
+					tokenaward.setTokenAwardFunctionType(16);
+					tokenaward.setTokenAwardFunctionDesc("注册奖励");
+					tokenaward.setInviteRewards(m0);
+					tokenaward.setCreateTime(new Date());
+					tokenaward.setDistributionType(1);
+					tokenaward.setAwardBalance(m0);
+					tokenaward.setUserName(user.getUserName());
+					tokenaward.setMobile(user.getMobile());
+					tokenaward.setCounter(0);
+					tokenaward.setGrantType(2);
+					kffTokenawardService.save(tokenaward);
+
+					coinProperty.setUserId(userId);
+					coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
+					coinProperty.setCoinDistributed(m0);
+					kffCoinPropertyService.save(coinProperty);
+
+					// 将注册用户的信息同时存入流水表单中
+					tokenrecords.setUserId(userId);
+					tokenrecords.setFunctionDesc("注册奖励");
+					tokenrecords.setFunctionType(16);
+					tokenrecords.setTradeType(1);
+					tokenrecords.setCreateTime(new Date());
+					kffTokenrecordsService.save(tokenrecords);
+
+					// 从数据表中获取所有注册用户的奖励数据
+					List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
+					// 获取上级邀请人邀请的钱数的总额
+					Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
+					// 获取上上级邀请人邀请的钱数的总额
+					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(), 18);
+
+					if (sum <= 500000) {
+						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+						Tokenaward tokenaward2 = new Tokenaward();
+						tokenaward2.setUserId(user2.getUserId());
+						tokenaward2.setTokenAwardFunctionType(18);
+						tokenaward2.setTokenAwardFunctionDesc("邀请奖励");
+						tokenaward2.setInviteRewards(m1);
+						tokenaward2.setCreateTime(new Date());
+						tokenaward2.setDistributionType(1);
+						tokenaward2.setCounter(0);
+						tokenaward2.setGrantType(2);
+						kffTokenawardService.save(tokenaward2);
+						// 将注册用户的信息同时存入流水表单中
+						Tokenrecords tokenrecords2 = new Tokenrecords();
+						tokenrecords2.setUserId(user2.getUserId());
+						tokenrecords2.setFunctionDesc("邀请奖励");
+						tokenrecords2.setFunctionType(18);
+						tokenrecords2.setTradeType(1);
+						tokenrecords2.setCreateTime(new Date());
+						kffTokenrecordsService.save(tokenrecords2);
+
+					}
+					if (sum2 <= 500000) {
+						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
+						Tokenaward tokenawarde3 = new Tokenaward();
+						tokenawarde3.setUserId(user3.getUserId());
+						tokenawarde3.setTokenAwardFunctionType(18);
+						tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
+						tokenawarde3.setInviteRewards(m2);
+						tokenawarde3.setCreateTime(new Date());
+						tokenawarde3.setDistributionType(1);
+						tokenawarde3.setAwardBalance(m2);
+						tokenawarde3.setCounter(0);
+						tokenawarde3.setGrantType(2);
+						kffTokenawardService.save(tokenawarde3);
+						// 将注册用户的信息同时存入流水表单中
+						Tokenrecords tokenrecords2 = new Tokenrecords();
+						tokenrecords2.setUserId(user3.getUserId());
+						tokenrecords2.setFunctionDesc("邀请奖励");
+						tokenrecords2.setFunctionType(18);
+						tokenrecords2.setTradeType(1);
+						tokenrecords2.setCreateTime(new Date());
+						kffTokenrecordsService.save(tokenrecords2);
+
+						coinProperty.setUserId(user3.getUserId());
+						coinProperty
+								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
+						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
+						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
+						kffCoinPropertyService.save(coinProperty);
+
+					}
+				}
+			}
+		} else if (true) {
+
+		}
+
+	}
+
 }
-
-
-
-
-
-
-

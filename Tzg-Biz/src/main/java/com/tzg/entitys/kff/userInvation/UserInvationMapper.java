@@ -11,4 +11,6 @@ public interface UserInvationMapper extends BaseMapper<UserInvation, java.lang.I
 
 	UserInvation selectUserInvation(Integer userId);
 
+	void updataUserInvation(UserInvation userInvation);
+
 }

@@ -2,6 +2,7 @@ package com.tzg.rest.controller.kff;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -45,14 +46,14 @@ public class EvaluationController extends BaseController {
 	@ResponseBody
 	public BaseResponseEntity saveEvaluation(HttpServletRequest request) {
 		BaseResponseEntity bre = new BaseResponseEntity();
-        HashMap<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<String, Object>();
 
 		try {
 			EvaluationRequest evaluationRequest = getParamMapFromRequestPolicy(request, EvaluationRequest.class);
 			String token = evaluationRequest.getToken();			
 			Integer userId = getUserIdByToken(token);
 			evaluationRequest.setCreateUserId(userId);
-			kffRmiService.saveEvaluation(evaluationRequest);
+			map =kffRmiService.saveEvaluation(evaluationRequest);
             bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("EvaluationController saveEvaluation:{}", e);

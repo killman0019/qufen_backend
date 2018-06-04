@@ -1,4 +1,4 @@
-package com.tzg.wap.utils;
+package com.tzg.common.utils;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -26,8 +26,6 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
-import com.tzg.entitys.kff.discuss.DiscussRequest;
-import com.tzg.rest.vo.BaseResponseEntity;
 
 /**
  * 路径存放思路 :将二维码生成放在指定的二维码路径下 ;将原始海报和二维码生成的图片存放在海报的路径下:在海报路径下添加文字在原来的基础上生成新的海报图片
@@ -49,11 +47,11 @@ public class Create2Code {
 	 */
 	private static final String posterSysPath = "D:\\opt\\file\\upload\\poster\\";
 	/**
-	 * 原始海报的存放路径
+	 * 原始海报的存放路径 "D:\\opt\\file\\upload\\poster\\init\\initpic.png
 	 */
-	private static String initPosterSysPath = "D:\\opt\\file\\upload\\poster\\init\\initpic.png";
+	private static String initPosterSysPath = "D:\\opt\\file\\upload\\poster\\init\\initpic";
 
-	private static String text = "区分欢迎你!";
+	private static String text = "";
 
 	public static void main(String[] args) {
 		createPoster(null);
@@ -69,12 +67,13 @@ public class Create2Code {
 		// 返回图片的相对于服务器的绝对地址
 		String contentselfid = contentself + str;
 		String posterSysPathlast = posterSysPath + str + ".png";
+		String initPosterSysPathLast = initPosterSysPath + rand1To11() + ".png";
 		String code2Path = createNameAndPath(str);// 二维码路径
 		create2CodeImg(code2Path, contentselfid);// 在制定位置生成二维码
-		overlapImage(initPosterSysPath, code2Path, posterSysPathlast);
-		createCharAtImg(text, posterSysPathlast);
+		overlapImage(initPosterSysPathLast, code2Path, posterSysPathlast);
+		// createCharAtImg(text, posterSysPathlast);
 
-		return "upload\\poster\\" + str + ".png";
+		return "upload/poster/" + str + ".png";
 	}
 
 	/**
@@ -172,6 +171,19 @@ public class Create2Code {
 	public static String createNameAndPath(String code2) {
 		String path = code2sysPath + code2 + ".png";
 		return path;
+	}
+
+	/**
+	 * 生成一个1到11 的随机数
+	 * 
+	 * @return
+	 */
+	public static String rand1To11() {
+		// int i = x + (int)(Math.random() * (y - x + 1));
+		String str = null;
+		int i = 1 + (int) (Math.random() * (11 - 1 + 1));
+		str = i + "";
+		return str;
 	}
 
 }

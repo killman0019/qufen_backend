@@ -67,7 +67,7 @@ public class Tokenrecords implements Serializable {
      */ 	
 	private java.lang.String memo;
 	/**
-	 * 新加字段(奖励的token)
+	 * 发放类型 1-一次性发放 2-线性发放
 	 * @param Wang
 	 */
 	private java.lang.Integer rewardGrantType;

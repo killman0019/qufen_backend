@@ -1,7 +1,6 @@
 package com.tzg.entitys.kff.post;
 
 import java.io.Serializable;
-
 import com.tzg.common.utils.DateUtil;
 
 public class Post implements Serializable {
@@ -15,11 +14,6 @@ public class Post implements Serializable {
      * postId
      */ 	
 	private java.lang.Integer postId;
-	
-	/**
-	 * 是否置顶0-否1-是
-	 */
-	private java.lang.Integer stickTop;
     /**
      * 项目ID
      */ 	
@@ -303,14 +297,6 @@ public class Post implements Serializable {
 
 	public void setProjectChineseName(java.lang.String projectChineseName) {
 		this.projectChineseName = projectChineseName;
-	}
-
-	public java.lang.Integer getStickTop() {
-		return stickTop;
-	}
-
-	public void setStickTop(java.lang.Integer stickTop) {
-		this.stickTop = stickTop;
 	}
 
 	

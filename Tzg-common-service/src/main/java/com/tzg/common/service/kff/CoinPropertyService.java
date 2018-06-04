@@ -42,7 +42,7 @@ public class CoinPropertyService {
 	}
 	
 	public void update(CoinProperty coinPropertyId) throws RestServiceException {	
-		if(coinPropertyId.getCoinPropertyId() == null){
+		if(coinPropertyId.getUserId() == null){
 			throw new RestServiceException("id不能为空");
 		}
 		coinPropertyMapper.update(coinPropertyId);
@@ -74,6 +74,21 @@ public class CoinPropertyService {
 		
 		return coinPropertyMapper.findAllCoinpropertyByWhere(map);
 	}
+
+	public List<CoinProperty> findByUserIds(Integer userId) {
+
+		return coinPropertyMapper.findByUserIds(userId);
+	}
+
+	public List<CoinProperty> findCoinPropertyByUserId(Integer userId) {
+		return coinPropertyMapper.findCoinPropertyByUserId(userId);
+	}
+
+	public List<CoinProperty> findAllCoinpropertyCoinUnlock(Integer userId, Double coinUnlock) {
+
+		return coinPropertyMapper.findAllCoinpropertyCoinUnlock(userId,coinUnlock);
+	}
+
 
 	
 }

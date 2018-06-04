@@ -25,15 +25,11 @@
 		<result property="updateTime" jdbcType="TIMESTAMP" column="updateTime"/>
 		<result property="status" jdbcType="INTEGER" column="status"/>
 		<result property="uuid" jdbcType="VARCHAR" column="uuid"/>
-		<result property="stickTop" jdbcType="INTEGER" column="stick_top"/>
-		<result property="stickUpdateTime" jdbcType="TIMESTAMP" column="stick_updateTime"/>
-
-
     </resultMap>
 	
 	<sql id="columns">
 	    <![CDATA[
-        post_id ,project_id ,project_icon ,project_code ,project_english_name ,project_chinese_name,post_title ,post_type ,post_short_desc ,post_small_images ,comments_num ,praise_num ,pageview_num ,donate_num ,collect_num ,create_user_id ,create_user_icon ,create_user_signature ,create_user_name ,createTime ,updateTime ,status,uuid,stick_top,stick_updateTime 
+        post_id ,project_id ,project_icon ,project_code ,project_english_name ,project_chinese_name,post_title ,post_type ,post_short_desc ,post_small_images ,comments_num ,praise_num ,pageview_num ,donate_num ,collect_num ,create_user_id ,create_user_icon ,create_user_signature ,create_user_name ,createTime ,updateTime ,status,uuid 
 	    ]]>
 	</sql>
 	
@@ -64,9 +60,7 @@
         	createTime ,
         	updateTime ,
         	status ,
-        	uuid,
-        	stick_top,
-        	stick_updateTime
+        	uuid
 		) VALUES (
         	#{projectId,jdbcType=INTEGER} ,
         	#{projectIcon,jdbcType=VARCHAR} ,
@@ -89,9 +83,7 @@
         	#{createTime,jdbcType=TIMESTAMP} ,
         	#{updateTime,jdbcType=TIMESTAMP} ,
         	#{status,jdbcType=INTEGER} ,
-        	#{uuid,jdbcType=VARCHAR},
-        	#{stickTop,jdbcType=INTEGER},
-        	#{stickUpdateTime,jdbcType=TIMESTAMP} 
+        	#{uuid,jdbcType=VARCHAR}
         	
 		)
 	]]>
@@ -164,12 +156,6 @@
 			<if test="status != null">
 	        status = #{status,jdbcType=INTEGER} 
 	        </if>
-	        <if test="stickTop != null">
-	        stick_top = #{stickTop,jdbcType=INTEGER} 
-	        </if>
-	        <if test="stickUpdateTime != null">
-	        stick_updateTime = #{stickUpdateTime,jdbcType=TIMESTAMP} 
-	        </if>	        
 	    </set>
 		WHERE 
 	        post_id = #{postId,jdbcType=INTEGER} 
@@ -364,9 +350,6 @@
 		</if>		
 		<if test="uuid != null and uuid.trim() != ''">
 		and uuid = #{uuid}
-		</if>
-		<if test="stickTop != null and stickTop.trim() != ''">
-		and stick_top = #{stickTop}
 		</if>
 	</sql>
 </mapper>

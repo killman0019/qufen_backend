@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.tzg.common.utils.FileUtils;
+import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
 import com.tzg.rmi.service.KFFRmiService;
@@ -44,7 +45,7 @@ public class UploadController extends BaseController {
 			throw new RestServiceException("上传图片不能为空!");
 		}
 		// 大于10M
-		if (upfile.getSize() >= 10 * 1024 * 1024) {
+		if (upfile.getSize() >= 5 * 1024 * 1024) {
 			throw new RestServiceException("图片大于10M");
 		}
 		// 保存图片到
@@ -63,7 +64,7 @@ public class UploadController extends BaseController {
 			upfile.transferTo(new File("D:\\opt\\file\\upload\\Idcard\\" + name + "." + ext));
 		}
 
-		resMap.put("picPath", "upload\\Idcard\\" + name + "." + ext);
+		resMap.put("picPath", "upload/Idcard/" + name + "." + ext);
 		bre.setData(resMap);
 		return bre;
 	}
@@ -77,7 +78,7 @@ public class UploadController extends BaseController {
 			throw new RestServiceException("上传图片不能为空!");
 		}
 		// 大于10M
-		if (upfile.getSize() >= 10 * 1024 * 1024) {
+		if (upfile.getSize() >= 5 * 1024 * 1024) {
 			throw new RestServiceException("图片大于10M");
 		}
 		// 保存图片到
@@ -94,7 +95,7 @@ public class UploadController extends BaseController {
 			upfile.transferTo(new File("D:\\opt\\file\\upload\\avatars\\" + name + "." + ext));
 		}
 
-		resMap.put("picPath", "upload\\avatars\\" + name + "." + ext);
+		resMap.put("picPath", "upload/avatars/" + name + "." + ext);
 		bre.setData(resMap);
 		return bre;
 	}
@@ -110,7 +111,7 @@ public class UploadController extends BaseController {
 			throw new RestServiceException("上传图片不能为空!");
 		}
 		// 大于10M
-		if (upfile.getSize() >= 10 * 1024 * 1024) {
+		if (upfile.getSize() >= 5 * 1024 * 1024) {
 			throw new RestServiceException("图片大于10M");
 		}
 		String name = UUID.randomUUID().toString().replaceAll("-", "");
@@ -126,7 +127,7 @@ public class UploadController extends BaseController {
 		} else {
 			upfile.transferTo(new File("D:\\opt\\file\\upload\\postPic\\" + name + "." + ext));
 		}
-		resMap.put("picPath", "upload\\postPic\\" + name + "." + ext);
+		resMap.put("picPath", "upload/postPic/" + name + "." + ext);
 		log.info("图片存入成功!++++++++++++++++++++++");
 		log.info(name + "." + ext);
 		bre.setData(resMap);
@@ -146,7 +147,7 @@ public class UploadController extends BaseController {
 			throw new RestServiceException("上传图片不能为空!");
 		}
 		// 大于10M
-		if (upfile.getSize() >= 10 * 1024 * 1024) {
+		if (upfile.getSize() >= 5 * 1024 * 1024) {
 			throw new RestServiceException("图片大于10M");
 		}
 		String name = UUID.randomUUID().toString().replaceAll("-", "");
@@ -185,7 +186,7 @@ public class UploadController extends BaseController {
 			throw new RestServiceException("上传图片不能为空!");
 		}
 		// 大于10M
-		if (upfile.getSize() >= 10 * 1024 * 1024) {
+		if (upfile.getSize() >= 5 * 1024 * 1024) {
 			throw new RestServiceException("图片大于10M");
 		}
 		String name = UUID.randomUUID().toString().replaceAll("-", "");
@@ -204,7 +205,7 @@ public class UploadController extends BaseController {
 
 		log.info("authentication +++++++图片存入成功!++++++++++++++++++++++");
 		log.info(name + "." + ext);
-		resMap.put("picPath", "upload\\authentication\\" + name + "." + ext);
+		resMap.put("picPath", "upload/authentication/" + name + "." + ext);
 		bre.setData(resMap);
 		return bre;
 	}

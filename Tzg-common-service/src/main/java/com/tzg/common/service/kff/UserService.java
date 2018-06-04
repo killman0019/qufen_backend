@@ -1,6 +1,7 @@
 package com.tzg.common.service.kff;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +27,8 @@ import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.entitys.kff.user.KFFUserMapper;
 import com.tzg.entitys.kff.userqfindex.Userqfindex;
 import com.tzg.entitys.kff.userqfindex.UserqfindexMapper;
+import com.tzg.entitys.kff.userwallet.KFFUserWallet;
+import com.tzg.entitys.kff.userwallet.KFFUserWalletMapper;
 import com.tzg.entitys.loginaccount.RegisterRequest;
 import com.tzg.rest.constant.KFFRestConstants;
 import com.tzg.rest.exception.rest.RestErrorCode;
@@ -37,14 +40,16 @@ import cn.jpush.api.report.UsersResult.User;
 @Transactional
 public class UserService {
 	private static final Log logger = LogFactory.getLog(UserService.class);
-
 	@Autowired
 	private KFFUserMapper userMapper;
 	@Autowired
 	private QfIndexService qfIndexService;
 	@Autowired
 	private TokenawardService tokenawardService;
-
+	@Autowired
+	private AwardPortService awardPortService;
+	@Autowired
+	private KFFUserWalletMapper kFFUserWalletMapper;
 	@Transactional(readOnly = true)
 	public KFFUser findById(java.lang.Integer id) throws RestServiceException {
 		if (id == null) {
@@ -108,8 +113,18 @@ public class UserService {
 		QfIndex qfIndex = new QfIndex();
 		qfIndex.setUserId(user.getUserId());
 		qfIndex.setStatusHierarchyDesc("刁民");
-		qfIndex.setStatusHierarchyType(0); // 区分指数 : 新建用户默认是100分
+		qfIndex.setStatusHierarchyType(0); // 区分指数 : 新建用户默认是0分
+		qfIndex.setCreateTime(new Date());
+		qfIndex.setUpdateTime(new Date());
 		qfIndexService.save(qfIndex);
+		//awardPortService.registerAward(user.getUserId());
+		KFFUserWallet kffUserWallet = new KFFUserWallet();
+		kffUserWallet.setUserId(user.getUserId());
+		kffUserWallet.setUserName(user.getUserName());
+		kffUserWallet.setMobile(user.getMemo());
+		kffUserWallet.setWalletType(0); // '钱包状态0-未绑定  1-已绑定'
+		kFFUserWalletMapper.save(kffUserWallet);
+		
 		return findUserByPhoneNumber(registerRequest.getPhoneNumber());
 	}
 
@@ -134,18 +149,20 @@ public class UserService {
 			 */
 			KFFUser loninUser = userMapper.findByMobileId(loginName);
 			Integer userId = loninUser.getUserId();
+			System.err.println("登录用户的ID  :" + userId);
 			// 根据用户id去tokenaward表中获取发放状态 grantType
-			/*List<Tokenaward> findByUserId = tokenawardService.findByUserId(userId);
+			List<Tokenaward> findByUserId = tokenawardService.findByUserId(userId);
 			for (Tokenaward tokenaward : findByUserId) {
 				if (tokenaward.getGrantType() == 2) {
 					// 调用发放接口
-					AwardPortService awardPortService = new AwardPortService();
-					awardPortService.registerAward(userId);
-					Tokenaward tokenawardNew = new Tokenaward();
-					tokenawardNew.setGrantType(1);
-					tokenawardService.update(tokenawardNew);
+				//	AwardPortService awardPortService = new AwardPortService();
+					//Integer tokenawardUserid = tokenaward.getUserId();
+					//awardPortService.registerAward(userId);
+					registerAward(userId);
+					tokenaward.setGrantType(1);
+					tokenawardService.update(tokenaward);
 				}
-			}*/
+			}
 		} else {
 			// 用户名登录
 			query.addQueryData("userName", loginName);
@@ -162,9 +179,8 @@ public class UserService {
 					// 调用发放接口
 					AwardPortService awardPortService = new AwardPortService();
 					awardPortService.registerAward(userId);
-					Tokenaward tokenawardNew = new Tokenaward();
-					tokenawardNew.setGrantType(1);
-					tokenawardService.update(tokenawardNew);
+					tokenaward.setGrantType(1);
+					tokenawardService.update(tokenaward);
 				}
 			}
 
@@ -318,7 +334,97 @@ public class UserService {
 
 	public KFFUser findByUserId(Integer userId) {
 
-		return userMapper.findById(userId);
+		return userMapper.findUserById(userId);
 
+	}
+
+	public Integer selectInvationM1Num(Integer userId) {
+		List<KFFUser> users = userMapper.selectInvationM1Num(userId);
+		if (users == null) {
+			return 0;
+		}
+		return users.size();
+
+	}
+
+	public Integer selectInvationM2Num(Integer userId) {
+		// 所有的一级邀请人
+		List<KFFUser> users = userMapper.selectInvationM1Num(userId);
+		if (users.size() == 0) {
+			return 0;
+		}
+
+		// 初始邀请M2总人数
+		int userM2Sum = 0;
+		for (KFFUser user : users) {
+			Integer userM2 = selectInvationM1Num(user.getUserId());
+			userM2Sum = userM2Sum + userM2.intValue();
+		}
+		return new Integer(userM2Sum);
+	}
+
+	private void registerAward(Integer userId){
+		System.err.println("registerAward类的" + userId);
+		 KFFUser user = findByUserId(userId);
+		//格式化时间
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		System.err.println("测试我是注册人id :" + user.getUserId());
+		System.err.println("userIdRegisterAward : "+ userId);
+		if(userId != null && userId != 0){
+			//判断注册用户在哪个区间
+			if(userId>0 && userId <= 50000){
+				Date createTime = user.getCreateTime();
+				
+				String formatCreateTime = format.format(createTime);
+				String formatNewDate = format.format(new Date());
+				if(formatCreateTime == formatNewDate) {
+					
+					System.err.println("我是发放奖励");
+					awardPortService.method1(userId);
+					
+					//method1(userId);
+					//	issue(userId);
+				}else{
+					System.err.println("我是账单生成");
+					awardPortService.issue(userId);
+				}
+				
+			}else
+			if(userId>50000 && userId <= 100000){
+				Date createTime = user.getCreateTime();
+				String formatCreateTime = format.format(createTime);
+				String formatNewDate = format.format(new Date());
+				if(formatCreateTime==formatNewDate) {
+					awardPortService.method1(userId);
+				}else{
+					
+					awardPortService.issue(userId);
+				}
+			}else
+			if(userId>100000 && userId <= 500000){
+				Date createTime = user.getCreateTime();
+				String formatCreateTime = format.format(createTime);
+				String formatNewDate = format.format(new Date());
+				if(formatCreateTime==formatNewDate) {
+					
+					awardPortService.method3(userId);
+				}else{
+					
+					awardPortService.issue(userId);
+				}
+			}else
+			if(userId>5000000 && userId < 1000000){
+				Date createTime = user.getCreateTime();
+				String formatCreateTime = format.format(createTime);
+				String formatNewDate = format.format(new Date());
+				if(formatCreateTime==formatNewDate) {
+					awardPortService.method4(userId);
+				}else{
+					
+					awardPortService.issue(userId);
+				}
+			}
+		}
+		
 	}
 }

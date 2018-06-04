@@ -39,9 +39,12 @@ import com.tzg.entitys.kff.project.ProjectResponse;
 import com.tzg.entitys.kff.project.SubmitKFFProjectRequest;
 import com.tzg.entitys.kff.suggest.SuggestRequest;
 import com.tzg.entitys.kff.tokenaward.Tokenaward;
+import com.tzg.entitys.kff.tokenaward.TokenawardReturn;
+import com.tzg.entitys.kff.tokenaward.TokenawardReturn;
 import com.tzg.entitys.kff.tokenrecords.Tokenrecords;
 import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.entitys.kff.user.KFFUserHomeResponse;
+import com.tzg.entitys.kff.userInvation.UserInvation;
 import com.tzg.entitys.kff.usercard.UserCard;
 import com.tzg.entitys.kff.userwallet.KFFUserWallet;
 import com.tzg.entitys.loginaccount.RegisterRequest;
@@ -196,9 +199,10 @@ public interface KFFRmiService {
 	 * 保存文章
 	 * 
 	 * @param articleRequest
+	 * @param toHtmlTags
 	 * @throws RestServiceException
 	 */
-	public void saveArticle(ArticleRequest articleRequest) throws RestServiceException;
+	public Map<String, Object> saveArticle(ArticleRequest articleRequest, String toHtmlTags) throws RestServiceException;
 
 	/**
 	 * 
@@ -225,7 +229,7 @@ public interface KFFRmiService {
 	 * @param evaluationRequest
 	 * @throws RestServiceException
 	 */
-	public void saveEvaluation(EvaluationRequest evaluationRequest) throws RestServiceException;
+	public Map<String, Object> saveEvaluation(EvaluationRequest evaluationRequest) throws RestServiceException;
 
 	/**
 	 * 保存评测模型
@@ -655,4 +659,89 @@ public interface KFFRmiService {
 	 * @throws RestServiceException
 	 */
 	public UserCard selectUserCardByUserId(Integer userId) throws RestServiceException;
+
+	/**
+	 * 根据用户的id查询邀请奖励总数
+	 * 
+	 * @param userId
+	 * @return
+	 * @throws RestServiceException
+	 */
+	public Double selectInvationAward(Integer userId) throws RestServiceException;
+
+	/**
+	 * 根据用户的id查询用户邀请m1 的人数
+	 * 
+	 * @param userId
+	 * @return
+	 * @throws RestServiceException
+	 */
+	public Integer selectInvationM1Num(Integer userId) throws RestServiceException;
+
+	/**
+	 * 根据用户id 查询用户的邀请m2 的人数
+	 * 
+	 * @param userId
+	 * @return
+	 * @throws RestServiceException
+	 */
+	public Integer selectInvationM2Num(Integer userId) throws RestServiceException;
+
+	/**
+	 * 根据userID查询邀请表
+	 * 
+	 * @param userId
+	 * @return
+	 * @throws RestServiceException
+	 */
+	public UserInvation selectUseInvation(Integer userId) throws RestServiceException;
+
+	/**
+	 * 更新邀请表
+	 * 
+	 * @param userId
+	 * @param posterUrl
+	 * @param code2Url
+	 * @throws RestServiceException
+	 */
+	public void updataUserInvation(Integer userId, String posterUrl, String code2Url) throws RestServiceException;
+	
+	
+	public List<KFFUserWallet> findBywalletAndType(Integer userId);
+	/**
+	 * 短信验证码逻辑 淘宝文档
+	 * 
+	 * @param phone
+	 * @param module
+	 * @param dynamicValidateCode
+	 * @throws RestServiceException
+	 */
+	public void aLiYunSms(String phone, String module, String dynamicValidateCode, String cacheKey, String smsStormCheckKey) throws RestServiceException;
+
+	/**
+	 * 短信验证码逻辑 官方文档
+	 * 
+	 * @param phone
+	 * @param module
+	 * @param dynamicValidateCode
+	 * @throws RestServiceException
+	 */
+	public void aLiYunSmsApi(String phone, String module, String dynamicValidateCode, String cacheKey, String smsStormCheckKey) throws RestServiceException;
+	
+	public PageResult<Tokenaward> findPageMyTokenAwards(PaginationQuery query);
+
+	public void updateUserWallet(Integer userId, String wallet);
+
+	public KFFUserWallet findUserId(Integer userId);
+
+	public List<Tokenaward> findByTokenAward(Integer userId);
+
+	public Tokenaward findToken(Integer userId);
+
+	public PageResult<TokenawardReturn> findPageMyTokenawardReturn(PaginationQuery query);
+
+	public List<Tokenaward> findAllTokenawardUserId(Integer userId);
+
+	public List<Tokenrecords> findAllTokenrecordsUserId(Integer userId);
+
 }

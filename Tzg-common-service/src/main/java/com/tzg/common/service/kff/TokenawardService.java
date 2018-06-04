@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alibaba.druid.sql.parser.Token;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.entitys.kff.tokenaward.Tokenaward;
@@ -24,7 +25,7 @@ public class TokenawardService {
 	private TokenawardMapper tokenawardMapper;	
 	   
 	@Transactional(readOnly=true)
-    public List<Tokenaward> findByUserId(java.lang.Integer id) throws RestServiceException {
+    public List<Tokenaward> findByUserId(Integer id) throws RestServiceException {
     	if(id == null){
 			throw new RestServiceException("id不能为空");
 		}
@@ -57,8 +58,8 @@ public class TokenawardService {
 	}
 	
 	public void update(Tokenaward tokenaward) throws RestServiceException {	
-		if(tokenaward.getTokenRecordsId() == null){
-			throw new RestServiceException("id不能为空");
+		if(tokenaward.getUserId() == null){
+			throw new RestServiceException("userid不能为空");
 		}
 		tokenawardMapper.update(tokenaward);
 	}	
@@ -87,9 +88,23 @@ public class TokenawardService {
 	public void updateByGrantType(Integer a) {
 
 		tokenawardMapper.updateByGrantType(a);
+	}
+	/**
+	 * 根据token_award_function_type=18   userID   获取invite_rewards 的值 
+	 * @param userId
+	 * @return
+	 */
+	public List<Tokenaward> selectInvationAward(Integer userId) {
+		
+		return tokenawardMapper.selectInvationAward(userId);
+	}
+	
+	public Tokenaward findPraiseAwardByType(Integer createUserId) {
+		return tokenawardMapper.findPraiseAwardByType(createUserId);
+		
 	}	
 	
-	/*@Transactional(readOnly=true)
+	@Transactional(readOnly=true)
 	public PageResult<Tokenaward> findPage(PaginationQuery query) throws RestServiceException {
 		PageResult<Tokenaward> result = null;
 		try {
@@ -98,7 +113,7 @@ public class TokenawardService {
 				int startRecord = (query.getPageIndex() - 1)* query.getRowsPerPage();
 				query.addQueryData("startRecord", Integer.toString(startRecord));
 				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
-				List<Tokenrecords> list = tokenawardMapper.findPage(query.getQueryData());
+				List<Tokenaward> list = tokenawardMapper.findPage(query.getQueryData());
 				result = new PageResult<Tokenaward>(list,count,query);
 			} 
 		} catch (Exception e) {
@@ -106,11 +121,15 @@ public class TokenawardService {
 		}
 		return result;
 	}
-
+/*
 	@Transactional(readOnly=true)
 	public int findUserSumRewardToken(java.lang.Integer userId) throws RestServiceException{
 		
 		return tokenawardMapper.findUserSumRewardToken();
+	}*/
+	public List<Tokenaward> findAllTokenawardUserId(Integer userId) {
+		// TODO Auto-generated method stub
+		return tokenawardMapper.findAllTokenawardUserId(userId);
 	}
-	*/
+	
 }

@@ -1,6 +1,7 @@
 package com.tzg.entitys.kff.qfindex;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import com.tzg.common.utils.DateUtil;
 
@@ -21,27 +22,27 @@ public class QfIndex implements Serializable {
 	/**
 	 * 内容贡献指数;
 	 */
-	private java.lang.Float contributeContent;
+	private java.lang.Double contributeContent;
 	/**
 	 * 锁仓评测指数
 	 */
-	private java.lang.Float lockedPosition;
+	private java.lang.Double lockedPosition;
 	/**
 	 * 活跃度指数
 	 */
-	private java.lang.Float liveness;
+	private java.lang.Double liveness;
 	/**
 	 * 影响力指数
 	 */
-	private java.lang.Float influence;
+	private java.lang.Double influence;
 	/**
 	 * 社区考核指数
 	 */
-	private java.lang.Float communityAssessment;
+	private java.lang.Double communityAssessment;
 	/**
 	 * 健康度
 	 */
-	private java.lang.Float healthDegree;
+	private java.lang.Double healthDegree;
 	/**
 	 * 0-99刁民 100-199平民 200-299元芳 300-499狄仁杰 500-699柯南 700-899福尔摩斯900-1000包青天
 	 */
@@ -105,40 +106,40 @@ public class QfIndex implements Serializable {
 	public void setUserId(java.lang.Integer userId) {
 		this.userId = userId;
 	}
-	public java.lang.Float getContributeContent() {
+	public java.lang.Double getContributeContent() {
 		return contributeContent;
 	}
-	public void setContributeContent(java.lang.Float contributeContent) {
+	public void setContributeContent(java.lang.Double contributeContent) {
 		this.contributeContent = contributeContent;
 	}
-	public java.lang.Float getLockedPosition() {
+	public java.lang.Double getLockedPosition() {
 		return lockedPosition;
 	}
-	public void setLockedPosition(java.lang.Float lockedPosition) {
+	public void setLockedPosition(java.lang.Double lockedPosition) {
 		this.lockedPosition = lockedPosition;
 	}
-	public java.lang.Float getLiveness() {
+	public java.lang.Double getLiveness() {
 		return liveness;
 	}
-	public void setLiveness(java.lang.Float liveness) {
+	public void setLiveness(java.lang.Double liveness) {
 		this.liveness = liveness;
 	}
-	public java.lang.Float getInfluence() {
+	public java.lang.Double getInfluence() {
 		return influence;
 	}
-	public void setInfluence(java.lang.Float influence) {
+	public void setInfluence(java.lang.Double influence) {
 		this.influence = influence;
 	}
-	public java.lang.Float getCommunityAssessment() {
+	public java.lang.Double getCommunityAssessment() {
 		return communityAssessment;
 	}
-	public void setCommunityAssessment(java.lang.Float communityAssessment) {
+	public void setCommunityAssessment(java.lang.Double communityAssessment) {
 		this.communityAssessment = communityAssessment;
 	}
-	public java.lang.Float getHealthDegree() {
+	public java.lang.Double getHealthDegree() {
 		return healthDegree;
 	}
-	public void setHealthDegree(java.lang.Float healthDegree) {
+	public void setHealthDegree(java.lang.Double healthDegree) {
 		this.healthDegree = healthDegree;
 	}
 	public java.lang.String getStatusHierarchyDesc() {

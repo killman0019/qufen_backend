@@ -35,5 +35,22 @@ public class UserInvationService {
 		return userInvationMapper.selectUserInvation(userId);
 	}
 
-	
+	@Transactional(readOnly = true)
+	public UserInvation selectUseInvation(Integer userId) {
+
+		return userInvationMapper.selectUserInvation(userId);
+	}
+
+	public void updataUserInvation(Integer userId, String posterUrl, String code2Url) {
+		UserInvation userInvation = new UserInvation();
+		userInvation.setUser2code(null);
+		userInvation.setStatus(1);
+		userInvation.setCreatetime(null);
+		userInvation.setUserId(userId);
+		userInvation.setUser2codepic(code2Url);
+		userInvation.setUserposterpic(posterUrl);
+		userInvationMapper.updataUserInvation(userInvation);
+
+	}
+
 }

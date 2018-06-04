@@ -24,4 +24,6 @@ public interface CommentsMapper extends BaseMapper<Comments, java.lang.Integer> 
 	void updateUserInfo(Map<String, Object> map);	
 
 	List<Comments> findFlootOrderById(Integer postId);
+
+	Comments findByPostId(Integer commentsId);
 }

@@ -52,7 +52,7 @@
         	#{coinUnlockType,jdbcType=INTEGER} ,
         	#{coinDistributed,jdbcType=DOUBLE} ,
         	#{coinUsable,jdbcType=DOUBLE} ,
-        	#{coinUnlockUptime,jdbcType=TIMESTAMP} ,
+        	#{coinUnlockUptime,jdbcType=TIMESTAMP} 
         	
 		)
 	]]>
@@ -83,7 +83,7 @@
 	        coin_usable = #{coinUsable,jdbcType=DOUBLE} ,
 	        </if>
 	        <if test="coinUnlockUptime != null">
-	        coin_unlock_uptime = #{coinUnlockUptime,jdbcType=TIMESTAMP} ,
+	        coin_unlock_uptime = #{coinUnlockUptime,jdbcType=TIMESTAMP} 
 	        </if>
 	      
 	    </set>
@@ -115,20 +115,35 @@
         user_id = #{userId}
 	]]>
 	</select>
-	
+	<select id="findByUserIds" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT <include refid="columns"/>
+		<![CDATA[
+		FROM tbcoinproperty 
+		WHERE 
+        user_id = #{userId} 
+	]]>
+	</select>
+	<select id="findCoinPropertyByUserId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT <include refid="columns"/>
+		<![CDATA[
+		FROM tbcoinproperty 
+		WHERE 
+        user_id = #{userId} 
+	]]>
+	</select>
+	<!-- <select id="findAllCoinpropertyCoinUnlock" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT <include refid="columns"/>
+		<![CDATA[
+		FROM tbcoinproperty 
+		WHERE 
+        user_id = #{userId} 
+	]]>
+	</select> -->
 	
 	<select id="findAllCoinPropertyByWhere" resultMap="BaseResultMap" parameterType="java.util.Map">
 		select <include refid="columns"/>  from tbcoinproperty where 1=1
-		<include refid="queryWhere"/> 
-	     <choose>
-	            <when test="sortField != null and sortField != ''">
-	               ORDER BY ${sortField} DESC
-	            </when>
-	            <otherwise>
-	                <![CDATA[ ORDER BY coin_property_id desc ]]>
-	            </otherwise>
-	        </choose>
-	</select>	
+		<include refid="queryWhere"/>
+	</select>
 	
 	
 	 
@@ -147,31 +162,31 @@
 	
 	<sql id="queryWhere">
 	
-		<if test="coinPropertyId != null and tokenAwardId.trim() != ''">
+		<if test="coinPropertyId != null and coinPropertyId.trim() != ''">
 		and coin_property_id = #{coinPropertyId}
 		</if>
 		<if test="userId != null and userId.trim() != ''">      
 		and user_id = #{userId}
 		</if>
-		<if test="coinLock != null and tokenRecordsId.trim() != ''">
+		<if test="coinLock != null and coinLock.trim() != ''">
 		and coin_lock = #{coinLock}									
 		</if>
-		<if test="coinUnlock != null and praiseId.trim() != ''">
+		<if test="coinUnlock != null and coinUnlock.trim() != ''">
 		and coin_unlock = #{coinUnlock}
 		</if>
-		<if test="coinUnlockType != null and tokenAwardFunctionDesc.trim() != ''">
+		<if test="coinUnlockType != null and coinUnlockType.trim() != ''">
 		and coin_unlock_type = #{coinUnlockType}
 		</if>
-		<if test="coinDistributed != null and tokenAwardFunctionType.trim() != ''">
+		<if test="coinDistributed != null and coinDistributed.trim() != ''">
 		and coin_distributed = #{coinDistributed}
 		</if>
-		<if test="coinUsable != null and inviteRewards.trim() != ''">
+		<if test="coinUsable != null and coinUsable.trim() != ''">
 		and coin_usable = #{coinUsable}
 		</if>
-		<if test="coinUnlockUptime != null and priaiseAward.trim() != ''">
+		<if test="coinUnlockUptime != null and coinUnlockUptime.trim() != ''">
 		and coin_unlock_uptime >= #{coinUnlockUptime}
 		</if>
-		<if test="coinUnlockTime != null and giveTime.trim() != ''">
+		<if test="coinUnlockTime != null and coinUnlockTime.trim() != ''">
 		and coin_unlock_time &lt;= #{coinUnlockTime}
 		</if>
 		

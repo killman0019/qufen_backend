@@ -1,10 +1,12 @@
 package com.tzg.wap.controller.h5;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -42,7 +44,7 @@ public class ArticleController extends BaseController {
 	@RequestMapping(value = "/saveArticle", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public BaseResponseEntity saveArticle(HttpServletRequest request, HttpServletResponse response, String projectName, String postTitle,
-			String postSmallImages, String articleContents, String token) {
+			String postSmallImages, String articleContents, String token, String toHtmlTags) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		if (null == projectName) {
@@ -63,6 +65,8 @@ public class ArticleController extends BaseController {
 			throw new RestServiceException(RestErrorCode.SYS_ERROR);
 		}
 		try {
+			// 进行转义
+			articleContents = StringEscapeUtils.unescapeHtml(articleContents);
 			Integer userId = AccountTokenUtil.decodeAccountToken(token);
 			ArticleRequest articleRequest = new ArticleRequest();
 			articleRequest.setCreateUserId(userId);
@@ -70,8 +74,8 @@ public class ArticleController extends BaseController {
 			articleRequest.setArticleContents(articleContents);
 			articleRequest.setPostTitle(postTitle);
 			articleRequest.setProjectId(SubProject.getProjectId());
-			kffRmiService.saveArticle(articleRequest);
-			bre.setData(map);
+			Map<String, Object> saveArticle = kffRmiService.saveArticle(articleRequest, toHtmlTags);
+			bre.setData(saveArticle);
 		} catch (RestServiceException e) {
 			logger.error("ArticleController saveArticle:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());

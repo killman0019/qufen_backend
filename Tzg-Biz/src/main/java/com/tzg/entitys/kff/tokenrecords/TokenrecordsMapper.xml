@@ -20,7 +20,7 @@
 	
 	<sql id="columns">
 	    <![CDATA[
-        token_records_id ,user_id ,trade_code ,trade_type ,function_desc ,function_type ,amount ,trade_date ,balance ,createTime ,updateTime ,status ,memo 
+        token_records_id ,user_id ,trade_code ,trade_type ,function_desc ,function_type ,amount ,trade_date ,balance ,createTime ,updateTime ,status ,memo ,reward_grant_type
 	    ]]>
 	</sql>
 	
@@ -101,7 +101,7 @@
 	        memo = #{memo,jdbcType=VARCHAR} 
 	        </if>
 	        <if test="rewardGrantType != null">
-	        rewardGrantType = #{rewardGrantType,jdbcType=INTEGER} 
+	        reward_grant_type = #{rewardGrantType,jdbcType=INTEGER} 
 	        </if>
 	    </set>
 		WHERE 
@@ -122,6 +122,24 @@
 		WHERE 
         token_records_id = #{tokenRecordsId} 
 	]]>
+	</select>
+	<!-- 注册奖励的查询 -->
+	<select id="findByUserIdAndFunctionType" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT *
+		FROM tbtokenrecords 
+		WHERE 1=1
+		AND
+        user_id = #{userId}
+        AND
+        function_type = 16
+
+	</select>
+	<select id="findAllTokenrecordsUserId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT *
+		FROM tbtokenrecords 
+		WHERE 1=1
+		AND
+        user_id = #{userId}
 	</select>
 	 
 	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">

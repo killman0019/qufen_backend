@@ -40,6 +40,16 @@
 					<stopWait>10</stopWait>
 				</configuration>
 			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<port>8082</port>
+					<path>/</path>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 </project>

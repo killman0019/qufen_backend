@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.kff.tokenaward.TokenawardReturnMapper">	
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.kff.tokenaward.TokenawardReturn">
+		<result property="userId" jdbcType="INTEGER" column="user_id"/>
+		<result property="functionType" jdbcType="INTEGER" column="function_type"/>
+		<result property="functionDesc" jdbcType="VARCHAR" column="function_desc"/>
+		<result property="amount" jdbcType="DECIMAL" column="amount"/>
+		<result property="createTime" jdbcType="TIMESTAMP" column="createTime"/>
+		<result property="tradeType" jdbcType="INTEGER" column="trade_type"/>
+		<result property="rewardGrantType" jdbcType="INTEGER" column="reward_grant_type"/>
+		
+    </resultMap>
+	
+	<select id="findPageCounts" resultType="java.lang.Integer" parameterType="java.util.Map">
+	<![CDATA[
+   SELECT count(*) FROM
+	(
+		SELECT
+			d.user_id user_id,
+			d.token_award_function_type function_type,
+			d.token_award_function_desc function_desc,
+			d.invite_rewards amount,
+			d.createTime createTime,
+			1 trade_type,
+			d.distribution_type reward_grant_type 
+		FROM
+			tbtokenaward d 
+		WHERE
+			d.distribution_type = 1 UNION
+		
+		SELECT
+			s.user_id user_id,
+			s.function_type function_type,
+			s.function_desc function_desc,
+			s.amount amount,
+			s.createTime createTime,
+			s.trade_type trade_type,
+			s.reward_grant_type reward_grant_type 
+		FROM
+			tbtokenrecords s 
+		WHERE
+			s.reward_grant_type = 1 
+	) c
+	WHERE
+	user_id = #{userId}
+	]]>
+	</select>
+	
+	<select id="findPageToken" resultMap="BaseResultMap" parameterType="java.util.Map">
+			<![CDATA[
+			SELECT 
+			c.user_id user_id,
+			c.function_type function_type,
+			c.function_desc function_desc,
+			c.amount amount,
+			c.createTime createTime,
+			c.trade_type trade_type,
+			c.reward_grant_type reward_grant_type 
+			FROM (
+			SELECT 
+			d.user_id user_id,
+			d.token_award_function_type function_type,
+			d.token_award_function_desc function_desc,
+			d.invite_rewards amount,
+			d.createTime createTime,
+			1 trade_type,
+			d.distribution_type reward_grant_type 
+			FROM tbtokenaward d 
+			WHERE d.distribution_type = 1 
+		UNION
+			SELECT 
+				s.user_id user_id,
+				s.function_type function_type,
+				s.function_desc function_desc,
+				s.amount amount,
+				s.createTime createTime,
+				s.trade_type trade_type,
+				s.reward_grant_type reward_grant_type 
+			FROM tbtokenrecords s 
+			where s.reward_grant_type =1) c
+			WHERE user_id =#{userId}]]>
+	    <![CDATA[ ORDER BY createTime DESC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+        
+	</select>
+</mapper>
+
+

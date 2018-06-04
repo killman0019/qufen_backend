@@ -212,18 +212,34 @@ public class UserController extends BaseController {
 	public BaseResponseEntity createPoster(HttpServletRequest request, HttpServletResponse response, String token) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
-		token = "i";
-		if (null == token) {
-			throw new RestServiceException("参数错误,请重新注册!");
-		}
-		// 根据token获得userId
-		Integer userId = AccountTokenUtil.decodeAccountToken(token);
-		// 根据userID 的code2生成相关的海报存在相对应的位置
-		userId = 18;
-		String posterUrl = Create2Code.createPoster(userId);
-		// 调用生成海报的方法返回
 
-		map.put("url", posterUrl);
+		try {
+			if (null == token) {
+				throw new RestServiceException("参数错误,请重新注册!");
+			}
+			// 根据token获得userId
+			Integer userId = AccountTokenUtil.decodeAccountToken(token);
+			// 根据userID 的code2生成相关的海报存在相对应的位置
+			// 查询数据库判断是否已经生成专属海报
+			String posterUrl = null;
+			UserInvation userInvation = kffRmiService.selectUseInvation(userId);
+			if (userInvation.getUserposterpic().trim() == null || "".equals(userInvation.getUserposterpic())) {
+				// 生成海报
+				posterUrl = Create2Code.createPoster(userId);
+				String code2Url = null;
+				kffRmiService.updataUserInvation(userId, posterUrl, code2Url);
+				map.put("url", posterUrl);
+			} else {
+				posterUrl = userInvation.getUserposterpic();
+				map.put("url", posterUrl);
+			}
+		} catch (RestServiceException e) {
+			logger.error("createPoster register：", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("createPoster register：", e);
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+		}
 		bre.setData(map);
 		return bre;
 	}
@@ -614,7 +630,7 @@ public class UserController extends BaseController {
 
 		// 根据用户token 查找到用户的userID
 		Integer userId = AccountTokenUtil.decodeAccountToken(token);
-		userId = 54;
+
 		if (userId == null) {
 			throw new RestServiceException(RestErrorCode.USER_NOT_EXIST);
 		}

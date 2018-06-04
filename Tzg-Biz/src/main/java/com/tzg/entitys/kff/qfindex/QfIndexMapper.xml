@@ -4,15 +4,14 @@
 	<resultMap id="BaseResultMap" type="com.tzg.entitys.kff.qfindex.QfIndex">
 		<result property="qfIndexId" jdbcType="INTEGER" column="qf_index_id"/>
 		<result property="userId" jdbcType="INTEGER" column="user_id"/>
-		<result property="contributeContent" jdbcType="REAL" column="contribute_content"/>
-		<result property="lockedPosition" jdbcType="REAL" column="locked_position"/>
-		<result property="liveness" jdbcType="REAL" column="liveness"/>
-		<result property="influence" jdbcType="REAL" column="influence"/>
-		<result property="communityAssessment" jdbcType="REAL" column="community_assessment"/>
-		<result property="healthDegree" jdbcType="REAL" column="health_degree"/>
+		<result property="contributeContent" jdbcType="DOUBLE" column="contribute_content"/>
+		<result property="lockedPosition" jdbcType="DOUBLE" column="locked_position"/>
+		<result property="liveness" jdbcType="DOUBLE" column="liveness"/>
+		<result property="influence" jdbcType="DOUBLE" column="influence"/>
+		<result property="communityAssessment" jdbcType="DOUBLE" column="community_assessment"/>
+		<result property="healthDegree" jdbcType="DOUBLE" column="health_degree"/>
 		<result property="statusHierarchyDesc" jdbcType="VARCHAR" column="status_hierarchy_desc"/>
 		<result property="statusHierarchyType" jdbcType="INTEGER" column="status_hierarchy_type"/>
-		
 		<result property="yxpraise" jdbcType="INTEGER" column="yxpraise"/>
 		<result property="createTime" jdbcType="TIMESTAMP" column="createTime"/>
 		<result property="updateTime" jdbcType="TIMESTAMP" column="updateTime"/>
@@ -60,14 +59,14 @@
 		) VALUES (
 		
         	#{userId,jdbcType=INTEGER} ,
-        	#{contributeContent,jdbcType=REAL} ,
-        	#{lockedPosition,jdbcType=REAL} ,
-        	#{liveness,jdbcType=REAL} ,
-        	#{influence,jdbcType=REAL} ,
-        	#{communityAssessment,jdbcType=REAL} ,
-        	#{healthDegree,jdbcType=REAL} ,
+        	#{contributeContent,jdbcType=DOUBLE} ,
+        	#{lockedPosition,jdbcType=DOUBLE} ,
+        	#{liveness,jdbcType=DOUBLE} ,
+        	#{influence,jdbcType=DOUBLE} ,
+        	#{communityAssessment,jdbcType=DOUBLE} ,
+        	#{healthDegree,jdbcType=DOUBLE} ,
         	#{statusHierarchyDesc,jdbcType=VARCHAR} ,
-        	#{statusHierarchyType,jdbcType=INTEGER} 
+        	#{statusHierarchyType,jdbcType=INTEGER} ,
         	#{yxpraise,jdbcType=INTEGER} ,
         	#{createTime,jdbcType=TIMESTAMP} ,
         	#{updateTime,jdbcType=TIMESTAMP} 
@@ -86,19 +85,19 @@
 	        contribute_content = #{contributeContent,jdbcType=INTEGER} ,
 	        </if>
 			<if test="praiseId != null">
-	        locked_position = #{lockedPosition,jdbcType=REAL} ,
+	        locked_position = #{lockedPosition,jdbcType=DOUBLE} ,
 	        </if>
 			<if test="liveness != null">
-	        liveness = #{liveness,jdbcType=REAL} ,
+	        liveness = #{liveness,jdbcType=DOUBLE} ,
 	        </if>
 			<if test="influence != null">
-	        influence = #{influence,jdbcType=REAL} ,
+	        influence = #{influence,jdbcType=DOUBLE} ,
 	        </if>
 			<if test="communityAssessment != null">
-	        community_assessment = #{communityAssessment,jdbcType=REAL} ,
+	        community_assessment = #{communityAssessment,jdbcType=DOUBLE} ,
 	        </if>
 			<if test="healthDegree != null">
-	        health_degree = #{healthDegree,jdbcType=REAL} ,
+	        health_degree = #{healthDegree,jdbcType=DOUBLE} ,
 	        </if>
 	        <if test="statusHierarchyDesc != null">
 	        status_hierarchy_desc = #{statusHierarchyDesc,jdbcType=VARCHAR} ,
@@ -107,13 +106,13 @@
 	        status_hierarchy_type = #{statusHierarchyType,jdbcType=INTEGER} ,
 	        </if>
 			<if test="yxpraise != null">
-	        yxpraise = #{yxPraise,jdbcType=INTEGER} ,
+	        yxpraise = #{yxpraise,jdbcType=INTEGER} ,
 	        </if>
 			<if test="createTime != null">
 	        createTime = #{createTime,jdbcType=TIMESTAMP} ,
 	        </if>
 			<if test="updateTime != null">
-	        updateTime = #{updateTime,jdbcType=TIMESTAMP} ,
+	        updateTime = #{updateTime,jdbcType=TIMESTAMP} 
 	        </if>
 			
 	      
@@ -123,13 +122,12 @@
 	</update>
 	
 	<update id="updateYxPraise" parameterType="java.lang.Integer">
-		UPDATE tbqfindex set yxpraise = yxpraise - 1		
-		WHERE 
-	    qf_index_id = #{qfIndexId,jdbcType=INTEGER} 
-	    AND
+		UPDATE tbqfindex set yxpraise = yxpraise - 1
+		WHERE
 	    user_id = #{userId,jdbcType=INTEGER}
 	</update>
-	<update id="updateYxPraiseValid" parameterType="java.lang.Integer">
+	
+	<update id="updateyxpraiseValid" parameterType="java.lang.Integer">
 		UPDATE tbqfindex set yxpraise = floor(status_hierarchy_type * 0.1)
 	</update>
 	
@@ -180,43 +178,43 @@
 	<!-- 查询单人的邀请字段 -->
 	<sql id="queryWhere">
         	
-		<if test="qfIndexId != null and tokenAwardId.trim() != ''">
+		<if test="qfIndexId != null and qfIndexId.trim() != ''">
 		and qf_index_id = #{qfIndexId}
 		</if>
 		<if test="userId != null and userId.trim() != ''">      
 		and user_id = #{userId}
 		</if>
-		<if test="contributeContent != null and tokenRecordsId.trim() != ''">
+		<if test="contributeContent != null and contributeContent.trim() != ''">
 		and contribute_content = #{contributeContent}
 		</if>
-		<if test="lockedPosition != null and praiseId.trim() != ''">
+		<if test="lockedPosition != null and lockedPosition.trim() != ''">
 		and locked_position = #{lockedPosition}
 		</if>
-		<if test="liveness != null and tokenAwardFunctionDesc.trim() != ''">
+		<if test="liveness != null and liveness.trim() != ''">
 		and liveness = #{liveness}
 		</if>
-		<if test="influence != null and tokenAwardFunctionType.trim() != ''">
+		<if test="influence != null and influence.trim() != ''">
 		and influence = #{influence}
 		</if>
-		<if test="communityAssessment != null and inviteRewards.trim() != ''">
+		<if test="communityAssessment != null and communityAssessment.trim() != ''">
 		and community_assessment = #{communityAssessment}
 		</if>
-		<if test="healthDegree != null and priaiseAward.trim() != ''">
+		<if test="healthDegree != null and healthDegree.trim() != ''">
 		and health_degree >= #{healthDegree}
 		</if>
-		<if test="statusHierarchyDesc != null and giveTime.trim() != ''">
+		<if test="statusHierarchyDesc != null and statusHierarchyDesc.trim() != ''">
 		and status_hierarchy_desc &lt;= #{statusHierarchyDesc}
 		</if>
-		<if test="statusHierarchyType != null and containerAward.trim() != ''">
+		<if test="statusHierarchyType != null and statusHierarchyType.trim() != ''">
 		and status_hierarchy_type = #{statusHierarchyType}
 		</if>
-		<if test="yxPraise != null and priaiseAward.trim() != ''">
-		and yxpraise >= #{yxPraise}
+		<if test="yxpraise != null and yxpraise.trim() != ''">
+		and yxpraise >= #{yxpraise}
 		</if>
-		<if test="createTime != null and giveTime.trim() != ''">
+		<if test="createTime != null and createTime.trim() != ''">
 		and createTime &lt;= #{createTime}
 		</if>
-		<if test="updateTime != null and containerAward.trim() != ''">
+		<if test="updateTime != null and updateTime.trim() != ''">
 		and updateTime = #{updateTime}
 		</if>
 		

@@ -1,5 +1,7 @@
 package com.tzg.rest.controller.kff;
 
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -11,10 +13,17 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -30,12 +39,16 @@ import com.tzg.common.utils.FileUtils;
 import com.tzg.common.utils.RandomUtil;
 import com.tzg.common.utils.rest.Base64Util;
 import com.tzg.entitys.kff.article.ArticleDetailResponse;
+import com.tzg.entitys.kff.commendation.CommendationRequest;
 import com.tzg.entitys.kff.comments.Comments;
 import com.tzg.entitys.kff.discuss.DiscussDetailResponse;
 import com.tzg.entitys.kff.evaluation.EvaluationDetailResponse;
+import com.tzg.entitys.kff.message.KFFMessage;
 import com.tzg.entitys.kff.post.PostResponse;
 import com.tzg.entitys.kff.project.ProjectResponse;
+import com.tzg.entitys.kff.suggest.SuggestRequest;
 import com.tzg.entitys.kff.user.KFFUser;
+import com.tzg.entitys.kff.user.KFFUserHomeResponse;
 import com.tzg.entitys.leopard.system.SystemParam;
 import com.tzg.rest.controller.BaseController;
 import com.tzg.rest.exception.rest.RestErrorCode;
@@ -81,9 +94,7 @@ public class HomeController extends BaseController {
 			}			
 			PaginationQuery query = new PaginationQuery();
 	        query.addQueryData("status", "1");
-	        query.addQueryData("stickTop", "1");
-
-	        query.addQueryData("sortField", "stick_updateTime");
+	        query.addQueryData("sortField", "pageview_num");
 	        //帖子类型：1-评测；2-讨论；3-文章
 	        //query.addQueryData("postType", "1");
 	        query.setPageIndex(baseRequest.getPageIndex());
