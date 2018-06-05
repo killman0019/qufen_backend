@@ -90,7 +90,7 @@ public class DynamicValidateCodeController extends BaseController {
 			}
 			logger.info("dynamicValidateCode:rest:"+module+":"+dynamicValidateCode);
 			
-			this.redisService.put(cacheKey,dynamicValidateCode, 60*10);//有效期10min
+			this.redisService.put(cacheKey,dynamicValidateCode, 60);//有效期10min
 			logger.info("cacheKey:"+cacheKey);
 		
 			//防止短信轰炸
