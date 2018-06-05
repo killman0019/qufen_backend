@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import com.sun.el.parser.Token;
 import com.tzg.common.utils.DateUtil;
 import com.tzg.entitys.kff.tokenrecords.Tokenrecords;
 
