@@ -43,7 +43,7 @@
 				</configuration>
 			</plugin>
 			
-			<plugin>
+			<!-- <plugin>
 				<groupId>org.apache.tomcat.maven</groupId>
 				<artifactId>tomcat7-maven-plugin</artifactId>
 				<version>2.2</version>
@@ -51,7 +51,7 @@
 					<port>8080</port>
 					<path>/rest</path>
 				</configuration>
-			</plugin>
+			</plugin> -->
 		</plugins>
 	</build>
 </project>
