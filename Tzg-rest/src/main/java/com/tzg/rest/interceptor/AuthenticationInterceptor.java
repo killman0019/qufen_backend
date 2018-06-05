@@ -30,6 +30,13 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
 
 	protected static Logger logger = Logger.getLogger(AuthenticationInterceptor.class);
 
+<<<<<<< HEAD
+=======
+	
+	@Autowired
+	private RedisService redisService;
+	
+>>>>>>> ec54ef4e1f55df51d87413a6797bf8468b8cb953
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		/*	if (true) {
