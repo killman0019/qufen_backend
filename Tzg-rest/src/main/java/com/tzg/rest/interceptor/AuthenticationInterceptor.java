@@ -33,9 +33,6 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
 	@Autowired
 	private RedisService redisService;
 	
-	@Autowired
-	private RedisService redService;
-	
 	@Override
 	public boolean preHandle(HttpServletRequest request,
 			HttpServletResponse response, Object handler) throws Exception {
