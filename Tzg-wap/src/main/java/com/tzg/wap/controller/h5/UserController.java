@@ -127,7 +127,7 @@ public class UserController extends BaseController {
 		String cacheCode = null;
 		try {
 			String module = "register";
-			//key_rest_sms_login15537791297sms
+			// key_rest_sms_login15537791297sms
 			String cacheKey = new StringBuffer(RestConstants.key_rest).append(module).append(phoneNumber).toString();
 			cacheCode = redisService.get(cacheKey);
 		} catch (Exception e) {
@@ -224,7 +224,7 @@ public class UserController extends BaseController {
 			// 查询数据库判断是否已经生成专属海报
 			String posterUrl = null;
 			UserInvation userInvation = kffRmiService.selectUseInvation(userId);
-			if (userInvation.getUserposterpic().trim() == null || "".equals(userInvation.getUserposterpic())) {
+			if (StringUtils.isEmpty(userInvation.getUserposterpic())) {
 				// 生成海报
 				posterUrl = Create2Code.createPoster(userId);
 				String code2Url = null;
@@ -415,15 +415,16 @@ public class UserController extends BaseController {
 			try {
 				// 用户登陆
 				loginaccount = kffRmiService.login(loginName, password);
+				if (null == loginaccount) {
+					throw new RestServiceException(RestErrorCode.LOGIN_NAME_OR_PASSWORD_INCORRECT);
+				}
 
 			} catch (RestServiceException e) {
 				return this.resResult(e.getErrorCode(), e.getMessage());
 			} catch (Exception e) {
 				return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
 			}
-			if (null == loginaccount) {
-				throw new RestServiceException(RestErrorCode.LOGIN_NAME_OR_PASSWORD_INCORRECT);
-			}
+
 			// 设置字段 将支付密码和登陆密码设置成true
 			// map.put("user", this.formatLoginaccount(loginaccount));
 

@@ -1232,7 +1232,7 @@ public class UserController extends BaseController {
 			// 查询数据库判断是否已经生成专属海报
 			String posterUrl = null;
 			UserInvation userInvation = kffRmiService.selectUseInvation(userId);
-			if (userInvation.getUserposterpic() == null) {
+			if (StringUtils.isEmpty(userInvation.getUserposterpic())) {
 				// 生成海报
 				posterUrl = Create2Code.createPoster(userId);
 				String code2Url = null;
@@ -1255,15 +1255,15 @@ public class UserController extends BaseController {
 		bre.setData(map);
 		return bre;
 	}
-	
-		/**
+
+	/**
 	 * 我的账单明细列表，按照时间排序
 	 * 
 	 * @param request
 	 *            (传入一个userId)
 	 * @return
 	 */
-	@RequestMapping(value = "/myTokenBill", method = {RequestMethod.POST, RequestMethod.GET})
+	@RequestMapping(value = "/myTokenBill", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public BaseResponseEntity myTokenBill(HttpServletRequest request) {
 		BaseResponseEntity bre = new BaseResponseEntity();
@@ -1271,12 +1271,8 @@ public class UserController extends BaseController {
 		try {
 			JSONObject params = getParamMapFromRequestPolicy(request);
 			String token = (String) params.get("token");
-			Integer pageIndex = (Integer) params.get("pageIndex") == null
-					? 1
-					: (Integer) params.get("pageIndex");
-			Integer pageSize = (Integer) params.get("pageSize") == null
-					? 10
-					: (Integer) params.get("pageSize");
+			Integer pageIndex = (Integer) params.get("pageIndex") == null ? 1 : (Integer) params.get("pageIndex");
+			Integer pageSize = (Integer) params.get("pageSize") == null ? 10 : (Integer) params.get("pageSize");
 
 			if (StringUtils.isBlank(token)) {
 				throw new RestServiceException(RestErrorCode.USER_NOT_LOGIN);
@@ -1312,11 +1308,10 @@ public class UserController extends BaseController {
 					bdSum = bdSum.add(new BigDecimal(inviteNumber));
 				}
 			}
-			List<Tokenrecords> findAllTokenrecordsUserId = kffRmiService
-					.findAllTokenrecordsUserId(userId);
+			List<Tokenrecords> findAllTokenrecordsUserId = kffRmiService.findAllTokenrecordsUserId(userId);
 			for (Tokenrecords tokenrecords : findAllTokenrecordsUserId) {
-				if(tokenrecords.getRewardGrantType() ==1 && tokenrecords != null){
-					
+				if (tokenrecords.getRewardGrantType() == 1 && tokenrecords != null) {
+
 					BigDecimal amount = tokenrecords.getAmount();
 					bdSum = bdSum.add(amount);
 				}

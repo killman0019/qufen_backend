@@ -50,6 +50,7 @@ public class UserService {
 	private AwardPortService awardPortService;
 	@Autowired
 	private KFFUserWalletMapper kFFUserWalletMapper;
+
 	@Transactional(readOnly = true)
 	public KFFUser findById(java.lang.Integer id) throws RestServiceException {
 		if (id == null) {
@@ -117,14 +118,14 @@ public class UserService {
 		qfIndex.setCreateTime(new Date());
 		qfIndex.setUpdateTime(new Date());
 		qfIndexService.save(qfIndex);
-		//awardPortService.registerAward(user.getUserId());
+		// awardPortService.registerAward(user.getUserId());
 		KFFUserWallet kffUserWallet = new KFFUserWallet();
 		kffUserWallet.setUserId(user.getUserId());
 		kffUserWallet.setUserName(user.getUserName());
 		kffUserWallet.setMobile(user.getMemo());
-		kffUserWallet.setWalletType(0); // '钱包状态0-未绑定  1-已绑定'
+		kffUserWallet.setWalletType(0); // '钱包状态0-未绑定 1-已绑定'
 		kFFUserWalletMapper.save(kffUserWallet);
-		
+
 		return findUserByPhoneNumber(registerRequest.getPhoneNumber());
 	}
 
@@ -148,6 +149,10 @@ public class UserService {
 			 * 根据用户的手机账号去查询用户的id
 			 */
 			KFFUser loninUser = userMapper.findByMobileId(loginName);
+			if (null == loninUser) {
+				// 账号或者密码错误
+				return null;
+			}
 			Integer userId = loninUser.getUserId();
 			System.err.println("登录用户的ID  :" + userId);
 			// 根据用户id去tokenaward表中获取发放状态 grantType
@@ -155,9 +160,9 @@ public class UserService {
 			for (Tokenaward tokenaward : findByUserId) {
 				if (tokenaward.getGrantType() == 2) {
 					// 调用发放接口
-				//	AwardPortService awardPortService = new AwardPortService();
-					//Integer tokenawardUserid = tokenaward.getUserId();
-					//awardPortService.registerAward(userId);
+					// AwardPortService awardPortService = new AwardPortService();
+					// Integer tokenawardUserid = tokenaward.getUserId();
+					// awardPortService.registerAward(userId);
 					registerAward(userId);
 					tokenaward.setGrantType(1);
 					tokenawardService.update(tokenaward);
@@ -171,6 +176,10 @@ public class UserService {
 			 * 根据用户的用户名账号去查询用户的id
 			 */
 			KFFUser loninUser = userMapper.findByUserName(loginName);
+			if (null == loninUser) {
+				// 账号或者密码错误
+				return null;
+			}
 			Integer userId = loninUser.getUserId();
 			// 根据用户id去tokenaward表中获取发放状态 grantType
 			List<Tokenaward> findByUserId = tokenawardService.findByUserId(userId);
@@ -363,68 +372,65 @@ public class UserService {
 		return new Integer(userM2Sum);
 	}
 
-	private void registerAward(Integer userId){
+	private void registerAward(Integer userId) {
 		System.err.println("registerAward类的" + userId);
-		 KFFUser user = findByUserId(userId);
-		//格式化时间
+		KFFUser user = findByUserId(userId);
+		// 格式化时间
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		System.err.println("测试我是注册人id :" + user.getUserId());
-		System.err.println("userIdRegisterAward : "+ userId);
-		if(userId != null && userId != 0){
-			//判断注册用户在哪个区间
-			if(userId>0 && userId <= 50000){
+		System.err.println("userIdRegisterAward : " + userId);
+		if (userId != null && userId != 0) {
+			// 判断注册用户在哪个区间
+			if (userId > 0 && userId <= 50000) {
 				Date createTime = user.getCreateTime();
-				
+
 				String formatCreateTime = format.format(createTime);
 				String formatNewDate = format.format(new Date());
-				if(formatCreateTime == formatNewDate) {
-					
+				if (formatCreateTime == formatNewDate) {
+
 					System.err.println("我是发放奖励");
 					awardPortService.method1(userId);
-					
-					//method1(userId);
-					//	issue(userId);
-				}else{
+
+					// method1(userId);
+					// issue(userId);
+				} else {
 					System.err.println("我是账单生成");
 					awardPortService.issue(userId);
 				}
-				
-			}else
-			if(userId>50000 && userId <= 100000){
+
+			} else if (userId > 50000 && userId <= 100000) {
 				Date createTime = user.getCreateTime();
 				String formatCreateTime = format.format(createTime);
 				String formatNewDate = format.format(new Date());
-				if(formatCreateTime==formatNewDate) {
+				if (formatCreateTime == formatNewDate) {
 					awardPortService.method1(userId);
-				}else{
-					
+				} else {
+
 					awardPortService.issue(userId);
 				}
-			}else
-			if(userId>100000 && userId <= 500000){
+			} else if (userId > 100000 && userId <= 500000) {
 				Date createTime = user.getCreateTime();
 				String formatCreateTime = format.format(createTime);
 				String formatNewDate = format.format(new Date());
-				if(formatCreateTime==formatNewDate) {
-					
+				if (formatCreateTime == formatNewDate) {
+
 					awardPortService.method3(userId);
-				}else{
-					
+				} else {
+
 					awardPortService.issue(userId);
 				}
-			}else
-			if(userId>5000000 && userId < 1000000){
+			} else if (userId > 5000000 && userId < 1000000) {
 				Date createTime = user.getCreateTime();
 				String formatCreateTime = format.format(createTime);
 				String formatNewDate = format.format(new Date());
-				if(formatCreateTime==formatNewDate) {
+				if (formatCreateTime == formatNewDate) {
 					awardPortService.method4(userId);
-				}else{
-					
+				} else {
+
 					awardPortService.issue(userId);
 				}
 			}
 		}
-		
+
 	}
 }
