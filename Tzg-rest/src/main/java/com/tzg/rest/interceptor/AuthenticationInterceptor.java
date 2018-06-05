@@ -5,16 +5,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.tzg.common.redis.RedisService;
+
 import com.tzg.common.utils.AccountTokenUtil;
-import com.tzg.common.utils.SHAUtil;
 import com.tzg.common.utils.StringUtil;
-import com.tzg.common.utils.TzgConstant;
 import com.tzg.rest.constant.RestRequestHead;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
@@ -30,13 +27,6 @@ public class AuthenticationInterceptor extends HandlerInterceptorAdapter {
 
 	protected static Logger logger = Logger.getLogger(AuthenticationInterceptor.class);
 
-<<<<<<< HEAD
-=======
-	
-	@Autowired
-	private RedisService redisService;
-	
->>>>>>> ec54ef4e1f55df51d87413a6797bf8468b8cb953
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		/*	if (true) {

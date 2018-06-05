@@ -10,6 +10,6 @@
 
 	<bean id="springContextHolder" class="com.tzg.common.utils.SpringContextHolder" lazy-init="false" />
 
-	<context:property-placeholder location="file:/opt/resource/system-param.properties" ignore-unresolvable="true" />
+	<!-- <context:property-placeholder location="file:/opt/resource/system-param.properties" ignore-unresolvable="true" /> -->
 
 </beans>
