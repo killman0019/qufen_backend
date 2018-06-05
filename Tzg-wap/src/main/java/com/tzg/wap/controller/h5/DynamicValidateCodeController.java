@@ -23,7 +23,6 @@ import com.tzg.common.utils.EnumConstant.SmsBuss;
 import com.tzg.common.utils.rest.RestConstants;
 import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.entitys.loginaccount.RegisterRequest;
-
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
@@ -33,12 +32,11 @@ import com.tzg.rmi.service.SmsSendRmiService;
 @Controller(value = "KFFDynamicValidateCodeController")
 @RequestMapping("/kff/dynamicValidateCode")
 public class DynamicValidateCodeController extends BaseController {
-	protected static Logger logger = Logger
-			.getLogger(DynamicValidateCodeController.class);
+	protected static Logger logger = Logger.getLogger(DynamicValidateCodeController.class);
 	@Autowired
-	private  SmsSendRmiService smsSendRmiService;
+	private SmsSendRmiService smsSendRmiService;
 	@Autowired
-	private  RedisService redisService;
+	private RedisService redisService;
 	@Autowired
 	private KFFRmiService kffRmiService;
 
@@ -51,11 +49,9 @@ public class DynamicValidateCodeController extends BaseController {
 	 * @param module
 	 * @return
 	 */
-	@RequestMapping(value = "/send", method = { RequestMethod.POST,
-			RequestMethod.GET })
+	@RequestMapping(value = "/send", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public BaseResponseEntity sendencrypt(HttpServletRequest request,
-			HttpServletResponse response, String phone, String module) {
+	public BaseResponseEntity sendencrypt(HttpServletRequest request, HttpServletResponse response, String phone, String module) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		Map<String, Object> data = new HashMap<String, Object>();
 		try {
@@ -73,15 +69,12 @@ public class DynamicValidateCodeController extends BaseController {
 				throw new RestServiceException(RestErrorCode.PHONE_FORMAT_ERROR);
 			}
 
-			if (module.equals(SmsBuss.新手机效验码.getBus())
-					|| module.equals(SmsBuss.注册效验码.getBus())) {
+			if (module.equals(SmsBuss.新手机效验码.getBus()) || module.equals(SmsBuss.注册效验码.getBus())) {
 				if (kffRmiService.verifyLoginaccount("mobile", phone)) {
-					throw new RestServiceException(
-							RestErrorCode.PHONE_ALREADY_EXIST);
+					throw new RestServiceException(RestErrorCode.PHONE_ALREADY_EXIST);
 				}
-			} 
-			String cacheKey = new StringBuffer(RestConstants.key_rest)
-					.append(module).append(phone).toString();
+			}
+			String cacheKey = new StringBuffer(RestConstants.key_rest).append(module).append(phone).toString();
 			String smsStormCheckKey = cacheKey + "sms";
 			String cacheCode = this.redisService.get(cacheKey);
 			String dynamicValidateCode = cacheCode;
@@ -89,8 +82,7 @@ public class DynamicValidateCodeController extends BaseController {
 				dynamicValidateCode = RandomUtil.produceNumber(6) + "";
 
 			}
-			logger.info("dynamicValidateCode:rest:" + module + ":"
-					+ dynamicValidateCode);
+			logger.info("dynamicValidateCode:rest:" + module + ":" + dynamicValidateCode);
 
 			this.redisService.put(cacheKey, dynamicValidateCode, 60 * 10);// 有效期10min
 			logger.info("cacheKey:" + cacheKey);
@@ -124,34 +116,27 @@ public class DynamicValidateCodeController extends BaseController {
 	 * @param code
 	 * @return
 	 */
-	@RequestMapping(value = "/verify", method = { RequestMethod.POST,
-			RequestMethod.GET })
+	@RequestMapping(value = "/verify", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public BaseResponseEntity verify(HttpServletRequest request,
-			HttpServletResponse response, String phone, String module,
-			String code) {
+	public BaseResponseEntity verify(HttpServletRequest request, HttpServletResponse response, String phone, String module, String code) {
 		BaseResponseEntity bre = new BaseResponseEntity();
-		try {			
+		try {
 			JSONObject map = new JSONObject();
 			map.put("phone", phone);
 			map.put("module", module);
 			map.put("code", code);
-			if (StringUtils.isBlank(module) || StringUtils.isBlank(phone)
-					|| StringUtils.isBlank(code)) {
+			if (StringUtils.isBlank(module) || StringUtils.isBlank(phone) || StringUtils.isBlank(code)) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
 			}
 
-			String cacheKey = new StringBuffer(RestConstants.key_rest)
-					.append(module).append(phone).toString();
+			String cacheKey = new StringBuffer(RestConstants.key_rest).append(module).append(phone).toString();
 			String cacheCode = this.redisService.get(cacheKey);
 			if (!StringUtils.isEmpty(cacheCode)) {
 				if (!(cacheCode).equalsIgnoreCase(code)) {
-					throw new RestServiceException(
-							RestErrorCode.DYNAMIC_VERIFY_CODE_ERROR);
+					throw new RestServiceException(RestErrorCode.DYNAMIC_VERIFY_CODE_ERROR);
 				}
 			} else {
-				throw new RestServiceException(
-						RestErrorCode.DYNAMIC_VERIFY_CODE_EXPIRED);
+				throw new RestServiceException(RestErrorCode.DYNAMIC_VERIFY_CODE_EXPIRED);
 			}
 
 			KFFUser user = null;
@@ -169,8 +154,7 @@ public class DynamicValidateCodeController extends BaseController {
 				}
 				if (user != null) {
 					// 生成account token
-					String token = AccountTokenUtil.getAccountToken(user
-							.getUserId());
+					String token = AccountTokenUtil.getAccountToken(user.getUserId());
 					map.put("user", user);
 					map.put("token", token);
 				}
@@ -228,17 +212,20 @@ public class DynamicValidateCodeController extends BaseController {
 				dynamicValidateCode = RandomUtil.produceNumber(6) + "";
 
 			}
-			logger.info("dynamicValidateCode:rest:" + module + ":" + dynamicValidateCode);
-			kffRmiService.aLiYunSmsApi(phone, module, dynamicValidateCode, cacheKey, smsStormCheckKey);
-			this.redisService.put(cacheKey, dynamicValidateCode, 60 * 10);// 有效期10min
-			logger.info("cacheKey:" + cacheKey);
-
-			// 防止短信轰炸
+			// 防止短信轰炸 阿里大鱼已经设置防止短信轰炸
+			/*
+			 * 
+			 * 默认流控：短信验证码 ：使用同一个签名，对同一个手机号码发送短信验证码，支持1条/分钟，5条/小时 ，累计10条/天
+			 * */
 			if (StringUtils.isBlank(this.redisService.get(smsStormCheckKey))) {
 				smsSendRmiService.sendMSG(phone, dynamicValidateCode, module);
 			}
 
-			 this.redisService.put(smsStormCheckKey, "1", 50); // 有效期50秒防止短信轰炸
+			this.redisService.put(smsStormCheckKey, "1", 50); // 有效期50秒防止短信轰炸
+			logger.info("dynamicValidateCode:rest:" + module + ":" + dynamicValidateCode);
+			kffRmiService.aLiYunSmsApi(phone, module, dynamicValidateCode, cacheKey, smsStormCheckKey);
+
+			logger.info("cacheKey:" + cacheKey);
 
 			data.put("dynamicCode", dynamicValidateCode);
 			bre.setData(data);

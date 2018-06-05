@@ -4677,52 +4677,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		return userWalletService.findBywalletAndType(userId);
 	}
 
-		@Override
-	public void aLiYunSms(String phone, String module, String dynamicValidateCode, String cacheKey, String smsStormCheckKey) {
-		/*//TaobaoClient client = new DefaultTaobaoClient(AliyunConstant.SMS_URL, AliyunConstant.SMS_APP_KEY, AliyunConstant.SMS_SECRET);
-		AlibabaAliqinFcSmsNumSendRequest req = new AlibabaAliqinFcSmsNumSendRequest();
-		//req.setSmsType(AliyunConstant.SMS_TYPE);
-		//req.setSmsFreeSignName(AliyunConstant.SMS_FREE_SIGN_NAME);
-
-		Map<String, String> map = new HashMap<String, String>();
-		// 放置json串
-		map.put("code", dynamicValidateCode);// 放置code 验证码
-		req.setSmsParamString(JSON.toJSONString(map));
-		req.setRecNum(phone);
-		// 登陆
-		if (module.equals(AliyunConstant.SMS_LOGIN)) {
-			req.setSmsTemplateCode(AliyunConstant.SMS_LOGIN_TEMPLATE_CODE);
-		}
-		// 注册
-		if (module.equals(AliyunConstant.SMS_REGISTER)) {
-			req.setSmsTemplateCode(AliyunConstant.SMS_REGISTER_TEMPLATE_CODE);
-		}
-		// 忘记密码
-		if (module.equals(AliyunConstant.SMS_FORGETPASDWORD)) {
-			req.setSmsTemplateCode(AliyunConstant.SMS_SMS_FORGETPASDWORD_TEMPLATE_CODE);
-		}
-		AlibabaAliqinFcSmsNumSendResponse rsp = null;
-		try {
-			rsp = client.execute(req);
-			if (rsp.isSuccess()) {
-
-				redisService.put(cacheKey, dynamicValidateCode, 60 * 10);// 设置10分钟
-				System.out.println("短信发送成功!");
-			} else {
-				System.out.println("短信发送失败!");
-			}
-			if (StringUtils.isBlank(this.redisService.get(smsStormCheckKey))) {
-				smsSendRmiService.sendMSG(phone, dynamicValidateCode, module);
-			}
-		} catch (ApiException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}*/
-
-	}
-	
-		@Override
+	@Override
 	public void aLiYunSmsApi(String phone, String module, String dynamicValidateCode, String cacheKey, String smsStormCheckKey) {
 		// TaobaoClient client = new DefaultTaobaoClient(AliyunConstant.SMS_URL,
 		// AliyunConstant.SMS_APP_KEY, AliyunConstant.SMS_SECRET);
@@ -4754,21 +4709,35 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			request.setSignName(AliyunConstant.SMS_FREE_SIGN_NAME);
 			// 必填:短信模板-可在短信控制台中找到
 			// 在此添加模板类型
-			request.setTemplateCode(AliyunConstant.SMS_REGISTER_TEMPLATE_CODE);
+
+			// 登陆
+			if (module.equals(AliyunConstant.SMS_LOGIN)) {
+				request.setTemplateCode(AliyunConstant.SMS_LOGIN_TEMPLATE_CODE);
+			}
+			// 注册
+			if (module.equals(AliyunConstant.SMS_REGISTER)) {
+				request.setTemplateCode(AliyunConstant.SMS_REGISTER_TEMPLATE_CODE);
+			}
+			// 忘记密码
+			if (module.equals(AliyunConstant.SMS_FORGETPASDWORD)) {
+				request.setTemplateCode(AliyunConstant.SMS_SMS_FORGETPASDWORD_TEMPLATE_CODE);
+			}
+			// request.setTemplateCode(AliyunConstant.SMS_REGISTER_TEMPLATE_CODE);
 			// 可选:模板中的变量替换JSON串,如模板内容为"亲爱的${name},您的验证码为${code}"时,此处的值为
 			// 友情提示:如果JSON中需要带换行符,请参照标准的JSON协议对换行符的要求,比如短信内容中包含\r\n的情况在JSON中需要表示成\\r\\n,否则会导致JSON在服务端解析失败
-			String jsonString = "{\"code\":\"123\"}";
+			String jsonString = JSON.toJSONString(map);
 			request.setTemplateParam(jsonString);
 			// 可选-上行短信扩展码(扩展码字段控制在7位或以下，无特殊需求用户请忽略此字段)
-			request.setSmsUpExtendCode("90997");
+			// request.setSmsUpExtendCode("90997");
 			// 可选:outId为提供给业务方扩展字段,最终在短信回执消息中将此值带回给调用者
-			request.setOutId("yourOutId");
+			// request.setOutId("yourOutId");
 			// 请求失败这里会抛ClientException异常
 			SendSmsResponse sendSmsResponse = acsClient.getAcsResponse(request);
+			System.out.println(sendSmsResponse);
 			if (sendSmsResponse.getCode() != null && sendSmsResponse.getCode().equals("OK")) {
 				System.out.println("短信发送成功!");
 				System.out.println(sendSmsResponse.getCode());
-				redisService.put(cacheKey, dynamicValidateCode, 60 * 10);// 设置10分钟
+				redisService.put(cacheKey, dynamicValidateCode, 60 * 5);// 设置10分钟
 			}
 		} catch (ServerException e) {
 			// TODO Auto-generated catch block

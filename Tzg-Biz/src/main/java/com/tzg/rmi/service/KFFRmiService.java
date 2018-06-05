@@ -705,18 +705,6 @@ public interface KFFRmiService {
 	 * @throws RestServiceException
 	 */
 	public void updataUserInvation(Integer userId, String posterUrl, String code2Url) throws RestServiceException;
-	
-	
-	public List<KFFUserWallet> findBywalletAndType(Integer userId);
-	/**
-	 * 短信验证码逻辑 淘宝文档
-	 * 
-	 * @param phone
-	 * @param module
-	 * @param dynamicValidateCode
-	 * @throws RestServiceException
-	 */
-	public void aLiYunSms(String phone, String module, String dynamicValidateCode, String cacheKey, String smsStormCheckKey) throws RestServiceException;
 
 	/**
 	 * 短信验证码逻辑 官方文档
@@ -743,5 +731,7 @@ public interface KFFRmiService {
 	public List<Tokenaward> findAllTokenawardUserId(Integer userId);
 
 	public List<Tokenrecords> findAllTokenrecordsUserId(Integer userId);
+	
+	public List<KFFUserWallet> findBywalletAndType(Integer userId);
 
 }

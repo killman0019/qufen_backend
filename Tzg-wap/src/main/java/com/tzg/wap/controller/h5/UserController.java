@@ -24,6 +24,7 @@ import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.redis.RedisService;
 import com.tzg.common.utils.AccountTokenUtil;
+import com.tzg.common.utils.Create2Code;
 import com.tzg.common.utils.EnumConstant.SmsBuss;
 import com.tzg.common.utils.RegexUtil;
 import com.tzg.common.utils.SHAUtil;
@@ -46,7 +47,6 @@ import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
 import com.tzg.rmi.service.KFFRmiService;
 import com.tzg.rmi.service.SystemParamRmiService;
-import com.tzg.wap.utils.Create2Code;
 import com.tzg.wap.utils.DateUtil;
 import com.tzg.wap.utils.HexUtil;
 
@@ -127,6 +127,7 @@ public class UserController extends BaseController {
 		String cacheCode = null;
 		try {
 			String module = "register";
+			//key_rest_sms_login15537791297sms
 			String cacheKey = new StringBuffer(RestConstants.key_rest).append(module).append(phoneNumber).toString();
 			cacheCode = redisService.get(cacheKey);
 		} catch (Exception e) {

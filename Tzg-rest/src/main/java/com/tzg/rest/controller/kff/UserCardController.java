@@ -1,6 +1,9 @@
 package com.tzg.rest.controller.kff;
 
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSONObject;
 import com.tzg.common.utils.AccountTokenUtil;
 import com.tzg.common.utils.RegexUtil;
+import com.tzg.entitys.kff.authentication.Authentication;
 import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.entitys.kff.usercard.UserCard;
 import com.tzg.rest.controller.BaseController;
@@ -189,6 +193,47 @@ public class UserCardController extends BaseController {
 			e.printStackTrace();
 			return this.resResult(RestErrorCode.SYS_ERROR);
 		}
+		return bre;
+	}
+
+	/**
+	 * 重新提交
+	 * 
+	 * @param request
+	 * @param response
+	 * @param token
+	 * @param authentication
+	 * @param flag
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/submitUserCardTiFormAgain", method = { RequestMethod.POST, RequestMethod.GET })
+	public BaseResponseEntity submitUserCardTiFormAgain(HttpServletRequest request, HttpServletResponse response, String token) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+		Map<String, Object> resMap = new HashMap<String, Object>();
+		Integer userId = AccountTokenUtil.decodeAccountToken(token);
+		// 点击重新提交 在数据库中重新插入新的一行数据
+		try {
+			UserCard userCard = new UserCard();
+			userCard.setCreatetime(new Date());
+			userCard.setStatus(4);
+			userCard.setValid(1);
+			userCard.setUpdatatime(new Date());
+			userCard.setUserid(userId);
+			kffRmiService.saveUserIdCard(userCard);
+
+			// 向前台展示信息
+			List<Authentication> authenticationFromDB = kffRmiService.selectAuthenticationByUserId(userId);
+			resMap.put("status", authenticationFromDB.get(0).getStatus());
+			resMap.put("notpassreason", authenticationFromDB.get(0).getNotpassreason());
+		} catch (RestServiceException e) {
+			logger.error("AuthenticationController submitAuthenTiFormAgain:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("AuthenticationController submitAuthenTiFormAgain:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+		}
+		bre.setData(resMap);
 		return bre;
 	}
 
