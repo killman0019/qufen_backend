@@ -21,6 +21,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.swing.ImageIcon;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
@@ -33,10 +36,13 @@ import com.google.zxing.common.BitMatrix;
  * @author Administrator
  *
  */
+@Component
 public class Create2Code {
+
 	/**
 	 * 二维码生成的存放路径
 	 */
+
 	private static String code2sysPath = "D:\\opt\\file\\upload\\2code\\";
 	/**
 	 * 邀请链接的url
@@ -54,7 +60,8 @@ public class Create2Code {
 	private static String text = "";
 
 	public static void main(String[] args) {
-		createPoster(null);
+		// createPoster(null);
+
 	}
 
 	public static String createPoster(Integer userId) {
@@ -73,6 +80,7 @@ public class Create2Code {
 		overlapImage(initPosterSysPathLast, code2Path, posterSysPathlast);
 		// createCharAtImg(text, posterSysPathlast);
 
+		// System.out.println(picUrlpro);
 		return "upload/poster/" + str + ".png";
 	}
 

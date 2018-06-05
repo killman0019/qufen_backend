@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:util="http://www.springframework.org/schema/util" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
-	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:mvc="http://www.springframework.org/schema/mvc"
-	xmlns:c="http://www.springframework.org/schema/c"
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:util="http://www.springframework.org/schema/util" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop" xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:c="http://www.springframework.org/schema/c"
 	xsi:schemaLocation="
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
@@ -15,20 +12,18 @@
 	default-lazy-init="true">
 
 
-	<util:properties id="dbConfig"
-		location="file:/opt/resource/system-db.properties" />
+	<util:properties id="dbConfig" location="file:/opt/resource/system-db.properties" />
+
+<!-- 	<util:properties id="paramConfig" location="file:/opt/resource/system-param.properties" /> -->
 	
-	<!--			
-	<bean id="configProfile"
-		class="com.dangdang.config.service.zookeeper.ZookeeperConfigProfile">
-		<constructor-arg name="connectStr" value="#{props['zookeeper.hosts']}" />
-		<constructor-arg name="rootNode" value="#{props['rootNode']}" />
-		<constructor-arg name="version" value="#{props['version']}" />
-	</bean>
-	<bean id="dbConfig"
-		class="com.dangdang.config.service.zookeeper.ZookeeperConfigGroup"
-		c:configProfile-ref="configProfile" c:node="db" />
-    -->
+
+	
+	<!--文件begin -->
+
+	<!-- 文件end -->
+	<!-- <bean id="configProfile" class="com.dangdang.config.service.zookeeper.ZookeeperConfigProfile"> <constructor-arg name="connectStr" value="#{props['zookeeper.hosts']}" /> <constructor-arg name="rootNode" 
+		value="#{props['rootNode']}" /> <constructor-arg name="version" value="#{props['version']}" /> </bean> <bean id="dbConfig" class="com.dangdang.config.service.zookeeper.ZookeeperConfigGroup" c:configProfile-ref="configProfile" 
+		c:node="db" /> -->
 	<bean id="stat-filter" class="com.alibaba.druid.filter.stat.StatFilter">
 		<property name="slowSqlMillis" value="1000" />
 		<property name="logSlowSql" value="false" />
@@ -50,20 +45,19 @@
 		<!-- statementExecutableSqlLogEnable 表示是否显示SQL语句 -->
 		<property name="statementExecutableSqlLogEnable" value="true" />
 		<property name="connectionConnectAfterLogEnabled" value="true" />
-		<property name="statementLogEnabled" value="false"/>
-		<property name="statementCloseAfterLogEnabled" value="false"/>
-		<property name="statementParameterSetLogEnabled" value="false"/>
-		<property name="statementPrepareAfterLogEnabled" value="false"/>
+		<property name="statementLogEnabled" value="false" />
+		<property name="statementCloseAfterLogEnabled" value="false" />
+		<property name="statementParameterSetLogEnabled" value="false" />
+		<property name="statementPrepareAfterLogEnabled" value="false" />
 		<property name="statementExecuteAfterLogEnabled" value="false" />
-		<property name="resultSetCloseAfterLogEnabled" value="false"/>
+		<property name="resultSetCloseAfterLogEnabled" value="false" />
 	</bean>
-	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
-		init-method="init" destroy-method="close">
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
 		<property name="driverClassName" value="#{dbConfig['jdbc.driver']}" />
 		<property name="url" value="#{dbConfig['jdbc.url']}" />
 		<property name="username" value="#{dbConfig['jdbc.username']}" />
 		<property name="password" value="#{dbConfig['jdbc.password']}" />
-	    <!-- 连接池最大使用连接数 -->
+		<!-- 连接池最大使用连接数 -->
 		<property name="maxActive" value="300" />
 		<!-- 初始化连接大小 -->
 		<property name="initialSize" value="10" />
@@ -76,14 +70,13 @@
 		<!-- 清除无用连接的等待时间1800秒，也就是30分钟.关闭长时间不使用的连接 -->
 		<property name="removeAbandonedTimeout" value="180" />
 		<!-- 关闭abanded连接时输出错误日志 -->
-		<property name="logAbandoned" value="true" /> 	
+		<property name="logAbandoned" value="true" />
 		<!-- 连接属性 -->
 		<property name="connectionProperties" value="clientEncoding=UTF-8" />
-		<!-- 用于统计监控信息 ,StatFilter的几种配置方式: 1、proxyFilters属性自定义 2、StatFilter简化配置方式，通过filters属性value="mergeStat" 
-			3、可以通过connectProperties属性来打开mergeSql功能druid.stat.mergeSql=true 4、通过JVM参数:-Ddruid.stat.mergeSql=true -->
+		<!-- 用于统计监控信息 ,StatFilter的几种配置方式: 1、proxyFilters属性自定义 2、StatFilter简化配置方式，通过filters属性value="mergeStat" 3、可以通过connectProperties属性来打开mergeSql功能druid.stat.mergeSql=true 4、通过JVM参数:-Ddruid.stat.mergeSql=true -->
 		<property name="proxyFilters">
 			<list>
-				<ref bean="stat-filter"/>
+				<ref bean="stat-filter" />
 				<ref bean="log-filter" />
 				<ref bean="wall-filter" />
 			</list>
@@ -102,12 +95,10 @@
 	</bean>
 
 	<!-- 对数据源进行事务管理 -->
-	<bean id="transactionManager"
-		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 
-	<tx:annotation-driven transaction-manager="transactionManager"
-		proxy-target-class="true" />
- 
+	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true" />
+
 </beans>
