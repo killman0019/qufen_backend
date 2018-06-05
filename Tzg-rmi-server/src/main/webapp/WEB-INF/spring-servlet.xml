@@ -31,7 +31,7 @@
 	<!-- 启动注解驱动的Spring MVC功能，注册请求url和注解POJO类方法的映射 -->
 	<mvc:annotation-driven />
 
-	<util:properties id="sysConfig" location="file:c:/opt/resource/system.properties"/>
+	<util:properties id="sysConfig" location="file:/opt/resource/system.properties"/>
 	
 	<!--
 	<bean id="configProfile" class="com.dangdang.config.service.zookeeper.ZookeeperConfigProfile">
