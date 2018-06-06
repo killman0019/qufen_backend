@@ -1,5 +1,6 @@
 package com.tzg.wap.controller.h5;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,19 +9,24 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
 import com.tzg.entitys.kff.devaluationModel.DevaluationModel;
 import com.tzg.entitys.kff.devaluationModel.DevaluationModelRequest;
 import com.tzg.entitys.kff.devaluationModelDetail.DevaluationModelDetail;
 import com.tzg.entitys.kff.evaluation.Evaluation;
+import com.tzg.entitys.kff.evaluation.EvaluationData;
 import com.tzg.entitys.kff.evaluation.EvaluationRequest;
 import com.tzg.entitys.kff.project.KFFProject;
 import com.tzg.rest.exception.rest.RestErrorCode;
@@ -37,26 +43,33 @@ public class EvaluationController extends BaseController {
 	private KFFRmiService kffRmiService;
 
 	/**
-	 * 发表评测,传入evaluationRequest 对象
+	 * 发表评测,传入evaluationRequest 对象 EvaluationRequest evaluationRequest, String token, String
+	 * projectName
 	 * 
 	 * @param evaluationRequest
 	 * @return
 	 */
 	@RequestMapping(value = "/saveEvaluation", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public BaseResponseEntity saveEvaluation(HttpServletRequest request, HttpServletResponse response, EvaluationRequest evaluationRequest, String token,
-			String projectName) {
+	public BaseResponseEntity saveEvaluation(HttpServletRequest request, HttpServletResponse response, @RequestBody String data) {
 
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		try {
+			EvaluationData evaluationData = JSON.parseObject(data, EvaluationData.class);
+			EvaluationRequest evaluationRequest = new EvaluationRequest();
+			String projectName = evaluationData.getProjectName();
+			String token = evaluationData.getToken();
+			evaluationRequest.setProfessionalEvaDetail(evaluationData.getProfessionalEvaDetail());
 			evaluationRequest.setProfessionalEvaDetail(StringEscapeUtils.unescapeHtml(evaluationRequest.getProfessionalEvaDetail()));
+			evaluationRequest.setEvauationContent(evaluationData.getEvauationContent());
 			evaluationRequest.setEvauationContent(StringEscapeUtils.unescapeHtml(evaluationRequest.getEvauationContent()));
 			Integer userId = getUserIdByToken(token);
 			evaluationRequest.setCreateUserId(userId);
 			KFFProject project = kffRmiService.selectProjectByprojectName(projectName);
 			evaluationRequest.setProjectId(project.getProjectId());
 			// 判断用户是否已经对此项目进行了全面评测
+			evaluationRequest.setModelType(evaluationData.getModelType());
 			if (2 == evaluationRequest.getModelType()) {
 				Evaluation evaluationDB = new Evaluation();
 				evaluationDB.setModelType(evaluationRequest.getModelType());

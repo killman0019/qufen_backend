@@ -16,10 +16,12 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
@@ -39,6 +41,7 @@ import com.tzg.entitys.kff.follow.FollowResponse;
 import com.tzg.entitys.kff.model.UserModel;
 import com.tzg.entitys.kff.tokenrecords.Tokenrecords;
 import com.tzg.entitys.kff.user.KFFUser;
+import com.tzg.entitys.kff.user.KFFUserLogin;
 import com.tzg.entitys.kff.userInvation.UserInvation;
 import com.tzg.entitys.leopard.system.SystemParam;
 import com.tzg.entitys.loginaccount.RegisterRequest;
@@ -200,6 +203,7 @@ public class UserController extends BaseController {
 		kffRmiService.saveUserInvation(userId, userIdTo2code);
 		// 生成URL注册链接
 		String user2codeUrl = registerUrl + userIdTo2code;
+		System.out.println(user2codeUrl);
 		map.put("url", user2codeUrl);
 		bre.setData(map);
 		return bre;
@@ -397,11 +401,18 @@ public class UserController extends BaseController {
 	 */
 	@RequestMapping(value = "/login", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public BaseResponseEntity login(HttpServletRequest request, HttpServletResponse response, String loginName, String password) {
+	public BaseResponseEntity login(HttpServletRequest request, HttpServletResponse response, @RequestBody String data) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		JSONObject jsonObject = new JSONObject();
+
 		// 验证密码是否符合规定
+		if (StringUtils.isEmpty(data)) {
+			throw new RestServiceException("登陆参数异常,请联系客服!");
+		}
+		KFFUserLogin userLogin = JSON.parseObject(data, KFFUserLogin.class);
+		String password = userLogin.getPassword();
+		String loginName = userLogin.getLoginName();
 		jsonObject.put("password", password);
 		try {
 			if (StringUtils.isBlank(loginName)) {

@@ -58,8 +58,9 @@ import com.tzg.rmi.service.SystemParamRmiService;
 @RequestMapping("/kff/user")
 public class UserController extends BaseController {
 	private static Logger log = Logger.getLogger(UserController.class);
-	//private static final String REGISTER_URL = "http://192.168.10.196:5000/user/registerSmp?invaUIH=";
-	
+	// private static final String REGISTER_URL =
+	// "http://192.168.10.196:5000/user/registerSmp?invaUIH=";
+
 	@Value("#{paramConfig['registerUrl']}")
 	private String registerUrl;
 	@Autowired
@@ -229,7 +230,7 @@ public class UserController extends BaseController {
 			// 生成account token
 			String token = AccountTokenUtil.getAccountToken(loginaccount.getUserId());
 			map.put("token", token);
-			
+
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.warn("login warn:{}", e);
@@ -1164,7 +1165,7 @@ public class UserController extends BaseController {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		// 生成URL注册链接
-		String user2codeUrl;
+
 		try {
 			JSONObject params = getParamMapFromRequestPolicy(request);
 			String token = (String) params.get("token");
@@ -1177,7 +1178,8 @@ public class UserController extends BaseController {
 			String userIdTo2code = HexUtil.userIdTo2code(userId);
 			// 将生成的2code 放在数据库中
 			kffRmiService.saveUserInvation(userId, userIdTo2code);
-			user2codeUrl = registerUrl + userIdTo2code;
+			String user2codeUrl = registerUrl + userIdTo2code;
+			System.out.println(user2codeUrl);
 			// 获取邀请奖励
 			// 参数类型 先用double类型
 			Double awardNum = kffRmiService.selectInvationAward(userId);

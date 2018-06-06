@@ -1,6 +1,7 @@
 package com.tzg.wap.controller.h5;
 
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -20,7 +22,9 @@ import com.alibaba.fastjson.JSON;
 import com.tzg.common.base.BaseRequest;
 import com.tzg.entitys.discussImages.DiscussImages;
 import com.tzg.entitys.kff.discuss.DiscussRequest;
+import com.tzg.entitys.kff.discuss.DiscussRequestData;
 import com.tzg.entitys.kff.dtags.Dtags;
+import com.tzg.entitys.kff.evaluation.EvaluationData;
 import com.tzg.entitys.kff.project.KFFProject;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
@@ -38,23 +42,28 @@ public class DiscussController extends BaseController {
 	 * 发表讨论
 	 * 
 	 * @param discussRequest
-	 * @return
+	 * @return String projectName, String disscussContents, String tagInfos, String token, String
+	 *         discussImages, String postTitle
 	 */
 	@RequestMapping(value = "/saveDiscuss", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public BaseResponseEntity saveDiscuss(HttpServletRequest request, HttpServletResponse response, String projectName, String disscussContents,
-			String tagInfos, String token, String discussImages, String postTitle) {
+	public BaseResponseEntity saveDiscuss(HttpServletRequest request, HttpServletResponse response, @RequestBody String data) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 
-		// 进行json转换
-		String discussImagesl = StringEscapeUtils.unescapeHtml(discussImages);
-		String tagInfosl = StringEscapeUtils.unescapeHtml(tagInfos);
-		if (null == token) {
-			throw new RestServiceException(RestErrorCode.USER_NOT_LOGIN);
-		}
-
 		try {
+			DiscussRequestData discussRequestData = JSON.parseObject(data, DiscussRequestData.class);
+			// 进行json转换
+			String token = discussRequestData.getToken();
+			String projectName = discussRequestData.getProjectName();
+			String disscussContents = discussRequestData.getDisscussContents();
+			String postTitle = discussRequestData.getPostTitle();
+			String discussImagesl = StringEscapeUtils.unescapeHtml(discussRequestData.getDiscussImages());
+			String tagInfosl = StringEscapeUtils.unescapeHtml(discussRequestData.getTagInfos());
+			if (null == token) {
+				throw new RestServiceException(RestErrorCode.USER_NOT_LOGIN);
+			}
+
 			// List<String> name = JSON.parseObject(pic, ArrayList.class);
 			DiscussRequest discussRequest = new DiscussRequest();
 			Integer userId = getUserIdByToken(token);
