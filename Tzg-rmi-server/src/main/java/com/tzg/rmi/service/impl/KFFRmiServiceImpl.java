@@ -4892,7 +4892,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			if (sendSmsResponse.getCode() != null && sendSmsResponse.getCode().equals("OK")) {
 				System.out.println("短信发送成功!");
 				System.out.println(sendSmsResponse.getCode());
-				redisService.put(cacheKey, dynamicValidateCode, 60 * 5);// 设置10分钟
+				redisService.put(cacheKey, dynamicValidateCode, 60 * 10);// 设置10分钟
 			}
 		} catch (ServerException e) {
 			e.printStackTrace();
