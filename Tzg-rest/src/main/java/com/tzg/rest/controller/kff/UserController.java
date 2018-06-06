@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -57,7 +58,10 @@ import com.tzg.rmi.service.SystemParamRmiService;
 @RequestMapping("/kff/user")
 public class UserController extends BaseController {
 	private static Logger log = Logger.getLogger(UserController.class);
-	private static final String REGISTER_URL = "http://192.168.10.196:5000/user/registerSmp?invaUIH=";
+	//private static final String REGISTER_URL = "http://192.168.10.196:5000/user/registerSmp?invaUIH=";
+	
+	@Value("#{paramConfig['registerUrl']}")
+	private String registerUrl;
 	@Autowired
 	private KFFRmiService kffRmiService;
 	@Autowired
@@ -1173,7 +1177,7 @@ public class UserController extends BaseController {
 			String userIdTo2code = HexUtil.userIdTo2code(userId);
 			// 将生成的2code 放在数据库中
 			kffRmiService.saveUserInvation(userId, userIdTo2code);
-			user2codeUrl = REGISTER_URL + userIdTo2code;
+			user2codeUrl = registerUrl + userIdTo2code;
 			// 获取邀请奖励
 			// 参数类型 先用double类型
 			Double awardNum = kffRmiService.selectInvationAward(userId);
