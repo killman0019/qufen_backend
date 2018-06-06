@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tzg.common.utils.DateUtil;
 import com.tzg.entitys.kff.coinproperty.CoinProperty;
 import com.tzg.entitys.kff.tokenaward.Tokenaward;
 import com.tzg.entitys.kff.tokenrecords.Tokenrecords;
@@ -112,7 +113,7 @@ public class AwardPortService {
 						System.err.println("我是账单生成");
 					}
 				}
-				if (userId > 5000000 && userId < 1000000) {
+				if (userId > 500000 && userId < 1000000) {
 					List<Tokenaward> findByUserId = kffTokenawardService.findByUserId(userId);
 					
 					if (findByUserId.size() == 0) {
@@ -865,41 +866,51 @@ public class AwardPortService {
 						// 如果是注册奖励
 						if (awardFunctionType == 16) {
 							Tokenrecords tokenrecords1 = tokenrecordsMapper.findByUserIdAndFunctionType(userId);
-							tokenrecords1.setUserId(userId);
-							tokenrecords1.setFunctionDesc("注册奖励");
-							tokenrecords1.setFunctionType(awardFunctionType);
-							tokenrecords1.setAmount(new BigDecimal(x));
-							tokenrecords1.setUpdateTime(new Date());
-							tokenrecords1.setRewardGrantType(2);
-							award.setUserId(userId);
-							award.setTokenAwardFunctionType(awardFunctionType);
-							award.setCounter(counter + 1);
-							Double awardBalance = award.getAwardBalance();
-							award.setAwardBalance(awardBalance - x);
-							
-							BigDecimal tokenNum = finduser.getKffCoinNum();
-							tokenNum = tokenNum.add(new BigDecimal(x));
-							finduser.setKffCoinNum(tokenNum);
-							finduser.setUpdateTime(new Date());
-							kffUserService.update(finduser);
-							
-							kffTokenrecordsService.update(tokenrecords1);
-							System.err.println(award.getTokenAwardFunctionDesc());
-							
-							kffTokenawardService.update(award);
-							
-							KFFUser kffUser = kffUserService.findById(userId);
-							BigDecimal kffCoinNum = kffUser.getKffCoinNum();
-							kffUserService.updateUserKFFCoinNum(userId, kffCoinNum.add(new BigDecimal(x)));
-							
-							Double coinLock = coinProperty.getCoinLock();
-							Double coinDistributed = coinProperty.getCoinDistributed();
-							coinProperty2.setCoinLock(coinLock + x);
-							coinProperty2.setCoinDistributed(coinDistributed - x);
-							coinProperty2.setUserId(userId);
-							
-							kffCoinPropertyService.update(coinProperty2);
-							
+							if(tokenrecords1 != null) {
+								
+								tokenrecords1.setUserId(userId);
+								tokenrecords1.setFunctionDesc("注册奖励");
+								tokenrecords1.setFunctionType(awardFunctionType);
+								tokenrecords1.setAmount(new BigDecimal(x));
+								tokenrecords1.setUpdateTime(new Date());
+								tokenrecords1.setRewardGrantType(2);
+								
+								Date date = new Date();
+								String stringDate = DateUtil.getDate(date, "yyyy-MM-dd");
+								String replaceAllDate = stringDate.replaceAll("-", "");
+								String format = String.format("%010d", userId);
+								tokenrecords1.setTradeCode("01" + replaceAllDate + format); // 交易流水号
+								
+								award.setUserId(userId);
+								award.setTokenAwardFunctionType(awardFunctionType);
+								award.setCounter(counter + 1);
+								Double awardBalance = award.getAwardBalance();
+								award.setAwardBalance(awardBalance - x);
+								
+								BigDecimal tokenNum = finduser.getKffCoinNum();
+								tokenNum = tokenNum.add(new BigDecimal(x));
+								finduser.setKffCoinNum(tokenNum);
+								finduser.setUpdateTime(new Date());
+								kffUserService.update(finduser);
+								
+								kffTokenrecordsService.update(tokenrecords1);
+								System.err.println(award.getTokenAwardFunctionDesc());
+								
+								kffTokenawardService.update(award);
+								
+								KFFUser kffUser = kffUserService.findById(userId);
+								BigDecimal kffCoinNum = kffUser.getKffCoinNum();
+								kffUserService.updateUserKFFCoinNum(userId, kffCoinNum.add(new BigDecimal(x)));
+								
+								Double coinLock = coinProperty.getCoinLock();
+								Double coinDistributed = coinProperty.getCoinDistributed();
+								coinProperty2.setCoinLock(coinLock + x);
+								coinProperty2.setCoinDistributed(coinDistributed - x);
+								coinProperty2.setUserId(userId);
+								
+								kffCoinPropertyService.update(coinProperty2);
+								
+							}
 						} else if (awardFunctionType == 18) {// 如果是邀请好友的奖励
 							
 							tokenrecords.setUserId(userId);
@@ -908,6 +919,13 @@ public class AwardPortService {
 							tokenrecords.setAmount(new BigDecimal(x)); // 发放奖励数
 							tokenrecords.setUpdateTime(new Date());
 							tokenrecords.setRewardGrantType(2);
+							
+							Date date = new Date();
+							String stringDate = DateUtil.getDate(date, "yyyy-MM-dd");
+							String replaceAllDate = stringDate.replaceAll("-", "");
+							String format = String.format("%010d", userId);
+							tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
+							
 							kffTokenrecordsService.update(tokenrecords);
 							tokenaward.setUserId(userId);
 							tokenaward.setTokenAwardFunctionType(awardFunctionType);
@@ -938,7 +956,7 @@ public class AwardPortService {
 			
 		}catch(NullPointerException ne){
 			ne.printStackTrace();
-			logger.error("login error:{}", ne);
+			logger.error("参数为空", ne);
 		}
 	}
 	@Transactional

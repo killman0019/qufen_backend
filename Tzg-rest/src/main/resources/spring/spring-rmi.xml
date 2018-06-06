@@ -23,7 +23,7 @@
 	default-lazy-init="true">
 
 	<util:properties id="sysConfig" location="file:/opt/resource/system.properties"/>
-	
+	<util:properties id="paramConfig" location="file:/opt/resource/system-param.properties" />
 	<!--
 	<bean id="configProfile" class="com.dangdang.config.service.zookeeper.ZookeeperConfigProfile">
 		<constructor-arg name="connectStr" value="#{props['zookeeper.hosts']}" />
