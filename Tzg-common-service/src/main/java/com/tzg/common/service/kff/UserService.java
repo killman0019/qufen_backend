@@ -159,16 +159,24 @@ public class UserService {
 			// 根据用户id去tokenaward表中获取发放状态 grantType
 			List<Tokenaward> findByUserId = tokenawardService.findByUserId(userId);
 			for (Tokenaward tokenaward : findByUserId) {
-				if (tokenaward.getGrantType() == 2) {
-					// 调用发放接口
-					// AwardPortService awardPortService = new AwardPortService();
-					// Integer tokenawardUserid = tokenaward.getUserId();
-					// awardPortService.registerAward(userId);
-					registerAward(userId);
-					tokenaward.setGrantType(1);
-					tokenawardService.update(tokenaward);
+				if(tokenaward != null) {
+					if(tokenaward.getGrantType() != null) {
+						
+						if ( tokenaward.getGrantType() == 2) {
+							
+							// 调用发放接口
+							// AwardPortService awardPortService = new AwardPortService();
+							// Integer tokenawardUserid = tokenaward.getUserId();
+							// awardPortService.registerAward(userId);
+							registerAward(userId);
+							tokenaward.setGrantType(1);
+							tokenawardService.update(tokenaward);
+						}
+					}
 				}
+			
 			}
+			
 		} else {
 			// 用户名登录
 			query.addQueryData("userName", loginName);
@@ -185,13 +193,22 @@ public class UserService {
 			// 根据用户id去tokenaward表中获取发放状态 grantType
 			List<Tokenaward> findByUserId = tokenawardService.findByUserId(userId);
 			for (Tokenaward tokenaward : findByUserId) {
-				if (tokenaward.getGrantType() == 2) {
-					// 调用发放接口
-					AwardPortService awardPortService = new AwardPortService();
-					awardPortService.registerAward(userId);
-					tokenaward.setGrantType(1);
-					tokenawardService.update(tokenaward);
+				if(tokenaward != null) {
+					if(tokenaward.getGrantType() != null) {
+						
+						if ( tokenaward.getGrantType() == 2) {
+							
+							// 调用发放接口
+							// AwardPortService awardPortService = new AwardPortService();
+							// Integer tokenawardUserid = tokenaward.getUserId();
+							// awardPortService.registerAward(userId);
+							registerAward(userId);
+							tokenaward.setGrantType(1);
+							tokenawardService.update(tokenaward);
+						}
+					}
 				}
+			
 			}
 
 		}
