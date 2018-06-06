@@ -2329,6 +2329,29 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (loginUserId != null) {
 			loginUser = kffUserService.findById(loginUserId);
 		}
+		/**
+		 * 
+		 * 解决登录送奖励问题
+		 * 
+		 * 
+		 */
+		
+		List<Tokenaward> findByUserId = tokenawardService.findByUserId(loginUserId);
+		for (Tokenaward tokenaward : findByUserId) {
+			if(tokenaward != null) {
+				if(tokenaward.getGrantType() != null) {
+					
+					if ( tokenaward.getGrantType() == 2) {
+						
+						registerAward(loginUserId);
+						tokenaward.setGrantType(1);
+						tokenawardService.update(tokenaward);
+					}
+				}
+			}
+		
+		}
+		
 		if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
 			result.setCurPageNum(posts.getCurPageNum());
 			result.setPageSize(posts.getPageSize());
@@ -3161,6 +3184,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 								tokenrecords.setTradeType(1);
 								tokenrecords.setRewardGrantType(1);
 								tokenrecords.setCreateTime(new Date());
+								
+								tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
+								
+								
 								kffTokenrecordsService.save(tokenrecords);
 								
 								Double coinLock = coinCommenId.getCoinLock();
@@ -3197,6 +3224,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 								tokenrecords.setTradeType(1);
 								tokenrecords.setRewardGrantType(1);
 								tokenrecords.setCreateTime(new Date());
+								tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
 								kffTokenrecordsService.save(tokenrecords);
 								
 								Double coinLock = coinCommenId.getCoinLock();
@@ -3283,6 +3311,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 								tokenrecords.setTradeType(1);
 								tokenrecords.setRewardGrantType(1);
 								tokenrecords.setCreateTime(new Date());
+								tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
 								kffTokenrecordsService.save(tokenrecords);
 								
 								Double coinLock = coinCommenId.getCoinLock();
