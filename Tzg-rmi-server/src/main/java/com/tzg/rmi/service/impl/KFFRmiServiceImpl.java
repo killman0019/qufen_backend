@@ -5071,7 +5071,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			// request.setOutId("yourOutId");
 			// 请求失败这里会抛ClientException异常
 			SendSmsResponse sendSmsResponse = acsClient.getAcsResponse(request);
-			System.out.println(sendSmsResponse);
+			System.out.println(sendSmsResponse.getCode());
 			if (sendSmsResponse.getCode() != null && sendSmsResponse.getCode().equals("OK")) {
 				System.out.println("短信发送成功!");
 				System.out.println(sendSmsResponse.getCode());
