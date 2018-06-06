@@ -1,6 +1,7 @@
 package com.tzg.rest.controller.kff;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,6 +22,7 @@ import com.tzg.common.utils.RegexUtil;
 import com.tzg.common.utils.EnumConstant.SmsBuss;
 import com.tzg.common.utils.RandomUtil;
 import com.tzg.common.utils.rest.RestConstants;
+import com.tzg.entitys.kff.tokenaward.Tokenaward;
 import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.entitys.loginaccount.Loginaccount;
 import com.tzg.entitys.loginaccount.RegisterRequest;

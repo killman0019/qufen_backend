@@ -117,6 +117,7 @@ public class UserService {
 		qfIndex.setStatusHierarchyType(0); // 区分指数 : 新建用户默认是0分
 		qfIndex.setCreateTime(new Date());
 		qfIndex.setUpdateTime(new Date());
+		qfIndex.setYxpraise(0);
 		qfIndexService.save(qfIndex);
 		// awardPortService.registerAward(user.getUserId());
 		KFFUserWallet kffUserWallet = new KFFUserWallet();
@@ -253,7 +254,10 @@ public class UserService {
 		map.put("status", "1");
 		List<KFFUser> users = userMapper.findAllPage(map);
 		if (CollectionUtils.isNotEmpty(users)) {
+			awardPortService.issue(users.get(0).getUserId());
 			return users.get(0);
+			
+			
 		}
 		return null;
 	}

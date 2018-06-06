@@ -7,6 +7,8 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,8 @@ import com.tzg.entitys.kff.tokenrecords.Tokenrecords;
 import com.tzg.entitys.kff.tokenrecords.TokenrecordsMapper;
 import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.entitys.kff.usercard.UserCard;
+import com.tzg.rest.exception.rest.RestErrorCode;
+import com.tzg.rest.exception.rest.RestServiceException;
 
 /**
  * 发放接口
@@ -28,6 +32,7 @@ import com.tzg.entitys.kff.usercard.UserCard;
 @Service(value = "AwardPortService")
 @Transactional
 public class AwardPortService {
+	private static final Log logger = LogFactory.getLog(AwardPortService.class);
 	@Autowired
 	private TokenrecordsService kffTokenrecordsService;
 	@Autowired
@@ -57,79 +62,85 @@ public class AwardPortService {
 	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
 	// 注册的奖励发放
+	@Transactional
 	public void registerAward(Integer userId) {
-		System.err.println("registerAward类的" + userId);
-
-		KFFUser user = kffUserService.findByUserId(userId);
-		System.err.println("测试我是注册人id :" + user.getUserId());
-		System.err.println("userIdRegisterAward : " + userId);
-		if (userId != null && userId != 0) {
-			// 判断注册用户在哪个区间
-			if (userId > 0 && userId <= 50000) {
-
-				List<Tokenaward> findByUserId = kffTokenawardService.findByUserId(userId);
-				
-				if (findByUserId.size() == 0) {
-					System.err.println("我是发放奖励");
-					method1(userId);
-
-				} else {
-
-					issue(userId);
-					System.err.println("我是账单生成");
+		try {
+			System.err.println("registerAward类的" + userId);
+			KFFUser user = kffUserService.findByUserId(userId);
+			System.err.println("测试我是注册人id :" + user.getUserId());
+			System.err.println("userIdRegisterAward : " + userId);
+			if (userId != null && userId != 0) {
+				// 判断注册用户在哪个区间
+				if (userId > 0 && userId <= 50000) {
+					
+					List<Tokenaward> findByUserId = kffTokenawardService.findByUserId(userId);
+					
+					if (findByUserId.size() == 0) {
+						System.err.println("我是发放奖励");
+						method1(userId);
+						
+					} else {
+						
+						issue(userId);
+						System.err.println("我是账单生成");
+					}
+					
+					
+				} 
+				if (userId > 50000 && userId <= 100000) {
+					List<Tokenaward> findByUserId = kffTokenawardService.findByUserId(userId);
+					
+					if (findByUserId.size() == 0) {
+						System.err.println("我是发放奖励");
+						method2(userId);
+						
+					} else {
+						
+						issue(userId);
+						System.err.println("我是账单生成");
+					}
+				} if (userId > 100000 && userId <= 500000) {
+					List<Tokenaward> findByUserId = kffTokenawardService.findByUserId(userId);
+					
+					if (findByUserId.size() == 0) {
+						System.err.println("我是发放奖励");
+						method3(userId);
+						
+					} else {
+						
+						issue(userId);
+						System.err.println("我是账单生成");
+					}
 				}
-				
-
-			} 
-			if (userId > 50000 && userId <= 100000) {
-				List<Tokenaward> findByUserId = kffTokenawardService.findByUserId(userId);
+				if (userId > 5000000 && userId < 1000000) {
+					List<Tokenaward> findByUserId = kffTokenawardService.findByUserId(userId);
+					
+					if (findByUserId.size() == 0) {
+						System.err.println("我是发放奖励");
+						method4(userId);
+						
+					} else {
+						
+						issue(userId);
+						System.err.println("我是账单生成");
+					}
+				}
+			}
 			
-				if (findByUserId.size() == 0) {
-					System.err.println("我是发放奖励");
-					method2(userId);
-
-				} else {
-
-					issue(userId);
-					System.err.println("我是账单生成");
-			}
-			} if (userId > 100000 && userId <= 500000) {
-				List<Tokenaward> findByUserId = kffTokenawardService.findByUserId(userId);
-				
-				if (findByUserId.size() == 0) {
-					System.err.println("我是发放奖励");
-					method3(userId);
-
-				} else {
-
-					issue(userId);
-					System.err.println("我是账单生成");
-				}
-			}
-			if (userId > 5000000 && userId < 1000000) {
-				List<Tokenaward> findByUserId = kffTokenawardService.findByUserId(userId);
-
-				if (findByUserId.size() == 0) {
-					System.err.println("我是发放奖励");
-					method4(userId);
-
-				} else {
-
-					issue(userId);
-					System.err.println("我是账单生成");
-				}
-			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("login error:{}", e);
 		}
 
 	}
 
 	// 邀请奖励的发放
-
+	@Transactional
 	public void method1(Integer userId) {
 		KFFUser user = kffUserService.findByUserId(userId);
 		// 判断如果用户没有被邀请 并且是普通用户
 		if (user.getReferLevel() == 0 && (user.getUserType() == 1 || user.getUserType() == 4)) {
-			m0 = 5000d;
+			m0 = 50000d;
 			// 没有邀请人
 			// 将用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 			tokenaward.setUserId(userId);
@@ -159,8 +170,8 @@ public class AwardPortService {
 
 			// 从数据表中获取所有该用户的奖励数据
 			// issue(userId);
-		} else if (user.getReferLevel() == 0 && (user.getUserType() == 2 || user.getUserType() == 3)) { // 有邀请人并且是项目方
-			m0 = 5000d * 150 / 100;
+		} else if (user.getReferLevel() == 0 && (user.getUserType() == 2 || user.getUserType() == 3)) { // 没有邀请人并且是项目方
+			m0 = 50000d * 150 / 100;
 			// 将用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 			tokenaward.setUserId(userId);
 			tokenaward.setTokenAwardFunctionType(16);
@@ -187,81 +198,6 @@ public class AwardPortService {
 			tokenrecords.setCreateTime(new Date());
 			kffTokenrecordsService.save(tokenrecords);
 
-			// 从数据表中获取所有该用户的奖励数据
-			// issue(userId);
-		
-
-			// 从数据表中获取所有该用户的奖励数据
-			//List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
-			// 根据用户id去获取用户资产信息
-			//CoinProperty coinProperty = kffCoinPropertyService.findByUserId(userId);
-
-			/*
-			 * for (Tokenaward award : list) { //获取每个奖励已经奖励的次数 Integer counter =
-			 * award.getCounter(); //获取发放的类型 Integer distributionType =
-			 * award.getDistributionType(); //获取每个发放的金额 Double rewards =
-			 * award.getInviteRewards(); //获取奖励的类型 Integer awardFunctionType =
-			 * award.getTokenAwardFunctionType(); //如果奖励没有发放完毕并且是线性发放
-			 * CoinProperty coinProperty2 = new CoinProperty(); KFFUser user2 =
-			 * kffUserService.findById(userId); if(counter<100 &&
-			 * distributionType == 1 ){ if(award.getGrantType()==2) { Double x =
-			 * rewards/100f; //如果是注册奖励
-			 * 
-			 * if(awardFunctionType == 16){ tokenrecords.setUserId(userId);
-			 * tokenrecords.setFunctionDesc("注册奖励");
-			 * tokenrecords.setFunctionType(awardFunctionType);
-			 * tokenrecords.setAmount(x); tokenrecords.setUpdateTime(new
-			 * Date()); kffTokenrecordsService.update(tokenrecords);
-			 * tokenaward.setUserId(userId);
-			 * tokenaward.setTokenAwardFunctionType(awardFunctionType);
-			 * tokenaward.setCounter(counter+1); Double awardBalance =
-			 * award.getAwardBalance();
-			 * tokenaward.setAwardBalance(awardBalance-x);
-			 * 
-			 * kffTokenrecordsService.update(tokenrecords);
-			 * kffTokenawardService.update(tokenaward);
-			 * 
-			 * KFFUser kffUser = kffUserService.findById(userId); Double
-			 * kffCoinNum = kffUser.getKffCoinNum();
-			 * kffUserService.updateUserKFFCoinNum(userId, kffCoinNum+=x);
-			 * 
-			 * 
-			 * Double coinLock = coinProperty.getCoinLock(); Double
-			 * coinDistributed = coinProperty.getCoinDistributed();
-			 * coinProperty2.setCoinLock(coinLock + x);
-			 * coinProperty2.setCoinDistributed(coinDistributed - x);
-			 * kffCoinPropertyService.update(coinProperty2);
-			 * 
-			 * }else if(awardFunctionType == 18){//如果是邀请好友的奖励
-			 * 
-			 * tokenrecords.setUserId(user2.getUserId());
-			 * tokenrecords.setFunctionDesc("邀请奖励");
-			 * tokenrecords.setFunctionType(awardFunctionType);
-			 * tokenrecords.setAmount(x); // 发放奖励数
-			 * tokenrecords.setUpdateTime(new Date());
-			 * kffTokenrecordsService.update(tokenrecords);
-			 * tokenaward.setUserId(user2.getUserId());
-			 * tokenaward.setTokenAwardFunctionType(awardFunctionType);
-			 * tokenaward.setCounter(counter+1);
-			 * 
-			 * Double awardBalance = award.getAwardBalance();
-			 * tokenaward.setAwardBalance(awardBalance-x);
-			 * 
-			 * kffTokenawardService.update(tokenaward);
-			 * 
-			 * KFFUser kffUser = kffUserService.findByUserId(user2.getUserId());
-			 * Double kffCoinNum = kffUser.getKffCoinNum();
-			 * kffUserService.updateUserKFFCoinNum(user2.getUserId(),
-			 * kffCoinNum+=x);
-			 * 
-			 * Double coinLock = coinProperty.getCoinLock(); Double
-			 * coinDistributed = coinProperty.getCoinDistributed();
-			 * coinProperty2.setCoinLock(coinLock + x);
-			 * coinProperty2.setCoinDistributed(coinDistributed - x);
-			 * kffCoinPropertyService.update(coinProperty2);
-			 * 
-			 * } } } }
-			 */
 			// 有邀请人,并且注册的是普通用户
 		} else if (user.getReferLevel() == 1 && (user.getUserType() == 1 || user.getUserType() == 4)) {
 			// 获取邀请人的id
@@ -271,8 +207,8 @@ public class AwardPortService {
 
 			// 判断邀请人是普通用户，并且没有上一级邀请
 			if ((user2.getUserType() == 1 || user2.getUserType() == 4) && user2.getReferLevel() == 0) {
-				m0 = 5000d;
-				m1 = 250d;
+				m0 = 50000d;
+				m1 = 2500d;
 				// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 				tokenaward.setUserId(userId);
 				tokenaward.setTokenAwardFunctionType(16);
@@ -307,7 +243,7 @@ public class AwardPortService {
 				// kffTokenawardService.findByUserId(user2.getUserId());
 				// 获取邀请人邀请的钱数的总额
 				Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
-				if (sum <= 5000) {
+				if (sum <= 50000) {
 					// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 					Tokenaward tokenaward2 = new Tokenaward();
 					tokenaward2.setUserId(user2.getUserId());
@@ -340,11 +276,11 @@ public class AwardPortService {
 			} else if ((user2.getUserType() == 2 || user2.getUserType() == 3) && user2.getReferLevel() == 0) {
 				Integer findReferCount = kffUserService.findReferCount(user2.getUserId());
 				if (findReferCount <= 1000) {
-					m0 = 5000d * 150 / 100;
-					m1 = 250d * 150 / 100;
+					m0 = 50000d * 150 / 100;
+					m1 = 2500d * 150 / 100;
 				} else {
-					m0 = 5000d;
-					m1 = 250d;
+					m0 = 50000d;
+					m1 = 2500d;
 				}
 				// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 				tokenaward.setUserId(userId);
@@ -377,7 +313,7 @@ public class AwardPortService {
 				List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
 				// 获取邀请人邀请的钱数的总额
 				Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
-				if (sum <= 500000) {
+				if (sum <= 5000000) {
 					// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 					Tokenaward tokenaward2 = new Tokenaward();
 					tokenaward2.setUserId(user2.getUserId());
@@ -412,9 +348,9 @@ public class AwardPortService {
 				KFFUser user3 = kffUserService.findById(user2.getReferUserId());
 				// 判断注册用户的上上级是普通用户
 				if ((user3.getUserType() == 1 || user3.getUserType() == 4)) {
-					m0 = 5000d;
-					m1 = 250d;
-					m2 = 50d;
+					m0 = 50000d;
+					m1 = 2500d;
+					m2 = 500d;
 					// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 					tokenaward.setUserId(userId);
 					tokenaward.setTokenAwardFunctionType(16);
@@ -449,7 +385,7 @@ public class AwardPortService {
 					// 获取上上级邀请人邀请的钱数的总额
 					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(), 18);
 					// kffTokenawardService.findByUserId(user2.getUserId());
-					if (sum <= 5000) {
+					if (sum <= 50000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenaward2 = new Tokenaward();
 						tokenaward2.setUserId(user2.getUserId());
@@ -479,7 +415,7 @@ public class AwardPortService {
 						kffCoinPropertyService.save(coinProperty);
 
 					}
-					if (sum2 <= 5000) {
+					if (sum2 <= 50000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenawarde3 = new Tokenaward();
 						tokenawarde3.setUserId(user3.getUserId());
@@ -515,13 +451,13 @@ public class AwardPortService {
 				else if ((user3.getUserType() == 2 || user3.getUserType() == 3)) {
 					Integer findReferCount = kffUserService.findReferCount(user3.getUserId());
 					if (findReferCount <= 1000) {
-						m0 = 5000d;
-						m1 = 250d;
-						m2 = 50d * 150 / 100;
+						m0 = 50000d;
+						m1 = 2500d;
+						m2 = 500d * 150 / 100;
 					} else {
-						m0 = 5000d;
-						m1 = 250d;
-						m2 = 50d;
+						m0 = 50000d;
+						m1 = 2500d;
+						m2 = 500d;
 					}
 
 					// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
@@ -558,7 +494,7 @@ public class AwardPortService {
 					// 获取上上级邀请人邀请的钱数的总额
 					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(), 18);
 
-					if (sum <= 5000) {
+					if (sum <= 50000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenaward2 = new Tokenaward();
 						tokenaward2.setUserId(user2.getUserId());
@@ -580,7 +516,7 @@ public class AwardPortService {
 						kffTokenrecordsService.save(tokenrecords2);
 
 					}
-					if (sum2 <= 5000) {
+					if (sum2 <= 50000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenawarde3 = new Tokenaward();
 						tokenawarde3.setUserId(user3.getUserId());
@@ -689,13 +625,13 @@ public class AwardPortService {
 				if ((user3.getUserType() == 1 || user3.getUserType() == 4)) {
 					Integer findReferCount = kffUserService.findReferCount(user2.getUserId());
 					if (findReferCount <= 1000) {
-						m0 = 5000d;
-						m1 = 250d;
-						m2 = 50d * 150 / 100;
+						m0 = 50000d;
+						m1 = 2500d;
+						m2 = 500d * 150 / 100;
 					} else {
-						m0 = 5000d;
-						m1 = 250d;
-						m2 = 50d;
+						m0 = 50000d;
+						m1 = 2500d;
+						m2 = 500d;
 					}
 					// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 					tokenaward.setUserId(userId);
@@ -730,7 +666,7 @@ public class AwardPortService {
 					Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
 					// 获取上上级邀请人邀请的钱数的总额
 					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(), 18);
-					if (sum <= 5000) {
+					if (sum <= 50000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenawarde3 = new Tokenaward();
 						tokenawarde3.setUserId(user3.getUserId());
@@ -760,7 +696,7 @@ public class AwardPortService {
 						kffCoinPropertyService.save(coinProperty);
 
 					}
-					if (sum2 <= 5000) {
+					if (sum2 <= 50000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenawarde3 = new Tokenaward();
 						tokenawarde3.setUserId(user3.getUserId());
@@ -797,13 +733,13 @@ public class AwardPortService {
 																						// 发放的方式存入奖励表中
 					Integer findReferCount = kffUserService.findReferCount(user3.getUserId());
 					if (findReferCount <= 1000) {
-						m0 = 5000d;
-						m1 = 250d * 150 / 100;
-						m2 = 50d * 150 / 100;
+						m0 = 50000d;
+						m1 = 2500d * 150 / 100;
+						m2 = 500d * 150 / 100;
 					} else {
-						m0 = 5000d;
-						m1 = 250d;
-						m2 = 50d;
+						m0 = 50000d;
+						m1 = 2500d;
+						m2 = 500d;
 					}
 
 					tokenaward.setUserId(userId);
@@ -839,7 +775,7 @@ public class AwardPortService {
 					// 获取上上级邀请人邀请的钱数的总额
 					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(), 18);
 
-					if (sum <= 500000) {
+					if (sum <= 5000000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenaward2 = new Tokenaward();
 						tokenaward2.setUserId(user2.getUserId());
@@ -861,7 +797,7 @@ public class AwardPortService {
 						kffTokenrecordsService.save(tokenrecords2);
 
 					}
-					if (sum2 <= 500000) {
+					if (sum2 <= 5000000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenawarde3 = new Tokenaward();
 						tokenawarde3.setUserId(user3.getUserId());
@@ -898,114 +834,119 @@ public class AwardPortService {
 		}
 
 	}
-
-	public void issue(Integer userId) {
-
-		// 判断注册用户是否实名认证
-		// UserCard findBycreateUserId = userCardService.findByUserid(userId);
-		UserCard findByUserid = userCardService.findByUserid(userId);
-
-		List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
-		// 根据用户id去获取用户资产信息
-		CoinProperty coinProperty = kffCoinPropertyService.findByUserId(userId);
-		KFFUser finduser = kffUserService.findById(userId);
-		
-		for (Tokenaward award : list) {
-			// 获取每个奖励已经奖励的次数
-			Integer counter = award.getCounter();
-			// 获取发放的类型
-			Integer distributionType = award.getDistributionType();
-			// 获取每个发放的金额
-			Double rewards = award.getInviteRewards();
-			// 获取奖励的类型
-			Integer awardFunctionType = award.getTokenAwardFunctionType();
-			// 如果奖励没有发放完毕并且是线性发放
-			// CoinProperty coinProperty2 = new CoinProperty();
-			CoinProperty coinProperty2 = kffCoinPropertyService.findByUserId(userId);
-			if (counter < 100 && distributionType == 1 && findByUserid != null) {
-				if (award.getGrantType() == 2) { // 1-今天发放一次,2-今天未发放
-
-					Double x = rewards / 100;
-					// 如果是注册奖励
-					if (awardFunctionType == 16) {
-						Tokenrecords tokenrecords1 = tokenrecordsMapper.findByUserIdAndFunctionType(userId);
-						tokenrecords1.setUserId(userId);
-						tokenrecords1.setFunctionDesc("注册奖励");
-						tokenrecords1.setFunctionType(awardFunctionType);
-						tokenrecords1.setAmount(new BigDecimal(x));
-						tokenrecords1.setUpdateTime(new Date());
-						tokenrecords1.setRewardGrantType(2);
-						award.setUserId(userId);
-						award.setTokenAwardFunctionType(awardFunctionType);
-						award.setCounter(counter + 1);
-						Double awardBalance = award.getAwardBalance();
-						award.setAwardBalance(awardBalance - x);
+	@Transactional
+	public void issue (Integer userId) {
+		try{
+			// 判断注册用户是否实名认证
+			// UserCard findBycreateUserId = userCardService.findByUserid(userId);
+			UserCard findByUserid = userCardService.findByUserid(userId);
+			
+			List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
+			// 根据用户id去获取用户资产信息
+			CoinProperty coinProperty = kffCoinPropertyService.findByUserId(userId);
+			KFFUser finduser = kffUserService.findById(userId);
+			
+			for (Tokenaward award : list) {
+				// 获取每个奖励已经奖励的次数
+				Integer counter = award.getCounter();
+				// 获取发放的类型
+				Integer distributionType = award.getDistributionType();
+				// 获取每个发放的金额
+				Double rewards = award.getInviteRewards();
+				// 获取奖励的类型
+				Integer awardFunctionType = award.getTokenAwardFunctionType();
+				// 如果奖励没有发放完毕并且是线性发放
+				// CoinProperty coinProperty2 = new CoinProperty();
+				CoinProperty coinProperty2 = kffCoinPropertyService.findByUserId(userId);
+				if (counter < 100 && distributionType == 1 && findByUserid != null) {
+					if (award.getGrantType() == 2) { // 1-今天发放一次,2-今天未发放
 						
-						BigDecimal tokenNum = finduser.getKffCoinNum();
-						tokenNum = tokenNum.add(new BigDecimal(x));
-						finduser.setKffCoinNum(tokenNum);
-						finduser.setUpdateTime(new Date());
-						kffUserService.update(finduser);
-						
-						kffTokenrecordsService.update(tokenrecords1);
-						System.err.println(award.getTokenAwardFunctionDesc());
-
-						kffTokenawardService.update(award);
-
-						KFFUser kffUser = kffUserService.findById(userId);
-						BigDecimal kffCoinNum = kffUser.getKffCoinNum();
-						kffUserService.updateUserKFFCoinNum(userId, kffCoinNum.add(new BigDecimal(x)));
-
-						Double coinLock = coinProperty.getCoinLock();
-						Double coinDistributed = coinProperty.getCoinDistributed();
-						coinProperty2.setCoinLock(coinLock + x);
-						coinProperty2.setCoinDistributed(coinDistributed - x);
-						coinProperty2.setUserId(userId);
-
-						kffCoinPropertyService.update(coinProperty2);
-
-					} else if (awardFunctionType == 18) {// 如果是邀请好友的奖励
-
-						tokenrecords.setUserId(userId);
-						tokenrecords.setFunctionDesc("邀请奖励");
-						tokenrecords.setFunctionType(awardFunctionType);
-						tokenrecords.setAmount(new BigDecimal(x)); // 发放奖励数
-						tokenrecords.setUpdateTime(new Date());
-						tokenrecords.setRewardGrantType(2);
-						kffTokenrecordsService.update(tokenrecords);
-						tokenaward.setUserId(userId);
-						tokenaward.setTokenAwardFunctionType(awardFunctionType);
-						tokenaward.setCounter(counter + 1);
-
-						Double awardBalance = award.getAwardBalance();
-						tokenaward.setAwardBalance(awardBalance - x);
-						
-						BigDecimal tokenNum = finduser.getKffCoinNum();
-						tokenNum = tokenNum.add(new BigDecimal(x));
-						finduser.setUpdateTime(new Date());
-						kffUserService.update(finduser);
-						
-						kffTokenawardService.update(award);
-						KFFUser kffUser = kffUserService.findById(userId);
-						BigDecimal kffCoinNum = kffUser.getKffCoinNum();
-						kffUserService.updateUserKFFCoinNum(userId, kffCoinNum.add(new BigDecimal(x)));
-
-						Double coinLock = coinProperty.getCoinLock();
-						Double coinDistributed = coinProperty.getCoinDistributed();
-						coinProperty2.setCoinLock(coinLock + x);
-						coinProperty2.setCoinDistributed(coinDistributed - x);
-						kffCoinPropertyService.update(coinProperty2);
+						Double x = rewards / 100;
+						// 如果是注册奖励
+						if (awardFunctionType == 16) {
+							Tokenrecords tokenrecords1 = tokenrecordsMapper.findByUserIdAndFunctionType(userId);
+							tokenrecords1.setUserId(userId);
+							tokenrecords1.setFunctionDesc("注册奖励");
+							tokenrecords1.setFunctionType(awardFunctionType);
+							tokenrecords1.setAmount(new BigDecimal(x));
+							tokenrecords1.setUpdateTime(new Date());
+							tokenrecords1.setRewardGrantType(2);
+							award.setUserId(userId);
+							award.setTokenAwardFunctionType(awardFunctionType);
+							award.setCounter(counter + 1);
+							Double awardBalance = award.getAwardBalance();
+							award.setAwardBalance(awardBalance - x);
+							
+							BigDecimal tokenNum = finduser.getKffCoinNum();
+							tokenNum = tokenNum.add(new BigDecimal(x));
+							finduser.setKffCoinNum(tokenNum);
+							finduser.setUpdateTime(new Date());
+							kffUserService.update(finduser);
+							
+							kffTokenrecordsService.update(tokenrecords1);
+							System.err.println(award.getTokenAwardFunctionDesc());
+							
+							kffTokenawardService.update(award);
+							
+							KFFUser kffUser = kffUserService.findById(userId);
+							BigDecimal kffCoinNum = kffUser.getKffCoinNum();
+							kffUserService.updateUserKFFCoinNum(userId, kffCoinNum.add(new BigDecimal(x)));
+							
+							Double coinLock = coinProperty.getCoinLock();
+							Double coinDistributed = coinProperty.getCoinDistributed();
+							coinProperty2.setCoinLock(coinLock + x);
+							coinProperty2.setCoinDistributed(coinDistributed - x);
+							coinProperty2.setUserId(userId);
+							
+							kffCoinPropertyService.update(coinProperty2);
+							
+						} else if (awardFunctionType == 18) {// 如果是邀请好友的奖励
+							
+							tokenrecords.setUserId(userId);
+							tokenrecords.setFunctionDesc("邀请奖励");
+							tokenrecords.setFunctionType(awardFunctionType);
+							tokenrecords.setAmount(new BigDecimal(x)); // 发放奖励数
+							tokenrecords.setUpdateTime(new Date());
+							tokenrecords.setRewardGrantType(2);
+							kffTokenrecordsService.update(tokenrecords);
+							tokenaward.setUserId(userId);
+							tokenaward.setTokenAwardFunctionType(awardFunctionType);
+							tokenaward.setCounter(counter + 1);
+							
+							Double awardBalance = award.getAwardBalance();
+							tokenaward.setAwardBalance(awardBalance - x);
+							
+							BigDecimal tokenNum = finduser.getKffCoinNum();
+							tokenNum = tokenNum.add(new BigDecimal(x));
+							finduser.setUpdateTime(new Date());
+							kffUserService.update(finduser);
+							
+							kffTokenawardService.update(award);
+							KFFUser kffUser = kffUserService.findById(userId);
+							BigDecimal kffCoinNum = kffUser.getKffCoinNum();
+							kffUserService.updateUserKFFCoinNum(userId, kffCoinNum.add(new BigDecimal(x)));
+							
+							Double coinLock = coinProperty.getCoinLock();
+							Double coinDistributed = coinProperty.getCoinDistributed();
+							coinProperty2.setCoinLock(coinLock + x);
+							coinProperty2.setCoinDistributed(coinDistributed - x);
+							kffCoinPropertyService.update(coinProperty2);
+						}
 					}
 				}
 			}
+			
+		}catch(NullPointerException ne){
+			ne.printStackTrace();
+			logger.error("login error:{}", ne);
 		}
 	}
-
+	@Transactional
 	public void method2(Integer userId) {
 		KFFUser user = kffUserService.findByUserId(userId);
 		// 判断如果用户没有被邀请 并且是普通用户
 		if (user.getReferLevel() == 0 && (user.getUserType() == 1 || user.getUserType() == 4)) {
-			m0 = 3000d;
+			m0 = 30000d;
 			// 没有邀请人
 			// 将用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 			tokenaward.setUserId(userId);
@@ -1035,7 +976,7 @@ public class AwardPortService {
 			// 从数据表中获取所有该用户的奖励数据
 			// issue(userId);
 		} else if (user.getReferLevel() == 0 && (user.getUserType() == 2 || user.getUserType() == 3)) { // 有邀请人并且是项目方
-			m0 = 3000d * 150 / 100;
+			m0 = 30000d * 150 / 100;
 			// 将用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 			tokenaward.setUserId(userId);
 			tokenaward.setTokenAwardFunctionType(16);
@@ -1069,8 +1010,8 @@ public class AwardPortService {
 
 			// 判断邀请人是普通用户，并且没有上一级邀请
 			if ((user2.getUserType() == 1 || user2.getUserType() == 4) && user2.getReferLevel() == 0) {
-				m0 = 3000d;
-				m1 = 150d;
+				m0 = 30000d;
+				m1 = 1500d;
 				// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 				tokenaward.setUserId(userId);
 				tokenaward.setTokenAwardFunctionType(16);
@@ -1104,7 +1045,7 @@ public class AwardPortService {
 				// kffTokenawardService.findByUserId(user2.getUserId());
 				// 获取邀请人邀请的钱数的总额
 				Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
-				if (sum <= 3000) {
+				if (sum <= 30000) {
 					// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 					Tokenaward tokenaward2 = new Tokenaward();
 					tokenaward2.setUserId(user2.getUserId());
@@ -1137,11 +1078,11 @@ public class AwardPortService {
 			} else if ((user2.getUserType() == 2 || user2.getUserType() == 3) && user2.getReferLevel() == 0) {
 				Integer findReferCount = kffUserService.findReferCount(user2.getUserId());
 				if (findReferCount <= 1000) {
-					m0 = 3000d * 150 / 100;
-					m1 = 150d * 150 / 100;
+					m0 = 30000d * 150 / 100;
+					m1 = 1500d * 150 / 100;
 				} else {
-					m0 = 3000d;
-					m1 = 150d;
+					m0 = 30000d;
+					m1 = 1500d;
 				}
 				// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 				tokenaward.setUserId(userId);
@@ -1175,7 +1116,7 @@ public class AwardPortService {
 				List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
 				// 获取邀请人邀请的钱数的总额
 				Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
-				if (sum <= 500000) {
+				if (sum <= 5000000) {
 					// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 					Tokenaward tokenaward2 = new Tokenaward();
 					tokenaward2.setUserId(user2.getUserId());
@@ -1210,9 +1151,9 @@ public class AwardPortService {
 				KFFUser user3 = kffUserService.findById(user2.getReferUserId());
 				// 判断注册用户的上上级是普通用户
 				if ((user3.getUserType() == 1 || user3.getUserType() == 4)) {
-					m0 = 3000d;
-					m1 = 150d;
-					m2 = 30d;
+					m0 = 30000d;
+					m1 = 1500d;
+					m2 = 300d;
 					// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 					tokenaward.setUserId(userId);
 					tokenaward.setTokenAwardFunctionType(16);
@@ -1247,7 +1188,7 @@ public class AwardPortService {
 					// 获取上上级邀请人邀请的钱数的总额
 					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(), 18);
 					// kffTokenawardService.findByUserId(user2.getUserId());
-					if (sum <= 3000) {
+					if (sum <= 30000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenaward2 = new Tokenaward();
 						tokenaward2.setUserId(user2.getUserId());
@@ -1278,7 +1219,7 @@ public class AwardPortService {
 						kffCoinPropertyService.save(coinProperty);
 
 					}
-					if (sum2 <= 3000) {
+					if (sum2 <= 30000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenawarde3 = new Tokenaward();
 						tokenawarde3.setUserId(user3.getUserId());
@@ -1313,13 +1254,13 @@ public class AwardPortService {
 				else if ((user3.getUserType() == 2 || user3.getUserType() == 3)) {
 					Integer findReferCount = kffUserService.findReferCount(user3.getUserId());
 					if (findReferCount <= 1000) {
-						m0 = 3000d;
-						m1 = 150d;
-						m2 = 30d * 150 / 100;
+						m0 = 30000d;
+						m1 = 1500d;
+						m2 = 300d * 150 / 100;
 					} else {
-						m0 = 3000d;
-						m1 = 150d;
-						m2 = 30d;
+						m0 = 30000d;
+						m1 = 1500d;
+						m2 = 300d;
 					}
 
 					// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
@@ -1356,7 +1297,7 @@ public class AwardPortService {
 					// 获取上上级邀请人邀请的钱数的总额
 					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(), 18);
 
-					if (sum <= 3000) {
+					if (sum <= 30000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenaward2 = new Tokenaward();
 						tokenaward2.setUserId(user2.getUserId());
@@ -1378,7 +1319,7 @@ public class AwardPortService {
 						kffTokenrecordsService.save(tokenrecords2);
 
 					}
-					if (sum2 <= 3000) {
+					if (sum2 <= 30000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenawarde3 = new Tokenaward();
 						tokenawarde3.setUserId(user3.getUserId());
@@ -1418,13 +1359,13 @@ public class AwardPortService {
 				if ((user3.getUserType() == 1 || user3.getUserType() == 4)) {
 					Integer findReferCount = kffUserService.findReferCount(user2.getUserId());
 					if (findReferCount <= 1000) {
-						m0 = 3000d;
-						m1 = 150d;
-						m2 = 30d * 150 / 100;
+						m0 = 30000d;
+						m1 = 1500d;
+						m2 = 300d * 150 / 100;
 					} else {
-						m0 = 3000d;
-						m1 = 150d;
-						m2 = 30d;
+						m0 = 30000d;
+						m1 = 1500d;
+						m2 = 300d;
 					}
 					// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 					tokenaward.setUserId(userId);
@@ -1459,7 +1400,7 @@ public class AwardPortService {
 					Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
 					// 获取上上级邀请人邀请的钱数的总额
 					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(), 18);
-					if (sum <= 3000) {
+					if (sum <= 30000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenawarde3 = new Tokenaward();
 						tokenawarde3.setUserId(user3.getUserId());
@@ -1489,7 +1430,7 @@ public class AwardPortService {
 						kffCoinPropertyService.save(coinProperty);
 
 					}
-					if (sum2 <= 3000) {
+					if (sum2 <= 30000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenawarde3 = new Tokenaward();
 						tokenawarde3.setUserId(user3.getUserId());
@@ -1527,13 +1468,13 @@ public class AwardPortService {
 																						// 发放的方式存入奖励表中
 					Integer findReferCount = kffUserService.findReferCount(user3.getUserId());
 					if (findReferCount <= 1000) {
-						m0 = 3000d;
-						m1 = 150d * 150 / 100;
-						m2 = 30d * 150 / 100;
+						m0 = 30000d;
+						m1 = 1500d * 150 / 100;
+						m2 = 300d * 150 / 100;
 					} else {
-						m0 = 3000d;
-						m1 = 150d;
-						m2 = 30d;
+						m0 = 30000d;
+						m1 = 1500d;
+						m2 = 300d;
 					}
 
 					tokenaward.setUserId(userId);
@@ -1569,7 +1510,7 @@ public class AwardPortService {
 					// 获取上上级邀请人邀请的钱数的总额
 					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(), 18);
 
-					if (sum <= 500000) {
+					if (sum <= 5000000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenaward2 = new Tokenaward();
 						tokenaward2.setUserId(user2.getUserId());
@@ -1591,7 +1532,7 @@ public class AwardPortService {
 						kffTokenrecordsService.save(tokenrecords2);
 
 					}
-					if (sum2 <= 500000) {
+					if (sum2 <= 5000000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenawarde3 = new Tokenaward();
 						tokenawarde3.setUserId(user3.getUserId());
@@ -1629,12 +1570,12 @@ public class AwardPortService {
 		}
 
 	}
-
+	@Transactional
 	public void method3(Integer userId) {
 		KFFUser user = kffUserService.findByUserId(userId);
 		// 判断如果用户没有被邀请 并且是普通用户
 		if (user.getReferLevel() == 0 && (user.getUserType() == 1 || user.getUserType() == 4)) {
-			m0 = 1000d;
+			m0 = 10000d;
 			// 没有邀请人
 			// 将用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 			tokenaward.setUserId(userId);
@@ -1665,7 +1606,7 @@ public class AwardPortService {
 			// 从数据表中获取所有该用户的奖励数据
 			// issue(userId);
 		} else if (user.getReferLevel() == 0 && (user.getUserType() == 2 || user.getUserType() == 3)) { // 有邀请人并且是项目方
-			m0 = 1000d * 150 / 100;
+			m0 = 10000d * 150 / 100;
 			// 将用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 			tokenaward.setUserId(userId);
 			tokenaward.setTokenAwardFunctionType(16);
@@ -1699,8 +1640,8 @@ public class AwardPortService {
 
 			// 判断邀请人是普通用户，并且没有上一级邀请
 			if ((user2.getUserType() == 1 || user2.getUserType() == 4) && user2.getReferLevel() == 0) {
-				m0 = 1000d;
-				m1 = 50d;
+				m0 = 10000d;
+				m1 = 500d;
 				// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 				tokenaward.setUserId(userId);
 				tokenaward.setTokenAwardFunctionType(16);
@@ -1734,7 +1675,7 @@ public class AwardPortService {
 				// kffTokenawardService.findByUserId(user2.getUserId());
 				// 获取邀请人邀请的钱数的总额
 				Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
-				if (sum <= 1000) {
+				if (sum <= 10000) {
 					// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 					Tokenaward tokenaward2 = new Tokenaward();
 					tokenaward2.setUserId(user2.getUserId());
@@ -1767,11 +1708,11 @@ public class AwardPortService {
 			} else if ((user2.getUserType() == 2 || user2.getUserType() == 3) && user2.getReferLevel() == 0) {
 				Integer findReferCount = kffUserService.findReferCount(user2.getUserId());
 				if (findReferCount <= 1000) {
-					m0 = 1000d * 150 / 100;
-					m1 = 50d * 150 / 100;
+					m0 = 10000d * 150 / 100;
+					m1 = 500d * 150 / 100;
 				} else {
-					m0 = 1000d;
-					m1 = 50d;
+					m0 = 10000d;
+					m1 = 500d;
 				}
 				// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 				tokenaward.setUserId(userId);
@@ -1804,7 +1745,7 @@ public class AwardPortService {
 				List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
 				// 获取邀请人邀请的钱数的总额
 				Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
-				if (sum <= 500000) {
+				if (sum <= 5000000) {
 					// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 					Tokenaward tokenaward2 = new Tokenaward();
 					tokenaward2.setUserId(user2.getUserId());
@@ -1839,9 +1780,9 @@ public class AwardPortService {
 				KFFUser user3 = kffUserService.findById(user2.getReferUserId());
 				// 判断注册用户的上上级是普通用户
 				if ((user3.getUserType() == 1 || user3.getUserType() == 4)) {
-					m0 = 1000d;
-					m1 = 50d;
-					m2 = 10d;
+					m0 = 10000d;
+					m1 = 500d;
+					m2 = 100d;
 					// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 					tokenaward.setUserId(userId);
 					tokenaward.setTokenAwardFunctionType(16);
@@ -1876,7 +1817,7 @@ public class AwardPortService {
 					// 获取上上级邀请人邀请的钱数的总额
 					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(), 18);
 					// kffTokenawardService.findByUserId(user2.getUserId());
-					if (sum <= 1000) {
+					if (sum <= 10000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenaward2 = new Tokenaward();
 						tokenaward2.setUserId(user2.getUserId());
@@ -1906,7 +1847,7 @@ public class AwardPortService {
 						kffCoinPropertyService.save(coinProperty);
 
 					}
-					if (sum2 <= 1000) {
+					if (sum2 <= 10000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenawarde3 = new Tokenaward();
 						tokenawarde3.setUserId(user3.getUserId());
@@ -1941,13 +1882,13 @@ public class AwardPortService {
 				else if ((user3.getUserType() == 2 || user3.getUserType() == 3)) {
 					Integer findReferCount = kffUserService.findReferCount(user3.getUserId());
 					if (findReferCount <= 1000) {
-						m0 = 1000d;
-						m1 = 50d;
-						m2 = 10d * 150 / 100;
+						m0 = 10000d;
+						m1 = 500d;
+						m2 = 100d * 150 / 100;
 					} else {
-						m0 = 1000d;
-						m1 = 50d;
-						m2 = 10d;
+						m0 = 10000d;
+						m1 = 500d;
+						m2 = 100d;
 					}
 
 					// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
@@ -1984,7 +1925,7 @@ public class AwardPortService {
 					// 获取上上级邀请人邀请的钱数的总额
 					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(), 18);
 
-					if (sum <= 1000) {
+					if (sum <= 10000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenaward2 = new Tokenaward();
 						tokenaward2.setUserId(user2.getUserId());
@@ -2006,7 +1947,7 @@ public class AwardPortService {
 						kffTokenrecordsService.save(tokenrecords2);
 
 					}
-					if (sum2 <= 1000) {
+					if (sum2 <= 10000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenawarde3 = new Tokenaward();
 						tokenawarde3.setUserId(user3.getUserId());
@@ -2046,13 +1987,13 @@ public class AwardPortService {
 				if ((user3.getUserType() == 1 || user3.getUserType() == 4)) {
 					Integer findReferCount = kffUserService.findReferCount(user2.getUserId());
 					if (findReferCount <= 1000) {
-						m0 = 1000d;
-						m1 = 50d;
-						m2 = 10d * 150 / 100;
+						m0 = 10000d;
+						m1 = 500d;
+						m2 = 100d * 150 / 100;
 					} else {
-						m0 = 1000d;
-						m1 = 50d;
-						m2 = 10d;
+						m0 = 10000d;
+						m1 = 500d;
+						m2 = 100d;
 					}
 					// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 					tokenaward.setUserId(userId);
@@ -2087,7 +2028,7 @@ public class AwardPortService {
 					Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
 					// 获取上上级邀请人邀请的钱数的总额
 					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(), 18);
-					if (sum <= 1000) {
+					if (sum <= 10000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenawarde3 = new Tokenaward();
 						tokenawarde3.setUserId(user3.getUserId());
@@ -2117,7 +2058,7 @@ public class AwardPortService {
 						kffCoinPropertyService.save(coinProperty);
 
 					}
-					if (sum2 <= 1000) {
+					if (sum2 <= 10000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenawarde3 = new Tokenaward();
 						tokenawarde3.setUserId(user3.getUserId());
@@ -2154,13 +2095,13 @@ public class AwardPortService {
 																						// 发放的方式存入奖励表中
 					Integer findReferCount = kffUserService.findReferCount(user3.getUserId());
 					if (findReferCount <= 1000) {
-						m0 = 15000d;
-						m1 = 50d * 150 / 100;
-						m2 = 10d * 150 / 100;
+						m0 = 10000d;
+						m1 = 500d * 150 / 100;
+						m2 = 100d * 150 / 100;
 					} else {
-						m0 = 1000d;
-						m1 = 50d;
-						m2 = 10d;
+						m0 = 10000d;
+						m1 = 500d;
+						m2 = 100d;
 					}
 
 					tokenaward.setUserId(userId);
@@ -2196,7 +2137,7 @@ public class AwardPortService {
 					// 获取上上级邀请人邀请的钱数的总额
 					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(), 18);
 
-					if (sum <= 500000) {
+					if (sum <= 5000000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenaward2 = new Tokenaward();
 						tokenaward2.setUserId(user2.getUserId());
@@ -2218,7 +2159,7 @@ public class AwardPortService {
 						kffTokenrecordsService.save(tokenrecords2);
 
 					}
-					if (sum2 <= 500000) {
+					if (sum2 <= 5000000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenawarde3 = new Tokenaward();
 						tokenawarde3.setUserId(user3.getUserId());
@@ -2255,7 +2196,7 @@ public class AwardPortService {
 		}
 
 	}
-
+	@Transactional
 	public void method4(Integer userId) {
 		KFFUser user = kffUserService.findByUserId(userId);
 		// 判断如果用户没有被邀请 并且是普通用户
@@ -2329,7 +2270,7 @@ public class AwardPortService {
 			// 判断邀请人是普通用户，并且没有上一级邀请
 			if ((user2.getUserType() == 1 || user2.getUserType() == 4) && user2.getReferLevel() == 0) {
 				m0 = 0.00d;
-				m1 = 25d;
+				m1 = 250d;
 				// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 				tokenaward.setUserId(userId);
 				tokenaward.setTokenAwardFunctionType(16);
@@ -2363,7 +2304,7 @@ public class AwardPortService {
 				// kffTokenawardService.findByUserId(user2.getUserId());
 				// 获取邀请人邀请的钱数的总额
 				Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
-				if (sum <= 1000) {
+				if (sum <= 10000) {
 					// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 					Tokenaward tokenaward2 = new Tokenaward();
 					tokenaward2.setUserId(user2.getUserId());
@@ -2397,10 +2338,10 @@ public class AwardPortService {
 				Integer findReferCount = kffUserService.findReferCount(user2.getUserId());
 				if (findReferCount <= 1000) {
 					m0 = 0.00d;
-					m1 = 25d * 150 / 100;
+					m1 = 250d * 150 / 100;
 				} else {
 					m0 = 0.00d;
-					m1 = 25d;
+					m1 = 250d;
 				}
 				// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 				tokenaward.setUserId(userId);
@@ -2433,7 +2374,7 @@ public class AwardPortService {
 				List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
 				// 获取邀请人邀请的钱数的总额
 				Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
-				if (sum <= 500000) {
+				if (sum <= 5000000) {
 					// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 					Tokenaward tokenaward2 = new Tokenaward();
 					tokenaward2.setUserId(user2.getUserId());
@@ -2469,8 +2410,8 @@ public class AwardPortService {
 				// 判断注册用户的上上级是普通用户
 				if ((user3.getUserType() == 1 || user3.getUserType() == 4)) {
 					m0 = 0.00d;
-					m1 = 25d;
-					m2 = 5d;
+					m1 = 250d;
+					m2 = 50d;
 					// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 					tokenaward.setUserId(userId);
 					tokenaward.setTokenAwardFunctionType(16);
@@ -2505,7 +2446,7 @@ public class AwardPortService {
 					// 获取上上级邀请人邀请的钱数的总额
 					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(), 18);
 					// kffTokenawardService.findByUserId(user2.getUserId());
-					if (sum <= 1000) {
+					if (sum <= 10000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenaward2 = new Tokenaward();
 						tokenaward2.setUserId(user2.getUserId());
@@ -2535,7 +2476,7 @@ public class AwardPortService {
 						kffCoinPropertyService.save(coinProperty);
 
 					}
-					if (sum2 <= 1000) {
+					if (sum2 <= 10000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenawarde3 = new Tokenaward();
 						tokenawarde3.setUserId(user3.getUserId());
@@ -2572,12 +2513,12 @@ public class AwardPortService {
 					Integer findReferCount = kffUserService.findReferCount(user3.getUserId());
 					if (findReferCount <= 1000) {
 						m0 = 0.00d;
-						m1 = 25d;
-						m2 = 5d * 150 / 100;
+						m1 = 250d;
+						m2 = 50d * 150 / 100;
 					} else {
 						m0 = 0.00d;
-						m1 = 25d;
-						m2 = 5d;
+						m1 = 250d;
+						m2 = 50d;
 					}
 
 					// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
@@ -2614,7 +2555,7 @@ public class AwardPortService {
 					// 获取上上级邀请人邀请的钱数的总额
 					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(), 18);
 
-					if (sum <= 1000) {
+					if (sum <= 10000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenaward2 = new Tokenaward();
 						tokenaward2.setUserId(user2.getUserId());
@@ -2636,7 +2577,7 @@ public class AwardPortService {
 						kffTokenrecordsService.save(tokenrecords2);
 
 					}
-					if (sum2 <= 1000) {
+					if (sum2 <= 10000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenawarde3 = new Tokenaward();
 						tokenawarde3.setUserId(user3.getUserId());
@@ -2677,12 +2618,12 @@ public class AwardPortService {
 					Integer findReferCount = kffUserService.findReferCount(user2.getUserId());
 					if (findReferCount <= 1000) {
 						m0 = 0.00d;
-						m1 = 25d;
-						m2 = 5d * 150 / 100;
+						m1 = 250d;
+						m2 = 50d * 150 / 100;
 					} else {
 						m0 = 0.00d;
-						m1 = 25d;
-						m2 = 5d;
+						m1 = 250d;
+						m2 = 50d;
 					}
 					// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 					tokenaward.setUserId(userId);
@@ -2717,7 +2658,7 @@ public class AwardPortService {
 					Double sum = kffTokenawardService.reawardSum(user2.getUserId(), 18);
 					// 获取上上级邀请人邀请的钱数的总额
 					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(), 18);
-					if (sum <= 1000) {
+					if (sum <= 10000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenawarde3 = new Tokenaward();
 						tokenawarde3.setUserId(user3.getUserId());
@@ -2747,7 +2688,7 @@ public class AwardPortService {
 						kffCoinPropertyService.save(coinProperty);
 
 					}
-					if (sum2 <= 1000) {
+					if (sum2 <= 10000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenawarde3 = new Tokenaward();
 						tokenawarde3.setUserId(user3.getUserId());
@@ -2785,12 +2726,12 @@ public class AwardPortService {
 					Integer findReferCount = kffUserService.findReferCount(user3.getUserId());
 					if (findReferCount <= 1000) {
 						m0 = 0.00d;
-						m1 = 25d * 150 / 100;
-						m2 = 5d * 150 / 100;
+						m1 = 250d * 150 / 100;
+						m2 = 50d * 150 / 100;
 					} else {
 						m0 = 0.00d;
-						m1 = 25d;
-						m2 = 5d;
+						m1 = 250d;
+						m2 = 50d;
 					}
 
 					tokenaward.setUserId(userId);
@@ -2826,7 +2767,7 @@ public class AwardPortService {
 					// 获取上上级邀请人邀请的钱数的总额
 					Double sum2 = kffTokenawardService.reawardSum(user3.getUserId(), 18);
 
-					if (sum <= 500000) {
+					if (sum <= 5000000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenaward2 = new Tokenaward();
 						tokenaward2.setUserId(user2.getUserId());
@@ -2848,7 +2789,7 @@ public class AwardPortService {
 						kffTokenrecordsService.save(tokenrecords2);
 
 					}
-					if (sum2 <= 500000) {
+					if (sum2 <= 5000000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenawarde3 = new Tokenaward();
 						tokenawarde3.setUserId(user3.getUserId());
