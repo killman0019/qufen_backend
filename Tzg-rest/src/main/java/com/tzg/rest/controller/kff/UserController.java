@@ -12,11 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -27,7 +25,6 @@ import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.redis.RedisService;
 import com.tzg.common.utils.AccountTokenUtil;
-import com.tzg.common.utils.Create2Code;
 import com.tzg.common.utils.EnumConstant.SmsBuss;
 import com.tzg.common.utils.FileUtils;
 import com.tzg.common.utils.HexUtil;
@@ -41,8 +38,6 @@ import com.tzg.entitys.kff.collect.CollectPostResponse;
 import com.tzg.entitys.kff.dareas.Dareas;
 import com.tzg.entitys.kff.follow.FollowResponse;
 import com.tzg.entitys.kff.tokenaward.Tokenaward;
-import com.tzg.entitys.kff.tokenaward.TokenawardMapper;
-import com.tzg.entitys.kff.tokenaward.TokenawardReturn;
 import com.tzg.entitys.kff.tokenaward.TokenawardReturn;
 import com.tzg.entitys.kff.tokenrecords.Tokenrecords;
 import com.tzg.entitys.kff.user.KFFUser;
@@ -1234,7 +1229,7 @@ public class UserController extends BaseController {
 			UserInvation userInvation = kffRmiService.selectUseInvation(userId);
 			if (StringUtils.isEmpty(userInvation.getUserposterpic())) {
 				// 生成海报
-				posterUrl = Create2Code.createPoster(userId);
+				posterUrl = kffRmiService.creat2Code(userId);
 				String code2Url = null;
 				kffRmiService.updataUserInvation(userId, posterUrl, code2Url);
 				map.put("url", posterUrl);

@@ -14,7 +14,7 @@
 
 	<util:properties id="dbConfig" location="file:/opt/resource/system-db.properties" />
 
-<!-- 	<util:properties id="paramConfig" location="file:/opt/resource/system-param.properties" /> -->
+	<util:properties id="paramConfig" location="file:/opt/resource/system-param.properties" /> 
 	
 
 	

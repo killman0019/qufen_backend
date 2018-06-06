@@ -20,6 +20,16 @@ public class ProjectEvaluationDetailShareResponse implements Serializable {
 
 	private List<Evaluation> evaluations;
 
+	private Integer cUsertype;
+
+	public Integer getcUsertype() {
+		return cUsertype;
+	}
+
+	public void setcUsertype(Integer cUsertype) {
+		this.cUsertype = cUsertype;
+	}
+
 	public List<Evaluation> getEvaluations() {
 		return evaluations;
 	}

@@ -24,6 +24,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import com.alibaba.fastjson.JSON;
@@ -72,6 +73,7 @@ import com.tzg.common.service.kff.UserInvationService;
 import com.tzg.common.service.kff.UserService;
 import com.tzg.common.service.kff.UserWalletService;
 import com.tzg.common.service.systemParam.SystemParamService;
+import com.tzg.common.utils.Create2Code;
 import com.tzg.common.utils.DateUtil;
 import com.tzg.common.utils.DelHtmlAll;
 import com.tzg.common.utils.DownImagesUtile;
@@ -223,6 +225,32 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	private RedisService redisService;
 	@Autowired
 	private ThreadPoolTaskExecutor taskExecutor;
+
+	@Value("#{paramConfig['registerUrl']}")
+	private String contentself;
+
+	@Value("#{paramConfig['picUrl']}")
+	private String picUrl;
+
+	@Value("#{paramConfig['SMS_APP_KEY']}")
+	private String smsAppkey;
+
+	@Value("#{paramConfig['SMS_SECRET']}")
+	private String smsSecret;
+
+	@Value("#{paramConfig['SMS_TYPE']}")
+	private String smsType;
+	@Value("#{paramConfig['SMS_FREE_SIGN_NAME']}")
+	private String smsFreeSignName;
+
+	@Value("#{paramConfig['SMS_REGISTER_TEMPLATE_CODE']}")
+	private String smsRegisterTemplateCode;
+
+	@Value("#{paramConfig['SMS_LOGIN_TEMPLATE_CODE']}")
+	private String smsLoginTemplateCode;
+
+	@Value("#{paramConfig['SMS_FORGETPASDWORD_TEMPLATE_CODE']}")
+	private String smsForgetpasdwoedTemplateCode;
 
 	@Override
 	public KFFUser registerRest(RegisterRequest registerRequest) {
@@ -1099,7 +1127,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				break;
 			}
 			// 生成url名称
-			String picUrlGen = "D:\\opt\\file";
+			String picUrlGen = picUrl;
 			String picName = "/upload/postPic/" + DateUtil.getCurrentTimeStamp() + articleRequest.getCreateUserId() + ".jpg";
 			String picUrl = picUrlGen + picName;
 			DownImgGoodUtil.downloadPicture(img, picUrl);
@@ -1356,7 +1384,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				break;
 			}
 			// 生成url名称
-			String picUrlGen = "D:\\opt\\file";
+			String picUrlGen = picUrl;
 			String picName = "/upload/postPic/" + DateUtil.getCurrentTimeStamp() + evaluationRequest.getCreateUserId() + ".jpg";
 			String picUrl = picUrlGen + picName;
 			DownImgGoodUtil.downloadPicture(img, picUrl);
@@ -3961,6 +3989,15 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 		BeanUtils.copyProperties(post, articleDetailShareResponse);
 
+		// 放置创建poster的类型
+		if (StringUtils.isBlank(post.getCreateUserId() + "")) {
+			throw new RestServiceException("创建人id为空");
+		}
+		Integer type = authenticationService.selectCUserType(post.getCreateUserId());
+		if (0 == type) {
+			throw new RestServiceException("数据错误!");
+		}
+		articleDetailShareResponse.setcUsertype(type);
 		// 赞赏用户列表最多8个
 		List<Commendation> donateUsers = new ArrayList<>();
 		PaginationQuery query = new PaginationQuery();
@@ -3981,6 +4018,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// 根据postid查询project
 		KFFProject kFFProject = kffProjectService.findById(post.getProjectId());
 		articleDetailShareResponse.setProjectIcon(kFFProject.getProjectIcon());
+
 		return articleDetailShareResponse;
 	}
 
@@ -3995,6 +4033,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (post == null) {
 			throw new RestServiceException(RestErrorCode.POST_NOT_EXIST);
 		}
+		Integer type = authenticationService.selectCUserType(post.getCreateUserId());
+		if (0 == type) {
+			throw new RestServiceException("数据错误!");
+		}
+		projectEvaluationDetailShareResponse.setcUsertype(type);
+
 		post.setUuid(null);
 		post.setCreateUserId(null);
 
@@ -4062,6 +4106,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			throw new RestServiceException(RestErrorCode.POST_NOT_EXIST);
 		}
 		projectEvaluationDetailShareResponse.setPost(post);
+
+		Integer type = authenticationService.selectCUserType(post.getCreateUserId());
+		if (0 == type) {
+			throw new RestServiceException("数据错误!");
+		}
+		projectEvaluationDetailShareResponse.setcUsertype(type);
 		// 根据post查询evaluation
 		Evaluation evaluation = kffEvaluationService.selectEvaluationByPostId(postId);
 
@@ -4691,8 +4741,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			final String product = "Dysmsapi";// 短信API产品名称（短信产品名固定，无需修改）
 			final String domain = "dysmsapi.aliyuncs.com";// 短信API产品域名（接口地址固定，无需修改）
 			// 替换成你的AK
-			final String accessKeyId = AliyunConstant.SMS_APP_KEY;// 你的accessKeyId,参考本文档步骤2
-			final String accessKeySecret = AliyunConstant.SMS_SECRET;// 你的accessKeySecret，参考本文档步骤2
+			final String accessKeyId = smsAppkey; // AliyunConstant.SMS_APP_KEY;//
+													// 你的accessKeyId,参考本文档步骤2
+			final String accessKeySecret = smsSecret;// AliyunConstant.SMS_SECRET;//
+														// 你的accessKeySecret，参考本文档步骤2
 			// 初始化ascClient,暂时不支持多region（请勿修改）
 			IClientProfile profile = DefaultProfile.getProfile("cn-hangzhou", accessKeyId, accessKeySecret);
 			DefaultProfile.addEndpoint("cn-hangzhou", "cn-hangzhou", product, domain);
@@ -4704,21 +4756,21 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			// 必填:待发送手机号。支持以逗号分隔的形式进行批量调用，批量上限为1000个手机号码,批量调用相对于单条调用及时性稍有延迟,验证码类型的短信推荐使用单条调用的方式；发送国际/港澳台消息时，接收号码格式为00+国际区号+号码，如“0085200000000”
 			request.setPhoneNumbers(phone);
 			// 必填:短信签名-可在短信控制台中找到
-			request.setSignName(AliyunConstant.SMS_FREE_SIGN_NAME);
+			request.setSignName(smsFreeSignName);// AliyunConstant.SMS_FREE_SIGN_NAME
 			// 必填:短信模板-可在短信控制台中找到
 			// 在此添加模板类型
 
 			// 登陆
-			if (module.equals(AliyunConstant.SMS_LOGIN)) {
-				request.setTemplateCode(AliyunConstant.SMS_LOGIN_TEMPLATE_CODE);
+			if (module.equals("login")) {// AliyunConstant.SMS_LOGIN
+				request.setTemplateCode(smsLoginTemplateCode);// AliyunConstant.SMS_LOGIN_TEMPLATE_CODE
 			}
 			// 注册
-			if (module.equals(AliyunConstant.SMS_REGISTER)) {
-				request.setTemplateCode(AliyunConstant.SMS_REGISTER_TEMPLATE_CODE);
+			if (module.equals("register")) {
+				request.setTemplateCode(smsRegisterTemplateCode);// (AliyunConstant.SMS_REGISTER_TEMPLATE_CODE
 			}
 			// 忘记密码
-			if (module.equals(AliyunConstant.SMS_FORGETPASDWORD)) {
-				request.setTemplateCode(AliyunConstant.SMS_SMS_FORGETPASDWORD_TEMPLATE_CODE);
+			if (module.equals("forgetPassword")) {
+				request.setTemplateCode(smsForgetpasdwoedTemplateCode);
 			}
 			// request.setTemplateCode(AliyunConstant.SMS_REGISTER_TEMPLATE_CODE);
 			// 可选:模板中的变量替换JSON串,如模板内容为"亲爱的${name},您的验证码为${code}"时,此处的值为
@@ -4738,13 +4790,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				redisService.put(cacheKey, dynamicValidateCode, 60 * 5);// 设置10分钟
 			}
 		} catch (ServerException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ClientException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -4839,5 +4888,41 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	public List<Tokenaward> findAllTokenawardUserId(Integer userId) {
 		// TODO Auto-generated method stub
 		return kffTokenawardService.findAllTokenawardUserId(userId);
+	}
+
+	@Override
+	public String creat2Code(Integer userId) throws RestServiceException {
+		/**
+		 * 邀请链接的url
+		 */
+
+		// String contentself = "http://192.168.10.196:5000/user/registerSmp?invaUIH=";
+		/**
+		 * 最终海报的存放路径
+		 */
+		String posterSysPath = picUrl + "\\upload\\poster\\";
+		/**
+		 * 原始海报的存放路径 "D:\\opt\\file\\upload\\poster\\init\\initpic.png
+		 */
+		String initPosterSysPath = picUrl + "\\upload\\poster\\init\\initpic";
+		String text = "";
+
+		String str = HexUtil.userIdTo2code(userId);
+
+		// 调用create2CodeImg 方法生成二维码
+		// 调用overlapImage 方法将两个图片合成一个
+		// 调用createCharAtImg 方法 向图片上添加文字
+		// 返回图片的相对于服务器的绝对地址
+		String contentselfid = contentself + str;
+		String posterSysPathlast = posterSysPath + str + ".png";
+		String initPosterSysPathLast = initPosterSysPath + Create2Code.rand1To11() + ".png";
+		String code2Path = Create2Code.createNameAndPath(str);// 二维码路径
+		Create2Code.create2CodeImg(code2Path, contentselfid);// 在制定位置生成二维码
+		Create2Code.overlapImage(initPosterSysPathLast, code2Path, posterSysPathlast);
+		// createCharAtImg(text, posterSysPathlast);
+
+		// System.out.println(picUrlpro);
+		return "upload/poster/" + str + ".png";
+
 	}
 }

@@ -279,7 +279,7 @@
 				notPassReason = #{notpassreason,jdbcType=VARCHAR},
 			</if>
 		</set>
-		where userId = #{userid,jdbcType=INTEGER} and notPassReason  IS  NULL
+		where userId = #{userid,jdbcType=INTEGER} and notPassReason IS NULL
 	</update>
 
 	<update id="updateByPrimaryKey" parameterType="com.tzg.entitys.kff.authentication.Authentication">
@@ -334,6 +334,5 @@
 		accountAuthenticationId DESC
 
 	</select>
-
-
+	
 </mapper>

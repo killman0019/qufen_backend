@@ -14,6 +14,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -54,7 +55,10 @@ import com.tzg.wap.utils.HexUtil;
 @RequestMapping("/kff/user")
 public class UserController extends BaseController {
 	// 前台春晓的注册链接
-	private static final String REGISTER_URL = "http://192.168.10.196:5000/user/registerSmp?invaUIH=";
+	@Value("#{paramConfig['registerUrl']}")
+	private String registerUrl;
+	// "http://192.168.10.196:5000/user/registerSmp?invaUIH=";
+	private  String REGISTER_URL = registerUrl;
 	private static Logger log = Logger.getLogger(UserController.class);
 
 	@Autowired
@@ -226,7 +230,7 @@ public class UserController extends BaseController {
 			UserInvation userInvation = kffRmiService.selectUseInvation(userId);
 			if (StringUtils.isEmpty(userInvation.getUserposterpic())) {
 				// 生成海报
-				posterUrl = Create2Code.createPoster(userId);
+				posterUrl = kffRmiService.creat2Code(userId);
 				String code2Url = null;
 				kffRmiService.updataUserInvation(userId, posterUrl, code2Url);
 				map.put("url", posterUrl);

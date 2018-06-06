@@ -19,6 +19,16 @@ public class ArticleDetailShareResponse extends ArticleDetailResponse {
 
 	private JSON conCommendationlp;
 
+	private Integer cUsertype;
+
+	public Integer getcUsertype() {
+		return cUsertype;
+	}
+
+	public void setcUsertype(Integer cUsertype) {
+		this.cUsertype = cUsertype;
+	}
+
 	public JSON getConCommendationlp() {
 		return conCommendationlp;
 	}

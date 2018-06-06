@@ -715,7 +715,7 @@ public interface KFFRmiService {
 	 * @throws RestServiceException
 	 */
 	public void aLiYunSmsApi(String phone, String module, String dynamicValidateCode, String cacheKey, String smsStormCheckKey) throws RestServiceException;
-	
+
 	public PageResult<Tokenaward> findPageMyTokenAwards(PaginationQuery query);
 
 	public void updateUserWallet(Integer userId, String wallet);
@@ -731,7 +731,16 @@ public interface KFFRmiService {
 	public List<Tokenaward> findAllTokenawardUserId(Integer userId);
 
 	public List<Tokenrecords> findAllTokenrecordsUserId(Integer userId);
-	
+
 	public List<KFFUserWallet> findBywalletAndType(Integer userId);
+
+	/**
+	 * 创建二维码和海报
+	 * 
+	 * @param userId
+	 * @return
+	 * @throws RestServiceException
+	 */
+	public String creat2Code(Integer userId) throws RestServiceException;
 
 }

@@ -3,7 +3,7 @@ package com.tzg.entitys.url;
 import java.io.Serializable;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+
 
 public class UrlPram implements Serializable {
 
