@@ -14,10 +14,10 @@
 
 	<util:properties id="dbConfig" location="file:/opt/resource/system-db.properties" />
 
-	<util:properties id="paramConfig" location="file:/opt/resource/system-param.properties" /> 
-	
+	<util:properties id="paramConfig" location="file:/opt/resource/system-param.properties" />
 
-	
+
+
 	<!--文件begin -->
 
 	<!-- 文件end -->
@@ -101,4 +101,5 @@
 
 	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true" />
 
+	<!-- <context:component-scan base-package="com.tzg"> <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository" /> </context:component-scan> -->
 </beans>

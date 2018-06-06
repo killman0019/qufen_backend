@@ -19,6 +19,15 @@ public class DiscussShare implements Serializable {
 	private List<CommentShareFloot> commentseZanDuo;
 	private CommentShareFloot commentseZanDuoOnly;
 	private Integer commentseSum;
+	private Integer cUsertype;
+
+	public Integer getcUsertype() {
+		return cUsertype;
+	}
+
+	public void setcUsertype(Integer cUsertype) {
+		this.cUsertype = cUsertype;
+	}
 
 	public Integer getCommentseSum() {
 		return commentseSum;

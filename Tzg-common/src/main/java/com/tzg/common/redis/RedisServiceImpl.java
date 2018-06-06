@@ -24,6 +24,7 @@ import com.tzg.common.utils.SerializeUtil;
  * @author yangpeiliang
  * @version 1.0
  */
+
 public class RedisServiceImpl implements RedisService {
 
 	protected static Logger logger = Logger.getLogger(RedisServiceImpl.class);

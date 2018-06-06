@@ -4,12 +4,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.stereotype.Component;
+
 /**
  * redis客户端接口
  * 
  * @author yangpeiliang
  * @version 1.0
  */
+
 public interface RedisService {
 
 	/**
@@ -108,18 +111,15 @@ public interface RedisService {
 	 * 清空所有数据
 	 */
 	public void flush() throws Exception;
-	
+
 	/**
 	 * 判断key是否在redis中存在
 	 */
 	public boolean exists(String key) throws Exception;
-	
+
 	/**
-	 * 模糊查询redis中的key
-	 * KEYS * 匹配数据库中所有 key 。
-	 * KEYS h?llo 匹配 hello ， hallo 和 hxllo 等。
-	 * KEYS h*llo 匹配 hllo 和 heeeeello 等。
-	 * KEYS h[ae]llo 匹配 hello 和 hallo ，但不匹配 hillo 。
+	 * 模糊查询redis中的key KEYS * 匹配数据库中所有 key 。 KEYS h?llo 匹配 hello ， hallo 和 hxllo 等。 KEYS h*llo 匹配
+	 * hllo 和 heeeeello 等。 KEYS h[ae]llo 匹配 hello 和 hallo ，但不匹配 hillo 。
 	 */
 	public Set<?> keys(String key) throws Exception;
 }

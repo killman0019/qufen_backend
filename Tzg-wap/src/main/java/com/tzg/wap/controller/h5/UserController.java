@@ -58,7 +58,7 @@ public class UserController extends BaseController {
 	@Value("#{paramConfig['registerUrl']}")
 	private String registerUrl;
 	// "http://192.168.10.196:5000/user/registerSmp?invaUIH=";
-	private  String REGISTER_URL = registerUrl;
+
 	private static Logger log = Logger.getLogger(UserController.class);
 
 	@Autowired
@@ -199,7 +199,7 @@ public class UserController extends BaseController {
 		// 将生成的2code 放在数据库中
 		kffRmiService.saveUserInvation(userId, userIdTo2code);
 		// 生成URL注册链接
-		String user2codeUrl = REGISTER_URL + userIdTo2code;
+		String user2codeUrl = registerUrl + userIdTo2code;
 		map.put("url", user2codeUrl);
 		bre.setData(map);
 		return bre;

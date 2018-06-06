@@ -29,6 +29,16 @@ public class CommentsShareRequest implements Serializable {
 
 	private List<Comments> hotComments;
 
+	private Integer cUsertype;
+
+	public Integer getcUsertype() {
+		return cUsertype;
+	}
+
+	public void setcUsertype(Integer cUsertype) {
+		this.cUsertype = cUsertype;
+	}
+
 	public List<Comments> getHotComments() {
 		return hotComments;
 	}

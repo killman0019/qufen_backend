@@ -304,7 +304,7 @@ public class HomeController extends BaseController {
 			newQuery.setPageIndex(1);
 			newQuery.setRowsPerPage(20);
 			PageResult<Comments> newestComments = kffRmiService.findPageNewestComments(userId, postId, newQuery);
-			map.put("newestComments", newestComments==null?null:newestComments.getRows());
+			map.put("newestComments", newestComments == null ? null : newestComments.getRows());
 
 			bre.setData(map);
 		} catch (RestServiceException e) {

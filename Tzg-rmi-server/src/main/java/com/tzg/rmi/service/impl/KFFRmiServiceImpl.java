@@ -3989,7 +3989,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 		BeanUtils.copyProperties(post, articleDetailShareResponse);
 
-		// 放置创建poster的类型
+		// 放置创建poster的类型 加V
 		if (StringUtils.isBlank(post.getCreateUserId() + "")) {
 			throw new RestServiceException("创建人id为空");
 		}
@@ -4033,6 +4033,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (post == null) {
 			throw new RestServiceException(RestErrorCode.POST_NOT_EXIST);
 		}
+		// 加V
 		Integer type = authenticationService.selectCUserType(post.getCreateUserId());
 		if (0 == type) {
 			throw new RestServiceException("数据错误!");
@@ -4147,7 +4148,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (null == post) {
 			throw new RestServiceException("帖子为空");
 		}
-
+		Integer type = authenticationService.selectCUserType(post.getCreateUserId());
+		if (0 == type) {
+			throw new RestServiceException("数据错误!");
+		}
+		commentsShareRequest.setcUsertype(type);
 		KFFProject project = kffProjectService.findById(post.getProjectId());
 		if (null == project) {
 			throw new RestServiceException("项目为空!");
@@ -4258,7 +4263,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (post == null) {
 			throw new RestServiceException(RestErrorCode.POST_NOT_EXIST);
 		}
-
+		Integer type = authenticationService.selectCUserType(post.getCreateUserId());
+		if (0 == type) {
+			throw new RestServiceException("数据错误!");
+		}
+		discussShare.setcUsertype(type);
 		Discuss discuss = kffDiscussService.findByPostId(postId);
 		discussShare.setTagInfo(discuss.getTagInfos());
 		// 防止post

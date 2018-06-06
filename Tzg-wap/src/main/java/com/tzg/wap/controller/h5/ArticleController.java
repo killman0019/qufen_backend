@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.tzg.common.redis.RedisService;
 import com.tzg.common.utils.AccountTokenUtil;
 import com.tzg.entitys.kff.article.Article;
 import com.tzg.entitys.kff.article.ArticleRequest;
