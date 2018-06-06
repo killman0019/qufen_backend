@@ -113,7 +113,7 @@ public class AwardPortService {
 						System.err.println("我是账单生成");
 					}
 				}
-				if (userId > 5000000 && userId < 1000000) {
+				if (userId > 500000 && userId < 1000000) {
 					List<Tokenaward> findByUserId = kffTokenawardService.findByUserId(userId);
 					
 					if (findByUserId.size() == 0) {
