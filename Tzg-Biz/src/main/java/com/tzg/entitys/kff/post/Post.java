@@ -16,6 +16,10 @@ public class Post implements Serializable {
 	/**
 	 * 项目ID
 	 */
+	private java.lang.Integer stickTop;
+    /**
+     * 项目ID
+     */ 	
 	private java.lang.Integer projectId;
 	/**
 	 * projectIcon
@@ -101,6 +105,9 @@ public class Post implements Serializable {
 	private java.lang.Integer status;
 
 	private java.lang.String uuid;
+	
+	private java.util.Date stickUpdateTime;
+	private java.lang.String stickUpdateTimeStr;
 
 	public java.lang.String getUuid() {
 		return uuid;
@@ -296,4 +303,23 @@ public class Post implements Serializable {
 		this.projectChineseName = projectChineseName;
 	}
 
+	public java.lang.Integer getStickTop() {
+		return stickTop;
+	}
+
+	public void setStickTop(java.lang.Integer stickTop) {
+		this.stickTop = stickTop;
+	}
+
+	public java.util.Date getStickUpdateTime() {
+		return stickUpdateTime;
+	}
+
+	public void setStickUpdateTime(java.util.Date value) {
+		this.stickUpdateTimeStr = DateUtil.getDate(value, "yyyy-MM-dd HH:mm:ss");
+		this.stickUpdateTime = value;
+	}
+
+	
+	
 }

@@ -142,8 +142,16 @@
 	
 	<select id="findAllCoinPropertyByWhere" resultMap="BaseResultMap" parameterType="java.util.Map">
 		select <include refid="columns"/>  from tbcoinproperty where 1=1
-		<include refid="queryWhere"/>
-	</select>
+		<include refid="queryWhere"/> 
+	     <choose>
+	            <when test="sortField != null and sortField != ''">
+	               ORDER BY ${sortField} DESC
+	            </when>
+	            <otherwise>
+	                <![CDATA[ ORDER BY coin_property_id desc ]]>
+	            </otherwise>
+	        </choose>
+	</select>	
 	
 	
 	 
