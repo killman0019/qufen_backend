@@ -4873,17 +4873,19 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			request.setSignName("区分");// AliyunConstant.SMS_FREE_SIGN_NAME
 			// 必填:短信模板-可在短信控制台中找到
 			// 在此添加模板类型
-
+			logger.info(module);
 			// 登陆
 			if (module.equals("login")) {// AliyunConstant.SMS_LOGIN
 				request.setTemplateCode(smsLoginTemplateCode);// AliyunConstant.SMS_LOGIN_TEMPLATE_CODE
 				// 放置json串
+				logger.info(smsLoginTemplateCode);
 				map.put("code", dynamicValidateCode);// 放置code 验证码
 			}
 			// 注册
 			if (module.equals("register")) {
 				request.setTemplateCode(smsRegisterTemplateCode);// (AliyunConstant.SMS_REGISTER_TEMPLATE_CODE
 				// 放置json串
+				logger.info(smsRegisterTemplateCode);
 				map.put("code", dynamicValidateCode);// 放置code 验证码
 			}
 			// 忘记密码
@@ -4903,7 +4905,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			// request.setOutId("yourOutId");
 			// 请求失败这里会抛ClientException异常
 			SendSmsResponse sendSmsResponse = acsClient.getAcsResponse(request);
-			System.out.println(sendSmsResponse);
+			logger.info(sendSmsResponse.getCode());
 			if (sendSmsResponse.getCode() != null && sendSmsResponse.getCode().equals("OK")) {
 				System.out.println("短信发送成功!");
 				System.out.println(sendSmsResponse.getCode());
