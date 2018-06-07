@@ -80,7 +80,7 @@ public class FileUtils {
 	}
 
 	/**
-	 * 生成本地文件
+	 * 仅生成本地文件夹
 	 *
 	 * @param request
 	 * @param localPath
