@@ -16,6 +16,10 @@ public class Post implements Serializable {
 	/**
 	 * 项目ID
 	 */
+	private java.lang.Integer stickTop;
+    /**
+     * 项目ID
+     */ 	
 	private java.lang.Integer projectId;
 	/**
 	 * projectIcon
@@ -296,4 +300,14 @@ public class Post implements Serializable {
 		this.projectChineseName = projectChineseName;
 	}
 
+	public java.lang.Integer getStickTop() {
+		return stickTop;
+	}
+
+	public void setStickTop(java.lang.Integer stickTop) {
+		this.stickTop = stickTop;
+	}
+
+	
+	
 }

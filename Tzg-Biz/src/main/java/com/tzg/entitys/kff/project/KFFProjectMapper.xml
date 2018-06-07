@@ -246,15 +246,13 @@
 
 
 	<select id="findProjectByCode" resultMap="BaseResultMap" parameterType="java.util.Map">
-		select
-		<include refid="columns" />
-		from tbproject where status=1
-		<include refid="queryWhere" />
-		<choose>
-			<when test="sortField != null and sortField != ''">
-				ORDER BY ${sortField} DESC
-			</when>
-			<otherwise>
+		select <include refid="columns"/>  from tbproject where status=1
+		<include refid="queryWhereByCode"/> 
+		 <choose>
+	            <when test="sortField != null and sortField != ''">
+	               ORDER BY ${sortField} DESC
+	            </when>
+	            <otherwise>
 	                <![CDATA[ ORDER BY project_code ASC ]]>
 			</otherwise>
 		</choose>
