@@ -172,7 +172,6 @@ public class UserController extends BaseController {
 			String token = AccountTokenUtil.getAccountToken(KffUser.getUserId());
 			map.put("token", token);
 			bre.setData(map);
-
 			return bre;
 		}
 		// 1是成功

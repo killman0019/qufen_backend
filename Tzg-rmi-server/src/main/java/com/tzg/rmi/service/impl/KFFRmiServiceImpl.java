@@ -73,6 +73,7 @@ import com.tzg.common.service.kff.UserInvationService;
 import com.tzg.common.service.kff.UserService;
 import com.tzg.common.service.kff.UserWalletService;
 import com.tzg.common.service.systemParam.SystemParamService;
+import com.tzg.common.utils.AccountTokenUtil;
 import com.tzg.common.utils.Create2Code;
 import com.tzg.common.utils.DateUtil;
 import com.tzg.common.utils.DelHtmlAll;
@@ -1128,7 +1129,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			}
 			// 生成url名称
 			String picUrlGen = picUrl;
-			String picName = "/upload/postPic/" + DateUtil.getCurrentTimeStamp() + articleRequest.getCreateUserId() + ".jpg";
+			String picName = "/upload/postPic/" + DateUtil.getCurrentYearMonth() + "/" + DateUtil.getCurrentTimeStamp() + articleRequest.getCreateUserId()
+					+ ".jpg";
 			String picUrl = picUrlGen + picName;
 			DownImgGoodUtil.downloadPicture(img, picUrl);
 			imgDB.add(picName);
@@ -1385,7 +1387,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			}
 			// 生成url名称
 			String picUrlGen = picUrl;
-			String picName = "/upload/postPic/" + DateUtil.getCurrentTimeStamp() + evaluationRequest.getCreateUserId() + ".jpg";
+			String picName = "/upload/postPic/" + DateUtil.getCurrentYearMonth() + "/" + DateUtil.getCurrentTimeStamp() + evaluationRequest.getCreateUserId()
+					+ ".jpg";
 			String picUrl = picUrlGen + picName;
 			DownImgGoodUtil.downloadPicture(img, picUrl);
 			imgDB.add(picName);
@@ -4069,6 +4072,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			kffFollowService.save(followUser);
 		}
 
+		/*if (user.getUserId() != null) {
+
+			registerAward(user.getUserId());
+		}*/
+
 		return user;
 
 	}
@@ -4830,7 +4838,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	@Override
 	public void updataUserInvation(Integer userId, String posterUrl, String code2Url) throws RestServiceException {
 		String str = HexUtil.userIdTo2code(userId);
-		code2Url = "upload\\2code\\" + str + ".png";
+		code2Url = "upload/2code/" + DateUtil.getCurrentYearMonth() + "/" + str + ".png";
 		userInvationService.updataUserInvation(userId, posterUrl, code2Url);
 
 	}
@@ -5025,7 +5033,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		/**
 		 * 最终海报的存放路径
 		 */
-		String posterSysPath = picUrl + "\\upload\\poster\\";
+		String posterSysPath = "/upload/poster/";
 		/**
 		 * 原始海报的存放路径 "D:\\opt\\file\\upload\\poster\\init\\initpic.png
 		 */
@@ -5039,7 +5047,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// 调用createCharAtImg 方法 向图片上添加文字
 		// 返回图片的相对于服务器的绝对地址
 		String contentselfid = contentself + str;
-		String posterSysPathlast = posterSysPath + str + ".png";
+		String posterSysPathNotPilast = posterSysPath + DateUtil.getCurrentYearMonth() + "/" + str + ".png";
+		String posterSysPathlast = picUrl + posterSysPathNotPilast;
 		String initPosterSysPathLast = initPosterSysPath + Create2Code.rand1To11() + ".png";
 		String code2Path = Create2Code.createNameAndPath(str);// 二维码路径
 		Create2Code.create2CodeImg(code2Path, contentselfid);// 在制定位置生成二维码

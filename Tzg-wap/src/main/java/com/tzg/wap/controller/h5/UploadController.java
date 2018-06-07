@@ -51,7 +51,7 @@ public class UploadController extends BaseController {
 	public BaseResponseEntity uploadIdCard(@RequestParam(required = false) MultipartFile upfile) throws Exception, IOException {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		Map<String, Object> resMap = new HashMap<String, Object>();
-		String picUrlIdCard = picUrl + "\\upload\\Idcard\\";
+		String picUrlIdCard = picUrl + "/upload/Idcard/";
 		if (null == upfile) {
 			throw new RestServiceException("上传图片不能为空!");
 		}
@@ -70,12 +70,13 @@ public class UploadController extends BaseController {
 		// upfile.transferTo(new File("D:\\opt\\file\\upload\\Idcard\\" + name +"." + ext));
 		// 进行压缩 大于3m 进行压缩
 		if (upfile.getSize() >= 3 * 1024 * 1024) {
-			Thumbnails.of(upfile.getInputStream()).scale(1f).outputQuality(0.25f).toFile(new File("D:\\opt\\file\\upload\\Idcard\\" + name + "." + ext));
+			Thumbnails.of(upfile.getInputStream()).scale(1f).outputQuality(0.25f)
+					.toFile(new File(picUrl + "/upload/Idcard/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext));
 		} else {
-			upfile.transferTo(new File(picUrlIdCard + name + "." + ext));
+			upfile.transferTo(new File(picUrlIdCard + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext));
 		}
 
-		resMap.put("picPath", "upload/Idcard/" + name + "." + ext);
+		resMap.put("picPath", "upload/Idcard/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext);
 		bre.setData(resMap);
 		return bre;
 	}
@@ -85,7 +86,7 @@ public class UploadController extends BaseController {
 	public BaseResponseEntity uploadAvatars(@RequestParam(required = false) MultipartFile upfile) throws Exception, IOException {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		Map<String, Object> resMap = new HashMap<String, Object>();
-		String picUrlAvatars = picUrl + "\\upload\\avatars\\";
+		String picUrlAvatars = picUrl + "/upload/avatars/";
 		if (null == upfile) {
 			throw new RestServiceException("上传图片不能为空!");
 		}
@@ -102,12 +103,13 @@ public class UploadController extends BaseController {
 			throw new RestServiceException("非法文件后缀" + ext);
 		}
 		if (upfile.getSize() >= 3 * 1024 * 1024) {
-			Thumbnails.of(upfile.getInputStream()).scale(1f).outputQuality(0.25f).toFile(new File("D:\\opt\\file\\upload\\avatars\\" + name + "." + ext));
+			Thumbnails.of(upfile.getInputStream()).scale(1f).outputQuality(0.25f)
+					.toFile(new File(picUrl + "/upload/avatars/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext));
 		} else {
-			upfile.transferTo(new File(picUrlAvatars + name + "." + ext));
+			upfile.transferTo(new File(picUrlAvatars + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext));
 		}
 
-		resMap.put("picPath", "upload/avatars/" + name + "." + ext);
+		resMap.put("picPath", "upload/avatars/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext);
 		bre.setData(resMap);
 		return bre;
 	}
@@ -117,7 +119,7 @@ public class UploadController extends BaseController {
 	public BaseResponseEntity uploadPostPic(@RequestParam(value = "upfile", required = false) MultipartFile upfile) throws Exception, IOException {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		Map<String, Object> resMap = new HashMap<String, Object>();
-		String picUrlPostPic = picUrl + "\\upload\\postPic\\";
+		String picUrlPostPic = picUrl + "/upload/postPic/";
 		log.info("图片进入接口!++++++++++++++++++++++");
 		// 保存图片到
 		if (null == upfile) {
@@ -136,11 +138,12 @@ public class UploadController extends BaseController {
 		}
 
 		if (upfile.getSize() >= 3 * 1024 * 1024) {
-			Thumbnails.of(upfile.getInputStream()).scale(1f).outputQuality(0.25f).toFile(new File("D:\\opt\\file\\upload\\postPic\\" + name + "." + ext));
+			Thumbnails.of(upfile.getInputStream()).scale(1f).outputQuality(0.25f)
+					.toFile(new File(picUrl + "/upload/postPic/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext));
 		} else {
-			upfile.transferTo(new File(picUrlPostPic + name + "." + ext));
+			upfile.transferTo(new File(picUrlPostPic + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext));
 		}
-		resMap.put("picPath", "upload/postPic/" + name + "." + ext);
+		resMap.put("picPath", "upload/postPic/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext);
 		log.info("图片存入成功!++++++++++++++++++++++");
 		log.info(name + "." + ext);
 		bre.setData(resMap);
@@ -156,7 +159,7 @@ public class UploadController extends BaseController {
 		response.setContentType("text/html;charset=gbk");
 		log.info("postPicsf图片进入接口!++++++++++++++++++++++");
 		// 保存图片到
-		String picUrlPostPicsf = picUrl + "\\upload\\postPic\\";
+		String picUrlPostPicsf = picUrl + "/upload/postPic/";
 		if (null == upfile) {
 			throw new RestServiceException("上传图片不能为空!");
 		}
@@ -173,15 +176,16 @@ public class UploadController extends BaseController {
 		}
 
 		if (upfile.getSize() >= 3 * 1024 * 1024) {
-			Thumbnails.of(upfile.getInputStream()).scale(1f).outputQuality(0.25f).toFile(new File("D:\\opt\\file\\upload\\postPic\\" + name + "." + ext));
+			Thumbnails.of(upfile.getInputStream()).scale(1f).outputQuality(0.25f)
+					.toFile(new File(picUrl + "/upload/postPic/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext));
 		} else {
-			upfile.transferTo(new File(picUrlPostPicsf + name + "." + ext));
+			upfile.transferTo(new File(picUrlPostPicsf + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext));
 		}
 
-		resMap.put("file_path", ipPicUrl + "//postPic//" + name + "." + ext);
+		resMap.put("file_path", ipPicUrl + "/postPic/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext);
 		resMap.put("success", "true");
 		bre.setData(resMap);
-		String file_Name = ipPicUrl + "//postPic//" + name + "." + ext;
+		String file_Name = ipPicUrl + "/postPic/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext;
 		log.info("postPicsf图片存入成功!++++++++++++++++++++++");
 		log.info(name + "." + ext);
 		bre.setMsg("{\"success\":\"" + true + "\",\"file_path\":\"" + file_Name + "\"}");
@@ -195,7 +199,7 @@ public class UploadController extends BaseController {
 		Map<String, Object> resMap = new HashMap<String, Object>();
 		log.info("authentication图片进入接口!++++++++++++++++++++++");
 
-		String picUrlAuthentication = picUrl + "\\upload\\authentication\\";
+		String picUrlAuthentication = picUrl + "/upload/authentication/";
 		// 保存图片到
 		// 保存图片到
 		if (null == upfile) {
@@ -213,14 +217,15 @@ public class UploadController extends BaseController {
 			throw new RestServiceException("非法文件后缀" + ext);
 		}
 		if (upfile.getSize() >= 3 * 1024 * 1024) {
-			Thumbnails.of(upfile.getInputStream()).scale(1f).outputQuality(0.25f).toFile(new File(picUrlAuthentication + name + "." + ext));
+			Thumbnails.of(upfile.getInputStream()).scale(1f).outputQuality(0.25f)
+					.toFile(new File(picUrlAuthentication + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext));
 		} else {
-			upfile.transferTo(new File(picUrlAuthentication + name + "." + ext));
+			upfile.transferTo(new File(picUrlAuthentication + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext));
 		}
 
 		log.info("authentication +++++++图片存入成功!++++++++++++++++++++++");
 		log.info(name + "." + ext);
-		resMap.put("picPath", "upload/authentication/" + name + "." + ext);
+		resMap.put("picPath", "upload/authentication/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext);
 		bre.setData(resMap);
 		return bre;
 	}
