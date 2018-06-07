@@ -68,13 +68,10 @@ public class UploadController extends BaseController {
 		}
 		// upfile.transferTo(new File("D:\\opt\\file\\upload\\Idcard\\" + name +"." + ext));
 		// 进行压缩 大于3m 进行压缩
-		if (upfile.getSize() >= 3 * 1024 * 1024) {
-			Thumbnails.of(upfile.getInputStream()).scale(1f).outputQuality(0.25f).toFile(new File(picUrl+"/upload/Idcard/" +DateUtil.getCurrentYearMonth() + "/"+ name + "." + ext));
-		} else {
-			upfile.transferTo(new File(picUrlIdCard + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext));
-		}
+		String fileName = picUrlIdCard + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext;
+		FileUtils.createFileLocal(fileName, upfile.getBytes());
 
-		resMap.put("picPath", "upload/Idcard/" +DateUtil.getCurrentYearMonth() + "/"+ name + "." + ext);
+		resMap.put("picPath", "upload/Idcard/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext);
 		bre.setData(resMap);
 		return bre;
 	}
@@ -100,11 +97,9 @@ public class UploadController extends BaseController {
 		if (!FileUtils.allowedExtensionSet().contains(ext)) {
 			throw new RestServiceException("非法文件后缀" + ext);
 		}
-		if (upfile.getSize() >= 3 * 1024 * 1024) {
-			Thumbnails.of(upfile.getInputStream()).scale(1f).outputQuality(0.25f).toFile(new File(picUrl+"/upload/avatars/" + DateUtil.getCurrentYearMonth() + "/"+name + "." + ext));
-		} else {
-			upfile.transferTo(new File(picUrlAvatars +DateUtil.getCurrentYearMonth() + "/"+ name + "." + ext));
-		}
+
+		String fileName = picUrlAvatars + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext;
+		FileUtils.createFileLocal(fileName, upfile.getBytes());
 
 		resMap.put("picPath", "upload/avatars/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext);
 		bre.setData(resMap);
@@ -134,11 +129,8 @@ public class UploadController extends BaseController {
 			throw new RestServiceException("非法文件后缀" + ext);
 		}
 
-		if (upfile.getSize() >= 3 * 1024 * 1024) {
-			Thumbnails.of(upfile.getInputStream()).scale(1f).outputQuality(0.25f).toFile(new File(ipPicUrl+"/upload/postPic/" + DateUtil.getCurrentYearMonth() + "/"+name + "." + ext));
-		} else {
-			upfile.transferTo(new File(picUrlPostPic +DateUtil.getCurrentYearMonth() + "/"+ name + "." + ext));
-		}
+		String fileName = picUrlPostPic + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext;
+		FileUtils.createFileLocal(fileName, upfile.getBytes());
 		resMap.put("picPath", "upload/postPic/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext);
 		log.info("图片存入成功!++++++++++++++++++++++");
 		log.info(name + "." + ext);
@@ -171,16 +163,13 @@ public class UploadController extends BaseController {
 			throw new RestServiceException("非法文件后缀" + ext);
 		}
 
-		if (upfile.getSize() >= 3 * 1024 * 1024) {
-			Thumbnails.of(upfile.getInputStream()).scale(1f).outputQuality(0.25f).toFile(new File(ipPicUrl + "/upload/postPic/"+ DateUtil.getCurrentYearMonth() + "/"+ name + "." + ext));
-		} else {
-			upfile.transferTo(new File(picUrlPostPicsf + DateUtil.getCurrentYearMonth() + "/"+name + "." + ext));
-		}
+		String fileName = picUrlPostPicsf + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext;
+		FileUtils.createFileLocal(fileName, upfile.getBytes());
 
-		resMap.put("file_path", ipPicUrl + "/postPic/" +DateUtil.getCurrentYearMonth() + "/"+ name + "." + ext);
+		resMap.put("file_path", ipPicUrl + "/postPic/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext);
 		resMap.put("success", "true");
 		bre.setData(resMap);
-		String file_Name = ipPicUrl + "/postPic/"+DateUtil.getCurrentYearMonth() + "/" + name + "." + ext;
+		String file_Name = ipPicUrl + "/postPic/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext;
 		log.info("postPicsf图片存入成功!++++++++++++++++++++++");
 		log.info(name + "." + ext);
 		bre.setMsg("{\"success\":\"" + true + "\",\"file_path\":\"" + file_Name + "\"}");
@@ -211,11 +200,16 @@ public class UploadController extends BaseController {
 		if (!FileUtils.allowedExtensionSet().contains(ext)) {
 			throw new RestServiceException("非法文件后缀" + ext);
 		}
-		if (upfile.getSize() >= 3 * 1024 * 1024) {
-			Thumbnails.of(upfile.getInputStream()).scale(1f).outputQuality(0.25f).toFile(new File(picUrlAuthentication +DateUtil.getCurrentYearMonth() + "/"+ name + "." + ext));
+
+		// picUrlAuthentication +DateUtil.getCurrentYearMonth() + "/"+ name + "." + ext
+		String fileName = picUrlAuthentication + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext;
+		FileUtils.createFileLocal(fileName, upfile.getBytes());
+		/*if (upfile.getSize() >= 3 * 1024 * 1024) {
+			Thumbnails.of(upfile.getInputStream()).scale(1f).outputQuality(0.25f)
+					.toFile(new File(picUrlAuthentication + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext));
 		} else {
-			upfile.transferTo(new File(picUrlAuthentication +DateUtil.getCurrentYearMonth() + "/"+ name + "." + ext));
-		}
+			upfile.transferTo(new File());
+		}*/
 
 		log.info("authentication +++++++图片存入成功!++++++++++++++++++++++");
 		log.info(name + "." + ext);

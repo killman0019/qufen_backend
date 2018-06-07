@@ -78,6 +78,7 @@ import com.tzg.common.utils.Create2Code;
 import com.tzg.common.utils.DateUtil;
 import com.tzg.common.utils.DelHtmlAll;
 import com.tzg.common.utils.DownImagesUtile;
+import com.tzg.common.utils.FileUtils;
 import com.tzg.common.utils.GetImgUrl;
 import com.tzg.common.utils.H5AgainDeltagsUtil;
 import com.tzg.common.utils.HexUtil;
