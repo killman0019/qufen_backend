@@ -1391,6 +1391,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			String picName = "/upload/postPic/" + DateUtil.getCurrentYearMonth() + "/" + DateUtil.getCurrentTimeStamp() + evaluationRequest.getCreateUserId()
 					+ ".jpg";
 			String picUrl = picUrlGen + picName;
+			try {
+				FileUtils.createFileLocal(picUrl);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				throw new RestServiceException("后台创建文件出错!");
+			}
 			DownImgGoodUtil.downloadPicture(img, picUrl);
 			imgDB.add(picName);
 			i = i + 1;

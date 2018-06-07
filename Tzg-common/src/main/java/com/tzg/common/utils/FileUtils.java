@@ -62,11 +62,10 @@ public class FileUtils {
 	 * @param blobSource
 	 * @throws Exception
 	 */
-	public static void createFileLocal(String localPath, byte[] blobSource)
-			throws Exception {
-		
+	public static void createFileLocal(String localPath, byte[] blobSource) throws Exception {
+
 		File file = new File(localPath);
-		if (file.exists()){
+		if (file.exists()) {
 			file.delete();
 		}
 		File dir = new File(file.getParent());
@@ -77,26 +76,48 @@ public class FileUtils {
 			fos.write(blobSource);
 			fos.close();
 		}
-		//return file;
+		// return file;
 	}
-	
+
 	/**
-	 *根据文件名获取后缀，默认jpg 
+	 * 生成本地文件
+	 *
+	 * @param request
+	 * @param localPath
+	 * @param blobSource
+	 * @throws Exception
+	 */
+	public static void createFileLocal(String localPath) throws Exception {
+
+		File file = new File(localPath);
+		if (file.exists()) {
+			file.delete();
+		}
+		File dir = new File(file.getParent());
+		if (!dir.exists())
+			dir.mkdirs();
+
+		// return file;
+	}
+
+	/**
+	 * 根据文件名获取后缀，默认jpg
+	 * 
 	 * @param fileName
 	 * @return
 	 */
-	public static String getFileExtension(String fileName){
+	public static String getFileExtension(String fileName) {
 		String result = "jpg";
-		if(StringUtils.isBlank(fileName)){
+		if (StringUtils.isBlank(fileName)) {
 			return result;
 		}
-		int idx = fileName.lastIndexOf(".");  
-        //文件后缀  
-        result= fileName.substring(idx+1);
+		int idx = fileName.lastIndexOf(".");
+		// 文件后缀
+		result = fileName.substring(idx + 1);
 		return result;
 	}
-	
-	public static Set<String> allowedExtensionSet(){
+
+	public static Set<String> allowedExtensionSet() {
 		Set<String> result = new HashSet<String>();
 		result.add("jpg");
 		result.add("jpeg");
@@ -107,6 +128,6 @@ public class FileUtils {
 		result.add("PNG");
 		result.add("GIF");
 		return result;
-		
+
 	}
 }
