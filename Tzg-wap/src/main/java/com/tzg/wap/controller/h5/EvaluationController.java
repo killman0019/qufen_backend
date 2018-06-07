@@ -80,6 +80,7 @@ public class EvaluationController extends BaseController {
 					throw new RestServiceException("不能对此项目进行重复评测!");
 				}
 			}
+			evaluationRequest.setTotalScore(evaluationData.getTotalScore());
 			Map<String, Object> saveEvaluation = kffRmiService.saveEvaluation(evaluationRequest);
 			bre.setData(saveEvaluation);
 		} catch (RestServiceException e) {
