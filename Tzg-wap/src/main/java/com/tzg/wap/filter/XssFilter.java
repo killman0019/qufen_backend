@@ -23,10 +23,9 @@ import com.tzg.wap.filter.wrapper.XssHttpServletRequestWrapper;
  * Filename: XssFilter.java Description: XSS跨站脚本攻击漏洞拦截器，配置：
  * <p>
  * <filter> <filter-name>XssEscape</filter-name>
- * <filter-class>com.tzg.web.filter.XssFilter</filter-class> </filter>
- * <filter-mapping> <filter-name>XssEscape</filter-name>
- * <url-pattern>/*</url-pattern> <dispatcher>REQUEST</dispatcher>
- * </filter-mapping>
+ * <filter-class>com.tzg.web.filter.XssFilter</filter-class> </filter> <filter-mapping>
+ * <filter-name>XssEscape</filter-name> <url-pattern>/*</url-pattern>
+ * <dispatcher>REQUEST</dispatcher> </filter-mapping>
  * </p>
  * Copyright: Copyright (c) 2015-2018 All Rights Reserved. Company: tzg.cn Inc.
  * 
@@ -61,11 +60,12 @@ public class XssFilter implements Filter {
 		/**
 		 * 自己写的解决跨域问题 ,上线之前注释掉 会引起CSRF攻击
 		 */
-		resp.setHeader("Access-Control-Allow-Origin", "*");
-		resp.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
-		resp.setHeader("Access-Control-Max-Age", "3600");
-		resp.addHeader("Access-Control-Allow-Headers", "Content-Type,XFILENAME,XFILECATEGORY,XFILESIZE");
-		resp.setHeader("Access-Control-Allow-Credentials", "true");
+		// resp.setHeader("Access-Control-Allow-Origin", "*");
+		// resp.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
+		// resp.setHeader("Access-Control-Max-Age", "3600");
+		// resp.addHeader("Access-Control-Allow-Headers",
+		// "Content-Type,XFILENAME,XFILECATEGORY,XFILESIZE");
+		// resp.setHeader("Access-Control-Allow-Credentials", "true");
 		String path = req.getServletPath();
 		if (ArrayUtils.contains(excludeURLs, path)) {
 			logger.debug("XSS filter ignored ,servlet path:{}", path);
