@@ -1382,8 +1382,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			}
 			// 生成url名称
 			String picUrlGen = picServiceUrl;
-			String picName = "/upload/postPic/" + DateUtil.getCurrentYearMonth() + "/" + DateUtil.getCurrentTimeStamp() + evaluationRequest.getCreateUserId()
-					+ ".jpg";
+			String picName = "/upload/postPic/" + DateUtil.getCurrentYearMonth() + "/" + DateUtil.getCurrentTimeStamp() + i
+					+ evaluationRequest.getCreateUserId() + ".jpg";
 			String picUrlName = picUrlGen + picName;
 			try {
 				FileUtils.createFileLocal(picUrlName);
