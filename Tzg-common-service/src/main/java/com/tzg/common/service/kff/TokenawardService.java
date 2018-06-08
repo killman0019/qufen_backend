@@ -73,7 +73,12 @@ public class TokenawardService {
 		if(userId == null ){
 			throw new RestServiceException("传入参数不能为空");
 		}
-		return tokenawardMapper.reawardSum1(userId);
+		Double sum =0d;
+		if(tokenawardMapper.reawardSum1(userId) != null)
+		{
+			sum = tokenawardMapper.reawardSum1(userId);
+		}
+		return sum;
 	}	
 	public Double findUserSumInviteRewards(Integer userId,Integer functionType) throws RestServiceException {	
 		if(userId == null || functionType == null){

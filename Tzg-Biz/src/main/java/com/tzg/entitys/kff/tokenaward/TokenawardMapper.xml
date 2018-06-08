@@ -255,11 +255,11 @@
 	]]>
 	</select> -->
 	<select id="reawardSum1"  resultType="java.lang.Double" parameterType="java.lang.Integer">
-	select sum(reward_token) from tbtokenaward 
+	select sum(invite_rewards) from tbtokenaward 
 	<![CDATA[
 		where 1=1
 		and
-        user_id = #{userId} 
+        user_id = #{userId}
         AND
 		token_award_function_type = 18     
 	]]>
