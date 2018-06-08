@@ -5070,7 +5070,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			throw new RestServiceException("后台创建文件出错!");
 		}
 		String initPosterSysPathLast = initPosterSysPath + Create2Code.rand1To11() + ".png";// 选出随机海报图片
-		String code2Path = create2CodeNameAndPath(str);// 二维码路径
+		String code2Path = this.create2CodeNameAndPath(str);// 二维码路径
 		Create2Code.create2CodeImg(code2Path, contentselfid);// 在制定位置生成二维码
 		Create2Code.overlapImage(initPosterSysPathLast, code2Path, posterSysPathlast);
 		// createCharAtImg(text, posterSysPathlast);
