@@ -13,15 +13,9 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.ObjectUtils.Null;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.poi.xwpf.usermodel.TOC;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -73,21 +67,16 @@ import com.tzg.common.service.kff.UserInvationService;
 import com.tzg.common.service.kff.UserService;
 import com.tzg.common.service.kff.UserWalletService;
 import com.tzg.common.service.systemParam.SystemParamService;
-import com.tzg.common.utils.AccountTokenUtil;
 import com.tzg.common.utils.Create2Code;
 import com.tzg.common.utils.DateUtil;
-import com.tzg.common.utils.DelHtmlAll;
-import com.tzg.common.utils.DownImagesUtile;
 import com.tzg.common.utils.FileUtils;
 import com.tzg.common.utils.GetImgUrl;
 import com.tzg.common.utils.H5AgainDeltagsUtil;
 import com.tzg.common.utils.HexUtil;
 import com.tzg.common.utils.DownImgGoodUtil;
-import com.tzg.common.utils.rest.AliyunConstant;
 import com.tzg.common.utils.Numbers;
 import com.tzg.common.utils.RandomUtil;
 import com.tzg.common.utils.RegexUtil;
-import com.tzg.common.utils.ToRemoveHtml;
 import com.tzg.common.utils.WorkHtmlRegexpUtil;
 import com.tzg.common.zookeeper.ZKClient;
 import com.tzg.entitys.kff.article.Article;
@@ -135,7 +124,6 @@ import com.tzg.entitys.kff.qfindex.QfIndex;
 import com.tzg.entitys.kff.suggest.Suggest;
 import com.tzg.entitys.kff.suggest.SuggestRequest;
 import com.tzg.entitys.kff.tokenaward.Tokenaward;
-import com.tzg.entitys.kff.tokenaward.TokenawardReturn;
 import com.tzg.entitys.kff.tokenaward.TokenawardReturn;
 import com.tzg.entitys.kff.tokenrecords.Tokenrecords;
 import com.tzg.entitys.kff.user.KFFUser;
@@ -1130,7 +1118,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			}
 			// 生成url名称
 			String picUrlGen = picServiceUrl;
-			String picName = "/upload/postPic/" + DateUtil.getCurrentYearMonth() + "/" + DateUtil.getCurrentTimeStamp() + articleRequest.getCreateUserId()
+			String picName = "/upload/postPic/" + DateUtil.getCurrentYearMonth() + "/" + DateUtil.getCurrentTimeStamp() + i + articleRequest.getCreateUserId()
 					+ ".jpg";
 			String picUrlName = picUrlGen + picName;
 			try {
@@ -4851,7 +4839,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	@Override
 	public void updataUserInvation(Integer userId, String posterUrl, String code2Url) throws RestServiceException {
 		String str = HexUtil.userIdTo2code(userId);
-		code2Url = "upload/2code/" + DateUtil.getCurrentYearMonth() + "/" + str + ".png";
+		code2Url = "/upload/2code/" + DateUtil.getCurrentYearMonth() + "/" + str + ".png";
 		userInvationService.updataUserInvation(userId, posterUrl, code2Url);
 
 	}
