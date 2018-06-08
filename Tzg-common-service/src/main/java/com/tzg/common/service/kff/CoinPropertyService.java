@@ -37,7 +37,7 @@ public class CoinPropertyService {
 		}
     	coinPropertyMapper.deleteById(id);
     }
-	
+    @Transactional(readOnly=true)
 	public void save(CoinProperty coinProperty) throws RestServiceException {	    
 		coinPropertyMapper.save(coinProperty);
 	}
