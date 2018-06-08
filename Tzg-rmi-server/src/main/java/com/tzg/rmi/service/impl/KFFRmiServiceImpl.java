@@ -5050,7 +5050,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		/**
 		 * 原始海报的存放路径 "D:\\opt\\file\\upload\\poster\\init\\initpic.png
 		 */
-		String initPosterSysPath = picServiceUrl + "\\upload\\poster\\init\\initpic";// 原始海报存放路径
+		String initPosterSysPath = picServiceUrl + "/upload/poster/init/initpic";// 原始海报存放路径
 		String text = "";
 
 		String str = HexUtil.userIdTo2code(userId);
@@ -5083,7 +5083,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 	@Override
 	public String create2CodeNameAndPath(String code2) throws RestServiceException {
-		String code2sysPath = picServiceUrl + "\\upload\\2code\\";
+		String code2sysPath = picServiceUrl + "/upload/2code/";
 		String path = code2sysPath + code2 + ".png";
 		return path;
 	}
