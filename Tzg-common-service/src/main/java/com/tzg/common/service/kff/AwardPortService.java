@@ -154,7 +154,7 @@ public class AwardPortService {
 			tokenaward.setMobile(user.getMobile());
 			tokenaward.setCounter(0);
 			tokenaward.setGrantType(2);
-			
+			tokenaward.setPriaiseAward(0d);
 			kffTokenawardService.save(tokenaward);
 			coinProperty.setUserId(userId);
 			coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
@@ -184,6 +184,7 @@ public class AwardPortService {
 			tokenaward.setMobile(user.getMobile());
 			tokenaward.setCounter(0);
 			tokenaward.setGrantType(2);
+			tokenaward.setPriaiseAward(0d);
 			
 			kffTokenawardService.save(tokenaward);
 			coinProperty.setUserId(userId);
@@ -220,7 +221,7 @@ public class AwardPortService {
 				tokenaward.setMobile(user.getMobile());
 				tokenaward.setCounter(0);
 				tokenaward.setGrantType(2);
-
+				tokenaward.setPriaiseAward(0d);
 				tokenaward.setAwardBalance(m0);
 				kffTokenawardService.save(tokenaward);
 
@@ -255,6 +256,7 @@ public class AwardPortService {
 					tokenaward2.setCounter(0);
 					tokenaward2.setGrantType(2);
 					tokenaward2.setAwardBalance(m1);
+					tokenaward2.setPriaiseAward(0d);
 					kffTokenawardService.save(tokenaward2);
 
 					coinProperty.setUserId(user2.getUserId());
@@ -294,6 +296,7 @@ public class AwardPortService {
 				tokenaward.setMobile(user.getMobile());
 				tokenaward.setCounter(0);
 				tokenaward.setGrantType(2);
+				tokenaward.setPriaiseAward(0d);
 				kffTokenawardService.save(tokenaward);
 
 				// 将注册用户的信息同时存入流水表单中
@@ -325,7 +328,7 @@ public class AwardPortService {
 					tokenaward2.setCounter(0);
 					tokenaward2.setGrantType(2);
 					tokenaward2.setAwardBalance(m1);
-
+					tokenaward2.setPriaiseAward(0d);
 					kffTokenawardService.save(tokenaward2);
 
 					coinProperty.setUserId(userId);
@@ -363,6 +366,7 @@ public class AwardPortService {
 					tokenaward.setMobile(user.getMobile());
 					tokenaward.setCounter(0);
 					tokenaward.setGrantType(2);
+					tokenaward.setPriaiseAward(0d);
 					kffTokenawardService.save(tokenaward);
 
 					coinProperty.setUserId(userId);
@@ -397,6 +401,7 @@ public class AwardPortService {
 						tokenaward2.setAwardBalance(m1);
 						tokenaward2.setCounter(0);
 						tokenaward2.setGrantType(2);
+						tokenaward2.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenaward2);
 						// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
@@ -427,6 +432,7 @@ public class AwardPortService {
 						tokenawarde3.setAwardBalance(m2);
 						tokenawarde3.setCounter(0);
 						tokenawarde3.setGrantType(2);
+						tokenawarde3.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenawarde3);
 						// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
@@ -472,6 +478,7 @@ public class AwardPortService {
 					tokenaward.setMobile(user.getMobile());
 					tokenaward.setCounter(0);
 					tokenaward.setGrantType(2);
+					tokenaward.setPriaiseAward(0d);
 					kffTokenawardService.save(tokenaward);
 
 					coinProperty.setUserId(userId);
@@ -505,6 +512,7 @@ public class AwardPortService {
 						tokenaward2.setDistributionType(1);
 						tokenaward2.setCounter(0);
 						tokenaward2.setGrantType(2);
+						tokenaward2.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenaward2);
 						// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
@@ -528,6 +536,8 @@ public class AwardPortService {
 						tokenawarde3.setAwardBalance(m2);
 						tokenawarde3.setCounter(0);
 						tokenawarde3.setGrantType(2);
+						tokenawarde3.setPriaiseAward(0d);
+						
 						kffTokenawardService.save(tokenawarde3);
 						// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
@@ -645,6 +655,7 @@ public class AwardPortService {
 					tokenaward.setMobile(user.getMobile());
 					tokenaward.setCounter(0);
 					tokenaward.setGrantType(2);
+					tokenaward.setPriaiseAward(0d);
 					kffTokenawardService.save(tokenaward);
 
 					coinProperty.setUserId(userId);
@@ -678,6 +689,7 @@ public class AwardPortService {
 						tokenawarde3.setAwardBalance(m2);
 						tokenawarde3.setCounter(0);
 						tokenawarde3.setGrantType(2);
+						tokenawarde3.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenawarde3);
 						// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
@@ -708,6 +720,7 @@ public class AwardPortService {
 						tokenawarde3.setAwardBalance(m2);
 						tokenawarde3.setCounter(0);
 						tokenawarde3.setGrantType(2);
+						tokenawarde3.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenawarde3);
 						// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
@@ -753,6 +766,7 @@ public class AwardPortService {
 					tokenaward.setMobile(user.getMobile());
 					tokenaward.setCounter(0);
 					tokenaward.setGrantType(2);
+					tokenaward.setPriaiseAward(0d);
 					kffTokenawardService.save(tokenaward);
 
 					coinProperty.setUserId(userId);
@@ -786,6 +800,7 @@ public class AwardPortService {
 						tokenaward2.setDistributionType(1);
 						tokenaward2.setCounter(0);
 						tokenaward2.setGrantType(2);
+						tokenaward2.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenaward2);
 						// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
@@ -809,6 +824,7 @@ public class AwardPortService {
 						tokenawarde3.setAwardBalance(m2);
 						tokenawarde3.setCounter(0);
 						tokenawarde3.setGrantType(2);
+						tokenawarde3.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenawarde3);
 						// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
@@ -977,6 +993,7 @@ public class AwardPortService {
 			tokenaward.setMobile(user.getMobile());
 			tokenaward.setCounter(0);
 			tokenaward.setGrantType(2);
+			tokenaward.setPriaiseAward(0d);
 			kffTokenawardService.save(tokenaward);
 			coinProperty.setUserId(userId);
 			coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
@@ -1006,6 +1023,7 @@ public class AwardPortService {
 			tokenaward.setMobile(user.getMobile());
 			tokenaward.setCounter(0);
 			tokenaward.setGrantType(2);
+			tokenaward.setPriaiseAward(0d);
 			kffTokenawardService.save(tokenaward);
 			coinProperty.setUserId(userId);
 			coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
@@ -1041,6 +1059,7 @@ public class AwardPortService {
 				tokenaward.setCounter(0);
 				tokenaward.setGrantType(2);
 				tokenaward.setAwardBalance(m0);
+				tokenaward.setPriaiseAward(0d);
 				kffTokenawardService.save(tokenaward);
 
 				coinProperty.setUserId(userId);
@@ -1074,6 +1093,7 @@ public class AwardPortService {
 					tokenaward2.setCounter(0);
 					tokenaward2.setGrantType(2);
 					tokenaward2.setAwardBalance(m1);
+					tokenaward2.setPriaiseAward(0d);
 					kffTokenawardService.save(tokenaward2);
 
 					coinProperty.setUserId(user2.getUserId());
@@ -1113,6 +1133,7 @@ public class AwardPortService {
 				tokenaward.setMobile(user.getMobile());
 				tokenaward.setCounter(0);
 				tokenaward.setGrantType(2);
+				tokenaward.setPriaiseAward(0d);
 				kffTokenawardService.save(tokenaward);
 
 				// 将注册用户的信息同时存入流水表单中
@@ -1145,6 +1166,7 @@ public class AwardPortService {
 					tokenaward2.setCounter(0);
 					tokenaward2.setGrantType(2);
 					tokenaward2.setAwardBalance(m1);
+					tokenaward2.setPriaiseAward(0d);
 
 					kffTokenawardService.save(tokenaward2);
 
@@ -1183,6 +1205,7 @@ public class AwardPortService {
 					tokenaward.setMobile(user.getMobile());
 					tokenaward.setCounter(0);
 					tokenaward.setGrantType(2);
+					tokenaward.setPriaiseAward(0d);
 					kffTokenawardService.save(tokenaward);
 
 					coinProperty.setUserId(userId);
@@ -1217,6 +1240,7 @@ public class AwardPortService {
 						tokenaward2.setAwardBalance(m1);
 						tokenaward2.setCounter(0);
 						tokenaward2.setGrantType(2);
+						tokenaward2.setPriaiseAward(0d);
 
 						kffTokenawardService.save(tokenaward2);
 						// 将注册用户的信息同时存入流水表单中
@@ -1248,6 +1272,7 @@ public class AwardPortService {
 						tokenawarde3.setAwardBalance(m2);
 						tokenawarde3.setCounter(0);
 						tokenawarde3.setGrantType(2);
+						tokenawarde3.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenawarde3);
 						// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
@@ -1292,6 +1317,7 @@ public class AwardPortService {
 					tokenaward.setMobile(user.getMobile());
 					tokenaward.setCounter(0);
 					tokenaward.setGrantType(2);
+					tokenaward.setPriaiseAward(0d);
 					kffTokenawardService.save(tokenaward);
 
 					coinProperty.setUserId(userId);
@@ -1325,6 +1351,7 @@ public class AwardPortService {
 						tokenaward2.setDistributionType(1);
 						tokenaward2.setCounter(0);
 						tokenaward2.setGrantType(2);
+						tokenaward2.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenaward2);
 						// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
@@ -1348,6 +1375,7 @@ public class AwardPortService {
 						tokenawarde3.setAwardBalance(m2);
 						tokenawarde3.setCounter(0);
 						tokenawarde3.setGrantType(2);
+						tokenawarde3.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenawarde3);
 						// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
@@ -1396,6 +1424,7 @@ public class AwardPortService {
 					tokenaward.setMobile(user.getMobile());
 					tokenaward.setCounter(0);
 					tokenaward.setGrantType(2);
+					tokenaward.setPriaiseAward(0d);
 					kffTokenawardService.save(tokenaward);
 
 					coinProperty.setUserId(userId);
@@ -1429,6 +1458,7 @@ public class AwardPortService {
 						tokenawarde3.setAwardBalance(m2);
 						tokenawarde3.setCounter(0);
 						tokenawarde3.setGrantType(2);
+						tokenawarde3.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenawarde3);
 						// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
@@ -1459,6 +1489,7 @@ public class AwardPortService {
 						tokenawarde3.setAwardBalance(m2);
 						tokenawarde3.setCounter(0);
 						tokenawarde3.setGrantType(2);
+						tokenawarde3.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenawarde3);
 						// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
@@ -1505,6 +1536,7 @@ public class AwardPortService {
 					tokenaward.setMobile(user.getMobile());
 					tokenaward.setCounter(0);
 					tokenaward.setGrantType(2);
+					tokenaward.setPriaiseAward(0d);
 					kffTokenawardService.save(tokenaward);
 
 					coinProperty.setUserId(userId);
@@ -1538,6 +1570,7 @@ public class AwardPortService {
 						tokenaward2.setDistributionType(1);
 						tokenaward2.setCounter(0);
 						tokenaward2.setGrantType(2);
+						tokenaward2.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenaward2);
 						// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
@@ -1561,6 +1594,7 @@ public class AwardPortService {
 						tokenawarde3.setAwardBalance(m2);
 						tokenawarde3.setCounter(0);
 						tokenawarde3.setGrantType(2);
+						tokenawarde3.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenawarde3);
 						// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
@@ -1606,6 +1640,7 @@ public class AwardPortService {
 			tokenaward.setMobile(user.getMobile());
 			tokenaward.setCounter(0);
 			tokenaward.setGrantType(2);
+			tokenaward.setPriaiseAward(0d);
 
 			kffTokenawardService.save(tokenaward);
 			coinProperty.setUserId(userId);
@@ -1636,6 +1671,7 @@ public class AwardPortService {
 			tokenaward.setMobile(user.getMobile());
 			tokenaward.setCounter(0);
 			tokenaward.setGrantType(2);
+			tokenaward.setPriaiseAward(0d);
 			kffTokenawardService.save(tokenaward);
 			coinProperty.setUserId(userId);
 			coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
@@ -1671,6 +1707,7 @@ public class AwardPortService {
 				tokenaward.setCounter(0);
 				tokenaward.setGrantType(2);
 				tokenaward.setAwardBalance(m0);
+				tokenaward.setPriaiseAward(0d);
 				kffTokenawardService.save(tokenaward);
 
 				coinProperty.setUserId(userId);
@@ -1704,6 +1741,7 @@ public class AwardPortService {
 					tokenaward2.setCounter(0);
 					tokenaward2.setGrantType(2);
 					tokenaward2.setAwardBalance(m1);
+					tokenaward2.setPriaiseAward(0d);
 					kffTokenawardService.save(tokenaward2);
 
 					coinProperty.setUserId(user2.getUserId());
@@ -1743,6 +1781,7 @@ public class AwardPortService {
 				tokenaward.setMobile(user.getMobile());
 				tokenaward.setCounter(0);
 				tokenaward.setGrantType(2);
+				tokenaward.setPriaiseAward(0d);
 				kffTokenawardService.save(tokenaward);
 
 				// 将注册用户的信息同时存入流水表单中
@@ -1773,6 +1812,7 @@ public class AwardPortService {
 					tokenaward2.setDistributionType(1);
 					tokenaward2.setCounter(0);
 					tokenaward2.setGrantType(2);
+					tokenaward2.setPriaiseAward(0d);
 					tokenaward2.setAwardBalance(m1);
 
 					kffTokenawardService.save(tokenaward2);
@@ -1812,6 +1852,7 @@ public class AwardPortService {
 					tokenaward.setMobile(user.getMobile());
 					tokenaward.setCounter(0);
 					tokenaward.setGrantType(2);
+					tokenaward.setPriaiseAward(0d);
 					kffTokenawardService.save(tokenaward);
 
 					coinProperty.setUserId(userId);
@@ -1846,6 +1887,7 @@ public class AwardPortService {
 						tokenaward2.setAwardBalance(m1);
 						tokenaward2.setCounter(0);
 						tokenaward2.setGrantType(2);
+						tokenaward2.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenaward2);
 						// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
@@ -1876,6 +1918,7 @@ public class AwardPortService {
 						tokenawarde3.setAwardBalance(m2);
 						tokenawarde3.setCounter(0);
 						tokenawarde3.setGrantType(2);
+						tokenawarde3.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenawarde3);
 						// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
@@ -1920,6 +1963,7 @@ public class AwardPortService {
 					tokenaward.setMobile(user.getMobile());
 					tokenaward.setCounter(0);
 					tokenaward.setGrantType(2);
+					tokenaward.setPriaiseAward(0d);
 					kffTokenawardService.save(tokenaward);
 
 					coinProperty.setUserId(userId);
@@ -1953,6 +1997,7 @@ public class AwardPortService {
 						tokenaward2.setDistributionType(1);
 						tokenaward2.setCounter(0);
 						tokenaward2.setGrantType(2);
+						tokenaward2.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenaward2);
 						// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
@@ -1976,6 +2021,7 @@ public class AwardPortService {
 						tokenawarde3.setAwardBalance(m2);
 						tokenawarde3.setCounter(0);
 						tokenawarde3.setGrantType(2);
+						tokenawarde3.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenawarde3);
 						// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
@@ -2024,6 +2070,7 @@ public class AwardPortService {
 					tokenaward.setMobile(user.getMobile());
 					tokenaward.setCounter(0);
 					tokenaward.setGrantType(2);
+					tokenaward.setPriaiseAward(0d);
 					kffTokenawardService.save(tokenaward);
 
 					coinProperty.setUserId(userId);
@@ -2057,6 +2104,7 @@ public class AwardPortService {
 						tokenawarde3.setAwardBalance(m2);
 						tokenawarde3.setCounter(0);
 						tokenawarde3.setGrantType(2);
+						tokenawarde3.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenawarde3);
 						// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
@@ -2087,6 +2135,7 @@ public class AwardPortService {
 						tokenawarde3.setAwardBalance(m2);
 						tokenawarde3.setCounter(0);
 						tokenawarde3.setGrantType(2);
+						tokenawarde3.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenawarde3);
 						// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
@@ -2132,6 +2181,7 @@ public class AwardPortService {
 					tokenaward.setMobile(user.getMobile());
 					tokenaward.setCounter(0);
 					tokenaward.setGrantType(2);
+					tokenaward.setPriaiseAward(0d);
 					kffTokenawardService.save(tokenaward);
 
 					coinProperty.setUserId(userId);
@@ -2165,6 +2215,7 @@ public class AwardPortService {
 						tokenaward2.setDistributionType(1);
 						tokenaward2.setCounter(0);
 						tokenaward2.setGrantType(2);
+						tokenaward2.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenaward2);
 						// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
@@ -2188,6 +2239,7 @@ public class AwardPortService {
 						tokenawarde3.setAwardBalance(m2);
 						tokenawarde3.setCounter(0);
 						tokenawarde3.setGrantType(2);
+						tokenawarde3.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenawarde3);
 						// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
@@ -2232,7 +2284,7 @@ public class AwardPortService {
 			tokenaward.setMobile(user.getMobile());
 			tokenaward.setCounter(0);
 			tokenaward.setGrantType(2);
-
+			tokenaward.setPriaiseAward(0d);
 			kffTokenawardService.save(tokenaward);
 			coinProperty.setUserId(userId);
 			coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
@@ -2262,6 +2314,7 @@ public class AwardPortService {
 			tokenaward.setMobile(user.getMobile());
 			tokenaward.setCounter(0);
 			tokenaward.setGrantType(2);
+			tokenaward.setPriaiseAward(0d);
 			kffTokenawardService.save(tokenaward);
 			coinProperty.setUserId(userId);
 			coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
@@ -2300,6 +2353,7 @@ public class AwardPortService {
 				tokenaward.setCounter(0);
 				tokenaward.setGrantType(2);
 				tokenaward.setAwardBalance(m0);
+				tokenaward.setPriaiseAward(0d);
 				kffTokenawardService.save(tokenaward);
 
 				coinProperty.setUserId(userId);
@@ -2332,6 +2386,7 @@ public class AwardPortService {
 					tokenaward2.setDistributionType(1);
 					tokenaward2.setCounter(0);
 					tokenaward2.setGrantType(2);
+					tokenaward2.setPriaiseAward(0d);
 					tokenaward2.setAwardBalance(m1);
 					kffTokenawardService.save(tokenaward2);
 
@@ -2372,6 +2427,7 @@ public class AwardPortService {
 				tokenaward.setMobile(user.getMobile());
 				tokenaward.setCounter(0);
 				tokenaward.setGrantType(2);
+				tokenaward.setPriaiseAward(0d);
 				kffTokenawardService.save(tokenaward);
 
 				// 将注册用户的信息同时存入流水表单中
@@ -2403,7 +2459,7 @@ public class AwardPortService {
 					tokenaward2.setCounter(0);
 					tokenaward2.setGrantType(2);
 					tokenaward2.setAwardBalance(m1);
-
+					tokenaward2.setPriaiseAward(0d);
 					kffTokenawardService.save(tokenaward2);
 
 					coinProperty.setUserId(userId);
@@ -2441,6 +2497,7 @@ public class AwardPortService {
 					tokenaward.setMobile(user.getMobile());
 					tokenaward.setCounter(0);
 					tokenaward.setGrantType(2);
+					tokenaward.setPriaiseAward(0d);
 					kffTokenawardService.save(tokenaward);
 
 					coinProperty.setUserId(userId);
@@ -2475,6 +2532,7 @@ public class AwardPortService {
 						tokenaward2.setAwardBalance(m1);
 						tokenaward2.setCounter(0);
 						tokenaward2.setGrantType(2);
+						tokenaward2.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenaward2);
 						// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
@@ -2503,7 +2561,7 @@ public class AwardPortService {
 						tokenawarde3.setCreateTime(new Date());
 						tokenawarde3.setDistributionType(1);
 						tokenawarde3.setAwardBalance(m2);
-						
+						tokenawarde3.setPriaiseAward(0d);
 						tokenawarde3.setCounter(0);
 						tokenawarde3.setGrantType(2);
 						kffTokenawardService.save(tokenawarde3);
@@ -2550,6 +2608,7 @@ public class AwardPortService {
 					tokenaward.setMobile(user.getMobile());
 					tokenaward.setCounter(0);
 					tokenaward.setGrantType(2);
+					tokenaward.setPriaiseAward(0d);
 					kffTokenawardService.save(tokenaward);
 
 					coinProperty.setUserId(userId);
@@ -2583,6 +2642,7 @@ public class AwardPortService {
 						tokenaward2.setDistributionType(1);
 						tokenaward2.setCounter(0);
 						tokenaward2.setGrantType(2);
+						tokenaward2.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenaward2);
 						// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
@@ -2606,6 +2666,7 @@ public class AwardPortService {
 						tokenawarde3.setAwardBalance(m2);
 						tokenawarde3.setCounter(0);
 						tokenawarde3.setGrantType(2);
+						tokenawarde3.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenawarde3);
 						// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
@@ -2654,6 +2715,7 @@ public class AwardPortService {
 					tokenaward.setMobile(user.getMobile());
 					tokenaward.setCounter(0);
 					tokenaward.setGrantType(2);
+					tokenaward.setPriaiseAward(0d);
 					kffTokenawardService.save(tokenaward);
 
 					coinProperty.setUserId(userId);
@@ -2686,6 +2748,7 @@ public class AwardPortService {
 						tokenawarde3.setDistributionType(1);
 						tokenawarde3.setAwardBalance(m2);
 						tokenawarde3.setCounter(0);
+						tokenawarde3.setPriaiseAward(0d);
 						tokenawarde3.setGrantType(2);
 						kffTokenawardService.save(tokenawarde3);
 						// 将注册用户的信息同时存入流水表单中
@@ -2717,6 +2780,7 @@ public class AwardPortService {
 						tokenawarde3.setAwardBalance(m2);
 						tokenawarde3.setCounter(0);
 						tokenawarde3.setGrantType(2);
+						tokenawarde3.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenawarde3);
 						// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
@@ -2762,6 +2826,7 @@ public class AwardPortService {
 					tokenaward.setMobile(user.getMobile());
 					tokenaward.setCounter(0);
 					tokenaward.setGrantType(2);
+					tokenaward.setPriaiseAward(0d);
 					kffTokenawardService.save(tokenaward);
 
 					coinProperty.setUserId(userId);
@@ -2795,6 +2860,7 @@ public class AwardPortService {
 						tokenaward2.setDistributionType(1);
 						tokenaward2.setCounter(0);
 						tokenaward2.setGrantType(2);
+						tokenaward2.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenaward2);
 						// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
@@ -2818,6 +2884,7 @@ public class AwardPortService {
 						tokenawarde3.setAwardBalance(m2);
 						tokenawarde3.setCounter(0);
 						tokenawarde3.setGrantType(2);
+						tokenawarde3.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenawarde3);
 						// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
