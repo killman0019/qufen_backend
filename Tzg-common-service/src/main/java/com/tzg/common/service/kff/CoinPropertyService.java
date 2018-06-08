@@ -1,5 +1,6 @@
 package com.tzg.common.service.kff;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -67,7 +68,9 @@ public class CoinPropertyService {
 	}
 
 	public CoinProperty findByUserId(Integer userid)  throws RestServiceException {
-		return coinPropertyMapper.findByUserId(userid);
+		List<CoinProperty> list = (List<CoinProperty>) coinPropertyMapper.findByUserId(userid);
+		
+		return list.get(0);
 	}
 
 	public List<CoinProperty> findAllCoinpropertyByWhere(Map<String, Object> map) {
