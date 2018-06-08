@@ -51,7 +51,7 @@ public class UploadController extends BaseController {
 	public BaseResponseEntity uploadIdCard(@RequestParam(required = false) MultipartFile upfile) throws Exception, IOException {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		Map<String, Object> resMap = new HashMap<String, Object>();
-		String picUrlIdCard = picUrl + "\\upload\\Idcard\\";
+		String picUrlIdCard = picUrl + "/upload/Idcard/";
 		if (null == upfile) {
 			throw new RestServiceException("上传图片不能为空!");
 		}
@@ -71,7 +71,7 @@ public class UploadController extends BaseController {
 		String fileName = picUrlIdCard + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext;
 		FileUtils.createFileLocal(fileName, upfile.getBytes());
 
-		resMap.put("picPath", "upload/Idcard/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext);
+		resMap.put("picPath", "/upload/Idcard/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext);
 		bre.setData(resMap);
 		return bre;
 	}
@@ -101,7 +101,7 @@ public class UploadController extends BaseController {
 		String fileName = picUrlAvatars + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext;
 		FileUtils.createFileLocal(fileName, upfile.getBytes());
 
-		resMap.put("picPath", "upload/avatars/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext);
+		resMap.put("picPath", "/upload/avatars/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext);
 		bre.setData(resMap);
 		return bre;
 	}
@@ -132,7 +132,7 @@ public class UploadController extends BaseController {
 		String fileName = picUrlPostPic + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext;
 		FileUtils.createFileLocal(fileName, upfile.getBytes());
 
-		resMap.put("picPath", "upload/postPic/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext);
+		resMap.put("picPath", "/upload/postPic/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext);
 		log.info("图片存入成功!++++++++++++++++++++++");
 		log.info(name + "." + ext);
 		bre.setData(resMap);
@@ -183,7 +183,7 @@ public class UploadController extends BaseController {
 		Map<String, Object> resMap = new HashMap<String, Object>();
 		log.info("authentication图片进入接口!++++++++++++++++++++++");
 
-		String picUrlAuthentication = picUrl + "\\upload\\authentication\\";
+		String picUrlAuthentication = picUrl + "/upload/authentication/";
 		// 保存图片到
 		// 保存图片到
 		if (null == upfile) {
@@ -212,7 +212,7 @@ public class UploadController extends BaseController {
 		FileUtils.createFileLocal(fileName, upfile.getBytes());
 		log.info("authentication +++++++图片存入成功!++++++++++++++++++++++");
 		log.info(name + "." + ext);
-		resMap.put("picPath", "upload/authentication/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext);
+		resMap.put("picPath", "/upload/authentication/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext);
 		bre.setData(resMap);
 		return bre;
 	}

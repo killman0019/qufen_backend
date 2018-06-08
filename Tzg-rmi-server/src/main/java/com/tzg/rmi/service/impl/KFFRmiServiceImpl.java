@@ -471,11 +471,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 	@Override
 	public KFFMessage getMessageDetail(Integer userId, Integer messageId) throws RestServiceException {
-		
-		if(messageId == null){
+
+		if (messageId == null) {
 			throw new RestServiceException("messageId必填");
 		}
-		if(!messageId.equals(0)){
+		if (!messageId.equals(0)) {
 			KFFMessage result = kffMessageService.findById(messageId);
 			if (result == null) {
 				throw new RestServiceException("消息不存在");
@@ -493,7 +493,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			result.setUpdateTime(new Date());
 			kffMessageService.update(result);
 			return result;
-		}else{
+		} else {
 			kffMessageService.updateAllMessageRead(userId);
 			return null;
 		}
@@ -622,10 +622,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// }
 		projects = kffProjectService.findProjectByCode(map);
 		if (CollectionUtils.isNotEmpty(projects)) {
-			
+
 			Set<Integer> followedProjectIds = new HashSet<Integer>();
-			//登录用户查关注项目列表
-			if(userId != null && userId != 0){
+			// 登录用户查关注项目列表
+			if (userId != null && userId != 0) {
 				PaginationQuery query = new PaginationQuery();
 				query.addQueryData("followUserId", userId + "");
 				query.addQueryData("followType", "1"); // 关注类型：1-关注项目;2-关注帖子；3-关注用户
@@ -635,25 +635,25 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				// query.addQueryData("followedProjectId",
 				// project.getProjectId()+"");
 				PageResult<Follow> follows = kffFollowService.findPage(query);
-				
+
 				if (follows != null && CollectionUtils.isNotEmpty(follows.getRows())) {
 					for (Follow follow : follows.getRows()) {
 						followedProjectIds.add(follow.getFollowedId());
 					}
 				}
-			 }
-				for (KFFProject project : projects) {
-					ProjectResponse response = new ProjectResponse();
-					BeanUtils.copyProperties(project, response);
-					//登录用户
-					if(userId != null && userId != 0){
-						if (followedProjectIds != null && followedProjectIds.contains(project.getProjectId())) {
-							response.setFollowStatus(1);
-						}
+			}
+			for (KFFProject project : projects) {
+				ProjectResponse response = new ProjectResponse();
+				BeanUtils.copyProperties(project, response);
+				// 登录用户
+				if (userId != null && userId != 0) {
+					if (followedProjectIds != null && followedProjectIds.contains(project.getProjectId())) {
+						response.setFollowStatus(1);
 					}
-					result.add(response);
 				}
-			
+				result.add(response);
+			}
+
 		}
 
 		return result;
@@ -957,7 +957,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			response.setFollowStatus(0);
 		}
 
-		//关注的用户
+		// 关注的用户
 		PaginationQuery userquery = new PaginationQuery();
 		userquery.addQueryData("followUserId", userId + "");
 		userquery.addQueryData("followType", "3"); // 关注类型：1-关注项目;2-关注帖子；3-关注用户
@@ -965,24 +965,24 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		userquery.setPageIndex(1);
 		userquery.setRowsPerPage(1);
 		List<KFFUser> activeUsers = findProjectActiveUsers(projectId);
-        if(CollectionUtils.isNotEmpty(activeUsers)){
-        	for(KFFUser user:activeUsers){
-        		userquery.addQueryData("followedId", user.getUserId() + "");
-        		PageResult<Follow> followsuser = kffFollowService.findPage(userquery);
-                if(followsuser != null && CollectionUtils.isNotEmpty(followsuser.getRows())){
-                	user.setFollowStatus(KFFConstants.STATUS_ACTIVE);
-                }
-        	}
-        }
+		if (CollectionUtils.isNotEmpty(activeUsers)) {
+			for (KFFUser user : activeUsers) {
+				userquery.addQueryData("followedId", user.getUserId() + "");
+				PageResult<Follow> followsuser = kffFollowService.findPage(userquery);
+				if (followsuser != null && CollectionUtils.isNotEmpty(followsuser.getRows())) {
+					user.setFollowStatus(KFFConstants.STATUS_ACTIVE);
+				}
+			}
+		}
 		response.setActiveUsers(activeUsers);
 
 		KFFUser owner = kffUserService.findById(project.getSubmitUserId());
-		if(owner != null){
+		if (owner != null) {
 			userquery.addQueryData("followedId", owner.getUserId() + "");
 			PageResult<Follow> followsuser = kffFollowService.findPage(userquery);
-            if(followsuser != null && CollectionUtils.isNotEmpty(followsuser.getRows())){
-            	owner.setFollowStatus(KFFConstants.STATUS_ACTIVE);
-            }
+			if (followsuser != null && CollectionUtils.isNotEmpty(followsuser.getRows())) {
+				owner.setFollowStatus(KFFConstants.STATUS_ACTIVE);
+			}
 		}
 		response.setOwner(owner);
 
@@ -1219,9 +1219,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		kffArticleService.save(article);
 
 		result.put("postId", newPost.getPostId());
-		
-		//更新用户发帖数
-		kffUserService.increasePostNum(createUser.getUserId(),KFFConstants.POST_TYPE_ARTICLE);
+
+		// 更新用户发帖数
+		kffUserService.increasePostNum(createUser.getUserId(), KFFConstants.POST_TYPE_ARTICLE);
 		return result;
 	}
 
@@ -1334,8 +1334,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		discuss.setTagInfos(discussRequest.getTagInfos());
 		kffDiscussService.save(discuss);
 
-		//更新用户发帖数
-		kffUserService.increasePostNum(createUser.getUserId(),KFFConstants.POST_TYPE_DISCUSS);
+		// 更新用户发帖数
+		kffUserService.increasePostNum(createUser.getUserId(), KFFConstants.POST_TYPE_DISCUSS);
 	}
 
 	@Override
@@ -1497,15 +1497,14 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		evaluation.setTotalScore(totalScore);
 		kffEvaluationService.save(evaluation);
 
-		try{
-			redisService.put(KFFRestConstants.REDIS_KEY_PROJECT_SYNC_SCORE, String.valueOf(project.getProjectId()), 24*60*60);
-		}catch(Exception e)
-		{
-			logger.error("put redis key REDIS_KEY_PROJECT_SYNC_SCORE error "+project.getProjectId());
+		try {
+			redisService.put(KFFRestConstants.REDIS_KEY_PROJECT_SYNC_SCORE, String.valueOf(project.getProjectId()), 24 * 60 * 60);
+		} catch (Exception e) {
+			logger.error("put redis key REDIS_KEY_PROJECT_SYNC_SCORE error " + project.getProjectId());
 		}
 		result.put("postId", newPost.getPostId());
-		//更新用户发帖数
-		kffUserService.increasePostNum(createUser.getUserId(),KFFConstants.POST_TYPE_EVALUATION);
+		// 更新用户发帖数
+		kffUserService.increasePostNum(createUser.getUserId(), KFFConstants.POST_TYPE_EVALUATION);
 		return result;
 	}
 
@@ -4915,7 +4914,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	@Override
 	public void updataUserInvation(Integer userId, String posterUrl, String code2Url) throws RestServiceException {
 		String str = HexUtil.userIdTo2code(userId);
-		code2Url = "upload/2code/" + DateUtil.getCurrentYearMonth() + "/" + str + ".png";
+		code2Url = "/upload/2code/" + DateUtil.getCurrentYearMonth() + "/" + str + ".png";
 		userInvationService.updataUserInvation(userId, posterUrl, code2Url);
 
 	}
@@ -5114,7 +5113,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		/**
 		 * 原始海报的存放路径 "D:\\opt\\file\\upload\\poster\\init\\initpic.png
 		 */
-		String initPosterSysPath = picServiceUrl + "\\upload\\poster\\init\\initpic";// 原始海报存放路径
+		String initPosterSysPath = picServiceUrl + "/upload/poster/init/initpic";// 原始海报存放路径
 		String text = "";
 
 		String str = HexUtil.userIdTo2code(userId);
@@ -5147,7 +5146,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 	@Override
 	public String create2CodeNameAndPath(String code2) throws RestServiceException {
-		String code2sysPath = picServiceUrl + "\\upload\\2code\\";
+		String code2sysPath = picServiceUrl + "/upload/2code/";
 		String path = code2sysPath + code2 + ".png";
 		return path;
 	}

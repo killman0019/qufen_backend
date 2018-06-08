@@ -71,7 +71,7 @@ public class UploadController extends BaseController {
 		String fileName = picUrlIdCard + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext;
 		FileUtils.createFileLocal(fileName, upfile.getBytes());
 
-		resMap.put("picPath", "upload/Idcard/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext);
+		resMap.put("picPath", "/upload/Idcard/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext);
 		bre.setData(resMap);
 		return bre;
 	}
@@ -101,7 +101,7 @@ public class UploadController extends BaseController {
 		String fileName = picUrlAvatars + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext;
 		FileUtils.createFileLocal(fileName, upfile.getBytes());
 
-		resMap.put("picPath", "upload/avatars/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext);
+		resMap.put("picPath", "/upload/avatars/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext);
 		bre.setData(resMap);
 		return bre;
 	}
@@ -131,7 +131,7 @@ public class UploadController extends BaseController {
 
 		String fileName = picUrlPostPic + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext;
 		FileUtils.createFileLocal(fileName, upfile.getBytes());
-		resMap.put("picPath", "upload/postPic/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext);
+		resMap.put("picPath", "/upload/postPic/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext);
 		log.info("图片存入成功!++++++++++++++++++++++");
 		log.info(name + "." + ext);
 		bre.setData(resMap);
@@ -213,7 +213,7 @@ public class UploadController extends BaseController {
 
 		log.info("authentication +++++++图片存入成功!++++++++++++++++++++++");
 		log.info(name + "." + ext);
-		resMap.put("picPath", "upload/authentication/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext);
+		resMap.put("picPath", "/upload/authentication/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext);
 		bre.setData(resMap);
 		return bre;
 	}
