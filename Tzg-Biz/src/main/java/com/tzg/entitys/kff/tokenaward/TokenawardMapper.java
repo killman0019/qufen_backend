@@ -16,7 +16,8 @@ public interface TokenawardMapper extends BaseMapper<Tokenaward, java.lang.Integ
 
 	List<Tokenaward> findByUserId(Integer id);
 
-	Double reawardSum(Integer userId, Integer functionType);
+	//Double reawardSum(Integer userId, Integer functionType);
+	Double reawardSum1(Integer userId);
 
 	List<Tokenaward> priaiseAwardSum(Integer userId);
 
