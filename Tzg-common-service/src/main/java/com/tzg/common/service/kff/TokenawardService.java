@@ -63,11 +63,17 @@ public class TokenawardService {
 		}
 		tokenawardMapper.update(tokenaward);
 	}	
-	public Double reawardSum(Integer userId,Integer functionType) throws RestServiceException {	
+	/*public Double reawardSum(Integer userId,Integer functionType) throws RestServiceException {	
 		if(userId == null || functionType == null){
 			throw new RestServiceException("传入参数不能为空");
 		}
 		return tokenawardMapper.reawardSum(userId,functionType);
+	}	*/
+	public Double reawardSum1(Integer userId) throws RestServiceException {	
+		if(userId == null ){
+			throw new RestServiceException("传入参数不能为空");
+		}
+		return tokenawardMapper.reawardSum1(userId);
 	}	
 	public Double findUserSumInviteRewards(Integer userId,Integer functionType) throws RestServiceException {	
 		if(userId == null || functionType == null){
