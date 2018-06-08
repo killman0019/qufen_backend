@@ -324,7 +324,7 @@ public class UserService {
 	 * }
 	 */
 
-     @Transactional(readOnly = true)
+
 	public KFFUser saveUserByphonePass(String phoneNumber, Integer invaUserId, String password) {
 
 		Date createTime = new Date();
