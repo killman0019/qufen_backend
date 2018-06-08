@@ -70,6 +70,14 @@ public class MessageService   {
 		
 		messageMapper.deleteAllMessages(userId);
 	}
+
+	public void updateAllMessageRead(Integer userId) {
+		if(userId == null){
+			throw new RestServiceException("用户id不能为空");
+		}	
+		messageMapper.updateAllMessageRead(userId);
+		
+	}
 	
 
 	

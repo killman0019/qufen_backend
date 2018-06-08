@@ -7,10 +7,12 @@ import com.tzg.common.utils.DateUtil;
 
 public class Projectevastat implements Serializable {
 
+
+
 	/**
 	 * @Fields serialVersionUID : 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -2914526790250995734L;
 	/**
      * id
      */ 	

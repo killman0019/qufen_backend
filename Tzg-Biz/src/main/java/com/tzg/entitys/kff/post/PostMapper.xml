@@ -39,7 +39,7 @@
 	
 	<insert id="save" parameterType="com.tzg.entitys.kff.post.Post" useGeneratedKeys="true" keyProperty="postId">
 		<selectKey resultType="java.lang.Integer" keyProperty="postId" order="AFTER" >
-	      SELECT LAST_INSERT_ID() AS postId
+	      SELECT LAST_INSERT_ID() AS post_id
 	    </selectKey>
 	<![CDATA[
 		INSERT INTO tbpost (

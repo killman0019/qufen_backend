@@ -1332,4 +1332,45 @@ public class UserController extends BaseController {
 		}
 		return bre;
 	}
+	
+		/**
+	 * 获取登录用户信息
+	 * 
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/getUserInfo", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public BaseResponseEntity getUserInfo(HttpServletRequest request) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		try {
+			JSONObject params = getParamMapFromRequestPolicy(request);
+			String token = (String) params.get("token");
+			Integer loginUserId = getUserIdByToken(token);
+
+			KFFUser loginaccount = null;
+			try {
+				loginaccount = kffRmiService.findUserById(loginUserId);
+			} catch (RestServiceException e) {
+				return this.resResult(e.getErrorCode(), e.getMessage());
+			} catch (Exception e) {
+				return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+			}
+
+			if (null == loginaccount) {
+				throw new RestServiceException(RestErrorCode.LOGIN_NAME_OR_PASSWORD_INCORRECT);
+			}
+			map.put("user", this.formatLoginaccount(loginaccount));
+
+			bre.setData(map);
+		} catch (RestServiceException e) {
+			logger.warn("getUserInfo warn:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("getUserInfo error:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+		}
+		return bre;
+	}
 }

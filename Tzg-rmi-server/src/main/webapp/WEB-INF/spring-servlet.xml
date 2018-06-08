@@ -84,6 +84,10 @@
 	<dubbo:service interface="com.tzg.rmi.service.KFFRmiService" ref="kffRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0" />
 
 
+	<bean id="kffProjectPostRmiService" class="com.tzg.rmi.service.impl.KFFProjectPostRmiServiceImpl" />
+	<dubbo:service interface="com.tzg.rmi.service.KFFProjectPostRmiService" ref="kffProjectPostRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0"/>
+
+
 	<!-- 地区 -->
 	<bean id="areainfoRmiService" class="com.tzg.rmi.service.impl.AreainfoRmiServiceImpl" />
 	<dubbo:service interface="com.tzg.rmi.service.AreainfoRmiService" ref="areainfoRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0" />

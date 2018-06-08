@@ -93,7 +93,7 @@ public class EvaluationService   {
 
 	public List<Evaluation> findByProjectId(Integer projectId) throws RestServiceException{
 		if(projectId == null){
-			throw new RestServiceException("postId不能为空");
+			throw new RestServiceException("project不能为空");
 		}
 		Map<String,Object> map = new HashMap<>();
 		map.put("projectId", projectId+"");
@@ -104,6 +104,17 @@ public class EvaluationService   {
 		return list;
 	}
 	
+	public List<Evaluation> findAllTypeByProjectId(Integer projectId) throws RestServiceException{
+		if(projectId == null){
+			throw new RestServiceException("project不能为空");
+		}
+		Map<String,Object> map = new HashMap<>();
+		map.put("projectId", projectId+"");
+		map.put("status", "1");
+		List<Evaluation> list = evaluationMapper.findByWhere(map);
+		
+		return list;
+	}
 
 	
 }

@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface KFFMessageMapper extends BaseMapper<KFFMessage, java.lang.Integer> {
 
-	void deleteAllMessages(Integer userId);	
+	void deleteAllMessages(Integer userId);
+
+	void updateAllMessageRead(Integer userId);	
 
 }

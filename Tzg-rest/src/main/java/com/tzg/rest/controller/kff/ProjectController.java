@@ -26,10 +26,12 @@ import com.tzg.entitys.kff.post.PostResponse;
 import com.tzg.entitys.kff.project.KFFProject;
 import com.tzg.entitys.kff.project.ProjectResponse;
 import com.tzg.entitys.kff.project.SubmitKFFProjectRequest;
+import com.tzg.entitys.kff.projectevastat.ProjectevastatByGrade;
 import com.tzg.rest.controller.BaseController;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
+import com.tzg.rmi.service.KFFProjectPostRmiService;
 import com.tzg.rmi.service.KFFRmiService;
 
 @Controller(value="KFFProjectController")
@@ -39,7 +41,8 @@ public class ProjectController extends BaseController {
 	
 	@Autowired
 	private KFFRmiService kffRmiService;
-	
+	@Autowired
+	private KFFProjectPostRmiService kffProjectPostRmiService;
 	
 	/**
 	 * 
@@ -86,6 +89,50 @@ public class ProjectController extends BaseController {
 		return bre;
 	}
 	
+	/**
+	 * 
+	* @Title: index
+	* @Description: 项目分数统计
+	* @param @param request
+	* @param @param response
+	* @param @return    
+	* @return BaseResponseEntity
+	* @see    
+	* @throws
+	 */
+	@RequestMapping(value="/evaStatScore",method = {RequestMethod.POST,RequestMethod.GET})
+	@ResponseBody
+	public BaseResponseEntity evaStatScore(HttpServletRequest request) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+        HashMap<String, Object> map = new HashMap<String, Object>();
+
+		try {
+			JSONObject params = getParamMapFromRequestPolicy(request);
+			String token = (String)params.get("token");
+			Integer projectId = (Integer)params.get("projectId");
+			Integer userId = getUserIdByToken(token); 
+			if(projectId == null){
+				throw new RestServiceException(RestErrorCode.MISSING_ARG_PROJID);
+			}	
+			ProjectResponse project = kffRmiService.findProjectById(userId,projectId);
+            map.put("project", project);
+            //2条7天内回复数最高的讨论帖子
+            List<PostResponse> hotDiscuss = kffRmiService.findHotDiscussList(projectId);
+            map.put("hotDiscuss", hotDiscuss);
+      
+            //项目评测统计信息
+            List<ProjectevastatByGrade> proEvaStat = kffProjectPostRmiService.findProjectEvaStatScore(projectId);
+            map.put("evaGradeStat", proEvaStat);
+			bre.setData(map);
+		} catch (RestServiceException e) {
+			logger.error("ProjectController index:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("ProjectController index:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR,e.getMessage());
+		}
+		return bre;
+	}
 	
 	/**
 	 * 
@@ -310,7 +357,10 @@ public class ProjectController extends BaseController {
 			JSONObject params = getParamMapFromRequestPolicy(request);
 			String token = (String)params.get("token");
 			String projectCode = (String)params.get("projectCode");
-			Integer userId = getUserIdByToken(token);
+			Integer userId = null;
+			if(StringUtils.isNotBlank(token)){
+				userId = getUserIdByToken(token);
+			}	
 			//1-按关注数量倒序；2-按名称排序
 			int sortType = (Integer) params.get("sortType")==null?2:(Integer) params.get("sortType");
 			
