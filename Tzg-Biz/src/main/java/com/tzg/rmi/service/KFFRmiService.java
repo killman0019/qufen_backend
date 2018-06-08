@@ -742,5 +742,11 @@ public interface KFFRmiService {
 	 * @throws RestServiceException
 	 */
 	public String creat2Code(Integer userId) throws RestServiceException;
-
+/**
+ * 创建图片名称 和路径
+ * @param code2
+ * @return
+ * @throws RestServiceException
+ */
+	public String create2CodeNameAndPath(String code2) throws RestServiceException;
 }

@@ -232,7 +232,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	private String contentself;
 
 	@Value("#{paramConfig['picUrl']}")
-	private String picUrl;
+	private String picServiceUrl;
 
 	@Value("#{paramConfig['SMS_APP_KEY']}")
 	private String smsAppkey;
@@ -1129,17 +1129,17 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				break;
 			}
 			// 生成url名称
-			String picUrlGen = picUrl;
+			String picUrlGen = picServiceUrl;
 			String picName = "/upload/postPic/" + DateUtil.getCurrentYearMonth() + "/" + DateUtil.getCurrentTimeStamp() + articleRequest.getCreateUserId()
 					+ ".jpg";
-			String picUrl = picUrlGen + picName;
+			String picUrlName = picUrlGen + picName;
 			try {
-				FileUtils.createFileLocal(picUrl);
+				FileUtils.createFileLocal(picUrlName);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				throw new RestServiceException("后台创建文件出错!");
 			}
-			DownImgGoodUtil.downloadPicture(img, picUrl);
+			DownImgGoodUtil.downloadPicture(img, picUrlName);
 			imgDB.add(picName);
 			i = i + 1;
 
@@ -1393,17 +1393,17 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				break;
 			}
 			// 生成url名称
-			String picUrlGen = picUrl;
+			String picUrlGen = picServiceUrl;
 			String picName = "/upload/postPic/" + DateUtil.getCurrentYearMonth() + "/" + DateUtil.getCurrentTimeStamp() + evaluationRequest.getCreateUserId()
 					+ ".jpg";
-			String picUrl = picUrlGen + picName;
+			String picUrlName = picUrlGen + picName;
 			try {
-				FileUtils.createFileLocal(picUrl);
+				FileUtils.createFileLocal(picUrlName);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				throw new RestServiceException("后台创建文件出错!");
 			}
-			DownImgGoodUtil.downloadPicture(img, picUrl);
+			DownImgGoodUtil.downloadPicture(img, picUrlName);
 			imgDB.add(picName);
 			i = i + 1;
 
@@ -5050,7 +5050,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		/**
 		 * 原始海报的存放路径 "D:\\opt\\file\\upload\\poster\\init\\initpic.png
 		 */
-		String initPosterSysPath = picUrl + "\\upload\\poster\\init\\initpic";
+		String initPosterSysPath = picServiceUrl + "\\upload\\poster\\init\\initpic";// 原始海报存放路径
 		String text = "";
 
 		String str = HexUtil.userIdTo2code(userId);
@@ -5059,17 +5059,32 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// 调用overlapImage 方法将两个图片合成一个
 		// 调用createCharAtImg 方法 向图片上添加文字
 		// 返回图片的相对于服务器的绝对地址
-		String contentselfid = contentself + str;
-		String posterSysPathNotPilast = posterSysPath + DateUtil.getCurrentYearMonth() + "/" + str + ".png";
-		String posterSysPathlast = picUrl + posterSysPathNotPilast;
-		String initPosterSysPathLast = initPosterSysPath + Create2Code.rand1To11() + ".png";
-		String code2Path = Create2Code.createNameAndPath(str);// 二维码路径
+		String contentselfid = contentself + str;// 注册链接+邀请码
+		String posterSysPathNoUrllast = posterSysPath + DateUtil.getCurrentYearMonth() + "/" + str + ".png";// 不含服务器路径的地址
+
+		String posterSysPathlast = picServiceUrl + posterSysPathNoUrllast;// 含有服务器路径的地址
+		try {
+			FileUtils.createFileLocal(posterSysPathlast);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			throw new RestServiceException("后台创建文件出错!");
+		}
+		String initPosterSysPathLast = initPosterSysPath + Create2Code.rand1To11() + ".png";// 选出随机海报图片
+		String code2Path = create2CodeNameAndPath(str);// 二维码路径
 		Create2Code.create2CodeImg(code2Path, contentselfid);// 在制定位置生成二维码
 		Create2Code.overlapImage(initPosterSysPathLast, code2Path, posterSysPathlast);
 		// createCharAtImg(text, posterSysPathlast);
 
 		// System.out.println(picUrlpro);
-		return "upload/poster/" + str + ".png";
+		// return "upload/poster/" + str + ".png";
+		return posterSysPathNoUrllast;
 
+	}
+
+	@Override
+	public String create2CodeNameAndPath(String code2) throws RestServiceException {
+		String code2sysPath = picServiceUrl + "\\upload\\2code\\";
+		String path = code2sysPath + code2 + ".png";
+		return path;
 	}
 }
