@@ -122,11 +122,8 @@ public class Create2Code {
 	 */
 	public static final void overlapImage(String bigPath, String smallPath, String outFile) {
 		try {
-			System.out.println("大图地址" + bigPath);
-			System.out.println("小图地址" + smallPath);
 			BufferedImage big = ImageIO.read(new File(bigPath));
 			BufferedImage small = ImageIO.read(new File(smallPath));
-			System.out.println("============================");
 			Graphics2D g = big.createGraphics();
 			// int x = (big.getWidth() - small.getWidth()) / 2;
 			// int y = (big.getHeight() - small.getHeight()) / 2;

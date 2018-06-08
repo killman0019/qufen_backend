@@ -13,9 +13,15 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ObjectUtils.Null;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.poi.xwpf.usermodel.TOC;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -67,16 +73,21 @@ import com.tzg.common.service.kff.UserInvationService;
 import com.tzg.common.service.kff.UserService;
 import com.tzg.common.service.kff.UserWalletService;
 import com.tzg.common.service.systemParam.SystemParamService;
+import com.tzg.common.utils.AccountTokenUtil;
 import com.tzg.common.utils.Create2Code;
 import com.tzg.common.utils.DateUtil;
+import com.tzg.common.utils.DelHtmlAll;
+import com.tzg.common.utils.DownImagesUtile;
 import com.tzg.common.utils.FileUtils;
 import com.tzg.common.utils.GetImgUrl;
 import com.tzg.common.utils.H5AgainDeltagsUtil;
 import com.tzg.common.utils.HexUtil;
 import com.tzg.common.utils.DownImgGoodUtil;
+import com.tzg.common.utils.rest.AliyunConstant;
 import com.tzg.common.utils.Numbers;
 import com.tzg.common.utils.RandomUtil;
 import com.tzg.common.utils.RegexUtil;
+import com.tzg.common.utils.ToRemoveHtml;
 import com.tzg.common.utils.WorkHtmlRegexpUtil;
 import com.tzg.common.zookeeper.ZKClient;
 import com.tzg.entitys.kff.article.Article;
@@ -125,6 +136,7 @@ import com.tzg.entitys.kff.suggest.Suggest;
 import com.tzg.entitys.kff.suggest.SuggestRequest;
 import com.tzg.entitys.kff.tokenaward.Tokenaward;
 import com.tzg.entitys.kff.tokenaward.TokenawardReturn;
+import com.tzg.entitys.kff.tokenaward.TokenawardReturn;
 import com.tzg.entitys.kff.tokenrecords.Tokenrecords;
 import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.entitys.kff.user.KFFUserHomeResponse;
@@ -133,6 +145,7 @@ import com.tzg.entitys.kff.usercard.UserCard;
 import com.tzg.entitys.kff.userwallet.KFFUserWallet;
 import com.tzg.entitys.loginaccount.RegisterRequest;
 import com.tzg.entitys.photo.PhotoParams;
+import com.tzg.rest.constant.KFFRestConstants;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rmi.service.KFFRmiService;
@@ -458,20 +471,32 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 	@Override
 	public KFFMessage getMessageDetail(Integer userId, Integer messageId) throws RestServiceException {
-		KFFMessage result = kffMessageService.findById(messageId);
-		if (result == null) {
-			throw new RestServiceException("消息不存在");
+		
+		if(messageId == null){
+			throw new RestServiceException("messageId必填");
 		}
-		if (!result.getUserId().equals(userId)) {
-			throw new RestServiceException("不能查看他人消息");
-		}
-		if (result.getSenderUserId() != null) {
-			KFFUser user = kffUserService.findById(result.getSenderUserId());
-			if (user != null) {
-				result.setSenderUserIcon(user.getIcon());
+		if(!messageId.equals(0)){
+			KFFMessage result = kffMessageService.findById(messageId);
+			if (result == null) {
+				throw new RestServiceException("消息不存在");
 			}
+			if (!result.getUserId().equals(userId)) {
+				throw new RestServiceException("不能查看他人消息");
+			}
+			if (result.getSenderUserId() != null) {
+				KFFUser user = kffUserService.findById(result.getSenderUserId());
+				if (user != null) {
+					result.setSenderUserIcon(user.getIcon());
+				}
+			}
+			result.setState(2);
+			result.setUpdateTime(new Date());
+			kffMessageService.update(result);
+			return result;
+		}else{
+			kffMessageService.updateAllMessageRead(userId);
+			return null;
 		}
-		return result;
 	}
 
 	@Override
@@ -500,7 +525,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			throw new RestServiceException("消息ID不能为空");
 		}
 		// 删除单个
-		if (messageId != 0) {
+		if (!messageId.equals(0)) {
 			KFFMessage result = kffMessageService.findById(messageId);
 			if (result == null) {
 				throw new RestServiceException("消息不存在");
@@ -597,30 +622,38 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// }
 		projects = kffProjectService.findProjectByCode(map);
 		if (CollectionUtils.isNotEmpty(projects)) {
-			PaginationQuery query = new PaginationQuery();
-			query.addQueryData("followUserId", userId + "");
-			query.addQueryData("followType", "1"); // 关注类型：1-关注项目;2-关注帖子；3-关注用户
-			query.addQueryData("status", "1");
-			query.setPageIndex(1);
-			query.setRowsPerPage(1000);
-			// query.addQueryData("followedProjectId",
-			// project.getProjectId()+"");
-			PageResult<Follow> follows = kffFollowService.findPage(query);
+			
 			Set<Integer> followedProjectIds = new HashSet<Integer>();
-			if (follows != null && CollectionUtils.isNotEmpty(follows.getRows())) {
-				for (Follow follow : follows.getRows()) {
-					followedProjectIds.add(follow.getFollowedId());
+			//登录用户查关注项目列表
+			if(userId != null && userId != 0){
+				PaginationQuery query = new PaginationQuery();
+				query.addQueryData("followUserId", userId + "");
+				query.addQueryData("followType", "1"); // 关注类型：1-关注项目;2-关注帖子；3-关注用户
+				query.addQueryData("status", "1");
+				query.setPageIndex(1);
+				query.setRowsPerPage(1000);
+				// query.addQueryData("followedProjectId",
+				// project.getProjectId()+"");
+				PageResult<Follow> follows = kffFollowService.findPage(query);
+				
+				if (follows != null && CollectionUtils.isNotEmpty(follows.getRows())) {
+					for (Follow follow : follows.getRows()) {
+						followedProjectIds.add(follow.getFollowedId());
+					}
 				}
-			}
-
-			for (KFFProject project : projects) {
-				ProjectResponse response = new ProjectResponse();
-				BeanUtils.copyProperties(project, response);
-				if (followedProjectIds != null && followedProjectIds.contains(project.getProjectId())) {
-					response.setFollowStatus(1);
+			 }
+				for (KFFProject project : projects) {
+					ProjectResponse response = new ProjectResponse();
+					BeanUtils.copyProperties(project, response);
+					//登录用户
+					if(userId != null && userId != 0){
+						if (followedProjectIds != null && followedProjectIds.contains(project.getProjectId())) {
+							response.setFollowStatus(1);
+						}
+					}
+					result.add(response);
 				}
-				result.add(response);
-			}
+			
 		}
 
 		return result;
@@ -914,9 +947,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		query.addQueryData("followUserId", userId + "");
 		query.addQueryData("followType", "1"); // 关注类型：1-关注项目;2-关注帖子；3-关注用户
 		query.addQueryData("status", "1");
-		query.addQueryData("followedProjectId", projectId + "");
+		query.addQueryData("followedId", projectId + "");
 		query.setPageIndex(1);
-		query.setRowsPerPage(10);
+		query.setRowsPerPage(1);
 		PageResult<Follow> follows = kffFollowService.findPage(query);
 		if (follows != null && CollectionUtils.isNotEmpty(follows.getRows())) {
 			response.setFollowStatus(1);
@@ -924,11 +957,33 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			response.setFollowStatus(0);
 		}
 
+		//关注的用户
+		PaginationQuery userquery = new PaginationQuery();
+		userquery.addQueryData("followUserId", userId + "");
+		userquery.addQueryData("followType", "3"); // 关注类型：1-关注项目;2-关注帖子；3-关注用户
+		userquery.addQueryData("status", "1");
+		userquery.setPageIndex(1);
+		userquery.setRowsPerPage(1);
 		List<KFFUser> activeUsers = findProjectActiveUsers(projectId);
-
+        if(CollectionUtils.isNotEmpty(activeUsers)){
+        	for(KFFUser user:activeUsers){
+        		userquery.addQueryData("followedId", user.getUserId() + "");
+        		PageResult<Follow> followsuser = kffFollowService.findPage(userquery);
+                if(followsuser != null && CollectionUtils.isNotEmpty(followsuser.getRows())){
+                	user.setFollowStatus(KFFConstants.STATUS_ACTIVE);
+                }
+        	}
+        }
 		response.setActiveUsers(activeUsers);
 
 		KFFUser owner = kffUserService.findById(project.getSubmitUserId());
+		if(owner != null){
+			userquery.addQueryData("followedId", owner.getUserId() + "");
+			PageResult<Follow> followsuser = kffFollowService.findPage(userquery);
+            if(followsuser != null && CollectionUtils.isNotEmpty(followsuser.getRows())){
+            	owner.setFollowStatus(KFFConstants.STATUS_ACTIVE);
+            }
+		}
 		response.setOwner(owner);
 
 		return response;
@@ -1118,7 +1173,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			}
 			// 生成url名称
 			String picUrlGen = picServiceUrl;
-			String picName = "/upload/postPic/" + DateUtil.getCurrentYearMonth() + "/" + DateUtil.getCurrentTimeStamp() + i + articleRequest.getCreateUserId()
+			String picName = "/upload/postPic/" + DateUtil.getCurrentYearMonth() + "/" + DateUtil.getCurrentTimeStamp() + articleRequest.getCreateUserId()
 					+ ".jpg";
 			String picUrlName = picUrlGen + picName;
 			try {
@@ -1164,6 +1219,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		kffArticleService.save(article);
 
 		result.put("postId", newPost.getPostId());
+		
+		//更新用户发帖数
+		kffUserService.increasePostNum(createUser.getUserId(),KFFConstants.POST_TYPE_ARTICLE);
 		return result;
 	}
 
@@ -1276,6 +1334,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		discuss.setTagInfos(discussRequest.getTagInfos());
 		kffDiscussService.save(discuss);
 
+		//更新用户发帖数
+		kffUserService.increasePostNum(createUser.getUserId(),KFFConstants.POST_TYPE_DISCUSS);
 	}
 
 	@Override
@@ -1437,7 +1497,15 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		evaluation.setTotalScore(totalScore);
 		kffEvaluationService.save(evaluation);
 
+		try{
+			redisService.put(KFFRestConstants.REDIS_KEY_PROJECT_SYNC_SCORE, String.valueOf(project.getProjectId()), 24*60*60);
+		}catch(Exception e)
+		{
+			logger.error("put redis key REDIS_KEY_PROJECT_SYNC_SCORE error "+project.getProjectId());
+		}
 		result.put("postId", newPost.getPostId());
+		//更新用户发帖数
+		kffUserService.increasePostNum(createUser.getUserId(),KFFConstants.POST_TYPE_EVALUATION);
 		return result;
 	}
 
@@ -4009,6 +4077,14 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (authentication.getQufennickname().length() > 10) {
 			throw new RestServiceException("区分昵称不能超过10 字!");
 		}
+		if (StringUtils.isNotBlank(authentication.getMail())) {
+			// 正在判断邮箱
+			String checkMailfmt = RegexUtil.EMAILREGEX;
+			if (!authentication.getMail().matches(checkMailfmt)) {
+				throw new RestServiceException(RestErrorCode.EMAIL_INCORRECT);
+			}
+
+		}
 		// 分类型进行参数判断 end
 		authentication.setCreatedata(new Date());
 		authentication.setStatus(2);
@@ -4839,7 +4915,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	@Override
 	public void updataUserInvation(Integer userId, String posterUrl, String code2Url) throws RestServiceException {
 		String str = HexUtil.userIdTo2code(userId);
-		code2Url = "/upload/2code/" + DateUtil.getCurrentYearMonth() + "/" + str + ".png";
+		code2Url = "upload/2code/" + DateUtil.getCurrentYearMonth() + "/" + str + ".png";
 		userInvationService.updataUserInvation(userId, posterUrl, code2Url);
 
 	}
@@ -5038,7 +5114,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		/**
 		 * 原始海报的存放路径 "D:\\opt\\file\\upload\\poster\\init\\initpic.png
 		 */
-		String initPosterSysPath = picServiceUrl + "/upload/poster/init/initpic";// 原始海报存放路径
+		String initPosterSysPath = picServiceUrl + "\\upload\\poster\\init\\initpic";// 原始海报存放路径
 		String text = "";
 
 		String str = HexUtil.userIdTo2code(userId);
@@ -5058,7 +5134,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			throw new RestServiceException("后台创建文件出错!");
 		}
 		String initPosterSysPathLast = initPosterSysPath + Create2Code.rand1To11() + ".png";// 选出随机海报图片
-		String code2Path = this.create2CodeNameAndPath(str);// 二维码路径
+		String code2Path = create2CodeNameAndPath(str);// 二维码路径
 		Create2Code.create2CodeImg(code2Path, contentselfid);// 在制定位置生成二维码
 		Create2Code.overlapImage(initPosterSysPathLast, code2Path, posterSysPathlast);
 		// createCharAtImg(text, posterSysPathlast);
@@ -5071,7 +5147,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 	@Override
 	public String create2CodeNameAndPath(String code2) throws RestServiceException {
-		String code2sysPath = picServiceUrl + "/upload/2code/";
+		String code2sysPath = picServiceUrl + "\\upload\\2code\\";
 		String path = code2sysPath + code2 + ".png";
 		return path;
 	}

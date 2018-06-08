@@ -31,6 +31,12 @@ public interface KFFUserMapper extends BaseMapper<KFFUser, java.lang.Integer> {
 	public KFFUser findByUserName(String loginName);
 
 	public Integer findReferCount(Integer userId);
-	
+
 	public List<KFFUser> selectInvationM1Num(Integer userId);
+
+	public void increaseArticleNum(Integer userId);
+
+	public void increaseEvaNum(Integer userId);
+
+	public void increaseDiscussNum(Integer userId);
 }

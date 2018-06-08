@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tzg.common.constants.KFFConstants;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.utils.RandomUtil;
@@ -453,5 +454,19 @@ public class UserService {
 			}
 		}
 
+	}
+	
+	public void increasePostNum(Integer userId, int postType) {
+		if(userId == null){
+			throw new RestServiceException("用户不能为空");
+		}
+		if(postType ==KFFConstants.POST_TYPE_ARTICLE){
+			userMapper.increaseArticleNum(userId);
+		}else if(postType == KFFConstants.POST_TYPE_EVALUATION){
+			userMapper.increaseEvaNum(userId);
+		}else if(postType==KFFConstants.POST_TYPE_DISCUSS){
+			userMapper.increaseDiscussNum(userId);
+		}
+		
 	}
 }

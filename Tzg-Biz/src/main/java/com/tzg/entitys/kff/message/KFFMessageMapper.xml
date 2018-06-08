@@ -93,11 +93,21 @@
 
 	<update id="deleteAllMessages" parameterType="java.lang.Integer">
 		UPDATE tbmessage
-		set status = 0, state=2,updateTime=now() 
+		<set>
+		 status = 0, state=2,updateTime=now()
+		</set>  
 		WHERE 
 	        user_id = #{userId,jdbcType=INTEGER}
 	</update>
 
+	<update id="updateAllMessageRead" parameterType="java.lang.Integer">
+		UPDATE tbmessage
+		<set>
+		 state=2,updateTime=now()
+		</set>  
+		WHERE 
+	        user_id = #{userId,jdbcType=INTEGER}
+	</update>
 
 
 	<delete id="deleteById" parameterType="java.lang.Integer">
