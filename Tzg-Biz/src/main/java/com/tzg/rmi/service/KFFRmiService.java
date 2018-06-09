@@ -211,7 +211,7 @@ public interface KFFRmiService {
 	 * @param discussRequest
 	 * @throws RestServiceException
 	 */
-	public void saveDiscuss(DiscussRequest discussRequest) throws RestServiceException;
+	public Map<String,Object> saveDiscuss(DiscussRequest discussRequest) throws RestServiceException;
 
 	/**
 	 * 

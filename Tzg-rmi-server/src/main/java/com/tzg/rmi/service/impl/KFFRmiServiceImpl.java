@@ -1242,7 +1242,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public void saveDiscuss(DiscussRequest discussRequest) throws RestServiceException {
+	public Map<String, Object> saveDiscuss(DiscussRequest discussRequest) throws RestServiceException {
+		Map<String,Object> result = new HashMap<>();
 		String uuid = UUID.randomUUID().toString().replace("-", "");
 		if (discussRequest == null) {
 			throw new RestServiceException("参数缺失");
@@ -1259,7 +1260,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (StringUtils.isBlank(discussRequest.getPostTitle())) {
 			throw new RestServiceException("讨论标题不能为空");
 		}
-		if (discussRequest.getDisscussContents().length() > 3000) {
+		if (discussRequest.getDisscussContents().length() > 30000) {
 			throw new RestServiceException("讨论内容长度超过限制");
 		}
 		if (discussRequest.getPostTitle().length() > 30) {
@@ -1350,8 +1351,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		discuss.setTagInfos(discussRequest.getTagInfos());
 		kffDiscussService.save(discuss);
 
-		// 更新用户发帖数
-		kffUserService.increasePostNum(createUser.getUserId(), KFFConstants.POST_TYPE_DISCUSS);
+		//更新用户发帖数
+		kffUserService.increasePostNum(createUser.getUserId(),KFFConstants.POST_TYPE_DISCUSS);
+		result.put("postId", newPost.getPostId());
+		return result;
 	}
 
 	@Override

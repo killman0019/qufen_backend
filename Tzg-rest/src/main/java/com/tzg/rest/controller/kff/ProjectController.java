@@ -2,6 +2,7 @@ package com.tzg.rest.controller.kff;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,9 +17,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
 import com.tzg.common.base.BaseRequest;
+import com.tzg.common.constants.KFFConstants;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.utils.AccountTokenUtil;
+import com.tzg.entitys.kff.comments.Comments;
 import com.tzg.entitys.kff.devaluationModelDetail.DevaluationModelDetail;
 import com.tzg.entitys.kff.dprojectType.DprojectType;
 import com.tzg.entitys.kff.evaluation.EvaluationDetailResponse;
@@ -104,7 +107,7 @@ public class ProjectController extends BaseController {
 	@ResponseBody
 	public BaseResponseEntity evaStatScore(HttpServletRequest request) {
 		BaseResponseEntity bre = new BaseResponseEntity();
-        HashMap<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<String, Object>();
 
 		try {
 			JSONObject params = getParamMapFromRequestPolicy(request);
@@ -114,15 +117,28 @@ public class ProjectController extends BaseController {
 			if(projectId == null){
 				throw new RestServiceException(RestErrorCode.MISSING_ARG_PROJID);
 			}	
-			ProjectResponse project = kffRmiService.findProjectById(userId,projectId);
-            map.put("project", project);
+			//ProjectResponse project = kffRmiService.findProjectById(userId,projectId);
+          //  map.put("project", project);
             //2条7天内回复数最高的讨论帖子
-            List<PostResponse> hotDiscuss = kffRmiService.findHotDiscussList(projectId);
-            map.put("hotDiscuss", hotDiscuss);
+           // List<PostResponse> hotDiscuss = kffRmiService.findHotDiscussList(projectId);
+          //  map.put("hotDiscuss", hotDiscuss);
       
+            PaginationQuery hotQuery = new PaginationQuery();
+			hotQuery.addQueryData("status", "1");
+			hotQuery.addQueryData("projectId", projectId + "");
+			hotQuery.addQueryData("postType", KFFConstants.POST_TYPE_ARTICLE + "");
+	        //点赞数最多的2个评论
+			hotQuery.addQueryData("sortField", "praise_num");
+			hotQuery.setPageIndex(1);
+			hotQuery.setRowsPerPage(2);
+			List<Comments> hotComments = kffRmiService.findPageHotCommentsList(userId,projectId,hotQuery);
+            map.put("hotComments", hotComments);
+            
             //项目评测统计信息
-            List<ProjectevastatByGrade> proEvaStat = kffProjectPostRmiService.findProjectEvaStatScore(projectId);
-            map.put("evaGradeStat", proEvaStat);
+            map = kffProjectPostRmiService.findProjectEvaStatScore(projectId);
+           // map.put("evaGradeStat", proEvaStat);
+            
+            
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("ProjectController index:{}", e);

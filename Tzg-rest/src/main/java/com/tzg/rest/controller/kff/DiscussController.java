@@ -42,14 +42,14 @@ public class DiscussController extends BaseController {
 	@ResponseBody
 	public BaseResponseEntity saveDiscuss(HttpServletRequest request) {
 		BaseResponseEntity bre = new BaseResponseEntity();
-        HashMap<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<String, Object>();
 
 		try {
 			DiscussRequest discussRequest = getParamMapFromRequestPolicy(request, DiscussRequest.class);
 			String token = discussRequest.getToken();			
 			Integer userId = getUserIdByToken(token);
 			discussRequest.setCreateUserId(userId);
-			kffRmiService.saveDiscuss(discussRequest);
+			map = kffRmiService.saveDiscuss(discussRequest);
             bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("DiscussController saveDiscuss:{}", e);

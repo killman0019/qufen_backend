@@ -132,7 +132,8 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 
 
 	@Override
-	public List<ProjectevastatByGrade> findProjectEvaStatScore(Integer projectId) throws RestServiceException {
+	public Map<String,Object> findProjectEvaStatScore(Integer projectId) throws RestServiceException {
+		Map<String,Object> resultMap = new HashMap<String,Object>();
 		if(projectId == null || projectId == 0){
 			throw new RestServiceException("错误项目id"+projectId);
 		}
@@ -156,10 +157,10 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 			result.add(i,grade);
 		}
 		List<Evaluation> evas = kffEvaluationService.findAllTypeByProjectId(projectId);
+		BigDecimal eachTotalScore = BigDecimal.ZERO;
+		BigDecimal totalScore = BigDecimal.ZERO;
+		int totalRaterNum = 0;
 		if(CollectionUtils.isNotEmpty(evas)){
-			BigDecimal eachTotalScore = BigDecimal.ZERO;
-			BigDecimal totalScore = BigDecimal.ZERO;
-			int totalRaterNum = 0;
 			int gradeOneRaterNum = 0;
 			int gradeTwoRaterNum = 0;
 			int gradeThreeRaterNum = 0;
@@ -204,7 +205,15 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 			}
 			
 		}
-		return finalList;
+		
+		resultMap.put("evaGradeStat", finalList);
+		if(totalRaterNum == 0){
+			resultMap.put("totalScore",0);
+		}else{
+			resultMap.put("totalScore", totalScore.divide(new BigDecimal(totalRaterNum)).setScale(1, RoundingMode.HALF_DOWN));
+		}
+		resultMap.put("totalRaterNum", totalRaterNum);
+		return resultMap ;
 	}
 
 
