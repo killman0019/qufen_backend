@@ -261,7 +261,6 @@ public class UserService {
 	 * @param phoneNumber
 	 * @return
 	 */
-	@Transactional(readOnly = true)
 	public KFFUser findUserByPhoneNumber(String phoneNumber) throws RestServiceException {
 
 		if (StringUtils.isBlank(phoneNumber)) {
