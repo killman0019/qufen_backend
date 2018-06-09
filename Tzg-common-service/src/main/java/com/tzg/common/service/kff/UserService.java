@@ -73,8 +73,9 @@ public class UserService {
 
 	public KFFUser registerH(KFFUser user) throws RestServiceException
 	{
-		Integer userId = userMapper.saveUser(user);
-		return userMapper.findUserById(userId);
+		userMapper.saveUser(user);
+		System.out.println("================="+user.getUserId());
+		return userMapper.findUserById(user.getUserId());
 	}
 	
 	public boolean update(KFFUser user) throws RestServiceException {
