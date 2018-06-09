@@ -358,7 +358,7 @@ public class UserService {
 			user.setReferUserId(null);
 
 		}
-		userMapper.save(user);
+		save(user);
 		return findUserByPhoneNumber(phoneNumber);
 
 	}
