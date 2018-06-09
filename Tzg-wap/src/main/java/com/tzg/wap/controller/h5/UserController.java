@@ -203,7 +203,7 @@ public class UserController extends BaseController {
 		kffRmiService.saveUserInvation(userId, userIdTo2code);
 		// 生成URL注册链接
 		String user2codeUrl = registerUrl + userIdTo2code;
-		System.out.println(user2codeUrl);
+		logger.info(user2codeUrl);
 		map.put("url", user2codeUrl);
 		bre.setData(map);
 		return bre;

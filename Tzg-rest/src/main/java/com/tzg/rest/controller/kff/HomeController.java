@@ -93,23 +93,23 @@ public class HomeController extends BaseController {
 				userId = getUserIdByToken(token);
 			}
 			PaginationQuery query = new PaginationQuery();
-	        query.addQueryData("status", "1");
-	        query.addQueryData("stickTop", "1");
+			query.addQueryData("status", "1");
+			query.addQueryData("stickTop", "1");
 
-	        query.addQueryData("sortField", "stick_updateTime");
-	        //帖子类型：1-评测；2-讨论；3-文章
-	        //query.addQueryData("postType", "1");
-	        query.setPageIndex(baseRequest.getPageIndex());
-	        query.setRowsPerPage(baseRequest.getPageSize());
-			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId,query);
-            map.put("recommends", recommends);
+			query.addQueryData("sortField", "stick_updateTime");
+			// 帖子类型：1-评测；2-讨论；3-文章
+			// query.addQueryData("postType", "1");
+			query.setPageIndex(baseRequest.getPageIndex());
+			query.setRowsPerPage(baseRequest.getPageSize());
+			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query);
+			map.put("recommends", recommends);
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("HomeController recommendList:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
 		} catch (Exception e) {
 			logger.error("HomeController recommendList:{}", e);
-			return this.resResult(RestErrorCode.SYS_ERROR,e.getMessage());
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
 		}
 		return bre;
 	}
@@ -685,7 +685,7 @@ public class HomeController extends BaseController {
 			String localPath = systemParam.getVcParamValue();
 			systemParam = systemParamRmiService.findByCode("upload_file_path");
 			String urlPath = systemParam.getVcParamValue();
-
+			logger.info("存放路径" + systemParam);
 			if (imgtype == KFFConstants.IMGTYPE_AVATARS) {
 				localPath = localPath + "avatars/" + DateUtil.getCurrentYearMonth() + "/";
 				localPath = localPath + userId + "." + extention;
@@ -723,6 +723,7 @@ public class HomeController extends BaseController {
 				localPath = localPath + "projects/" + DateUtil.getCurrentYearMonth() + "/";
 				String randomStr = RandomUtil.produceString(10);
 				localPath = localPath + randomStr + "." + extention;
+				logger.info("存放路径localPath" + localPath);
 				try {
 					FileUtils.createFileLocal(localPath, file.getBytes());
 				} catch (Exception e) {
@@ -732,7 +733,7 @@ public class HomeController extends BaseController {
 				// 返回imgurl
 				urlPath = urlPath + "/projects/" + DateUtil.getCurrentYearMonth() + "/";
 				urlPath = urlPath + randomStr + "." + extention;
-
+				logger.info("存放路径urlPath" + urlPath);
 				resMap.put("imgUrl", urlPath);
 			}
 
