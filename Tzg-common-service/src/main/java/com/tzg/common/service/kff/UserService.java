@@ -71,6 +71,13 @@ public class UserService {
 		userMapper.save(user);
 	}
 
+	public KFFUser registerH(KFFUser user) throws RestServiceException
+	{
+		Integer userId = userMapper.save(user);
+		System.out.println("==================="+userId);
+		return userMapper.findUserById(userId);
+	}
+	
 	public boolean update(KFFUser user) throws RestServiceException {
 		if (user.getUserId() == null) {
 			throw new RestServiceException("id不能为空");
@@ -358,8 +365,8 @@ public class UserService {
 			user.setReferUserId(null);
 
 		}
-		save(user);
-		return findUserByPhoneNumber(phoneNumber);
+		
+		return registerH(user);
 
 	}
 
