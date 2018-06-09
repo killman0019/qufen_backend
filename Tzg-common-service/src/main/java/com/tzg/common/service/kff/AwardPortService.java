@@ -224,7 +224,7 @@ public class AwardPortService {
 				tokenaward.setPriaiseAward(0d);
 				tokenaward.setAwardBalance(m0);
 				kffTokenawardService.save(tokenaward);
-
+				
 				coinProperty.setUserId(userId);
 				coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
 				coinProperty.setCoinDistributed(m0);
@@ -258,21 +258,26 @@ public class AwardPortService {
 					tokenaward2.setAwardBalance(m1);
 					tokenaward2.setPriaiseAward(0d);
 					kffTokenawardService.save(tokenaward2);
+					
+					CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user2.getUserId());
+				
+					Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+					if(coinDistributed == null) {
+						coinDistributed = 0d;
+						coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+					}
+					coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+					
+					kffCoinPropertyService.update(coinPropertyRefer);
 
-					coinProperty.setUserId(user2.getUserId());
-					coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
-					coinProperty.setCoinDistributed(m1);
-
-					kffCoinPropertyService.save(coinProperty);
-
-					// 将注册用户的信息同时存入流水表单中
+					/*// 将注册用户的信息同时存入流水表单中
 					Tokenrecords tokenrecords2 = new Tokenrecords();
 					tokenrecords2.setUserId(user2.getUserId());
 					tokenrecords2.setFunctionDesc("邀请奖励");
 					tokenrecords2.setFunctionType(18);
 					tokenrecords2.setTradeType(1);
 					tokenrecords2.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords2);
+					kffTokenrecordsService.save(tokenrecords2);*/
 
 				}
 			} else if ((user2.getUserType() == 2 || user2.getUserType() == 3) && user2.getReferLevel() == 0) {
@@ -331,19 +336,25 @@ public class AwardPortService {
 					tokenaward2.setPriaiseAward(0d);
 					kffTokenawardService.save(tokenaward2);
 
-					coinProperty.setUserId(userId);
-					coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
-					coinProperty.setCoinDistributed(m0);
-					kffCoinPropertyService.save(coinProperty);
+					CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user2.getUserId());
+					
+					Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+					if(coinDistributed == null) {
+						coinDistributed = 0d;
+						coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+					}
+					coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+					
+					kffCoinPropertyService.update(coinPropertyRefer);
 
-					// 将注册用户的信息同时存入流水表单中
+					/*// 将注册用户的信息同时存入流水表单中
 					Tokenrecords tokenrecords2 = new Tokenrecords();
 					tokenrecords2.setUserId(user2.getUserId());
 					tokenrecords2.setFunctionDesc("邀请奖励");
 					tokenrecords2.setFunctionType(18);
 					tokenrecords2.setTradeType(1);
 					tokenrecords2.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords2);
+					kffTokenrecordsService.save(tokenrecords2);*/
 
 				}
 			} else if ((user2.getUserType() == 1 || user2.getUserType() == 4) && user2.getReferLevel() == 1) {
@@ -403,7 +414,7 @@ public class AwardPortService {
 						tokenaward2.setGrantType(2);
 						tokenaward2.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenaward2);
-						// 将注册用户的信息同时存入流水表单中
+						/*// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
 						tokenrecords2.setUserId(user2.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
@@ -411,13 +422,19 @@ public class AwardPortService {
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
 						kffTokenrecordsService.save(tokenrecords2);
-
-						coinProperty.setUserId(user2.getUserId());
-						coinProperty
-								.setCoinLock(kffUserService.findById(user2.getUserId()).getKffCoinNum().doubleValue());
-						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-						coinProperty.setCoinDistributed(m1 + coinProperty.getCoinDistributed());
-						kffCoinPropertyService.save(coinProperty);
+						*/
+						
+						CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user2.getUserId());
+						
+						Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+						if(coinDistributed == null) {
+							coinDistributed = 0d;
+							coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+						}
+						coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+						
+						kffCoinPropertyService.update(coinPropertyRefer);
+						
 
 					}
 					if (sum2 <= 50000) {
@@ -434,21 +451,25 @@ public class AwardPortService {
 						tokenawarde3.setGrantType(2);
 						tokenawarde3.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenawarde3);
-						// 将注册用户的信息同时存入流水表单中
+						/*// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
 						tokenrecords2.setUserId(user3.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
 						tokenrecords2.setFunctionType(18);
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
-						kffTokenrecordsService.save(tokenrecords2);
+						kffTokenrecordsService.save(tokenrecords2);*/
 
-						coinProperty.setUserId(user3.getUserId());
-						coinProperty
-								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
-						kffCoinPropertyService.save(coinProperty);
+						CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user3.getUserId());
+						
+						Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+						if(coinDistributed == null) {
+							coinDistributed = 0d;
+							coinPropertyRefer.setCoinDistributed(m2+coinDistributed);
+						}
+						coinPropertyRefer.setCoinDistributed(m2+coinDistributed);
+						
+						kffCoinPropertyService.update(coinPropertyRefer);
 
 					}
 					
@@ -513,15 +534,27 @@ public class AwardPortService {
 						tokenaward2.setCounter(0);
 						tokenaward2.setGrantType(2);
 						tokenaward2.setPriaiseAward(0d);
+						tokenaward2.setAwardBalance(m1);
 						kffTokenawardService.save(tokenaward2);
-						// 将注册用户的信息同时存入流水表单中
+						/*// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
 						tokenrecords2.setUserId(user2.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
 						tokenrecords2.setFunctionType(18);
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
-						kffTokenrecordsService.save(tokenrecords2);
+						kffTokenrecordsService.save(tokenrecords2);*/
+						
+						CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user2.getUserId());
+						
+						Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+						if(coinDistributed == null) {
+							coinDistributed = 0d;
+							coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+						}
+						coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+						
+						kffCoinPropertyService.update(coinPropertyRefer);
 
 					}
 					if (sum2 <= 50000) {
@@ -539,21 +572,25 @@ public class AwardPortService {
 						tokenawarde3.setPriaiseAward(0d);
 						
 						kffTokenawardService.save(tokenawarde3);
-						// 将注册用户的信息同时存入流水表单中
+						/*// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
 						tokenrecords2.setUserId(user3.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
 						tokenrecords2.setFunctionType(18);
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
-						kffTokenrecordsService.save(tokenrecords2);
+						kffTokenrecordsService.save(tokenrecords2);*/
 
-						coinProperty.setUserId(user3.getUserId());
-						coinProperty
-								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
-						kffCoinPropertyService.save(coinProperty);
+						CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user3.getUserId());
+						
+						Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+						if(coinDistributed == null) {
+							coinDistributed = 0d;
+							coinPropertyRefer.setCoinDistributed(m2+coinDistributed);
+						}
+						coinPropertyRefer.setCoinDistributed(m2+coinDistributed);
+						
+						kffCoinPropertyService.update(coinPropertyRefer);
 
 					}
 					/*
@@ -680,32 +717,36 @@ public class AwardPortService {
 					if (sum <= 50000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenawarde3 = new Tokenaward();
-						tokenawarde3.setUserId(user3.getUserId());
+						tokenawarde3.setUserId(user2.getUserId());
 						tokenawarde3.setTokenAwardFunctionType(18);
 						tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
-						tokenawarde3.setInviteRewards(m2);
+						tokenawarde3.setInviteRewards(m1);
 						tokenawarde3.setCreateTime(new Date());
 						tokenawarde3.setDistributionType(1);
-						tokenawarde3.setAwardBalance(m2);
+						tokenawarde3.setAwardBalance(m1);
 						tokenawarde3.setCounter(0);
 						tokenawarde3.setGrantType(2);
 						tokenawarde3.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenawarde3);
-						// 将注册用户的信息同时存入流水表单中
+						/*// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
-						tokenrecords2.setUserId(user3.getUserId());
+						tokenrecords2.setUserId(user2.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
 						tokenrecords2.setFunctionType(18);
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
-						kffTokenrecordsService.save(tokenrecords2);
+						kffTokenrecordsService.save(tokenrecords2);*/
 
-						coinProperty.setUserId(user3.getUserId());
-						coinProperty
-								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
-						kffCoinPropertyService.save(coinProperty);
+						CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user2.getUserId());
+						
+						Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+						if(coinDistributed == null) {
+							coinDistributed = 0d;
+							coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+						}
+						coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+						
+						kffCoinPropertyService.update(coinPropertyRefer);
 
 					}
 					if (sum2 <= 50000) {
@@ -722,21 +763,25 @@ public class AwardPortService {
 						tokenawarde3.setGrantType(2);
 						tokenawarde3.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenawarde3);
-						// 将注册用户的信息同时存入流水表单中
+						/*// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
 						tokenrecords2.setUserId(user3.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
 						tokenrecords2.setFunctionType(18);
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
-						kffTokenrecordsService.save(tokenrecords2);
+						kffTokenrecordsService.save(tokenrecords2);*/
 
-						coinProperty.setUserId(user3.getUserId());
-						coinProperty
-								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
-						kffCoinPropertyService.save(coinProperty);
+						CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user3.getUserId());
+						
+						Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+						if(coinDistributed == null) {
+							coinDistributed = 0d;
+							coinPropertyRefer.setCoinDistributed(m2+coinDistributed);
+						}
+						coinPropertyRefer.setCoinDistributed(m2+coinDistributed);
+						
+						kffCoinPropertyService.update(coinPropertyRefer);
 
 					}
 				} else if ((user3.getUserType() == 2 || user3.getUserType() == 3)) { // 将注册用户id
@@ -801,15 +846,27 @@ public class AwardPortService {
 						tokenaward2.setCounter(0);
 						tokenaward2.setGrantType(2);
 						tokenaward2.setPriaiseAward(0d);
+						tokenaward2.setAwardBalance(m1);
 						kffTokenawardService.save(tokenaward2);
-						// 将注册用户的信息同时存入流水表单中
+						/*// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
 						tokenrecords2.setUserId(user2.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
 						tokenrecords2.setFunctionType(18);
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
-						kffTokenrecordsService.save(tokenrecords2);
+						kffTokenrecordsService.save(tokenrecords2);*/
+						
+						CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user2.getUserId());
+						
+						Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+						if(coinDistributed == null) {
+							coinDistributed = 0d;
+							coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+						}
+						coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+						
+						kffCoinPropertyService.update(coinPropertyRefer);
 
 					}
 					if (sum2 <= 5000000) {
@@ -826,21 +883,27 @@ public class AwardPortService {
 						tokenawarde3.setGrantType(2);
 						tokenawarde3.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenawarde3);
-						// 将注册用户的信息同时存入流水表单中
+						/*// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
 						tokenrecords2.setUserId(user3.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
 						tokenrecords2.setFunctionType(18);
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
-						kffTokenrecordsService.save(tokenrecords2);
+						kffTokenrecordsService.save(tokenrecords2);*/
+						
+						
 
-						coinProperty.setUserId(user3.getUserId());
-						coinProperty
-								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
-						kffCoinPropertyService.save(coinProperty);
+						CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user3.getUserId());
+						
+						Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+						if(coinDistributed == null) {
+							coinDistributed = 0d;
+							coinPropertyRefer.setCoinDistributed(m2+coinDistributed);
+						}
+						coinPropertyRefer.setCoinDistributed(m2+coinDistributed);
+						
+						kffCoinPropertyService.update(coinPropertyRefer);
 
 					}
 				}
@@ -929,19 +992,22 @@ public class AwardPortService {
 						} else if (awardFunctionType == 18) {// 如果是邀请好友的奖励
 							
 							tokenrecords.setUserId(userId);
-							tokenrecords.setFunctionDesc("邀请奖励");
-							tokenrecords.setFunctionType(awardFunctionType);
+							tokenrecords.setFunctionDesc("邀请奖励");	// 交易类型
+							tokenrecords.setFunctionType(awardFunctionType); // 交易的类型
 							tokenrecords.setAmount(new BigDecimal(x)); // 发放奖励数
-							tokenrecords.setUpdateTime(new Date());
-							tokenrecords.setRewardGrantType(2);
-							
+							tokenrecords.setRewardGrantType(2); // 发放类型  1-一次性发放  2-线性发放
 							Date date = new Date();
 							String stringDate = DateUtil.getDate(date, "yyyy-MM-dd");
 							String replaceAllDate = stringDate.replaceAll("-", "");
 							String format = String.format("%010d", userId);
 							tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
+							tokenrecords.setTradeType(1); // 交易类型 1-收入    2-支出
+							tokenrecords.setTradeDate(date); // 交易日期
+							tokenrecords.setCreateTime(date);  //  创建的日期
+							tokenrecords.setStatus(1);	
+							tokenrecords.setMemo("邀请好友的登录奖励");
+							kffTokenrecordsService.save(tokenrecords);
 							
-							kffTokenrecordsService.update(tokenrecords);
 							tokenaward.setUserId(userId);
 							tokenaward.setTokenAwardFunctionType(awardFunctionType);
 							tokenaward.setCounter(counter + 1);
@@ -1096,20 +1162,25 @@ public class AwardPortService {
 					tokenaward2.setPriaiseAward(0d);
 					kffTokenawardService.save(tokenaward2);
 
-					coinProperty.setUserId(user2.getUserId());
-					coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
-					coinProperty.setCoinDistributed(m1);
+					CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user2.getUserId());
+					
+					Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+					if(coinDistributed == null) {
+						coinDistributed = 0d;
+						coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+					}
+					coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+					
+					kffCoinPropertyService.update(coinPropertyRefer);
 
-					kffCoinPropertyService.save(coinProperty);
-
-					// 将注册用户的信息同时存入流水表单中
+					/*// 将注册用户的信息同时存入流水表单中
 					Tokenrecords tokenrecords2 = new Tokenrecords();
 					tokenrecords2.setUserId(user2.getUserId());
 					tokenrecords2.setFunctionDesc("邀请奖励");
 					tokenrecords2.setFunctionType(18);
 					tokenrecords2.setTradeType(1);
 					tokenrecords2.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords2);
+					kffTokenrecordsService.save(tokenrecords2);*/
 
 				}
 			} else if ((user2.getUserType() == 2 || user2.getUserType() == 3) && user2.getReferLevel() == 0) {
@@ -1170,19 +1241,25 @@ public class AwardPortService {
 
 					kffTokenawardService.save(tokenaward2);
 
-					coinProperty.setUserId(userId);
-					coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
-					coinProperty.setCoinDistributed(m0);
-					kffCoinPropertyService.save(coinProperty);
+					CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user2.getUserId());
+					
+					Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+					if(coinDistributed == null) {
+						coinDistributed = 0d;
+						coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+					}
+					coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+					
+					kffCoinPropertyService.update(coinPropertyRefer);
 
-					// 将注册用户的信息同时存入流水表单中
+					/*// 将注册用户的信息同时存入流水表单中
 					Tokenrecords tokenrecords2 = new Tokenrecords();
 					tokenrecords2.setUserId(user2.getUserId());
 					tokenrecords2.setFunctionDesc("邀请奖励");
 					tokenrecords2.setFunctionType(18);
 					tokenrecords2.setTradeType(1);
 					tokenrecords2.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords2);
+					kffTokenrecordsService.save(tokenrecords2);*/
 
 				}
 			} else if ((user2.getUserType() == 1 || user2.getUserType() == 4) && user2.getReferLevel() == 1) {
@@ -1241,23 +1318,27 @@ public class AwardPortService {
 						tokenaward2.setCounter(0);
 						tokenaward2.setGrantType(2);
 						tokenaward2.setPriaiseAward(0d);
-
+						
 						kffTokenawardService.save(tokenaward2);
-						// 将注册用户的信息同时存入流水表单中
+						/*// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
 						tokenrecords2.setUserId(user2.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
 						tokenrecords2.setFunctionType(18);
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
-						kffTokenrecordsService.save(tokenrecords2);
+						kffTokenrecordsService.save(tokenrecords2);*/
 
-						coinProperty.setUserId(user2.getUserId());
-						coinProperty
-								.setCoinLock(kffUserService.findById(user2.getUserId()).getKffCoinNum().doubleValue());
-						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-						coinProperty.setCoinDistributed(m1 + coinProperty.getCoinDistributed());
-						kffCoinPropertyService.save(coinProperty);
+						CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user2.getUserId());
+						
+						Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+						if(coinDistributed == null) {
+							coinDistributed = 0d;
+							coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+						}
+						coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+						
+						kffCoinPropertyService.update(coinPropertyRefer);
 
 					}
 					if (sum2 <= 30000) {
@@ -1274,21 +1355,25 @@ public class AwardPortService {
 						tokenawarde3.setGrantType(2);
 						tokenawarde3.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenawarde3);
-						// 将注册用户的信息同时存入流水表单中
+						/*// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
 						tokenrecords2.setUserId(user3.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
 						tokenrecords2.setFunctionType(18);
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
-						kffTokenrecordsService.save(tokenrecords2);
+						kffTokenrecordsService.save(tokenrecords2);*/
 
-						coinProperty.setUserId(user3.getUserId());
-						coinProperty
-								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
-						kffCoinPropertyService.save(coinProperty);
+						CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user3.getUserId());
+						
+						Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+						if(coinDistributed == null) {
+							coinDistributed = 0d;
+							coinPropertyRefer.setCoinDistributed(m2+coinDistributed);
+						}
+						coinPropertyRefer.setCoinDistributed(m2+coinDistributed);
+						
+						kffCoinPropertyService.update(coinPropertyRefer);
 
 					}
 				}
@@ -1351,16 +1436,28 @@ public class AwardPortService {
 						tokenaward2.setDistributionType(1);
 						tokenaward2.setCounter(0);
 						tokenaward2.setGrantType(2);
+						tokenaward2.setAwardBalance(m1);
 						tokenaward2.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenaward2);
-						// 将注册用户的信息同时存入流水表单中
+						/*// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
 						tokenrecords2.setUserId(user2.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
 						tokenrecords2.setFunctionType(18);
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
-						kffTokenrecordsService.save(tokenrecords2);
+						kffTokenrecordsService.save(tokenrecords2);*/
+						
+						CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user2.getUserId());
+						
+						Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+						if(coinDistributed == null) {
+							coinDistributed = 0d;
+							coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+						}
+						coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+						
+						kffCoinPropertyService.update(coinPropertyRefer);
 
 					}
 					if (sum2 <= 30000) {
@@ -1377,21 +1474,25 @@ public class AwardPortService {
 						tokenawarde3.setGrantType(2);
 						tokenawarde3.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenawarde3);
-						// 将注册用户的信息同时存入流水表单中
+						/*// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
 						tokenrecords2.setUserId(user3.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
 						tokenrecords2.setFunctionType(18);
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
-						kffTokenrecordsService.save(tokenrecords2);
+						kffTokenrecordsService.save(tokenrecords2);*/
 
-						coinProperty.setUserId(user3.getUserId());
-						coinProperty
-								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
-						kffCoinPropertyService.save(coinProperty);
+						CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user3.getUserId());
+						
+						Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+						if(coinDistributed == null) {
+							coinDistributed = 0d;
+							coinPropertyRefer.setCoinDistributed(m2+coinDistributed);
+						}
+						coinPropertyRefer.setCoinDistributed(m2+coinDistributed);
+						
+						kffCoinPropertyService.update(coinPropertyRefer);
 
 					}
 				}
@@ -1449,32 +1550,36 @@ public class AwardPortService {
 					if (sum <= 30000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenawarde3 = new Tokenaward();
-						tokenawarde3.setUserId(user3.getUserId());
+						tokenawarde3.setUserId(user2.getUserId());
 						tokenawarde3.setTokenAwardFunctionType(18);
 						tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
-						tokenawarde3.setInviteRewards(m2);
+						tokenawarde3.setInviteRewards(m1);
 						tokenawarde3.setCreateTime(new Date());
 						tokenawarde3.setDistributionType(1);
-						tokenawarde3.setAwardBalance(m2);
+						tokenawarde3.setAwardBalance(m1);
 						tokenawarde3.setCounter(0);
 						tokenawarde3.setGrantType(2);
 						tokenawarde3.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenawarde3);
-						// 将注册用户的信息同时存入流水表单中
+						/*// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
-						tokenrecords2.setUserId(user3.getUserId());
+						tokenrecords2.setUserId(user2.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
 						tokenrecords2.setFunctionType(18);
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
-						kffTokenrecordsService.save(tokenrecords2);
+						kffTokenrecordsService.save(tokenrecords2);*/
 
-						coinProperty.setUserId(user3.getUserId());
-						coinProperty
-								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
-						kffCoinPropertyService.save(coinProperty);
+						CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user2.getUserId());
+						
+						Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+						if(coinDistributed == null) {
+							coinDistributed = 0d;
+							coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+						}
+						coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+						
+						kffCoinPropertyService.update(coinPropertyRefer);
 
 					}
 					if (sum2 <= 30000) {
@@ -1491,22 +1596,25 @@ public class AwardPortService {
 						tokenawarde3.setGrantType(2);
 						tokenawarde3.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenawarde3);
-						// 将注册用户的信息同时存入流水表单中
+						/*// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
 						tokenrecords2.setUserId(user3.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
 						tokenrecords2.setFunctionType(18);
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
-						kffTokenrecordsService.save(tokenrecords2);
+						kffTokenrecordsService.save(tokenrecords2);*/
 
-						coinProperty.setUserId(user3.getUserId());
-						coinProperty
-								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
-						kffCoinPropertyService.save(coinProperty);
-
+						CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user3.getUserId());
+						
+						Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+						if(coinDistributed == null) {
+							coinDistributed = 0d;
+							coinPropertyRefer.setCoinDistributed(m2+coinDistributed);
+						}
+						coinPropertyRefer.setCoinDistributed(m2+coinDistributed);
+						
+						kffCoinPropertyService.update(coinPropertyRefer);
 					}
 					
 				} else if ((user3.getUserType() == 2 || user3.getUserType() == 3)) { // 将注册用户id
@@ -1571,15 +1679,27 @@ public class AwardPortService {
 						tokenaward2.setCounter(0);
 						tokenaward2.setGrantType(2);
 						tokenaward2.setPriaiseAward(0d);
+						tokenaward2.setAwardBalance(m1);
 						kffTokenawardService.save(tokenaward2);
-						// 将注册用户的信息同时存入流水表单中
+						/*// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
 						tokenrecords2.setUserId(user2.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
 						tokenrecords2.setFunctionType(18);
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
-						kffTokenrecordsService.save(tokenrecords2);
+						kffTokenrecordsService.save(tokenrecords2);*/
+						
+						CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user2.getUserId());
+						
+						Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+						if(coinDistributed == null) {
+							coinDistributed = 0d;
+							coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+						}
+						coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+						
+						kffCoinPropertyService.update(coinPropertyRefer);
 
 					}
 					if (sum2 <= 5000000) {
@@ -1596,22 +1716,25 @@ public class AwardPortService {
 						tokenawarde3.setGrantType(2);
 						tokenawarde3.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenawarde3);
-						// 将注册用户的信息同时存入流水表单中
+						/*// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
 						tokenrecords2.setUserId(user3.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
 						tokenrecords2.setFunctionType(18);
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
-						kffTokenrecordsService.save(tokenrecords2);
+						kffTokenrecordsService.save(tokenrecords2);*/
 
-						coinProperty.setUserId(user3.getUserId());
-						coinProperty
-								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
-						kffCoinPropertyService.save(coinProperty);
-
+						CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user3.getUserId());
+						
+						Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+						if(coinDistributed == null) {
+							coinDistributed = 0d;
+							coinPropertyRefer.setCoinDistributed(m2+coinDistributed);
+						}
+						coinPropertyRefer.setCoinDistributed(m2+coinDistributed);
+						
+						kffCoinPropertyService.update(coinPropertyRefer);
 					}
 					
 				}
@@ -1744,20 +1867,25 @@ public class AwardPortService {
 					tokenaward2.setPriaiseAward(0d);
 					kffTokenawardService.save(tokenaward2);
 
-					coinProperty.setUserId(user2.getUserId());
-					coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
-					coinProperty.setCoinDistributed(m1);
-
-					kffCoinPropertyService.save(coinProperty);
-
-					// 将注册用户的信息同时存入流水表单中
+					CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user2.getUserId());
+					
+					Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+					if(coinDistributed == null) {
+						coinDistributed = 0d;
+						coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+					}
+					coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+					
+					kffCoinPropertyService.update(coinPropertyRefer);
+					
+					/*// 将注册用户的信息同时存入流水表单中
 					Tokenrecords tokenrecords2 = new Tokenrecords();
 					tokenrecords2.setUserId(user2.getUserId());
 					tokenrecords2.setFunctionDesc("邀请奖励");
 					tokenrecords2.setFunctionType(18);
 					tokenrecords2.setTradeType(1);
 					tokenrecords2.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords2);
+					kffTokenrecordsService.save(tokenrecords2);*/
 
 				}
 			} else if ((user2.getUserType() == 2 || user2.getUserType() == 3) && user2.getReferLevel() == 0) {
@@ -1817,19 +1945,25 @@ public class AwardPortService {
 
 					kffTokenawardService.save(tokenaward2);
 
-					coinProperty.setUserId(userId);
-					coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
-					coinProperty.setCoinDistributed(m0);
-					kffCoinPropertyService.save(coinProperty);
+					CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user2.getUserId());
+					
+					Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+					if(coinDistributed == null) {
+						coinDistributed = 0d;
+						coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+					}
+					coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+					
+					kffCoinPropertyService.update(coinPropertyRefer);
 
-					// 将注册用户的信息同时存入流水表单中
+					/*// 将注册用户的信息同时存入流水表单中
 					Tokenrecords tokenrecords2 = new Tokenrecords();
 					tokenrecords2.setUserId(user2.getUserId());
 					tokenrecords2.setFunctionDesc("邀请奖励");
 					tokenrecords2.setFunctionType(18);
 					tokenrecords2.setTradeType(1);
 					tokenrecords2.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords2);
+					kffTokenrecordsService.save(tokenrecords2);*/
 
 				}
 			} else if ((user2.getUserType() == 1 || user2.getUserType() == 4) && user2.getReferLevel() == 1) {
@@ -1889,21 +2023,25 @@ public class AwardPortService {
 						tokenaward2.setGrantType(2);
 						tokenaward2.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenaward2);
-						// 将注册用户的信息同时存入流水表单中
+						/*// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
 						tokenrecords2.setUserId(user2.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
 						tokenrecords2.setFunctionType(18);
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
-						kffTokenrecordsService.save(tokenrecords2);
+						kffTokenrecordsService.save(tokenrecords2);*/
 
-						coinProperty.setUserId(user2.getUserId());
-						coinProperty
-								.setCoinLock(kffUserService.findById(user2.getUserId()).getKffCoinNum().doubleValue());
-						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-						coinProperty.setCoinDistributed(m1 + coinProperty.getCoinDistributed());
-						kffCoinPropertyService.save(coinProperty);
+						CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user2.getUserId());
+						
+						Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+						if(coinDistributed == null) {
+							coinDistributed = 0d;
+							coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+						}
+						coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+						
+						kffCoinPropertyService.update(coinPropertyRefer);
 
 					}
 					if (sum2 <= 10000) {
@@ -1920,22 +2058,25 @@ public class AwardPortService {
 						tokenawarde3.setGrantType(2);
 						tokenawarde3.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenawarde3);
-						// 将注册用户的信息同时存入流水表单中
+						/*// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
 						tokenrecords2.setUserId(user3.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
 						tokenrecords2.setFunctionType(18);
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
-						kffTokenrecordsService.save(tokenrecords2);
+						kffTokenrecordsService.save(tokenrecords2);*/
 
-						coinProperty.setUserId(user3.getUserId());
-						coinProperty
-								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
-						kffCoinPropertyService.save(coinProperty);
-
+						CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user3.getUserId());
+						
+						Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+						if(coinDistributed == null) {
+							coinDistributed = 0d;
+							coinPropertyRefer.setCoinDistributed(m2+coinDistributed);
+						}
+						coinPropertyRefer.setCoinDistributed(m2+coinDistributed);
+						
+						kffCoinPropertyService.update(coinPropertyRefer);
 					}
 				}
 
@@ -1998,15 +2139,27 @@ public class AwardPortService {
 						tokenaward2.setCounter(0);
 						tokenaward2.setGrantType(2);
 						tokenaward2.setPriaiseAward(0d);
+						tokenaward2.setAwardBalance(m1);
 						kffTokenawardService.save(tokenaward2);
-						// 将注册用户的信息同时存入流水表单中
+						/*// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
 						tokenrecords2.setUserId(user2.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
 						tokenrecords2.setFunctionType(18);
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
-						kffTokenrecordsService.save(tokenrecords2);
+						kffTokenrecordsService.save(tokenrecords2);*/
+						
+						CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user2.getUserId());
+						
+						Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+						if(coinDistributed == null) {
+							coinDistributed = 0d;
+							coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+						}
+						coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+						
+						kffCoinPropertyService.update(coinPropertyRefer);
 
 					}
 					if (sum2 <= 10000) {
@@ -2023,21 +2176,25 @@ public class AwardPortService {
 						tokenawarde3.setGrantType(2);
 						tokenawarde3.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenawarde3);
-						// 将注册用户的信息同时存入流水表单中
+						/*// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
 						tokenrecords2.setUserId(user3.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
 						tokenrecords2.setFunctionType(18);
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
-						kffTokenrecordsService.save(tokenrecords2);
+						kffTokenrecordsService.save(tokenrecords2);*/
 
-						coinProperty.setUserId(user3.getUserId());
-						coinProperty
-								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
-						kffCoinPropertyService.save(coinProperty);
+						CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user3.getUserId());
+						
+						Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+						if(coinDistributed == null) {
+							coinDistributed = 0d;
+							coinPropertyRefer.setCoinDistributed(m2+coinDistributed);
+						}
+						coinPropertyRefer.setCoinDistributed(m2+coinDistributed);
+						
+						kffCoinPropertyService.update(coinPropertyRefer);
 
 					}
 				}
@@ -2095,32 +2252,36 @@ public class AwardPortService {
 					if (sum <= 10000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenawarde3 = new Tokenaward();
-						tokenawarde3.setUserId(user3.getUserId());
+						tokenawarde3.setUserId(user2.getUserId());
 						tokenawarde3.setTokenAwardFunctionType(18);
 						tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
-						tokenawarde3.setInviteRewards(m2);
+						tokenawarde3.setInviteRewards(m1);
 						tokenawarde3.setCreateTime(new Date());
 						tokenawarde3.setDistributionType(1);
-						tokenawarde3.setAwardBalance(m2);
+						tokenawarde3.setAwardBalance(m1);
 						tokenawarde3.setCounter(0);
 						tokenawarde3.setGrantType(2);
 						tokenawarde3.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenawarde3);
-						// 将注册用户的信息同时存入流水表单中
+						/*// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
-						tokenrecords2.setUserId(user3.getUserId());
+						tokenrecords2.setUserId(user2.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
 						tokenrecords2.setFunctionType(18);
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
 						kffTokenrecordsService.save(tokenrecords2);
-
-						coinProperty.setUserId(user3.getUserId());
-						coinProperty
-								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
-						kffCoinPropertyService.save(coinProperty);
+*/
+						CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user2.getUserId());
+						
+						Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+						if(coinDistributed == null) {
+							coinDistributed = 0d;
+							coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+						}
+						coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+						
+						kffCoinPropertyService.update(coinPropertyRefer);
 
 					}
 					if (sum2 <= 10000) {
@@ -2137,21 +2298,25 @@ public class AwardPortService {
 						tokenawarde3.setGrantType(2);
 						tokenawarde3.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenawarde3);
-						// 将注册用户的信息同时存入流水表单中
+						/*// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
 						tokenrecords2.setUserId(user3.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
 						tokenrecords2.setFunctionType(18);
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
-						kffTokenrecordsService.save(tokenrecords2);
+						kffTokenrecordsService.save(tokenrecords2);*/
 
-						coinProperty.setUserId(user3.getUserId());
-						coinProperty
-								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
-						kffCoinPropertyService.save(coinProperty);
+						CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user3.getUserId());
+						
+						Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+						if(coinDistributed == null) {
+							coinDistributed = 0d;
+							coinPropertyRefer.setCoinDistributed(m2+coinDistributed);
+						}
+						coinPropertyRefer.setCoinDistributed(m2+coinDistributed);
+						
+						kffCoinPropertyService.update(coinPropertyRefer);
 
 					}
 				} else if ((user3.getUserType() == 2 || user3.getUserType() == 3)) { // 将注册用户id
@@ -2216,15 +2381,27 @@ public class AwardPortService {
 						tokenaward2.setCounter(0);
 						tokenaward2.setGrantType(2);
 						tokenaward2.setPriaiseAward(0d);
+						tokenaward2.setAwardBalance(m1);
 						kffTokenawardService.save(tokenaward2);
-						// 将注册用户的信息同时存入流水表单中
+						/*// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
 						tokenrecords2.setUserId(user2.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
 						tokenrecords2.setFunctionType(18);
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
-						kffTokenrecordsService.save(tokenrecords2);
+						kffTokenrecordsService.save(tokenrecords2);*/
+						
+						CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user2.getUserId());
+						
+						Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+						if(coinDistributed == null) {
+							coinDistributed = 0d;
+							coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+						}
+						coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+						
+						kffCoinPropertyService.update(coinPropertyRefer);
 
 					}
 					if (sum2 <= 5000000) {
@@ -2241,21 +2418,25 @@ public class AwardPortService {
 						tokenawarde3.setGrantType(2);
 						tokenawarde3.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenawarde3);
-						// 将注册用户的信息同时存入流水表单中
+						/*// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
 						tokenrecords2.setUserId(user3.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
 						tokenrecords2.setFunctionType(18);
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
-						kffTokenrecordsService.save(tokenrecords2);
+						kffTokenrecordsService.save(tokenrecords2);*/
 
-						coinProperty.setUserId(user3.getUserId());
-						coinProperty
-								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
-						kffCoinPropertyService.save(coinProperty);
+						CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user3.getUserId());
+						
+						Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+						if(coinDistributed == null) {
+							coinDistributed = 0d;
+							coinPropertyRefer.setCoinDistributed(m2+coinDistributed);
+						}
+						coinPropertyRefer.setCoinDistributed(m2+coinDistributed);
+						
+						kffCoinPropertyService.update(coinPropertyRefer);
 
 					}
 				}
@@ -2390,20 +2571,25 @@ public class AwardPortService {
 					tokenaward2.setAwardBalance(m1);
 					kffTokenawardService.save(tokenaward2);
 
-					coinProperty.setUserId(user2.getUserId());
-					coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
-					coinProperty.setCoinDistributed(m1);
-
-					kffCoinPropertyService.save(coinProperty);
+					CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user2.getUserId());
+					
+					Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+					if(coinDistributed == null) {
+						coinDistributed = 0d;
+						coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+					}
+					coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+					
+					kffCoinPropertyService.update(coinPropertyRefer);
 
 					// 将注册用户的信息同时存入流水表单中
-					Tokenrecords tokenrecords2 = new Tokenrecords();
+					/*Tokenrecords tokenrecords2 = new Tokenrecords();
 					tokenrecords2.setUserId(user2.getUserId());
 					tokenrecords2.setFunctionDesc("邀请奖励");
 					tokenrecords2.setFunctionType(18);
 					tokenrecords2.setTradeType(1);
 					tokenrecords2.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords2);
+					kffTokenrecordsService.save(tokenrecords2);*/
 
 				}
 			} else if ((user2.getUserType() == 2 || user2.getUserType() == 3) && user2.getReferLevel() == 0) {
@@ -2462,19 +2648,25 @@ public class AwardPortService {
 					tokenaward2.setPriaiseAward(0d);
 					kffTokenawardService.save(tokenaward2);
 
-					coinProperty.setUserId(userId);
-					coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
-					coinProperty.setCoinDistributed(m0);
-					kffCoinPropertyService.save(coinProperty);
+					CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user2.getUserId());
+					
+					Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+					if(coinDistributed == null) {
+						coinDistributed = 0d;
+						coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+					}
+					coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+					
+					kffCoinPropertyService.update(coinPropertyRefer);
 
-					// 将注册用户的信息同时存入流水表单中
+					/*// 将注册用户的信息同时存入流水表单中
 					Tokenrecords tokenrecords2 = new Tokenrecords();
 					tokenrecords2.setUserId(user2.getUserId());
 					tokenrecords2.setFunctionDesc("邀请奖励");
 					tokenrecords2.setFunctionType(18);
 					tokenrecords2.setTradeType(1);
 					tokenrecords2.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords2);
+					kffTokenrecordsService.save(tokenrecords2);*/
 
 				}
 			} else if ((user2.getUserType() == 1 || user2.getUserType() == 4) && user2.getReferLevel() == 1) {
@@ -2534,7 +2726,7 @@ public class AwardPortService {
 						tokenaward2.setGrantType(2);
 						tokenaward2.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenaward2);
-						// 将注册用户的信息同时存入流水表单中
+					/*	// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
 						tokenrecords2.setUserId(user2.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
@@ -2542,13 +2734,17 @@ public class AwardPortService {
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
 						kffTokenrecordsService.save(tokenrecords2);
-
-						coinProperty.setUserId(user2.getUserId());
-						coinProperty
-								.setCoinLock(kffUserService.findById(user2.getUserId()).getKffCoinNum().doubleValue());
-						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-						coinProperty.setCoinDistributed(m1 + coinProperty.getCoinDistributed());
-						kffCoinPropertyService.save(coinProperty);
+*/
+						CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user2.getUserId());
+						
+						Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+						if(coinDistributed == null) {
+							coinDistributed = 0d;
+							coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+						}
+						coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+						
+						kffCoinPropertyService.update(coinPropertyRefer);
 
 					}
 					if (sum2 <= 10000) {
@@ -2565,21 +2761,25 @@ public class AwardPortService {
 						tokenawarde3.setCounter(0);
 						tokenawarde3.setGrantType(2);
 						kffTokenawardService.save(tokenawarde3);
-						// 将注册用户的信息同时存入流水表单中
+						/*// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
 						tokenrecords2.setUserId(user3.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
 						tokenrecords2.setFunctionType(18);
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
-						kffTokenrecordsService.save(tokenrecords2);
+						kffTokenrecordsService.save(tokenrecords2);*/
 
-						coinProperty.setUserId(user3.getUserId());
-						coinProperty
-								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
-						kffCoinPropertyService.save(coinProperty);
+						CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user3.getUserId());
+						
+						Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+						if(coinDistributed == null) {
+							coinDistributed = 0d;
+							coinPropertyRefer.setCoinDistributed(m2+coinDistributed);
+						}
+						coinPropertyRefer.setCoinDistributed(m2+coinDistributed);
+						
+						kffCoinPropertyService.update(coinPropertyRefer);
 
 					}
 				}
@@ -2643,15 +2843,27 @@ public class AwardPortService {
 						tokenaward2.setCounter(0);
 						tokenaward2.setGrantType(2);
 						tokenaward2.setPriaiseAward(0d);
+						tokenaward2.setAwardBalance(m1);
 						kffTokenawardService.save(tokenaward2);
-						// 将注册用户的信息同时存入流水表单中
+						/*// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
 						tokenrecords2.setUserId(user2.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
 						tokenrecords2.setFunctionType(18);
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
-						kffTokenrecordsService.save(tokenrecords2);
+						kffTokenrecordsService.save(tokenrecords2);*/
+						
+						CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user2.getUserId());
+						
+						Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+						if(coinDistributed == null) {
+							coinDistributed = 0d;
+							coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+						}
+						coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+						
+						kffCoinPropertyService.update(coinPropertyRefer);
 
 					}
 					if (sum2 <= 10000) {
@@ -2668,21 +2880,25 @@ public class AwardPortService {
 						tokenawarde3.setGrantType(2);
 						tokenawarde3.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenawarde3);
-						// 将注册用户的信息同时存入流水表单中
+					/*	// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
 						tokenrecords2.setUserId(user3.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
 						tokenrecords2.setFunctionType(18);
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
-						kffTokenrecordsService.save(tokenrecords2);
+						kffTokenrecordsService.save(tokenrecords2);*/
 
-						coinProperty.setUserId(user3.getUserId());
-						coinProperty
-								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
-						kffCoinPropertyService.save(coinProperty);
+						CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user3.getUserId());
+						
+						Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+						if(coinDistributed == null) {
+							coinDistributed = 0d;
+							coinPropertyRefer.setCoinDistributed(m2+coinDistributed);
+						}
+						coinPropertyRefer.setCoinDistributed(m2+coinDistributed);
+						
+						kffCoinPropertyService.update(coinPropertyRefer);
 
 					}
 				}
@@ -2740,33 +2956,36 @@ public class AwardPortService {
 					if (sum <= 10000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenawarde3 = new Tokenaward();
-						tokenawarde3.setUserId(user3.getUserId());
+						tokenawarde3.setUserId(user2.getUserId());
 						tokenawarde3.setTokenAwardFunctionType(18);
 						tokenawarde3.setTokenAwardFunctionDesc("邀请奖励");
-						tokenawarde3.setInviteRewards(m2);
+						tokenawarde3.setInviteRewards(m1);
 						tokenawarde3.setCreateTime(new Date());
 						tokenawarde3.setDistributionType(1);
-						tokenawarde3.setAwardBalance(m2);
+						tokenawarde3.setAwardBalance(m1);
 						tokenawarde3.setCounter(0);
 						tokenawarde3.setPriaiseAward(0d);
 						tokenawarde3.setGrantType(2);
 						kffTokenawardService.save(tokenawarde3);
-						// 将注册用户的信息同时存入流水表单中
+					/*	// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
-						tokenrecords2.setUserId(user3.getUserId());
+						tokenrecords2.setUserId(user2.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
 						tokenrecords2.setFunctionType(18);
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
-						kffTokenrecordsService.save(tokenrecords2);
+						kffTokenrecordsService.save(tokenrecords2);*/
 
-						coinProperty.setUserId(user3.getUserId());
-						coinProperty
-								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
-						kffCoinPropertyService.save(coinProperty);
-
+						CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user2.getUserId());
+						
+						Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+						if(coinDistributed == null) {
+							coinDistributed = 0d;
+							coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+						}
+						coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+						
+						kffCoinPropertyService.update(coinPropertyRefer);
 					}
 					if (sum2 <= 10000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
@@ -2782,7 +3001,7 @@ public class AwardPortService {
 						tokenawarde3.setGrantType(2);
 						tokenawarde3.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenawarde3);
-						// 将注册用户的信息同时存入流水表单中
+					/*	// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
 						tokenrecords2.setUserId(user3.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
@@ -2790,13 +3009,17 @@ public class AwardPortService {
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
 						kffTokenrecordsService.save(tokenrecords2);
-
-						coinProperty.setUserId(user3.getUserId());
-						coinProperty
-								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
-						kffCoinPropertyService.save(coinProperty);
+*/
+						CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user3.getUserId());
+						
+						Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+						if(coinDistributed == null) {
+							coinDistributed = 0d;
+							coinPropertyRefer.setCoinDistributed(m2+coinDistributed);
+						}
+						coinPropertyRefer.setCoinDistributed(m2+coinDistributed);
+						
+						kffCoinPropertyService.update(coinPropertyRefer);
 
 					}
 				} else if ((user3.getUserType() == 2 || user3.getUserType() == 3)) { // 将注册用户id
@@ -2861,15 +3084,27 @@ public class AwardPortService {
 						tokenaward2.setCounter(0);
 						tokenaward2.setGrantType(2);
 						tokenaward2.setPriaiseAward(0d);
+						tokenaward2.setAwardBalance(m1);
 						kffTokenawardService.save(tokenaward2);
-						// 将注册用户的信息同时存入流水表单中
+					/*	// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
 						tokenrecords2.setUserId(user2.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
 						tokenrecords2.setFunctionType(18);
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
-						kffTokenrecordsService.save(tokenrecords2);
+						kffTokenrecordsService.save(tokenrecords2);*/
+						
+						CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user2.getUserId());
+						
+						Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+						if(coinDistributed == null) {
+							coinDistributed = 0d;
+							coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+						}
+						coinPropertyRefer.setCoinDistributed(m1+coinDistributed);
+						
+						kffCoinPropertyService.update(coinPropertyRefer);
 
 					}
 					if (sum2 <= 5000000) {
@@ -2886,21 +3121,25 @@ public class AwardPortService {
 						tokenawarde3.setGrantType(2);
 						tokenawarde3.setPriaiseAward(0d);
 						kffTokenawardService.save(tokenawarde3);
-						// 将注册用户的信息同时存入流水表单中
+						/*// 将注册用户的信息同时存入流水表单中
 						Tokenrecords tokenrecords2 = new Tokenrecords();
 						tokenrecords2.setUserId(user3.getUserId());
 						tokenrecords2.setFunctionDesc("邀请奖励");
 						tokenrecords2.setFunctionType(18);
 						tokenrecords2.setTradeType(1);
 						tokenrecords2.setCreateTime(new Date());
-						kffTokenrecordsService.save(tokenrecords2);
+						kffTokenrecordsService.save(tokenrecords2);*/
 
-						coinProperty.setUserId(user3.getUserId());
-						coinProperty
-								.setCoinLock(kffUserService.findById(user3.getUserId()).getKffCoinNum().doubleValue());
-						CoinProperty coinProperty = kffCoinPropertyService.findByUserId(user2.getUserId());
-						coinProperty.setCoinDistributed(m2 + coinProperty.getCoinDistributed());
-						kffCoinPropertyService.save(coinProperty);
+						CoinProperty coinPropertyRefer = kffCoinPropertyService.findByUserId(user3.getUserId());
+						
+						Double coinDistributed = coinPropertyRefer.getCoinDistributed();
+						if(coinDistributed == null) {
+							coinDistributed = 0d;
+							coinPropertyRefer.setCoinDistributed(m2+coinDistributed);
+						}
+						coinPropertyRefer.setCoinDistributed(m2+coinDistributed);
+						
+						kffCoinPropertyService.update(coinPropertyRefer);
 
 					}
 				}

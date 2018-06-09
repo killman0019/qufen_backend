@@ -18,6 +18,13 @@ import com.tzg.rest.exception.rest.RestServiceException;
 public interface KFFProjectPostRmiService {
 	
 
-	public List<ProjectevastatByGrade> findProjectEvaStatScore(Integer projectId) throws RestServiceException;
+	/**
+	 * 项目维度 普通评测按分值统计
+	 * @author:  wj.song 
+	 * @param projectId
+	 * @return
+	 * @throws RestServiceException
+	 */
+	public Map<String,Object> findProjectEvaStatScore(Integer projectId) throws RestServiceException;
 	
 }
