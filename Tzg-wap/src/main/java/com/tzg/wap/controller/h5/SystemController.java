@@ -35,7 +35,7 @@ public class SystemController extends BaseController {
 	@Autowired
 	private KFFRmiService kffRmiService;
 	@Autowired
-	private SystemParamRmiService systemParamRmiService;
+	public SystemParamRmiService systemParamRmiService;
 	@Autowired
 	private RedisService redisService;
 
@@ -50,28 +50,23 @@ public class SystemController extends BaseController {
 	 * @see
 	 * @throws
 	 */
-	@RequestMapping(value = "/upgrade", method = { RequestMethod.POST,
-			RequestMethod.GET })
+	@RequestMapping(value = "/upgrade", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public BaseResponseEntity upgrade(HttpServletRequest request,RegisterRequest registerRequest) {
+	public BaseResponseEntity upgrade(HttpServletRequest request, RegisterRequest registerRequest) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 
-		try {	
-			
-			RestRequestHead requestHead = HttpRequestDeviceUtils
-					.getUserAgent(request);
+		try {
+
+			RestRequestHead requestHead = HttpRequestDeviceUtils.getUserAgent(request);
 			Integer platformType = requestHead.getPlatform();
 			String currentVer = requestHead.getAppVersion();
-			Mobileversionupdate dto = kffRmiService
-					.selectLastVersionByType(platformType);
+			Mobileversionupdate dto = kffRmiService.selectLastVersionByType(platformType);
 			VersionUpgradeResponse response = new VersionUpgradeResponse();
 
 			if (dto != null) {
-				String newVer = dto.getBaseVersion() + "."
-						+ dto.getAlphaVersion() + "." + dto.getBetaVersion();
-				String forceVer = dto.getFbaseVersion() + "."
-						+ dto.getFalphaVersion() + "." + dto.getFbetaVersion();
+				String newVer = dto.getBaseVersion() + "." + dto.getAlphaVersion() + "." + dto.getBetaVersion();
+				String forceVer = dto.getFbaseVersion() + "." + dto.getFalphaVersion() + "." + dto.getFbetaVersion();
 				String upgradeUrl = dto.getUpgradeUrl();
 				String guideUrl = dto.getGuideUrl();
 				String upExplain = dto.getUpexplain().replaceAll("-", "\r\n");
@@ -116,11 +111,9 @@ public class SystemController extends BaseController {
 	 * @see
 	 * @throws
 	 */
-	@RequestMapping(value = "/notice", method = { RequestMethod.POST,
-			RequestMethod.GET })
+	@RequestMapping(value = "/notice", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public BaseResponseEntity notice(HttpServletRequest request,
-			HttpServletResponse response) {
+	public BaseResponseEntity notice(HttpServletRequest request, HttpServletResponse response) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 
@@ -149,11 +142,9 @@ public class SystemController extends BaseController {
 	 * @see
 	 * @throws
 	 */
-	@RequestMapping(value = "/submitSuggest", method = { RequestMethod.POST,
-			RequestMethod.GET })
+	@RequestMapping(value = "/submitSuggest", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public BaseResponseEntity submitSuggest(HttpServletRequest request,
-			HttpServletResponse response, SuggestRequest suggestRequest) {
+	public BaseResponseEntity submitSuggest(HttpServletRequest request, HttpServletResponse response, SuggestRequest suggestRequest) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 
@@ -167,8 +158,7 @@ public class SystemController extends BaseController {
 				userId = AccountTokenUtil.decodeAccountToken(token);
 			} catch (Exception e) {
 				logger.error("submitSuggest decodeAccountToken error:{}", e);
-				return this.resResult(RestErrorCode.PARSE_TOKEN_ERROR,
-						e.getMessage());
+				return this.resResult(RestErrorCode.PARSE_TOKEN_ERROR, e.getMessage());
 			}
 			if (userId == null) {
 				throw new RestServiceException(RestErrorCode.USER_NOT_EXIST);
