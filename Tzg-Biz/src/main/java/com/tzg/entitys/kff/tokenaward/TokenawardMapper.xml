@@ -244,14 +244,24 @@
 	<include refid="queryWhere"/>
 	</select>
 	
-	<select id="reawardSum"  resultType="java.lang.Double" parameterType="java.lang.Double">
-	select sum(reward_token) from tbtokenaward where 1=1
+	<!-- <select id="reawardSum"  resultType="java.lang.Double" parameterType="java.lang.Integer">
+	select sum(invite_rewards) from tbtokenaward where 1=1
 	<![CDATA[
 		FROM tbtokenaward 
 		WHERE 
         user_id = #{userId} 
         AND
 		token_award_function_type = #{tokenAwardFunctionType}        
+	]]>
+	</select> -->
+	<select id="reawardSum1"  resultType="java.lang.Double" parameterType="java.lang.Integer">
+	select sum(invite_rewards) from tbtokenaward 
+	<![CDATA[
+		where 1=1
+		and
+        user_id = #{userId}
+        AND
+		token_award_function_type = 18     
 	]]>
 	</select>
 	

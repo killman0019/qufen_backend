@@ -71,6 +71,12 @@ public class UserService {
 		userMapper.save(user);
 	}
 
+	public KFFUser registerH(KFFUser user) throws RestServiceException
+	{
+		userMapper.saveUser(user);
+		return userMapper.findUserById(user.getUserId());
+	}
+	
 	public boolean update(KFFUser user) throws RestServiceException {
 		if (user.getUserId() == null) {
 			throw new RestServiceException("id不能为空");
@@ -261,7 +267,6 @@ public class UserService {
 	 * @param phoneNumber
 	 * @return
 	 */
-	@Transactional(readOnly = true)
 	public KFFUser findUserByPhoneNumber(String phoneNumber) throws RestServiceException {
 
 		if (StringUtils.isBlank(phoneNumber)) {
@@ -324,6 +329,7 @@ public class UserService {
 	 * }
 	 */
 
+
 	public KFFUser saveUserByphonePass(String phoneNumber, Integer invaUserId, String password) {
 
 		Date createTime = new Date();
@@ -358,8 +364,8 @@ public class UserService {
 			user.setReferUserId(null);
 
 		}
-		userMapper.save(user);
-		return findUserByPhoneNumber(phoneNumber);
+		
+		return registerH(user);
 
 	}
 

@@ -106,6 +106,68 @@
 		)
 	]]>
 	</insert>
+	
+	<insert id="saveUser" parameterType="com.tzg.entitys.kff.user.KFFUser" useGeneratedKeys="true" keyProperty="userId">
+		INSERT INTO tbuser (user_id,
+        	user_name ,
+        	sex ,
+        	icon ,
+        	mobile ,
+        	email ,
+        	wechat ,
+        	password ,
+        	pay_password ,
+        	user_type ,
+        	user_degree ,
+        	user_signature ,
+        	fans_num ,
+        	praise_num ,
+        	evaluation_num ,
+        	discuss_num ,
+        	article_num ,
+        	kff_coin_num ,
+        	area_name ,
+        	createTime ,
+        	updateTime ,
+        	status ,
+        	memo ,
+        	province_code ,
+        	city_code ,
+        	area_code ,
+        	refer_user_id ,
+        	refer_level ,
+        	last_login_dateTime 
+		) VALUES (#{userId,jdbcType=INTEGER},
+        	#{userName,jdbcType=VARCHAR} ,
+        	#{sex,jdbcType=INTEGER} ,
+        	#{icon,jdbcType=VARCHAR} ,
+        	#{mobile,jdbcType=VARCHAR} ,
+        	#{email,jdbcType=VARCHAR} ,
+        	#{wechat,jdbcType=VARCHAR} ,
+        	#{password,jdbcType=VARCHAR} ,
+        	#{payPassword,jdbcType=VARCHAR} ,
+        	#{userType,jdbcType=INTEGER} ,
+        	#{userDegree,jdbcType=INTEGER} ,
+        	#{userSignature,jdbcType=VARCHAR} ,
+        	#{fansNum,jdbcType=INTEGER} ,
+        	#{praiseNum,jdbcType=INTEGER} ,
+        	#{evaluationNum,jdbcType=INTEGER} ,
+        	#{discussNum,jdbcType=INTEGER} ,
+        	#{articleNum,jdbcType=INTEGER} ,
+        	#{kffCoinNum,jdbcType=DECIMAL} ,
+        	#{areaName,jdbcType=VARCHAR} ,
+        	#{createTime,jdbcType=TIMESTAMP} ,
+        	#{updateTime,jdbcType=TIMESTAMP} ,
+        	#{status,jdbcType=INTEGER} ,
+        	#{memo,jdbcType=VARCHAR} ,
+        	#{provinceCode,jdbcType=VARCHAR} ,
+        	#{cityCode,jdbcType=VARCHAR} ,
+        	#{areaCode,jdbcType=VARCHAR} ,
+        	#{referUserId,jdbcType=INTEGER} ,
+        	#{referLevel,jdbcType=INTEGER} ,
+        	#{lastLoginDateTime,jdbcType=TIMESTAMP} 
+		)
+	</insert>
 
 	<update id="update" parameterType="com.tzg.entitys.kff.user.KFFUser">
 		UPDATE tbuser

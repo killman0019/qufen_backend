@@ -39,4 +39,6 @@ public interface KFFUserMapper extends BaseMapper<KFFUser, java.lang.Integer> {
 	public void increaseEvaNum(Integer userId);
 
 	public void increaseDiscussNum(Integer userId);
+	
+	public Integer saveUser(KFFUser user);
 }
