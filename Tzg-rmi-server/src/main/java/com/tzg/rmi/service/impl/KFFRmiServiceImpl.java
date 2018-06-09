@@ -746,7 +746,23 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		receiveTokenRecords.setUpdateTime(now);
 		receiveTokenRecords.setUserId(receiveUser.getUserId());
 		kffTokenrecordsService.save(receiveTokenRecords);
-
+		/**
+		 *  新加资产表同步
+		 */
+		CoinProperty coinSendUser = coinPropertyService.findByUserId(sendUser.getUserId()); // 发送打赏的人
+		CoinProperty coinReceiveUser = coinPropertyService.findByUserId(receiveUser.getUserId());	// 接受打赏的人
+		
+		Double coinLockSend = coinSendUser.getCoinLock();
+		coinLockSend = new BigDecimal(Double.toString(coinLockSend)).subtract(commendationRequest.getAmount()).doubleValue();
+		coinSendUser.setCoinLock(coinLockSend);
+		coinPropertyService.update(coinSendUser);
+		
+		Double coinLockReceive = coinReceiveUser.getCoinLock();
+		coinLockReceive = new BigDecimal(Double.toString(coinLockReceive)).add(commendationRequest.getAmount()).doubleValue();
+		coinReceiveUser.setCoinLock(coinLockReceive);
+		coinPropertyService.update(coinReceiveUser);
+		
+		
 		// 被赞赏用户消息
 		KFFMessage message = new KFFMessage();
 		message.setContent(sendUser.getUserName() + "赞赏了您" + commendationRequest.getAmount() + "个token");
@@ -1733,9 +1749,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 								Double rewardToken = tokenaward.getRewardToken();
 								Double priaiseAward = tokenaward.getPriaiseAward();
 								tokenaward.setPriaiseAward(priaiseAward + (pc * createPUF)); // 点赞奖励.
-								tokenaward.setRewardToken(rewardToken + (pc * createPUF));
+								tokenaward.setInviteRewards(rewardToken + (pc * createPUF));
 								tokenaward.setCreateTime(new Date());
-
+								tokenaward.setAwardBalance(0d); // 线性余额  跟一次性发放的奖励没有关系 默认为0
 								kffTokenawardService.save(tokenaward);
 
 								qfIndexService.updateYxPraise(userId);
@@ -1782,7 +1798,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 									// Double rewardToken = tokenaward.getRewardToken();
 									// Double priaiseAward = tokenaward.getPriaiseAward();
 									tokenaward.setPriaiseAward((pc2 * createPUF) + meet1); // 点赞奖励.
-									tokenaward.setRewardToken((pc2 * createPUF) + meet1);
+									tokenaward.setInviteRewards((pc2 * createPUF) + meet1);
+									tokenaward.setAwardBalance(0d); // 线性余额  跟一次性发放的奖励没有关系 默认为0
 									tokenaward.setCreateTime(new Date());
 
 									kffTokenawardService.save(tokenaward);
@@ -1818,8 +1835,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 									// Double rewardToken = tokenaward.getRewardToken();
 									// Double priaiseAward = tokenaward.getPriaiseAward();
 									tokenaward.setPriaiseAward((pc2 * createPUF)); // 点赞奖励.
-									tokenaward.setRewardToken((pc2 * createPUF));
+									tokenaward.setInviteRewards((pc2 * createPUF));
 									tokenaward.setCreateTime(new Date());
+									tokenaward.setAwardBalance(0d); // 线性余额  跟一次性发放的奖励没有关系 默认为0
 									kffTokenawardService.save(tokenaward);
 									qfIndexService.updateYxPraise(userId);
 								}
@@ -1862,8 +1880,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 							// Double rewardToken = tokenaward.getRewardToken();
 							// Double priaiseAward = tokenaward.getPriaiseAward();
 							tokenaward.setPriaiseAward((pc3 * createPUF)); // 点赞奖励.
-							tokenaward.setRewardToken((pc3 * createPUF));
+							tokenaward.setInviteRewards((pc3 * createPUF));
 							tokenaward.setCreateTime(new Date());
+							tokenaward.setAwardBalance(0d); // 线性余额  跟一次性发放的奖励没有关系 默认为0
 							kffTokenawardService.save(tokenaward);
 
 							qfIndexService.updateYxPraise(userId);
@@ -1908,8 +1927,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 							// Double rewardToken = tokenaward.getRewardToken();
 							// Double priaiseAward = tokenaward.getPriaiseAward();
 							tokenaward.setPriaiseAward((tl * createPUF)); // 点赞奖励.
-							tokenaward.setRewardToken((tl * createPUF)); // 奖励总数
+							tokenaward.setInviteRewards((tl * createPUF)); // 奖励总数
 							tokenaward.setCreateTime(new Date());
+							tokenaward.setAwardBalance(0d); // 线性余额  跟一次性发放的奖励没有关系 默认为0
 							kffTokenawardService.save(tokenaward);
 							qfIndexService.updateYxPraise(userId);
 						}
@@ -1955,8 +1975,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 									// Double rewardToken = tokenaward.getRewardToken();
 									// Double priaiseAward = tokenaward.getPriaiseAward();
 									tokenaward.setPriaiseAward((wz * createPUF + meet)); // 点赞奖励.
-									tokenaward.setRewardToken((wz * createPUF + meet));
+									tokenaward.setInviteRewards((wz * createPUF + meet));
 									tokenaward.setCreateTime(new Date());
+									tokenaward.setAwardBalance(0d); // 线性余额  跟一次性发放的奖励没有关系 默认为0
 									kffTokenawardService.save(tokenaward);
 									qfIndexService.updateYxPraise(userId);
 								} else {
@@ -1989,8 +2010,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 									// Double rewardToken = tokenaward.getRewardToken();
 									// Double priaiseAward = tokenaward.getPriaiseAward();
 									tokenaward.setPriaiseAward((wz * createPUF)); // 点赞奖励.
-									tokenaward.setRewardToken((wz * createPUF)); // 奖励总额
+									tokenaward.setInviteRewards((wz * createPUF)); // 奖励总额
 									tokenaward.setCreateTime(new Date());
+									tokenaward.setAwardBalance(0d); // 线性余额  跟一次性发放的奖励没有关系 默认为0
 									kffTokenawardService.save(tokenaward);
 									qfIndexService.updateYxPraise(userId);
 
@@ -3261,8 +3283,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 								// Double rewardToken = tokenaward.getRewardToken();
 								// Double priaiseAward = tokenaward.getPriaiseAward();
 								tokenaward.setPriaiseAward(profesEvaluat * createPUF); // 点赞奖励.
-								tokenaward.setRewardToken(profesEvaluat * createPUF);
+								tokenaward.setInviteRewards(profesEvaluat * createPUF);
 								tokenaward.setCreateTime(new Date());
+								tokenaward.setAwardBalance(0d); // 线性余额  跟一次性发放的奖励没有关系 默认为0
 								kffTokenawardService.save(tokenaward);
 
 								qfIndexService.updateYxPraise(userId);
@@ -3298,8 +3321,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 								// Double rewardToken = tokenaward.getRewardToken();
 								// Double priaiseAward = tokenaward.getPriaiseAward();
 								tokenaward.setPriaiseAward(aloneEvaluat * createPUF); // 点赞奖励.
-								tokenaward.setRewardToken(aloneEvaluat * createPUF);
+								tokenaward.setInviteRewards(aloneEvaluat * createPUF);
 								tokenaward.setCreateTime(new Date());
+								tokenaward.setAwardBalance(0d); // 线性余额  跟一次性发放的奖励没有关系 默认为0
 								kffTokenawardService.save(tokenaward);
 
 								qfIndexService.updateYxPraise(userId);
@@ -3340,8 +3364,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 							// Double rewardToken = tokenaward.getRewardToken();
 							// Double priaiseAward = tokenaward.getPriaiseAward();
 							tokenaward.setPriaiseAward(discuss * createPUF); // 点赞奖励.
-							tokenaward.setRewardToken(discuss * createPUF); // 奖励总数
+							tokenaward.setInviteRewards(discuss * createPUF); // 奖励总数
 							tokenaward.setCreateTime(new Date());
+							tokenaward.setAwardBalance(0d); // 线性余额  跟一次性发放的奖励没有关系 默认为0
 							kffTokenawardService.save(tokenaward);
 							qfIndexService.updateYxPraise(userId);
 
@@ -3380,8 +3405,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 							// Double rewardToken = tokenaward.getRewardToken();
 							// Double priaiseAward = tokenaward.getPriaiseAward();
 							tokenaward.setPriaiseAward(article * createPUF); // 点赞奖励.
-							tokenaward.setRewardToken(article * createPUF); // 点赞总数
+							tokenaward.setInviteRewards(article * createPUF); // 点赞总数
 							tokenaward.setCreateTime(new Date());
+							tokenaward.setAwardBalance(0d); // 线性余额  跟一次性发放的奖励没有关系 默认为0
 							kffTokenawardService.save(tokenaward);
 							qfIndexService.updateYxPraise(userId);
 						}
