@@ -1243,7 +1243,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (StringUtils.isBlank(discussRequest.getPostTitle())) {
 			throw new RestServiceException("讨论标题不能为空");
 		}
-		if (discussRequest.getDisscussContents().length() > 30000) {
+		if (discussRequest.getDisscussContents().length() > 3000) {
 			throw new RestServiceException("讨论内容长度超过限制");
 		}
 		if (discussRequest.getPostTitle().length() > 30) {
@@ -4925,7 +4925,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public void aLiYunSmsApi(String phone, String module, String dynamicValidateCode, String cacheKey, String smsStormCheckKey) {
+	public synchronized void aLiYunSmsApi(String phone, String module, String dynamicValidateCode, String cacheKey, String smsStormCheckKey) {
 		// TaobaoClient client = new DefaultTaobaoClient(AliyunConstant.SMS_URL,
 		// AliyunConstant.SMS_APP_KEY, AliyunConstant.SMS_SECRET);
 

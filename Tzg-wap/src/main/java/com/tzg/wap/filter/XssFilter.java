@@ -61,12 +61,12 @@ public class XssFilter implements Filter {
 		 * 自己写的解决跨域问题 ,上线之前注释掉 会引起CSRF攻击
 		 */
 		// 上线之前进行注释,本地运行打开注释,Nginx已经进行跨域处理,此处再次处理将会引起跨域问题
-		/*resp.setHeader("Access-Control-Allow-Origin", "*");
+		resp.setHeader("Access-Control-Allow-Origin", "*");
 		resp.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
 		resp.setHeader("Access-Control-Max-Age", "3600");
 		resp.addHeader("Access-Control-Allow-Headers", "Content-Type,XFILENAME,XFILECATEGORY,XFILESIZE");
 		resp.setHeader("Access-Control-Allow-Credentials", "true");
-*/
+
 		String path = req.getServletPath();
 		if (ArrayUtils.contains(excludeURLs, path)) {
 			logger.debug("XSS filter ignored ,servlet path:{}", path);

@@ -19,6 +19,13 @@ public class DateUtil {
 
 	private static String timePattern = "HH:mm:ss";
 
+	public static String getCurrentTimeSS() {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		Date date = new Date();
+		String now = sdf.format(date);
+		return now;
+	}
+
 	/**
 	 * 根据默认日期格式，返回日期字符串。
 	 * 

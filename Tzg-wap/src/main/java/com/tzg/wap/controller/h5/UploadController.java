@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.tzg.common.redis.RedisService;
 import com.tzg.common.utils.FileUtils;
+import com.tzg.common.utils.RandomUtil;
 import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
@@ -61,7 +62,7 @@ public class UploadController extends BaseController {
 		}
 		// 保存图片到
 		String name = UUID.randomUUID().toString().replaceAll("-", "");
-		name = DateUtil.getCurrentTime();
+		name = DateUtil.getCurrentTimeSS();
 		// jpg
 		String ext = FilenameUtils.getExtension(upfile.getOriginalFilename());
 		if (!FileUtils.allowedExtensionSet().contains(ext)) {
@@ -91,7 +92,7 @@ public class UploadController extends BaseController {
 		}
 		// 保存图片到
 		String name = UUID.randomUUID().toString().replaceAll("-", "");
-		name = DateUtil.getCurrentTime();
+		name = DateUtil.getCurrentTimeSS();
 		// jpg
 		String ext = FilenameUtils.getExtension(upfile.getOriginalFilename());
 		if (!FileUtils.allowedExtensionSet().contains(ext)) {
@@ -122,7 +123,7 @@ public class UploadController extends BaseController {
 			throw new RestServiceException("图片大于10M");
 		}
 		String name = UUID.randomUUID().toString().replaceAll("-", "");
-		name = DateUtil.getCurrentTime();
+		name = DateUtil.getCurrentTimeSS();
 		// jpg
 		String ext = FilenameUtils.getExtension(upfile.getOriginalFilename());
 		if (!FileUtils.allowedExtensionSet().contains(ext)) {
@@ -157,7 +158,7 @@ public class UploadController extends BaseController {
 			throw new RestServiceException("图片大于10M");
 		}
 		String name = UUID.randomUUID().toString().replaceAll("-", "");
-		name = DateUtil.getCurrentTime();
+		name = DateUtil.getCurrentTimeSS();
 		// jpg
 		String ext = FilenameUtils.getExtension(upfile.getOriginalFilename());
 		if (!FileUtils.allowedExtensionSet().contains(ext)) {
@@ -194,7 +195,7 @@ public class UploadController extends BaseController {
 			throw new RestServiceException("图片大于10M");
 		}
 		String name = UUID.randomUUID().toString().replaceAll("-", "");
-		name = DateUtil.getCurrentTime();
+		name = DateUtil.getCurrentTimeSS();
 		// jpg
 		String ext = FilenameUtils.getExtension(upfile.getOriginalFilename());
 		if (!FileUtils.allowedExtensionSet().contains(ext)) {
