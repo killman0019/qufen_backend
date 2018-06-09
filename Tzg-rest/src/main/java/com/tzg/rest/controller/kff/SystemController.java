@@ -29,34 +29,33 @@ import com.tzg.rest.vo.BaseResponseEntity;
 import com.tzg.rmi.service.KFFRmiService;
 import com.tzg.rmi.service.SystemParamRmiService;
 
-@Controller(value="KFFSystemController")
+@Controller(value = "KFFSystemController")
 @RequestMapping("/kff/system")
 public class SystemController extends BaseController {
 	private static Logger log = Logger.getLogger(SystemController.class);
-	
 	@Autowired
 	private KFFRmiService kffRmiService;
-    @Autowired
-    private SystemParamRmiService  systemParamRmiService;
+	@Autowired
+	private SystemParamRmiService systemParamRmiService;
 	@Autowired
 	private RedisService redisService;
-	
+
 	/**
 	 * 
-	* @Title: upgrade
-	* @Description: 获取升级提示语和升级链接 
-	* @param @param request
-	* @param @param response
-	* @param @return    
-	* @return BaseResponseEntity
-	* @see    
-	* @throws
+	 * @Title: upgrade
+	 * @Description: 获取升级提示语和升级链接
+	 * @param @param request
+	 * @param @param response
+	 * @param @return
+	 * @return BaseResponseEntity
+	 * @see
+	 * @throws
 	 */
-	@RequestMapping(value="/upgrade",method = {RequestMethod.POST,RequestMethod.GET})
+	@RequestMapping(value = "/upgrade", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public BaseResponseEntity upgrade(HttpServletRequest request) {
 		BaseResponseEntity bre = new BaseResponseEntity();
-        HashMap<String, Object> map = new HashMap<String, Object>();
+		HashMap<String, Object> map = new HashMap<String, Object>();
 
 		try {
 			RegisterRequest registerRequest = getParamMapFromRequestPolicy(request, RegisterRequest.class);
@@ -66,30 +65,30 @@ public class SystemController extends BaseController {
 			Mobileversionupdate dto = kffRmiService.selectLastVersionByType(platformType);
 			VersionUpgradeResponse response = new VersionUpgradeResponse();
 
-			if(dto != null){
-				String newVer = dto.getBaseVersion()+"."+dto.getAlphaVersion()+"."+dto.getBetaVersion();
-	            String forceVer = dto.getFbaseVersion()+"."+dto.getFalphaVersion()+"."+dto.getFbetaVersion();
-	            String upgradeUrl = dto.getUpgradeUrl();
-	            String guideUrl = dto.getGuideUrl();
-	            String upExplain = dto.getUpexplain().replaceAll("-","\r\n");
-	          //是否需要更新
-	            if(currentVer.compareToIgnoreCase(newVer) >= 0){
-	            	response.setUpgrade(0);
-	            }else{
-	            	response.setUpgrade(1);
-	            	response.setVer(newVer);
-	            	response.setUpExplain(upExplain);
-	                //判断需要强制更新还是普通更新
-	                if(currentVer.compareToIgnoreCase(forceVer)>0){
-	                	response.setForce(0);
-	                	response.setUpgradeUrl(upgradeUrl);
-	                	response.setGuideUrl(guideUrl);
-	                }else{
-	                	response.setForce(1);
-	                	response.setUpgradeUrl(upgradeUrl);
-	                	response.setGuideUrl(guideUrl);
-	                }
-	            }
+			if (dto != null) {
+				String newVer = dto.getBaseVersion() + "." + dto.getAlphaVersion() + "." + dto.getBetaVersion();
+				String forceVer = dto.getFbaseVersion() + "." + dto.getFalphaVersion() + "." + dto.getFbetaVersion();
+				String upgradeUrl = dto.getUpgradeUrl();
+				String guideUrl = dto.getGuideUrl();
+				String upExplain = dto.getUpexplain().replaceAll("-", "\r\n");
+				// 是否需要更新
+				if (currentVer.compareToIgnoreCase(newVer) >= 0) {
+					response.setUpgrade(0);
+				} else {
+					response.setUpgrade(1);
+					response.setVer(newVer);
+					response.setUpExplain(upExplain);
+					// 判断需要强制更新还是普通更新
+					if (currentVer.compareToIgnoreCase(forceVer) > 0) {
+						response.setForce(0);
+						response.setUpgradeUrl(upgradeUrl);
+						response.setGuideUrl(guideUrl);
+					} else {
+						response.setForce(1);
+						response.setUpgradeUrl(upgradeUrl);
+						response.setGuideUrl(guideUrl);
+					}
+				}
 			}
 			bre.setData(response);
 
@@ -98,30 +97,29 @@ public class SystemController extends BaseController {
 			return this.resResult(e.getErrorCode(), e.getMessage());
 		} catch (Exception e) {
 			logger.error("SystemController upgrade:{}", e);
-			return this.resResult(RestErrorCode.SYS_ERROR,e.getMessage());
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
 		}
 		return bre;
 	}
-	
-	
+
 	/**
-	* @Title: notice
-	* @Description: 获取系统提示公告
-	* @param @param request
-	* @param @param response
-	* @param @return    
-	* @return BaseResponseEntity
-	* @see    
-	* @throws
+	 * @Title: notice
+	 * @Description: 获取系统提示公告
+	 * @param @param request
+	 * @param @param response
+	 * @param @return
+	 * @return BaseResponseEntity
+	 * @see
+	 * @throws
 	 */
-	@RequestMapping(value="/notice",method = {RequestMethod.POST,RequestMethod.GET})
+	@RequestMapping(value = "/notice", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public BaseResponseEntity notice(HttpServletRequest request) {
 		BaseResponseEntity bre = new BaseResponseEntity();
-        HashMap<String, Object> map = new HashMap<String, Object>();
+		HashMap<String, Object> map = new HashMap<String, Object>();
 
-		try {			
-			KFFNotice dto = kffRmiService.selectLatestNotice();	
+		try {
+			KFFNotice dto = kffRmiService.selectLatestNotice();
 			bre.setData(dto);
 
 		} catch (RestServiceException e) {
@@ -129,58 +127,55 @@ public class SystemController extends BaseController {
 			return this.resResult(e.getErrorCode(), e.getMessage());
 		} catch (Exception e) {
 			logger.error("SystemController notice:{}", e);
-			return this.resResult(RestErrorCode.SYS_ERROR,e.getMessage());
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
 		}
 		return bre;
 	}
+
 	/**
 	 * 
-	* @Title: submitSuggest
-	* @Description: 提交意见反馈
-	* @param @param request
-	* @param @param response
-	* @param @return    
-	* @return BaseResponseEntity
-	* @see    
-	* @throws
+	 * @Title: submitSuggest
+	 * @Description: 提交意见反馈
+	 * @param @param request
+	 * @param @param response
+	 * @param @return
+	 * @return BaseResponseEntity
+	 * @see
+	 * @throws
 	 */
-	@RequestMapping(value="/submitSuggest",method = {RequestMethod.POST,RequestMethod.GET})
+	@RequestMapping(value = "/submitSuggest", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public BaseResponseEntity submitSuggest(HttpServletRequest request) {
 		BaseResponseEntity bre = new BaseResponseEntity();
-        HashMap<String, Object> map = new HashMap<String, Object>();
+		HashMap<String, Object> map = new HashMap<String, Object>();
 
 		try {
 			SuggestRequest suggestRequest = getParamMapFromRequestPolicy(request, SuggestRequest.class);
 			String token = suggestRequest.getToken();
 			if (StringUtils.isBlank(token)) {
-	            	throw new RestServiceException(RestErrorCode.USER_NOT_LOGIN);
-	        }		         
-	        Integer userId = null;
-			try{
-					userId = AccountTokenUtil.decodeAccountToken(token);
-			}catch(Exception e){
-					logger.error("submitSuggest decodeAccountToken error:{}",e);
-					return this.resResult(RestErrorCode.PARSE_TOKEN_ERROR,e.getMessage());
+				throw new RestServiceException(RestErrorCode.USER_NOT_LOGIN);
 			}
-			if(userId == null){
-	        		throw new RestServiceException(RestErrorCode.USER_NOT_EXIST);
-	        }
+			Integer userId = null;
+			try {
+				userId = AccountTokenUtil.decodeAccountToken(token);
+			} catch (Exception e) {
+				logger.error("submitSuggest decodeAccountToken error:{}", e);
+				return this.resResult(RestErrorCode.PARSE_TOKEN_ERROR, e.getMessage());
+			}
+			if (userId == null) {
+				throw new RestServiceException(RestErrorCode.USER_NOT_EXIST);
+			}
 			suggestRequest.setCreateUserId(userId);
 			kffRmiService.submitSuggest(suggestRequest);
-            bre.setData(map);
+			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("SystemController submitSuggest:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
 		} catch (Exception e) {
 			logger.error("SystemController submitSuggest:{}", e);
-			return this.resResult(RestErrorCode.SYS_ERROR,e.getMessage());
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
 		}
 		return bre;
 	}
-	
-	
-	
+
 }
-
-

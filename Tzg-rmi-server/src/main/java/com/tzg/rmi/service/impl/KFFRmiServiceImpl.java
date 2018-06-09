@@ -4084,6 +4084,14 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			}
 
 		}
+
+		if (StringUtils.isNotEmpty(authentication.getRegistrationnum())) {
+			logger.info("营业执照的号码长度" + authentication.getRegistrationnum().length());
+			if (authentication.getRegistrationnum().length() != 15 && authentication.getRegistrationnum().length() != 18) {
+				throw new RestServiceException("营业执照注册号错误");
+			}
+
+		}
 		// 分类型进行参数判断 end
 		authentication.setCreatedata(new Date());
 		authentication.setStatus(2);

@@ -36,7 +36,7 @@ public class AliyunSmsController extends BaseController {
 	@Autowired
 	private SmsSendRmiService smsSendRmiService;
 	@Autowired
-	private static RedisService redisService;
+	private RedisService redisService;
 	@Autowired
 	private KFFRmiService kffRmiService;
 

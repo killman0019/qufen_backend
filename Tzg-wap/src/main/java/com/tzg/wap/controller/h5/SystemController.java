@@ -35,7 +35,7 @@ public class SystemController extends BaseController {
 	@Autowired
 	private KFFRmiService kffRmiService;
 	@Autowired
-	public SystemParamRmiService systemParamRmiService;
+	private SystemParamRmiService systemParamRmiService;
 	@Autowired
 	private RedisService redisService;
 
