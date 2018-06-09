@@ -34,10 +34,11 @@ public class SystemController extends BaseController {
 	private static Logger log = Logger.getLogger(SystemController.class);
 	@Autowired
 	private KFFRmiService kffRmiService;
-	@Autowired
-	private SystemParamRmiService systemParamRmiService;
-	@Autowired
-	private RedisService redisService;
+
+	// @Autowired
+	// private SystemParamRmiService systemParamRmiService;
+	// @Autowired
+	// private RedisService redisService;
 
 	/**
 	 * 
