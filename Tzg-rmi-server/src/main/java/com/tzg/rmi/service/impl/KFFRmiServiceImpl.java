@@ -747,21 +747,22 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		receiveTokenRecords.setUserId(receiveUser.getUserId());
 		kffTokenrecordsService.save(receiveTokenRecords);
 		/**
-		 * 新加资产表同步
+		 *  新加资产表同步
 		 */
 		CoinProperty coinSendUser = coinPropertyService.findByUserId(sendUser.getUserId()); // 发送打赏的人
-		CoinProperty coinReceiveUser = coinPropertyService.findByUserId(receiveUser.getUserId()); // 接受打赏的人
-
+		CoinProperty coinReceiveUser = coinPropertyService.findByUserId(receiveUser.getUserId());	// 接受打赏的人
+		
 		Double coinLockSend = coinSendUser.getCoinLock();
 		coinLockSend = new BigDecimal(Double.toString(coinLockSend)).subtract(commendationRequest.getAmount()).doubleValue();
 		coinSendUser.setCoinLock(coinLockSend);
 		coinPropertyService.update(coinSendUser);
-
+		
 		Double coinLockReceive = coinReceiveUser.getCoinLock();
 		coinLockReceive = new BigDecimal(Double.toString(coinLockReceive)).add(commendationRequest.getAmount()).doubleValue();
 		coinReceiveUser.setCoinLock(coinLockReceive);
 		coinPropertyService.update(coinReceiveUser);
-
+		
+		
 		// 被赞赏用户消息
 		KFFMessage message = new KFFMessage();
 		message.setContent(sendUser.getUserName() + "赞赏了您" + commendationRequest.getAmount() + "个token");
@@ -2424,21 +2425,23 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		 * 
 		 * 
 		 */
-
-		List<Tokenaward> findByUserId = tokenawardService.findByUserId(loginUserId);
-		for (Tokenaward tokenaward : findByUserId) {
-			if (tokenaward != null) {
-				if (tokenaward.getGrantType() != null) {
-
-					if (tokenaward.getGrantType() == 2) {
-
-						registerAward(loginUserId);
-						tokenaward.setGrantType(1);
-						tokenawardService.update(tokenaward);
+		if(loginUserId != null) {
+			
+			List<Tokenaward> findByUserId = tokenawardService.findByUserId(loginUserId);
+			for (Tokenaward tokenaward : findByUserId) {
+				if (tokenaward != null) {
+					if (tokenaward.getGrantType() != null) {
+						
+						if (tokenaward.getGrantType() == 2) {
+							
+							registerAward(loginUserId);
+							tokenaward.setGrantType(1);
+							tokenawardService.update(tokenaward);
+						}
 					}
 				}
+				
 			}
-
 		}
 
 		if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
