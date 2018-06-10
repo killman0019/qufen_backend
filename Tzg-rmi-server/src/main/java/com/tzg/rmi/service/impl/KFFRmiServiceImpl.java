@@ -4173,6 +4173,21 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 		// 将用户信息插入认证表中
 		this.saveAuthenticationByUseId(user.getUserId());
+		
+		// 将用户信息同步到区分指数表
+		QfIndex qfIndex = new QfIndex();
+		qfIndex.setUserId(user.getUserId());
+		qfIndex.setContributeContent(0d);
+		qfIndex.setLockedPosition(0d);
+		qfIndex.setLiveness(0d);
+		qfIndex.setInfluence(0d);
+		qfIndex.setCommunityAssessment(0d);
+		qfIndex.setHealthDegree(0d);
+		qfIndex.setStatusHierarchyDesc("刁民");
+		qfIndex.setStatusHierarchyType(0);
+		qfIndex.setYxpraise(0);
+		qfIndex.setCreateTime(new Date());
+		qfIndexService.save(qfIndex);
 
 		/******************* 关注邀请人 *********************/
 		// 根据邀请人的ID查询user表
@@ -4923,9 +4938,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			return null;
 		}
 		QfIndex qfUser = qfIndexService.findByUserId(userId);
-		qfUser.setStatusHierarchyType(100);
-		qfUser.setStatusHierarchyDesc("平民");
-		qfIndexService.update(qfUser);
+		if(qfUser != null) {
+			
+			qfUser.setStatusHierarchyType(100);
+			qfUser.setStatusHierarchyDesc("平民");
+			qfIndexService.update(qfUser);
+		}
 		return userCards.get(0);
 	}
 
