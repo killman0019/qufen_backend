@@ -255,6 +255,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	@Value("#{paramConfig['SMS_FORGETPASDWORD_TEMPLATE_CODE']}")
 	private String smsForgetpasdwoedTemplateCode;
 
+	@Value("#{paramConfig['ipPicUrl']}")
+	private String ipPicUrl;
+
 	@Override
 	public KFFUser registerRest(RegisterRequest registerRequest) {
 
@@ -1190,6 +1193,16 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			if (i == 3) {
 				break;
 			}
+			if (img.contains(ipPicUrl)) {
+				// 说明是h5富文本传来的,服务器中存有图片,直接截取存放数据库
+				// http://192.168.10.151:8080/upload/postPic/201806/20180610160559928.png
+				logger.info("开始处理H5富文本编译器图片");
+				String replaceStr = img.replaceAll(ipPicUrl, "");
+				logger.info("h5富文本传来的图片绝对路径:" + replaceStr);
+				imgDB.add(replaceStr);
+				i = i + 1;
+			}
+
 			// 生成url名称
 			String picUrlGen = picServiceUrl;
 			String picName = "/upload/postPic/" + DateUtil.getCurrentYearMonth() + "/" + DateUtil.getCurrentTimeStamp() + articleRequest.getCreateUserId()
@@ -4135,7 +4148,20 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			if (authentication.getRegistrationnum().length() != 15 && authentication.getRegistrationnum().length() != 18) {
 				throw new RestServiceException("营业执照注册号错误");
 			}
-
+			if (authentication.getRegistrationnum().length() == 18) {
+				// 判断15位营业执照注册号
+				String sheHuiXinYongfmt = RegexUtil.TONGYISHEHUIXINYONGDAIMA;
+				// 判断手机号码手机是否符合标注
+				if (!authentication.getRegistrationnum().matches(sheHuiXinYongfmt)) {
+					throw new RestServiceException("统一社会信用代码格式错误!");
+				}
+			}
+			if (authentication.getRegistrationnum().length() == 15) {
+				String checkCode = RegexUtil.CHECKCODE;
+				if (!authentication.getRegistrationnum().matches(checkCode)) {
+					throw new RestServiceException("营业执照号码格式错误!");
+				}
+			}
 		}
 		// 分类型进行参数判断 end
 		authentication.setCreatedata(new Date());
@@ -4173,7 +4199,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 		// 将用户信息插入认证表中
 		this.saveAuthenticationByUseId(user.getUserId());
-		
+
 		// 将用户信息同步到区分指数表
 		QfIndex qfIndex = new QfIndex();
 		qfIndex.setUserId(user.getUserId());
@@ -4938,8 +4964,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			return null;
 		}
 		QfIndex qfUser = qfIndexService.findByUserId(userId);
-		if(qfUser != null) {
-			
+		if (qfUser != null) {
+
 			qfUser.setStatusHierarchyType(100);
 			qfUser.setStatusHierarchyDesc("平民");
 			qfIndexService.update(qfUser);

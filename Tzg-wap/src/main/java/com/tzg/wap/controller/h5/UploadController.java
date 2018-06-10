@@ -167,13 +167,13 @@ public class UploadController extends BaseController {
 
 		String fileName = picUrlPostPicsf + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext;
 		FileUtils.createFileLocal(fileName, upfile.getBytes());
-		resMap.put("file_path", ipPicUrl + "/postPic/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext);
+		resMap.put("file_path", ipPicUrl + "/upload/postPic/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext);
 		resMap.put("success", "true");
 		bre.setData(resMap);
-		String file_Name = ipPicUrl + "/postPic/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext;
+		String file_Name = ipPicUrl + "/upload/postPic/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext;
 		log.info("postPicsf图片存入成功!++++++++++++++++++++++");
 		log.info(name + "." + ext);
-		bre.setMsg("{\"success\":\"" + true + "\",\"file_path\":\"" + file_Name + "\"}");
+		//bre.setMsg("{\"success\":\"" + true + "\",\"file_path\":\"" + file_Name + "\"}");
 		return bre;
 	}
 

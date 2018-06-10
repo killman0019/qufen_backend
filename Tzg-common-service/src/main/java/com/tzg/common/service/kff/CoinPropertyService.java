@@ -16,65 +16,66 @@ import com.tzg.entitys.kff.qfindex.QfIndex;
 import com.tzg.entitys.kff.tokenaward.Tokenaward;
 import com.tzg.rest.exception.rest.RestServiceException;
 
-@Service(value="KFFCoinPropertyService")
+@Service(value = "KFFCoinPropertyService")
 @Transactional
 public class CoinPropertyService {
 
 	@Autowired
-	private CoinPropertyMapper coinPropertyMapper;	
-	   
-	@Transactional(readOnly=true)
-    public CoinProperty findById(java.lang.Integer id) throws RestServiceException {
-    	if(id == null){
+	private CoinPropertyMapper coinPropertyMapper;
+
+	@Transactional(readOnly = true)
+	public CoinProperty findById(java.lang.Integer id) throws RestServiceException {
+		if (id == null) {
 			throw new RestServiceException("id不能为空");
 		}
-        return coinPropertyMapper.findById(id);
-    }
-	
-    public void delete(java.lang.Integer id) throws RestServiceException {
-    	if(id == null){
+		return coinPropertyMapper.findById(id);
+	}
+
+	public void delete(java.lang.Integer id) throws RestServiceException {
+		if (id == null) {
 			throw new RestServiceException("id不能为空");
 		}
-    	coinPropertyMapper.deleteById(id);
-    }
-    @Transactional
-	public void save(CoinProperty coinProperty) throws RestServiceException {	    
+		coinPropertyMapper.deleteById(id);
+	}
+
+	@Transactional
+	public void save(CoinProperty coinProperty) throws RestServiceException {
 		coinPropertyMapper.save(coinProperty);
 	}
-	
-	public void update(CoinProperty coinPropertyId) throws RestServiceException {	
-		if(coinPropertyId.getUserId() == null){
+
+	public void update(CoinProperty coinPropertyId) throws RestServiceException {
+		if (coinPropertyId.getUserId() == null) {
 			throw new RestServiceException("id不能为空");
 		}
 		coinPropertyMapper.update(coinPropertyId);
-	}	
-	
-	@Transactional(readOnly=true)
+	}
+
+	@Transactional(readOnly = true)
 	public PageResult<CoinProperty> findPage(PaginationQuery query) throws RestServiceException {
 		PageResult<CoinProperty> result = null;
 		try {
 			Integer count = coinPropertyMapper.findPageCount(query.getQueryData());
 			if (null != count && count.intValue() > 0) {
-				int startRecord = (query.getPageIndex() - 1)* query.getRowsPerPage();
+				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
 				query.addQueryData("startRecord", Integer.toString(startRecord));
 				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
 				List<CoinProperty> list = coinPropertyMapper.findPage(query.getQueryData());
-				result = new PageResult<CoinProperty>(list,count,query);
-			} 
+				result = new PageResult<CoinProperty>(list, count, query);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return result;
 	}
 
-	public CoinProperty findByUserId(Integer userid)  throws RestServiceException {
+	public CoinProperty findByUserId(Integer userid) throws RestServiceException {
 		List<CoinProperty> list = (List<CoinProperty>) coinPropertyMapper.findByUserId(userid);
-		
+
 		return list.get(0);
 	}
 
 	public List<CoinProperty> findAllCoinpropertyByWhere(Map<String, Object> map) {
-		
+
 		return coinPropertyMapper.findAllCoinpropertyByWhere(map);
 	}
 
@@ -89,9 +90,7 @@ public class CoinPropertyService {
 
 	public List<CoinProperty> findAllCoinpropertyCoinUnlock(Integer userId, Double coinUnlock) {
 
-		return coinPropertyMapper.findAllCoinpropertyCoinUnlock(userId,coinUnlock);
+		return coinPropertyMapper.findAllCoinpropertyCoinUnlock(userId, coinUnlock);
 	}
 
-
-	
 }

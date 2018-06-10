@@ -195,7 +195,7 @@ public class DynamicValidateCodeController extends BaseController {
 	@ResponseBody
 	public BaseResponseEntity sendAliyun(HttpServletRequest request, HttpServletResponse response) {
 		BaseResponseEntity bre = new BaseResponseEntity();
-		Map<String, Object> data = new HashMap<String, Object>();		
+		Map<String, Object> data = new HashMap<String, Object>();
 		try {
 			JSONObject map = getParamMapFromRequestPolicy(request);
 			String phone = (String) map.get("phone");
