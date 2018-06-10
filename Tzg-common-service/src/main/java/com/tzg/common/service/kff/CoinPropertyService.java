@@ -69,9 +69,8 @@ public class CoinPropertyService {
 	}
 
 	public CoinProperty findByUserId(Integer userid) throws RestServiceException {
-		List<CoinProperty> list = (List<CoinProperty>) coinPropertyMapper.findByUserId(userid);
-
-		return list.get(0);
+		// CoinProperty coinProperty =  coinPropertyMapper.findByUserId(userid);
+		return coinPropertyMapper.findByUserId(userid);
 	}
 
 	public List<CoinProperty> findAllCoinpropertyByWhere(Map<String, Object> map) {
