@@ -979,14 +979,16 @@ public class AwardPortService {
 								KFFUser kffUser = kffUserService.findById(userId);
 								BigDecimal kffCoinNum = kffUser.getKffCoinNum();
 								kffUserService.updateUserKFFCoinNum(userId, kffCoinNum.add(new BigDecimal(x)));
+								if(coinProperty != null ) {
+									
+									Double coinLock = coinProperty.getCoinLock();
+									Double coinDistributed = coinProperty.getCoinDistributed();
+									coinProperty2.setCoinLock(coinLock + x);
+									coinProperty2.setCoinDistributed(coinDistributed - x);
+									coinProperty2.setUserId(userId);
+									kffCoinPropertyService.update(coinProperty2);
+								}
 								
-								Double coinLock = coinProperty.getCoinLock();
-								Double coinDistributed = coinProperty.getCoinDistributed();
-								coinProperty2.setCoinLock(coinLock + x);
-								coinProperty2.setCoinDistributed(coinDistributed - x);
-								coinProperty2.setUserId(userId);
-								
-								kffCoinPropertyService.update(coinProperty2);
 								
 							}
 						} else if (awardFunctionType == 18) {// 如果是邀请好友的奖励
@@ -1024,12 +1026,14 @@ public class AwardPortService {
 							KFFUser kffUser = kffUserService.findById(userId);
 							BigDecimal kffCoinNum = kffUser.getKffCoinNum();
 							kffUserService.updateUserKFFCoinNum(userId, kffCoinNum.add(new BigDecimal(x)));
-							
-							Double coinLock = coinProperty.getCoinLock();
-							Double coinDistributed = coinProperty.getCoinDistributed();
-							coinProperty2.setCoinLock(coinLock + x);
-							coinProperty2.setCoinDistributed(coinDistributed - x);
-							kffCoinPropertyService.update(coinProperty2);
+							if(coinProperty != null) {
+								
+								Double coinLock = coinProperty.getCoinLock();
+								Double coinDistributed = coinProperty.getCoinDistributed();
+								coinProperty2.setCoinLock(coinLock + x);
+								coinProperty2.setCoinDistributed(coinDistributed - x);
+								kffCoinPropertyService.update(coinProperty2);
+							}
 						}
 					}
 				}
