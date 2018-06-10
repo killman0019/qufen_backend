@@ -2,6 +2,7 @@ package com.tzg.rest.controller.kff;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -21,80 +22,77 @@ import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
 import com.tzg.rmi.service.KFFRmiService;
 
-@Controller(value="KFFDiscussController")
+@Controller(value = "KFFDiscussController")
 @RequestMapping("/kff/discuss")
 public class DiscussController extends BaseController {
 	private static Logger log = Logger.getLogger(DiscussController.class);
 	@Autowired
 	private KFFRmiService kffRmiService;
-	
+
 	/**
-	* @Title: saveDiscuss
-	* @Description: 发表讨论
-	* @param @param request
-	* @param @param response
-	* @param @return    
-	* @return BaseResponseEntity
-	* @see    
-	* @throws
+	 * @Title: saveDiscuss
+	 * @Description: 发表讨论
+	 * @param @param request
+	 * @param @param response
+	 * @param @return
+	 * @return BaseResponseEntity
+	 * @see
+	 * @throws
 	 */
-	@RequestMapping(value="/saveDiscuss",method = {RequestMethod.POST,RequestMethod.GET})
+	@RequestMapping(value = "/saveDiscuss", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public BaseResponseEntity saveDiscuss(HttpServletRequest request) {
 		BaseResponseEntity bre = new BaseResponseEntity();
-        Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<String, Object>();
 
 		try {
 			DiscussRequest discussRequest = getParamMapFromRequestPolicy(request, DiscussRequest.class);
-			String token = discussRequest.getToken();			
+			String token = discussRequest.getToken();
 			Integer userId = getUserIdByToken(token);
 			discussRequest.setCreateUserId(userId);
 			map = kffRmiService.saveDiscuss(discussRequest);
-            bre.setData(map);
+			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("DiscussController saveDiscuss:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
 		} catch (Exception e) {
 			logger.error("DiscussController saveDiscuss:{}", e);
-			return this.resResult(RestErrorCode.SYS_ERROR,e.getMessage());
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
 		}
 		return bre;
 	}
-	
-	
+
 	/**
 	 * 
-	* @Title: tagList
-	* @Description: 获取标签列表
-	* @param @param request
-	* @param @param response
-	* @param @return    
-	* @return BaseResponseEntity
-	* @see    
-	* @throws
+	 * @Title: tagList
+	 * @Description: 获取标签列表
+	 * @param @param request
+	 * @param @param response
+	 * @param @return
+	 * @return BaseResponseEntity
+	 * @see
+	 * @throws
 	 */
-	@RequestMapping(value="/tagList",method = {RequestMethod.POST,RequestMethod.GET})
+	@RequestMapping(value = "/tagList", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public BaseResponseEntity tagList(HttpServletRequest request) {
 		BaseResponseEntity bre = new BaseResponseEntity();
-        HashMap<String, Object> map = new HashMap<String, Object>();
+		HashMap<String, Object> map = new HashMap<String, Object>();
 
 		try {
 			BaseRequest baseRequest = getParamMapFromRequestPolicy(request, BaseRequest.class);
 			String token = baseRequest.getToken();
 			Integer userId = getUserIdByToken(token);
 			List<Dtags> tagList = kffRmiService.findAllTags();
-            map.put("tagList", tagList);
+			map.put("tagList", tagList);
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("DiscussController tagList:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
 		} catch (Exception e) {
 			logger.error("DiscussController tagList:{}", e);
-			return this.resResult(RestErrorCode.SYS_ERROR,e.getMessage());
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
 		}
 		return bre;
 	}
 }
-
-

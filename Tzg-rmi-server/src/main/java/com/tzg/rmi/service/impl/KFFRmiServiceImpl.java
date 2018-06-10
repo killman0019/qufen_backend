@@ -747,22 +747,21 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		receiveTokenRecords.setUserId(receiveUser.getUserId());
 		kffTokenrecordsService.save(receiveTokenRecords);
 		/**
-		 *  新加资产表同步
+		 * 新加资产表同步
 		 */
 		CoinProperty coinSendUser = coinPropertyService.findByUserId(sendUser.getUserId()); // 发送打赏的人
-		CoinProperty coinReceiveUser = coinPropertyService.findByUserId(receiveUser.getUserId());	// 接受打赏的人
-		
+		CoinProperty coinReceiveUser = coinPropertyService.findByUserId(receiveUser.getUserId()); // 接受打赏的人
+
 		Double coinLockSend = coinSendUser.getCoinLock();
 		coinLockSend = new BigDecimal(Double.toString(coinLockSend)).subtract(commendationRequest.getAmount()).doubleValue();
 		coinSendUser.setCoinLock(coinLockSend);
 		coinPropertyService.update(coinSendUser);
-		
+
 		Double coinLockReceive = coinReceiveUser.getCoinLock();
 		coinLockReceive = new BigDecimal(Double.toString(coinLockReceive)).add(commendationRequest.getAmount()).doubleValue();
 		coinReceiveUser.setCoinLock(coinLockReceive);
 		coinPropertyService.update(coinReceiveUser);
-		
-		
+
 		// 被赞赏用户消息
 		KFFMessage message = new KFFMessage();
 		message.setContent(sendUser.getUserName() + "赞赏了您" + commendationRequest.getAmount() + "个token");
@@ -1164,14 +1163,18 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 		}
 		if (toHtmlTags == null) {
-			if (articleRequest.getArticleContents().length() < 300) {
+			String text = WorkHtmlRegexpUtil.delHTMLTag(articleRequest.getArticleContents());
+			toHtmlTags = H5AgainDeltagsUtil.h5AgainDeltags(text);
+			if (toHtmlTags.length() < 300) {
 
-				post.setPostShortDesc(articleRequest.getArticleContents());
+				post.setPostShortDesc(toHtmlTags);
 			} else {
 				// 去除所有HTML标签
 
-				post.setPostShortDesc(articleRequest.getArticleContents().substring(0, 300));
+				post.setPostShortDesc(toHtmlTags.substring(0, 300));
 			}
+
+			logger.info("去标签成功!");
 
 		}
 
@@ -1243,7 +1246,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 	@Override
 	public Map<String, Object> saveDiscuss(DiscussRequest discussRequest) throws RestServiceException {
-		Map<String,Object> result = new HashMap<>();
+		Map<String, Object> result = new HashMap<>();
 		String uuid = UUID.randomUUID().toString().replace("-", "");
 		if (discussRequest == null) {
 			throw new RestServiceException("参数缺失");
@@ -1351,8 +1354,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		discuss.setTagInfos(discussRequest.getTagInfos());
 		kffDiscussService.save(discuss);
 
-		//更新用户发帖数
-		kffUserService.increasePostNum(createUser.getUserId(),KFFConstants.POST_TYPE_DISCUSS);
+		// 更新用户发帖数
+		kffUserService.increasePostNum(createUser.getUserId(), KFFConstants.POST_TYPE_DISCUSS);
 		result.put("postId", newPost.getPostId());
 		return result;
 	}
@@ -1754,7 +1757,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 								tokenaward.setPriaiseAward(priaiseAward + (pc * createPUF)); // 点赞奖励.
 								tokenaward.setInviteRewards(rewardToken + (pc * createPUF));
 								tokenaward.setCreateTime(new Date());
-								tokenaward.setAwardBalance(0d); // 线性余额  跟一次性发放的奖励没有关系 默认为0
+								tokenaward.setAwardBalance(0d); // 线性余额 跟一次性发放的奖励没有关系 默认为0
 								kffTokenawardService.save(tokenaward);
 
 								qfIndexService.updateYxPraise(userId);
@@ -1802,7 +1805,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 									// Double priaiseAward = tokenaward.getPriaiseAward();
 									tokenaward.setPriaiseAward((pc2 * createPUF) + meet1); // 点赞奖励.
 									tokenaward.setInviteRewards((pc2 * createPUF) + meet1);
-									tokenaward.setAwardBalance(0d); // 线性余额  跟一次性发放的奖励没有关系 默认为0
+									tokenaward.setAwardBalance(0d); // 线性余额 跟一次性发放的奖励没有关系 默认为0
 									tokenaward.setCreateTime(new Date());
 
 									kffTokenawardService.save(tokenaward);
@@ -1840,7 +1843,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 									tokenaward.setPriaiseAward((pc2 * createPUF)); // 点赞奖励.
 									tokenaward.setInviteRewards((pc2 * createPUF));
 									tokenaward.setCreateTime(new Date());
-									tokenaward.setAwardBalance(0d); // 线性余额  跟一次性发放的奖励没有关系 默认为0
+									tokenaward.setAwardBalance(0d); // 线性余额 跟一次性发放的奖励没有关系 默认为0
 									kffTokenawardService.save(tokenaward);
 									qfIndexService.updateYxPraise(userId);
 								}
@@ -1885,7 +1888,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 							tokenaward.setPriaiseAward((pc3 * createPUF)); // 点赞奖励.
 							tokenaward.setInviteRewards((pc3 * createPUF));
 							tokenaward.setCreateTime(new Date());
-							tokenaward.setAwardBalance(0d); // 线性余额  跟一次性发放的奖励没有关系 默认为0
+							tokenaward.setAwardBalance(0d); // 线性余额 跟一次性发放的奖励没有关系 默认为0
 							kffTokenawardService.save(tokenaward);
 
 							qfIndexService.updateYxPraise(userId);
@@ -1932,7 +1935,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 							tokenaward.setPriaiseAward((tl * createPUF)); // 点赞奖励.
 							tokenaward.setInviteRewards((tl * createPUF)); // 奖励总数
 							tokenaward.setCreateTime(new Date());
-							tokenaward.setAwardBalance(0d); // 线性余额  跟一次性发放的奖励没有关系 默认为0
+							tokenaward.setAwardBalance(0d); // 线性余额 跟一次性发放的奖励没有关系 默认为0
 							kffTokenawardService.save(tokenaward);
 							qfIndexService.updateYxPraise(userId);
 						}
@@ -1980,7 +1983,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 									tokenaward.setPriaiseAward((wz * createPUF + meet)); // 点赞奖励.
 									tokenaward.setInviteRewards((wz * createPUF + meet));
 									tokenaward.setCreateTime(new Date());
-									tokenaward.setAwardBalance(0d); // 线性余额  跟一次性发放的奖励没有关系 默认为0
+									tokenaward.setAwardBalance(0d); // 线性余额 跟一次性发放的奖励没有关系 默认为0
 									kffTokenawardService.save(tokenaward);
 									qfIndexService.updateYxPraise(userId);
 								} else {
@@ -2015,7 +2018,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 									tokenaward.setPriaiseAward((wz * createPUF)); // 点赞奖励.
 									tokenaward.setInviteRewards((wz * createPUF)); // 奖励总额
 									tokenaward.setCreateTime(new Date());
-									tokenaward.setAwardBalance(0d); // 线性余额  跟一次性发放的奖励没有关系 默认为0
+									tokenaward.setAwardBalance(0d); // 线性余额 跟一次性发放的奖励没有关系 默认为0
 									kffTokenawardService.save(tokenaward);
 									qfIndexService.updateYxPraise(userId);
 
@@ -2529,10 +2532,15 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				// 设置post和project信息
 				response.setPostShortDesc(post.getPostShortDesc());
 				response.setPostSmallImages(post.getPostSmallImages());
+				logger.info("post.getPostSmallImages()" + post.getPostSmallImages());
 				if (StringUtils.isNotBlank(post.getPostSmallImages())) {
 					try {
 						List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
 						response.setPostSmallImagesList(pfl);
+						for (PostFile postFile : pfl) {
+							logger.info("postFile" + postFile.getFileUrl());
+						}
+
 					} catch (Exception e) {
 						logger.error("首页关注列表解析帖子缩略图json出错:{}", e);
 					}
@@ -3288,7 +3296,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 								tokenaward.setPriaiseAward(profesEvaluat * createPUF); // 点赞奖励.
 								tokenaward.setInviteRewards(profesEvaluat * createPUF);
 								tokenaward.setCreateTime(new Date());
-								tokenaward.setAwardBalance(0d); // 线性余额  跟一次性发放的奖励没有关系 默认为0
+								tokenaward.setAwardBalance(0d); // 线性余额 跟一次性发放的奖励没有关系 默认为0
 								kffTokenawardService.save(tokenaward);
 
 								qfIndexService.updateYxPraise(userId);
@@ -3326,7 +3334,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 								tokenaward.setPriaiseAward(aloneEvaluat * createPUF); // 点赞奖励.
 								tokenaward.setInviteRewards(aloneEvaluat * createPUF);
 								tokenaward.setCreateTime(new Date());
-								tokenaward.setAwardBalance(0d); // 线性余额  跟一次性发放的奖励没有关系 默认为0
+								tokenaward.setAwardBalance(0d); // 线性余额 跟一次性发放的奖励没有关系 默认为0
 								kffTokenawardService.save(tokenaward);
 
 								qfIndexService.updateYxPraise(userId);
@@ -3369,7 +3377,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 							tokenaward.setPriaiseAward(discuss * createPUF); // 点赞奖励.
 							tokenaward.setInviteRewards(discuss * createPUF); // 奖励总数
 							tokenaward.setCreateTime(new Date());
-							tokenaward.setAwardBalance(0d); // 线性余额  跟一次性发放的奖励没有关系 默认为0
+							tokenaward.setAwardBalance(0d); // 线性余额 跟一次性发放的奖励没有关系 默认为0
 							kffTokenawardService.save(tokenaward);
 							qfIndexService.updateYxPraise(userId);
 
@@ -3410,7 +3418,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 							tokenaward.setPriaiseAward(article * createPUF); // 点赞奖励.
 							tokenaward.setInviteRewards(article * createPUF); // 点赞总数
 							tokenaward.setCreateTime(new Date());
-							tokenaward.setAwardBalance(0d); // 线性余额  跟一次性发放的奖励没有关系 默认为0
+							tokenaward.setAwardBalance(0d); // 线性余额 跟一次性发放的奖励没有关系 默认为0
 							kffTokenawardService.save(tokenaward);
 							qfIndexService.updateYxPraise(userId);
 						}
@@ -3820,19 +3828,27 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 	@Override
 	public void updataUserIdStstus(String userRealName, String userCardNum, String photoIviews, Integer userId) {
+		if (StringUtils.isEmpty(userCardNum)) {
+			throw new RestServiceException("请填写身份证号码");
+		}
 		String idcard = RegexUtil.IDCARD; // 判断手机是否符合标注
 		if (!userCardNum.matches(idcard)) {
 			throw new RestServiceException(RestErrorCode.USER_IDCARD_IS_FALSE);
 		}
 		// 将前台传来的数据进行转化保存在数据库
-		if (null == userRealName) {
+		if (StringUtils.isEmpty(userRealName)) {
 			throw new RestServiceException(RestErrorCode.VCNAME_NULL);
 		}
 		// 根据用户的ID查询手机手机号
 		String phone = kffUserService.findPhoneByUserId(userId);
-		if (null == phone) {
+		if (StringUtils.isEmpty(phone)) {
 			throw new RestServiceException(RestErrorCode.PHONE_NULL);
 		}
+		if (StringUtils.isEmpty(photoIviews)) {
+
+			throw new RestServiceException("请上传身份证");
+		}
+
 		// 将URL转化成字符串对象
 		String uploadIeviw = this.uploadIeviw(photoIviews);
 		UserCard userCard = new UserCard();
