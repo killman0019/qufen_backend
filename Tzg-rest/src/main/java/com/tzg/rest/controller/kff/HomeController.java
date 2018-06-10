@@ -674,7 +674,7 @@ public class HomeController extends BaseController {
 			if (userId == null) {
 				throw new RestServiceException(RestErrorCode.USER_NOT_EXIST);
 			}
-			if (file.getSize() > 2 * 1024 * 1024) {
+			if (file.getSize() > 5 * 1024 * 1024) {
 				throw new RestServiceException("图片大于5M");
 			}
 			// 文件后缀
