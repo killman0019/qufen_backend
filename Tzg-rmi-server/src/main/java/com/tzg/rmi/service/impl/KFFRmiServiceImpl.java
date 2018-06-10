@@ -750,22 +750,21 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		receiveTokenRecords.setUserId(receiveUser.getUserId());
 		kffTokenrecordsService.save(receiveTokenRecords);
 		/**
-		 *  新加资产表同步
+		 * 新加资产表同步
 		 */
 		CoinProperty coinSendUser = coinPropertyService.findByUserId(sendUser.getUserId()); // 发送打赏的人
-		CoinProperty coinReceiveUser = coinPropertyService.findByUserId(receiveUser.getUserId());	// 接受打赏的人
-		
+		CoinProperty coinReceiveUser = coinPropertyService.findByUserId(receiveUser.getUserId()); // 接受打赏的人
+
 		Double coinLockSend = coinSendUser.getCoinLock();
 		coinLockSend = new BigDecimal(Double.toString(coinLockSend)).subtract(commendationRequest.getAmount()).doubleValue();
 		coinSendUser.setCoinLock(coinLockSend);
 		coinPropertyService.update(coinSendUser);
-		
+
 		Double coinLockReceive = coinReceiveUser.getCoinLock();
 		coinLockReceive = new BigDecimal(Double.toString(coinLockReceive)).add(commendationRequest.getAmount()).doubleValue();
 		coinReceiveUser.setCoinLock(coinLockReceive);
 		coinPropertyService.update(coinReceiveUser);
-		
-		
+
 		// 被赞赏用户消息
 		KFFMessage message = new KFFMessage();
 		message.setContent(sendUser.getUserName() + "赞赏了您" + commendationRequest.getAmount() + "个token");
@@ -1202,23 +1201,23 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				logger.info("h5富文本传来的图片绝对路径:" + replaceStr);
 				imgDB.add(replaceStr);
 				i = i + 1;
-			}
+			} else {
 
-			// 生成url名称
-			String picUrlGen = picServiceUrl;
-			String picName = "/upload/postPic/" + DateUtil.getCurrentYearMonth() + "/" + DateUtil.getCurrentTimeStamp() + articleRequest.getCreateUserId()
-					+ ".jpg";
-			String picUrlName = picUrlGen + picName;
-			try {
-				FileUtils.createFileLocal(picUrlName);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				throw new RestServiceException("后台创建文件出错!");
+				// 生成url名称
+				String picUrlGen = picServiceUrl;
+				String picName = "/upload/postPic/" + DateUtil.getCurrentYearMonth() + "/" + DateUtil.getCurrentTimeStamp() + articleRequest.getCreateUserId()
+						+ ".jpg";
+				String picUrlName = picUrlGen + picName;
+				try {
+					FileUtils.createFileLocal(picUrlName);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					throw new RestServiceException("后台创建文件出错!");
+				}
+				DownImgGoodUtil.downloadPicture(img, picUrlName);
+				imgDB.add(picName);
+				i = i + 1;
 			}
-			DownImgGoodUtil.downloadPicture(img, picUrlName);
-			imgDB.add(picName);
-			i = i + 1;
-
 		}
 		logger.info("图片抽离成功!");
 		// 将图片集合转化成json
@@ -2438,22 +2437,22 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		 * 
 		 * 
 		 */
-		if(loginUserId != null) {
-			
+		if (loginUserId != null) {
+
 			List<Tokenaward> findByUserId = tokenawardService.findByUserId(loginUserId);
 			for (Tokenaward tokenaward : findByUserId) {
 				if (tokenaward != null) {
 					if (tokenaward.getGrantType() != null) {
-						
+
 						if (tokenaward.getGrantType() == 2) {
-							
+
 							registerAward(loginUserId);
 							tokenaward.setGrantType(1);
 							tokenawardService.update(tokenaward);
 						}
 					}
 				}
-				
+
 			}
 		}
 

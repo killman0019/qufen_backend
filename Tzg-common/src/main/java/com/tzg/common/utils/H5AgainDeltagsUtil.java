@@ -12,7 +12,9 @@ public class H5AgainDeltagsUtil {
 		html = html.replace("&rdquo;", " ");
 		// 除去&lt;h1&gt;
 		html = html.replace("&lt;h1&gt;", " ");
-		System.out.println(html);
+		// 去除&nbsp;
+		html = html.replace("&nbsp;", " ");
+		System.out.println("html" + html);
 		System.out.println("=============去标签end==================");
 		return html;
 
