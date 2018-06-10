@@ -10,7 +10,7 @@ import com.tzg.common.base.BaseMapper;
 @Repository
 public interface CoinPropertyMapper extends BaseMapper<CoinProperty, java.lang.Integer> {
 
-	List<CoinProperty> findByUserId(Integer userid);
+	CoinProperty findByUserId(Integer userid);
 
 	List<CoinProperty> findAllCoinpropertyByWhere(Map<String, Object> map);
 
