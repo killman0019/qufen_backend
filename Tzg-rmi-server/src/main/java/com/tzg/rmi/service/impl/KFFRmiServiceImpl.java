@@ -4922,9 +4922,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			return null;
 		}
 		QfIndex qfUser = qfIndexService.findByUserId(userId);
-		qfUser.setStatusHierarchyType(100);
-		qfUser.setStatusHierarchyDesc("平民");
-		qfIndexService.update(qfUser);
+		if(qfUser != null) {
+			
+			qfUser.setStatusHierarchyType(100);
+			qfUser.setStatusHierarchyDesc("平民");
+			qfIndexService.update(qfUser);
+		}
 		return userCards.get(0);
 	}
 
