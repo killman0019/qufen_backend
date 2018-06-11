@@ -5157,7 +5157,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				Date createTime = tokenawards.getCreateTime(); // 奖励创建的时间
 				Integer counter = tokenawards.getCounter(); // 发放的次数
 				Double awardBalance = tokenawards.getAwardBalance(); // 线性发放的余额
-				if (inviteRewards != null && awardBalance != null) {
+				if (inviteRewards != null && awardBalance != null && tokenawards.getDistributionType() == 1) {
 
 					BigDecimal bd1 = new BigDecimal(Double.toString(inviteRewards));
 					BigDecimal bd2 = new BigDecimal(Double.toString(awardBalance));
