@@ -1737,9 +1737,15 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			System.err.println("内容贡献者的id: " + createUserId);
 			// 根据内容贡献值的id去获取本身的区分指数
 			QfIndex qfIndex = qfIndexService.findByUserId(createUserId);
-			Integer createPostUserQFIndex = qfIndex.getYxpraise();
-			// 发帖人赞的收益系数
-			Double createPUF = createPostUserQFIndex * 0.01d;
+			Integer createPostUserQFIndex =0;
+			Double createPUF = 0.0d;
+			if(null !=qfIndex)
+			{
+				createPostUserQFIndex = qfIndex.getYxpraise();
+				// 发帖人赞的收益系数
+				createPUF = createPostUserQFIndex * 0.01d;
+			}
+
 			// 满足点赞条件额外送币
 			Double meet = 10000.00000000d;
 			Double meet1 = 4000.00000000d;
