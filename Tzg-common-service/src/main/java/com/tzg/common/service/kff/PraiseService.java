@@ -87,7 +87,7 @@ public class PraiseService   {
 		map.put("bepraiseUserId", createUserId);
 		map.put("praiseType",1);
 		map.put("praiseUserId",userId);
-		return praiseMapper.findByPostId(map);
+		return praiseMapper.findByPraiseId(map);
 	}
 	
 
