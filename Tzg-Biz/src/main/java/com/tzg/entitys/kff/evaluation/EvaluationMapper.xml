@@ -208,7 +208,13 @@
 		<include refid="columns" /> 
 		FROM tbevaluation 
 		WHERE 
-     create_user_id = #{createUserId} and status=1  and model_type = #{modelType} and project_id = #{projectId}
+     create_user_id = #{createUserId} and status=1  and model_type = 2 and project_id = #{projectId}
+     UNION ALL 
+     SELECT
+		<include refid="columns" /> 
+		FROM tbevaluation 
+		WHERE 
+     create_user_id = #{createUserId} and status=1  and model_type = 4 and project_id = #{projectId}
 	</select>
 </mapper>
 

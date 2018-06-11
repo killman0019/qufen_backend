@@ -211,7 +211,7 @@ public interface KFFRmiService {
 	 * @param discussRequest
 	 * @throws RestServiceException
 	 */
-	public Map<String,Object> saveDiscuss(DiscussRequest discussRequest) throws RestServiceException;
+	public Map<String, Object> saveDiscuss(DiscussRequest discussRequest) throws RestServiceException;
 
 	/**
 	 * 
@@ -570,7 +570,7 @@ public interface KFFRmiService {
 	 * @param evaluationDB
 	 * @return
 	 */
-	public Evaluation selectEvaluationByUserId(Evaluation evaluationDB);
+	public List<Evaluation> selectEvaluationByUserId(Evaluation evaluationDB);
 
 	/**
 	 * 讨论的详情页
@@ -742,11 +742,13 @@ public interface KFFRmiService {
 	 * @throws RestServiceException
 	 */
 	public String creat2Code(Integer userId) throws RestServiceException;
-/**
- * 创建图片名称 和路径
- * @param code2
- * @return
- * @throws RestServiceException
- */
+
+	/**
+	 * 创建图片名称 和路径
+	 * 
+	 * @param code2
+	 * @return
+	 * @throws RestServiceException
+	 */
 	public String create2CodeNameAndPath(String code2) throws RestServiceException;
 }

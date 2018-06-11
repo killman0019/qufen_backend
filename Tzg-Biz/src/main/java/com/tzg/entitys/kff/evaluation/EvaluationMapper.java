@@ -16,9 +16,11 @@ public interface EvaluationMapper extends BaseMapper<Evaluation, java.lang.Integ
 	Evaluation selectEvaluationByPostId(Integer postId);
 
 	List<Evaluation> findEvaliationByProjectId(Integer projectId);
+
 	Evaluation findByPostId(Integer postId);
 
-	Evaluation selectEvaluationOrNotByUserId(Evaluation evaluation);
-	List<Evaluation> findByWhere(Map<String, Object> map);	
+	List<Evaluation> selectEvaluationOrNotByUserId(Evaluation evaluation);
+
+	List<Evaluation> findByWhere(Map<String, Object> map);
 
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.dubbo.common.utils.CollectionUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.tzg.common.utils.AccountTokenUtil;
 import com.tzg.common.utils.RegexUtil;
@@ -227,8 +228,11 @@ public class UserCardController extends BaseController {
 
 			// 向前台展示信息
 			List<Authentication> authenticationFromDB = kffRmiService.selectAuthenticationByUserId(userId);
-			resMap.put("status", authenticationFromDB.get(0).getStatus());
-			resMap.put("notpassreason", authenticationFromDB.get(0).getNotpassreason());
+			if (CollectionUtils.isNotEmpty(authenticationFromDB)) {
+				resMap.put("status", authenticationFromDB.get(0).getStatus());
+				resMap.put("notpassreason", authenticationFromDB.get(0).getNotpassreason());
+			}
+
 		} catch (RestServiceException e) {
 			logger.error("AuthenticationController submitAuthenTiFormAgain:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());

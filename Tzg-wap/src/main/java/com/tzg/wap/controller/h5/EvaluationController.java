@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.dubbo.common.utils.CollectionUtils;
 import com.alibaba.fastjson.JSON;
 import com.tzg.entitys.kff.devaluationModel.DevaluationModel;
 import com.tzg.entitys.kff.devaluationModel.DevaluationModelRequest;
@@ -70,14 +71,17 @@ public class EvaluationController extends BaseController {
 			evaluationRequest.setProjectId(project.getProjectId());
 			// 判断用户是否已经对此项目进行了全面评测
 			evaluationRequest.setModelType(evaluationData.getModelType());
-			if (2 == evaluationRequest.getModelType()) {
+			if (2 == evaluationRequest.getModelType() || 4 == evaluationRequest.getModelType()) {
 				Evaluation evaluationDB = new Evaluation();
 				evaluationDB.setModelType(evaluationRequest.getModelType());
 				evaluationDB.setCreateUserId(evaluationRequest.getCreateUserId());
 				evaluationDB.setProjectId(project.getProjectId());
-				Evaluation evaluations = kffRmiService.selectEvaluationByUserId(evaluationDB);
-				if (null != evaluations) {
-					throw new RestServiceException("不能对此项目进行重复评测!");
+				List<Evaluation> evaluations = kffRmiService.selectEvaluationByUserId(evaluationDB);
+				if (CollectionUtils.isNotEmpty(evaluations)) {
+					if (evaluations.size() > 1) {
+						throw new RestServiceException("完整评测和自定义评测不能对同一个项目进行重复评测!");
+					}
+
 				}
 			}
 			evaluationRequest.setTotalScore(evaluationData.getTotalScore());

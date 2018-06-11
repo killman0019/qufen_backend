@@ -1737,10 +1737,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			System.err.println("内容贡献者的id: " + createUserId);
 			// 根据内容贡献值的id去获取本身的区分指数
 			QfIndex qfIndex = qfIndexService.findByUserId(createUserId);
-			Integer createPostUserQFIndex =0;
+			Integer createPostUserQFIndex = 0;
 			Double createPUF = 0.0d;
-			if(null !=qfIndex)
-			{
+			if (null != qfIndex) {
 				createPostUserQFIndex = qfIndex.getYxpraise();
 				// 发帖人赞的收益系数
 				createPUF = createPostUserQFIndex * 0.01d;
@@ -4586,7 +4585,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public Evaluation selectEvaluationByUserId(Evaluation evaluation) {
+	public List<Evaluation> selectEvaluationByUserId(Evaluation evaluation) {
 		if (null == evaluation.getCreateUserId()) {
 			throw new RestServiceException(RestErrorCode.USER_NOT_LOGIN);
 		}
