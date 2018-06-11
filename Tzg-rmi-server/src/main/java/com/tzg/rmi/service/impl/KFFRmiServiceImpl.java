@@ -1773,12 +1773,15 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			if (null != praiseId)
 				format = String.format("%010d", praiseId.getPraiseId());
 			// 判断点赞人是否实名认证
-			UserCard findBycreateUserId = userCardService.findByUserid(createUserId);// 看创建帖子的人是不是实名认证
-			UserCard findByUserid = userCardService.findByUserid(userId);
-			System.err.println("findBycreateUserId:" + findBycreateUserId);
-			System.err.println("findByUserid : " + findByUserid);
+		//	UserCard findBycreateUserId = userCardService.findByUserid(createUserId);// 看创建帖子的人是不是实名认证
+		//	UserCard findByUserid = userCardService.findByUserid(userId);
+			
+		//	System.err.println("findBycreateUserId:" + findBycreateUserId);
+		//	System.err.println("findByUserid : " + findByUserid);
 			// 判断所点赞的文章是不是有效(1有效,0删除,无效)
-			if (post.getStatus() == 1 && findBycreateUserId != null && findByUserid != null) {
+		//	QfIndex byUserId = qfIndexService.findByUserId(createUserId);
+			
+			if (post.getStatus() == 1) {
 				/**
 				 * 有效赞
 				 * 
@@ -3317,15 +3320,15 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 			// String format = String.format("%010d", praise.getPraiseId());
 			// 判断点赞人是否实名认证
-			UserCard findBycreateUserId = userCardService.findByUserid(commentUserId);
-			UserCard findByUserid = userCardService.findByUserid(userId);
+		//	UserCard findBycreateUserId = userCardService.findByUserid(commentUserId);
+		//	UserCard findByUserid = userCardService.findByUserid(userId);
 			Double profesEvaluat = 2.00d; // 评测的专业完整版评论赞奖励
 			Double aloneEvaluat = 2.00d; // 单项评测评论赞奖励
 			Double discuss = 2.00d; // 讨论的评论赞奖励
 			Double article = 2.00d; // 文章的评论赞奖励
 			// 判断所点赞的文章是不是有效(1有效,0删除,无效)
 			CoinProperty coinCommenId = coinPropertyService.findByUserId(comments.getCommentUserId());
-			if (post.getStatus() == 1 && findBycreateUserId != null && findByUserid != null) {
+			if (post.getStatus() == 1) {
 				/**
 				 * 有效赞
 				 * 
