@@ -448,22 +448,24 @@ public class UserController extends BaseController {
 			System.out.println("token" + token);
 			// 查询用户的认证表和身份认证表中的是否有数据
 			// 5 表示首次登陆
-			if (5 == kffRmiService.selectUserCardStatusByUserId(loginaccount.getUserId())) {
+			Integer userCardStatus = kffRmiService.selectUserCardStatusByUserId(loginaccount.getUserId());
+			if (5 == userCardStatus) {
 				// 身份验证表中没有该用户
 				// 将用户是否进行身份审核等信息存放在authentication表中
 				kffRmiService.setUserCardAuthentication(loginaccount.getUserId(), loginaccount.getMobile());
 			}
 			// 5表示首次登陆
-			if (5 == kffRmiService.selectAuthenticationStatusByUserId(loginaccount.getUserId())) {
+			Integer authenticationStatus = kffRmiService.selectAuthenticationStatusByUserId(loginaccount.getUserId());
+			if (5 == authenticationStatus) {
 				// 将用户信息插入认证表中
 				kffRmiService.saveAuthenticationByUseId(loginaccount.getUserId());
 			}
 
 			// 创建usermodel模型 将相关数据传递给前台
 			UserModel userModel = new UserModel();
-			userModel.setUserIdStatus(kffRmiService.selectUserCardStatusByUserId(loginaccount.getUserId()));
+			userModel.setUserIdStatus(userCardStatus);
 			// 根据用户的ID 查询用户的认证审核状态
-			userModel.setAuthenticationStatus(kffRmiService.selectAuthenticationStatusByUserId(loginaccount.getUserId()));
+			userModel.setAuthenticationStatus(authenticationStatus);
 			userModel.setUserNick(loginaccount.getUserName());
 			userModel.setIcon(loginaccount.getIcon());
 			// tokenSession.setAttribute("userModel", userModel);
@@ -633,7 +635,7 @@ public class UserController extends BaseController {
 	 * ====== =========================
 	 */
 	/**
-	 * 首页审核展示状态 status 1 审核成功 2 审核中 3 审核不通过 4 未提交审核
+	 * 首页审核展示状态 status 1 待审核 2 审核通过 3 审核不通过 4 未提交审核
 	 * 
 	 * @return
 	 */
@@ -681,14 +683,14 @@ public class UserController extends BaseController {
 			bre.setData(map);
 			return bre;
 		}
-		if (2 == statusNum) {
+		if (1 == statusNum) {
 			// 审核中
 			//
 			map.put("status", statusNum);
 			bre.setData(map);
 			return bre;
 		}
-		if (1 == statusNum) {
+		if (2 == statusNum) {
 			// 审核成功
 			//
 			map.put("status", statusNum);
@@ -739,7 +741,7 @@ public class UserController extends BaseController {
 			 * // 根据用户ID查询用户是否已经进行实名验证 Integer userStatus =
 			 * kffRmiService.selectStatusByUserID(userId);
 			 */
-			// status 1 审核成功 2 审核中 3 审核不通过 4 未提交审核
+			// status 1 待审核 2 审核通过 3 未通过 4 未提交
 			// 如果在表能查询到信息, 说明 此用户曾经进行过身份审核
 
 			// 如果查询的card是空 则表明此用户没有进行身份验证 进行身份验证等工作流程 验证身份证号是否符合标注
@@ -762,7 +764,7 @@ public class UserController extends BaseController {
 
 			// 并将status设置成待审核状态
 			kffRmiService.updataUserIdStstus(userRealName, userCardNum, photoIviews, userId);
-			map.put("status", 2);
+			map.put("status", 1);
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("error in uploadUserIcon method:{}", e);

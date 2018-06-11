@@ -3844,7 +3844,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	/**
 	 * 根据用户ID查询用户的身份审核信息
 	 * 
-	 * 1:审核成功 2: 审核中 3: 审核不通过 4 未进行身份审核',
+	 * 1:待审核 2: 审核通过 3: 审核不通过 4 未进行身份审核',
 	 */
 	@Override
 	public Integer selectStatusByUserID(Integer userId) throws RestServiceException {
@@ -3930,7 +3930,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		userCard.setUserrealname(userRealName);
 		userCard.setUsercardNum(userCardNum);
 		userCard.setPositiveofcard(uploadIeviw);
-		userCard.setStatus(2);// status 1 审核成功 2 审核中 3 审核不通过 4 未审核
+		userCard.setStatus(1);// status 1待审核 2 审核通过 3 未通过审核 4 未提交审核
 		userCard.setUpdatatime(new Date());
 		userCard.setCreatetime(new Date());
 		userCard.setValid(1);
@@ -4227,7 +4227,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 		// 分类型进行参数判断 end
 		authentication.setCreatedata(new Date());
-		authentication.setStatus(2);
+		authentication.setStatus(1);
 		authentication.setValid(1);
 
 		authenticationService.updataAuthenByUserId(authentication);
@@ -4429,10 +4429,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 
 		projectEvaluationDetailShareResponse.setCommendationList(donateUsers);
-		// projectEvaluationDetailShareResponse.setDevaluationModelList(evaliationModel);
-		// String evaluationTags = evaluation.getEvaluationTags();
-
-		// projectEvaluationDetailShareResponse.setDtags(evaluationTags);
 
 		return projectEvaluationDetailShareResponse;
 	}
@@ -4504,8 +4500,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		commentsShareRequest.setProjectCode(project.getProjectCode());
 
 		commentsShareRequest.setProjectChineseName(project.getProjectChineseName());
-
-		// Map<String, Object> findMap = new HashMap<String, Object>();
 
 		// 进行排序分页查询
 		List<Comments> commentUsers = new ArrayList<>();

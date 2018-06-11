@@ -37,7 +37,7 @@ public class UserCardController extends BaseController {
 	private KFFRmiService kffRmiService;
 
 	/**
-	 * 首页审核展示状态 status 1 审核成功 2 审核中 3 审核不通过 4 未提交审核
+	 * 首页审核展示状态 status 1待审核 2 审核成功 3 审核未通过 4 未提交
 	 * 
 	 * @return
 	 */
@@ -87,17 +87,17 @@ public class UserCardController extends BaseController {
 				bre.setData(map);
 				return bre;
 			}
-			if (2 == statusNum) {
+			if (1 == statusNum) {
 				// 审核中
 				//
-				map.put("status", 2);
+				map.put("status", 1);
 				bre.setData(map);
 				return bre;
 			}
-			if (1 == statusNum) {
+			if (2 == statusNum) {
 				// 审核成功
 				//
-				map.put("status", 1);
+				map.put("status", 2);
 				UserCard userCard = kffRmiService.selectUserCardByUserId(userId);
 				map.put("uesrRealName", userCard.getUserrealname());
 				map.put("uesrcardNum", userCard.getUsercardNum());
@@ -184,7 +184,7 @@ public class UserCardController extends BaseController {
 
 			// 并将status设置成待审核状态
 			kffRmiService.updataUserIdStstus(userRealName, userCardNum, photoIviews, userId);
-			map.put("status", 2);
+			map.put("status", 1);
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("UserCardController uploadUserCard method:{}", e);

@@ -232,6 +232,8 @@ public class UserController extends BaseController {
 			map.put("token", token);
 			Integer userCardStatus = kffRmiService.selectUserCardStatusByUserId(loginaccount.getUserId());
 			map.put("userCardStatus", userCardStatus);
+			Integer authenticationStatus = kffRmiService.selectAuthenticationStatusByUserId(loginaccount.getUserId());
+			map.put("authenticationStatus", authenticationStatus);
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.warn("login warn:{}", e);
@@ -1314,8 +1316,7 @@ public class UserController extends BaseController {
 			List<Tokenrecords> findAllTokenrecordsUserId = kffRmiService.findAllTokenrecordsUserId(userId);
 			for (Tokenrecords tokenrecords : findAllTokenrecordsUserId) {
 				if (tokenrecords != null) {
-					if(tokenrecords.getRewardGrantType() == 1)
-					{
+					if (tokenrecords.getRewardGrantType() == 1) {
 						BigDecimal amount = tokenrecords.getAmount();
 						bdSum = bdSum.add(amount);
 					}
@@ -1368,6 +1369,8 @@ public class UserController extends BaseController {
 			map.put("user", this.formatLoginaccount(loginaccount));
 			Integer userCardStatus = kffRmiService.selectUserCardStatusByUserId(loginaccount.getUserId());
 			map.put("userCardStatus", userCardStatus);
+			Integer authenticationStatus = kffRmiService.selectAuthenticationStatusByUserId(loginaccount.getUserId());
+			map.put("authenticationStatus", authenticationStatus);
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.warn("getUserInfo warn:{}", e);

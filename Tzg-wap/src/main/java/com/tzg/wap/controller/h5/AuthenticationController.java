@@ -65,7 +65,7 @@ public class AuthenticationController extends BaseController {
 		// 根据userID查询申请表的 查询状态表,根据表的ID进行降序排列
 		// 如果 statuses 为空 说明 此用户是首次进行认证操作 直接跳转到操作页面
 		// statuses不为空
-		// 第一个数为 '1 通过审核 2 未通过审核 3 待审核 4未提交审核 ',
+		// 第一个数为 '1 待审核  2 审核通过  3 未通过审核   4未提交审核 ',
 
 		try {
 			List<Authentication> authentications = kffRmiService.selectAuthenticatiobByUserId(userId);
@@ -81,22 +81,22 @@ public class AuthenticationController extends BaseController {
 				bre.setData(resMap);
 				return bre;
 			}
-			if (1 == authentications.get(0).getStatus()) {
+			if (2 == authentications.get(0).getStatus()) {
 				// 通过审核
-				resMap.put("status", 1);
+				resMap.put("status", 2);
 				bre.setData(resMap);
 				return bre;
 			}
 			if (3 == authentications.get(0).getStatus()) {
-				// 未审核
+				// 未通过审核
 				resMap.put("status", 3);
 				resMap.put("notpassreason", authentications.get(0).getNotpassreason());
 				bre.setData(resMap);
 				return bre;
 			}
-			if (2 == authentications.get(0).getStatus()) {
-				// 未通过审核
-				resMap.put("status", 2);
+			if (1 == authentications.get(0).getStatus()) {
+				// 审核中
+				resMap.put("status", 1);
 				bre.setData(resMap);
 				return bre;
 			}
