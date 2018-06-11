@@ -1,5 +1,6 @@
 package com.tzg.rest.controller.kff;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,117 +24,117 @@ import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
 import com.tzg.rmi.service.KFFRmiService;
 
-@Controller(value="KFFEvaluationController")
+@Controller(value = "KFFEvaluationController")
 @RequestMapping("/kff/evaluation")
 public class EvaluationController extends BaseController {
 	private static Logger log = Logger.getLogger(EvaluationController.class);
-	
+
 	@Autowired
 	private KFFRmiService kffRmiService;
-	
-	
+
 	/**
-	* @Title: saveEvaluation  TODO 增加表来存储专业评测并定义接口入参格式
-	* @Description: 发表评测
-	* @param @param request
-	* @param @param response
-	* @param @return    
-	* @return BaseResponseEntity
-	* @see    
-	* @throws
+	 * @Title: saveEvaluation TODO 增加表来存储专业评测并定义接口入参格式
+	 * @Description: 发表评测
+	 * @param @param request
+	 * @param @param response
+	 * @param @return
+	 * @return BaseResponseEntity
+	 * @see
+	 * @throws
 	 */
-	@RequestMapping(value="/saveEvaluation",method = {RequestMethod.POST,RequestMethod.GET})
+	@RequestMapping(value = "/saveEvaluation", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public BaseResponseEntity saveEvaluation(HttpServletRequest request) {
 		BaseResponseEntity bre = new BaseResponseEntity();
-        Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<String, Object>();
 
 		try {
 			EvaluationRequest evaluationRequest = getParamMapFromRequestPolicy(request, EvaluationRequest.class);
-			String token = evaluationRequest.getToken();			
+			String token = evaluationRequest.getToken();
 			Integer userId = getUserIdByToken(token);
 			evaluationRequest.setCreateUserId(userId);
-			map =kffRmiService.saveEvaluation(evaluationRequest);
-            bre.setData(map);
+			map = kffRmiService.saveEvaluation(evaluationRequest);
+			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("EvaluationController saveEvaluation:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
 		} catch (Exception e) {
 			logger.error("EvaluationController saveEvaluation:{}", e);
-			return this.resResult(RestErrorCode.SYS_ERROR,e.getMessage());
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
 		}
 		return bre;
 	}
-	
+
 	/**
-	* @Title: saveEvaluationModel 
-	* @Description: 发表评测模型
-	* @param @param request
-	* @param @param response
-	* @param @return    
-	* @return BaseResponseEntity
-	* @see    
-	* @throws
+	 * @Title: saveEvaluationModel
+	 * @Description: 发表评测模型
+	 * @param @param request
+	 * @param @param response
+	 * @param @return
+	 * @return BaseResponseEntity
+	 * @see
+	 * @throws
 	 */
-	@RequestMapping(value="/saveEvaluationModel",method = {RequestMethod.POST,RequestMethod.GET})
+	@RequestMapping(value = "/saveEvaluationModel", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public BaseResponseEntity saveEvaluationModel(HttpServletRequest request) {
 		BaseResponseEntity bre = new BaseResponseEntity();
-        HashMap<String, Object> map = new HashMap<String, Object>();
+		HashMap<String, Object> map = new HashMap<String, Object>();
 
 		try {
 			DevaluationModelRequest devaluationModelRequest = getParamMapFromRequestPolicy(request, DevaluationModelRequest.class);
-			String token = devaluationModelRequest.getToken();			
+			String token = devaluationModelRequest.getToken();
 			Integer userId = getUserIdByToken(token);
 			devaluationModelRequest.setCreateUserId(userId);
 			kffRmiService.saveEvaluationModel(devaluationModelRequest);
-            bre.setData(map);
+			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("EvaluationController saveEvaluationModel:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
 		} catch (Exception e) {
 			logger.error("EvaluationController saveEvaluationModel:{}", e);
-			return this.resResult(RestErrorCode.SYS_ERROR,e.getMessage());
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
 		}
 		return bre;
 	}
-	
+
 	/**
-	* @Title: getSysEvaluationModel
-	* @Description: 获取生效中的系统评测模型
-	* @param @param request
-	* @param @param response
-	* @param @return    
-	* @return BaseResponseEntity
-	* @see    
-	* @throws
+	 * @Title: getSysEvaluationModel
+	 * @Description: 获取生效中的系统评测模型
+	 * @param @param request
+	 * @param @param response
+	 * @param @return
+	 * @return BaseResponseEntity
+	 * @see
+	 * @throws
 	 */
-	@RequestMapping(value="/getSysEvaluationModel",method = {RequestMethod.POST,RequestMethod.GET})
+	@RequestMapping(value = "/getSysEvaluationModel", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public BaseResponseEntity getSysEvaluationModel(HttpServletRequest request) {
 		BaseResponseEntity bre = new BaseResponseEntity();
-        HashMap<String, Object> map = new HashMap<String, Object>();
+		HashMap<String, Object> map = new HashMap<String, Object>();
 
 		try {
-			
-			
+
 			DevaluationModelRequest devaluationModelRequest = getParamMapFromRequestPolicy(request, DevaluationModelRequest.class);
-			String token = devaluationModelRequest.getToken();			
+			String token = devaluationModelRequest.getToken();
 			Integer userId = getUserIdByToken(token);
 			devaluationModelRequest.setCreateUserId(userId);
 			List<DevaluationModelDetail> sysEvuationModel = kffRmiService.findSysEvaModelDetailList();
+			for (DevaluationModelDetail devaluationModelDetail : sysEvuationModel) {
+				BigDecimal b2 = BigDecimal.valueOf(8.00);
+				devaluationModelDetail.setTotalScore(b2);
+			}
 			map.put("modeDetailList", sysEvuationModel);
-            bre.setData(map);
+			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("EvaluationController getSysEvaluationModel:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
 		} catch (Exception e) {
 			logger.error("EvaluationController getSysEvaluationModel:{}", e);
-			return this.resResult(RestErrorCode.SYS_ERROR,e.getMessage());
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
 		}
 		return bre;
 	}
-	
+
 }
-
-
