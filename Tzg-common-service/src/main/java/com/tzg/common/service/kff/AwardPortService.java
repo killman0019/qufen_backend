@@ -160,13 +160,13 @@ public class AwardPortService {
 			coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
 			coinProperty.setCoinDistributed(m0);
 			kffCoinPropertyService.save(coinProperty);
-			// 将用户的信息同时存入流水表单中
+			/*// 将用户的信息同时存入流水表单中
 			tokenrecords.setUserId(userId);
 			tokenrecords.setFunctionDesc("注册奖励");
 			tokenrecords.setFunctionType(16);
 			tokenrecords.setTradeType(1);
 			tokenrecords.setCreateTime(new Date());
-			kffTokenrecordsService.save(tokenrecords);
+			kffTokenrecordsService.save(tokenrecords);*/
 
 			// 从数据表中获取所有该用户的奖励数据
 			// issue(userId);
@@ -191,13 +191,13 @@ public class AwardPortService {
 			coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
 			coinProperty.setCoinDistributed(m0);
 			kffCoinPropertyService.save(coinProperty);
-			// 将用户的信息同时存入流水表单中
+			/*// 将用户的信息同时存入流水表单中
 			tokenrecords.setUserId(userId);
 			tokenrecords.setFunctionDesc("注册奖励");
 			tokenrecords.setFunctionType(16);
 			tokenrecords.setTradeType(1);
 			tokenrecords.setCreateTime(new Date());
-			kffTokenrecordsService.save(tokenrecords);
+			kffTokenrecordsService.save(tokenrecords);*/
 
 			// 有邀请人,并且注册的是普通用户
 		} else if (user.getReferLevel() == 1 && (user.getUserType() == 1 || user.getUserType() == 4)) {
@@ -230,13 +230,13 @@ public class AwardPortService {
 				coinProperty.setCoinDistributed(m0);
 				kffCoinPropertyService.save(coinProperty);
 
-				// 将注册用户的信息同时存入流水表单中
+				/*// 将注册用户的信息同时存入流水表单中
 				tokenrecords.setUserId(userId);
 				tokenrecords.setFunctionDesc("注册奖励");
 				tokenrecords.setFunctionType(16);
 				tokenrecords.setTradeType(1);
 				tokenrecords.setCreateTime(new Date());
-				kffTokenrecordsService.save(tokenrecords);
+				kffTokenrecordsService.save(tokenrecords);*/
 
 				// 从数据表中获取所有注册用户的奖励数据
 				List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
@@ -385,13 +385,13 @@ public class AwardPortService {
 					coinProperty.setCoinDistributed(m0);
 					kffCoinPropertyService.save(coinProperty);
 
-					// 将注册用户的信息同时存入流水表单中
+				/*	// 将注册用户的信息同时存入流水表单中
 					tokenrecords.setUserId(userId);
 					tokenrecords.setFunctionDesc("注册奖励");
 					tokenrecords.setFunctionType(16);
 					tokenrecords.setTradeType(1);
 					tokenrecords.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords);
+					kffTokenrecordsService.save(tokenrecords);*/
 
 					// 从数据表中获取所有注册用户的奖励数据
 					List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
@@ -507,13 +507,13 @@ public class AwardPortService {
 					coinProperty.setCoinDistributed(m0);
 					kffCoinPropertyService.save(coinProperty);
 
-					// 将注册用户的信息同时存入流水表单中
+					/*// 将注册用户的信息同时存入流水表单中
 					tokenrecords.setUserId(userId);
 					tokenrecords.setFunctionDesc("注册奖励");
 					tokenrecords.setFunctionType(16);
 					tokenrecords.setTradeType(1);
 					tokenrecords.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords);
+					kffTokenrecordsService.save(tokenrecords);*/
 
 					// 从数据表中获取所有注册用户的奖励数据
 					List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
@@ -700,13 +700,13 @@ public class AwardPortService {
 					coinProperty.setCoinDistributed(m0);
 					kffCoinPropertyService.save(coinProperty);
 
-					// 将注册用户的信息同时存入流水表单中
+					/*// 将注册用户的信息同时存入流水表单中
 					tokenrecords.setUserId(userId);
 					tokenrecords.setFunctionDesc("注册奖励");
 					tokenrecords.setFunctionType(16);
 					tokenrecords.setTradeType(1);
 					tokenrecords.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords);
+					kffTokenrecordsService.save(tokenrecords);*/
 
 					// 从数据表中获取所有注册用户的奖励数据
 					List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
@@ -819,13 +819,13 @@ public class AwardPortService {
 					coinProperty.setCoinDistributed(m0);
 					kffCoinPropertyService.save(coinProperty);
 
-					// 将注册用户的信息同时存入流水表单中
+					/*// 将注册用户的信息同时存入流水表单中
 					tokenrecords.setUserId(userId);
 					tokenrecords.setFunctionDesc("注册奖励");
 					tokenrecords.setFunctionType(16);
 					tokenrecords.setTradeType(1);
 					tokenrecords.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords);
+					kffTokenrecordsService.save(tokenrecords);*/
 
 					// 从数据表中获取所有注册用户的奖励数据
 					List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
@@ -943,42 +943,44 @@ public class AwardPortService {
 						Double x = rewards / 100;
 						// 如果是注册奖励
 						if (awardFunctionType == 16) {
-							Tokenrecords tokenrecords1 = tokenrecordsMapper.findByUserIdAndFunctionType(userId);
-							if(tokenrecords1 != null) {
+						//	Tokenrecords tokenrecords1 = tokenrecordsMapper.findByUserIdAndFunctionType(userId);
+							tokenrecords.setUserId(userId);
+							tokenrecords.setFunctionDesc("注册奖励");	// 交易类型
+							tokenrecords.setFunctionType(awardFunctionType); // 交易的类型
+							tokenrecords.setAmount(new BigDecimal(x)); // 发放奖励数
+							tokenrecords.setRewardGrantType(2); // 发放类型  1-一次性发放  2-线性发放
+							Date date = new Date();
+							String stringDate = DateUtil.getDate(date, "yyyy-MM-dd");
+							String replaceAllDate = stringDate.replaceAll("-", "");
+							String format = String.format("%010d", userId);
+							tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
+							tokenrecords.setTradeType(1); // 交易类型 1-收入    2-支出
+							tokenrecords.setTradeDate(date); // 交易日期
+							tokenrecords.setCreateTime(date);  //  创建的日期
+							tokenrecords.setStatus(1);	
+							tokenrecords.setMemo("注册奖励");
+							kffTokenrecordsService.save(tokenrecords);
 								
-								tokenrecords1.setUserId(userId);
-								tokenrecords1.setFunctionDesc("注册奖励");
-								tokenrecords1.setFunctionType(awardFunctionType);
-								tokenrecords1.setAmount(new BigDecimal(x));
-								tokenrecords1.setUpdateTime(new Date());
-								tokenrecords1.setRewardGrantType(2);
-								
-								Date date = new Date();
-								String stringDate = DateUtil.getDate(date, "yyyy-MM-dd");
-								String replaceAllDate = stringDate.replaceAll("-", "");
-								String format = String.format("%010d", userId);
-								tokenrecords1.setTradeCode("01" + replaceAllDate + format); // 交易流水号
 								
 								award.setUserId(userId);
 								award.setTokenAwardFunctionType(awardFunctionType);
 								award.setCounter(counter + 1);
 								Double awardBalance = award.getAwardBalance();
 								award.setAwardBalance(awardBalance - x);
-								
+								award.setGrantType(1);
 								BigDecimal tokenNum = finduser.getKffCoinNum();
 								tokenNum = tokenNum.add(new BigDecimal(x));
 								finduser.setKffCoinNum(tokenNum);
 								finduser.setUpdateTime(new Date());
 								kffUserService.update(finduser);
 								
-								kffTokenrecordsService.update(tokenrecords1);
 								System.err.println(award.getTokenAwardFunctionDesc());
 								
 								kffTokenawardService.update(award);
 								
-								KFFUser kffUser = kffUserService.findById(userId);
+								/*KFFUser kffUser = kffUserService.findById(userId);
 								BigDecimal kffCoinNum = kffUser.getKffCoinNum();
-								kffUserService.updateUserKFFCoinNum(userId, kffCoinNum.add(new BigDecimal(x)));
+								kffUserService.updateUserKFFCoinNum(userId, kffCoinNum.add(new BigDecimal(x)));*/
 								if(coinProperty != null ) {
 									
 									Double coinLock = coinProperty.getCoinLock();
@@ -990,7 +992,7 @@ public class AwardPortService {
 								}
 								
 								
-							}
+							
 						} else if (awardFunctionType == 18) {// 如果是邀请好友的奖励
 							
 							tokenrecords.setUserId(userId);
@@ -1010,22 +1012,22 @@ public class AwardPortService {
 							tokenrecords.setMemo("邀请好友的登录奖励");
 							kffTokenrecordsService.save(tokenrecords);
 							
-							tokenaward.setUserId(userId);
-							tokenaward.setTokenAwardFunctionType(awardFunctionType);
-							tokenaward.setCounter(counter + 1);
+							award.setUserId(userId);
+							award.setTokenAwardFunctionType(awardFunctionType);
+							award.setCounter(counter + 1);
 							
 							Double awardBalance = award.getAwardBalance();
-							tokenaward.setAwardBalance(awardBalance - x);
-							
+							award.setAwardBalance(awardBalance - x);
+							award.setGrantType(1);
 							BigDecimal tokenNum = finduser.getKffCoinNum();
 							tokenNum = tokenNum.add(new BigDecimal(x));
 							finduser.setUpdateTime(new Date());
 							kffUserService.update(finduser);
 							
 							kffTokenawardService.update(award);
-							KFFUser kffUser = kffUserService.findById(userId);
+							/*KFFUser kffUser = kffUserService.findById(userId);
 							BigDecimal kffCoinNum = kffUser.getKffCoinNum();
-							kffUserService.updateUserKFFCoinNum(userId, kffCoinNum.add(new BigDecimal(x)));
+							kffUserService.updateUserKFFCoinNum(userId, kffCoinNum.add(new BigDecimal(x)));*/
 							if(coinProperty != null) {
 								
 								Double coinLock = coinProperty.getCoinLock();
@@ -1069,14 +1071,14 @@ public class AwardPortService {
 			coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
 			coinProperty.setCoinDistributed(m0);
 			kffCoinPropertyService.save(coinProperty);
-			// 将用户的信息同时存入流水表单中
+			/*// 将用户的信息同时存入流水表单中
 			tokenrecords.setUserId(userId);
 			tokenrecords.setFunctionDesc("注册奖励");
 			tokenrecords.setFunctionType(16);
 			tokenrecords.setTradeType(1);
 			tokenrecords.setCreateTime(new Date());
 			kffTokenrecordsService.save(tokenrecords);
-
+*/
 			// 从数据表中获取所有该用户的奖励数据
 			// issue(userId);
 		} else if (user.getReferLevel() == 0 && (user.getUserType() == 2 || user.getUserType() == 3)) { // 有邀请人并且是项目方
@@ -1099,13 +1101,13 @@ public class AwardPortService {
 			coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
 			coinProperty.setCoinDistributed(m0);
 			kffCoinPropertyService.save(coinProperty);
-			// 将用户的信息同时存入流水表单中
+			/*// 将用户的信息同时存入流水表单中
 			tokenrecords.setUserId(userId);
 			tokenrecords.setFunctionDesc("注册奖励");
 			tokenrecords.setFunctionType(16);
 			tokenrecords.setTradeType(1);
 			tokenrecords.setCreateTime(new Date());
-			kffTokenrecordsService.save(tokenrecords);
+			kffTokenrecordsService.save(tokenrecords);*/
 
 		} else if (user.getReferLevel() == 1 && (user.getUserType() == 1 || user.getUserType() == 4)) {
 			// 获取邀请人的id
@@ -1137,13 +1139,13 @@ public class AwardPortService {
 				coinProperty.setCoinDistributed(m0);
 				kffCoinPropertyService.save(coinProperty);
 
-				// 将注册用户的信息同时存入流水表单中
+				/*// 将注册用户的信息同时存入流水表单中
 				tokenrecords.setUserId(userId);
 				tokenrecords.setFunctionDesc("注册奖励");
 				tokenrecords.setFunctionType(16);
 				tokenrecords.setTradeType(1);
 				tokenrecords.setCreateTime(new Date());
-				kffTokenrecordsService.save(tokenrecords);
+				kffTokenrecordsService.save(tokenrecords);*/
 
 				// 从数据表中获取所有注册用户的奖励数据
 				List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
@@ -1211,12 +1213,12 @@ public class AwardPortService {
 				tokenaward.setPriaiseAward(0d);
 				kffTokenawardService.save(tokenaward);
 
-				// 将注册用户的信息同时存入流水表单中
+				/*// 将注册用户的信息同时存入流水表单中
 				tokenrecords.setUserId(userId);
 				tokenrecords.setFunctionDesc("注册奖励");
 				tokenrecords.setFunctionType(16);
 				tokenrecords.setTradeType(1);
-				tokenrecords.setCreateTime(new Date());
+				tokenrecords.setCreateTime(new Date());*/
 				
 				kffTokenrecordsService.save(tokenrecords);
 
@@ -1294,13 +1296,13 @@ public class AwardPortService {
 					coinProperty.setCoinDistributed(m0);
 					kffCoinPropertyService.save(coinProperty);
 
-					// 将注册用户的信息同时存入流水表单中
+					/*// 将注册用户的信息同时存入流水表单中
 					tokenrecords.setUserId(userId);
 					tokenrecords.setFunctionDesc("注册奖励");
 					tokenrecords.setFunctionType(16);
 					tokenrecords.setTradeType(1);
 					tokenrecords.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords);
+					kffTokenrecordsService.save(tokenrecords);*/
 
 					// 从数据表中获取所有注册用户的奖励数据
 					List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
@@ -1414,13 +1416,13 @@ public class AwardPortService {
 					coinProperty.setCoinDistributed(m0);
 					kffCoinPropertyService.save(coinProperty);
 
-					// 将注册用户的信息同时存入流水表单中
+					/*// 将注册用户的信息同时存入流水表单中
 					tokenrecords.setUserId(userId);
 					tokenrecords.setFunctionDesc("注册奖励");
 					tokenrecords.setFunctionType(16);
 					tokenrecords.setTradeType(1);
 					tokenrecords.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords);
+					kffTokenrecordsService.save(tokenrecords);*/
 
 					// 从数据表中获取所有注册用户的奖励数据
 					List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
@@ -1537,13 +1539,13 @@ public class AwardPortService {
 					coinProperty.setCoinDistributed(m0);
 					kffCoinPropertyService.save(coinProperty);
 
-					// 将注册用户的信息同时存入流水表单中
+					/*// 将注册用户的信息同时存入流水表单中
 					tokenrecords.setUserId(userId);
 					tokenrecords.setFunctionDesc("注册奖励");
 					tokenrecords.setFunctionType(16);
 					tokenrecords.setTradeType(1);
 					tokenrecords.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords);
+					kffTokenrecordsService.save(tokenrecords);*/
 
 					// 从数据表中获取所有注册用户的奖励数据
 					List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
@@ -1656,13 +1658,13 @@ public class AwardPortService {
 					coinProperty.setCoinDistributed(m0);
 					kffCoinPropertyService.save(coinProperty);
 
-					// 将注册用户的信息同时存入流水表单中
+					/*// 将注册用户的信息同时存入流水表单中
 					tokenrecords.setUserId(userId);
 					tokenrecords.setFunctionDesc("注册奖励");
 					tokenrecords.setFunctionType(16);
 					tokenrecords.setTradeType(1);
 					tokenrecords.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords);
+					kffTokenrecordsService.save(tokenrecords);*/
 
 					// 从数据表中获取所有注册用户的奖励数据
 					List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
@@ -1774,13 +1776,13 @@ public class AwardPortService {
 			coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
 			coinProperty.setCoinDistributed(m0);
 			kffCoinPropertyService.save(coinProperty);
-			// 将用户的信息同时存入流水表单中
+			/*// 将用户的信息同时存入流水表单中
 			tokenrecords.setUserId(userId);
 			tokenrecords.setFunctionDesc("注册奖励");
 			tokenrecords.setFunctionType(16);
 			tokenrecords.setTradeType(1);
 			tokenrecords.setCreateTime(new Date());
-			kffTokenrecordsService.save(tokenrecords);
+			kffTokenrecordsService.save(tokenrecords);*/
 
 			// 从数据表中获取所有该用户的奖励数据
 			// issue(userId);
@@ -1804,14 +1806,14 @@ public class AwardPortService {
 			coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
 			coinProperty.setCoinDistributed(m0);
 			kffCoinPropertyService.save(coinProperty);
-			// 将用户的信息同时存入流水表单中
+			/*// 将用户的信息同时存入流水表单中
 			tokenrecords.setUserId(userId);
 			tokenrecords.setFunctionDesc("注册奖励");
 			tokenrecords.setFunctionType(16);
 			tokenrecords.setTradeType(1);
 			tokenrecords.setCreateTime(new Date());
 			kffTokenrecordsService.save(tokenrecords);
-
+*/
 		} else if (user.getReferLevel() == 1 && (user.getUserType() == 1 || user.getUserType() == 4)) {
 			// 获取邀请人的id
 			Integer referUserId = user.getReferUserId();
@@ -1842,14 +1844,14 @@ public class AwardPortService {
 				coinProperty.setCoinDistributed(m0);
 				kffCoinPropertyService.save(coinProperty);
 
-				// 将注册用户的信息同时存入流水表单中
+				/*// 将注册用户的信息同时存入流水表单中
 				tokenrecords.setUserId(userId);
 				tokenrecords.setFunctionDesc("注册奖励");
 				tokenrecords.setFunctionType(16);
 				tokenrecords.setTradeType(1);
 				tokenrecords.setCreateTime(new Date());
 				kffTokenrecordsService.save(tokenrecords);
-
+*/
 				// 从数据表中获取所有注册用户的奖励数据
 				List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
 				// List<Tokenaward> findByUserId2 =
@@ -1916,13 +1918,13 @@ public class AwardPortService {
 				tokenaward.setPriaiseAward(0d);
 				kffTokenawardService.save(tokenaward);
 
-				// 将注册用户的信息同时存入流水表单中
+				/*// 将注册用户的信息同时存入流水表单中
 				tokenrecords.setUserId(userId);
 				tokenrecords.setFunctionDesc("注册奖励");
 				tokenrecords.setFunctionType(16);
 				tokenrecords.setTradeType(1);
 				tokenrecords.setCreateTime(new Date());
-				kffTokenrecordsService.save(tokenrecords);
+				kffTokenrecordsService.save(tokenrecords);*/
 
 				coinProperty.setUserId(userId);
 				coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
@@ -1998,13 +2000,13 @@ public class AwardPortService {
 					coinProperty.setCoinDistributed(m0);
 					kffCoinPropertyService.save(coinProperty);
 
-					// 将注册用户的信息同时存入流水表单中
+					/*// 将注册用户的信息同时存入流水表单中
 					tokenrecords.setUserId(userId);
 					tokenrecords.setFunctionDesc("注册奖励");
 					tokenrecords.setFunctionType(16);
 					tokenrecords.setTradeType(1);
 					tokenrecords.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords);
+					kffTokenrecordsService.save(tokenrecords);*/
 
 					// 从数据表中获取所有注册用户的奖励数据
 					List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
@@ -2116,13 +2118,13 @@ public class AwardPortService {
 					coinProperty.setCoinDistributed(m0);
 					kffCoinPropertyService.save(coinProperty);
 
-					// 将注册用户的信息同时存入流水表单中
+					/*// 将注册用户的信息同时存入流水表单中
 					tokenrecords.setUserId(userId);
 					tokenrecords.setFunctionDesc("注册奖励");
 					tokenrecords.setFunctionType(16);
 					tokenrecords.setTradeType(1);
 					tokenrecords.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords);
+					kffTokenrecordsService.save(tokenrecords);*/
 
 					// 从数据表中获取所有注册用户的奖励数据
 					List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
@@ -2239,13 +2241,13 @@ public class AwardPortService {
 					coinProperty.setCoinDistributed(m0);
 					kffCoinPropertyService.save(coinProperty);
 
-					// 将注册用户的信息同时存入流水表单中
+					/*// 将注册用户的信息同时存入流水表单中
 					tokenrecords.setUserId(userId);
 					tokenrecords.setFunctionDesc("注册奖励");
 					tokenrecords.setFunctionType(16);
 					tokenrecords.setTradeType(1);
 					tokenrecords.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords);
+					kffTokenrecordsService.save(tokenrecords);*/
 
 					// 从数据表中获取所有注册用户的奖励数据
 					List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
@@ -2358,13 +2360,13 @@ public class AwardPortService {
 					coinProperty.setCoinDistributed(m0);
 					kffCoinPropertyService.save(coinProperty);
 
-					// 将注册用户的信息同时存入流水表单中
+					/*// 将注册用户的信息同时存入流水表单中
 					tokenrecords.setUserId(userId);
 					tokenrecords.setFunctionDesc("注册奖励");
 					tokenrecords.setFunctionType(16);
 					tokenrecords.setTradeType(1);
 					tokenrecords.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords);
+					kffTokenrecordsService.save(tokenrecords);*/
 
 					// 从数据表中获取所有注册用户的奖励数据
 					List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
@@ -2475,13 +2477,13 @@ public class AwardPortService {
 			coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
 			coinProperty.setCoinDistributed(m0);
 			kffCoinPropertyService.save(coinProperty);
-			// 将用户的信息同时存入流水表单中
+			/*// 将用户的信息同时存入流水表单中
 			tokenrecords.setUserId(userId);
 			tokenrecords.setFunctionDesc("注册奖励");
 			tokenrecords.setFunctionType(16);
 			tokenrecords.setTradeType(1);
 			tokenrecords.setCreateTime(new Date());
-			kffTokenrecordsService.save(tokenrecords);
+			kffTokenrecordsService.save(tokenrecords);*/
 
 			// 从数据表中获取所有该用户的奖励数据
 			// issue(userId);
@@ -2505,13 +2507,13 @@ public class AwardPortService {
 			coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
 			coinProperty.setCoinDistributed(m0);
 			kffCoinPropertyService.save(coinProperty);
-			// 将用户的信息同时存入流水表单中
+			/*// 将用户的信息同时存入流水表单中
 			tokenrecords.setUserId(userId);
 			tokenrecords.setFunctionDesc("注册奖励");
 			tokenrecords.setFunctionType(16);
 			tokenrecords.setTradeType(1);
 			tokenrecords.setCreateTime(new Date());
-			kffTokenrecordsService.save(tokenrecords);
+			kffTokenrecordsService.save(tokenrecords);*/
 
 			// 从数据表中获取所有该用户的奖励数据
 			// issue(userId);
@@ -2546,13 +2548,13 @@ public class AwardPortService {
 				coinProperty.setCoinDistributed(m0);
 				kffCoinPropertyService.save(coinProperty);
 
-				// 将注册用户的信息同时存入流水表单中
+				/*// 将注册用户的信息同时存入流水表单中
 				tokenrecords.setUserId(userId);
 				tokenrecords.setFunctionDesc("注册奖励");
 				tokenrecords.setFunctionType(16);
 				tokenrecords.setTradeType(1);
 				tokenrecords.setCreateTime(new Date());
-				kffTokenrecordsService.save(tokenrecords);
+				kffTokenrecordsService.save(tokenrecords);*/
 
 				// 从数据表中获取所有注册用户的奖励数据
 				List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
@@ -2620,13 +2622,13 @@ public class AwardPortService {
 				tokenaward.setPriaiseAward(0d);
 				kffTokenawardService.save(tokenaward);
 
-				// 将注册用户的信息同时存入流水表单中
+				/*// 将注册用户的信息同时存入流水表单中
 				tokenrecords.setUserId(userId);
 				tokenrecords.setFunctionDesc("注册奖励");
 				tokenrecords.setFunctionType(16);
 				tokenrecords.setTradeType(1);
 				tokenrecords.setCreateTime(new Date());
-				kffTokenrecordsService.save(tokenrecords);
+				kffTokenrecordsService.save(tokenrecords);*/
 
 				coinProperty.setUserId(userId);
 				coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
@@ -2701,13 +2703,13 @@ public class AwardPortService {
 					coinProperty.setCoinDistributed(m0);
 					kffCoinPropertyService.save(coinProperty);
 
-					// 将注册用户的信息同时存入流水表单中
+					/*// 将注册用户的信息同时存入流水表单中
 					tokenrecords.setUserId(userId);
 					tokenrecords.setFunctionDesc("注册奖励");
 					tokenrecords.setFunctionType(16);
 					tokenrecords.setTradeType(1);
 					tokenrecords.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords);
+					kffTokenrecordsService.save(tokenrecords);*/
 
 					// 从数据表中获取所有注册用户的奖励数据
 					List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
@@ -2820,13 +2822,13 @@ public class AwardPortService {
 					coinProperty.setCoinDistributed(m0);
 					kffCoinPropertyService.save(coinProperty);
 
-					// 将注册用户的信息同时存入流水表单中
+					/*// 将注册用户的信息同时存入流水表单中
 					tokenrecords.setUserId(userId);
 					tokenrecords.setFunctionDesc("注册奖励");
 					tokenrecords.setFunctionType(16);
 					tokenrecords.setTradeType(1);
 					tokenrecords.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords);
+					kffTokenrecordsService.save(tokenrecords);*/
 
 					// 从数据表中获取所有注册用户的奖励数据
 					List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
@@ -2943,13 +2945,13 @@ public class AwardPortService {
 					coinProperty.setCoinDistributed(m0);
 					kffCoinPropertyService.save(coinProperty);
 
-					// 将注册用户的信息同时存入流水表单中
+					/*// 将注册用户的信息同时存入流水表单中
 					tokenrecords.setUserId(userId);
 					tokenrecords.setFunctionDesc("注册奖励");
 					tokenrecords.setFunctionType(16);
 					tokenrecords.setTradeType(1);
 					tokenrecords.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords);
+					kffTokenrecordsService.save(tokenrecords);*/
 
 					// 从数据表中获取所有注册用户的奖励数据
 					List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
@@ -3061,13 +3063,13 @@ public class AwardPortService {
 					coinProperty.setCoinDistributed(m0);
 					kffCoinPropertyService.save(coinProperty);
 
-					// 将注册用户的信息同时存入流水表单中
+					/*// 将注册用户的信息同时存入流水表单中
 					tokenrecords.setUserId(userId);
 					tokenrecords.setFunctionDesc("注册奖励");
 					tokenrecords.setFunctionType(16);
 					tokenrecords.setTradeType(1);
 					tokenrecords.setCreateTime(new Date());
-					kffTokenrecordsService.save(tokenrecords);
+					kffTokenrecordsService.save(tokenrecords);*/
 
 					// 从数据表中获取所有注册用户的奖励数据
 					List<Tokenaward> list = kffTokenawardService.findByUserId(userId);

@@ -268,9 +268,7 @@ public class Tokenaward implements Serializable {
 	public void setRewardToken(java.lang.Double rewardToken) {
 		this.rewardToken = rewardToken;
 	}
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
+	
 	
 	
 	

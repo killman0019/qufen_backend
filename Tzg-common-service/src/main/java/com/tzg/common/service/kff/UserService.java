@@ -164,7 +164,11 @@ public class UserService {
 			Integer userId = loninUser.getUserId();
 			System.err.println("登录用户的ID  :" + userId);
 			// 根据用户id去tokenaward表中获取发放状态 grantType
-			List<Tokenaward> findByUserId = tokenawardService.findByUserId(userId);
+			if(userId != null) {
+				
+				registerAward(userId);
+			}
+		/*	List<Tokenaward> findByUserId = tokenawardService.findByUserId(userId);
 			for (Tokenaward tokenaward : findByUserId) {
 				if(tokenaward != null) {
 					if(tokenaward.getGrantType() != null) {
@@ -176,13 +180,14 @@ public class UserService {
 							// Integer tokenawardUserid = tokenaward.getUserId();
 							// awardPortService.registerAward(userId);
 							registerAward(userId);
+							
 							tokenaward.setGrantType(1);
 							tokenawardService.update(tokenaward);
 						}
 					}
 				}
 			
-			}
+			}*/
 			
 		} else {
 			// 用户名登录
@@ -198,7 +203,11 @@ public class UserService {
 			}
 			Integer userId = loninUser.getUserId();
 			// 根据用户id去tokenaward表中获取发放状态 grantType
-			List<Tokenaward> findByUserId = tokenawardService.findByUserId(userId);
+			if(userId != null) {
+				
+				registerAward(userId);
+			}
+			/*List<Tokenaward> findByUserId = tokenawardService.findByUserId(userId);
 			for (Tokenaward tokenaward : findByUserId) {
 				if(tokenaward != null) {
 					if(tokenaward.getGrantType() != null) {
@@ -216,7 +225,7 @@ public class UserService {
 					}
 				}
 			
-			}
+			}*/
 
 		}
 
@@ -230,10 +239,10 @@ public class UserService {
 
 		// 更新用户登录时间
 		if (user != null) {
-			KFFUser updateLastLoginTime = new KFFUser();
-			updateLastLoginTime.setUserId(user.getUserId());
-			updateLastLoginTime.setLastLoginDateTime(new Date());
-			userMapper.update(updateLastLoginTime);
+		//	KFFUser updateLastLoginTime = new KFFUser();
+		//	updateLastLoginTime.setUserId(user.getUserId());
+			user.setLastLoginDateTime(new Date());
+			userMapper.update(user);
 		}
 
 		return user;
@@ -275,6 +284,7 @@ public class UserService {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("mobile", phoneNumber);
 		map.put("status", "1");
+		
 		List<KFFUser> users = userMapper.findAllPage(map);
 		if (CollectionUtils.isNotEmpty(users)) {
 			awardPortService.issue(users.get(0).getUserId());
@@ -447,7 +457,7 @@ public class UserService {
 
 					awardPortService.issue(userId);
 				}
-			} else if (userId > 5000000 && userId < 1000000) {
+			} else if (userId > 500000 && userId < 1000000) {
 				Date createTime = user.getCreateTime();
 				String formatCreateTime = format.format(createTime);
 				String formatNewDate = format.format(new Date());

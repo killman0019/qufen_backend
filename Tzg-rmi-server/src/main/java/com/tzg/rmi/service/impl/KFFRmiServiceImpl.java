@@ -4951,31 +4951,36 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (CollectionUtils.isNotEmpty(coinProperty)) {
 
 			for (Tokenaward tokenawards : coinProperty) {
-				Integer tokenType = tokenawards.getTokenAwardFunctionType(); // 奖励类型
-				Double inviteRewards = tokenawards.getInviteRewards(); // 奖励数量
-				Date createTime = tokenawards.getCreateTime(); // 奖励创建的时间
-				Integer counter = tokenawards.getCounter(); // 发放的次数
-				Double awardBalance = tokenawards.getAwardBalance(); // 线性发放的余额
-				Double bDouble = inviteRewards - awardBalance;
-				ytokensum += bDouble;// 已经发放的总数
-				ftokensum += awardBalance; // 发放中的
-				tokenawards.setTokenAwardFunctionType(tokenType);
-				tokenawards.setInviteRewards(inviteRewards);
-				tokenawards.setCounter(counter);
-				tokenawards.setCreateTime(createTime);
-				// tokenawards.setGiveNext(ftokensum);
-
-				// result.add(tokenawards);
+				
+				if(tokenawards.getDistributionType() != null && tokenawards.getDistributionType() == 1 ) {
+					
+					/*Integer tokenType = tokenawards.getTokenAwardFunctionType(); // 奖励类型
+					Double inviteRewards = tokenawards.getInviteRewards(); // 奖励数量
+					Date createTime = tokenawards.getCreateTime(); // 奖励创建的时间
+					Integer counter = tokenawards.getCounter(); // 发放的次数
+					Double awardBalance = tokenawards.getAwardBalance(); // 线性发放的余额
+					Double bDouble = inviteRewards - awardBalance;
+					ytokensum += bDouble;// 已经发放的总数
+					ftokensum += awardBalance; // 发放中的
+					tokenawards.setTokenAwardFunctionType(tokenType);
+					tokenawards.setInviteRewards(inviteRewards);
+					tokenawards.setCounter(counter);
+					tokenawards.setCreateTime(createTime);*/
+					// tokenawards.setGiveNext(ftokensum);
+					result.add(tokenawards);
+					// result.add(tokenawards);
+				}
+			
 			}
 			// coinProperty.
-			Tokenaward tokenaward = new Tokenaward();
+		//	Tokenaward tokenaward = new Tokenaward();
 			// 发放中的总数
-			tokenaward.setRewardToken(ytokensum);
+		//	tokenaward.setRewardToken(ytokensum);
 			// 已发放的总数
-			tokenaward.setGiveNext(ftokensum);
+		//	tokenaward.setGiveNext(ftokensum);
 			// result.add(tokenaward);
-			result.addAll(coinProperty);
-			result.add(tokenaward);
+		//	result.addAll(coinProperty);
+		//	result.add(result);
 		}
 		return result;
 	}
@@ -5205,7 +5210,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				Date createTime = tokenawards.getCreateTime(); // 奖励创建的时间
 				Integer counter = tokenawards.getCounter(); // 发放的次数
 				Double awardBalance = tokenawards.getAwardBalance(); // 线性发放的余额
-				if (inviteRewards != null && awardBalance != null) {
+				if (inviteRewards != null && awardBalance != null && tokenawards.getDistributionType() == 1) {
 
 					BigDecimal bd1 = new BigDecimal(Double.toString(inviteRewards));
 					BigDecimal bd2 = new BigDecimal(Double.toString(awardBalance));
