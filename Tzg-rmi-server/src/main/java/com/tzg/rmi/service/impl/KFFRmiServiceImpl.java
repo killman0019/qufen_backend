@@ -1754,7 +1754,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			String stringDate = DateUtil.getDate(date, "yyyy-MM-dd");
 			String replaceAllDate = stringDate.replaceAll("-", "");
 			// 创建业务记录id+
-			Praise praiseId = kffPraiseService.findByPostId(createUserId, postId);
+			Praise praiseId = kffPraiseService.findByPostId(createUserId, userId);
 			String format ="";
 			if(null != praiseId)
 				format = String.format("%010d", praiseId.getPraiseId());
@@ -1841,7 +1841,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					if (evaluation.getModelType() == 2) {
 						// 系统自定义专业完整版评测
 
-						if (praiseId.getPraiseType() == 1) {
+						if (null != praiseId && praiseId.getPraiseType() == 1) {
 							// 点赞类型1-帖子点赞；2-评论点赞
 							// 帖子点赞(奖励50一个赞)
 							Tokenrecords tokenrecords = new Tokenrecords();
@@ -1927,7 +1927,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					}
 					if (evaluation.getModelType() == 3) {
 						// 用户自定义单项评测
-						if (praiseId.getStatus() == 1 && validPraise > 0 && validPraise != 0) {
+						if (null != praiseId && praiseId.getStatus() == 1 && validPraise > 0 && validPraise != 0) {
 							Tokenrecords tokenrecords = new Tokenrecords();
 							Tokenaward tokenaward = new Tokenaward();
 							tokenrecords.setFunctionDesc("点赞奖励");
@@ -1972,7 +1972,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				if (postType == 2) {
 					// 证明是讨论的帖子
 					System.err.println("执行我就相当于讨论的帖子");
-					if (praiseId.getPraiseType() == 1) {
+					if (null != praiseId && praiseId.getPraiseType() == 1) {
 						// 帖子点赞(普通1次五个)
 						Tokenrecords tokenrecords = new Tokenrecords();
 						Tokenaward tokenaward = new Tokenaward();
@@ -2018,7 +2018,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				if (postType == 3) {
 					// 证明是文章的帖子
 					System.err.println("执行我就相当于文章的帖子");
-					if (praiseId.getPraiseType() == 1) {
+					if (null != praiseId && praiseId.getPraiseType() == 1) {
 						// 帖子点赞(普通1次二十个)
 						Tokenrecords tokenrecords = new Tokenrecords();
 						Tokenaward tokenaward = new Tokenaward();
