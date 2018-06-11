@@ -2102,8 +2102,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					}
 
 				}
-			} else {
-				throw new RestServiceException("非法操作");
 			}
 		}
 
