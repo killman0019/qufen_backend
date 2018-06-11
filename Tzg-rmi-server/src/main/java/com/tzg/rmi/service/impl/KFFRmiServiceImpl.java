@@ -1740,7 +1740,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			Integer createPostUserQFIndex = 0;
 			Double createPUF = 0.0d;
 			if (null != qfIndex) {
-				createPostUserQFIndex = qfIndex.getYxpraise();
+				createPostUserQFIndex = qfIndex.getStatusHierarchyType();
 				// 发帖人赞的收益系数
 				createPUF = createPostUserQFIndex * 0.01d;
 			}
@@ -3286,7 +3286,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			// Integer createUserId = creatUserPost.getCreateUserId();
 			// 根据发表评论人的id去获取本身的区分指数
 			QfIndex qfIndex = qfIndexService.findByUserId(commentUserId);
-			Integer createPostUserQFIndex = qfIndex.getYxpraise();
+			Integer createPostUserQFIndex = qfIndex.getStatusHierarchyType();
 			// 发表评论人赞的收益系数
 			Double createPUF = createPostUserQFIndex * 0.01d;
 
