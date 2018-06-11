@@ -4899,7 +4899,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 			for (Tokenaward tokenawards : coinProperty) {
 				
-				if(tokenawards.getDistributionType() != null && tokenawards.getDistributionType() == 2 ) {
+				if(tokenawards.getDistributionType() != null && tokenawards.getDistributionType() == 1 ) {
 					
 					/*Integer tokenType = tokenawards.getTokenAwardFunctionType(); // 奖励类型
 					Double inviteRewards = tokenawards.getInviteRewards(); // 奖励数量
