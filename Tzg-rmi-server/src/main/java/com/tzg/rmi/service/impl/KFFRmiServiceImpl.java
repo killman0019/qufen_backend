@@ -1768,8 +1768,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			String stringDate = DateUtil.getDate(date, "yyyy-MM-dd");
 			String replaceAllDate = stringDate.replaceAll("-", "");
 			// 创建业务记录id+
-			Praise praiseId = kffPraiseService.findByPostId(createUserId, userId);
-			String format = "";
+			Praise praiseId = kffPraiseService.findByPraiseId(createUserId, userId);
+			String format ="";
 			if (null != praiseId)
 				format = String.format("%010d", praiseId.getPraiseId());
 			// 判断点赞人是否实名认证
@@ -1828,10 +1828,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 								coinPropertyService.update(findByCreateUser);
 
 								BigDecimal kffCoinNum = findByUserId.getKffCoinNum();
-								KFFUser kffUser = new KFFUser();
-								kffUser.setKffCoinNum(kffCoinNum.add(new BigDecimal(pc * createPUF)));
-								kffUser.setUpdateTime(new Date());
-								kffUserService.update(kffUser);
+								findByUserId.setKffCoinNum(kffCoinNum.add(new BigDecimal(pc * createPUF)));
+								findByUserId.setUpdateTime(new Date());
+								
+								kffUserService.update(findByUserId);
 								kffTokenrecordsService.save(tokenrecords);
 
 								// 根据userId去获取
@@ -1840,7 +1840,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 								tokenaward.setTokenAwardFunctionDesc("点赞奖励");
 								tokenaward.setTokenAwardFunctionType(17);
 								tokenaward.setDistributionType(2);
-								Double rewardToken = tokenaward.getRewardToken();
+								Double rewardToken = tokenaward.getInviteRewards();
 								Double priaiseAward = tokenaward.getPriaiseAward();
 								tokenaward.setPriaiseAward(priaiseAward + (pc * createPUF)); // 点赞奖励.
 								tokenaward.setInviteRewards(rewardToken + (pc * createPUF));
