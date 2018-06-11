@@ -1754,8 +1754,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			String stringDate = DateUtil.getDate(date, "yyyy-MM-dd");
 			String replaceAllDate = stringDate.replaceAll("-", "");
 			// 创建业务记录id+
-			Praise praiseId = kffPraiseService.findByPraiseId(createUserId, postId);
-			String format = String.format("%010d", praiseId.getPraiseId());
+			Praise praiseId = kffPraiseService.findByPostId(createUserId, postId);
+			String format ="";
+			if(null != praiseId)
+				format = String.format("%010d", praiseId.getPraiseId());
 			// 判断点赞人是否实名认证
 			UserCard findBycreateUserId = userCardService.findByUserid(createUserId);// 看创建帖子的人是不是实名认证
 			UserCard findByUserid = userCardService.findByUserid(userId);
