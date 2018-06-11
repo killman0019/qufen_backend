@@ -208,12 +208,15 @@ public class UserCardController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/submitUserCardTiFormAgain", method = { RequestMethod.POST, RequestMethod.GET })
-	public BaseResponseEntity submitUserCardTiFormAgain(HttpServletRequest request, HttpServletResponse response, String token) {
+	public BaseResponseEntity submitUserCardTiFormAgain(HttpServletRequest request, HttpServletResponse response) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		Map<String, Object> resMap = new HashMap<String, Object>();
-		Integer userId = AccountTokenUtil.decodeAccountToken(token);
+
 		// 点击重新提交 在数据库中重新插入新的一行数据
 		try {
+			JSONObject map1 = getParamMapFromRequestPolicy(request);
+			String token = (String) map1.get("token");
+			Integer userId = AccountTokenUtil.decodeAccountToken(token);
 			UserCard userCard = new UserCard();
 			userCard.setCreatetime(new Date());
 			userCard.setStatus(4);
