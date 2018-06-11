@@ -38,6 +38,12 @@ public class BaseTest {
 		*/
 		System.out.println(getMillis());
 		System.out.println(getCurrentTimeSS());
+		String str1 = "http:www.baidu.com";
+		String str2 = "www.qufem.io";
+
+		String str = "asdadadadadadasdsdevswezxvcewgacsdfgwdzgw//sfsaacwfsxvshttp:www.baidu.comaadasdadaf//asfdada//asdadaf/asfasddd";
+		String str3 = str.replaceAll(str1, str2);
+		System.out.println(str3);
 	}
 
 	public static String test(String str) {

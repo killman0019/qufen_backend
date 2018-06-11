@@ -114,6 +114,7 @@ import com.tzg.entitys.kff.discuss.DiscussRequest;
 import com.tzg.entitys.kff.discuss.DiscussShare;
 import com.tzg.entitys.kff.dprojectType.DprojectType;
 import com.tzg.entitys.kff.dtags.Dtags;
+import com.tzg.entitys.kff.evaluation.EvaDtail;
 import com.tzg.entitys.kff.evaluation.Evaluation;
 import com.tzg.entitys.kff.evaluation.EvaluationDetailResponse;
 import com.tzg.entitys.kff.evaluation.EvaluationRequest;
@@ -1182,31 +1183,32 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 
 		logger.info("开始进行抽离图片");
-		// List<String> imgSrc = WorkHtmlRegexpUtil.getImgSrc(articleRequest.getArticleContents());
 		List<String> imgSrc = GetImgUrl.getImgStr(articleRequest.getArticleContents());
 		List<String> imgDB = new ArrayList<String>();
-
+		String articleSrcReplace = null;
 		int i = 0;
 		for (String img : imgSrc) {
 			logger.info("抽离的图片路径");
 			logger.info(img);
-			if (i == 3) {
+			/*if (i == 3) {
 				break;
-			}
+			}*/
 			if (img.contains(ipPicUrl)) {
 				// 说明是h5富文本传来的,服务器中存有图片,直接截取存放数据库
 				// http://192.168.10.151:8080/upload/postPic/201806/20180610160559928.png
 				logger.info("开始处理H5富文本编译器图片");
 				String replaceStr = img.replaceAll(ipPicUrl, "");
 				logger.info("h5富文本传来的图片绝对路径:" + replaceStr);
-				imgDB.add(replaceStr);
-				i = i + 1;
+				if (imgDB.size() <= 3) {
+					imgDB.add(replaceStr);
+					// i = i + 1;
+				}
 			} else {
 
 				// 生成url名称
 				String picUrlGen = picServiceUrl;
 				String picName = "/upload/postPic/" + DateUtil.getCurrentYearMonth() + "/" + DateUtil.getCurrentTimeStamp() + articleRequest.getCreateUserId()
-						+ ".jpg";
+						+ i + ".jpg";
 				String picUrlName = picUrlGen + picName;
 				try {
 					FileUtils.createFileLocal(picUrlName);
@@ -1215,7 +1217,18 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					throw new RestServiceException("后台创建文件出错!");
 				}
 				DownImgGoodUtil.downloadPicture(img, picUrlName);
-				imgDB.add(picName);
+				if (imgDB.size() <= 3) {
+					imgDB.add(picName);
+				}
+				/************* 替换文章中的url ********************/
+				String picurlIpName = ipPicUrl + picName;
+				logger.info("img :原图片路径: " + img);
+				logger.info("picurlIpName : 替换后的图片路径: " + picurlIpName);
+				if (i == 0) {
+					articleSrcReplace = articleRequest.getArticleContents().replaceAll(img, picurlIpName);
+				}
+				articleSrcReplace = articleSrcReplace.replaceAll(img, picurlIpName);
+				logger.info(articleSrcReplace);
 				i = i + 1;
 			}
 		}
@@ -1245,7 +1258,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			throw new RestServiceException("帖子不存在" + uuid);
 		}
 		Article article = new Article();
-		article.setArticleContents(articleRequest.getArticleContents());
+		article.setArticleContents(articleSrcReplace);
 		article.setPostId(newPost.getPostId());
 		article.setPostUuid(uuid);
 		kffArticleService.save(article);
@@ -1383,6 +1396,17 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	@Override
 	// 根据用户的ID判断用户是否对项目进行评分,如果已经进行评分了,则抛出异常
 	public Map<String, Object> saveEvaluation(EvaluationRequest evaluationRequest) throws RestServiceException {
+		/**
+		 * a.完整评测 EOS - 完整版专业评测(all)
+		 * 
+		 * b.自定义完整评测 EOS - 完整版自建模型评测(all）
+		 * 
+		 * c.部分评测 EOS - 项目进度评测（part） EOS - 技术框架评测（part） （部分评测要带上单项纬度名称）
+		 * 
+		 * d.简单评测 EOS - 简单评测
+		 * 
+		 * EOS指的是代币符号
+		 */
 		Map<String, Object> result = new HashMap<>();
 		String uuid = UUID.randomUUID().toString().replace("-", "");
 		if (evaluationRequest == null) {
@@ -1400,17 +1424,31 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (evaluationRequest.getModelType() == null) {
 			throw new RestServiceException("评测类型不能为空");
 		}
+
+		// 评测标题定义
+		// 查询project code
+		KFFProject project = kffProjectService.findById(evaluationRequest.getProjectId());
+		if (project == null) {
+			throw new RestServiceException("项目不存在" + evaluationRequest.getProjectId());
+		}
+
 		if (1 == evaluationRequest.getModelType()) {
-			evaluationRequest.setPostTitle("简单评测");
+			evaluationRequest.setPostTitle("简单评测");// 完整评测 手机上的
 		}
 		if (2 == evaluationRequest.getModelType()) {
-			evaluationRequest.setPostTitle("ALL-专业评测");
+			evaluationRequest.setPostTitle(project.getProjectCode() + "- 完整版专业评测(all)");// 完整评测
+		}
+		String evaDetail = evaluationRequest.getProfessionalEvaDetail();
+		List<EvaDtail> EvaDtails = JSON.parseArray(evaDetail, EvaDtail.class);
+		String evaDtailModuleName = null;
+		if (EvaDtails.size() == 1 && null != EvaDtails) {
+			evaDtailModuleName = EvaDtails.get(0).getModelName();
 		}
 		if (3 == evaluationRequest.getModelType()) {
-			evaluationRequest.setPostTitle("PART-专业评测");
+			evaluationRequest.setPostTitle(project.getProjectCode() + " - " + evaDtailModuleName + "(all)");// 单项评测
 		}
 		if (4 == evaluationRequest.getModelType()) {
-			evaluationRequest.setPostTitle("ALL-专业评测");
+			evaluationRequest.setPostTitle(project.getProjectCode() + " - 完整版自建模型评测(all)");// 用户自定义评测
 		}
 
 		if (evaluationRequest.getModelType() != 1 && evaluationRequest.getModelType() != 2 && evaluationRequest.getModelType() != 3
@@ -1433,10 +1471,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (createUser == null) {
 			throw new RestServiceException("用户不存在" + evaluationRequest.getCreateUserId());
 		}
-		KFFProject project = kffProjectService.findById(evaluationRequest.getProjectId());
-		if (project == null) {
-			throw new RestServiceException("项目不存在" + evaluationRequest.getProjectId());
-		}
+
 		BigDecimal totalScore = evaluationRequest.getTotalScore();
 
 		Post post = new Post();
@@ -1468,28 +1503,46 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		List<String> imgSrc = GetImgUrl.getImgStr(evaluationRequest.getEvauationContent());
 		List<String> imgDB = new ArrayList<String>();
 
+		String evaluationSrcReplace = null;
 		int i = 0;
 		for (String img : imgSrc) {
 			logger.info("抽离的图片路径");
 			logger.info(img);
-			if (i == 3) {
-				break;
+			if (img.contains(ipPicUrl)) {
+				// 说明是h5富文本传来的,服务器中存有图片,直接截取存放数据库
+				// http://192.168.10.151:8080/upload/postPic/201806/20180610160559928.png
+				logger.info("开始处理H5富文本编译器图片");
+				String replaceStr = img.replaceAll(ipPicUrl, "");
+				logger.info("h5富文本传来的图片绝对路径:" + replaceStr);
+				if (imgDB.size() <= 3) {
+					imgDB.add(replaceStr);
+				}
+			} else {
+				// 生成url名称
+				String picUrlGen = picServiceUrl;
+				String picName = "/upload/postPic/" + DateUtil.getCurrentYearMonth() + "/" + DateUtil.getCurrentTimeStamp() + i
+						+ evaluationRequest.getCreateUserId() + ".jpg";
+				String picUrlName = picUrlGen + picName;
+				try {
+					FileUtils.createFileLocal(picUrlName);
+				} catch (Exception e) {
+					throw new RestServiceException("后台创建文件出错!");
+				}
+				DownImgGoodUtil.downloadPicture(img, picUrlName);
+				if (imgDB.size() <= 3) {
+					imgDB.add(picName);
+					// i = i + 1;
+				}
+				String picurlIpName = ipPicUrl + picName;
+				logger.info("img :原图片路径: " + img);
+				logger.info("picurlIpName : 替换后的图片路径: " + picurlIpName);
+				if (i == 0) {
+					evaluationSrcReplace = evaluationRequest.getEvauationContent().replaceAll(img, picurlIpName);
+				}
+				evaluationSrcReplace = evaluationSrcReplace.replaceAll(img, picurlIpName);
+				logger.info(evaluationSrcReplace);
+				i = i + 1;
 			}
-			// 生成url名称
-			String picUrlGen = picServiceUrl;
-			String picName = "/upload/postPic/" + DateUtil.getCurrentYearMonth() + "/" + DateUtil.getCurrentTimeStamp() + i
-					+ evaluationRequest.getCreateUserId() + ".jpg";
-			String picUrlName = picUrlGen + picName;
-			try {
-				FileUtils.createFileLocal(picUrlName);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				throw new RestServiceException("后台创建文件出错!");
-			}
-			DownImgGoodUtil.downloadPicture(img, picUrlName);
-			imgDB.add(picName);
-			i = i + 1;
-
 		}
 		logger.info("图片抽离成功!");
 		// 将图片集合转化成json
@@ -1518,12 +1571,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			throw new RestServiceException("帖子不存在" + uuid);
 		}
 		Evaluation evaluation = new Evaluation();
-		evaluation.setEvauationContent(evaluationRequest.getEvauationContent());
+		evaluation.setEvauationContent(evaluationSrcReplace);
 		evaluation.setPostId(newPost.getPostId());
 		evaluation.setProjectId(project.getProjectId());
 		evaluation.setPostUuid(uuid);
 		evaluation.setEvaluationTags(evaluationRequest.getEvaluationTags());
-		evaluation.setProfessionalEvaDetail(evaluationRequest.getProfessionalEvaDetail());
+		evaluation.setProfessionalEvaDetail(evaDetail);
 		evaluation.setCreateTime(now);
 		evaluation.setUpdateTime(now);
 		evaluation.setCreateUserId(createUser.getUserId());
@@ -4898,31 +4951,36 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (CollectionUtils.isNotEmpty(coinProperty)) {
 
 			for (Tokenaward tokenawards : coinProperty) {
-				Integer tokenType = tokenawards.getTokenAwardFunctionType(); // 奖励类型
-				Double inviteRewards = tokenawards.getInviteRewards(); // 奖励数量
-				Date createTime = tokenawards.getCreateTime(); // 奖励创建的时间
-				Integer counter = tokenawards.getCounter(); // 发放的次数
-				Double awardBalance = tokenawards.getAwardBalance(); // 线性发放的余额
-				Double bDouble = inviteRewards - awardBalance;
-				ytokensum += bDouble;// 已经发放的总数
-				ftokensum += awardBalance; // 发放中的
-				tokenawards.setTokenAwardFunctionType(tokenType);
-				tokenawards.setInviteRewards(inviteRewards);
-				tokenawards.setCounter(counter);
-				tokenawards.setCreateTime(createTime);
-				// tokenawards.setGiveNext(ftokensum);
-
-				// result.add(tokenawards);
+				
+				if(tokenawards.getDistributionType() != null && tokenawards.getDistributionType() == 1 ) {
+					
+					/*Integer tokenType = tokenawards.getTokenAwardFunctionType(); // 奖励类型
+					Double inviteRewards = tokenawards.getInviteRewards(); // 奖励数量
+					Date createTime = tokenawards.getCreateTime(); // 奖励创建的时间
+					Integer counter = tokenawards.getCounter(); // 发放的次数
+					Double awardBalance = tokenawards.getAwardBalance(); // 线性发放的余额
+					Double bDouble = inviteRewards - awardBalance;
+					ytokensum += bDouble;// 已经发放的总数
+					ftokensum += awardBalance; // 发放中的
+					tokenawards.setTokenAwardFunctionType(tokenType);
+					tokenawards.setInviteRewards(inviteRewards);
+					tokenawards.setCounter(counter);
+					tokenawards.setCreateTime(createTime);*/
+					// tokenawards.setGiveNext(ftokensum);
+					result.add(tokenawards);
+					// result.add(tokenawards);
+				}
+			
 			}
 			// coinProperty.
-			Tokenaward tokenaward = new Tokenaward();
+		//	Tokenaward tokenaward = new Tokenaward();
 			// 发放中的总数
-			tokenaward.setRewardToken(ytokensum);
+		//	tokenaward.setRewardToken(ytokensum);
 			// 已发放的总数
-			tokenaward.setGiveNext(ftokensum);
+		//	tokenaward.setGiveNext(ftokensum);
 			// result.add(tokenaward);
-			result.addAll(coinProperty);
-			result.add(tokenaward);
+		//	result.addAll(coinProperty);
+		//	result.add(result);
 		}
 		return result;
 	}
@@ -5152,7 +5210,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				Date createTime = tokenawards.getCreateTime(); // 奖励创建的时间
 				Integer counter = tokenawards.getCounter(); // 发放的次数
 				Double awardBalance = tokenawards.getAwardBalance(); // 线性发放的余额
-				if (inviteRewards != null && awardBalance != null) {
+				if (inviteRewards != null && awardBalance != null && tokenawards.getDistributionType() == 1) {
 
 					BigDecimal bd1 = new BigDecimal(Double.toString(inviteRewards));
 					BigDecimal bd2 = new BigDecimal(Double.toString(awardBalance));

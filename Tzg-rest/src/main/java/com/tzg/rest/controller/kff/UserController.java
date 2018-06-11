@@ -230,7 +230,8 @@ public class UserController extends BaseController {
 			// 生成account token
 			String token = AccountTokenUtil.getAccountToken(loginaccount.getUserId());
 			map.put("token", token);
-
+			Integer userCardStatus = kffRmiService.selectUserCardStatusByUserId(loginaccount.getUserId());
+			map.put("userCardStatus", userCardStatus);
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.warn("login warn:{}", e);
@@ -1182,6 +1183,7 @@ public class UserController extends BaseController {
 			System.out.println(user2codeUrl);
 			// 获取邀请奖励
 			// 参数类型 先用double类型
+			// userId = 110;测试参数
 			Double awardNum = kffRmiService.selectInvationAward(userId);
 			log.info("awardNum" + awardNum);
 
@@ -1334,8 +1336,8 @@ public class UserController extends BaseController {
 		}
 		return bre;
 	}
-	
-		/**
+
+	/**
 	 * 获取登录用户信息
 	 * 
 	 * @param request
@@ -1364,7 +1366,8 @@ public class UserController extends BaseController {
 				throw new RestServiceException(RestErrorCode.LOGIN_NAME_OR_PASSWORD_INCORRECT);
 			}
 			map.put("user", this.formatLoginaccount(loginaccount));
-
+			Integer userCardStatus = kffRmiService.selectUserCardStatusByUserId(loginaccount.getUserId());
+			map.put("userCardStatus", userCardStatus);
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.warn("getUserInfo warn:{}", e);
