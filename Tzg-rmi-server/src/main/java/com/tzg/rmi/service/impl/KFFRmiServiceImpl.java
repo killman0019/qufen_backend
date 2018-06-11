@@ -2498,21 +2498,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		 */
 		if (loginUserId != null) {
 
-			List<Tokenaward> findByUserId = tokenawardService.findByUserId(loginUserId);
-			for (Tokenaward tokenaward : findByUserId) {
-				if (tokenaward != null) {
-					if (tokenaward.getGrantType() != null) {
-
-						if (tokenaward.getGrantType() == 2) {
-
-							registerAward(loginUserId);
-							tokenaward.setGrantType(1);
-							tokenawardService.update(tokenaward);
-						}
-					}
-				}
-
-			}
+			
+			registerAward(loginUserId);
+					
 		}
 
 		if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
