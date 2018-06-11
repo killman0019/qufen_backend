@@ -84,9 +84,6 @@
 			<if test="contributeContent != null">
 	        contribute_content = #{contributeContent,jdbcType=INTEGER} ,
 	        </if>
-			<if test="praiseId != null">
-	        locked_position = #{lockedPosition,jdbcType=DOUBLE} ,
-	        </if>
 			<if test="liveness != null">
 	        liveness = #{liveness,jdbcType=DOUBLE} ,
 	        </if>
