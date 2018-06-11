@@ -306,7 +306,7 @@ public class AwardPortService {
 				tokenrecords.setFunctionType(16);
 				tokenrecords.setTradeType(1);
 				tokenrecords.setCreateTime(new Date());*/
-				kffTokenrecordsService.save(tokenrecords);
+				//kffTokenrecordsService.save(tokenrecords);
 
 				coinProperty.setUserId(userId);
 				coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
