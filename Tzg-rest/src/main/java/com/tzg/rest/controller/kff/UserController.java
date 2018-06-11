@@ -1311,10 +1311,12 @@ public class UserController extends BaseController {
 			}
 			List<Tokenrecords> findAllTokenrecordsUserId = kffRmiService.findAllTokenrecordsUserId(userId);
 			for (Tokenrecords tokenrecords : findAllTokenrecordsUserId) {
-				if (tokenrecords.getRewardGrantType() == 1 && tokenrecords != null) {
-
-					BigDecimal amount = tokenrecords.getAmount();
-					bdSum = bdSum.add(amount);
+				if (tokenrecords != null) {
+					if(tokenrecords.getRewardGrantType() == 1)
+					{
+						BigDecimal amount = tokenrecords.getAmount();
+						bdSum = bdSum.add(amount);
+					}
 				}
 			}
 
