@@ -1441,7 +1441,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		String evaDetail = evaluationRequest.getProfessionalEvaDetail();
 		List<EvaDtail> EvaDtails = JSON.parseArray(evaDetail, EvaDtail.class);
 		String evaDtailModuleName = null;
-		if (EvaDtails.size() == 1 && null != EvaDtails) {
+		if (null != EvaDtails && EvaDtails.size() == 1) {
 			evaDtailModuleName = EvaDtails.get(0).getModelName();
 		}
 		if (3 == evaluationRequest.getModelType()) {
