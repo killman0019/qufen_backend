@@ -1789,7 +1789,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					// kffUserService.findByUserId(createUserId);
 					if (evaluation.getModelType() == 1) {
 						// 判断点赞类型 (简单评测的 只有点赞有奖励,评论赞没有)
-						if (praiseId.getPraiseType() == 1) {
+						if (null != praiseId && praiseId.getPraiseType() == 1) {
 							// 帖子点赞(普通1次1个代币)
 							Tokenrecords tokenrecords = new Tokenrecords();
 							Tokenaward tokenaward = new Tokenaward();
