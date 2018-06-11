@@ -338,11 +338,13 @@
     	select count(*) from tbuser where 1=1
 		<include refid="queryWhere"/>
 	</select>
-    	<select id="findReferCount" resultType="java.lang.Integer" parameterType="java.lang.Integer">
-    	select count(*) from tbuser where 1=1
+    <select id="findReferCount" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+    	select count(*) from tbuser 
 		<![CDATA[
-		FROM tbuser 
+		
 		WHERE 
+		 1=1
+		 and
         refer_user_id = #{referUserId}
 	]]>
 	</select>
