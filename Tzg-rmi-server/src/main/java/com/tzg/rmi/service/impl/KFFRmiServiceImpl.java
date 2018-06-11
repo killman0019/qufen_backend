@@ -3293,6 +3293,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			QfIndex qfIndexPraiseUser = qfIndexService.findByUserId(userId);
 			Integer qfIndexId = qfIndexPraiseUser.getQfIndexId();
 			Integer yxPraise = qfIndexPraiseUser.getYxpraise();
+			
+			Integer validPraise = (int) Math.floor(yxPraise);
 			// 根据评论的id 去获取发表评论人的id
 			Integer commentUserId = comments.getCommentUserId();
 
@@ -3303,7 +3305,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			Integer createPostUserQFIndex = qfIndex.getStatusHierarchyType();
 			// 发表评论人赞的收益系数
 			Double createPUF = createPostUserQFIndex * 0.01d;
-
+	
 			// 创建生成交易流水的交易日期
 			Date date = new Date();
 			String stringDate = DateUtil.getDate(date, "yyyy-MM-dd");
@@ -3328,7 +3330,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				 * 有效赞
 				 * 
 				 */
-				Integer validPraise = (int) Math.floor(yxPraise);
+			//	Integer validPraise = (int) Math.floor(yxPraise);
 				// 判断 帖子类型是1-评测 , 2-讨论 , 3-文章
 
 				if (postType == 1) {
