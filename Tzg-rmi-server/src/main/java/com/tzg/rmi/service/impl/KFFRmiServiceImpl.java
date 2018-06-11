@@ -4951,9 +4951,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (CollectionUtils.isNotEmpty(coinProperty)) {
 
 			for (Tokenaward tokenawards : coinProperty) {
-				
-				if(tokenawards.getDistributionType() != null && tokenawards.getDistributionType() == 1 ) {
-					
+
+				if (tokenawards.getDistributionType() != null && tokenawards.getDistributionType() == 1) {
+
 					/*Integer tokenType = tokenawards.getTokenAwardFunctionType(); // 奖励类型
 					Double inviteRewards = tokenawards.getInviteRewards(); // 奖励数量
 					Date createTime = tokenawards.getCreateTime(); // 奖励创建的时间
@@ -4970,17 +4970,17 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					result.add(tokenawards);
 					// result.add(tokenawards);
 				}
-			
+
 			}
 			// coinProperty.
-		//	Tokenaward tokenaward = new Tokenaward();
+			// Tokenaward tokenaward = new Tokenaward();
 			// 发放中的总数
-		//	tokenaward.setRewardToken(ytokensum);
+			// tokenaward.setRewardToken(ytokensum);
 			// 已发放的总数
-		//	tokenaward.setGiveNext(ftokensum);
+			// tokenaward.setGiveNext(ftokensum);
 			// result.add(tokenaward);
-		//	result.addAll(coinProperty);
-		//	result.add(result);
+			// result.addAll(coinProperty);
+			// result.add(result);
 		}
 		return result;
 	}
@@ -5087,7 +5087,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// AliyunConstant.SMS_APP_KEY, AliyunConstant.SMS_SECRET);
 
 		Map<String, String> map = new HashMap<String, String>();
-
+		phone = "15856983323";
 		// 设置超时时间-可自行调整
 		try {
 			System.setProperty("sun.net.client.defaultConnectTimeout", "10000");
@@ -5148,6 +5148,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			SendSmsResponse sendSmsResponse = acsClient.getAcsResponse(request);
 			logger.info(sendSmsResponse.getCode());
 			System.out.println(sendSmsResponse.getCode());
+			redisService.put(cacheKey, dynamicValidateCode, 60 * 10);// 设置10分钟
 			if (sendSmsResponse.getCode() != null && sendSmsResponse.getCode().equals("OK")) {
 				System.out.println("短信发送成功!");
 				System.out.println(sendSmsResponse.getCode());
