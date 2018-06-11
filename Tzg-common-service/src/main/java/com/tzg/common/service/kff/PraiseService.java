@@ -81,6 +81,15 @@ public class PraiseService   {
 		return praiseMapper.findByPostId(map);
 	}
 	
+	public Praise findByPraiseId(Integer createUserId,Integer userId)
+	{
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("bepraiseUserId", createUserId);
+		map.put("praiseType",1);
+		map.put("praiseUserId",userId);
+		return praiseMapper.findByPraiseId(map);
+	}
+	
 
 	
 }

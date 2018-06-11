@@ -99,7 +99,7 @@
         praise_id = #{praiseId} 
 	]]>
 	</select>
-
+	
 	<select id="findByPostId" resultMap="BaseResultMap" parameterType="java.util.Map">
 	    SELECT <include refid="columns"/> 
 	<![CDATA[
@@ -112,7 +112,22 @@
           praise_user_id = #{praiseUserId}
           limit 1
 	]]>
+	</select>
+	
+	<select id="findByPraiseId" resultMap="BaseResultMap" parameterType="java.util.Map">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbpraise 
+		WHERE 
+		  bepraise_user_id = #{bepraiseUserId}
+		  and
+          praise_type = #{praiseType}
+          and  
+          praise_user_id = #{praiseUserId}
+          limit 1
+	]]>
 	</select>	
+	
 	 
 	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
     	select count(*) from tbpraise where 1=1
