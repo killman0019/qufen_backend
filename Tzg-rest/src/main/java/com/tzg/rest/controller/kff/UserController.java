@@ -103,7 +103,7 @@ public class UserController extends BaseController {
 			String token = AccountTokenUtil.getAccountToken(user.getUserId());
 			// 根据用户id 获取用户类型跟推荐人
 			Integer userid = AccountTokenUtil.decodeAccountToken(token);
-			kffRmiService.registerAward(userid);
+			// kffRmiService.registerAward(userid);
 			map.put("token", token);
 
 		} catch (RestServiceException e) {
