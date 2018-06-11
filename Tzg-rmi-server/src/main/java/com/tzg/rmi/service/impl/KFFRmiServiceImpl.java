@@ -1407,6 +1407,21 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		 * 
 		 * EOS指的是代币符号
 		 */
+		KFFProject project = kffProjectService.findById(evaluationRequest.getProjectId());
+		if (2 == evaluationRequest.getModelType() || 4 == evaluationRequest.getModelType()) {
+			Evaluation evaluationDB = new Evaluation();
+			evaluationDB.setModelType(evaluationRequest.getModelType());
+			evaluationDB.setCreateUserId(evaluationRequest.getCreateUserId());
+			evaluationDB.setProjectId(project.getProjectId());
+			List<Evaluation> evaluations = selectEvaluationByUserId(evaluationDB);
+			if (CollectionUtils.isNotEmpty(evaluations)) {
+				if (evaluations.size() >= 1) {
+					throw new RestServiceException("完整评测和自定义评测不能对同一个项目进行重复评测!");
+				}
+
+			}
+		}
+
 		Map<String, Object> result = new HashMap<>();
 		String uuid = UUID.randomUUID().toString().replace("-", "");
 		if (evaluationRequest == null) {
@@ -1427,7 +1442,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 		// 评测标题定义
 		// 查询project code
-		KFFProject project = kffProjectService.findById(evaluationRequest.getProjectId());
+
 		if (project == null) {
 			throw new RestServiceException("项目不存在" + evaluationRequest.getProjectId());
 		}
@@ -1754,8 +1769,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			String replaceAllDate = stringDate.replaceAll("-", "");
 			// 创建业务记录id+
 			Praise praiseId = kffPraiseService.findByPostId(createUserId, userId);
-			String format ="";
-			if(null != praiseId)
+			String format = "";
+			if (null != praiseId)
 				format = String.format("%010d", praiseId.getPraiseId());
 			// 判断点赞人是否实名认证
 			UserCard findBycreateUserId = userCardService.findByUserid(createUserId);// 看创建帖子的人是不是实名认证
@@ -2497,9 +2512,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		 */
 		if (loginUserId != null) {
 
-			
 			registerAward(loginUserId);
-					
+
 		}
 
 		if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
