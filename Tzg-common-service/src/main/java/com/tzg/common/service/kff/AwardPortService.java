@@ -300,12 +300,12 @@ public class AwardPortService {
 				tokenaward.setPriaiseAward(0d);
 				kffTokenawardService.save(tokenaward);
 
-				// 将注册用户的信息同时存入流水表单中
+				/*// 将注册用户的信息同时存入流水表单中
 				tokenrecords.setUserId(userId);
 				tokenrecords.setFunctionDesc("注册奖励");
 				tokenrecords.setFunctionType(16);
 				tokenrecords.setTradeType(1);
-				tokenrecords.setCreateTime(new Date());
+				tokenrecords.setCreateTime(new Date());*/
 				kffTokenrecordsService.save(tokenrecords);
 
 				coinProperty.setUserId(userId);
