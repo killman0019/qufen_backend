@@ -932,7 +932,7 @@ public class AwardPortService {
 				Integer awardFunctionType = award.getTokenAwardFunctionType();
 				// 如果奖励没有发放完毕并且是线性发放
 				// CoinProperty coinProperty2 = new CoinProperty();
-				CoinProperty coinProperty2 = kffCoinPropertyService.findByUserId(userId);
+				//CoinProperty coinProperty2 = kffCoinPropertyService.findByUserId(userId);
 				if (counter != null && counter < 100 && distributionType == 1 && findByUserid != null) {
 					if (award.getGrantType() == 2) { // 1-今天发放一次,2-今天未发放
 						
@@ -982,10 +982,10 @@ public class AwardPortService {
 									
 									Double coinLock = coinProperty.getCoinLock();
 									Double coinDistributed = coinProperty.getCoinDistributed();
-									coinProperty2.setCoinLock(coinLock + x);
-									coinProperty2.setCoinDistributed(coinDistributed - x);
-									coinProperty2.setUserId(userId);
-									kffCoinPropertyService.update(coinProperty2);
+									coinProperty.setCoinLock(coinLock + x);
+									coinProperty.setCoinDistributed(coinDistributed - x);
+									coinProperty.setUserId(userId);
+									kffCoinPropertyService.update(coinProperty);
 								}
 								
 								
@@ -1029,9 +1029,9 @@ public class AwardPortService {
 								
 								Double coinLock = coinProperty.getCoinLock();
 								Double coinDistributed = coinProperty.getCoinDistributed();
-								coinProperty2.setCoinLock(coinLock + x);
-								coinProperty2.setCoinDistributed(coinDistributed - x);
-								kffCoinPropertyService.update(coinProperty2);
+								coinProperty.setCoinLock(coinLock + x);
+								coinProperty.setCoinDistributed(coinDistributed - x);
+								kffCoinPropertyService.update(coinProperty);
 							}
 						}
 					}
