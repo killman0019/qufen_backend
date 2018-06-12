@@ -1234,6 +1234,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				// http://192.168.10.151:8080/upload/postPic/201806/20180610160559928.png
 				logger.info("开始处理H5富文本编译器图片");
 				if (ipPicUrl.contains("app.qufen.top")) {
+					logger.info("进入app.qufen.top抽离文本");
+					logger.info("http://" + ipPicUrl + "/");
 					replaceStr = img.replaceAll("http:/" + ipPicUrl + "/", "");
 				} else {
 					replaceStr = img.replaceAll(ipPicUrl + "/", "");
