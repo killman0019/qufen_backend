@@ -1922,10 +1922,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 								tokenaward.setTokenAwardFunctionDesc("点赞奖励(内容)");
 								tokenaward.setTokenAwardFunctionType(17);
 								tokenaward.setDistributionType(2);
-								Double rewardToken = tokenaward.getInviteRewards();
-								Double priaiseAward = tokenaward.getPriaiseAward();
-								tokenaward.setPriaiseAward(priaiseAward + (pc * createPUF)); // 点赞奖励.
-								tokenaward.setInviteRewards(rewardToken + (pc * createPUF));
+							//	Double rewardToken = tokenaward.getInviteRewards();
+							//	Double priaiseAward = tokenaward.getPriaiseAward();
+								tokenaward.setPriaiseAward(pc * createPUF); // 点赞奖励.
+								tokenaward.setInviteRewards(pc * createPUF);
 								tokenaward.setCreateTime(new Date());
 								tokenaward.setAwardBalance(0d); // 线性余额 跟一次性发放的奖励没有关系 默认为0
 								kffTokenawardService.save(tokenaward);
