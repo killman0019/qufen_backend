@@ -370,13 +370,13 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		PageResult<Collect> collects = kffCollectService.findPage(query);
 		if (collects != null && CollectionUtils.isNotEmpty(collects.getRows())) {
 			List<Integer> projectIds = new ArrayList<>();
-			for(Collect collect : collects.getRows()){
+			for (Collect collect : collects.getRows()) {
 				projectIds.add(collect.getProjectId());
 			}
-			List<Follow> followedProjects = kffFollowService.findFollowedProjects((Integer)query.getQueryData().get("collectUserId"),projectIds);
+			List<Follow> followedProjects = kffFollowService.findFollowedProjects((Integer) query.getQueryData().get("collectUserId"), projectIds);
 			Set<Integer> followedProjectIds = new HashSet<>();
-			if(CollectionUtils.isNotEmpty(followedProjects)){
-				for(Follow follow:followedProjects){
+			if (CollectionUtils.isNotEmpty(followedProjects)) {
+				for (Follow follow : followedProjects) {
 					followedProjectIds.add(follow.getFollowedId());
 				}
 			}
@@ -409,8 +409,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					response.setCreateUserIcon(post.getCreateUserIcon());
 					response.setCreateUserName(post.getCreateUserName());
 					response.setCreateUserSignature(post.getCreateUserSignature());
-					
-					if(followedProjectIds != null && followedProjectIds.contains(post.getProjectId())){
+
+					if (followedProjectIds != null && followedProjectIds.contains(post.getProjectId())) {
 						response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
 					}
 					// response.setTotalScore(post.get);
@@ -483,7 +483,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 				} else if (follow.getFollowType() != null && follow.getFollowType() == 3) {
 					// 被关注用户信息在follow表中已包含
-				}else if (follow.getFollowType() != null && follow.getFollowType() == 1) {
+				} else if (follow.getFollowType() != null && follow.getFollowType() == 1) {
 					// 项目 就是话题
 					response.setFollowedProjectId(follow.getFollowedId());
 					KFFProject project = kffProjectService.findById(follow.getFollowedId());
@@ -711,7 +711,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			throw new RestServiceException("帖子不存在");
 		}
 
-
 		if (commendationRequest.getSendUserId() == null) {
 			throw new RestServiceException("发送用户不能为空");
 		}
@@ -733,10 +732,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (sendUser.getKffCoinNum().compareTo(commendationRequest.getAmount()) < 0) {
 			throw new RestServiceException("账户余额不足:捐赠数量" + commendationRequest.getAmount().intValue() + "余额数量" + sendUser.getKffCoinNum().intValue());
 		}
-		
+
 		// 帖子捐赠人数加+1
 		kffPostService.updateDonateNum(post.getPostId());
-		
+
 		commendationRequest.setSendUserIcon(sendUser.getIcon());
 		commendationRequest.setPostType(post.getPostType());
 
@@ -1522,30 +1521,30 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (createUser == null) {
 			throw new RestServiceException("用户不存在" + evaluationRequest.getCreateUserId());
 		}
-		
+
 		if (project == null) {
 			throw new RestServiceException("项目不存在" + evaluationRequest.getProjectId());
 		}
-		BigDecimal totalScore = evaluationRequest.getTotalScore() == null?BigDecimal.ZERO:evaluationRequest.getTotalScore();
-		//专业评测总分计算
-        if(Objects.equal(4, evaluationRequest.getModelType())){
-        try{
-        		
-        	List<DevaluationModel> models =JSON.parseArray(evaluationRequest.getProfessionalEvaDetail(), DevaluationModel.class);
-        	if(models == null || models.size() ==0){
-        		throw new RestServiceException("专业评测分项内容不能为空"+evaluationRequest.getProfessionalEvaDetail());
-        	}
-        	
-        	for(DevaluationModel model:models){
-        		totalScore = totalScore.add(model.getScore().multiply(new BigDecimal(model.getModelWeight())));
-        	}
-        	totalScore = totalScore.divide(new BigDecimal(100)).setScale(1);
-        }catch(Exception e){
-        		e.printStackTrace();
-        		throw new RestServiceException("专业评测分项内容格式不对"+evaluationRequest.getProfessionalEvaDetail());
-        	}
-        	
-        }
+		BigDecimal totalScore = evaluationRequest.getTotalScore() == null ? BigDecimal.ZERO : evaluationRequest.getTotalScore();
+		// 专业评测总分计算
+		if (Objects.equal(4, evaluationRequest.getModelType())) {
+			try {
+
+				List<DevaluationModel> models = JSON.parseArray(evaluationRequest.getProfessionalEvaDetail(), DevaluationModel.class);
+				if (models == null || models.size() == 0) {
+					throw new RestServiceException("专业评测分项内容不能为空" + evaluationRequest.getProfessionalEvaDetail());
+				}
+
+				for (DevaluationModel model : models) {
+					totalScore = totalScore.add(model.getScore().multiply(new BigDecimal(model.getModelWeight())));
+				}
+				totalScore = totalScore.divide(new BigDecimal(100)).setScale(1);
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw new RestServiceException("专业评测分项内容格式不对" + evaluationRequest.getProfessionalEvaDetail());
+			}
+
+		}
 		Post post = new Post();
 		Date now = new Date();
 		post.setCollectNum(0);
@@ -1830,14 +1829,15 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			if (null != praiseId)
 				format = String.format("%010d", praiseId.getPraiseId());
 			// 判断点赞人是否实名认证
-		//	UserCard findBycreateUserId = userCardService.findByUserid(createUserId);// 看创建帖子的人是不是实名认证
-		//	UserCard findByUserid = userCardService.findByUserid(userId);
-			
-		//	System.err.println("findBycreateUserId:" + findBycreateUserId);
-		//	System.err.println("findByUserid : " + findByUserid);
+			// UserCard findBycreateUserId = userCardService.findByUserid(createUserId);//
+			// 看创建帖子的人是不是实名认证
+			// UserCard findByUserid = userCardService.findByUserid(userId);
+
+			// System.err.println("findBycreateUserId:" + findBycreateUserId);
+			// System.err.println("findByUserid : " + findByUserid);
 			// 判断所点赞的文章是不是有效(1有效,0删除,无效)
-		//	QfIndex byUserId = qfIndexService.findByUserId(createUserId);
-			
+			// QfIndex byUserId = qfIndexService.findByUserId(createUserId);
+
 			if (post.getStatus() == 1) {
 				/**
 				 * 有效赞
@@ -3353,7 +3353,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			QfIndex qfIndexPraiseUser = qfIndexService.findByUserId(userId);
 			Integer qfIndexId = qfIndexPraiseUser.getQfIndexId();
 			Integer yxPraise = qfIndexPraiseUser.getYxpraise();
-			
+
 			Integer validPraise = (int) Math.floor(yxPraise);
 			// 根据评论的id 去获取发表评论人的id
 			Integer commentUserId = comments.getCommentUserId();
@@ -3365,7 +3365,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			Integer createPostUserQFIndex = qfIndex.getStatusHierarchyType();
 			// 发表评论人赞的收益系数
 			Double createPUF = createPostUserQFIndex * 0.01d;
-	
+
 			// 创建生成交易流水的交易日期
 			Date date = new Date();
 			String stringDate = DateUtil.getDate(date, "yyyy-MM-dd");
@@ -3377,8 +3377,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 			// String format = String.format("%010d", praise.getPraiseId());
 			// 判断点赞人是否实名认证
-		//	UserCard findBycreateUserId = userCardService.findByUserid(commentUserId);
-		//	UserCard findByUserid = userCardService.findByUserid(userId);
+			// UserCard findBycreateUserId = userCardService.findByUserid(commentUserId);
+			// UserCard findByUserid = userCardService.findByUserid(userId);
 			Double profesEvaluat = 2.00d; // 评测的专业完整版评论赞奖励
 			Double aloneEvaluat = 2.00d; // 单项评测评论赞奖励
 			Double discuss = 2.00d; // 讨论的评论赞奖励
@@ -3390,7 +3390,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				 * 有效赞
 				 * 
 				 */
-			//	Integer validPraise = (int) Math.floor(yxPraise);
+				// Integer validPraise = (int) Math.floor(yxPraise);
 				// 判断 帖子类型是1-评测 , 2-讨论 , 3-文章
 
 				if (postType == 1) {
@@ -4362,15 +4362,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			followUser.setStatus(1);
 			followUser.setCreateTime(new Date());
 			followUser.setUpdateTime(new Date());
-
 			kffFollowService.save(followUser);
 		}
-
-		/*if (user.getUserId() != null) {
-
-			registerAward(user.getUserId());
-		}*/
-
 		return user;
 
 	}
@@ -4393,15 +4386,15 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 		BeanUtils.copyProperties(post, articleDetailShareResponse);
 
-		/*// 放置创建poster的类型 加V
+		// 放置创建poster的类型 加V
 		if (StringUtils.isBlank(post.getCreateUserId() + "")) {
 			throw new RestServiceException("创建人id为空");
 		}
-		Integer type = authenticationService.selectCUserType(post.getCreateUserId());
-		if (0 == type) {
-			throw new RestServiceException("数据错误!");
-		}*/
-		// articleDetailShareResponse.setcUsertype(type);
+		// 根据createid 查询user表
+		KFFUser kffUser = findUserById(post.getCreateUserId());
+		if (null != kffUser) {
+			articleDetailShareResponse.setcUsertype(kffUser.getUserType());
+		}
 		// 赞赏用户列表最多8个
 		List<Commendation> donateUsers = new ArrayList<>();
 		PaginationQuery query = new PaginationQuery();
@@ -4417,11 +4410,15 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 		// 根据postID 查询文章详情
 		Article acticle = kffArticleService.selectArticleByPostId(postId);
-		articleDetailShareResponse.setArticleId(acticle.getArticleId());
+		if (null != acticle) {
+			articleDetailShareResponse.setArticleId(acticle.getArticleId());
+		}
 		articleDetailShareResponse.setArticle(acticle);
 		// 根据postid查询project
 		KFFProject kFFProject = kffProjectService.findById(post.getProjectId());
-		articleDetailShareResponse.setProjectIcon(kFFProject.getProjectIcon());
+		if (null != kFFProject) {
+			articleDetailShareResponse.setProjectIcon(kFFProject.getProjectIcon());
+		}
 
 		return articleDetailShareResponse;
 	}
@@ -4437,13 +4434,16 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (post == null) {
 			throw new RestServiceException(RestErrorCode.POST_NOT_EXIST);
 		}
-		/*// 加V
-		Integer type = authenticationService.selectCUserType(post.getCreateUserId());
-		if (0 == type) {
-			throw new RestServiceException("数据错误!");
+
+		// 放置创建poster的类型 加V
+		if (StringUtils.isBlank(post.getCreateUserId() + "")) {
+			throw new RestServiceException("创建人id为空");
 		}
-		projectEvaluationDetailShareResponse.setcUsertype(type);
-*/
+		// 根据createid 查询user表
+		KFFUser kffUser = findUserById(post.getCreateUserId());
+		if (null != kffUser) {
+			projectEvaluationDetailShareResponse.setcUsertype(kffUser.getUserType());
+		}
 		post.setUuid(null);
 		post.setCreateUserId(null);
 
@@ -4508,11 +4508,16 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 		projectEvaluationDetailShareResponse.setPost(post);
 
-		Integer type = authenticationService.selectCUserType(post.getCreateUserId());
-		if (0 == type) {
-			throw new RestServiceException("数据错误!");
+		// 放置创建poster的类型 加V
+		if (StringUtils.isBlank(post.getCreateUserId() + "")) {
+			throw new RestServiceException("创建人id为空");
 		}
-		projectEvaluationDetailShareResponse.setcUsertype(type);
+		// 根据createid 查询user表
+		KFFUser kffUser = findUserById(post.getCreateUserId());
+		if (null != kffUser) {
+			projectEvaluationDetailShareResponse.setcUsertype(kffUser.getUserType());
+		}
+
 		// 根据post查询evaluation
 		Evaluation evaluation = kffEvaluationService.selectEvaluationByPostId(postId);
 
@@ -4548,11 +4553,16 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (null == post) {
 			throw new RestServiceException("帖子为空");
 		}
-		Integer type = authenticationService.selectCUserType(post.getCreateUserId());
-		if (0 == type) {
-			throw new RestServiceException("数据错误!");
+		// 放置创建poster的类型 加V
+		if (StringUtils.isBlank(post.getCreateUserId() + "")) {
+			throw new RestServiceException("创建人id为空");
 		}
-		commentsShareRequest.setcUsertype(type);
+		// 根据createid 查询user表
+		KFFUser kffUser = findUserById(post.getCreateUserId());
+		if (null != kffUser) {
+			commentsShareRequest.setcUsertype(kffUser.getUserType());
+		}
+
 		KFFProject project = kffProjectService.findById(post.getProjectId());
 		if (null == project) {
 			throw new RestServiceException("项目为空!");
@@ -4663,11 +4673,16 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (post == null) {
 			throw new RestServiceException(RestErrorCode.POST_NOT_EXIST);
 		}
-		/*Integer type = authenticationService.selectCUserType(post.getCreateUserId());
-		if (0 == type) {
-			throw new RestServiceException("数据错误!");
+
+		if (StringUtils.isBlank(post.getCreateUserId() + "")) {
+			throw new RestServiceException("创建人id为空");
 		}
-		discussShare.setcUsertype(type);*/
+		// 根据createid 查询user表
+		KFFUser kffUser = findUserById(post.getCreateUserId());
+		if (null != kffUser) {
+			discussShare.setcUsertype(kffUser.getUserType());
+		}
+
 		Discuss discuss = kffDiscussService.findByPostId(postId);
 		discussShare.setTagInfo(discuss.getTagInfos());
 		// 防止post
