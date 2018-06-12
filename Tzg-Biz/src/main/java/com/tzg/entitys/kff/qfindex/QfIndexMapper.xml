@@ -124,7 +124,7 @@
 	    user_id = #{userId,jdbcType=INTEGER}
 	</update>
 	
-	<update id="updateyxpraiseValid" parameterType="java.lang.Integer">
+	<update id="updateYxPraiseValid" parameterType="java.lang.Integer">
 		UPDATE tbqfindex set yxpraise = floor(status_hierarchy_type * 0.1)
 	</update>
 	

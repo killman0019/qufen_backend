@@ -1355,6 +1355,10 @@ public class UserController extends BaseController {
 			KFFUser loginaccount = null;
 			try {
 				loginaccount = kffRmiService.findUserById(loginUserId);
+				List<CoinProperty> userCoin = kffRmiService.findCoinPropertyByUserId(loginUserId);
+				for (CoinProperty coinProperty : userCoin) {
+					loginaccount.setKffCoinNum(new BigDecimal(coinProperty.getTotalAssets()));
+				}
 			} catch (RestServiceException e) {
 				return this.resResult(e.getErrorCode(), e.getMessage());
 			} catch (Exception e) {

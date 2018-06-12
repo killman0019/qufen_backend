@@ -36,7 +36,7 @@
 		and 
 		valid = 1
 		and
-		status = 1
+		status = 2
 	</select>
 
 	<insert id="save" parameterType="com.tzg.entitys.kff.usercard.UserCard">

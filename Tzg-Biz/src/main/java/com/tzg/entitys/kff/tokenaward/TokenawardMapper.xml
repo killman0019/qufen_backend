@@ -117,7 +117,8 @@
 		<set>
 			grant_type = #{grantType,jdbcType=INTEGER}
 		</set>
-		
+		WHERE 
+	        distribution_type = 1
 	</update>
 	
 	<update id="update" parameterType="com.tzg.entitys.kff.tokenaward.Tokenaward">
