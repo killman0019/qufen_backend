@@ -41,6 +41,18 @@ public class DateUtil {
 		String now = sdf.format(date);
 		return now;
 	}
+	
+	/**
+	 * 获取当前时间(格式：yyyyMMddHHmmssSSS)
+	 * 
+	 * @return
+	 */
+	public static String getCurrentTimeSS() {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		Date date = new Date();
+		String now = sdf.format(date);
+		return now;
+	}
 
 	/**
 	 * 比较两个日期时间的大小
