@@ -767,6 +767,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		sendTokenRecords.setTradeDate(now);
 		sendTokenRecords.setUpdateTime(now);
 		sendTokenRecords.setUserId(sendUser.getUserId());
+		sendTokenRecords.setRewardGrantType(1);
 		kffTokenrecordsService.save(sendTokenRecords);
 
 		Tokenrecords receiveTokenRecords = new Tokenrecords();
@@ -776,7 +777,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		receiveTokenRecords.setCreateTime(now);
 		// 交易描述:10-充值11-评测奖励12-讨论奖励13-文章奖励14-榜单奖励15-用户赞赏16-注册奖励17-点赞奖励18-邀请好友奖励21-提现22-赞赏他人'
 		receiveTokenRecords.setFunctionDesc("用户赞赏");
-		sendTokenRecords.setFunctionType(15);
+		receiveTokenRecords.setFunctionType(15);
 		receiveTokenRecords.setMemo("他人捐赠");
 		receiveTokenRecords.setStatus(1);
 		// 交易流水号=交易类型（2位） 交易时间年月日（8位） 业务记录ID（10位）
@@ -784,6 +785,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		receiveTokenRecords.setTradeDate(now);
 		receiveTokenRecords.setUpdateTime(now);
 		receiveTokenRecords.setUserId(receiveUser.getUserId());
+		receiveTokenRecords.setRewardGrantType(1);
 		kffTokenrecordsService.save(receiveTokenRecords);
 		/**
 		 * 新加资产表同步
