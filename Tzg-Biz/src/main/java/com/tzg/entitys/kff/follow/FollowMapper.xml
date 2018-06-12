@@ -141,6 +141,15 @@
         follow_id = #{followId} 
 	]]>
 	</select>
+	
+	<select id="findFollowedProjects" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbfollow where 1=1
+		<include refid="queryWhere"/> 
+	    <![CDATA[ ORDER BY follow_id DESC ]]>
+       
+	</select>
+	
+	
 	 
 	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
     	select count(*) from tbfollow where 1=1
@@ -203,6 +212,13 @@
 		</if>
 		<if test="updateTimeEnd != null and updateTimeEnd.trim() != ''">
 		and updateTime &lt;= #{updateTimeEnd}
+		</if>
+		
+		<if test="followedIds != null and followedIds.size()>0">
+		 and followed_id in 
+		 <foreach collection="followedIds" item="projectId" index="index" open="(" separator="," close=")">
+                #{projectId}
+            </foreach>
 		</if>
 	</sql>
 </mapper>

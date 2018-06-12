@@ -29,6 +29,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.aliyuncs.DefaultAcsClient;
 import com.aliyuncs.IAcsClient;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsRequest;
@@ -38,6 +39,7 @@ import com.aliyuncs.exceptions.ServerException;
 import com.aliyuncs.http.MethodType;
 import com.aliyuncs.profile.DefaultProfile;
 import com.aliyuncs.profile.IClientProfile;
+import com.google.common.base.Objects;
 import com.tzg.common.constants.KFFConstants;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
@@ -78,6 +80,7 @@ import com.tzg.common.utils.Create2Code;
 import com.tzg.common.utils.DateUtil;
 import com.tzg.common.utils.DelHtmlAll;
 import com.tzg.common.utils.DownImagesUtile;
+import com.tzg.common.utils.DownImgGoodUtil;
 import com.tzg.common.utils.FileUtils;
 import com.tzg.common.utils.GetImgUrl;
 import com.tzg.common.utils.H5AgainDeltagsUtil;
@@ -89,6 +92,7 @@ import com.tzg.common.utils.RandomUtil;
 import com.tzg.common.utils.RegexUtil;
 import com.tzg.common.utils.ToRemoveHtml;
 import com.tzg.common.utils.WorkHtmlRegexpUtil;
+import com.tzg.common.utils.rest.AliyunConstant;
 import com.tzg.common.zookeeper.ZKClient;
 import com.tzg.entitys.kff.article.Article;
 import com.tzg.entitys.kff.article.ArticleDetailResponse;
@@ -365,6 +369,17 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		List<CollectPostResponse> postResponse = new ArrayList<>();
 		PageResult<Collect> collects = kffCollectService.findPage(query);
 		if (collects != null && CollectionUtils.isNotEmpty(collects.getRows())) {
+			List<Integer> projectIds = new ArrayList<>();
+			for(Collect collect : collects.getRows()){
+				projectIds.add(collect.getProjectId());
+			}
+			List<Follow> followedProjects = kffFollowService.findFollowedProjects((Integer)query.getQueryData().get("collectUserId"),projectIds);
+			Set<Integer> followedProjectIds = new HashSet<>();
+			if(CollectionUtils.isNotEmpty(followedProjects)){
+				for(Follow follow:followedProjects){
+					followedProjectIds.add(follow.getFollowedId());
+				}
+			}
 			result.setCurPageNum(collects.getCurPageNum());
 			result.setPageSize(collects.getPageSize());
 			result.setQueryParameters(collects.getQueryParameters());
@@ -394,6 +409,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					response.setCreateUserIcon(post.getCreateUserIcon());
 					response.setCreateUserName(post.getCreateUserName());
 					response.setCreateUserSignature(post.getCreateUserSignature());
+					
+					if(followedProjectIds != null && followedProjectIds.contains(post.getProjectId())){
+						response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+					}
 					// response.setTotalScore(post.get);
 					KFFProject project = kffProjectService.findById(post.getProjectId());
 					if (project != null) {
@@ -464,6 +483,18 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 				} else if (follow.getFollowType() != null && follow.getFollowType() == 3) {
 					// 被关注用户信息在follow表中已包含
+				}else if (follow.getFollowType() != null && follow.getFollowType() == 1) {
+					// 项目 就是话题
+					response.setFollowedProjectId(follow.getFollowedId());
+					KFFProject project = kffProjectService.findById(follow.getFollowedId());
+					if (project != null) {
+						response.setProjectChineseName(project.getProjectChineseName());
+						response.setProjectCode(project.getProjectCode());
+						response.setProjectEnglishName(project.getProjectEnglishName());
+						response.setProjectIcon(project.getProjectIcon());
+						response.setProjectSignature(project.getProjectSignature());
+						response.setTotalScore(project.getTotalScore());
+					}
 				}
 				followResponses.add(response);
 			}
@@ -679,8 +710,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (post == null) {
 			throw new RestServiceException("帖子不存在");
 		}
-		// 帖子捐赠人数加+1
-		kffPostService.updateDonateNum(post.getPostId());
+
 
 		if (commendationRequest.getSendUserId() == null) {
 			throw new RestServiceException("发送用户不能为空");
@@ -703,15 +733,21 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (sendUser.getKffCoinNum().compareTo(commendationRequest.getAmount()) < 0) {
 			throw new RestServiceException("账户余额不足:捐赠数量" + commendationRequest.getAmount().intValue() + "余额数量" + sendUser.getKffCoinNum().intValue());
 		}
+		
+		// 帖子捐赠人数加+1
+		kffPostService.updateDonateNum(post.getPostId());
+		
 		commendationRequest.setSendUserIcon(sendUser.getIcon());
 		commendationRequest.setPostType(post.getPostType());
 
 		Commendation commendation = new Commendation();
+		Date now = new Date();
 		BeanUtils.copyProperties(commendationRequest, commendation);
 		commendation.setStatus(1);
+		commendation.setCreateTime(now);
+		commendation.setUpdateTime(now);
 		kffCommendationService.save(commendation);
 
-		Date now = new Date();
 		Integer randomBIZCode = Integer.valueOf(RandomUtil.produceNumber(3));
 		// 发送方扣减，接收方增加
 		kffUserService.updateUserKFFCoinNum(sendUser.getUserId(), commendationRequest.getAmount().multiply(new BigDecimal(-1)));
@@ -1486,9 +1522,30 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (createUser == null) {
 			throw new RestServiceException("用户不存在" + evaluationRequest.getCreateUserId());
 		}
-
-		BigDecimal totalScore = evaluationRequest.getTotalScore();
-
+		
+		if (project == null) {
+			throw new RestServiceException("项目不存在" + evaluationRequest.getProjectId());
+		}
+		BigDecimal totalScore = evaluationRequest.getTotalScore() == null?BigDecimal.ZERO:evaluationRequest.getTotalScore();
+		//专业评测总分计算
+        if(Objects.equal(4, evaluationRequest.getModelType())){
+        try{
+        		
+        	List<DevaluationModel> models =JSON.parseArray(evaluationRequest.getProfessionalEvaDetail(), DevaluationModel.class);
+        	if(models == null || models.size() ==0){
+        		throw new RestServiceException("专业评测分项内容不能为空"+evaluationRequest.getProfessionalEvaDetail());
+        	}
+        	
+        	for(DevaluationModel model:models){
+        		totalScore = totalScore.add(model.getScore().multiply(new BigDecimal(model.getModelWeight())));
+        	}
+        	totalScore = totalScore.divide(new BigDecimal(100)).setScale(1);
+        }catch(Exception e){
+        		e.printStackTrace();
+        		throw new RestServiceException("专业评测分项内容格式不对"+evaluationRequest.getProfessionalEvaDetail());
+        	}
+        	
+        }
 		Post post = new Post();
 		Date now = new Date();
 		post.setCollectNum(0);
@@ -4531,6 +4588,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		hotQuery.addQueryData("status", "1");
 		hotQuery.addQueryData("postId", postId + "");
 		hotQuery.addQueryData("postType", KFFConstants.POST_TYPE_ARTICLE + "");
+		hotQuery.addQueryData("parentCommentsIdNull", "YES");
+
 		// 点赞数最多的2个评论
 		hotQuery.addQueryData("sortField", "praiseNum");
 		hotQuery.setPageIndex(1);

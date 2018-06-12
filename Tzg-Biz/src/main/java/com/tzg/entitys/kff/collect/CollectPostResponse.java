@@ -13,6 +13,9 @@ public class CollectPostResponse implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -8824054290447132368L;
+	//0 未关注；1-已关注；2-不显示关注按钮
+	private java.lang.Integer followStatus = 0 ;
+	
 	/**
      * collectId
      */ 	
@@ -147,6 +150,14 @@ public class CollectPostResponse implements Serializable {
 	
 
 	
+
+	public java.lang.Integer getFollowStatus() {
+		return followStatus;
+	}
+
+	public void setFollowStatus(java.lang.Integer followStatus) {
+		this.followStatus = followStatus;
+	}
 
 	public List<PostFile> getPostSmallImagesList() {
 		return postSmallImagesList;

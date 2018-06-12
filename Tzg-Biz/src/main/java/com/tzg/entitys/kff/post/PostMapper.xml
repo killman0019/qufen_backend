@@ -266,6 +266,155 @@
 		<include refid="queryWhere"/>
 	</select>
     
+    <select id="findMyPageFollowListCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(*) from (
+				SELECT
+					post_id,createTime,1 as post_type
+				FROM
+					tbpraise
+				WHERE
+					praise_type = 1
+				AND praise_user_id IN (
+					SELECT
+						followed_id
+					FROM
+						tbfollow
+					WHERE
+						follow_user_id =  #{userId}
+					AND follow_type = 3
+				  and status = 1
+				)
+				
+				UNION ALL
+				
+				SELECT
+					post_id,createTime,2 as post_type
+				FROM
+					tbpost
+				WHERE
+				 create_user_id IN (
+					SELECT
+						followed_id
+					FROM
+						tbfollow
+					WHERE
+						follow_user_id = #{userId}
+					AND follow_type = 3
+				  and status = 1
+				)
+				UNION ALL
+			
+				select distinct followed_id as post_id,createTime ,3 as post_type from tbfollow where 
+				follow_user_id in (
+					SELECT
+						followed_id
+					FROM
+						tbfollow
+					WHERE
+						follow_user_id = #{userId}
+					AND follow_type = 3
+				  and status = 1
+				) and follow_type=1  
+				and status = 1
+				
+				UNION ALL
+				
+				select post_id,createTime,4 as post_type from tbpost where project_id in (
+					select followed_id from tbfollow where follow_user_id=#{userId} and follow_type = 1
+					and status = 1
+				) and create_user_id not in (
+				SELECT
+						distinct followed_id
+					FROM
+						tbfollow
+					WHERE
+						follow_user_id = #{userId}
+					AND follow_type = 3
+				  and status = 1
+				)
+				)a
+	</select>
+    
+    
+    <select id="findMyPageFollowList" resultMap="BaseResultMap" parameterType="java.util.Map">
+				SELECT
+						post_id,createTime,1 as post_type,praise_user_id as create_user_id
+					FROM
+						tbpraise
+					WHERE
+						praise_type = 1 
+					AND praise_user_id IN (
+						SELECT
+							followed_id
+						FROM
+							tbfollow
+						WHERE
+							follow_user_id =  #{userId}
+						AND follow_type = 3
+					  and status = 1
+					)
+					
+					UNION ALL
+					
+					SELECT
+						post_id,createTime,2 as post_type,create_user_id as create_user_id
+					FROM
+						tbpost
+					WHERE
+					 create_user_id IN (
+						SELECT
+							followed_id
+						FROM
+							tbfollow
+						WHERE
+							follow_user_id =  #{userId}
+						AND follow_type = 3
+					  and status = 1
+					)
+					UNION ALL
+					
+					select distinct followed_id as post_id,createTime ,3 as post_type ,follow_user_id as create_user_id
+					from tbfollow where 
+					follow_user_id in (
+						SELECT
+							followed_id
+						FROM
+							tbfollow
+						WHERE
+							follow_user_id =  #{userId}
+						AND follow_type = 3
+					  and status = 1
+					) and follow_type=1  
+					and status = 1
+					
+					UNION ALL
+					
+					select post_id,createTime,4 as post_type ,create_user_id as create_user_id 
+					from tbpost where project_id in (
+					select followed_id from tbfollow where follow_user_id= #{userId} and follow_type = 1
+					and status = 1
+					) and create_user_id not in (
+					SELECT
+							DISTINCT followed_id
+						FROM
+							tbfollow
+						WHERE
+							follow_user_id =  #{userId}
+						AND follow_type = 3
+					  and status = 1
+					)
+	   
+	     <choose>
+	            <when test="sortField != null and sortField != ''">
+	               ORDER BY ${sortField} DESC
+	            </when>
+	            <otherwise>
+	                <![CDATA[ ORDER BY createTime desc ]]>
+	            </otherwise>
+	        </choose>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+    
 	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
 		select <include refid="columns"/>  from tbpost where 1=1
 		<include refid="queryWhere"/> 

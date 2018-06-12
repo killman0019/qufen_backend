@@ -127,6 +127,8 @@ public class ProjectController extends BaseController {
 			hotQuery.addQueryData("status", "1");
 			hotQuery.addQueryData("projectId", projectId + "");
 			hotQuery.addQueryData("postType", KFFConstants.POST_TYPE_ARTICLE + "");
+			hotQuery.addQueryData("parentCommentsIdNull", "YES");
+
 	        //点赞数最多的2个评论
 			hotQuery.addQueryData("sortField", "praise_num");
 			hotQuery.setPageIndex(1);

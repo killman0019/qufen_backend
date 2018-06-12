@@ -111,5 +111,22 @@ public class PostService {
 		postMapper.updateUserInfo(postMap);
 	}
 
+	public PageResult<Post> findMyPageFollowList(PaginationQuery query) {
+		PageResult<Post> result = null;
+		try {
+			Integer count = postMapper.findMyPageFollowListCount(query.getQueryData());
+			if (null != count && count.intValue() > 0) {
+				int startRecord = (query.getPageIndex() - 1)* query.getRowsPerPage();
+				query.addQueryData("startRecord", Integer.toString(startRecord));
+				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
+				List<Post> list = postMapper.findMyPageFollowList(query.getQueryData());
+				result = new PageResult<Post>(list,count,query);
+			} 
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
 	
 }

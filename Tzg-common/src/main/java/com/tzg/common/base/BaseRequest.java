@@ -29,8 +29,18 @@ public class BaseRequest implements Serializable {
 	private Integer postId;
 	private String sortField;
 	
+	private Integer commentsId;
 	
 	
+	
+	public Integer getCommentsId() {
+		return commentsId;
+	}
+
+	public void setCommentsId(Integer commentsId) {
+		this.commentsId = commentsId;
+	}
+
 	public String getSortField() {
 		return sortField;
 	}
