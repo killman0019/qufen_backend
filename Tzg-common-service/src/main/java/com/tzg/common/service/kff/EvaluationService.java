@@ -117,4 +117,17 @@ public class EvaluationService {
 		return list;
 	}
 
+	public List<Evaluation> findSimpleEvaByProjectId(Integer projectId) throws RestServiceException{
+		if(projectId == null){
+			throw new RestServiceException("project不能为空");
+		}
+		Map<String,Object> map = new HashMap<>();
+		map.put("projectId", projectId+"");
+		map.put("status", "1");
+		map.put("modelType", "1");
+		List<Evaluation> list = evaluationMapper.findByWhere(map);
+		
+		return list;
+	}
+	
 }

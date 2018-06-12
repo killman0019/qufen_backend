@@ -59,7 +59,18 @@ public class DevaluationModel implements Serializable {
 	 */
 	private java.lang.String detailDesc;
 	
+	//分项打分，前端传入
+	private BigDecimal score = BigDecimal.ZERO;
 	
+	
+	public BigDecimal getScore() {
+		return score;
+	}
+
+	public void setScore(BigDecimal score) {
+		this.score = score;
+	}
+
 	public java.lang.String getDetailDesc() {
 		return detailDesc;
 	}

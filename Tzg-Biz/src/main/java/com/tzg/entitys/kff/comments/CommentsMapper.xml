@@ -256,6 +256,9 @@
 		<if test="parentCommentsId != null and parentCommentsId.trim() != ''">
 		and parent_comments_id = #{parentCommentsId}
 		</if>
+		<if test="parentCommentsIdNull != null and parentCommentsIdNull.trim() != ''">
+		and parent_comments_id is null
+		</if>
 		<if test="becommentedUserId != null and becommentedUserId.trim() != ''">
 		and becommented_user_id = #{becommentedUserId}
 		</if>

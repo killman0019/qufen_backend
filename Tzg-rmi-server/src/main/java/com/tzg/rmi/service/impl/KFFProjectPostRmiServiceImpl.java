@@ -10,9 +10,14 @@ import java.util.Map;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import com.google.common.base.Objects;
+import com.tzg.common.constants.KFFConstants;
+import com.tzg.common.page.PageResult;
+import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.redis.RedisService;
 import com.tzg.common.service.kff.ArticleService;
 import com.tzg.common.service.kff.AuthenticationService;
@@ -47,10 +52,16 @@ import com.tzg.common.service.kff.UserWalletService;
 import com.tzg.common.service.systemParam.SystemParamService;
 import com.tzg.common.zookeeper.ZKClient;
 import com.tzg.entitys.kff.article.ArticleRequest;
+import com.tzg.entitys.kff.comments.Comments;
 import com.tzg.entitys.kff.devaluationModelDetail.DevaluationModelDetail;
 import com.tzg.entitys.kff.evaluation.Evaluation;
 import com.tzg.entitys.kff.evaluation.EvaluationRequest;
+import com.tzg.entitys.kff.post.Post;
+import com.tzg.entitys.kff.post.PostResponse;
+import com.tzg.entitys.kff.praise.Praise;
+import com.tzg.entitys.kff.project.KFFProject;
 import com.tzg.entitys.kff.projectevastat.ProjectevastatByGrade;
+import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rmi.service.KFFProjectPostRmiService;
 
@@ -156,7 +167,7 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 			}
 			result.add(i, grade);
 		}
-		List<Evaluation> evas = kffEvaluationService.findAllTypeByProjectId(projectId);
+		List<Evaluation> evas = kffEvaluationService.findSimpleEvaByProjectId(projectId);
 		BigDecimal eachTotalScore = BigDecimal.ZERO;
 		BigDecimal totalScore = BigDecimal.ZERO;
 		int totalRaterNum = 0;
@@ -215,5 +226,117 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 		resultMap.put("totalRaterNum", totalRaterNum);
 		return resultMap;
 	}
+
+
+
+	@Override
+	public PageResult<Comments> findPagecommentCommentsList(Integer userId,
+			PaginationQuery query) throws RestServiceException {
+		KFFUser user = null;
+		if (userId != null && userId != 0) {
+			user = kffUserService.findById(userId);
+		}
+		PageResult<Comments> comments = kffCommentsService.findPage(query);
+		if (comments != null && CollectionUtils.isNotEmpty(comments.getRows())) {
+			PaginationQuery childQuery = new PaginationQuery();
+			childQuery.setPageIndex(1);
+			childQuery.setRowsPerPage(2);
+			for (Comments comment : comments.getRows()) {
+				childQuery.addQueryData("parentCommentsId", comment.getCommentsId() + "");
+				PageResult<Comments> childComments = kffCommentsService.findPage(childQuery);
+				if (childComments != null && CollectionUtils.isNotEmpty(childComments.getRows())) {
+					comment.setChildCommentsList(childComments.getRows());
+					comment.setChildCommentsNum(childComments.getRowCount());
+				}
+				// 登录用户判断点赞状态
+				if (user != null) {
+					Praise praise = kffPraiseService.findByCommentsId(userId, comment.getCommentsId());
+					if (praise != null) {
+						comment.setPraiseStatus(praise.getStatus());
+					}
+				} else {
+					comment.setPraiseStatus(KFFConstants.PRAISE_STATUS_NOSHOW);
+				}
+			}
+		}
+		return comments;
+
+	}
+
+
+
+	@Override
+	public PageResult<PostResponse> findMyPageFollowList(Integer userId, PaginationQuery query) {
+		PageResult<PostResponse> result = new PageResult<>();
+		if(userId == null || userId ==0){
+			throw new RestServiceException("用户未登录,请重新登录");
+		}
+		query.addQueryData("userId", userId +"");
+		//1 关注的用户 点赞帖子  2关注的用户 发表帖子  3关注的用户 关注项目 4关注的项目下发表的帖子
+		PageResult<Post> posts = kffPostService.findMyPageFollowList(query);
+		if(posts != null && CollectionUtils.isNotEmpty(posts.getRows())){
+			List<PostResponse> rows = new ArrayList<>();
+			result.setCurPageNum(posts.getCurPageNum());
+			result.setPageSize(posts.getPageSize());
+			result.setRowCount(posts.getRowCount());
+			result.setRowsPerPage(posts.getRowsPerPage());
+			KFFUser user = null;
+			Post realPost = null;
+			for(Post post:posts.getRows()){
+				PostResponse pr = new PostResponse();				
+				if(Objects.equal(1, post.getPostType())){
+					user = kffUserService.findById(post.getCreateUserId());
+					pr.setActionDesc(user ==null?"匿名用户":user.getUserName() +"点赞了帖子");
+					realPost = kffPostService.findById(post.getPostId());
+					if(realPost != null && Objects.equal(1,realPost.getPostType())){
+						Evaluation eva = kffEvaluationService.findByPostId(realPost.getPostId());
+						if(eva != null && Objects.equal(1,eva.getModelType())){
+							continue;
+						}else{
+							BeanUtils.copyProperties(realPost, pr);
+						}
+					}
+				}else if(Objects.equal(2, post.getPostType())){
+					user = kffUserService.findById(post.getCreateUserId());
+					pr.setActionDesc(user ==null?"匿名用户":user.getUserName() +"发表了帖子");
+					realPost = kffPostService.findById(post.getPostId());
+					if(realPost != null && Objects.equal(1,realPost.getPostType())){
+						Evaluation eva = kffEvaluationService.findByPostId(realPost.getPostId());
+						if(eva != null && Objects.equal(1,eva.getModelType())){
+							continue;
+						}else{
+							BeanUtils.copyProperties(realPost, pr);
+						}
+					}
+				}else if(Objects.equal(3, post.getPostType())){
+					user = kffUserService.findById(post.getCreateUserId());
+					pr.setActionDesc(user ==null?"匿名用户":user.getUserName() +"关注了项目");
+					KFFProject project = kffProjectService.findById(post.getPostId());
+					if(project != null){
+						BeanUtils.copyProperties(project, pr);
+					}
+				}else if(Objects.equal(4, post.getPostType())){
+					pr.setActionDesc("关注项目下发表了新帖");
+					realPost = kffPostService.findById(post.getPostId());
+					if(realPost != null && Objects.equal(1,realPost.getPostType())){
+						Evaluation eva = kffEvaluationService.findByPostId(realPost.getPostId());
+						if(eva != null && Objects.equal(1,eva.getModelType())){
+							continue;
+						}else{
+							BeanUtils.copyProperties(realPost, pr);
+						}
+					}
+				}else{
+					continue;
+				}
+				pr.setActionType(post.getPostType());							
+				rows.add(pr);
+			}
+			result.setRows(rows);
+		}
+		
+		return result;
+	}
+
 
 }

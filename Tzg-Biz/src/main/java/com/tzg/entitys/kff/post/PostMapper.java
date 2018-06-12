@@ -19,4 +19,6 @@ public interface PostMapper extends BaseMapper<Post, java.lang.Integer> {
 	void increasePageviewNum(Integer postId);
 	void decreaseCollectNum(Integer postId);
 	void updateUserInfo(Map<String, Object> postMap);
+	Integer findMyPageFollowListCount(Map<String, Object> map);
+	List<Post> findMyPageFollowList(Map<String, Object> map);
 }

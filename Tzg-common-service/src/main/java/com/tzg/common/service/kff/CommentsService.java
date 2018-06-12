@@ -50,6 +50,12 @@ public class CommentsService {
 	public PageResult<Comments> findPage(PaginationQuery query) throws RestServiceException {
 		PageResult<Comments> result = null;
 		try {
+			
+			//修复子评论查询异常
+			if(query.getQueryData().get("parentCommentsId") != null && query.getQueryData().get("parentCommentsIdNull") != null)
+			{
+				query.getQueryData().remove("parentCommentsIdNull");
+			}
 			Integer count = commentsMapper.findPageCount(query.getQueryData());
 			if (null != count && count.intValue() > 0) {
 				int startRecord = (query.getPageIndex() - 1)* query.getRowsPerPage();

@@ -17,6 +17,10 @@ public class PostResponse implements Serializable {
 	//0 未关注；1-已关注；2-不显示关注按钮
 	private java.lang.Integer followStatus = 2;
 	
+	private java.lang.String actionDesc;
+	
+	private java.lang.Integer actionType;
+	
 	/**
      * postId
      */ 	
@@ -390,6 +394,22 @@ public class PostResponse implements Serializable {
 
 	public void setTotalScore(BigDecimal totalScore) {
 		this.totalScore = totalScore;
+	}
+
+	public java.lang.String getActionDesc() {
+		return actionDesc;
+	}
+
+	public void setActionDesc(java.lang.String actionDesc) {
+		this.actionDesc = actionDesc;
+	}
+
+	public java.lang.Integer getActionType() {
+		return actionType;
+	}
+
+	public void setActionType(java.lang.Integer actionType) {
+		this.actionType = actionType;
 	}
 
 	

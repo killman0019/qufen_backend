@@ -290,6 +290,8 @@ public class HomeController extends BaseController {
 			hotQuery.addQueryData("status", "1");
 			hotQuery.addQueryData("postId", postId + "");
 			hotQuery.addQueryData("postType", KFFConstants.POST_TYPE_ARTICLE + "");
+			hotQuery.addQueryData("parentCommentsIdNull", "YES");
+
 			// 点赞数最多的2个评论
 			hotQuery.addQueryData("sortField", "praiseNum");
 			hotQuery.setPageIndex(1);

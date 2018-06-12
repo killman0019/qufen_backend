@@ -55,6 +55,7 @@ import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.utils.DateUtil;
 import com.tzg.rest.vo.BaseResponseEntity;
+import com.tzg.rmi.service.KFFProjectPostRmiService;
 import com.tzg.rmi.service.KFFRmiService;
 import com.tzg.rmi.service.SystemParamRmiService;
 
@@ -66,8 +67,10 @@ public class HomeController extends BaseController {
 	@Autowired
 	private KFFRmiService kffRmiService;
 	@Autowired
-	private SystemParamRmiService systemParamRmiService;
-
+	private KFFProjectPostRmiService kffProjectPostRmiService;
+    @Autowired
+    private SystemParamRmiService  systemParamRmiService;
+	
 	/**
 	 * 
 	 * @Title: recommendList
@@ -134,19 +137,18 @@ public class HomeController extends BaseController {
 		try {
 			BaseRequest baseRequest = getParamMapFromRequestPolicy(request, BaseRequest.class);
 			String token = baseRequest.getToken();
-			Integer userId = null;
-			if (StringUtils.isNotBlank(token)) {
-				userId = getUserIdByToken(token);
-			}
+			Integer userId = null;			
+			userId = getUserIdByToken(token);
 			PaginationQuery query = new PaginationQuery();
-			query.addQueryData("status", "1");
-			query.addQueryData("sortField", "collect_num");
-			// 帖子类型：1-评测；2-讨论；3-文章
-			// query.addQueryData("postType", "2");
-			query.setPageIndex(baseRequest.getPageIndex());
-			query.setRowsPerPage(baseRequest.getPageSize());
-			PageResult<PostResponse> follows = kffRmiService.findPageFollowList(userId, query);
-			map.put("follows", follows);
+			query.addQueryData("userId", userId+"");
+	        query.addQueryData("status", "1");
+	        //query.addQueryData("sortField", "collect_num");
+	        //帖子类型：1-评测；2-讨论；3-文章
+	        //query.addQueryData("postType", "2");
+	        query.setPageIndex(baseRequest.getPageIndex());
+	        query.setRowsPerPage(baseRequest.getPageSize());
+			PageResult<PostResponse> follows = kffProjectPostRmiService.findMyPageFollowList(userId,query);
+            map.put("follows", follows);
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("HomeController followList:{}", e);
@@ -286,7 +288,8 @@ public class HomeController extends BaseController {
 				hotQuery.addQueryData("status", "1");
 				hotQuery.addQueryData("postId", postId + "");
 				hotQuery.addQueryData("postType", KFFConstants.POST_TYPE_ARTICLE + "");
-				// 点赞数最多的2个评论
+    			hotQuery.addQueryData("parentCommentsIdNull", "YES");
+		        //点赞数最多的2个评论
 				hotQuery.addQueryData("sortField", "praise_num");
 				hotQuery.setPageIndex(1);
 				hotQuery.setRowsPerPage(2);
@@ -749,6 +752,59 @@ public class HomeController extends BaseController {
 			return this.resResult(RestErrorCode.SYS_ERROR);
 		}
 
+		return bre;
+	}
+	
+	
+	/**
+	 * 
+	* @Title: commentCommentsList
+	* @Description:显示针对某个评论的所有评论  分页加载
+	* @param @param request
+	* @param @param response
+	* @param @return    
+	* @return BaseResponseEntity
+	* @see    
+	* @throws
+	 */
+	@RequestMapping(value="/commentCommentsList",method = {RequestMethod.POST,RequestMethod.GET})
+	@ResponseBody
+	public BaseResponseEntity commentCommentsList(HttpServletRequest request) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+        HashMap<String, Object> map = new HashMap<String, Object>();
+
+		try {
+			BaseRequest baseRequest = getParamMapFromRequestPolicy(request, BaseRequest.class);
+			String token = (String)baseRequest.getToken();
+			Integer postId = (Integer) baseRequest.getPostId();
+			Integer commentsId = (Integer) baseRequest.getCommentsId();
+			if(postId == null || postId == 0){
+			   throw new RestServiceException(RestErrorCode.MISSING_ARG_POSTID);	
+			}
+			if(commentsId == null || commentsId == 0){
+				   throw new RestServiceException(RestErrorCode.MISSING_ARG_COMMENTSID);	
+				}
+			Integer userId = null;
+			if(StringUtils.isNotBlank(token)){
+				userId = getUserIdByToken(token);
+			}		
+			PaginationQuery query = new PaginationQuery();
+			query.setPageIndex(baseRequest.getPageIndex());
+			query.setRowsPerPage(baseRequest.getPageSize());
+			query.addQueryData("postId", postId + "");
+			query.addQueryData("parentCommentsId", commentsId + "");
+			query.addQueryData("status", KFFConstants.STATUS_ACTIVE + "");
+			PageResult<Comments> comments = kffProjectPostRmiService.findPagecommentCommentsList(userId,query);
+            map.put("comments", comments);    
+            
+			bre.setData(map);
+		} catch (RestServiceException e) {
+			logger.error("HomeController commentCommentsList:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("HomeController commentCommentsList:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR,e.getMessage());
+		}
 		return bre;
 	}
 }

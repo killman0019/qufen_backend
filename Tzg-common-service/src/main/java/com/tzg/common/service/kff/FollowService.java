@@ -3,7 +3,9 @@ package com.tzg.common.service.kff;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,6 +81,19 @@ public class FollowService   {
 		
 	}
 
+	public List<Follow> findFollowedProjects(Integer userId, List<Integer> projectIds) {
+		if(userId == null){ 
+			return null;
+		}
+		if(CollectionUtils.isEmpty(projectIds)){
+			return null;
+		}
+		Map<String, Object> map = new HashMap<>();
+		map.put("followUserId", userId+"");
+		map.put("followType", "1");
+		map.put("followedIds", projectIds);
+		return followMapper.findFollowedProjects(map);
+	}
 
 	
 }
