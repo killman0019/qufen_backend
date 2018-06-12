@@ -300,13 +300,13 @@ public class AwardPortService {
 				tokenaward.setPriaiseAward(0d);
 				kffTokenawardService.save(tokenaward);
 
-				// 将注册用户的信息同时存入流水表单中
+				/*// 将注册用户的信息同时存入流水表单中
 				tokenrecords.setUserId(userId);
 				tokenrecords.setFunctionDesc("注册奖励");
 				tokenrecords.setFunctionType(16);
 				tokenrecords.setTradeType(1);
-				tokenrecords.setCreateTime(new Date());
-				kffTokenrecordsService.save(tokenrecords);
+				tokenrecords.setCreateTime(new Date());*/
+			//	kffTokenrecordsService.save(tokenrecords);
 
 				coinProperty.setUserId(userId);
 				coinProperty.setCoinLock(kffUserService.findById(userId).getKffCoinNum().doubleValue());
@@ -475,8 +475,8 @@ public class AwardPortService {
 					Integer findReferCount = kffUserService.findReferCount(user3.getUserId());
 					if (findReferCount <= 1000) {
 						m0 = 50000d;
-						m1 = 2500d * 150 / 100;
-						m2 = 500d * 150 / 100;
+						m1 = 2500d;
+						m2 = 500d;
 					} else {
 						m0 = 50000d;
 						m1 = 2500d;
@@ -787,9 +787,9 @@ public class AwardPortService {
 																						// 发放的方式存入奖励表中
 					Integer findReferCount = kffUserService.findReferCount(user3.getUserId());
 					if (findReferCount <= 1000) {
-						m0 = 50000d * 150 / 100;
-						m1 = 2500d * 150 / 100;
-						m2 = 500d * 150 / 100;
+						m0 = 50000d ;
+						m1 = 2500d ;
+						m2 = 500d ;
 					} else {
 						m0 = 50000d;
 						m1 = 2500d;
@@ -1385,8 +1385,8 @@ public class AwardPortService {
 					Integer findReferCount = kffUserService.findReferCount(user3.getUserId());
 					if (findReferCount <= 1000) {
 						m0 = 30000d;
-						m1 = 1500d * 150 / 100;
-						m2 = 300d * 150 / 100;
+						m1 = 1500d;
+						m2 = 300d;
 					} else {
 						m0 = 30000d;
 						m1 = 1500d;
@@ -1627,9 +1627,9 @@ public class AwardPortService {
 																						// 发放的方式存入奖励表中
 					Integer findReferCount = kffUserService.findReferCount(user3.getUserId());
 					if (findReferCount <= 1000) {
-						m0 = 30000d;
+						m0 = 30000d * 150 / 100;
 						m1 = 1500d * 150 / 100;
-						m2 = 300d * 150 / 100;
+						m2 = 300d;
 					} else {
 						m0 = 30000d;
 						m1 = 1500d;
@@ -2087,8 +2087,8 @@ public class AwardPortService {
 					Integer findReferCount = kffUserService.findReferCount(user3.getUserId());
 					if (findReferCount <= 1000) {
 						m0 = 10000d;
-						m1 = 500d * 150 / 100;
-						m2 = 100d * 150 / 100;
+						m1 = 500d;
+						m2 = 100d;
 					} else {
 						m0 = 10000d;
 						m1 = 500d;
@@ -2331,7 +2331,7 @@ public class AwardPortService {
 					if (findReferCount <= 1000) {
 						m0 = 10000d * 150 / 100;
 						m1 = 500d * 150 / 100;
-						m2 = 100d * 150 / 100;
+						m2 = 100d;
 					} else {
 						m0 = 10000d;
 						m1 = 500d;
@@ -2792,7 +2792,7 @@ public class AwardPortService {
 					if (findReferCount <= 1000) {
 						m0 = 0.00d;
 						m1 = 250d * 150 / 100;
-						m2 = 50d * 150 / 100;
+						m2 = 50d;
 					} else {
 						m0 = 0.00d;
 						m1 = 250d;
@@ -3034,7 +3034,7 @@ public class AwardPortService {
 					if (findReferCount <= 1000) {
 						m0 = 0.00d;
 						m1 = 250d * 150 / 100;
-						m2 = 50d * 150 / 100;
+						m2 = 50d;
 					} else {
 						m0 = 0.00d;
 						m1 = 250d;
