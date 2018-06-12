@@ -717,7 +717,7 @@ public class HomeController extends BaseController {
 					// throw new RestServiceException("生成文件失败");
 				}
 				// 返回imgurl
-				urlPath = urlPath + "/posts/" + DateUtil.getCurrentYearMonth() + "/";
+				urlPath = urlPath + "/postPic/" + DateUtil.getCurrentYearMonth() + "/";
 				urlPath = urlPath + randomStr + "." + extention;
 
 				resMap.put("imgUrl", urlPath);

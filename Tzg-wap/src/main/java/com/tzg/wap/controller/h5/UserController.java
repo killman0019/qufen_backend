@@ -29,6 +29,7 @@ import com.tzg.common.redis.RedisService;
 import com.tzg.common.utils.AccountTokenUtil;
 import com.tzg.common.utils.Create2Code;
 import com.tzg.common.utils.EnumConstant.SmsBuss;
+import com.tzg.common.utils.CookieUtil;
 import com.tzg.common.utils.RegexUtil;
 import com.tzg.common.utils.SHAUtil;
 import com.tzg.common.utils.TzgConstant;
@@ -467,8 +468,7 @@ public class UserController extends BaseController {
 			// 根据用户的ID 查询用户的认证审核状态
 			userModel.setAuthenticationStatus(authenticationStatus);
 			userModel.setUserNick(loginaccount.getUserName());
-			userModel.setIcon(loginaccount.getIcon());
-			// tokenSession.setAttribute("userModel", userModel);
+			userModel.setIcon(loginaccount.getIcon());		
 			map.put("userModel", userModel);
 			map.put("s", token);
 			bre.setData(map);

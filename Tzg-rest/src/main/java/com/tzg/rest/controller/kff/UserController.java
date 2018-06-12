@@ -232,8 +232,6 @@ public class UserController extends BaseController {
 			map.put("token", token);
 			Integer userCardStatus = kffRmiService.selectUserCardStatusByUserId(loginaccount.getUserId());
 			map.put("userCardStatus", userCardStatus);
-			Integer authenticationStatus = kffRmiService.selectAuthenticationStatusByUserId(loginaccount.getUserId());
-			map.put("authenticationStatus", authenticationStatus);
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.warn("login warn:{}", e);
@@ -1369,8 +1367,7 @@ public class UserController extends BaseController {
 			map.put("user", this.formatLoginaccount(loginaccount));
 			Integer userCardStatus = kffRmiService.selectUserCardStatusByUserId(loginaccount.getUserId());
 			map.put("userCardStatus", userCardStatus);
-			Integer authenticationStatus = kffRmiService.selectAuthenticationStatusByUserId(loginaccount.getUserId());
-			map.put("authenticationStatus", authenticationStatus);
+
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.warn("getUserInfo warn:{}", e);
