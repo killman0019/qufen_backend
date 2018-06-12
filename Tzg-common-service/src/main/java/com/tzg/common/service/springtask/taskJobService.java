@@ -20,7 +20,13 @@ public class taskJobService {
 	  public void updateByGrantType() {  
  		Integer a = 2;
  		  tokenawardService.updateByGrantType(a);
- 		  qfIndexService.updateYxPraiseValid();
- 		  
+ 		  System.err.println("执行了第一个定时任务");
+ 		
+ 		 
+	  }  
+	  public void updateByGrantType2() {  
+		   qfIndexService.updateYxPraiseValid();
+		    System.err.println("执行了第二个定时任务");
+		  
 	  }  
 }

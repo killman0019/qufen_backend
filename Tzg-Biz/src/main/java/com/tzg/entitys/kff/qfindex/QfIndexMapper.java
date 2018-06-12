@@ -10,5 +10,4 @@ public interface QfIndexMapper extends BaseMapper<QfIndex, java.lang.Integer> {
 	QfIndex findByUserId(Integer userid);
 	void updateYxPraise(Integer userId);
 	void updateYxPraiseValid();
-
 }
