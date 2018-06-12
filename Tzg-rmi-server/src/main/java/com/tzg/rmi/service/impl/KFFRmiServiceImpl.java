@@ -1826,7 +1826,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			String replaceAllDate = stringDate.replaceAll("-", "");
 			// 创建业务记录id+
 			Praise praiseId = kffPraiseService.findByPraiseId(createUserId, userId);
-			String format ="";
+			String format = "";
 			if (null != praiseId)
 				format = String.format("%010d", praiseId.getPraiseId());
 			// 判断点赞人是否实名认证
@@ -1890,7 +1890,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 								BigDecimal kffCoinNum = findByUserId.getKffCoinNum();
 								findByUserId.setKffCoinNum(kffCoinNum.add(new BigDecimal(pc * createPUF)));
 								findByUserId.setUpdateTime(new Date());
-								
+
 								kffUserService.update(findByUserId);
 								kffTokenrecordsService.save(tokenrecords);
 
@@ -4393,15 +4393,15 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 		BeanUtils.copyProperties(post, articleDetailShareResponse);
 
-		// 放置创建poster的类型 加V
+		/*// 放置创建poster的类型 加V
 		if (StringUtils.isBlank(post.getCreateUserId() + "")) {
 			throw new RestServiceException("创建人id为空");
 		}
 		Integer type = authenticationService.selectCUserType(post.getCreateUserId());
 		if (0 == type) {
 			throw new RestServiceException("数据错误!");
-		}
-		articleDetailShareResponse.setcUsertype(type);
+		}*/
+		// articleDetailShareResponse.setcUsertype(type);
 		// 赞赏用户列表最多8个
 		List<Commendation> donateUsers = new ArrayList<>();
 		PaginationQuery query = new PaginationQuery();
@@ -4437,13 +4437,13 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (post == null) {
 			throw new RestServiceException(RestErrorCode.POST_NOT_EXIST);
 		}
-		// 加V
+		/*// 加V
 		Integer type = authenticationService.selectCUserType(post.getCreateUserId());
 		if (0 == type) {
 			throw new RestServiceException("数据错误!");
 		}
 		projectEvaluationDetailShareResponse.setcUsertype(type);
-
+*/
 		post.setUuid(null);
 		post.setCreateUserId(null);
 
@@ -4663,11 +4663,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (post == null) {
 			throw new RestServiceException(RestErrorCode.POST_NOT_EXIST);
 		}
-		Integer type = authenticationService.selectCUserType(post.getCreateUserId());
+		/*Integer type = authenticationService.selectCUserType(post.getCreateUserId());
 		if (0 == type) {
 			throw new RestServiceException("数据错误!");
 		}
-		discussShare.setcUsertype(type);
+		discussShare.setcUsertype(type);*/
 		Discuss discuss = kffDiscussService.findByPostId(postId);
 		discussShare.setTagInfo(discuss.getTagInfos());
 		// 防止post
