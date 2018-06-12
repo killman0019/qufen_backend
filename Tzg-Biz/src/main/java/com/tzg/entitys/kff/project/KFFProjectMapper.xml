@@ -246,13 +246,15 @@
 
 
 	<select id="findProjectByCode" resultMap="BaseResultMap" parameterType="java.util.Map">
-		select <include refid="columns"/>  from tbproject where status=1
-		<include refid="queryWhereByCode"/> 
-		 <choose>
-	            <when test="sortField != null and sortField != ''">
-	               ORDER BY ${sortField} DESC
-	            </when>
-	            <otherwise>
+		select
+		<include refid="columns" />
+		from tbproject where status=1
+		<include refid="queryWhereByCode" />
+		<choose>
+			<when test="sortField != null and sortField != ''">
+				ORDER BY ${sortField} DESC
+			</when>
+			<otherwise>
 	                <![CDATA[ ORDER BY project_code ASC ]]>
 			</otherwise>
 		</choose>
@@ -363,11 +365,14 @@
 		</if>
 	</sql>
 	<select id="findProjectName" resultMap="BaseResultMap">
-		SELECT
-		DISTINCT
-		project_code , project_chinese_name
+		SELECT DISTINCT
+		project_code,
+		project_chinese_name
 		FROM
-		tbproject where status = 1
+		tbproject
+		WHERE
+		STATUS = 1
+		AND state = 2
 	</select>
 	<select id="findProjectIdByCodeAndChineseName" resultMap="BaseResultMap">
 		SELECT
