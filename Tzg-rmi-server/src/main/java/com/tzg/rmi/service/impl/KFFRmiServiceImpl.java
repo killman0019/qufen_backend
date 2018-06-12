@@ -1221,6 +1221,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		List<String> imgSrc = GetImgUrl.getImgStr(articleRequest.getArticleContents());
 		List<String> imgDB = new ArrayList<String>();
 		String articleSrcReplace = null;
+		String replaceStr = null;
 		int i = 0;
 		for (String img : imgSrc) {
 			logger.info("抽离的图片路径");
@@ -1232,7 +1233,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				// 说明是h5富文本传来的,服务器中存有图片,直接截取存放数据库
 				// http://192.168.10.151:8080/upload/postPic/201806/20180610160559928.png
 				logger.info("开始处理H5富文本编译器图片");
-				String replaceStr = img.replaceAll(ipPicUrl + "/", "");
+				if (ipPicUrl.contains("app.qufen.top")) {
+					replaceStr = img.replaceAll("http:/" + ipPicUrl + "/", "");
+				} else {
+					replaceStr = img.replaceAll(ipPicUrl + "/", "");
+				}
 				logger.info("h5富文本传来的图片绝对路径:" + replaceStr);
 				if (imgDB.size() <= 3) {
 					imgDB.add(replaceStr);
@@ -1577,7 +1582,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 		List<String> imgSrc = GetImgUrl.getImgStr(evaluationRequest.getEvauationContent());
 		List<String> imgDB = new ArrayList<String>();
-
+		String replaceStr = null;
 		String evaluationSrcReplace = null;
 		int i = 0;
 		for (String img : imgSrc) {
@@ -1587,7 +1592,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				// 说明是h5富文本传来的,服务器中存有图片,直接截取存放数据库
 				// http://192.168.10.151:8080/upload/postPic/201806/20180610160559928.png
 				logger.info("开始处理H5富文本编译器图片");
-				String replaceStr = img.replaceAll(ipPicUrl, "");
+				if (ipPicUrl.contains("app.qufen.top")) {
+					replaceStr = img.replaceAll("http:/" + ipPicUrl + "/", "");
+				} else {
+					replaceStr = img.replaceAll(ipPicUrl + "/", "");
+				}
 				logger.info("h5富文本传来的图片绝对路径:" + replaceStr);
 				if (imgDB.size() <= 3) {
 					imgDB.add(replaceStr);
