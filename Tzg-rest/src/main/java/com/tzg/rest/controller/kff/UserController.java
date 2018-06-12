@@ -1330,7 +1330,7 @@ public class UserController extends BaseController {
 					}
 					else if(tokenrecords.getTradeType() != null && tokenrecords.getTradeType() == 2) {
 						BigDecimal amount = tokenrecords.getAmount();
-						bdSum = bdSum.add(amount);
+						bdSum = bdSum.subtract(amount);
 					}
 				}
 			}
