@@ -918,7 +918,7 @@ public class AwardPortService {
 			
 			List<Tokenaward> list = kffTokenawardService.findByUserId(userId);
 			// 根据用户id去获取用户资产信息
-			CoinProperty coinProperty = kffCoinPropertyService.findByUserId(userId);
+			
 			KFFUser finduser = kffUserService.findById(userId);
 			
 			for (Tokenaward award : list) {
@@ -978,14 +978,14 @@ public class AwardPortService {
 								/*KFFUser kffUser = kffUserService.findById(userId);
 								BigDecimal kffCoinNum = kffUser.getKffCoinNum();
 								kffUserService.updateUserKFFCoinNum(userId, kffCoinNum.add(new BigDecimal(x)));*/
-								if(coinProperty != null ) {
-									
-									Double coinLock = coinProperty.getCoinLock();
-									Double coinDistributed = coinProperty.getCoinDistributed();
-									coinProperty.setCoinLock(coinLock + x);
-									coinProperty.setCoinDistributed(coinDistributed - x);
-									coinProperty.setUserId(userId);
-									kffCoinPropertyService.update(coinProperty);
+								CoinProperty coinProperty1 = kffCoinPropertyService.findByUserId(userId);
+								if(coinProperty1 != null ) {
+									Double coinLock = coinProperty1.getCoinLock();
+									Double coinDistributed = coinProperty1.getCoinDistributed();
+									coinProperty1.setCoinLock(coinLock + x);
+									coinProperty1.setCoinDistributed(coinDistributed - x);
+									coinProperty1.setUserId(userId);
+									kffCoinPropertyService.update(coinProperty1);
 								}
 								
 								
@@ -1025,13 +1025,14 @@ public class AwardPortService {
 							/*KFFUser kffUser = kffUserService.findById(userId);
 							BigDecimal kffCoinNum = kffUser.getKffCoinNum();
 							kffUserService.updateUserKFFCoinNum(userId, kffCoinNum.add(new BigDecimal(x)));*/
-							if(coinProperty != null) {
+							CoinProperty coinProperty2 = kffCoinPropertyService.findByUserId(userId);
+							if(coinProperty2 != null) {
 								
-								Double coinLock = coinProperty.getCoinLock();
-								Double coinDistributed = coinProperty.getCoinDistributed();
-								coinProperty.setCoinLock(coinLock + x);
-								coinProperty.setCoinDistributed(coinDistributed - x);
-								kffCoinPropertyService.update(coinProperty);
+								Double coinLock = coinProperty2.getCoinLock();
+								Double coinDistributed = coinProperty2.getCoinDistributed();
+								coinProperty2.setCoinLock(coinLock + x);
+								coinProperty2.setCoinDistributed(coinDistributed - x);
+								kffCoinPropertyService.update(coinProperty2);
 							}
 						}
 					}
