@@ -697,7 +697,7 @@ public class HomeController extends BaseController {
 				kffRmiService.updateUser(account);
 				resMap.put("imgUrl", urlPath);
 			} else if (imgtype == KFFConstants.IMGTYPE_POSTS) {
-				localPath = localPath + "posts/" + DateUtil.getCurrentYearMonth() + "/";
+				localPath = localPath + "postPic/" + DateUtil.getCurrentYearMonth() + "/";
 				String randomStr = RandomUtil.produceString(10);
 				String currentTimeSS = DateUtil.getCurrentTimeSS();
 				localPath = localPath + currentTimeSS + "." + extention;
