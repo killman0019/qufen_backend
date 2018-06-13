@@ -216,7 +216,7 @@ public class UserController extends BaseController {
 			KFFUser loginaccount = null;
 			try {
 				loginaccount = kffRmiService.login(loginName, password);
-				
+
 				QfIndex qfIndex = kffRmiService.findQfIndexUser(loginaccount.getUserId());
 				Integer statusHierarchyType = qfIndex.getStatusHierarchyType();
 				String statusHierarchyDesc = qfIndex.getStatusHierarchyDesc();
@@ -1318,24 +1318,23 @@ public class UserController extends BaseController {
 					bdSum = bdSum.add(new BigDecimal(inviteNumber));
 				}
 			}
-		/*	List<Tokenrecords> findAllTokenrecordsUserId = kffRmiService.findAllTokenrecordsUserId(userId);
-			for (Tokenrecords tokenrecords : findAllTokenrecordsUserId) {
-				if (tokenrecords != null) {
-					if (tokenrecords.getRewardGrantType() == 1) {
-						BigDecimal amount = tokenrecords.getAmount();
-						bdSum = bdSum.add(amount);
+			/*	List<Tokenrecords> findAllTokenrecordsUserId = kffRmiService.findAllTokenrecordsUserId(userId);
+				for (Tokenrecords tokenrecords : findAllTokenrecordsUserId) {
+					if (tokenrecords != null) {
+						if (tokenrecords.getRewardGrantType() == 1) {
+							BigDecimal amount = tokenrecords.getAmount();
+							bdSum = bdSum.add(amount);
+						}
 					}
 				}
-			}
-			*/
+				*/
 			List<Tokenrecords> findAllTokenrecordsUserId = kffRmiService.findAllTokenrecordsUserId(userId);
 			for (Tokenrecords tokenrecords : findAllTokenrecordsUserId) {
 				if (tokenrecords != null) {
 					if (tokenrecords.getTradeType() != null && tokenrecords.getTradeType() == 1 && tokenrecords.getRewardGrantType() != 2) {
 						BigDecimal amount = tokenrecords.getAmount();
 						bdSum = bdSum.add(amount);
-					}
-					else if(tokenrecords.getTradeType() != null && tokenrecords.getTradeType() == 2) {
+					} else if (tokenrecords.getTradeType() != null && tokenrecords.getTradeType() == 2) {
 						BigDecimal amount = tokenrecords.getAmount();
 						bdSum = bdSum.subtract(amount);
 					}
@@ -1380,7 +1379,7 @@ public class UserController extends BaseController {
 				for (CoinProperty coinProperty : userCoin) {
 					loginaccount.setKffCoinNum(new BigDecimal(coinProperty.getTotalAssets()));
 				}
-				
+
 			} catch (RestServiceException e) {
 				return this.resResult(e.getErrorCode(), e.getMessage());
 			} catch (Exception e) {
@@ -1394,10 +1393,13 @@ public class UserController extends BaseController {
 			Integer userCardStatus = kffRmiService.selectUserCardStatusByUserId(loginaccount.getUserId());
 			map.put("userCardStatus", userCardStatus);
 			QfIndex qfIndex = kffRmiService.findQfIndexUser(loginUserId);
-			Integer statusHierarchyType = qfIndex.getStatusHierarchyType();
-			String statusHierarchyDesc = qfIndex.getStatusHierarchyDesc();
-			map.put("statusHierarchyType", statusHierarchyType);
-			map.put("statusHierarchyDesc", statusHierarchyDesc);
+			if (null != qfIndex) {
+				Integer statusHierarchyType = qfIndex.getStatusHierarchyType();
+				String statusHierarchyDesc = qfIndex.getStatusHierarchyDesc();
+				map.put("statusHierarchyType", statusHierarchyType);
+				map.put("statusHierarchyDesc", statusHierarchyDesc);
+			}
+
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.warn("getUserInfo warn:{}", e);

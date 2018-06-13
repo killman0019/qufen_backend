@@ -1,5 +1,6 @@
 package com.tzg.rmi.service.impl;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -910,6 +911,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					response.setEvaluationId(eva.getEvaluationId());
 					response.setEvauationContent(eva.getEvauationContent());
 					response.setTotalScore(eva.getTotalScore());
+					response.setModelType(eva.getModelType());
 				}
 				respones.add(response);
 			}
@@ -1485,7 +1487,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			evaDtailModuleName = EvaDtails.get(0).getModelName();
 		}
 		if (3 == evaluationRequest.getModelType()) {
-			evaluationRequest.setPostTitle(project.getProjectCode() + " - " + evaDtailModuleName + "(all)");// 单项评测
+			evaluationRequest.setPostTitle(project.getProjectCode() + " - " + evaDtailModuleName + "(part)");// 单项评测
 		}
 		if (4 == evaluationRequest.getModelType()) {
 			evaluationRequest.setPostTitle(project.getProjectCode() + " - 完整版自建模型评测(all)");// 用户自定义评测
@@ -1588,7 +1590,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				} catch (Exception e) {
 					throw new RestServiceException("后台创建文件出错!");
 				}
+
 				DownImgGoodUtil.downloadPicture(img, picUrlName);
+
+				logger.info("坑逼百度!!!!");
+
 				if (imgDB.size() <= 3) {
 					imgDB.add(picName);
 					// i = i + 1;

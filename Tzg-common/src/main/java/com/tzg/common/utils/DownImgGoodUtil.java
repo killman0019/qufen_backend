@@ -3,6 +3,7 @@ package com.tzg.common.utils;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -12,8 +13,9 @@ import java.net.URLConnection;
 
 public class DownImgGoodUtil {
 	public static void downloadPicture(String urlList, String path) {
-		URL url = null;
 		try {
+			URL url = null;
+
 			url = new URL(urlList);
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)"); // 防止报403错误。
@@ -32,10 +34,15 @@ public class DownImgGoodUtil {
 			dataInputStream.close();
 			fileOutputStream.close();
 		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("傻逼百度!");
 		}
+
 	}
 
 }
