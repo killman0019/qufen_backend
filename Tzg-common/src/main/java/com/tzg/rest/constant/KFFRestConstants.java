@@ -17,7 +17,7 @@ public class KFFRestConstants {
 	public static final int PLATFORM_ANDROID = 2;
 	public static final int PLATFORM_IOS_299 = 3;
 
-	public static final String USER_NAME_PREFIX = "U";
+	public static final String USER_NAME_PREFIX = "区分者_";
 	public static final String DEFAULT_USER_ICON = "/upload/avatars/avatar.png";
 	public static String REDIS_KEY_PROJECT_SYNC_SCORE = "redis_key_rest_sync_proect_";
 	

@@ -1245,7 +1245,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				} catch (Exception e) {
 					throw new RestServiceException("后台创建文件出错!");
 				}
-				DownImgGoodUtil.downloadPicture(img, picUrlName);
+				try {
+					DownImgGoodUtil.downloadPicture(img, picUrlName);
+				} catch (Exception e) {
+					logger.info("又tm的抽不出图片!!傻逼百度!!!");
+				}
 				if (imgDB.size() <= 3) {
 					imgDB.add(picName);
 				}
