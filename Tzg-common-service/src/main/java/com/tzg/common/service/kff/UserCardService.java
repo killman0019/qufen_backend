@@ -37,6 +37,7 @@ public class UserCardService {
 		userCardMapper.updateUserCard(userCard);
 
 	}
+	
 	public UserCard findByUserid(java.lang.Integer userId) {
 		return userCardMapper.findByUserid(userId);
 		

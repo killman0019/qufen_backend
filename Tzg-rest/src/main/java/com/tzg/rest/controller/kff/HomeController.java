@@ -679,8 +679,9 @@ public class HomeController extends BaseController {
 			String urlPath = systemParam.getVcParamValue();
 			logger.info("存放路径" + systemParam);
 			if (imgtype == KFFConstants.IMGTYPE_AVATARS) {
+				String currentTimeSS = DateUtil.getCurrentTimeSS();
 				localPath = localPath + "avatars/" + DateUtil.getCurrentYearMonth() + "/";
-				localPath = localPath + userId + "." + extention;
+				localPath = localPath + currentTimeSS + "." + extention;
 				try {
 					FileUtils.createFileLocal(localPath, file.getBytes());
 				} catch (Exception e) {
@@ -688,8 +689,9 @@ public class HomeController extends BaseController {
 					// throw new RestServiceException("生成文件失败");
 				}
 				// 更新用户头像url
+
 				urlPath = urlPath + "/avatars/" + DateUtil.getCurrentYearMonth() + "/";
-				urlPath = urlPath + userId + "." + extention;
+				urlPath = urlPath + currentTimeSS + "." + extention;
 				KFFUser account = new KFFUser();
 				account.setUserId(userId);
 				account.setUpdateTime(new Date());
@@ -784,7 +786,6 @@ public class HomeController extends BaseController {
 			query.addQueryData("status", KFFConstants.STATUS_ACTIVE + "");
 			PageResult<Comments> comments = kffProjectPostRmiService.findPagecommentCommentsList(userId, query);
 			map.put("comments", comments);
-
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("HomeController commentCommentsList:{}", e);

@@ -757,7 +757,7 @@ public interface KFFRmiService {
 	 * 
 	 * @param evaluationRequest
 	 */
-	public void checkProjectOnlyEvaluation(EvaluationRequest evaluationRequest);
+	public void checkProjectOnlyEvaluation(EvaluationRequest evaluationRequest) throws RestServiceException;
 
 	/**
 	 * 
@@ -768,7 +768,7 @@ public interface KFFRmiService {
 	 * @param modelType
 	 * @return
 	 */
-	public List<Evaluation> selectOnlyEvaluationByProjectId(Integer projectId, Integer createUserId, Integer modelType);
+	public List<Evaluation> selectOnlyEvaluationByProjectId(Integer projectId, Integer createUserId, Integer modelType) throws RestServiceException;
 
 	/**
 	 * 判断完整评测和自定义评测不能对同一个项目进行重复评测
@@ -776,8 +776,8 @@ public interface KFFRmiService {
 	 * @param evaluationRequest
 	 * @param project
 	 */
-	public void checkProjectEvaluation(EvaluationRequest evaluationRequest, KFFProject project);
-	
-	
-	public String createPostShare2Code();
+	public void checkProjectEvaluation(EvaluationRequest evaluationRequest, KFFProject project) throws RestServiceException;
+
+	public String createPostShare2Code() throws RestServiceException;;
+
 }

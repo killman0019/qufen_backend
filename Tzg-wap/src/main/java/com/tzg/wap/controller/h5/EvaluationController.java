@@ -71,7 +71,7 @@ public class EvaluationController extends BaseController {
 			evaluationRequest.setProjectId(project.getProjectId());
 			// 判断用户是否已经对此项目进行了全面评测
 			evaluationRequest.setModelType(evaluationData.getModelType());
-			if (2 == evaluationRequest.getModelType() || 4 == evaluationRequest.getModelType()) {
+			/*if (2 == evaluationRequest.getModelType() || 4 == evaluationRequest.getModelType()) {
 				Evaluation evaluationDB = new Evaluation();
 				evaluationDB.setModelType(evaluationRequest.getModelType());
 				evaluationDB.setCreateUserId(evaluationRequest.getCreateUserId());
@@ -83,7 +83,7 @@ public class EvaluationController extends BaseController {
 					}
 
 				}
-			}
+			}*/
 			evaluationRequest.setTotalScore(evaluationData.getTotalScore());
 			Map<String, Object> saveEvaluation = null;
 			if (null != evaluationRequest) {

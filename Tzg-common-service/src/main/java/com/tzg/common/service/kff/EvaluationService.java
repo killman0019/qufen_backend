@@ -79,19 +79,19 @@ public class EvaluationService {
 		// TODO Auto-generated method stub
 		return evaluationMapper.findEvaliationByProjectId(projectId);
 	}
-
+	@Transactional(readOnly = true)
 	public List<Evaluation> selectEvaluationOrNotByUserId(Evaluation evaluation) {
 		// TODO Auto-generated method stub
 		return evaluationMapper.selectEvaluationOrNotByUserId(evaluation);
 	}
-
+	@Transactional(readOnly = true)
 	public Evaluation findByPostId(Integer postId) throws RestServiceException {
 		if (postId == null) {
 			throw new RestServiceException("postId不能为空");
 		}
 		return evaluationMapper.findByPostId(postId);
 	}
-
+	@Transactional(readOnly = true)
 	public List<Evaluation> findByProjectId(Integer projectId) throws RestServiceException {
 		if (projectId == null) {
 			throw new RestServiceException("project不能为空");
@@ -104,7 +104,7 @@ public class EvaluationService {
 
 		return list;
 	}
-
+	@Transactional(readOnly = true)
 	public List<Evaluation> findAllTypeByProjectId(Integer projectId) throws RestServiceException {
 		if (projectId == null) {
 			throw new RestServiceException("project不能为空");
@@ -116,7 +116,7 @@ public class EvaluationService {
 
 		return list;
 	}
-
+	@Transactional(readOnly = true)
 	public List<Evaluation> findSimpleEvaByProjectId(Integer projectId) throws RestServiceException {
 		if (projectId == null) {
 			throw new RestServiceException("project不能为空");
@@ -129,7 +129,7 @@ public class EvaluationService {
 
 		return list;
 	}
-
+	@Transactional(readOnly = true)
 	public List<Evaluation> selectEvaluationByParam(Integer projectId, Integer createUserId, Integer modelType) {
 		// TODO Auto-generated method stub
 		Map<String, Object> map = new HashMap<String, Object>();

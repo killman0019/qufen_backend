@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -78,30 +79,8 @@ public class DiscussController extends BaseController {
 			discussRequest.setTagInfos(tagInfosl);
 			discussRequest.setDiscussImages(discussImagesl);
 			discussRequest.setPostTitle(postTitle);
-			// name是个图片数组
-			/*if (null == name) {
-				discussRequest.setDiscussImages(null);
-			}
-			if (name.size() <= 3) {
-				String uploadIeviwList = kffRmiService.uploadIeviwList(name);
-				discussRequest.setDiscussImages(uploadIeviwList);
-			} else {
-				int i = 0;
-				List<String> strl = new ArrayList<String>();
-				for (String nameStr : name) {
-					i = i + 1;
-					if (i == 4) {
-						break;
-					}
-					strl.add(nameStr);
-
-				}
-				String uploadIeviwList = kffRmiService.uploadIeviwList(strl);
-				discussRequest.setDiscussImages(uploadIeviwList);
-			}
-			*/
-			kffRmiService.saveDiscuss(discussRequest);
-			bre.setData(map);
+			Map<String, Object> saveDiscuss = kffRmiService.saveDiscuss(discussRequest);
+			bre.setData(saveDiscuss);
 		} catch (RestServiceException e) {
 			logger.error("DiscussController saveDiscuss:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
