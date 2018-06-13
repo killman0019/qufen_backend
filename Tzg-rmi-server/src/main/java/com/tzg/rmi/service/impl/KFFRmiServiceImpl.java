@@ -5462,4 +5462,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public QfIndex findQfIndexUser(Integer loginUserId) {
+		// TODO Auto-generated method stub
+		return qfIndexService.findByUserId(loginUserId);
+	}
 }
