@@ -117,17 +117,26 @@ public class EvaluationService {
 		return list;
 	}
 
-	public List<Evaluation> findSimpleEvaByProjectId(Integer projectId) throws RestServiceException{
-		if(projectId == null){
+	public List<Evaluation> findSimpleEvaByProjectId(Integer projectId) throws RestServiceException {
+		if (projectId == null) {
 			throw new RestServiceException("project不能为空");
 		}
-		Map<String,Object> map = new HashMap<>();
-		map.put("projectId", projectId+"");
+		Map<String, Object> map = new HashMap<>();
+		map.put("projectId", projectId + "");
 		map.put("status", "1");
 		map.put("modelType", "1");
 		List<Evaluation> list = evaluationMapper.findByWhere(map);
-		
+
 		return list;
 	}
-	
+
+	public List<Evaluation> selectEvaluationByParam(Integer projectId, Integer createUserId, Integer modelType) {
+		// TODO Auto-generated method stub
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("projectId", projectId);
+		map.put("createUserId", createUserId);
+		map.put("modelType", modelType);
+		return evaluationMapper.findByWhere(map);
+	}
+
 }

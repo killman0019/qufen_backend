@@ -1455,25 +1455,18 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		 * EOS指的是代币符号
 		 */
 		KFFProject project = kffProjectService.findById(evaluationRequest.getProjectId());
-		if (2 == evaluationRequest.getModelType() || 4 == evaluationRequest.getModelType()) {
-			Evaluation evaluationDB = new Evaluation();
-			evaluationDB.setModelType(evaluationRequest.getModelType());
-			evaluationDB.setCreateUserId(evaluationRequest.getCreateUserId());
-			evaluationDB.setProjectId(project.getProjectId());
-			List<Evaluation> evaluations = selectEvaluationByUserId(evaluationDB);
-			if (CollectionUtils.isNotEmpty(evaluations)) {
-				if (evaluations.size() >= 1) {
-					throw new RestServiceException("完整评测和自定义评测不能对同一个项目进行重复评测!");
-				}
-
-			}
+		if (null == project) {
+			throw new RestServiceException("此项目信息有错");
 		}
-
+		if (2 == evaluationRequest.getModelType() || 4 == evaluationRequest.getModelType()) {
+			checkProjectEvaluation(evaluationRequest, project);
+		}
+		if (3 == evaluationRequest.getModelType()) {
+			checkProjectOnlyEvaluation(evaluationRequest);
+		}
 		Map<String, Object> result = new HashMap<>();
 		String uuid = UUID.randomUUID().toString().replace("-", "");
-		if (evaluationRequest == null) {
-			throw new RestServiceException("参数缺失");
-		}
+
 		if (evaluationRequest.getTotalScore() == null) {
 			throw new RestServiceException("综合评分丢失!");
 		}
@@ -1639,7 +1632,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		/************ end *******************/
 
 		post.setPostSmallImages(uploadIeviwList);
-
 		post.setPostTitle(evaluationRequest.getPostTitle());
 		post.setPostType(KFFConstants.POST_TYPE_EVALUATION);// 帖子类型：1-评测；2-讨论；3-文章
 		post.setPraiseNum(0);
@@ -4659,8 +4651,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		System.out.println(str[0]);
 		System.out.println(str[1]);
 		KFFProject kffProject = new KFFProject();
-		kffProject.setProjectChineseName(str[0]);
-		kffProject.setProjectCode(str[1]);
+		kffProject.setProjectChineseName(str[1]);
+		kffProject.setProjectCode(str[0]);
 		return findProjectIdByCodeAndChineseName(kffProject);
 
 	}
@@ -5407,5 +5399,65 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		String code2sysPath = picServiceUrl + "/upload/2code/";
 		String path = code2sysPath + code2 + ".png";
 		return path;
+	}
+
+	@Override
+	public void checkProjectOnlyEvaluation(EvaluationRequest evaluationRequest) {
+		// 同一个项目 同一个单项评测 不能多次提交
+		String postSmallImages = evaluationRequest.getProfessionalEvaDetail();
+		List<EvaDtail> evaDtails = JSON.parseArray(postSmallImages, EvaDtail.class);
+		EvaDtail evaDtail = null;
+		if (CollectionUtils.isNotEmpty(evaDtails)) {
+			evaDtail = evaDtails.get(0);
+		}
+		List<Evaluation> evaluations = selectOnlyEvaluationByProjectId(evaluationRequest.getProjectId(), evaluationRequest.getCreateUserId(),
+				evaluationRequest.getModelType());
+		if (CollectionUtils.isNotEmpty(evaluations)) {
+			for (Evaluation evaluation : evaluations) {
+				String evaDetailDBStr = evaluation.getProfessionalEvaDetail();
+				if (StringUtils.isNotEmpty(evaDetailDBStr)) {
+					List<EvaDtail> evaDetailDBs = JSON.parseArray(evaDetailDBStr, EvaDtail.class);
+					if (CollectionUtils.isNotEmpty(evaDetailDBs)) {
+						for (EvaDtail evaDetailDB : evaDetailDBs) {
+							if (null != evaDetailDB && null != evaDtail) {
+								if (evaDetailDB.getModelName().equals(evaDtail.getModelName())) {
+									throw new RestServiceException("不能对同一项目同一指标进行多次评测!");
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+	}
+
+	@Override
+	public List<Evaluation> selectOnlyEvaluationByProjectId(Integer projectId, Integer createUserId, Integer modelType) {
+
+		return kffEvaluationService.selectEvaluationByParam(projectId, createUserId, modelType);
+
+	}
+
+	@Override
+	public void checkProjectEvaluation(EvaluationRequest evaluationRequest, KFFProject project) {
+		Evaluation evaluationDB = new Evaluation();
+		evaluationDB.setModelType(evaluationRequest.getModelType());
+		evaluationDB.setCreateUserId(evaluationRequest.getCreateUserId());
+		evaluationDB.setProjectId(project.getProjectId());
+		List<Evaluation> evaluations = selectEvaluationByUserId(evaluationDB);
+		if (CollectionUtils.isNotEmpty(evaluations)) {
+			if (evaluations.size() >= 1) {
+				throw new RestServiceException("完整评测和自定义评测不能对同一个项目进行重复评测!");
+			}
+
+		}
+
+	}
+
+	@Override
+	public String createPostShare2Code() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

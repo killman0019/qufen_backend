@@ -751,4 +751,33 @@ public interface KFFRmiService {
 	 * @throws RestServiceException
 	 */
 	public String create2CodeNameAndPath(String code2) throws RestServiceException;
+
+	/**
+	 * 查询用户是否对用一个项目同一个评测纬度进行了多次单项评测
+	 * 
+	 * @param evaluationRequest
+	 */
+	public void checkProjectOnlyEvaluation(EvaluationRequest evaluationRequest);
+
+	/**
+	 * 
+	 * 查询此用户此项目所有单项评测
+	 * 
+	 * @param projectId
+	 * @param createUserId
+	 * @param modelType
+	 * @return
+	 */
+	public List<Evaluation> selectOnlyEvaluationByProjectId(Integer projectId, Integer createUserId, Integer modelType);
+
+	/**
+	 * 判断完整评测和自定义评测不能对同一个项目进行重复评测
+	 * 
+	 * @param evaluationRequest
+	 * @param project
+	 */
+	public void checkProjectEvaluation(EvaluationRequest evaluationRequest, KFFProject project);
+	
+	
+	public String createPostShare2Code();
 }

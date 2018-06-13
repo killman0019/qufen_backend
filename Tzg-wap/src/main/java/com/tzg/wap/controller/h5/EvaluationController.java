@@ -85,7 +85,10 @@ public class EvaluationController extends BaseController {
 				}
 			}
 			evaluationRequest.setTotalScore(evaluationData.getTotalScore());
-			Map<String, Object> saveEvaluation = kffRmiService.saveEvaluation(evaluationRequest);
+			Map<String, Object> saveEvaluation = null;
+			if (null != evaluationRequest) {
+				saveEvaluation = kffRmiService.saveEvaluation(evaluationRequest);
+			}
 			bre.setData(saveEvaluation);
 		} catch (RestServiceException e) {
 			logger.error("EvaluationController saveEvaluation:{}", e);

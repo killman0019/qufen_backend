@@ -65,8 +65,8 @@ public class ArticleController extends BaseController {
 		System.out.println(str[0]);
 		System.out.println(str[1]);
 		KFFProject kffProject = new KFFProject();
-		kffProject.setProjectChineseName(str[0]);
-		kffProject.setProjectCode(str[1]);
+		kffProject.setProjectChineseName(str[1]);
+		kffProject.setProjectCode(str[0]);
 		KFFProject SubProject = kffRmiService.findProjectIdByCodeAndChineseName(kffProject);
 		if (null == SubProject) {
 			throw new RestServiceException(RestErrorCode.SYS_ERROR);
@@ -78,7 +78,6 @@ public class ArticleController extends BaseController {
 			Integer userId = AccountTokenUtil.decodeAccountToken(token);
 			ArticleRequest articleRequest = new ArticleRequest();
 			articleRequest.setCreateUserId(userId);
-			// articleRequest.setPostSmallImages(kffRmiService.uploadIeviw(postSmallImages));
 			articleRequest.setArticleContents(articleContents);
 			String postTitle = articleRequestData.getPostTitle();
 			articleRequest.setPostTitle(postTitle);
