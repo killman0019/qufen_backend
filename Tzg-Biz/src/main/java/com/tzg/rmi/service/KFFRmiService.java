@@ -37,6 +37,7 @@ import com.tzg.entitys.kff.post.PostResponse;
 import com.tzg.entitys.kff.project.KFFProject;
 import com.tzg.entitys.kff.project.ProjectResponse;
 import com.tzg.entitys.kff.project.SubmitKFFProjectRequest;
+import com.tzg.entitys.kff.qfindex.QfIndex;
 import com.tzg.entitys.kff.suggest.SuggestRequest;
 import com.tzg.entitys.kff.tokenaward.Tokenaward;
 import com.tzg.entitys.kff.tokenaward.TokenawardReturn;
@@ -780,4 +781,6 @@ public interface KFFRmiService {
 
 	public String createPostShare2Code() throws RestServiceException;;
 
+
+	public QfIndex findQfIndexUser(Integer loginUserId);
 }

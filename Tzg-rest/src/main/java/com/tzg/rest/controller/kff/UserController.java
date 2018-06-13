@@ -38,6 +38,7 @@ import com.tzg.entitys.kff.coinproperty.CoinProperty;
 import com.tzg.entitys.kff.collect.CollectPostResponse;
 import com.tzg.entitys.kff.dareas.Dareas;
 import com.tzg.entitys.kff.follow.FollowResponse;
+import com.tzg.entitys.kff.qfindex.QfIndex;
 import com.tzg.entitys.kff.tokenaward.Tokenaward;
 import com.tzg.entitys.kff.tokenaward.TokenawardReturn;
 import com.tzg.entitys.kff.tokenrecords.Tokenrecords;
@@ -215,6 +216,12 @@ public class UserController extends BaseController {
 			KFFUser loginaccount = null;
 			try {
 				loginaccount = kffRmiService.login(loginName, password);
+				
+				QfIndex qfIndex = kffRmiService.findQfIndexUser(loginaccount.getUserId());
+				Integer statusHierarchyType = qfIndex.getStatusHierarchyType();
+				String statusHierarchyDesc = qfIndex.getStatusHierarchyDesc();
+				map.put("statusHierarchyType", statusHierarchyType);
+				map.put("statusHierarchyDesc", statusHierarchyDesc);
 			} catch (RestServiceException e) {
 				return this.resResult(e.getErrorCode(), e.getMessage());
 			} catch (Exception e) {
@@ -1373,6 +1380,7 @@ public class UserController extends BaseController {
 				for (CoinProperty coinProperty : userCoin) {
 					loginaccount.setKffCoinNum(new BigDecimal(coinProperty.getTotalAssets()));
 				}
+				
 			} catch (RestServiceException e) {
 				return this.resResult(e.getErrorCode(), e.getMessage());
 			} catch (Exception e) {
@@ -1385,7 +1393,11 @@ public class UserController extends BaseController {
 			map.put("user", this.formatLoginaccount(loginaccount));
 			Integer userCardStatus = kffRmiService.selectUserCardStatusByUserId(loginaccount.getUserId());
 			map.put("userCardStatus", userCardStatus);
-
+			QfIndex qfIndex = kffRmiService.findQfIndexUser(loginUserId);
+			Integer statusHierarchyType = qfIndex.getStatusHierarchyType();
+			String statusHierarchyDesc = qfIndex.getStatusHierarchyDesc();
+			map.put("statusHierarchyType", statusHierarchyType);
+			map.put("statusHierarchyDesc", statusHierarchyDesc);
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.warn("getUserInfo warn:{}", e);
