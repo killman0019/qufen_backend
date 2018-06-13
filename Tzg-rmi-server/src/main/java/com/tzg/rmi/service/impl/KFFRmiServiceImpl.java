@@ -770,7 +770,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		sendTokenRecords.setUserId(sendUser.getUserId());
 		sendTokenRecords.setRewardGrantType(1);
 		kffTokenrecordsService.save(sendTokenRecords);
-
 		Tokenrecords receiveTokenRecords = new Tokenrecords();
 		receiveTokenRecords.setTradeType(1); // 交易类型:1-收入；2-支出
 		receiveTokenRecords.setAmount(commendationRequest.getAmount());
@@ -1213,7 +1212,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 		logger.info("开始进行抽离图片");
 		List<String> imgSrc = GetImgUrl.getImgStr(articleRequest.getArticleContents());
-		List<String> imgDB = new ArrayList<String>();
+		List<Object> imgDB = new ArrayList<Object>();
 		String articleSrcReplace = null;
 		String replaceStr = null;
 		int i = 0;
@@ -1247,10 +1246,16 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				} catch (Exception e) {
 					throw new RestServiceException("后台创建文件出错!");
 				}
-				try {
-					DownImgGoodUtil.downloadPicture(img, picUrlName);
-				} catch (Exception e) {
-					logger.info("又tm的抽不出图片!!傻逼百度!!!");
+				Boolean isExistSerive = DownImgGoodUtil.downloadPicture(img, picUrlName);
+				if (!isExistSerive) {// isExistSerive 是false
+					logger.info("启动处理图片失败预案");
+					PhotoParams photoParams = new PhotoParams();
+					photoParams.setFileUrl(img);
+					photoParams.setIsExist(false);
+					if (imgDB.size() <= 3) {
+						imgDB.add(photoParams);
+					}
+
 				}
 				if (imgDB.size() <= 3) {
 					imgDB.add(picName);
@@ -1268,10 +1273,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			}
 		}
 		logger.info("图片抽离成功!");
-		// 将图片集合转化成json
-
-		String uploadIeviwList = uploadIeviwList(imgDB);
-
+		// String uploadIeviwList = uploadIeviwList(imgDB);
+		String uploadIeviwList = uploadIeviwListObject(imgDB);
 		// logger.info("缩略图的json串" + uploadIeviwList);
 		/************ end *******************/
 
@@ -1308,6 +1311,41 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// 更新用户发帖数
 		kffUserService.increasePostNum(createUser.getUserId(), KFFConstants.POST_TYPE_ARTICLE);
 		return result;
+	}
+
+	private String uploadIeviwListObject(List<Object> photoIviewses) {
+		List<PhotoParams> PhotoParamses = new ArrayList<PhotoParams>();
+		for (Object photoIview : photoIviewses) {
+			if (photoIview instanceof String) {
+				if (null == photoIviewses) {
+					throw new RestServiceException(RestErrorCode.PICTURE_UPLOAD_FAIL);
+				}
+				// 把前台参数传输给后台
+				// 创建图片参数对象,用于存放photo参数 将URL转化字符串对象
+				// upload/Idcard/2.jpg
+				String photoIviewStr = (String) photoIview;
+				PhotoParams photoParams = new PhotoParams();
+				photoParams.setFileUrl(photoIviewStr);
+				// 取后缀名
+				String[] str = photoIviewStr.split("\\.");
+				logger.info(str[0]);
+				logger.info(str[1]);
+				photoParams.setExtension(str[1]);
+				logger.info(str[0].lastIndexOf("/"));
+				str[0].substring(str[0].lastIndexOf("/") + 1);
+				logger.info(str[0].substring(str[0].lastIndexOf("/") + 1));
+				photoParams.setFileName(str[0].substring(str[0].lastIndexOf("/") + 1));
+				photoParams.setIsExist(true);
+				PhotoParamses.add(photoParams);
+			} else if (photoIview instanceof PhotoParams) {
+				logger.info("全路径:" + photoIview);
+				PhotoParams photoIviewStr = (PhotoParams) photoIview;
+				PhotoParamses.add(photoIviewStr);
+			}
+		}
+		String jsonString = JSON.toJSONString(PhotoParamses);
+		logger.info("存储数据库的字符串:" + jsonString);
+		return jsonString;
 	}
 
 	@Override
@@ -1389,7 +1427,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				logger.info(str[0].substring(str[0].lastIndexOf("/") + 1));
 
 				photoParams.setFileName(str[0].substring(str[0].lastIndexOf("/") + 1));
-
+				photoParams.setIsExist(true);
 				picNewArray.add(photoParams);
 			}
 			String jsonString2 = JSON.toJSONString(picNewArray);
@@ -2826,6 +2864,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				response.setCollectStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
 			}
 		}
+		if (loginUser != null) {
+			response.setUserType(loginUser.getUserType());
+		}
+
 		// 赞赏用户列表最多8个
 		List<Commendation> donateUsers = new ArrayList<>();
 		PaginationQuery query = new PaginationQuery();
@@ -2846,6 +2888,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		response.setCommendationNum(commendationNum);
 
 		kffPostService.increasePageviewNum(postId);
+
 		return response;
 	}
 
@@ -3079,6 +3122,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				response.setCollectStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
 			}
 		}
+		if (null != loginUser) {
+			response.setUserType(loginUser.getUserType());
+		}
 		// /2条超过20个点赞的，最高的 热门评论
 		List<Comments> hotCommentsresult = new ArrayList<>();
 		PaginationQuery hotQuery = new PaginationQuery();
@@ -3240,6 +3286,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			} else {
 				response.setCollectStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
 			}
+		}
+		if (null != loginUser) {
+			response.setUserType(loginUser.getUserType());
 		}
 		// 赞赏用户列表最多8个
 		List<Commendation> donateUsers = new ArrayList<>();
@@ -4063,7 +4112,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		str[0].substring(str[0].lastIndexOf("/") + 1);
 		logger.info(str[0].substring(str[0].lastIndexOf("/") + 1));
 		// imgUrl.substring(imgUrl.lastIndexOf("/")+1);
-
+		photoParams.setIsExist(true);
 		photoParams.setFileName(str[0].substring(str[0].lastIndexOf("/") + 1));
 		// 截取位置
 		// String
@@ -4103,6 +4152,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			// imgUrl.substring(imgUrl.lastIndexOf("/")+1);
 			/** 88888888888888888888888888 ***/
 			photoParams.setFileName(str[0].substring(str[0].lastIndexOf("/") + 1));
+			photoParams.setIsExist(true);
 			// 截取位置
 			// String
 			// 将对象转化成json字符串

@@ -514,10 +514,18 @@ public class WorkHtmlRegexpUtil {
 		return list;
 	}
 
+	/**
+	 * 去除文章中的href链接 将链接转化成公司官网
+	 * 
+	 * @param str
+	 * @return
+	 */
 	public static String deleContentsHtmlTage(String str) {
-		String regex = "<a[^>]*href=(\"([^\"]*)\"|\'([^\']*)\'|([^\\s>]*))[^>]*>(.*?)</a>";
-		String replaceAll = str.replaceAll(regex, "www.qufen.top");
+		// <a href="http://36kr.com/user/798492498">Odaily星球日报</a>
+		// "<a[^>]*href=(\"([^\"]*)\"|\'([^\']*)\'|([^\\s>]*))[^>]*>(.*?)</a>";
+		String regex = "<a[^>]*href=(\"([^\"]*)\"|\'([^\']*)\'|([^\\s>]*))[^>]*>";
+		String replace = "<a href='http://www.qufen.top'>";
+		String replaceAll = str.replaceAll(regex, replace);
 		return replaceAll;
 	}
-
 }

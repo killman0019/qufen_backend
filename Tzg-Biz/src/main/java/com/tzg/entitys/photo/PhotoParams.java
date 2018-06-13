@@ -7,14 +7,24 @@ public class PhotoParams implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -8239763615289197283L;
-	
+
 	private String fileName;
-	
+
 	private String fileUrl;
-	
+
 	private String size;
-	
+
 	private String extension;
+
+	private Boolean isExist;
+
+	public Boolean getIsExist() {
+		return isExist;
+	}
+
+	public void setIsExist(Boolean isExist) {
+		this.isExist = isExist;
+	}
 
 	public String getFileName() {
 		return fileName;

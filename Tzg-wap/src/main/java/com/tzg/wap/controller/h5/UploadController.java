@@ -208,7 +208,6 @@ public class UploadController extends BaseController {
 			upfile.transferTo(new File(picUrlAuthentication + DateUtil.getCurrentYearMonth() + "\\" + name + "." + ext));
 		}
 		*/
-
 		String fileName = picUrlAuthentication + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext;
 		FileUtils.createFileLocal(fileName, upfile.getBytes());
 		log.info("authentication +++++++图片存入成功!++++++++++++++++++++++");

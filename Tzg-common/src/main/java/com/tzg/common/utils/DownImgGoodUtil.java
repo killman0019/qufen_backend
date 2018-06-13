@@ -12,7 +12,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 public class DownImgGoodUtil {
-	public static void downloadPicture(String urlList, String path) {
+	public static Boolean downloadPicture(String urlList, String path) {
 		try {
 			URL url = null;
 
@@ -33,15 +33,14 @@ public class DownImgGoodUtil {
 			fileOutputStream.write(output.toByteArray());
 			dataInputStream.close();
 			fileOutputStream.close();
-		} catch (MalformedURLException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			System.out.println("傻逼百度!");
+			// 抽离图片失败
+			System.out.println("抽离图片失败!!!!fuck you!!!");
+			return false;
 		}
+		return true;
 
 	}
 
