@@ -1311,12 +1311,26 @@ public class UserController extends BaseController {
 					bdSum = bdSum.add(new BigDecimal(inviteNumber));
 				}
 			}
-			List<Tokenrecords> findAllTokenrecordsUserId = kffRmiService.findAllTokenrecordsUserId(userId);
+		/*	List<Tokenrecords> findAllTokenrecordsUserId = kffRmiService.findAllTokenrecordsUserId(userId);
 			for (Tokenrecords tokenrecords : findAllTokenrecordsUserId) {
 				if (tokenrecords != null) {
 					if (tokenrecords.getRewardGrantType() == 1) {
 						BigDecimal amount = tokenrecords.getAmount();
 						bdSum = bdSum.add(amount);
+					}
+				}
+			}
+			*/
+			List<Tokenrecords> findAllTokenrecordsUserId = kffRmiService.findAllTokenrecordsUserId(userId);
+			for (Tokenrecords tokenrecords : findAllTokenrecordsUserId) {
+				if (tokenrecords != null) {
+					if (tokenrecords.getTradeType() != null && tokenrecords.getTradeType() == 1 && tokenrecords.getRewardGrantType() != 2) {
+						BigDecimal amount = tokenrecords.getAmount();
+						bdSum = bdSum.add(amount);
+					}
+					else if(tokenrecords.getTradeType() != null && tokenrecords.getTradeType() == 2) {
+						BigDecimal amount = tokenrecords.getAmount();
+						bdSum = bdSum.subtract(amount);
 					}
 				}
 			}
