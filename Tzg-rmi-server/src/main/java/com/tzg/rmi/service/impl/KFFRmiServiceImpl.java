@@ -1288,10 +1288,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		Article article = new Article();
 		String contents = null;
 		if (null == articleSrcReplace) {
-			contents = WorkHtmlRegexpUtil.delHTMLTag(articleRequest.getArticleContents());
+			contents = WorkHtmlRegexpUtil.deleContentsHtmlTage(articleRequest.getArticleContents());
 			article.setArticleContents(contents);
 		} else {
-			contents = WorkHtmlRegexpUtil.delHTMLTag(articleSrcReplace);
+			contents = WorkHtmlRegexpUtil.deleContentsHtmlTage(articleSrcReplace);
 			article.setArticleContents(contents);
 		}
 		article.setPostId(newPost.getPostId());
@@ -1467,14 +1467,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (evaluationRequest.getModelType() == null) {
 			throw new RestServiceException("评测类型不能为空");
 		}
-
 		// 评测标题定义
-		// 查询project code
-
-		/*	if (project == null) {
-				throw new RestServiceException("项目不存在" + evaluationRequest.getProjectId());
-			}*/
-
 		if (1 == evaluationRequest.getModelType()) {
 			evaluationRequest.setPostTitle("简单评测");// 完整评测 手机上的
 		}
@@ -1515,9 +1508,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			throw new RestServiceException("用户不存在" + evaluationRequest.getCreateUserId());
 		}
 
-		/*	if (project == null) {
-				throw new RestServiceException("项目不存在" + evaluationRequest.getProjectId());
-			}*/
 		BigDecimal totalScore = evaluationRequest.getTotalScore() == null ? BigDecimal.ZERO : evaluationRequest.getTotalScore();
 		// 专业评测总分计算
 		if (Objects.equal(4, evaluationRequest.getModelType())) {
@@ -1638,10 +1628,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		Evaluation evaluation = new Evaluation();
 		String content = null;
 		if (null == evaluationSrcReplace) {
-			content = WorkHtmlRegexpUtil.delHTMLTag(evaluationRequest.getEvauationContent());
+			content = WorkHtmlRegexpUtil.deleContentsHtmlTage(evaluationRequest.getEvauationContent());
 			evaluation.setEvauationContent(content);
 		} else {
-			content = WorkHtmlRegexpUtil.delHTMLTag(evaluationSrcReplace);
+			content = WorkHtmlRegexpUtil.deleContentsHtmlTage(evaluationSrcReplace);
 			evaluation.setEvauationContent(content);
 		}
 		evaluation.setPostId(newPost.getPostId());
@@ -1656,7 +1646,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		evaluation.setStatus(KFFConstants.STATUS_ACTIVE);
 		evaluation.setTotalScore(totalScore);
 		kffEvaluationService.save(evaluation);
-
 		try {
 			redisService.put(KFFRestConstants.REDIS_KEY_PROJECT_SYNC_SCORE, String.valueOf(project.getProjectId()), 24 * 60 * 60);
 		} catch (Exception e) {

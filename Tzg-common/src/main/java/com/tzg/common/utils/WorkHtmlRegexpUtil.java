@@ -514,7 +514,7 @@ public class WorkHtmlRegexpUtil {
 		return list;
 	}
 
-	public String deleContentsHtmlTage(String str) {
+	public static String deleContentsHtmlTage(String str) {
 		String regex = "<a[^>]*href=(\"([^\"]*)\"|\'([^\']*)\'|([^\\s>]*))[^>]*>(.*?)</a>";
 		String replaceAll = str.replaceAll(regex, "www.qufen.top");
 		return replaceAll;
