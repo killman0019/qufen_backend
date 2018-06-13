@@ -1246,6 +1246,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				} catch (Exception e) {
 					throw new RestServiceException("后台创建文件出错!");
 				}
+				String picurlIpName = ipPicUrl + picName;
+				logger.info("img :原图片路径: " + img);
+
 				Boolean isExistSerive = DownImgGoodUtil.downloadPicture(img, picUrlName);
 				if (!isExistSerive) {// isExistSerive 是false
 					logger.info("启动处理图片失败预案");
@@ -1255,14 +1258,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					if (imgDB.size() <= 3) {
 						imgDB.add(photoParams);
 					}
-
+					picurlIpName = img;
 				}
 				if (imgDB.size() <= 3) {
 					imgDB.add(picName);
 				}
 				/************* 替换文章中的url ********************/
-				String picurlIpName = ipPicUrl + picName;
-				logger.info("img :原图片路径: " + img);
 				logger.info("picurlIpName : 替换后的图片路径: " + picurlIpName);
 				if (i == 0) {
 					articleSrcReplace = articleRequest.getArticleContents().replaceAll(img, picurlIpName);
@@ -1325,6 +1326,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				// upload/Idcard/2.jpg
 				String photoIviewStr = (String) photoIview;
 				PhotoParams photoParams = new PhotoParams();
+
 				photoParams.setFileUrl(photoIviewStr);
 				// 取后缀名
 				String[] str = photoIviewStr.split("\\.");
@@ -1700,7 +1702,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			logger.error("put redis key REDIS_KEY_PROJECT_SYNC_SCORE error " + project.getProjectId());
 		}
 		result.put("postId", newPost.getPostId());
-		result.put("modelType", evaluationRequest.getModelType());
+		result.put("modelType", evaluation.getModelType());
 		// 更新用户发帖数
 		kffUserService.increasePostNum(createUser.getUserId(), KFFConstants.POST_TYPE_EVALUATION);
 		return result;
@@ -2852,7 +2854,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				response.setPraiseStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
 			}
 		}
-
 		// 收藏状态
 		if (loginUser == null) {
 			response.setCollectStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
@@ -2867,7 +2868,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (loginUser != null) {
 			response.setUserType(loginUser.getUserType());
 		}
-
 		// 赞赏用户列表最多8个
 		List<Commendation> donateUsers = new ArrayList<>();
 		PaginationQuery query = new PaginationQuery();

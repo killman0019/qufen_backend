@@ -154,13 +154,11 @@ public class DynamicValidateCodeController extends BaseController {
 				if (kffRmiService.verifyLoginaccount("mobile", phone)) {
 					// 老用户登录
 					user = kffRmiService.findUserByPhoneNumber(phone);
-
 				} else {
 					// 新用户注册
 					RegisterRequest registerRequest = new RegisterRequest();
 					registerRequest.setPhoneNumber(phone);
 					user = kffRmiService.registerRest(registerRequest);
-
 				}
 				if (user != null) {
 					// 生成account token
@@ -169,7 +167,6 @@ public class DynamicValidateCodeController extends BaseController {
 					map.put("token", token);
 				}
 			}
-
 			// this.redisService.del(cacheKey);
 			bre.setData(map);
 		} catch (RestServiceException e) {
