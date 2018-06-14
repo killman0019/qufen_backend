@@ -607,7 +607,7 @@ public class UserController extends BaseController {
 			}
 
 			PaginationQuery query = new PaginationQuery();
-			query.addQueryData("collectUserId", userId);
+			query.addQueryData("collectUserId", userId + "");
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
 			PageResult<CollectPostResponse> result = kffRmiService.findPageMyCollectRecords(query);
