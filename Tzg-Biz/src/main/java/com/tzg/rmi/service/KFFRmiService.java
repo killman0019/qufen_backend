@@ -783,4 +783,6 @@ public interface KFFRmiService {
 
 
 	public QfIndex findQfIndexUser(Integer loginUserId);
+	
+	public PageResult<PostResponse> findPageCounterfeitListList(Integer loginUserId, PaginationQuery query) throws RestServiceException;
 }

@@ -5562,4 +5562,90 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// TODO Auto-generated method stub
 		return qfIndexService.findByUserId(loginUserId);
 	}
+	
+	@Override
+	public PageResult<PostResponse> findPageCounterfeitListList(Integer loginUserId, PaginationQuery query) throws RestServiceException {
+		PageResult<PostResponse> result = new PageResult<PostResponse>();
+		List<PostResponse> postResponse = new ArrayList<>();
+		PageResult<Post> posts = kffPostService.findPage(query);
+		KFFUser loginUser = null;
+		if (loginUserId != null) {
+			loginUser = kffUserService.findById(loginUserId);
+		}
+		/**
+		 * 
+		 * 解决登录送奖励问题
+		 * 
+		 * 
+		 */
+		if (loginUserId != null) {
+
+			registerAward(loginUserId);
+
+		}
+
+		if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
+			result.setCurPageNum(posts.getCurPageNum());
+			result.setPageSize(posts.getPageSize());
+			result.setQueryParameters(posts.getQueryParameters());
+			result.setRowCount(posts.getRowCount());
+			result.setRowsPerPage(posts.getRowsPerPage());
+			for (Post post : posts.getRows()) {
+				PostResponse response = new PostResponse();
+				response.setcreateTime(post.getCreateTime());
+				response.setCreateUserId(post.getCreateUserId());
+				response.setPostId(post.getPostId());
+				response.setPostType(post.getPostType());
+				response.setProjectId(post.getProjectId());
+				response.setStatus(post.getStatus());
+
+				// 设置post和project信息
+				response.setPostShortDesc(post.getPostShortDesc());
+				response.setPostSmallImages(post.getPostSmallImages());
+				if (StringUtils.isNotBlank(post.getPostSmallImages())) {
+					try {
+						List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
+						response.setPostSmallImagesList(pfl);
+					} catch (Exception e) {
+						logger.error("首页推荐列表解析帖子缩略图json出错:{}", e);
+					}
+				}
+				response.setPostTitle(post.getPostTitle());
+				response.setCommentsNum(post.getCommentsNum());
+				response.setCollectNum(post.getCollectNum());
+				response.setPraiseNum(post.getPraiseNum());
+				response.setPageviewNum(post.getPageviewNum());
+				response.setDonateNum(post.getDonateNum());
+				response.setCreateUserIcon(post.getCreateUserIcon());
+				response.setCreateUserName(post.getCreateUserName());
+				response.setCreateUserSignature(post.getCreateUserSignature());
+				KFFProject project = kffProjectService.findById(post.getProjectId());
+				if (project != null) {
+					response.setProjectChineseName(project.getProjectChineseName());
+					response.setProjectCode(project.getProjectCode());
+					response.setProjectEnglishName(project.getProjectEnglishName());
+					response.setProjectIcon(project.getProjectIcon());
+					response.setProjectSignature(project.getProjectSignature());
+					response.setTotalScore(project.getTotalScore());
+				}
+
+				// 设置项目关注状态
+				if (loginUser == null) {
+					response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+				} else {
+					Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT, post.getProjectId());
+					if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+						response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+					} else {
+						response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+					}
+				}
+
+				postResponse.add(response);
+			}
+		}
+		result.setRows(postResponse);
+
+		return result;
+	}
 }
