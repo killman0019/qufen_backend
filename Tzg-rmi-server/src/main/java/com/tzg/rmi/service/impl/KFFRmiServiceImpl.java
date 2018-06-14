@@ -1,5 +1,6 @@
 package com.tzg.rmi.service.impl;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -1588,6 +1589,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			logger.error("put redis key REDIS_KEY_PROJECT_SYNC_SCORE error " + project.getProjectId());
 		}
 		result.put("postId", newPost.getPostId());
+		result.put("postType", newPost.getPostType());
+		result.put("modelType()", evaluationRequest.getModelType());
 		// 更新用户发帖数
 		kffUserService.increasePostNum(createUser.getUserId(), KFFConstants.POST_TYPE_EVALUATION);
 		// 更新项目总分
@@ -5357,7 +5360,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 		// System.out.println(picUrlpro);
 		// return "upload/poster/" + str + ".png";
-		return posterSysPathNoUrllast;
+		String pictureName = UUID.randomUUID().toString().replaceAll("-", "");
+		String qiNiuUrl = QiniuUtil.upload(new File(initPosterSysPathLast), pictureName);
+		return qiNiuUrl;
 
 	}
 
@@ -5656,7 +5661,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
 					}
 				}
-
 				postResponse.add(response);
 			}
 		}
