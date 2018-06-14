@@ -134,6 +134,20 @@
         function_type = 16
 
 	</select>
+		<!-- 今天线性发放总额 -->
+	<select id="findTodayToken" resultType="java.lang.Integer" parameterType="java.util.Map">
+	    SELECT sum(amount)
+		FROM tbtokenrecords 
+		WHERE 1=1
+		AND
+        user_id = #{userId}
+        AND
+        reward_grant_type = 2
+		AND
+		createTime >= #{createTimeBegin}
+		AND
+		createTime &lt;= #{createTimeEnd}
+	</select>
 	<select id="findAllTokenrecordsUserId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
 	    SELECT *
 		FROM tbtokenrecords 

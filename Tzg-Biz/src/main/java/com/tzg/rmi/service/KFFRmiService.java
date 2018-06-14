@@ -820,4 +820,6 @@ public interface KFFRmiService {
 
 	public PageResult<PostResponse> findPageCounterfeitListList(Integer loginUserId, PaginationQuery query) throws RestServiceException;
 
+	public Double findTodayToken(Integer loginUserId);
+
 }
