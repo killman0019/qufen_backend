@@ -787,9 +787,6 @@ public interface KFFRmiService {
 
 	public String createPostShare2Code() throws RestServiceException;;
 
-	public QfIndex findQfIndexUser(Integer loginUserId) throws RestServiceException;
-
-<<<<<<< HEAD
 	/**
 	 * 抓取文章评测中的图片url并且上传到本地图片服务器中 获取本地的url
 	 * 
@@ -818,9 +815,9 @@ public interface KFFRmiService {
 	 * @throws RestServiceException
 	 */
 	public String uploadIeviwListQiniu(List<String> photoIviewses) throws RestServiceException;
-=======
+
 	public QfIndex findQfIndexUser(Integer loginUserId);
-	
+
 	public PageResult<PostResponse> findPageCounterfeitListList(Integer loginUserId, PaginationQuery query) throws RestServiceException;
->>>>>>> 908b9f2bcc318bfb640a01b5d29152954ebba553
+
 }
