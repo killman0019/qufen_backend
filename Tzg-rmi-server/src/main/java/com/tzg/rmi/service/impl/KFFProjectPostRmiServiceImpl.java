@@ -447,7 +447,7 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 					detail.setTotalScore(BigDecimal.ZERO);
 				}else{
 					totalScore = detailModelTotalScore.get(detail.getDetailName())==null?BigDecimal.ZERO:detailModelTotalScore.get(detail.getDetailName());
-					detail.setTotalScore(totalScore.divide(new BigDecimal(detail.getRaterNum())).setScale(1, RoundingMode.HALF_DOWN));
+					detail.setTotalScore(totalScore.divide(new BigDecimal(detail.getRaterNum()),1,RoundingMode.HALF_DOWN).setScale(1, RoundingMode.HALF_DOWN));
 				}
 									
 			}
