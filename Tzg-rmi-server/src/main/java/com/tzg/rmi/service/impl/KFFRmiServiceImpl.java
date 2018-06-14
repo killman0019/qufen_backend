@@ -87,6 +87,7 @@ import com.tzg.common.utils.GetImgUrl;
 import com.tzg.common.utils.H5AgainDeltagsUtil;
 import com.tzg.common.utils.HexUtil;
 import com.tzg.common.utils.DownImgGoodUtil;
+import com.tzg.common.utils.QiniuUtil;
 import com.tzg.common.utils.rest.AliyunConstant;
 import com.tzg.common.utils.Numbers;
 import com.tzg.common.utils.RandomUtil;
@@ -1210,76 +1211,14 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			}
 			logger.info("去标签成功!");
 		}
-		logger.info("开始进行抽离图片");
-		List<String> imgSrc = GetImgUrl.getImgStr(articleRequest.getArticleContents());
-		List<Object> imgDB = new ArrayList<Object>();
-		String articleSrcReplace = null;
-		String replaceStr = null;
-		int i = 0;
-		for (String img : imgSrc) {
-			logger.info("抽离的图片路径");
-			logger.info(img);
-			if (img.contains(ipPicUrl)) {
-				// 说明是h5富文本传来的,服务器中存有图片,直接截取存放数据库
-				// http://192.168.10.151:8080/upload/postPic/201806/20180610160559928.png
-				logger.info("开始处理H5富文本编译器图片");
-				if (ipPicUrl.contains("app.qufen.top")) {
-					logger.info("进入app.qufen.top抽离文本");
-					logger.info("http://" + ipPicUrl + "/");
-					replaceStr = img.replaceAll("http://" + ipPicUrl + "/", "");
-					logger.info("去除域名:" + replaceStr);
-				} else {
-					replaceStr = img.replaceAll(ipPicUrl + "/", "");
-				}
-				logger.info("h5富文本传来的图片绝对路径:" + replaceStr);
-				if (imgDB.size() <= 3) {
-					imgDB.add(replaceStr);
-				}
-			} else {
-				// 生成url名称
-				String picUrlGen = picServiceUrl;
-				String picName = "/upload/postPic/" + DateUtil.getCurrentYearMonth() + "/" + DateUtil.getCurrentTimeStamp() + articleRequest.getCreateUserId()
-						+ i + ".jpg";
-				String picUrlName = picUrlGen + picName;
-				try {
-					FileUtils.createFileLocal(picUrlName);
-				} catch (Exception e) {
-					throw new RestServiceException("后台创建文件出错!");
-				}
-				String picurlIpName = ipPicUrl + picName;
-				logger.info("img :原图片路径: " + img);
 
-				Boolean isExistSerive = DownImgGoodUtil.downloadPicture(img, picUrlName);
-				if (!isExistSerive) {// isExistSerive 是false
-					logger.info("启动处理图片失败预案");
-					PhotoParams photoParams = new PhotoParams();
-					photoParams.setFileUrl(img);
-					photoParams.setIsExist(false);
-					if (imgDB.size() <= 3) {
-						imgDB.add(photoParams);
-					}
-					picurlIpName = img;
-				}
-				if (imgDB.size() <= 3) {
-					imgDB.add(picName);
-				}
-				/************* 替换文章中的url ********************/
-				logger.info("picurlIpName : 替换后的图片路径: " + picurlIpName);
-				if (i == 0) {
-					articleSrcReplace = articleRequest.getArticleContents().replaceAll(img, picurlIpName);
-				}
-				articleSrcReplace = articleSrcReplace.replaceAll(img, picurlIpName);
-				logger.info(articleSrcReplace);
-				i = i + 1;
-			}
-		}
-		logger.info("图片抽离成功!");
-		// String uploadIeviwList = uploadIeviwList(imgDB);
-		String uploadIeviwList = uploadIeviwListObject(imgDB);
-		// logger.info("缩略图的json串" + uploadIeviwList);
+		/************ begin *******************/
+		Map<String, String> qiNiuMap = grabUrlAndReplaceQiniu(articleRequest.getArticleContents(), createUser.getUserId());
+		String uploadIevisList = qiNiuMap.get("uploadIeviwList");
+		String contentSrcReplace = qiNiuMap.get("contentSrcReplace");
+		logger.info("缩略图的json串" + uploadIevisList);
 		/************ end *******************/
-
-		post.setPostSmallImages(uploadIeviwList);
+		post.setPostSmallImages(uploadIevisList);
 		post.setPostTitle(articleRequest.getPostTitle());
 		post.setPostType(KFFConstants.POST_TYPE_ARTICLE);// 帖子类型：1-评测；2-讨论；3-文章
 		post.setPraiseNum(0);
@@ -1297,11 +1236,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 		Article article = new Article();
 		String contents = null;
-		if (null == articleSrcReplace) {
+		if (null == contentSrcReplace) {
 			contents = WorkHtmlRegexpUtil.deleContentsHtmlTage(articleRequest.getArticleContents());
 			article.setArticleContents(contents);
 		} else {
-			contents = WorkHtmlRegexpUtil.deleContentsHtmlTage(articleSrcReplace);
+			contents = WorkHtmlRegexpUtil.deleContentsHtmlTage(contentSrcReplace);
 			article.setArticleContents(contents);
 		}
 		article.setPostId(newPost.getPostId());
@@ -1591,82 +1530,15 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		} else {
 			post.setPostShortDesc(text.substring(0, 200));
 		}
-
+		logger.info(evaluationRequest.getEvauationContent());
 		// 抽取文章中的图片路径
 		/************ begin *******************/
-
-		logger.info("开始进行抽离图片");
-
-		List<String> imgSrc = GetImgUrl.getImgStr(evaluationRequest.getEvauationContent());
-		List<Object> imgDB = new ArrayList<Object>();
-		String replaceStr = null;
-		String evaluationSrcReplace = null;
-		int i = 0;
-		for (String img : imgSrc) {
-			logger.info("抽离的图片路径");
-			logger.info(img);
-			if (img.contains(ipPicUrl)) {
-				// 说明是h5富文本传来的,服务器中存有图片,直接截取存放数据库
-				// http://192.168.10.151:8080/upload/postPic/201806/20180610160559928.png
-				logger.info("开始处理H5富文本编译器图片");
-				if (ipPicUrl.contains("app.qufen.top")) {
-					replaceStr = img.replaceAll("http://" + ipPicUrl + "/", "");
-				} else {
-					replaceStr = img.replaceAll(ipPicUrl + "/", "");
-				}
-				logger.info("h5富文本传来的图片绝对路径:" + replaceStr);
-				if (imgDB.size() <= 3) {
-					imgDB.add(replaceStr);
-				}
-			} else {
-				// 生成url名称
-				String picUrlGen = picServiceUrl;
-				String picName = "/upload/postPic/" + DateUtil.getCurrentYearMonth() + "/" + DateUtil.getCurrentTimeStamp() + i
-						+ evaluationRequest.getCreateUserId() + ".jpg";
-				String picUrlName = picUrlGen + picName;
-				try {
-					FileUtils.createFileLocal(picUrlName);
-				} catch (Exception e) {
-					throw new RestServiceException("后台创建文件出错!");
-				}
-				String picurlIpName = ipPicUrl + picName;
-				logger.info("img :原图片路径: " + img);
-				Boolean isExistSerive = DownImgGoodUtil.downloadPicture(img, picUrlName);
-				if (!isExistSerive) {// isExistSerive 是false
-					logger.info("启动处理图片失败预案");
-					PhotoParams photoParams = new PhotoParams();
-					photoParams.setFileUrl(img);
-					photoParams.setIsExist(false);
-					if (imgDB.size() <= 3) {
-						imgDB.add(photoParams);
-					}
-					picurlIpName = img;
-				}
-				logger.info("坑逼百度!!!!");
-
-				if (imgDB.size() <= 3) {
-					imgDB.add(picName);
-					// i = i + 1;
-				}
-
-				logger.info("picurlIpName : 替换后的图片路径: " + picurlIpName);
-				if (i == 0) {
-					evaluationSrcReplace = evaluationRequest.getEvauationContent().replaceAll(img, picurlIpName);
-				}
-				evaluationSrcReplace = evaluationSrcReplace.replaceAll(img, picurlIpName);
-				logger.info(evaluationSrcReplace);
-				i = i + 1;
-			}
-		}
-		logger.info("图片抽离成功!");
-		// 将图片集合转化成json
-
-		// String uploadIeviwList = uploadIeviwList(imgDB);
-		String uploadIeviwList = uploadIeviwListObject(imgDB);
-		logger.info("缩略图的json串" + uploadIeviwList);
+		Map<String, String> qiNiuMap = grabUrlAndReplaceQiniu(evaluationRequest.getEvauationContent(), createUser.getUserId());
+		String uploadIevisList = qiNiuMap.get("uploadIeviwList");
+		String contentSrcReplace = qiNiuMap.get("contentSrcReplace");
+		logger.info("缩略图的json串" + uploadIevisList);
 		/************ end *******************/
-
-		post.setPostSmallImages(uploadIeviwList);
+		post.setPostSmallImages(uploadIevisList);
 		post.setPostTitle(evaluationRequest.getPostTitle());
 		post.setPostType(KFFConstants.POST_TYPE_EVALUATION);// 帖子类型：1-评测；2-讨论；3-文章
 		post.setPraiseNum(0);
@@ -1686,11 +1558,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 		Evaluation evaluation = new Evaluation();
 		String content = null;
-		if (null == evaluationSrcReplace) {
+		if (null == contentSrcReplace) {
 			content = WorkHtmlRegexpUtil.deleContentsHtmlTage(evaluationRequest.getEvauationContent());
 			evaluation.setEvauationContent(content);
 		} else {
-			content = WorkHtmlRegexpUtil.deleContentsHtmlTage(evaluationSrcReplace);
+			content = WorkHtmlRegexpUtil.deleContentsHtmlTage(contentSrcReplace);
 			evaluation.setEvauationContent(content);
 		}
 		evaluation.setPostId(newPost.getPostId());
@@ -5548,5 +5420,149 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	public QfIndex findQfIndexUser(Integer loginUserId) {
 		// TODO Auto-generated method stub
 		return qfIndexService.findByUserId(loginUserId);
+	}
+
+	@Override
+	public Map<String, String> grabUrlAndReplaceSelf(String content, Integer createId) throws RestServiceException {
+		Map<String, String> map = new HashMap<String, String>();
+
+		logger.info("开始进行抽离图片");
+
+		List<String> imgSrc = GetImgUrl.getImgStr(content);
+		List<Object> imgDB = new ArrayList<Object>();
+		String replaceStr = null;
+		String evaluationSrcReplace = null;
+		int i = 0;
+		for (String img : imgSrc) {
+			logger.info("抽离的图片路径");
+			logger.info(img);
+			if (img.contains(ipPicUrl)) {
+				// 说明是h5富文本传来的,服务器中存有图片,直接截取存放数据库
+				// http://192.168.10.151:8080/upload/postPic/201806/20180610160559928.png
+				logger.info("开始处理H5富文本编译器图片");
+				if (ipPicUrl.contains("app.qufen.top")) {
+					replaceStr = img.replaceAll("http://" + ipPicUrl + "/", "");
+				} else {
+					replaceStr = img.replaceAll(ipPicUrl + "/", "");
+				}
+				logger.info("h5富文本传来的图片绝对路径:" + replaceStr);
+				if (imgDB.size() <= 3) {
+					imgDB.add(replaceStr);
+				}
+			} else {
+				// 生成url名称
+				String picUrlGen = picServiceUrl;
+				String picName = "/upload/postPic/" + DateUtil.getCurrentYearMonth() + "/" + DateUtil.getCurrentTimeStamp() + i + createId + ".jpg";
+				String picUrlName = picUrlGen + picName;
+				try {
+					FileUtils.createFileLocal(picUrlName);
+				} catch (Exception e) {
+					throw new RestServiceException("后台创建文件出错!");
+				}
+				String picurlIpName = ipPicUrl + picName;
+				logger.info("img :原图片路径: " + img);
+				Boolean isExistSerive = DownImgGoodUtil.downloadPicture(img, picUrlName);
+
+				if (!isExistSerive) {// isExistSerive 是false
+					logger.info("启动处理图片失败预案");
+					PhotoParams photoParams = new PhotoParams();
+					photoParams.setFileUrl(img);
+					photoParams.setIsExist(false);
+					if (imgDB.size() <= 3) {
+						imgDB.add(photoParams);
+					}
+					picurlIpName = img;
+				}
+				logger.info("坑逼百度!!!!");
+
+				if (imgDB.size() <= 3) {
+					imgDB.add(picName);
+					// i = i + 1;
+				}
+
+				logger.info("picurlIpName : 替换后的图片路径: " + picurlIpName);
+				if (i == 0) {
+					evaluationSrcReplace = content.replaceAll(img, picurlIpName);
+				}
+				evaluationSrcReplace = evaluationSrcReplace.replaceAll(img, picurlIpName);
+				logger.info(evaluationSrcReplace);
+				i = i + 1;
+			}
+		}
+		logger.info("图片抽离成功!");
+		// 将图片集合转化成json
+		// String uploadIeviwList = uploadIeviwList(imgDB);
+		String uploadIeviwList = uploadIeviwListObject(imgDB);
+		logger.info("缩略图的json串" + uploadIeviwList);
+		map.put("uploadIeviwList", uploadIeviwList);
+		map.put("evaluationSrcReplace", evaluationSrcReplace);
+		return map;
+	}
+
+	@Override
+	public Map<String, String> grabUrlAndReplaceQiniu(String content, Integer createid) throws RestServiceException {
+		Map<String, String> map = new HashMap<String, String>();
+		logger.info("开始进行抽离图片");
+		List<String> imgSrc = GetImgUrl.getImgStr(content);
+		List<String> imgDB = new ArrayList<String>();
+		String contentSrcReplace = null;
+		int i = 0;
+		for (String img : imgSrc) {
+			logger.info("抽离的图片路径");
+			logger.info(img);
+			if (img.contains("http://pic.qufen.top")) {
+				// 说明是h5富文本传来的,服务器中存有图片,直接截取存放数据库
+				logger.info("h5富文本传来的图片绝对路径:" + img);
+				if (imgDB.size() <= 3) {
+					imgDB.add(img);
+				}
+			} else {
+				// 生成url名称
+				logger.info("img :原图片路径: " + img);
+				String fileName = DateUtil.getCurrentTimeSS() + createid + i;
+				String UrlQiniu = QiniuUtil.changeToLocalUrl(img, fileName);
+				if ("false".equals(UrlQiniu)) {
+					logger.info(img + "上传七牛失败!");
+					logger.info("坑逼百度!!!!");
+				} else {
+					if (imgDB.size() <= 3) {
+						imgDB.add(UrlQiniu);
+					}
+					logger.info("picurlIpName : 替换后的图片路径: " + UrlQiniu);
+					if (i == 0) {
+						logger.info("原img将被代替" + img);
+						logger.info("七牛的url" + UrlQiniu);
+						contentSrcReplace = content.replaceAll(img, UrlQiniu);
+					}
+					contentSrcReplace = contentSrcReplace.replaceAll(img, UrlQiniu);
+					logger.info(contentSrcReplace);
+					i = i + 1;
+				}
+			}
+		}
+		logger.info("图片抽离成功!");
+		String uploadIeviwList = uploadIeviwListQiniu(imgDB);
+		logger.info("缩略图的json串" + uploadIeviwList);
+		map.put("uploadIeviwList", uploadIeviwList);
+		map.put("contentSrcReplace", contentSrcReplace);
+		return map;
+	}
+
+	@Override
+	public String uploadIeviwListQiniu(List<String> photoIviewses) throws RestServiceException {
+		if (null == photoIviewses) {
+			throw new RestServiceException(RestErrorCode.PICTURE_UPLOAD_FAIL);
+		}
+		List<PhotoParams> PhotoParamses = new ArrayList<PhotoParams>();
+		for (String photoIviews : photoIviewses) {
+			PhotoParams photoParams = new PhotoParams();
+			photoParams.setFileUrl(photoIviews);
+			photoParams.setExtension("ext");
+			photoParams.setFileName("name");
+			photoParams.setSize("1");
+			photoParams.setIsExist(true);
+			PhotoParamses.add(photoParams);
+		}
+		return JSON.toJSONString(PhotoParamses);
 	}
 }

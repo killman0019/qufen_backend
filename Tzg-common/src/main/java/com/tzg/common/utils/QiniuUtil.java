@@ -1,12 +1,14 @@
-package com.tzg.wap.utils;
+package com.tzg.common.utils;
 
 import org.apache.log4j.Logger;
 
 import com.qiniu.common.QiniuException;
 import com.qiniu.common.Zone;
 import com.qiniu.http.Response;
+import com.qiniu.storage.BucketManager;
 import com.qiniu.storage.Configuration;
 import com.qiniu.storage.UploadManager;
+
 import com.qiniu.storage.persistent.FileRecorder;
 import com.qiniu.util.Auth;
 import com.qiniu.util.StringMap;
@@ -23,7 +25,7 @@ public class QiniuUtil {
 	public static String BUCKETNAME = "qufenpic";
 
 	// @Value("#{paramConfig['qiniu.cdns']}")
-	public static String DOMAIN = "pic.qufen.top";
+	public static String DOMAIN = "http://pic.qufen.top";
 
 	// @Value("#{paramConfig['qiniu.accesskey']}")
 	public static String ACCESS_KEY = "enchuqUr0dVnB_QzjnONINpEkqcaAfJJ_uiaAp0h";
@@ -56,8 +58,12 @@ public class QiniuUtil {
 	// 获取凭证
 	public static String getUpToken() {
 		Auth auth = Auth.create(ACCESS_KEY, SECRET_KEY);
-		String upToken = auth.uploadToken(BUCKETNAME, null, 3600, new StringMap().put("callbackUrl", "http://qufen.top/qiniu/upload/callback")
-				.put("callbackBody", "key=$(key)&hash=$(etag)&bucket=$(bucket)&fsize=$(fsize)"));
+		String upToken = auth.uploadToken(
+				BUCKETNAME,
+				null,
+				3600,
+				new StringMap().put("callbackUrl", "http://qufen.top/qiniu/upload/callback").put("callbackBody",
+						"key=$(key)&hash=$(etag)&bucket=$(bucket)&fsize=$(fsize)"));
 		return upToken;
 	}
 
@@ -110,8 +116,36 @@ public class QiniuUtil {
 		} catch (QiniuException e) {
 			e.printStackTrace();
 		}
-		
-		String path = DOMAIN+"/"+fileName;
+
+		String path = DOMAIN + "/" + fileName;
 		return path;
+	}
+
+	/**
+	 * 根据外网的url上传到七牛的服务器上产生七牛服务器上的url
+	 * 
+	 * @param url
+	 *            外网的url
+	 * @param fileName
+	 *            文件的名字
+	 * @return DefaultPutRet putret =
+	 * @throws QiniuException
+	 */
+	public static String changeToLocalUrl(String url, String fileName) {
+		Auth auth = Auth.create(ACCESS_KEY, SECRET_KEY);
+		Configuration cfg = new Configuration(getZone());
+		BucketManager bucketManager = new BucketManager(auth, cfg);
+		try {
+			bucketManager.fetch(url, BUCKETNAME, fileName);
+		} catch (QiniuException e) {
+			System.out.println("抽取外链图片失败原因:" + e.getMessage());
+			System.out.println("外链图片抽取失败!原图片url为:" + url);
+			return "false";
+
+		}
+		String newUrl = DOMAIN + "/" + fileName;
+		System.out.println("七牛服务器上的url:" + newUrl);
+		System.out.println("succeed upload image");
+		return newUrl;
 	}
 }

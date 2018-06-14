@@ -1,11 +1,16 @@
 package com.tzg.rmi.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
+import com.tzg.common.utils.DateUtil;
+import com.tzg.common.utils.DownImgGoodUtil;
+import com.tzg.common.utils.FileUtils;
+import com.tzg.common.utils.GetImgUrl;
 import com.tzg.entitys.kff.article.ArticleDetailResponse;
 import com.tzg.entitys.kff.article.ArticleRequest;
 import com.tzg.entitys.kff.authentication.Authentication;
@@ -49,6 +54,7 @@ import com.tzg.entitys.kff.userInvation.UserInvation;
 import com.tzg.entitys.kff.usercard.UserCard;
 import com.tzg.entitys.kff.userwallet.KFFUserWallet;
 import com.tzg.entitys.loginaccount.RegisterRequest;
+import com.tzg.entitys.photo.PhotoParams;
 import com.tzg.rest.exception.rest.RestServiceException;
 
 /**
@@ -781,6 +787,34 @@ public interface KFFRmiService {
 
 	public String createPostShare2Code() throws RestServiceException;;
 
+	public QfIndex findQfIndexUser(Integer loginUserId) throws RestServiceException;
 
-	public QfIndex findQfIndexUser(Integer loginUserId);
+	/**
+	 * 抓取文章评测中的图片url并且上传到本地图片服务器中 获取本地的url
+	 * 
+	 * @param content
+	 * @param createid
+	 * @return 返回是放在数据库中的url 缩略图
+	 * @throws RestServiceException
+	 */
+	public Map<String, String> grabUrlAndReplaceSelf(String content, Integer createid) throws RestServiceException;
+
+	/**
+	 * 抓取文章评测中的图片url并且上传到七牛图片服务器中 获取七牛的url
+	 * 
+	 * @param content
+	 * @param createid
+	 * @return 返回是放在数据库中的url 缩略图
+	 * @throws RestServiceException
+	 */
+	public Map<String, String> grabUrlAndReplaceQiniu(String content, Integer createid) throws RestServiceException;
+
+	/**
+	 * 生成缩略图字符串
+	 * 
+	 * @param photoIviewses
+	 * @return
+	 * @throws RestServiceException
+	 */
+	public String uploadIeviwListQiniu(List<String> photoIviewses) throws RestServiceException;
 }
