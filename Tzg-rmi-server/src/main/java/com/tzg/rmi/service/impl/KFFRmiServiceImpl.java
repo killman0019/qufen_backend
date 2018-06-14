@@ -5361,7 +5361,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// System.out.println(picUrlpro);
 		// return "upload/poster/" + str + ".png";
 		String pictureName = UUID.randomUUID().toString().replaceAll("-", "");
-		String qiNiuUrl = QiniuUtil.upload(new File(initPosterSysPathLast), pictureName);
+		String ipurl = "D:\\opt\\file\\upload\\poster\\init\\initpic2.png";
+		String qiNiuUrl = QiniuUtil.uploadLocalPic(ipurl, pictureName);
 		return qiNiuUrl;
 
 	}

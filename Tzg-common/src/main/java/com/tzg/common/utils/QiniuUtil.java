@@ -2,13 +2,14 @@ package com.tzg.common.utils;
 
 import org.apache.log4j.Logger;
 
+import com.google.gson.Gson;
 import com.qiniu.common.QiniuException;
 import com.qiniu.common.Zone;
 import com.qiniu.http.Response;
 import com.qiniu.storage.BucketManager;
 import com.qiniu.storage.Configuration;
 import com.qiniu.storage.UploadManager;
-
+import com.qiniu.storage.model.DefaultPutRet;
 import com.qiniu.storage.persistent.FileRecorder;
 import com.qiniu.util.Auth;
 import com.qiniu.util.StringMap;
@@ -147,5 +148,32 @@ public class QiniuUtil {
 		System.out.println("七牛服务器上的url:" + newUrl);
 		System.out.println("succeed upload image");
 		return newUrl;
+	}
+
+	public static String uploadLocalPic(String path, String fileName) {
+		Auth auth = Auth.create(ACCESS_KEY, SECRET_KEY);
+		Configuration cfg = new Configuration(getZone());
+		UploadManager uploadManager = new UploadManager(cfg);
+		String upToken = auth.uploadToken(BUCKETNAME);
+		
+		try {
+		
+			Response response = uploadManager.put(path, fileName, upToken);
+			// 解析上传成功的结果
+			DefaultPutRet putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);
+			System.out.println(putRet.key);
+			System.out.println(putRet.hash);
+		} catch (QiniuException ex) {
+			System.out.println("本地图片上传失败!");
+			Response r = ex.response;
+			System.err.println(r.toString());
+			try {
+				System.err.println(r.bodyString());
+			} catch (QiniuException ex2) {
+				// ignore
+			}
+
+		}
+		return fileName;
 	}
 }
