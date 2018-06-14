@@ -1365,17 +1365,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				PhotoParams photoOUrl = JSON.parseObject(pic, PhotoParams.class);
 				PhotoParams photoParams = new PhotoParams();
 				photoParams.setFileUrl(photoOUrl.getFileUrl());
-				// 取后缀名
-				String[] str = photoOUrl.getFileUrl().split("\\.");
-				logger.info(str[0]);
-				logger.info(str[1]);
-				photoParams.setExtension(str[1]);
-
-				logger.info(str[0].lastIndexOf("/"));
-				str[0].substring(str[0].lastIndexOf("/") + 1);
-				logger.info(str[0].substring(str[0].lastIndexOf("/") + 1));
-
-				photoParams.setFileName(str[0].substring(str[0].lastIndexOf("/") + 1));
+				photoParams.setExtension("ext");
+				photoParams.setFileName("name");
 				photoParams.setIsExist(true);
 				picNewArray.add(photoParams);
 			}
@@ -1593,7 +1584,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 		result.put("postId", newPost.getPostId());
 		result.put("postType", newPost.getPostType());
-		result.put("modelType()", evaluationRequest.getModelType());
+		result.put("modelType", evaluationRequest.getModelType());
 		// 更新用户发帖数
 		kffUserService.increasePostNum(createUser.getUserId(), KFFConstants.POST_TYPE_EVALUATION);
 		// 更新项目总分
@@ -5159,7 +5150,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// AliyunConstant.SMS_APP_KEY, AliyunConstant.SMS_SECRET);
 
 		Map<String, String> map = new HashMap<String, String>();
-		phone = "15856983323";
+		// phone = "15856983323";
 		// 设置超时时间-可自行调整
 		try {
 			System.setProperty("sun.net.client.defaultConnectTimeout", "10000");
