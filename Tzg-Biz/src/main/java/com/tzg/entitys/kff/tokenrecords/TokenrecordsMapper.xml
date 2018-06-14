@@ -135,7 +135,7 @@
 
 	</select>
 		<!-- 今天线性发放总额 -->
-	<select id="findTodayToken" resultType="java.lang.Integer" parameterType="java.util.Map">
+	<select id="findTodayToken" resultType="java.lang.Double" parameterType="java.util.Map">
 	    SELECT sum(amount)
 		FROM tbtokenrecords 
 		WHERE 1=1
