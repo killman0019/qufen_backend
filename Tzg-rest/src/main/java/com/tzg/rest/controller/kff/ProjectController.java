@@ -23,7 +23,9 @@ import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.utils.AccountTokenUtil;
 import com.tzg.entitys.kff.comments.Comments;
 import com.tzg.entitys.kff.devaluationModelDetail.DevaluationModelDetail;
+import com.tzg.entitys.kff.discuss.Discuss;
 import com.tzg.entitys.kff.dprojectType.DprojectType;
+import com.tzg.entitys.kff.evaluation.Evaluation;
 import com.tzg.entitys.kff.evaluation.EvaluationDetailResponse;
 import com.tzg.entitys.kff.post.PostResponse;
 import com.tzg.entitys.kff.project.KFFProject;
@@ -74,13 +76,20 @@ public class ProjectController extends BaseController {
 			}	
 			ProjectResponse project = kffRmiService.findProjectById(userId,projectId);
             map.put("project", project);
+            
+            //20180613 去掉，改为 精选评测，精选打假（讨论）
+            //https://www.tapd.cn/21950911/bugtrace/bugs/view?bug_id=1121950911001000461
             //2条7天内回复数最高的讨论帖子
             List<PostResponse> hotDiscuss = kffRmiService.findHotDiscussList(projectId);
             map.put("hotDiscuss", hotDiscuss);
-      
+            //点赞量超过10 & 排名前2的内容
+            List<PostResponse> hotEva = kffProjectPostRmiService.findHotEvaList(projectId);
+            map.put("hotEva", hotEva);
+
             //项目专业评测统计信息
-            List<DevaluationModelDetail> proEvaStat = kffRmiService.findProjectEvaStat(projectId);
-            map.put("projectEvaStat", proEvaStat);
+            Map<String,Object> statMap = kffProjectPostRmiService.findProjectEvaStat(projectId);
+            map.put("projectEvaStat", statMap.get("projectEvaStat"));
+            map.put("totalProEvaRaterNum", statMap.get("totalProEvaRaterNum"));
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("ProjectController index:{}", e);
@@ -185,6 +194,9 @@ public class ProjectController extends BaseController {
 	        query.addQueryData("postType", "1");
 	        query.setPageIndex(baseRequest.getPageIndex());
 	        query.setRowsPerPage(baseRequest.getPageSize());
+	        if(StringUtils.isNotBlank(baseRequest.getSortField())){
+	        	query.addQueryData("sortField", baseRequest.getSortField());
+	        }
 			PageResult<EvaluationDetailResponse> evaluations = kffRmiService.findPageEvaluationList(query);
             map.put("evaluations", evaluations);
 			bre.setData(map);
@@ -228,6 +240,9 @@ public class ProjectController extends BaseController {
 	        query.addQueryData("status", "1");
 	        //帖子类型：1-评测；2-讨论；3-文章
 	        query.addQueryData("postType", "2");
+	        if(StringUtils.isNotBlank(baseRequest.getSortField())){
+	        	query.addQueryData("sortField", baseRequest.getSortField());
+	        }
 	        query.setPageIndex(baseRequest.getPageIndex());
 	        query.setRowsPerPage(baseRequest.getPageSize());
 			PageResult<PostResponse> discusses = kffRmiService.findPageDisscussList(query);
@@ -274,7 +289,9 @@ public class ProjectController extends BaseController {
 	        query.addQueryData("status", "1");
 	        //帖子类型：1-评测；2-讨论；3-文章
 	        query.addQueryData("postType", "3");
-	        query.addQueryData("sortField", "praise_num");	        
+	        if(StringUtils.isNotBlank(baseRequest.getSortField())){
+	        	query.addQueryData("sortField", baseRequest.getSortField());
+	        }	        
 	        query.setPageIndex(baseRequest.getPageIndex());
 	        query.setRowsPerPage(baseRequest.getPageSize());
 			PageResult<PostResponse> articles = kffRmiService.findPageArticleList(query);

@@ -821,4 +821,51 @@ public class HomeController extends BaseController {
 		}
 		return bre;
 	}
+	
+	
+	/**
+	 * 
+	 * @Title: counterfeitList
+	 * @Description:打假列表
+	 * @param @param request
+	 * @param @param response
+	 * @param @return
+	 * @return BaseResponseEntity
+	 * @see
+	 * @throws
+	 */
+	@RequestMapping(value = "/counterfeitList", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public BaseResponseEntity counterfeitList(HttpServletRequest request) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+		HashMap<String, Object> map = new HashMap<String, Object>();
+
+		try {
+			BaseRequest baseRequest = getParamMapFromRequestPolicy(request, BaseRequest.class);
+			String token = baseRequest.getToken();
+			Integer userId = null;
+			if (StringUtils.isNotBlank(token)) {
+				userId = getUserIdByToken(token);
+			}
+			PaginationQuery query = new PaginationQuery();
+			query.addQueryData("status", "1");
+			query.addQueryData("stickTop", "1");
+
+			query.addQueryData("sortField", "createTime");
+			// 帖子类型：1-评测；2-讨论；3-文章
+			// query.addQueryData("postType", "1");
+			query.setPageIndex(baseRequest.getPageIndex());
+			query.setRowsPerPage(baseRequest.getPageSize());
+			PageResult<PostResponse> counterfeits = kffRmiService.findPageCounterfeitListList(userId, query);
+			map.put("counterfeits", counterfeits);
+			bre.setData(map);
+		} catch (RestServiceException e) {
+			logger.error("HomeController recommendList:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("HomeController recommendList:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+		}
+		return bre;
+	}
 }

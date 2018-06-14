@@ -146,8 +146,58 @@ public class PostResponse implements Serializable {
 	private java.lang.String tagInfos;
 	
 	
+	//eva内容
+    /**
+     * 1-10，小数点1位
+     */ 	
+	private BigDecimal evaTotalScore = BigDecimal.ZERO;
+    /**
+     * 专业评测各子项评测内容详情json字符串
+     */ 	
+	private java.lang.String professionalEvaDetail;
+    /**
+     * 评测描述信息
+     */ 	
+	private java.lang.String evauationContent;
+    /**
+     * 评测表标签
+     */ 	
+	private java.lang.String evaluationTags;
 	
 	
+	
+	public BigDecimal getEvaTotalScore() {
+		return evaTotalScore;
+	}
+
+	public void setEvaTotalScore(BigDecimal evaTotalScore) {
+		this.evaTotalScore = evaTotalScore;
+	}
+
+	public java.lang.String getProfessionalEvaDetail() {
+		return professionalEvaDetail;
+	}
+
+	public void setProfessionalEvaDetail(java.lang.String professionalEvaDetail) {
+		this.professionalEvaDetail = professionalEvaDetail;
+	}
+
+	public java.lang.String getEvauationContent() {
+		return evauationContent;
+	}
+
+	public void setEvauationContent(java.lang.String evauationContent) {
+		this.evauationContent = evauationContent;
+	}
+
+	public java.lang.String getEvaluationTags() {
+		return evaluationTags;
+	}
+
+	public void setEvaluationTags(java.lang.String evaluationTags) {
+		this.evaluationTags = evaluationTags;
+	}
+
 	public java.lang.Integer getDiscussId() {
 		return discussId;
 	}

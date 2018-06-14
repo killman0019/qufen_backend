@@ -117,6 +117,9 @@ public class UserHomeController extends BaseController {
 	        query.addQueryData("status", "1");
 	        //帖子类型：1-评测；2-讨论；3-文章
 	        query.addQueryData("postType", "1");
+	        if(StringUtils.isNotBlank(baseRequest.getSortField())){
+	        	query.addQueryData("sortField", baseRequest.getSortField());
+	        }
 	        query.setPageIndex(baseRequest.getPageIndex());
 	        query.setRowsPerPage(baseRequest.getPageSize());
 			PageResult<EvaluationDetailResponse> evaluations = kffRmiService.findPageEvaluationList(query);
@@ -163,6 +166,9 @@ public class UserHomeController extends BaseController {
 	        query.addQueryData("status", "1");
 	        //帖子类型：1-评测；2-讨论；3-文章
 	        query.addQueryData("postType", "2");
+	        if(StringUtils.isNotBlank(baseRequest.getSortField())){
+	        	query.addQueryData("sortField", baseRequest.getSortField());
+	        }
 	        query.setPageIndex(baseRequest.getPageIndex());
 	        query.setRowsPerPage(baseRequest.getPageSize());
 			PageResult<PostResponse> discusses = kffRmiService.findPageDisscussList(query);
@@ -213,6 +219,9 @@ public class UserHomeController extends BaseController {
 	        query.addQueryData("status", "1");
 	        //帖子类型：1-评测；2-讨论；3-文章
 	        query.addQueryData("postType", "3");
+	        if(StringUtils.isNotBlank(baseRequest.getSortField())){
+	        	query.addQueryData("sortField", baseRequest.getSortField());
+	        }
 	        query.setPageIndex(baseRequest.getPageIndex());
 	        query.setRowsPerPage(baseRequest.getPageSize());
 			PageResult<PostResponse> articles = kffRmiService.findPageArticleList(query);

@@ -906,6 +906,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				if (eva == null) {
 					logger.error("evaluation not find,postId:" + post.getPostId());
 				} else {
+					//过滤掉简单评测
+					//https://www.tapd.cn/21950911/bugtrace/bugs/view?bug_id=1121950911001000461
+					if(Objects.equal(1, eva.getModelType())){
+						continue;
+					}
 					response.setProfessionalEvaDetail(eva.getProfessionalEvaDetail());
 					response.setEvaluationTags(eva.getEvaluationTags());
 					response.setEvaluationId(eva.getEvaluationId());
@@ -1583,10 +1588,13 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			logger.error("put redis key REDIS_KEY_PROJECT_SYNC_SCORE error " + project.getProjectId());
 		}
 		result.put("postId", newPost.getPostId());
-		result.put("modelType", evaluation.getModelType());
-		result.put("postType", newPost.getPostType());
-		// 更新用户发帖数
-		kffUserService.increasePostNum(createUser.getUserId(), KFFConstants.POST_TYPE_EVALUATION);
+		//更新用户发帖数
+		kffUserService.increasePostNum(createUser.getUserId(),KFFConstants.POST_TYPE_EVALUATION);
+		//更新项目总分
+		kffProjectService.updateTotalScore(project.getProjectId(),totalScore);
+		//更新评测人数
+		kffProjectService.increaseRaterNum(project.getProjectId());
+
 		return result;
 	}
 
@@ -3597,18 +3605,23 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (projectId == null) {
 			throw new RestServiceException("项目id不能为空");
 		}
-		Date day7 = DateUtil.getSpecifiedDateBeforeOrAfter(7).getTime();
+		//Date day7 = DateUtil.getSpecifiedDateBeforeOrAfter(7).getTime();
 		List<PostResponse> respones = new ArrayList<>();
 		PaginationQuery query = new PaginationQuery();
 		query.addQueryData("projectId", projectId + "");
-		query.addQueryData("sortField", "comments_num");
+		//query.addQueryData("sortField", "comments_num");
+		query.addQueryData("sortField", "praise_num");
 		query.addQueryData("status", "1");
-		query.addQueryData("createTimeBegin", DateUtil.getDate(day7, "yyyy-MM-dd"));
+		query.addQueryData("postType", "2");
+		//query.addQueryData("createTimeBegin", DateUtil.getDate(day7, "yyyy-MM-dd"));
 		query.setPageIndex(1);
 		query.setRowsPerPage(2);
 		PageResult<Post> posts = kffPostService.findPage(query);
 		if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
 			for (Post post : posts.getRows()) {
+				if(post.getPraiseNum()<10){
+					continue;
+				}
 				PostResponse response = new PostResponse();
 				BeanUtils.copyProperties(post, response);
 				if (StringUtils.isNotBlank(post.getPostSmallImages())) {
@@ -5421,6 +5434,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// TODO Auto-generated method stub
 		return qfIndexService.findByUserId(loginUserId);
 	}
+<<<<<<< HEAD
 
 	@Override
 	public Map<String, String> grabUrlAndReplaceSelf(String content, Integer createId) throws RestServiceException {
@@ -5564,5 +5578,91 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			PhotoParamses.add(photoParams);
 		}
 		return JSON.toJSONString(PhotoParamses);
+=======
+	
+	@Override
+	public PageResult<PostResponse> findPageCounterfeitListList(Integer loginUserId, PaginationQuery query) throws RestServiceException {
+		PageResult<PostResponse> result = new PageResult<PostResponse>();
+		List<PostResponse> postResponse = new ArrayList<>();
+		PageResult<Post> posts = kffPostService.findPage(query);
+		KFFUser loginUser = null;
+		if (loginUserId != null) {
+			loginUser = kffUserService.findById(loginUserId);
+		}
+		/**
+		 * 
+		 * 解决登录送奖励问题
+		 * 
+		 * 
+		 */
+		if (loginUserId != null) {
+
+			registerAward(loginUserId);
+
+		}
+
+		if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
+			result.setCurPageNum(posts.getCurPageNum());
+			result.setPageSize(posts.getPageSize());
+			result.setQueryParameters(posts.getQueryParameters());
+			result.setRowCount(posts.getRowCount());
+			result.setRowsPerPage(posts.getRowsPerPage());
+			for (Post post : posts.getRows()) {
+				PostResponse response = new PostResponse();
+				response.setcreateTime(post.getCreateTime());
+				response.setCreateUserId(post.getCreateUserId());
+				response.setPostId(post.getPostId());
+				response.setPostType(post.getPostType());
+				response.setProjectId(post.getProjectId());
+				response.setStatus(post.getStatus());
+
+				// 设置post和project信息
+				response.setPostShortDesc(post.getPostShortDesc());
+				response.setPostSmallImages(post.getPostSmallImages());
+				if (StringUtils.isNotBlank(post.getPostSmallImages())) {
+					try {
+						List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
+						response.setPostSmallImagesList(pfl);
+					} catch (Exception e) {
+						logger.error("首页推荐列表解析帖子缩略图json出错:{}", e);
+					}
+				}
+				response.setPostTitle(post.getPostTitle());
+				response.setCommentsNum(post.getCommentsNum());
+				response.setCollectNum(post.getCollectNum());
+				response.setPraiseNum(post.getPraiseNum());
+				response.setPageviewNum(post.getPageviewNum());
+				response.setDonateNum(post.getDonateNum());
+				response.setCreateUserIcon(post.getCreateUserIcon());
+				response.setCreateUserName(post.getCreateUserName());
+				response.setCreateUserSignature(post.getCreateUserSignature());
+				KFFProject project = kffProjectService.findById(post.getProjectId());
+				if (project != null) {
+					response.setProjectChineseName(project.getProjectChineseName());
+					response.setProjectCode(project.getProjectCode());
+					response.setProjectEnglishName(project.getProjectEnglishName());
+					response.setProjectIcon(project.getProjectIcon());
+					response.setProjectSignature(project.getProjectSignature());
+					response.setTotalScore(project.getTotalScore());
+				}
+
+				// 设置项目关注状态
+				if (loginUser == null) {
+					response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+				} else {
+					Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT, post.getProjectId());
+					if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+						response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+					} else {
+						response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+					}
+				}
+
+				postResponse.add(response);
+			}
+		}
+		result.setRows(postResponse);
+
+		return result;
 	}
 }
