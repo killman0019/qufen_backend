@@ -6,6 +6,7 @@ import com.tzg.common.page.PaginationQuery;
 import com.tzg.entitys.kff.tokenaward.TokenawardReturn;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
@@ -16,6 +17,8 @@ public interface TokenrecordsMapper extends BaseMapper<Tokenrecords, java.lang.I
 
 	PageResult<TokenawardReturn> findPageMyTokenawardReturn(PaginationQuery query);
 
-	List<Tokenrecords> findAllTokenrecordsUserId(Integer userId);	
+	List<Tokenrecords> findAllTokenrecordsUserId(Integer userId);
+
+	Double findTodayToken(Map<String, Object> map);	
 
 }

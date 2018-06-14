@@ -151,6 +151,7 @@ import com.tzg.entitys.kff.user.KFFUserHomeResponse;
 import com.tzg.entitys.kff.userInvation.UserInvation;
 import com.tzg.entitys.kff.usercard.UserCard;
 import com.tzg.entitys.kff.userwallet.KFFUserWallet;
+import com.tzg.entitys.kff.userwallet.KFFUserWalletMapper;
 import com.tzg.entitys.loginaccount.RegisterRequest;
 import com.tzg.entitys.photo.PhotoParams;
 import com.tzg.rest.constant.KFFRestConstants;
@@ -227,7 +228,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	private TokenawardService kffTokenawardService;
 	@Autowired
 	private AwardPortService awardPortService;
-
+	@Autowired
+	private KFFUserWalletMapper kFFUserWalletMapper;
 	@Autowired
 	private ZKClient zkClient;
 	@Autowired
@@ -4320,6 +4322,13 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		qfIndex.setYxpraise(0);
 		qfIndex.setCreateTime(new Date());
 		qfIndexService.save(qfIndex);
+		// 将用户信息同步到钱包表中
+		KFFUserWallet kffUserWallet = new KFFUserWallet();
+		kffUserWallet.setUserId(user.getUserId());
+		kffUserWallet.setUserName(user.getUserName());
+		kffUserWallet.setMobile(user.getMemo());
+		kffUserWallet.setWalletType(0); // '钱包状态0-未绑定 1-已绑定'
+		kFFUserWalletMapper.save(kffUserWallet);
 
 		/******************* 关注邀请人 *********************/
 		// 根据邀请人的ID查询user表
@@ -5667,5 +5676,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		result.setRows(postResponse);
 
 		return result;
+	}
+
+	@Override
+	public Double findTodayToken(Integer loginUserId) {
+	
+		 return kffTokenrecordsService.findTodayToken(loginUserId);
 	}
 }
