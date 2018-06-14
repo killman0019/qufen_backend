@@ -8,6 +8,8 @@ import com.tzg.common.page.PaginationQuery;
 import com.tzg.entitys.kff.article.ArticleRequest;
 import com.tzg.entitys.kff.comments.Comments;
 import com.tzg.entitys.kff.devaluationModelDetail.DevaluationModelDetail;
+import com.tzg.entitys.kff.discuss.Discuss;
+import com.tzg.entitys.kff.evaluation.Evaluation;
 import com.tzg.entitys.kff.evaluation.EvaluationRequest;
 import com.tzg.entitys.kff.post.PostResponse;
 import com.tzg.entitys.kff.projectevastat.ProjectevastatByGrade;
@@ -46,5 +48,22 @@ public interface KFFProjectPostRmiService {
 	 * @return
 	 */
 	public PageResult<PostResponse> findMyPageFollowList(Integer userId, PaginationQuery query) throws RestServiceException;
+
+	/**
+	 *项目维度 专业评测 分项统计 
+	 * @param projectId
+	 * @return
+	 * @throws RestServiceException
+	 */
+	public Map<String,Object> findProjectEvaStat(Integer projectId) throws RestServiceException;
+
+	/**
+	 * 热门评测
+	 * @param projectId
+	 * @return
+	 * @throws RestServiceException
+	 */
+	public List<PostResponse> findHotEvaList(Integer projectId) throws RestServiceException;
+
 	
 }

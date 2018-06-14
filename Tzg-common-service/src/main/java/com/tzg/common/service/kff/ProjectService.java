@@ -1,5 +1,8 @@
 package com.tzg.common.service.kff;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -90,6 +93,42 @@ public class ProjectService   {
 	public KFFProject findProjectIdByCodeAndChineseName(KFFProject kffProject) {
 		// TODO Auto-generated method stub
 		return projectMapper.findProjectIdByCodeAndChineseName(kffProject);
+	}
+
+	public void increaseRaterNum(Integer projectId) {
+		if(projectId == null || projectId ==0){
+			//throw new RestServiceException("项目ID错误");
+			return;
+		}
+		projectMapper.increaseRaterNum(projectId);
+		
+	}
+
+	public void updateTotalScore(Integer projectId, BigDecimal totalScore) {
+		if(projectId == null || projectId ==0){
+			//throw new RestServiceException("项目ID错误");
+			return;
+		}
+		if(totalScore == null || totalScore.compareTo(BigDecimal.ZERO)<=0){
+			return;
+		}
+		KFFProject original = projectMapper.findById(projectId);
+		if(original == null){
+			return;
+		}
+		KFFProject project = new KFFProject();
+		project.setProjectId(projectId);
+		project.setUpdateTime(new Date());
+		BigDecimal originalTotal = original.getTotalScore()==null?BigDecimal.ZERO:original.getTotalScore();
+		int raterNum = original.getRaterNum()==null?0:original.getRaterNum();
+		if(raterNum  == 0){
+			return ;
+		}
+		originalTotal = originalTotal.multiply(new BigDecimal(raterNum));
+		totalScore = originalTotal.add(totalScore);
+		totalScore = totalScore.divide(new BigDecimal(raterNum+1)).setScale(1, RoundingMode.HALF_DOWN);
+		project.setTotalScore(totalScore);
+		projectMapper.update(project);
 	}
 
 	

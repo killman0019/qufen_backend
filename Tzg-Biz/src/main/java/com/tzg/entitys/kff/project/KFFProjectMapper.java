@@ -19,4 +19,6 @@ public interface KFFProjectMapper extends BaseMapper<KFFProject, java.lang.Integ
 
 	KFFProject findProjectIdByCodeAndChineseName(KFFProject kffProject);
 
+	void increaseRaterNum(Integer projectId);
+
 }

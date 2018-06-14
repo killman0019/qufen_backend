@@ -905,6 +905,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				if (eva == null) {
 					logger.error("evaluation not find,postId:" + post.getPostId());
 				} else {
+					//过滤掉简单评测
+					//https://www.tapd.cn/21950911/bugtrace/bugs/view?bug_id=1121950911001000461
+					if(Objects.equal(1, eva.getModelType())){
+						continue;
+					}
 					response.setProfessionalEvaDetail(eva.getProfessionalEvaDetail());
 					response.setEvaluationTags(eva.getEvaluationTags());
 					response.setEvaluationId(eva.getEvaluationId());
@@ -1711,10 +1716,13 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			logger.error("put redis key REDIS_KEY_PROJECT_SYNC_SCORE error " + project.getProjectId());
 		}
 		result.put("postId", newPost.getPostId());
-		result.put("modelType", evaluation.getModelType());
-		result.put("postType", newPost.getPostType());
-		// 更新用户发帖数
-		kffUserService.increasePostNum(createUser.getUserId(), KFFConstants.POST_TYPE_EVALUATION);
+		//更新用户发帖数
+		kffUserService.increasePostNum(createUser.getUserId(),KFFConstants.POST_TYPE_EVALUATION);
+		//更新项目总分
+		kffProjectService.updateTotalScore(project.getProjectId(),totalScore);
+		//更新评测人数
+		kffProjectService.increaseRaterNum(project.getProjectId());
+
 		return result;
 	}
 
@@ -3725,18 +3733,23 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (projectId == null) {
 			throw new RestServiceException("项目id不能为空");
 		}
-		Date day7 = DateUtil.getSpecifiedDateBeforeOrAfter(7).getTime();
+		//Date day7 = DateUtil.getSpecifiedDateBeforeOrAfter(7).getTime();
 		List<PostResponse> respones = new ArrayList<>();
 		PaginationQuery query = new PaginationQuery();
 		query.addQueryData("projectId", projectId + "");
-		query.addQueryData("sortField", "comments_num");
+		//query.addQueryData("sortField", "comments_num");
+		query.addQueryData("sortField", "praise_num");
 		query.addQueryData("status", "1");
-		query.addQueryData("createTimeBegin", DateUtil.getDate(day7, "yyyy-MM-dd"));
+		query.addQueryData("postType", "2");
+		//query.addQueryData("createTimeBegin", DateUtil.getDate(day7, "yyyy-MM-dd"));
 		query.setPageIndex(1);
 		query.setRowsPerPage(2);
 		PageResult<Post> posts = kffPostService.findPage(query);
 		if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
 			for (Post post : posts.getRows()) {
+				if(post.getPraiseNum()<10){
+					continue;
+				}
 				PostResponse response = new PostResponse();
 				BeanUtils.copyProperties(post, response);
 				if (StringUtils.isNotBlank(post.getPostSmallImages())) {

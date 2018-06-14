@@ -8,12 +8,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.google.common.base.Objects;
 import com.tzg.common.constants.KFFConstants;
 import com.tzg.common.page.PageResult;
@@ -50,16 +53,22 @@ import com.tzg.common.service.kff.UserInvationService;
 import com.tzg.common.service.kff.UserService;
 import com.tzg.common.service.kff.UserWalletService;
 import com.tzg.common.service.systemParam.SystemParamService;
+import com.tzg.common.utils.RandomUtil;
 import com.tzg.common.zookeeper.ZKClient;
 import com.tzg.entitys.kff.article.ArticleRequest;
 import com.tzg.entitys.kff.comments.Comments;
+import com.tzg.entitys.kff.devaluationModel.DevaluationModel;
 import com.tzg.entitys.kff.devaluationModelDetail.DevaluationModelDetail;
+import com.tzg.entitys.kff.discuss.Discuss;
 import com.tzg.entitys.kff.evaluation.Evaluation;
 import com.tzg.entitys.kff.evaluation.EvaluationRequest;
+import com.tzg.entitys.kff.follow.Follow;
 import com.tzg.entitys.kff.post.Post;
+import com.tzg.entitys.kff.post.PostFile;
 import com.tzg.entitys.kff.post.PostResponse;
 import com.tzg.entitys.kff.praise.Praise;
 import com.tzg.entitys.kff.project.KFFProject;
+import com.tzg.entitys.kff.projectevastat.Projectevastat;
 import com.tzg.entitys.kff.projectevastat.ProjectevastatByGrade;
 import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.rest.exception.rest.RestServiceException;
@@ -283,7 +292,9 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 			KFFUser user = null;
 			Post realPost = null;
 			for(Post post:posts.getRows()){
-				PostResponse pr = new PostResponse();				
+				PostResponse pr = new PostResponse();	
+				
+				//评测去除简单评测
 				if(Objects.equal(1, post.getPostType())){
 					user = kffUserService.findById(post.getCreateUserId());
 					pr.setActionDesc(user ==null?"匿名用户":user.getUserName() +"点赞了帖子");
@@ -296,6 +307,17 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 							BeanUtils.copyProperties(realPost, pr);
 						}
 					}
+					
+					//讨论返回标签
+					if(realPost != null && Objects.equal(2,realPost.getPostType())){
+						Discuss dis = kffDiscussService.findByPostId(realPost.getPostId());
+						if(dis != null ){
+							pr.setTagInfos(dis.getTagInfos());
+						}
+					}
+					
+					//关注状态
+					pr.setFollowStatus(1);
 				}else if(Objects.equal(2, post.getPostType())){
 					user = kffUserService.findById(post.getCreateUserId());
 					pr.setActionDesc(user ==null?"匿名用户":user.getUserName() +"发表了帖子");
@@ -308,12 +330,32 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 							BeanUtils.copyProperties(realPost, pr);
 						}
 					}
+					//讨论返回标签
+					if(realPost != null && Objects.equal(2,realPost.getPostType())){
+						Discuss dis = kffDiscussService.findByPostId(realPost.getPostId());
+						if(dis != null ){
+							pr.setTagInfos(dis.getTagInfos());
+						}
+					}
+					//关注状态
+					pr.setFollowStatus(1);
 				}else if(Objects.equal(3, post.getPostType())){
 					user = kffUserService.findById(post.getCreateUserId());
 					pr.setActionDesc(user ==null?"匿名用户":user.getUserName() +"关注了项目");
 					KFFProject project = kffProjectService.findById(post.getPostId());
 					if(project != null){
 						BeanUtils.copyProperties(project, pr);
+					}
+					pr.setCreateUserId(user ==null?null:user.getUserId());
+					pr.setCreateUserIcon(user ==null?"/upload/avatars/default.png":user.getIcon());
+					pr.setCreateUserName(user ==null?"匿名用户":user.getUserName());
+					pr.setCreateUserSignature(user ==null?"":user.getUserSignature());
+					//项目 关注状态
+					Follow follow = kffFollowService.findByUserIdAndFollowType(userId, 1, post.getPostId());
+					if(follow != null && Objects.equal(1, follow.getStatus())){
+						pr.setFollowStatus(1);
+					}else{
+						pr.setFollowStatus(0);
 					}
 				}else if(Objects.equal(4, post.getPostType())){
 					pr.setActionDesc("关注项目下发表了新帖");
@@ -326,6 +368,15 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 							BeanUtils.copyProperties(realPost, pr);
 						}
 					}
+					//讨论返回标签
+					if(realPost != null && Objects.equal(2,realPost.getPostType())){
+						Discuss dis = kffDiscussService.findByPostId(realPost.getPostId());
+						if(dis != null ){
+							pr.setTagInfos(dis.getTagInfos());
+						}
+					}
+					//关注状态
+					pr.setFollowStatus(1);
 				}else{
 					continue;
 				}
@@ -336,6 +387,185 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 		}
 		
 		return result;
+	}
+
+
+
+	@Override
+	public Map<String,Object> findProjectEvaStat(Integer projectId) throws RestServiceException {
+		Map<String,Object> resultMap = new HashMap<>();
+		int totalProEvaRaterNum = 0;
+		if (projectId == null || projectId == 0) {
+			throw new RestServiceException("项目id不能为空"+projectId);
+		}
+
+		List<DevaluationModelDetail> result = new ArrayList<>();
+
+		DevaluationModel activeProModel = findSysActiveProModel();
+		List<DevaluationModelDetail> details = findSysEvaModelDetailList(activeProModel);
+
+		if (details != null && CollectionUtils.isNotEmpty(details)) {
+			Map<String,BigDecimal> detailModelTotalScore = new HashMap<String,BigDecimal>();
+			Map<String,Integer> detailModelTotalRater = new HashMap<String,Integer>();			
+			List<Evaluation> proEvas = kffEvaluationService.findProEvaByProjectId(projectId);
+			if(CollectionUtils.isNotEmpty(proEvas)){
+				for(Evaluation eva:proEvas){
+					try{
+						eva.getTotalScore();
+						List<DevaluationModel> models =JSON.parseArray(eva.getProfessionalEvaDetail(), DevaluationModel.class);
+					    if(CollectionUtils.isEmpty(models)){
+					    	continue;
+					    }
+					    BigDecimal score = BigDecimal.ZERO;
+					    Integer raterNum = 0;
+					    for(DevaluationModel model:models){
+					    	if(StringUtils.isBlank(model.getModelName())){
+					    		continue;
+					    	}
+					    	score = detailModelTotalScore.get(model.getModelName())==null?BigDecimal.ZERO:detailModelTotalScore.get(model.getModelName());
+					    	score = score.add(model.getScore() == null? BigDecimal.ZERO:model.getScore());
+					    	detailModelTotalScore.put(model.getModelName(),score);
+					    	raterNum = detailModelTotalRater.get(model.getModelName()) == null?0:detailModelTotalRater.get(model.getModelName());
+					    	raterNum++;
+					    	detailModelTotalRater.put(model.getModelName(), raterNum);
+
+					    }
+					    totalProEvaRaterNum ++ ; 
+					}catch(Exception e){
+						logger.error("专业评测统计解析评测内容出错,evaId:"+eva.getEvaluationId()+" details:"+eva.getProfessionalEvaDetail());
+					}
+							
+				}
+				
+			}
+			
+			for(DevaluationModelDetail detail:details){
+				
+			    BigDecimal totalScore = BigDecimal.ZERO;
+				detail.setRaterNum(detailModelTotalRater.get(detail.getDetailName())==null?0:detailModelTotalRater.get(detail.getDetailName()));
+				if(Objects.equal(0, detail.getRaterNum())){
+					detail.setTotalScore(BigDecimal.ZERO);
+				}else{
+					totalScore = detailModelTotalScore.get(detail.getDetailName())==null?BigDecimal.ZERO:detailModelTotalScore.get(detail.getDetailName());
+					detail.setTotalScore(totalScore.divide(new BigDecimal(detail.getRaterNum())).setScale(1, RoundingMode.HALF_DOWN));
+				}
+									
+			}
+		}	
+			//end
+			
+//			PaginationQuery query = new PaginationQuery();
+//			query.addQueryData("modelId", "3");
+//			query.addQueryData("sortField", "comments_num");
+//			query.addQueryData("status", "1");
+//			query.setPageIndex(1);
+//			query.setRowsPerPage(100);
+//			PageResult<Projectevastat> proEvaStat = kffProjectevastatService.findPage(query);
+//			Map<String, Object> evaMap = new HashMap<String, Object>();
+//			if (proEvaStat != null && CollectionUtils.isNotEmpty(proEvaStat.getRows())) {
+//				for (Projectevastat eva : proEvaStat.getRows()) {
+//
+//				}
+//			}
+//			for (DevaluationModelDetail detail : details) {
+//				float x = 8.1f;
+//				if (detail.getId() == 10)
+//					x = 9.1f;
+//				if (detail.getId() == 13)
+//					x = 6.1f;
+//				BigDecimal totalScore = BigDecimal.valueOf(x).setScale(1, BigDecimal.ROUND_HALF_DOWN);
+//				detail.setTotalScore(totalScore);
+//				detail.setRaterNum(Integer.valueOf(RandomUtil.produceNumber(3)));
+//
+//				result.add(detail);
+//			}
+//		  }
+		 
+		resultMap.put("projectEvaStat", details);
+		resultMap.put("totalProEvaRaterNum", totalProEvaRaterNum);
+		return resultMap;
+	}
+
+
+	private DevaluationModel findSysActiveProModel(){
+		DevaluationModel result = null;
+		List<DevaluationModel> modelPage = kffDevaluationModelService.selectEvaluationModelByModelType(KFFConstants.EVA_MODEL_TYPE_FULL_PRO);
+		if (modelPage == null || CollectionUtils.isEmpty(modelPage)) {
+			// throw new RestServiceException("当前不存在生效中的系统模型");
+			return result;
+		}
+		result = modelPage.get(0);
+		return result;
+	}
+	
+	private List<DevaluationModelDetail> findSysEvaModelDetailList(DevaluationModel activeProModel) throws RestServiceException {
+		List<DevaluationModelDetail> result = null;
+		if(activeProModel == null){
+			return result;
+		}
+		PaginationQuery detailQuery = new PaginationQuery();
+		detailQuery.setPageIndex(1);
+		detailQuery.setRowsPerPage(10);
+		detailQuery.addQueryData("modelId", activeProModel.getModelId() + "");
+		detailQuery.addQueryData("status", "1");
+		PageResult<DevaluationModelDetail> modelDetailList = kffDevaluationModelDetailService.findPage(detailQuery);
+
+		if (modelDetailList != null) {
+			result = modelDetailList.getRows();
+		}
+		return result;
+	}
+
+
+
+	@Override
+	public List<PostResponse> findHotEvaList(Integer projectId) throws RestServiceException {
+		//https://www.tapd.cn/21950911/bugtrace/bugs/view?bug_id=1121950911001000461
+				//规则：点赞量超过10 & 排名前2的内容
+				if (projectId == null) {
+					throw new RestServiceException("项目id不能为空");
+				}
+				//Date day7 = DateUtil.getSpecifiedDateBeforeOrAfter(7).getTime();
+				List<PostResponse> respones = new ArrayList<>();
+				PaginationQuery query = new PaginationQuery();
+				query.addQueryData("projectId", projectId + "");
+				//query.addQueryData("sortField", "comments_num");
+				query.addQueryData("sortField", "praise_num");
+				query.addQueryData("status", "1");
+				query.addQueryData("postType", "1");
+				//query.addQueryData("createTimeBegin", DateUtil.getDate(day7, "yyyy-MM-dd"));
+				query.setPageIndex(1);
+				query.setRowsPerPage(2);
+				PageResult<Post> posts = kffPostService.findPage(query);
+				if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
+					for (Post post : posts.getRows()) {
+						if(post.getPraiseNum()<10){
+							continue;
+						}
+						PostResponse response = new PostResponse();
+						BeanUtils.copyProperties(post, response);
+						if (StringUtils.isNotBlank(post.getPostSmallImages())) {
+							try {
+								List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
+								response.setPostSmallImagesList(pfl);
+							} catch (Exception e) {
+								logger.error("讨论列表解析帖子缩略图json出错:{}", e);
+							}
+						}
+						Evaluation eva = kffEvaluationService.findByPostId(post.getPostId());
+						if (eva != null) {
+							if(Objects.equal(1, eva.getModelType())){
+								continue;
+							}
+							response.setEvaluationTags(eva.getEvaluationTags());
+							response.setEvaTotalScore(eva.getTotalScore());
+							response.setEvauationContent(eva.getEvauationContent());
+							response.setProfessionalEvaDetail(eva.getProfessionalEvaDetail());
+						}
+						respones.add(response);
+					}
+				}
+				return respones;
 	}
 
 
