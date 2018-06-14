@@ -378,7 +378,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			for (Collect collect : collects.getRows()) {
 				projectIds.add(collect.getProjectId());
 			}
-			List<Follow> followedProjects = kffFollowService.findFollowedProjects((Integer) query.getQueryData().get("collectUserId"), projectIds);
+			
+			List<Follow> followedProjects = kffFollowService.findFollowedProjects(Integer.valueOf(query.getQueryData().get("collectUserId").toString()) , projectIds);
 			Set<Integer> followedProjectIds = new HashSet<>();
 			if (CollectionUtils.isNotEmpty(followedProjects)) {
 				for (Follow follow : followedProjects) {
