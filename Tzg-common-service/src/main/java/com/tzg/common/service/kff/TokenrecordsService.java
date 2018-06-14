@@ -3,7 +3,10 @@ package com.tzg.common.service.kff;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,6 +106,19 @@ public class TokenrecordsService   {
 	public List<Tokenrecords> findAllTokenrecordsUserId(Integer userId) {
 		// TODO Auto-generated method stub
 		return tokenrecordsMapper.findAllTokenrecordsUserId(userId);
+	}
+
+	public Double findTodayToken(Integer loginUserId) {
+		Map<String, Object> map = new HashMap<>();
+		long current=System.currentTimeMillis();//当前时间毫秒数
+        long zero=current/(1000*3600*24)*(1000*3600*24)-TimeZone.getDefault().getRawOffset();//今天零点零分零秒的毫秒数
+        long twelve=zero+24*60*60*1000-1;//今天23点59分59秒的毫秒数
+        Date createTimeBegin = new Date(zero);
+        Date createTimeEnd = new Date(twelve);
+		map.put("userId", loginUserId);
+		map.put("createTimeBegin", createTimeBegin);
+		map.put("createTimeEnd", createTimeEnd);
+		return tokenrecordsMapper.findTodayToken(map);
 	}
 	
 }
