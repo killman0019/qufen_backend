@@ -24,10 +24,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.tzg.common.utils.DateUtil;
 import com.tzg.common.utils.FileUtils;
+import com.tzg.common.utils.QiniuUtil;
 import com.tzg.common.utils.RandomUtil;
 import com.tzg.rest.controller.BaseController;
 import com.tzg.rest.exception.rest.RestServiceException;
-import com.tzg.rest.utils.QiniuUtil;
 import com.tzg.rest.vo.BaseResponseEntity;
 import com.tzg.rmi.service.KFFRmiService;
 
