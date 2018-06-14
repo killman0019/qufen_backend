@@ -5365,13 +5365,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		String code2Path = create2CodeNameAndPath(str);// 二维码路径
 		Create2Code.create2CodeImg(code2Path, contentselfid);// 在制定位置生成二维码
 		Create2Code.overlapImage(initPosterSysPathLast, code2Path, posterSysPathlast);
-		// createCharAtImg(text, posterSysPathlast);
-
-		// System.out.println(picUrlpro);
-		// return "upload/poster/" + str + ".png";
-		String pictureName = UUID.randomUUID().toString().replaceAll("-", "");
-		String ipurl = "D:\\opt\\file\\upload\\poster\\init\\initpic2.png";
-		String qiNiuUrl = QiniuUtil.uploadLocalPic(ipurl, pictureName);
+		String qiNiuUrl = QiniuUtil.uploadLocalPic(posterSysPathlast, str);
 		return qiNiuUrl;
 
 	}
@@ -5681,7 +5675,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 	@Override
 	public Double findTodayToken(Integer loginUserId) {
-	
-		 return kffTokenrecordsService.findTodayToken(loginUserId);
+
+		return kffTokenrecordsService.findTodayToken(loginUserId);
 	}
 }

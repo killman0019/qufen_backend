@@ -235,7 +235,7 @@ public class UserController extends BaseController {
 			UserInvation userInvation = kffRmiService.selectUseInvation(userId);
 			if (StringUtils.isEmpty(userInvation.getUserposterpic())) {
 				// 生成海报
-				posterUrl = kffRmiService.creat2Code(userId);
+				posterUrl = "http://" + kffRmiService.creat2Code(userId);
 				String code2Url = null;
 				kffRmiService.updataUserInvation(userId, posterUrl, code2Url);
 				map.put("url", posterUrl);
@@ -468,7 +468,7 @@ public class UserController extends BaseController {
 			// 根据用户的ID 查询用户的认证审核状态
 			userModel.setAuthenticationStatus(authenticationStatus);
 			userModel.setUserNick(loginaccount.getUserName());
-			userModel.setIcon(loginaccount.getIcon());		
+			userModel.setIcon(loginaccount.getIcon());
 			map.put("userModel", userModel);
 			map.put("s", token);
 			bre.setData(map);
