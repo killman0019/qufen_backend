@@ -5588,18 +5588,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (loginUserId != null) {
 			loginUser = kffUserService.findById(loginUserId);
 		}
-		/**
-		 * 
-		 * 解决登录送奖励问题
-		 * 
-		 * 
-		 */
-		if (loginUserId != null) {
-
-			registerAward(loginUserId);
-
-		}
-
+		
 		if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
 			result.setCurPageNum(posts.getCurPageNum());
 			result.setPageSize(posts.getPageSize());
