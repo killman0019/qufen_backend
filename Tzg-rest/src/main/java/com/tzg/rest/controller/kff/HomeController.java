@@ -4,10 +4,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +43,7 @@ import com.tzg.rest.controller.BaseController;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.utils.DateUtil;
+import com.tzg.rest.utils.QiniuUtil;
 import com.tzg.rest.vo.BaseResponseEntity;
 import com.tzg.rmi.service.KFFProjectPostRmiService;
 import com.tzg.rmi.service.KFFRmiService;
@@ -668,18 +671,30 @@ public class HomeController extends BaseController {
 				throw new RestServiceException("图片大于5M");
 			}
 			// 文件后缀
-			String extention = FileUtils.getFileExtension(file.getOriginalFilename());
+			/*String extention = FileUtils.getFileExtension(file.getOriginalFilename());
 			if (!FileUtils.allowedExtensionSet().contains(extention)) {
 				throw new RestServiceException("非法文件后缀" + extention);
-			}
+			}*/
 
+			String name = UUID.randomUUID().toString().replaceAll("-", "");
+			name = DateUtil.getCurrentTimeSS();
+			// jpg
+			String ext = FilenameUtils.getExtension(file.getOriginalFilename());
+			if (!FileUtils.allowedExtensionSet().contains(ext)) {
+				throw new RestServiceException("非法文件后缀" + ext);
+			}
+			
 			SystemParam systemParam = systemParamRmiService.findByCode("upload_local_path");
 			String localPath = systemParam.getVcParamValue();
 			systemParam = systemParamRmiService.findByCode("upload_file_path");
 			String urlPath = systemParam.getVcParamValue();
 			logger.info("存放路径" + systemParam);
+			
+			name = DateUtil.getCurrentTimeSS();
+			// jpg
+			
 			if (imgtype == KFFConstants.IMGTYPE_AVATARS) {
-				String currentTimeSS = DateUtil.getCurrentTimeSS();
+				/*String currentTimeSS = DateUtil.getCurrentTimeSS();
 				localPath = localPath + "avatars/" + DateUtil.getCurrentYearMonth() + "/";
 				localPath = localPath + currentTimeSS + "." + extention;
 				try {
@@ -691,7 +706,11 @@ public class HomeController extends BaseController {
 				// 更新用户头像url
 
 				urlPath = urlPath + "/avatars/" + DateUtil.getCurrentYearMonth() + "/";
-				urlPath = urlPath + currentTimeSS + "." + extention;
+				urlPath = urlPath + currentTimeSS + "." + extention;*/
+				
+				String fName =  name + "." + ext;
+				urlPath = QiniuUtil.uploadStream(file.getInputStream(), fName);
+				
 				KFFUser account = new KFFUser();
 				account.setUserId(userId);
 				account.setUpdateTime(new Date());
@@ -699,7 +718,7 @@ public class HomeController extends BaseController {
 				kffRmiService.updateUser(account);
 				resMap.put("imgUrl", urlPath);
 			} else if (imgtype == KFFConstants.IMGTYPE_POSTS) {
-				localPath = localPath + "postPic/" + DateUtil.getCurrentYearMonth() + "/";
+				/*localPath = localPath + "postPic/" + DateUtil.getCurrentYearMonth() + "/";
 				String randomStr = RandomUtil.produceString(10);
 				String currentTimeSS = DateUtil.getCurrentTimeSS();
 				localPath = localPath + currentTimeSS + "." + extention;
@@ -708,14 +727,17 @@ public class HomeController extends BaseController {
 				} catch (Exception e) {
 					logger.warn("error in uploadImgFile method createFileLocal IMGTYPE_POSTS:{}", e);
 					// throw new RestServiceException("生成文件失败");
-				}
+				}*/
 				// 返回imgurl
-				urlPath = urlPath + "/postPic/" + DateUtil.getCurrentYearMonth() + "/";
-				urlPath = urlPath + currentTimeSS + "." + extention;
+				//urlPath = urlPath + "/postPic/" + DateUtil.getCurrentYearMonth() + "/";
+				//urlPath = urlPath + currentTimeSS + "." + extention;
+				
+				String fName =  name + "." + ext;
+				urlPath = QiniuUtil.uploadStream(file.getInputStream(), fName);
 
 				resMap.put("imgUrl", urlPath);
 			} else if (imgtype == KFFConstants.IMGTYPE_PROJECTS) {
-				localPath = localPath + "projects/" + DateUtil.getCurrentYearMonth() + "/";
+				/*localPath = localPath + "projects/" + DateUtil.getCurrentYearMonth() + "/";
 				String randomStr = RandomUtil.produceString(10);
 				String currentTimeSS = DateUtil.getCurrentTimeSS();
 				localPath = localPath + currentTimeSS + "." + extention;
@@ -728,7 +750,10 @@ public class HomeController extends BaseController {
 				}
 				// 返回imgurl
 				urlPath = urlPath + "/projects/" + DateUtil.getCurrentYearMonth() + "/";
-				urlPath = urlPath + currentTimeSS + "." + extention;
+				urlPath = urlPath + currentTimeSS + "." + extention;*/
+				String fName =  name + "." + ext;
+				urlPath = QiniuUtil.uploadStream(file.getInputStream(), fName);
+				
 				logger.info("存放路径urlPath" + urlPath);
 				resMap.put("imgUrl", urlPath);
 			}
