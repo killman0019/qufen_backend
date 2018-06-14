@@ -1405,9 +1405,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 		/*// 抽取文章中的图片路径
 		*//************ begin *******************/
-		/*
 
-		*//************ end *******************/
+		// ************ end *******************/
 		// 对图片进行转化
 		if (StringUtils.isNotBlank(discussRequest.getDiscussImages())) {
 			List<String> picArray = JSON.parseArray(discussRequest.getDiscussImages(), String.class);
@@ -1599,7 +1598,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		logger.info("开始进行抽离图片");
 
 		List<String> imgSrc = GetImgUrl.getImgStr(evaluationRequest.getEvauationContent());
-		List<String> imgDB = new ArrayList<String>();
+		List<Object> imgDB = new ArrayList<Object>();
 		String replaceStr = null;
 		String evaluationSrcReplace = null;
 		int i = 0;
@@ -1630,17 +1629,26 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				} catch (Exception e) {
 					throw new RestServiceException("后台创建文件出错!");
 				}
-
-				DownImgGoodUtil.downloadPicture(img, picUrlName);
-
+				String picurlIpName = ipPicUrl + picName;
+				logger.info("img :原图片路径: " + img);
+				Boolean isExistSerive = DownImgGoodUtil.downloadPicture(img, picUrlName);
+				if (!isExistSerive) {// isExistSerive 是false
+					logger.info("启动处理图片失败预案");
+					PhotoParams photoParams = new PhotoParams();
+					photoParams.setFileUrl(img);
+					photoParams.setIsExist(false);
+					if (imgDB.size() <= 3) {
+						imgDB.add(photoParams);
+					}
+					picurlIpName = img;
+				}
 				logger.info("坑逼百度!!!!");
 
 				if (imgDB.size() <= 3) {
 					imgDB.add(picName);
 					// i = i + 1;
 				}
-				String picurlIpName = ipPicUrl + picName;
-				logger.info("img :原图片路径: " + img);
+
 				logger.info("picurlIpName : 替换后的图片路径: " + picurlIpName);
 				if (i == 0) {
 					evaluationSrcReplace = evaluationRequest.getEvauationContent().replaceAll(img, picurlIpName);
@@ -1653,7 +1661,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		logger.info("图片抽离成功!");
 		// 将图片集合转化成json
 
-		String uploadIeviwList = uploadIeviwList(imgDB);
+		// String uploadIeviwList = uploadIeviwList(imgDB);
+		String uploadIeviwList = uploadIeviwListObject(imgDB);
 		logger.info("缩略图的json串" + uploadIeviwList);
 		/************ end *******************/
 
@@ -1703,6 +1712,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 		result.put("postId", newPost.getPostId());
 		result.put("modelType", evaluation.getModelType());
+		result.put("postType", newPost.getPostType());
 		// 更新用户发帖数
 		kffUserService.increasePostNum(createUser.getUserId(), KFFConstants.POST_TYPE_EVALUATION);
 		return result;
