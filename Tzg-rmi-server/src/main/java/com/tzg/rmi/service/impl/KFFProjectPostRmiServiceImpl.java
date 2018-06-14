@@ -227,10 +227,10 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 		}
 
 		resultMap.put("evaGradeStat", finalList);
-		if (totalRaterNum == 0) {
-			resultMap.put("totalScore", 0);
-		} else {
-			resultMap.put("totalScore", totalScore.divide(new BigDecimal(totalRaterNum)).setScale(1, RoundingMode.HALF_DOWN));
+		if(totalRaterNum == 0){
+			resultMap.put("totalScore",0);
+		}else{
+			resultMap.put("totalScore", totalScore.divide(new BigDecimal(totalRaterNum),1,RoundingMode.HALF_DOWN).setScale(1, RoundingMode.HALF_DOWN));
 		}
 		resultMap.put("totalRaterNum", totalRaterNum);
 		return resultMap;
