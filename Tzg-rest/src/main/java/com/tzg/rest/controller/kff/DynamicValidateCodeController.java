@@ -236,7 +236,7 @@ public class DynamicValidateCodeController extends BaseController {
 			logger.info("cacheKey:" + cacheKey);
 
 			data.put("dynamicCode", dynamicValidateCode);
-			bre.setData(data);
+			//bre.setData(data);
 		} catch (RestServiceException e) {
 			logger.error("DynamicValidateCodeController send:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());

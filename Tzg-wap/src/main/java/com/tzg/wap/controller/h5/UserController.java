@@ -235,7 +235,7 @@ public class UserController extends BaseController {
 			UserInvation userInvation = kffRmiService.selectUseInvation(userId);
 			if (StringUtils.isEmpty(userInvation.getUserposterpic())) {
 				// 生成海报
-				posterUrl = "http://" + kffRmiService.creat2Code(userId);
+				posterUrl = "http://pic.qufen.top/" + kffRmiService.creat2Code(userId);
 				String code2Url = null;
 				kffRmiService.updataUserInvation(userId, posterUrl, code2Url);
 				map.put("url", posterUrl);

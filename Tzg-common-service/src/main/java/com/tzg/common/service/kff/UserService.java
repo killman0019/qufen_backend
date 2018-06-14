@@ -71,12 +71,11 @@ public class UserService {
 		userMapper.save(user);
 	}
 
-	public KFFUser registerH(KFFUser user) throws RestServiceException
-	{
+	public KFFUser registerH(KFFUser user) throws RestServiceException {
 		userMapper.saveUser(user);
 		return userMapper.findUserById(user.getUserId());
 	}
-	
+
 	public boolean update(KFFUser user) throws RestServiceException {
 		if (user.getUserId() == null) {
 			throw new RestServiceException("id不能为空");
@@ -111,7 +110,17 @@ public class UserService {
 			user.setPassword(SHAUtil.encode(registerRequest.getPassword()));
 		}
 		user.setUserName(KFFRestConstants.USER_NAME_PREFIX + RandomUtil.produceStringAndNumber(8));
-		user.setIcon(KFFRestConstants.DEFAULT_USER_ICON);
+		Integer randomNumber = RandomUtil.randomNumber(1, 3);
+		String userIconstr = null;
+
+		if (randomNumber == 1) {
+			userIconstr = KFFRestConstants.DEFAULT_USER_ICON1;
+		} else if (randomNumber == 2) {
+			userIconstr = KFFRestConstants.DEFAULT_USER_ICON2;
+		} else if (randomNumber == 3) {
+			userIconstr = KFFRestConstants.DEFAULT_USER_ICON3;
+		}
+		user.setIcon(userIconstr);
 		user.setCreateTime(createTime);
 		user.setUpdateTime(createTime);
 		user.setUserType(1);
@@ -164,31 +173,31 @@ public class UserService {
 			Integer userId = loninUser.getUserId();
 			System.err.println("登录用户的ID  :" + userId);
 			// 根据用户id去tokenaward表中获取发放状态 grantType
-			if(userId != null) {
-				
+			if (userId != null) {
+
 				registerAward(userId);
 			}
-		/*	List<Tokenaward> findByUserId = tokenawardService.findByUserId(userId);
-			for (Tokenaward tokenaward : findByUserId) {
-				if(tokenaward != null) {
-					if(tokenaward.getGrantType() != null) {
-						
-						if ( tokenaward.getGrantType() == 2) {
+			/*	List<Tokenaward> findByUserId = tokenawardService.findByUserId(userId);
+				for (Tokenaward tokenaward : findByUserId) {
+					if(tokenaward != null) {
+						if(tokenaward.getGrantType() != null) {
 							
-							// 调用发放接口
-							// AwardPortService awardPortService = new AwardPortService();
-							// Integer tokenawardUserid = tokenaward.getUserId();
-							// awardPortService.registerAward(userId);
-							registerAward(userId);
-							
-							tokenaward.setGrantType(1);
-							tokenawardService.update(tokenaward);
+							if ( tokenaward.getGrantType() == 2) {
+								
+								// 调用发放接口
+								// AwardPortService awardPortService = new AwardPortService();
+								// Integer tokenawardUserid = tokenaward.getUserId();
+								// awardPortService.registerAward(userId);
+								registerAward(userId);
+								
+								tokenaward.setGrantType(1);
+								tokenawardService.update(tokenaward);
+							}
 						}
 					}
-				}
-			
-			}*/
-			
+				
+				}*/
+
 		} else {
 			// 用户名登录
 			query.addQueryData("userName", loginName);
@@ -203,8 +212,8 @@ public class UserService {
 			}
 			Integer userId = loninUser.getUserId();
 			// 根据用户id去tokenaward表中获取发放状态 grantType
-			if(userId != null) {
-				
+			if (userId != null) {
+
 				registerAward(userId);
 			}
 			/*List<Tokenaward> findByUserId = tokenawardService.findByUserId(userId);
@@ -239,8 +248,8 @@ public class UserService {
 
 		// 更新用户登录时间
 		if (user != null) {
-		//	KFFUser updateLastLoginTime = new KFFUser();
-		//	updateLastLoginTime.setUserId(user.getUserId());
+			// KFFUser updateLastLoginTime = new KFFUser();
+			// updateLastLoginTime.setUserId(user.getUserId());
 			user.setLastLoginDateTime(new Date());
 			userMapper.update(user);
 		}
@@ -284,13 +293,12 @@ public class UserService {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("mobile", phoneNumber);
 		map.put("status", "1");
-		
+
 		List<KFFUser> users = userMapper.findAllPage(map);
 		if (CollectionUtils.isNotEmpty(users)) {
 			awardPortService.issue(users.get(0).getUserId());
 			return users.get(0);
-			
-			
+
 		}
 		return null;
 	}
@@ -339,7 +347,6 @@ public class UserService {
 	 * }
 	 */
 
-
 	public KFFUser saveUserByphonePass(String phoneNumber, Integer invaUserId, String password) {
 
 		Date createTime = new Date();
@@ -349,7 +356,17 @@ public class UserService {
 			user.setPassword(SHAUtil.encode(password));
 		}
 		user.setUserName(KFFRestConstants.USER_NAME_PREFIX + RandomUtil.produceStringAndNumber(8));
-		user.setIcon(KFFRestConstants.DEFAULT_USER_ICON);
+		Integer randomNumber = RandomUtil.randomNumber(1, 3);
+		String userIconstr = null;
+
+		if (randomNumber == 1) {
+			userIconstr = KFFRestConstants.DEFAULT_USER_ICON1;
+		} else if (randomNumber == 2) {
+			userIconstr = KFFRestConstants.DEFAULT_USER_ICON2;
+		} else if (randomNumber == 3) {
+			userIconstr = KFFRestConstants.DEFAULT_USER_ICON3;
+		}
+		user.setIcon(userIconstr);
 		user.setCreateTime(createTime);
 		user.setUpdateTime(createTime);
 		user.setUserType(1);
@@ -374,7 +391,7 @@ public class UserService {
 			user.setReferUserId(null);
 
 		}
-		
+
 		return registerH(user);
 
 	}
@@ -471,18 +488,18 @@ public class UserService {
 		}
 
 	}
-	
+
 	public void increasePostNum(Integer userId, int postType) {
-		if(userId == null){
+		if (userId == null) {
 			throw new RestServiceException("用户不能为空");
 		}
-		if(postType ==KFFConstants.POST_TYPE_ARTICLE){
+		if (postType == KFFConstants.POST_TYPE_ARTICLE) {
 			userMapper.increaseArticleNum(userId);
-		}else if(postType == KFFConstants.POST_TYPE_EVALUATION){
+		} else if (postType == KFFConstants.POST_TYPE_EVALUATION) {
 			userMapper.increaseEvaNum(userId);
-		}else if(postType==KFFConstants.POST_TYPE_DISCUSS){
+		} else if (postType == KFFConstants.POST_TYPE_DISCUSS) {
 			userMapper.increaseDiscussNum(userId);
 		}
-		
+
 	}
 }
