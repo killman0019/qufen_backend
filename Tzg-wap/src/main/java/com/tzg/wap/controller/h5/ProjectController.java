@@ -332,11 +332,9 @@ public class ProjectController extends BaseController {
 		try {
 			List<String> projectCodeAndCName = new ArrayList<String>();
 			for (KFFProject kffProject : kffProjects) {
-				// getProjectChineseName
-				if (null != kffProject) {
-					projectCodeAndCName.add(kffProject.getProjectCode() + "/" + kffProject.getProjectChineseName());
-				}
+				projectCodeAndCName.add(kffProject.getProjectChineseName() + "/" + kffProject.getProjectCode());
 			}
+
 			map.put("projectCodeAndCName", projectCodeAndCName);
 			bre.setData(map);
 		} catch (RestServiceException e) {
