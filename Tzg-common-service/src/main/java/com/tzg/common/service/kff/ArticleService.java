@@ -62,12 +62,12 @@ public class ArticleService {
 		}
 		return result;
 	}
-	@Transactional(readOnly=true)
+
 	public Article findByPostId(Integer postId)  throws RestServiceException {
 		return articleMapper.findByPostId(postId);
 	}
 	
-	@Transactional(readOnly=true)
+
 	public Article selectArticleByPostId(Integer postId) {
 
 		return articleMapper.findByPostId(postId);

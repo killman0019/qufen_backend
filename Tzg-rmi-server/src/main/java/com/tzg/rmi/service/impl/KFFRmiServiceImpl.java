@@ -927,7 +927,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					response.setEvaluationId(eva.getEvaluationId());
 					response.setEvauationContent(eva.getEvauationContent());
 					response.setTotalScore(eva.getTotalScore());
-					response.setModelType(eva.getModelType());
 				}
 				respones.add(response);
 			}
@@ -1498,9 +1497,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (createUser == null) {
 			throw new RestServiceException("用户不存在" + evaluationRequest.getCreateUserId());
 		}
-
-		BigDecimal totalScore = evaluationRequest.getTotalScore() == null ? BigDecimal.ZERO : evaluationRequest.getTotalScore();
-		// 专业评测总分计算
+		KFFProject project = kffProjectService.findById(evaluationRequest.getProjectId());
+		if (project == null) {
+			throw new RestServiceException("项目不存在" + evaluationRequest.getProjectId());
+		}
+		BigDecimal totalScore = evaluationRequest.getTotalScore() == null?BigDecimal.ZERO:evaluationRequest.getTotalScore();
+		//专业评测总分计算
         if(Objects.equal(2, evaluationRequest.getModelType())){
 			try {
 				List<DevaluationModel> models = JSON.parseArray(evaluationRequest.getProfessionalEvaDetail(), DevaluationModel.class);
