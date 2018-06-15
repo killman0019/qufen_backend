@@ -1497,7 +1497,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (createUser == null) {
 			throw new RestServiceException("用户不存在" + evaluationRequest.getCreateUserId());
 		}
-		KFFProject project = kffProjectService.findById(evaluationRequest.getProjectId());
 		if (project == null) {
 			throw new RestServiceException("项目不存在" + evaluationRequest.getProjectId());
 		}
