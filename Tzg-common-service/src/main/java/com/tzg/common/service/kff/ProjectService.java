@@ -127,7 +127,7 @@ public class ProjectService   {
 		}
 		originalTotal = originalTotal.multiply(new BigDecimal(raterNum));
 		totalScore = originalTotal.add(totalScore);
-		totalScore = totalScore.divide(new BigDecimal(raterNum+1)).setScale(1, RoundingMode.HALF_DOWN);
+		totalScore = totalScore.divide(new BigDecimal(raterNum+1),1,RoundingMode.HALF_DOWN).setScale(1, RoundingMode.HALF_DOWN);
 		project.setTotalScore(totalScore);
 	
 		projectMapper.updateTotalScore(project);
