@@ -89,6 +89,7 @@ import com.tzg.common.utils.H5AgainDeltagsUtil;
 import com.tzg.common.utils.HexUtil;
 import com.tzg.common.utils.DownImgGoodUtil;
 import com.tzg.common.utils.QiniuUtil;
+import com.tzg.common.utils.sendTelephone;
 import com.tzg.common.utils.rest.AliyunConstant;
 import com.tzg.common.utils.Numbers;
 import com.tzg.common.utils.RandomUtil;
@@ -5149,7 +5150,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// AliyunConstant.SMS_APP_KEY, AliyunConstant.SMS_SECRET);
 
 		Map<String, String> map = new HashMap<String, String>();
-		// phone = "15856983323";
+		// 随机使用手机号发送信息
+		// phone = sendTelephone.sendTele();
 		// 设置超时时间-可自行调整
 		try {
 			System.setProperty("sun.net.client.defaultConnectTimeout", "10000");
@@ -5357,6 +5359,21 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		Create2Code.create2CodeImg(code2Path, contentselfid);// 在制定位置生成二维码
 		Create2Code.overlapImage(initPosterSysPathLast, code2Path, posterSysPathlast);
 		String qiNiuUrl = QiniuUtil.uploadLocalPic(posterSysPathlast, str);
+		// 将本本地的图片服务器上的图片删除
+		if (StringUtils.isNotEmpty(qiNiuUrl)) {
+			// 直接删除本地服务器上的图片
+			File file = new File(posterSysPathlast);
+			if (file.exists()) {// 说明文件存在
+				if (file.isFile()) {
+					boolean delete = file.delete();
+					if (delete) {
+						logger.info("删除成功!");
+					} else {
+						logger.info("删除失败!");
+					}
+				}
+			}
+		}
 		return qiNiuUrl;
 
 	}
@@ -5588,7 +5605,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (loginUserId != null) {
 			loginUser = kffUserService.findById(loginUserId);
 		}
-		
+
 		if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
 			result.setCurPageNum(posts.getCurPageNum());
 			result.setPageSize(posts.getPageSize());
