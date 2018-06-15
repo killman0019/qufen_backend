@@ -1507,7 +1507,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		BigDecimal totalScore = evaluationRequest.getTotalScore() == null?BigDecimal.ZERO:evaluationRequest.getTotalScore();
 		//专业评测总分计算
         if(Objects.equal(2, evaluationRequest.getModelType())){
-        try{
+  //      try{
         	if(StringUtils.isBlank(evaluationRequest.getProfessionalEvaDetail())){
         		throw new RestServiceException("专业评测打分内容不能为空");
         	}
@@ -1539,12 +1539,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
         	}
         	totalScore = totalScore.divide(new BigDecimal(100),1,RoundingMode.HALF_DOWN).setScale(1,RoundingMode.HALF_DOWN);
         	
-        }catch(Exception e){
-        		e.printStackTrace();
-        		throw new RestServiceException("专业评测分项内容格式不对"+evaluationRequest.getProfessionalEvaDetail());
-        	}
-        	
-        }
+//        }catch(Exception e){
+//        		e.printStackTrace();
+//        		throw new RestServiceException("专业评测分项内容格式不对"+evaluationRequest.getProfessionalEvaDetail());
+//        	}
+//        	
+       }
 		Post post = new Post();
 		Date now = new Date();
 		post.setCollectNum(0);
