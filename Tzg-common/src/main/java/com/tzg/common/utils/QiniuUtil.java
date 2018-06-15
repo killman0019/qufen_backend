@@ -155,9 +155,9 @@ public class QiniuUtil {
 		Configuration cfg = new Configuration(getZone());
 		UploadManager uploadManager = new UploadManager(cfg);
 		String upToken = auth.uploadToken(BUCKETNAME);
-		
+
 		try {
-		
+
 			Response response = uploadManager.put(path, fileName, upToken);
 			// 解析上传成功的结果
 			DefaultPutRet putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);
@@ -165,14 +165,10 @@ public class QiniuUtil {
 			System.out.println(putRet.hash);
 		} catch (QiniuException ex) {
 			System.out.println("本地图片上传失败!");
+
 			Response r = ex.response;
 			System.err.println(r.toString());
-			try {
-				System.err.println(r.bodyString());
-			} catch (QiniuException ex2) {
-				// ignore
-			}
-
+			return null;
 		}
 		return fileName;
 	}

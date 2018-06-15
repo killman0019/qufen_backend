@@ -332,7 +332,7 @@ public class ProjectController extends BaseController {
 		try {
 			List<String> projectCodeAndCName = new ArrayList<String>();
 			for (KFFProject kffProject : kffProjects) {
-				projectCodeAndCName.add(kffProject.getProjectChineseName() + "/" + kffProject.getProjectCode());
+				projectCodeAndCName.add(kffProject.getProjectCode() + "/" + kffProject.getProjectChineseName());
 			}
 
 			map.put("projectCodeAndCName", projectCodeAndCName);
