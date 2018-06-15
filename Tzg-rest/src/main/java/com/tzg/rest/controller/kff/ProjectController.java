@@ -126,8 +126,8 @@ public class ProjectController extends BaseController {
 			if(projectId == null){
 				throw new RestServiceException(RestErrorCode.MISSING_ARG_PROJID);
 			}	
-			//ProjectResponse project = kffRmiService.findProjectById(userId,projectId);
-          //  map.put("project", project);
+			ProjectResponse project = kffRmiService.findProjectById(userId,projectId);
+            map.put("project", project);
             //2条7天内回复数最高的讨论帖子
            // List<PostResponse> hotDiscuss = kffRmiService.findHotDiscussList(projectId);
           //  map.put("hotDiscuss", hotDiscuss);
@@ -135,7 +135,7 @@ public class ProjectController extends BaseController {
             PaginationQuery hotQuery = new PaginationQuery();
 			hotQuery.addQueryData("status", "1");
 			hotQuery.addQueryData("projectId", projectId + "");
-			hotQuery.addQueryData("postType", KFFConstants.POST_TYPE_ARTICLE + "");
+			hotQuery.addQueryData("postType", KFFConstants.POST_TYPE_EVALUATION + "");
 			hotQuery.addQueryData("parentCommentsIdNull", "YES");
 
 	        //点赞数最多的2个评论
