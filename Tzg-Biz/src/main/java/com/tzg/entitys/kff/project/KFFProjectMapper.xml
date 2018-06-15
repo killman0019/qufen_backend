@@ -199,6 +199,12 @@
 		project_id = #{projectId,jdbcType=INTEGER}
 	</update>
 	
+	<update id="updateTotalScore" parameterType="com.tzg.entitys.kff.project.KFFProject">
+		UPDATE tbproject set total_score =  #{totalScore,jdbcType=DECIMAL} 
+		WHERE
+		project_id = #{projectId,jdbcType=INTEGER}
+	</update>
+	
 	<update id="increaseRaterNum" parameterType="java.lang.Integer">
 		UPDATE tbproject set rater_num = rater_num + 1		
 		WHERE 

@@ -3,6 +3,7 @@ package com.tzg.common.service.kff;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -128,7 +129,8 @@ public class ProjectService   {
 		totalScore = originalTotal.add(totalScore);
 		totalScore = totalScore.divide(new BigDecimal(raterNum+1)).setScale(1, RoundingMode.HALF_DOWN);
 		project.setTotalScore(totalScore);
-		projectMapper.update(project);
+	
+		projectMapper.updateTotalScore(project);
 	}
 
 	
