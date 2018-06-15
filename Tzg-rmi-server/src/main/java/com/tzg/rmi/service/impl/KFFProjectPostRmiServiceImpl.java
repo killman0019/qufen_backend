@@ -290,10 +290,10 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 			result.setRowCount(posts.getRowCount());
 			result.setRowsPerPage(posts.getRowsPerPage());
 			KFFUser user = null;
-			Post realPost = null;
+			
 			for(Post post:posts.getRows()){
 				PostResponse pr = new PostResponse();	
-				
+				Post realPost = null;
 				//评测去除简单评测
 				if(Objects.equal(1, post.getPostType())){
 					user = kffUserService.findById(post.getCreateUserId());
