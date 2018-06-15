@@ -306,6 +306,8 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 						}else{
 							BeanUtils.copyProperties(realPost, pr);
 						}
+					}else if(realPost != null){
+						BeanUtils.copyProperties(realPost, pr);
 					}
 					
 					//讨论返回标签
@@ -329,6 +331,8 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 						}else{
 							BeanUtils.copyProperties(realPost, pr);
 						}
+					}else if (realPost != null){
+						BeanUtils.copyProperties(realPost, pr);
 					}
 					//讨论返回标签
 					if(realPost != null && Objects.equal(2,realPost.getPostType())){
