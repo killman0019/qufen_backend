@@ -221,8 +221,7 @@
 	</delete>
 
 	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
-		SELECT
-		<include refid="columns" /> 
+	    SELECT <include refid="columns"/> 
 	<![CDATA[
 		FROM tbproject 
 		WHERE 
@@ -236,15 +235,13 @@
 	</select>
 
 	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
-		select
-		<include refid="columns" />
-		from tbproject where status=1
-		<include refid="queryWhere" />
-		<choose>
-			<when test="sortField != null and sortField != ''">
-				ORDER BY ${sortField} DESC
-			</when>
-			<otherwise>
+		select <include refid="columns"/>  from tbproject where status=1
+		<include refid="queryWhere"/> 
+		 <choose>
+	            <when test="sortField != null and sortField != ''">
+	               ORDER BY ${sortField} DESC
+	            </when>
+	            <otherwise>
 	                <![CDATA[ ORDER BY project_id desc ]]>
 			</otherwise>
 		</choose>
@@ -253,15 +250,13 @@
 
 
 	<select id="findProjectByCode" resultMap="BaseResultMap" parameterType="java.util.Map">
-		select
-		<include refid="columns" />
-		from tbproject where status=1
-		<include refid="queryWhereByCode" />
-		<choose>
-			<when test="sortField != null and sortField != ''">
-				ORDER BY ${sortField} DESC
-			</when>
-			<otherwise>
+		select <include refid="columns"/>  from tbproject where status=1
+		<include refid="queryWhereByCode"/> 
+		 <choose>
+	            <when test="sortField != null and sortField != ''">
+	               ORDER BY ${sortField} DESC
+	            </when>
+	            <otherwise>
 	                <![CDATA[ ORDER BY project_code ASC ]]>
 			</otherwise>
 		</choose>
@@ -274,7 +269,7 @@
 			and state = #{state}
 		</if>
 		<if test="projectCode != null and projectCode.trim() != ''">
-			and ( project_code like CONCAT('%', #{projectCode},'%') or project_english_name like CONCAT('%', #{projectCode},'%') )
+		and ( project_code like CONCAT('%', #{projectCode},'%') or project_english_name like CONCAT('%', #{projectCode},'%') or project_chinese_name like CONCAT('%', #{projectCode},'%'))
 		</if>
 
 	</sql>

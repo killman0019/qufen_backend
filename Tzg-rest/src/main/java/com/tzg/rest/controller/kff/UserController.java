@@ -564,7 +564,7 @@ public class UserController extends BaseController {
 			PaginationQuery query = new PaginationQuery();
 			query.addQueryData("followUserId", userId + "");
 			query.addQueryData("followType", followType + "");
-
+			query.addQueryData("status", "1");
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
 			PageResult<FollowResponse> result = kffRmiService.findPageMyFollow(query);
