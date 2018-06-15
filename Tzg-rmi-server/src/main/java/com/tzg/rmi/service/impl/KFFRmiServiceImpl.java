@@ -1861,7 +1861,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 							Tokenaward tokenaward = new Tokenaward();
 							if (praiseId.getStatus() == 1 && validPraise > 0 && validPraise != 0) {
 								// 证明是有效赞
-								if (kffPostService.findById(postId).getPraiseNum() == 500) {
+								if (kffPostService.findById(postId).getPraiseNum() == 10) {
 									tokenrecords.setFunctionDesc("点赞奖励(内容)");
 									tokenrecords.setFunctionType(17);
 									tokenrecords.setAmount(new BigDecimal(pc2 * createPUF + meet1)); // 点赞奖励生成流水
@@ -2050,7 +2050,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						if (praiseId.getStatus() == 1 && validPraise > 0 && validPraise != 0) {
 							// 证明是有效赞
 							if (praiseId.getPraiseType() == 1) {
-								if (kffPostService.findById(postId).getPraiseNum() == 500) {
+								if (kffPostService.findById(postId).getPraiseNum() == 10) {
 									tokenrecords.setFunctionDesc("点赞奖励(内容)");
 									tokenrecords.setFunctionType(17);
 									tokenrecords.setAmount(new BigDecimal(wz * createPUF + meet)); // 点赞奖励生成流水
