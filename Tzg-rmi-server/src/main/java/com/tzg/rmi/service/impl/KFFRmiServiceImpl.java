@@ -380,11 +380,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			for (Collect collect : collects.getRows()) {
 				projectIds.add(collect.getProjectId());
 			}
-			if(query.getQueryData().get("collectUserId") == null){
+			if (query.getQueryData().get("collectUserId") == null) {
 				throw new RestServiceException("用户ID不能为空");
 			}
 			Integer userId = Integer.parseInt(query.getQueryData().get("collectUserId").toString());
-			List<Follow> followedProjects = kffFollowService.findFollowedProjects(userId,projectIds);
+			List<Follow> followedProjects = kffFollowService.findFollowedProjects(userId, projectIds);
 			Set<Integer> followedProjectIds = new HashSet<>();
 			if (CollectionUtils.isNotEmpty(followedProjects)) {
 				for (Follow follow : followedProjects) {
@@ -631,18 +631,19 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (project.getProjectDesc().length() > 3000) {
 			throw new RestServiceException("项目描述信息长度超限");
 		}
-//		if(Objects.equal(1, project.getListed())&&StringUtils.isBlank(project.getIssueDateStr())){
-//			throw new RestServiceException("已上市项目请填写上市时间");
-//		}
+		// if(Objects.equal(1,
+		// project.getListed())&&StringUtils.isBlank(project.getIssueDateStr())){
+		// throw new RestServiceException("已上市项目请填写上市时间");
+		// }
 		project.setCreateTime(now);
 		project.setUpdateTime(now);
 		project.setState(1);// 1；待审核；2-审核通过；3-拒绝
 		project.setStatus(1);
-		//上市时间默认提交时间
+		// 上市时间默认提交时间
 		project.setIssueDate(now);
-//        if(StringUtils.isNotBlank(project.getIssueDateStr())){
-//        	project.setIssueDate(DateUtil.getDate(project.getIssueDateStr(), "yyyy-MM-dd"));
-//        }
+		// if(StringUtils.isNotBlank(project.getIssueDateStr())){
+		// project.setIssueDate(DateUtil.getDate(project.getIssueDateStr(), "yyyy-MM-dd"));
+		// }
 		kffProjectService.save(project);
 		return null;
 	}
@@ -1504,47 +1505,48 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (project == null) {
 			throw new RestServiceException("项目不存在" + evaluationRequest.getProjectId());
 		}
-		BigDecimal totalScore = evaluationRequest.getTotalScore() == null?BigDecimal.ZERO:evaluationRequest.getTotalScore();
-		//专业评测总分计算
-        if(Objects.equal(2, evaluationRequest.getModelType())){
-  //      try{
-        	if(StringUtils.isBlank(evaluationRequest.getProfessionalEvaDetail())){
-        		throw new RestServiceException("专业评测打分内容不能为空");
-        	}
-        	JSONArray ja = JSON.parseArray(evaluationRequest.getProfessionalEvaDetail());
-        	if(ja == null || ja.size() ==0){
-        		throw new RestServiceException("专业评测分项内容不能为空"+evaluationRequest.getProfessionalEvaDetail());
-        	}
-        	
-        	//临时兼容score传入字符串
-        	List<DevaluationModel> models = new ArrayList<>();
-        	for(int i = 0;i<ja.size();i++){
-        		JSONObject jo = ja.getJSONObject(i);
-        		DevaluationModel model = new DevaluationModel();
-        		model.setModelId((Integer)jo.get("modelId"));
-        		model.setModelName(jo.getString("modelName"));
-        		model.setModelWeight((Integer)jo.getInteger("modelWeight"));
-        		String score = (String)jo.get("score");
-        		model.setScore(new BigDecimal(score));
-        		models.add(model);
-        	}
-        	/*
-        	List<DevaluationModel> models =JSON.parseArray(evaluationRequest.getProfessionalEvaDetail(), DevaluationModel.class);
-        	if(models == null || models.size() ==0){
-        		throw new RestServiceException("专业评测分项内容不能为空"+evaluationRequest.getProfessionalEvaDetail());
-        	}
-        	*/
-        	for(DevaluationModel model:models){
-        		totalScore = totalScore.add(model.getScore().multiply(new BigDecimal(model.getModelWeight())));
-        	}
-        	totalScore = totalScore.divide(new BigDecimal(100),1,RoundingMode.HALF_DOWN).setScale(1,RoundingMode.HALF_DOWN);
-        	
-//        }catch(Exception e){
-//        		e.printStackTrace();
-//        		throw new RestServiceException("专业评测分项内容格式不对"+evaluationRequest.getProfessionalEvaDetail());
-//        	}
-//        	
-       }
+		BigDecimal totalScore = evaluationRequest.getTotalScore() == null ? BigDecimal.ZERO : evaluationRequest.getTotalScore();
+		// 专业评测总分计算
+		if (Objects.equal(2, evaluationRequest.getModelType())) {
+			// try{
+			if (StringUtils.isBlank(evaluationRequest.getProfessionalEvaDetail())) {
+				throw new RestServiceException("专业评测打分内容不能为空");
+			}
+			JSONArray ja = JSON.parseArray(evaluationRequest.getProfessionalEvaDetail());
+			if (ja == null || ja.size() == 0) {
+				throw new RestServiceException("专业评测分项内容不能为空" + evaluationRequest.getProfessionalEvaDetail());
+			}
+
+			// 临时兼容score传入字符串
+			List<DevaluationModel> models = new ArrayList<>();
+			for (int i = 0; i < ja.size(); i++) {
+				JSONObject jo = ja.getJSONObject(i);
+				DevaluationModel model = new DevaluationModel();
+				model.setModelId((Integer) jo.get("modelId"));
+				model.setModelName(jo.getString("modelName"));
+				model.setModelWeight((Integer) jo.getInteger("modelWeight"));
+				String score = String.valueOf(jo.get("score"));
+				model.setScore(new BigDecimal(score));
+				models.add(model);
+			}
+			/*
+			List<DevaluationModel> models =JSON.parseArray(evaluationRequest.getProfessionalEvaDetail(), DevaluationModel.class);
+			if(models == null || models.size() ==0){
+				throw new RestServiceException("专业评测分项内容不能为空"+evaluationRequest.getProfessionalEvaDetail());
+			}
+			*/
+			for (DevaluationModel model : models) {
+				totalScore = totalScore.add(model.getScore().multiply(new BigDecimal(model.getModelWeight())));
+			}
+			totalScore = totalScore.divide(new BigDecimal(100), 1, RoundingMode.HALF_DOWN).setScale(1, RoundingMode.HALF_DOWN);
+
+			// }catch(Exception e){
+			// e.printStackTrace();
+			// throw new
+			// RestServiceException("专业评测分项内容格式不对"+evaluationRequest.getProfessionalEvaDetail());
+			// }
+			//
+		}
 		Post post = new Post();
 		Date now = new Date();
 		post.setCollectNum(0);
@@ -2164,10 +2166,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			}
 		}
 
-        Post latestPost = kffPostService.findById(postId);
-        if(latestPost != null){
-        	result = latestPost.getPraiseNum() == null ? 0 : (latestPost.getPraiseNum());
-        }
+		Post latestPost = kffPostService.findById(postId);
+		if (latestPost != null) {
+			result = latestPost.getPraiseNum() == null ? 0 : (latestPost.getPraiseNum());
+		}
 		return result;
 	}
 
@@ -2246,7 +2248,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			throw new RestServiceException("用户不存在" + userId);
 		}
 
-		if(Objects.equal(3, followType)&&Objects.equal(userId, followedId)){
+		if (Objects.equal(3, followType) && Objects.equal(userId, followedId)) {
 			throw new RestServiceException("不用关注本人");
 		}
 		Integer followedUserId = 0;
@@ -2834,7 +2836,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			PaginationQuery childQuery = new PaginationQuery();
 			childQuery.setPageIndex(1);
 			childQuery.setRowsPerPage(2);
-			//childQuery.addQueryData("postType", KFFConstants.POST_TYPE_ARTICLE + "");
+			// childQuery.addQueryData("postType", KFFConstants.POST_TYPE_ARTICLE + "");
 			for (Comments comment : comments.getRows()) {
 				Comments finalComment = new Comments();
 				BeanUtils.copyProperties(comment, finalComment);
