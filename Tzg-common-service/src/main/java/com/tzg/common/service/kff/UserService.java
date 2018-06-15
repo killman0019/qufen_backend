@@ -500,6 +500,25 @@ public class UserService {
 		} else if (postType == KFFConstants.POST_TYPE_DISCUSS) {
 			userMapper.increaseDiscussNum(userId);
 		}
-
+		
 	}
+
+	public void increasePraiseNum(Integer userId) {
+		if(userId == null){
+			throw new RestServiceException("用户不能为空");
+		}
+		
+		userMapper.increasePraiseNum(userId);
+		
+	}
+
+	public void decreasePraiseNum(Integer userId) {
+		if(userId == null){
+			throw new RestServiceException("用户不能为空");
+		}
+		
+		userMapper.decreasePraiseNum(userId);
+		
+	}
+
 }
