@@ -3,6 +3,7 @@ package com.tzg.rmi.service.impl;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -1536,7 +1537,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
         	for(DevaluationModel model:models){
         		totalScore = totalScore.add(model.getScore().multiply(new BigDecimal(model.getModelWeight())));
         	}
-        	totalScore = totalScore.divide(new BigDecimal(100)).setScale(1);
+        	totalScore = totalScore.divide(new BigDecimal(100),1,RoundingMode.HALF_DOWN).setScale(1,RoundingMode.HALF_DOWN);
         	
         }catch(Exception e){
         		e.printStackTrace();
