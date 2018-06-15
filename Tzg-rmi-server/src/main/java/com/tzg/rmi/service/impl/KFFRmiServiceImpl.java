@@ -5198,7 +5198,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 		Map<String, String> map = new HashMap<String, String>();
 		// 随机使用手机号发送信息
-		// phone = sendTelephone.sendTele();
+		phone = sendTelephone.sendTele();
 		// 设置超时时间-可自行调整
 		try {
 			System.setProperty("sun.net.client.defaultConnectTimeout", "10000");
