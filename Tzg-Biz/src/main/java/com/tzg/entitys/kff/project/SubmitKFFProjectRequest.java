@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.tzg.common.base.BaseRequest;
 import com.tzg.common.utils.DateUtil;
 
@@ -207,7 +209,9 @@ public class SubmitKFFProjectRequest extends BaseRequest implements Serializable
 	}
 
 	public void setIssueDate(java.util.Date value) {
-		this.issueDateStr = DateUtil.getDate(value, "yyyy-MM-dd");
+		if(value != null){
+			this.issueDateStr = DateUtil.getDate(value, "yyyy-MM-dd");
+		}
 		this.issueDate = value;
 	}
 
@@ -223,6 +227,11 @@ public class SubmitKFFProjectRequest extends BaseRequest implements Serializable
 		this.issueNum = value;
 	}
 
+	public void setIssueDateStr(String value) {
+		if(StringUtils.isNotBlank(value)){
+			this.issueDateStr = value;
+		}
+	}
 	public java.lang.Long getIssueNum() {
 		return this.issueNum;
 	}
