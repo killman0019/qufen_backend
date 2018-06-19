@@ -32,7 +32,18 @@ public class BaseRequest implements Serializable {
 	private Integer commentsId;
 	
 	
+	private String policy;
 	
+	
+	
+	public String getPolicy() {
+		return policy;
+	}
+
+	public void setPolicy(String policy) {
+		this.policy = policy;
+	}
+
 	public Integer getCommentsId() {
 		return commentsId;
 	}

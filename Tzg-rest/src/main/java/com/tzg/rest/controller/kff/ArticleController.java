@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
+import com.tzg.common.base.BaseRequest;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.entitys.kff.article.ArticleRequest;
@@ -29,6 +31,7 @@ import com.tzg.entitys.kff.comments.CommentsRequest;
 import com.tzg.rest.controller.BaseController;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
+import com.tzg.rest.utils.PolicyUtil;
 import com.tzg.rest.vo.BaseResponseEntity;
 import com.tzg.rmi.service.KFFRmiService;
 
@@ -52,12 +55,30 @@ public class ArticleController extends BaseController {
 	 */
 	@RequestMapping(value = "/saveArticle", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public BaseResponseEntity saveArticle(HttpServletRequest request) {
+	public BaseResponseEntity saveArticle(BaseRequest baseRequest,HttpServletRequest request) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		Map<String, Object> map = new HashMap<String, Object>();
 
 		try {
-			ArticleRequest articleRequest = getParamMapFromRequestPolicy(request, ArticleRequest.class);
+			//ArticleRequest articleRequest = getParamMapFromRequestPolicy(request, ArticleRequest.class);
+			String policy;
+			ArticleRequest articleRequest;
+			try{
+				policy = PolicyUtil.decryptPolicy(baseRequest.getPolicy());
+			}catch(Exception e){
+				e.printStackTrace();
+				throw new RestServiceException(RestErrorCode.DECRYPT_POLICY_ERROR);
+			}
+			try{
+				articleRequest = JSON.parseObject(policy, ArticleRequest.class);
+			}catch(Exception e){
+				e.printStackTrace();
+				throw new RestServiceException(RestErrorCode.PARSE_JSON_ERROR);
+				
+			}
+			if(null == articleRequest) {
+				throw new RestServiceException(RestErrorCode.JSON_BLANK_ERROR);
+			}
 			String token = articleRequest.getToken();
 			Integer userId = getUserIdByToken(token);
 			articleRequest.setCreateUserId(userId);
