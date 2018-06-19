@@ -51,7 +51,6 @@ public class SubmitKFFProjectRequest extends BaseRequest implements Serializable
 	/**
 	 * 发行时间
 	 */
-	private java.util.Date issueDate;
 	private java.lang.String issueDateStr;
 	/**
 	 * 发行数量
@@ -208,16 +207,6 @@ public class SubmitKFFProjectRequest extends BaseRequest implements Serializable
 		this.listed = listed;
 	}
 
-	public void setIssueDate(java.util.Date value) {
-		if(value != null){
-			this.issueDateStr = DateUtil.getDate(value, "yyyy-MM-dd");
-		}
-		this.issueDate = value;
-	}
-
-	public java.util.Date getIssueDate() {
-		return this.issueDate;
-	}
 
 	public java.lang.String getIssueDateStr() {
 		return this.issueDateStr;
@@ -228,9 +217,8 @@ public class SubmitKFFProjectRequest extends BaseRequest implements Serializable
 	}
 
 	public void setIssueDateStr(String value) {
-		if(StringUtils.isNotBlank(value)){
 			this.issueDateStr = value;
-		}
+		
 	}
 	public java.lang.Long getIssueNum() {
 		return this.issueNum;
