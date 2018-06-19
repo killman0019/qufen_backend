@@ -616,9 +616,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (StringUtils.isBlank(project.getSubmitReason())) {
 			throw new RestServiceException("推荐理由不能为空");
 		}
-		if (StringUtils.isBlank(project.getProjectDesc())) {
-			throw new RestServiceException("项目描述不能为空");
-		}
+//		if (StringUtils.isBlank(project.getProjectDesc())) {
+//			throw new RestServiceException("项目描述不能为空");
+//		}
 		if (project.getWhitepaperUrl().length() > 255) {
 			throw new RestServiceException("白皮书地址长度超限");
 		}
@@ -628,10 +628,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (project.getSubmitReason().length() > 3000) {
 			throw new RestServiceException("提交理由信息长度超限");
 		}
-		if (project.getProjectDesc().length() > 3000) {
-			throw new RestServiceException("项目描述信息长度超限");
-		}
-		 if(Objects.equal(1,project.getListed())&&StringUtils.isBlank(project.getIssueDateStr())){
+//		if (project.getProjectDesc().length() > 3000) {
+//			throw new RestServiceException("项目描述信息长度超限");
+//		}
+		 if(Objects.equal(1,projectRequest.getListed())&&StringUtils.isBlank(projectRequest.getIssueDateStr())){
 			 throw new RestServiceException("已上市项目请填写上市时间");
 		 }
 		project.setCreateTime(now);
@@ -640,8 +640,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		project.setStatus(1);
 		// 上市时间默认提交时间
 		//project.setIssueDate(now);
-		 if(StringUtils.isNotBlank(project.getIssueDateStr())){
-			 project.setIssueDate(DateUtil.getDate(project.getIssueDateStr(), "yyyy-MM-dd"));
+		 if(StringUtils.isNotBlank(projectRequest.getIssueDateStr())){
+			 project.setIssueDate(DateUtil.getDate(projectRequest.getIssueDateStr(), "yyyy-MM-dd"));
 		 }
 		kffProjectService.save(project);
 		return null;
