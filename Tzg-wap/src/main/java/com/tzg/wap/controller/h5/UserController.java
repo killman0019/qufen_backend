@@ -238,9 +238,12 @@ public class UserController extends BaseController {
 				posterUrl = "http://pic.qufen.top/" + kffRmiService.creat2Code(userId);
 				String code2Url = null;
 				kffRmiService.updataUserInvation(userId, posterUrl, code2Url);
+				System.out.println("posterUrl" + posterUrl);
 				map.put("url", posterUrl);
 			} else {
 				posterUrl = userInvation.getUserposterpic();
+				posterUrl = "http://pic.qufen.top/" + posterUrl;
+				System.out.println("posterUrlbd" + posterUrl);
 				map.put("url", posterUrl);
 			}
 		} catch (RestServiceException e) {
