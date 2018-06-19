@@ -225,8 +225,9 @@ public class ProjectController extends BaseController {
 		HashMap<String, Object> map = new HashMap<String, Object>();
 
 		try {
-			String token = (String) request.getSession().getAttribute("token");
-			Integer userId = getUserIdByToken(token);
+			// String token = (String) request.getSession().getAttribute("token");
+			// Integer userId = getUserIdByToken(token);
+			Integer userId = 1;
 			submitRequest.setSubmitUserId(userId);
 			kffRmiService.submitProject(submitRequest);
 			bre.setData(map);

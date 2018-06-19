@@ -67,7 +67,7 @@ public class ProjectResponse implements Serializable {
 	/**
 	 * 发行数量
 	 */
-	private java.lang.Integer issueNum = 0;
+	private java.lang.Long issueNum = 0L;
 	/**
 	 * 白皮书地址
 	 */
@@ -240,11 +240,11 @@ public class ProjectResponse implements Serializable {
 		return this.issueDateStr;
 	}
 
-	public void setIssueNum(java.lang.Integer value) {
+	public void setIssueNum(java.lang.Long value) {
 		this.issueNum = value;
 	}
 
-	public java.lang.Integer getIssueNum() {
+	public java.lang.Long getIssueNum() {
 		return this.issueNum;
 	}
 
