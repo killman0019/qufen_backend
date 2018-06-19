@@ -12,7 +12,7 @@
 		<result property="websiteUrl" jdbcType="VARCHAR" column="website_url" />
 		<result property="listed" jdbcType="INTEGER" column="listed" />
 		<result property="issueDate" jdbcType="DATE" column="issue_date" />
-		<result property="issueNum" jdbcType="INTEGER" column="issue_num" />
+		<result property="issueNum" jdbcType="BIGINTEGER" column="issue_num" />
 		<result property="whitepaperUrl" jdbcType="VARCHAR" column="whitepaper_url" />
 		<result property="projectTypeName" jdbcType="VARCHAR" column="project_type_name" />
 		<result property="projectTypeId" jdbcType="INTEGER" column="project_type_id" />
@@ -81,7 +81,7 @@
         	#{websiteUrl,jdbcType=VARCHAR} ,
         	#{listed,jdbcType=INTEGER} ,
         	#{issueDate,jdbcType=DATE} ,
-        	#{issueNum,jdbcType=INTEGER} ,
+        	#{issueNum,jdbcType=BIGINTEGER} ,
         	#{whitepaperUrl,jdbcType=VARCHAR} ,
         	#{projectTypeName,jdbcType=VARCHAR} ,
         	#{projectTypeId,jdbcType=INTEGER} ,
@@ -134,7 +134,7 @@
 				issue_date = #{issueDate,jdbcType=DATE} ,
 			</if>
 			<if test="issueNum != null">
-				issue_num = #{issueNum,jdbcType=INTEGER} ,
+				issue_num = #{issueNum,jdbcType="BIGINTEGER"} ,
 			</if>
 			<if test="whitepaperUrl != null">
 				whitepaper_url = #{whitepaperUrl,jdbcType=VARCHAR} ,

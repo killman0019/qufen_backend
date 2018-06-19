@@ -1492,7 +1492,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (StringUtils.isBlank(evaluationRequest.getPostTitle())) {
 			throw new RestServiceException("评测标题不能为空");
 		}
-		if (evaluationRequest.getEvauationContent().length() > 3000) {
+		if (evaluationRequest.getEvauationContent().length() > 30000) {
 			throw new RestServiceException("评测内容长度超过限制");
 		}
 		if (evaluationRequest.getPostTitle().length() > 30) {
