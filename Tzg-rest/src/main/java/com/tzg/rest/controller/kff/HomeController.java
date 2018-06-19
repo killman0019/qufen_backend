@@ -268,6 +268,7 @@ public class HomeController extends BaseController {
 			newQuery.addQueryData("status", "1");
 			newQuery.addQueryData("postId", postId + "");
 			newQuery.addQueryData("postType", KFFConstants.POST_TYPE_ARTICLE + "");
+			newQuery.addQueryData("parentCommentsIdNull", "YES");
 			newQuery.setPageIndex(params.getPageIndex());
 			newQuery.setRowsPerPage(params.getPageSize());
 			PageResult<Comments> newestComments = kffRmiService.findPageNewestComments(userId, postId, newQuery);
@@ -421,6 +422,7 @@ public class HomeController extends BaseController {
 			query.addQueryData("postId", postId + "");
 			query.addQueryData("status", KFFConstants.STATUS_ACTIVE + "");
 			query.addQueryData("postType", KFFConstants.POST_TYPE_DISCUSS + "");
+			query.addQueryData("parentCommentsIdNull", "YES");
 			PageResult<Comments> comments = kffRmiService.findPageDiscussCommentsList(userId, query);
 			map.put("comments", comments);
 
@@ -510,6 +512,7 @@ public class HomeController extends BaseController {
 			newQuery.addQueryData("status", "1");
 			newQuery.addQueryData("postId", postId + "");
 			newQuery.addQueryData("postType", KFFConstants.POST_TYPE_EVALUATION + "");
+			newQuery.addQueryData("parentCommentsIdNull", "YES");
 			newQuery.setPageIndex(params.getPageIndex());
 			newQuery.setRowsPerPage(params.getPageSize());
 			PageResult<Comments> newestComments = kffRmiService.findPageNewestComments(userId, postId, newQuery);
