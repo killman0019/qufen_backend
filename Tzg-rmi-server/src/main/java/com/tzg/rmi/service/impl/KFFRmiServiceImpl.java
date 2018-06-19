@@ -4045,14 +4045,14 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		String[] str = photoIviews.split("\\.");
 		logger.info(str[0]);
 		logger.info(str[1]);
-		photoParams.setExtension(str[1]);
+		photoParams.setExtension("ext");
 
 		logger.info(str[0].lastIndexOf("/"));
 		str[0].substring(str[0].lastIndexOf("/") + 1);
 		logger.info(str[0].substring(str[0].lastIndexOf("/") + 1));
 		// imgUrl.substring(imgUrl.lastIndexOf("/")+1);
 		photoParams.setIsExist(true);
-		photoParams.setFileName(str[0].substring(str[0].lastIndexOf("/") + 1));
+		photoParams.setFileName("qufen");
 		// 截取位置
 		// String
 		// 将对象转化成json字符串
