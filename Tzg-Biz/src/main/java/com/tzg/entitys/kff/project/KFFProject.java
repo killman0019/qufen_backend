@@ -56,7 +56,7 @@ public class KFFProject implements Serializable {
 	/**
 	 * 发行数量
 	 */
-	private java.math.BigInteger issueNum = BigInteger.ZERO;
+	private java.lang.Integer issueNum = 0;
 	/**
 	 * 白皮书地址
 	 */
@@ -229,11 +229,11 @@ public class KFFProject implements Serializable {
 		return this.issueDateStr;
 	}
 
-	public void setIssueNum(java.math.BigInteger value) {
+	public void setIssueNum(java.lang.Integer value) {
 		this.issueNum = value;
 	}
 
-	public java.math.BigInteger getIssueNum() {
+	public java.lang.Integer getIssueNum() {
 		return this.issueNum;
 	}
 
