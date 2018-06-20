@@ -1803,7 +1803,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			// 判断所点赞的文章是不是有效(1有效,0删除,无效)
 			// QfIndex byUserId = qfIndexService.findByUserId(createUserId);
 
-			if (post.getStatus() == 1  && findBycreateUserId != null && findByUserid != null) {
+			if (post.getStatus() == 1 && findBycreateUserId != null && findByUserid != null) {
 				/**
 				 * 有效赞
 				 * 
@@ -5406,7 +5406,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 		Create2Code.overlapImage(initPosterSysPathLast, code2Path, posterSysPathlast);
 		logger.info("posterSysPathlast" + posterSysPathlast);
-		String qiNiuUrl = QiniuUtil.uploadLocalPic(posterSysPathlast, str);
+		String posterQiniuName = str + "qufen" + DateUtil.getCurrentTimeSS();
+		String qiNiuUrl = QiniuUtil.uploadLocalPic(posterSysPathlast, posterQiniuName);
 		logger.info("qiNiuUrl" + qiNiuUrl);
 		if (StringUtils.isNotEmpty(qiNiuUrl)) {
 			// 直接删除本地服务器上的图片
@@ -5423,7 +5424,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			}
 		}
 		// 将二维码生成后的照片上传到七牛云上
-		String code2QiniuName = "2code" + str;
+		String code2QiniuName = "2code" + str + "qufen" + DateUtil.getCurrentTimeSS();
 		String qiNiuUrl2code = QiniuUtil.uploadLocalPic(code2Path, code2QiniuName);
 		if (StringUtils.isNotEmpty(qiNiuUrl2code)) {
 			// 直接删除本地服务器上的图片
