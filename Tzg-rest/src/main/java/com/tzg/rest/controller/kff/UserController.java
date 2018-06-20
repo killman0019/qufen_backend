@@ -1244,12 +1244,12 @@ public class UserController extends BaseController {
 			UserInvation userInvation = kffRmiService.selectUseInvation(userId);
 			if (StringUtils.isEmpty(userInvation.getUserposterpic())) {
 				// 生成海报
-				posterUrl = kffRmiService.creat2Code(userId);
+				posterUrl = "http://pic.qufen.top/" + kffRmiService.creat2Code(userId);
 				String code2Url = null;
 				kffRmiService.updataUserInvation(userId, posterUrl, code2Url);
 				map.put("url", posterUrl);
 			} else {
-				posterUrl = userInvation.getUserposterpic();
+				posterUrl = "http://pic.qufen.top/" + userInvation.getUserposterpic();
 				map.put("url", posterUrl);
 			}
 
@@ -1410,9 +1410,10 @@ public class UserController extends BaseController {
 		}
 		return bre;
 	}
-	
+
 	/**
 	 * 登录后奖励弹框
+	 * 
 	 * @param request
 	 * @return
 	 */
@@ -1425,25 +1426,25 @@ public class UserController extends BaseController {
 			JSONObject params = getParamMapFromRequestPolicy(request);
 			String token = (String) params.get("token");
 			Integer loginUserId = getUserIdByToken(token);
-			
+
 			KFFUser loginaccount = null;
 			try {
 				loginaccount = kffRmiService.findUserById(loginUserId);
-				
+
 			} catch (RestServiceException e) {
 				return this.resResult(e.getErrorCode(), e.getMessage());
 			} catch (Exception e) {
 				return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
 			}
-			
+
 			if (null == loginaccount) {
 				throw new RestServiceException(RestErrorCode.LOGIN_NAME_OR_PASSWORD_INCORRECT);
 			}
-			if(loginUserId == null) {
+			if (loginUserId == null) {
 				throw new RestServiceException("传入token有误");
-			}else {
-				
-				try{
+			} else {
+
+				try {
 					Double tokenTodaySum = kffRmiService.findTodayToken(loginUserId);
 					map.put("tokenTodaySum", tokenTodaySum);
 				} catch (RestServiceException e) {
