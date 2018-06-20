@@ -5403,7 +5403,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		String initPosterSysPathLast = initPosterSysPath + Create2Code.rand1To11() + ".png";// 选出随机海报图片
 		String code2Path = create2CodeNameAndPath(str);// 二维码路径
 		Create2Code.create2CodeImg(code2Path, contentselfid);// 在制定位置生成二维码
-	
+
 		Create2Code.overlapImage(initPosterSysPathLast, code2Path, posterSysPathlast);
 		String qiNiuUrl = QiniuUtil.uploadLocalPic(posterSysPathlast, str);
 
@@ -5422,7 +5422,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			}
 		}
 		// 将二维码生成后的照片上传到七牛云上
-		String qiNiuUrl2code = QiniuUtil.uploadLocalPic(code2Path, str);
+		String code2QiniuName = "2code" + str;
+		String qiNiuUrl2code = QiniuUtil.uploadLocalPic(code2Path, code2QiniuName);
 		if (StringUtils.isNotEmpty(qiNiuUrl2code)) {
 			// 直接删除本地服务器上的图片
 			File file = new File(code2Path);
