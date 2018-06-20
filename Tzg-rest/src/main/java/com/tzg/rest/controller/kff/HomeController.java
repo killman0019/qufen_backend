@@ -686,16 +686,16 @@ public class HomeController extends BaseController {
 			if (!FileUtils.allowedExtensionSet().contains(ext)) {
 				throw new RestServiceException("非法文件后缀" + ext);
 			}
-			
+
 			SystemParam systemParam = systemParamRmiService.findByCode("upload_local_path");
 			String localPath = systemParam.getVcParamValue();
 			systemParam = systemParamRmiService.findByCode("upload_file_path");
 			String urlPath = systemParam.getVcParamValue();
 			logger.info("存放路径" + systemParam);
-			
+
 			name = DateUtil.getCurrentTimeSS();
 			// jpg
-			
+
 			if (imgtype == KFFConstants.IMGTYPE_AVATARS) {
 				/*String currentTimeSS = DateUtil.getCurrentTimeSS();
 				localPath = localPath + "avatars/" + DateUtil.getCurrentYearMonth() + "/";
@@ -710,10 +710,10 @@ public class HomeController extends BaseController {
 
 				urlPath = urlPath + "/avatars/" + DateUtil.getCurrentYearMonth() + "/";
 				urlPath = urlPath + currentTimeSS + "." + extention;*/
-				
-				String fName =  name + "." + ext;
+
+				String fName = "avatars" + name + "." + ext;
 				urlPath = QiniuUtil.uploadStream(file.getInputStream(), fName);
-				
+
 				KFFUser account = new KFFUser();
 				account.setUserId(userId);
 				account.setUpdateTime(new Date());
@@ -732,10 +732,10 @@ public class HomeController extends BaseController {
 					// throw new RestServiceException("生成文件失败");
 				}*/
 				// 返回imgurl
-				//urlPath = urlPath + "/postPic/" + DateUtil.getCurrentYearMonth() + "/";
-				//urlPath = urlPath + currentTimeSS + "." + extention;
-				
-				String fName =  name + "." + ext;
+				// urlPath = urlPath + "/postPic/" + DateUtil.getCurrentYearMonth() + "/";
+				// urlPath = urlPath + currentTimeSS + "." + extention;
+
+				String fName = "posts" + name + "." + ext;
 				urlPath = QiniuUtil.uploadStream(file.getInputStream(), fName);
 
 				resMap.put("imgUrl", urlPath);
@@ -754,9 +754,9 @@ public class HomeController extends BaseController {
 				// 返回imgurl
 				urlPath = urlPath + "/projects/" + DateUtil.getCurrentYearMonth() + "/";
 				urlPath = urlPath + currentTimeSS + "." + extention;*/
-				String fName =  name + "." + ext;
+				String fName = "projects" + name + "." + ext;
 				urlPath = QiniuUtil.uploadStream(file.getInputStream(), fName);
-				
+
 				logger.info("存放路径urlPath" + urlPath);
 				resMap.put("imgUrl", urlPath);
 			}
@@ -824,8 +824,7 @@ public class HomeController extends BaseController {
 		}
 		return bre;
 	}
-	
-	
+
 	/**
 	 * 
 	 * @Title: counterfeitList

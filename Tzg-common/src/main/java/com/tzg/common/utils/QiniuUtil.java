@@ -150,14 +150,21 @@ public class QiniuUtil {
 		return newUrl;
 	}
 
+	/**
+	 * 本地地址上传到七牛云服务器
+	 * 
+	 * @param path
+	 * @param fileName
+	 * @return
+	 */
 	public static String uploadLocalPic(String path, String fileName) {
 		Auth auth = Auth.create(ACCESS_KEY, SECRET_KEY);
 		Configuration cfg = new Configuration(getZone());
 		UploadManager uploadManager = new UploadManager(cfg);
 		String upToken = auth.uploadToken(BUCKETNAME);
-
+		System.out.println("进入七牛云---path" + path);
+		System.out.println("进入七牛云---fileName" + fileName);
 		try {
-
 			Response response = uploadManager.put(path, fileName, upToken);
 			// 解析上传成功的结果
 			DefaultPutRet putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);
@@ -169,6 +176,6 @@ public class QiniuUtil {
 			System.err.println(r.toString());
 			return null;
 		}
-		return fileName;
+		return DOMAIN + "/" + fileName;
 	}
 }

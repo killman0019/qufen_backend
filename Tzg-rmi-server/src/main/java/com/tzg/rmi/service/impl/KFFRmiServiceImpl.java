@@ -1376,7 +1376,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				PhotoParams photoParams = new PhotoParams();
 				photoParams.setFileUrl(photoOUrl.getFileUrl());
 				photoParams.setExtension("ext");
-				photoParams.setFileName("name");
+				photoParams.setFileName("qufen");
 				photoParams.setIsExist(true);
 				picNewArray.add(photoParams);
 			}
@@ -1803,7 +1803,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			// 判断所点赞的文章是不是有效(1有效,0删除,无效)
 			// QfIndex byUserId = qfIndexService.findByUserId(createUserId);
 
-			if (post.getStatus() == 1  && findBycreateUserId != null && findByUserid != null) {
+			if (post.getStatus() == 1 && findBycreateUserId != null && findByUserid != null) {
 				/**
 				 * 有效赞
 				 * 
@@ -4079,17 +4079,18 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			PhotoParams photoParams = new PhotoParams();
 			photoParams.setFileUrl(photoIviews);
 			// 取后缀名
-			String[] str = photoIviews.split("\\.");
-			logger.info(str[0]);
-			logger.info(str[1]);
-			photoParams.setExtension(str[1]);
+			// String[] str = photoIviews.split("\\.");
+			// logger.info(str[0]);
+			// logger.info(str[1]);
+			photoParams.setExtension("ext");
 
-			logger.info(str[0].lastIndexOf("/"));
-			str[0].substring(str[0].lastIndexOf("/") + 1);
-			logger.info(str[0].substring(str[0].lastIndexOf("/") + 1));
+			// logger.info(str[0].lastIndexOf("/"));
+			// str[0].substring(str[0].lastIndexOf("/") + 1);
+			// /logger.info(str[0].substring(str[0].lastIndexOf("/") + 1));
 			// imgUrl.substring(imgUrl.lastIndexOf("/")+1);
 			/** 88888888888888888888888888 ***/
-			photoParams.setFileName(str[0].substring(str[0].lastIndexOf("/") + 1));
+			// photoParams.setFileName(str[0].substring(str[0].lastIndexOf("/") + 1));
+			photoParams.setFileName("qufen");
 			photoParams.setIsExist(true);
 			// 截取位置
 			// String
@@ -5180,7 +5181,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	@Override
 	public void updataUserInvation(Integer userId, String posterUrl, String code2Url) throws RestServiceException {
 		String str = HexUtil.userIdTo2code(userId);
-		code2Url = "/upload/2code/" + DateUtil.getCurrentYearMonth() + "/" + str + ".png";
+		code2Url = "http://pic.qufen.top/" + "2code" + str + "qufen";
 		userInvationService.updataUserInvation(userId, posterUrl, code2Url);
 
 	}
@@ -5405,8 +5406,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		Create2Code.create2CodeImg(code2Path, contentselfid);// 在制定位置生成二维码
 
 		Create2Code.overlapImage(initPosterSysPathLast, code2Path, posterSysPathlast);
-		String qiNiuUrl = QiniuUtil.uploadLocalPic(posterSysPathlast, str);
-
+		logger.info("posterSysPathlast" + posterSysPathlast);
+		String posterQiniuName = str + "qufen" + DateUtil.getCurrentTimeSS();
+		String qiNiuUrl = QiniuUtil.uploadLocalPic(posterSysPathlast, posterQiniuName);
+		logger.info("qiNiuUrl" + qiNiuUrl);
 		if (StringUtils.isNotEmpty(qiNiuUrl)) {
 			// 直接删除本地服务器上的图片
 			File file = new File(posterSysPathlast);
@@ -5422,7 +5425,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			}
 		}
 		// 将二维码生成后的照片上传到七牛云上
-		String code2QiniuName = "2code" + str;
+		String code2QiniuName = "2code" + str + "qufen";
 		String qiNiuUrl2code = QiniuUtil.uploadLocalPic(code2Path, code2QiniuName);
 		if (StringUtils.isNotEmpty(qiNiuUrl2code)) {
 			// 直接删除本地服务器上的图片
@@ -5652,7 +5655,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			PhotoParams photoParams = new PhotoParams();
 			photoParams.setFileUrl(photoIviews);
 			photoParams.setExtension("ext");
-			photoParams.setFileName("name");
+			photoParams.setFileName("qufen");
 			photoParams.setSize("1");
 			photoParams.setIsExist(true);
 			PhotoParamses.add(photoParams);
