@@ -242,7 +242,6 @@ public class UserController extends BaseController {
 				map.put("url", posterUrl);
 			} else {
 				posterUrl = userInvation.getUserposterpic();
-				posterUrl = "http://pic.qufen.top/" + posterUrl;
 				System.out.println("posterUrlbd" + posterUrl);
 				map.put("url", posterUrl);
 			}

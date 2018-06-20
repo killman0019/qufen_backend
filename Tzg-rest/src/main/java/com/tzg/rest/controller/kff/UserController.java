@@ -1249,7 +1249,7 @@ public class UserController extends BaseController {
 				kffRmiService.updataUserInvation(userId, posterUrl, code2Url);
 				map.put("url", posterUrl);
 			} else {
-				posterUrl = "http://pic.qufen.top/" + userInvation.getUserposterpic();
+				posterUrl = userInvation.getUserposterpic();
 				map.put("url", posterUrl);
 			}
 
