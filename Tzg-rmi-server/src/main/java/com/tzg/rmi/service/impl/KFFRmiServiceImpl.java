@@ -1794,16 +1794,16 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			if (null != praiseId)
 				format = String.format("%010d", praiseId.getPraiseId());
 			// 判断点赞人是否实名认证
-			// UserCard findBycreateUserId = userCardService.findByUserid(createUserId);//
+			UserCard findBycreateUserId = userCardService.findByUserid(createUserId);//
 			// 看创建帖子的人是不是实名认证
-			// UserCard findByUserid = userCardService.findByUserid(userId);
+			UserCard findByUserid = userCardService.findByUserid(userId);
 
-			// System.err.println("findBycreateUserId:" + findBycreateUserId);
-			// System.err.println("findByUserid : " + findByUserid);
+			System.err.println("findBycreateUserId:" + findBycreateUserId);
+			System.err.println("findByUserid : " + findByUserid);
 			// 判断所点赞的文章是不是有效(1有效,0删除,无效)
 			// QfIndex byUserId = qfIndexService.findByUserId(createUserId);
 
-			if (post.getStatus() == 1) {
+			if (post.getStatus() == 1  && findBycreateUserId != null && findByUserid != null) {
 				/**
 				 * 有效赞
 				 * 
