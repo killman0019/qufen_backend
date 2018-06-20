@@ -155,9 +155,9 @@ public class QiniuUtil {
 		Configuration cfg = new Configuration(getZone());
 		UploadManager uploadManager = new UploadManager(cfg);
 		String upToken = auth.uploadToken(BUCKETNAME);
-
+		System.out.println("进入七牛云---path" + path);
+		System.out.println("进入七牛云---fileName" + fileName);
 		try {
-
 			Response response = uploadManager.put(path, fileName, upToken);
 			// 解析上传成功的结果
 			DefaultPutRet putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);

@@ -5180,7 +5180,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	@Override
 	public void updataUserInvation(Integer userId, String posterUrl, String code2Url) throws RestServiceException {
 		String str = HexUtil.userIdTo2code(userId);
-		code2Url = "/upload/2code/" + DateUtil.getCurrentYearMonth() + "/" + str + ".png";
+		code2Url = "http://pic.qufen.top/" + "2code" + str;
 		userInvationService.updataUserInvation(userId, posterUrl, code2Url);
 
 	}
@@ -5405,8 +5405,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		Create2Code.create2CodeImg(code2Path, contentselfid);// 在制定位置生成二维码
 
 		Create2Code.overlapImage(initPosterSysPathLast, code2Path, posterSysPathlast);
+		logger.info("posterSysPathlast" + posterSysPathlast);
 		String qiNiuUrl = QiniuUtil.uploadLocalPic(posterSysPathlast, str);
-
+		logger.info("qiNiuUrl" + qiNiuUrl);
 		if (StringUtils.isNotEmpty(qiNiuUrl)) {
 			// 直接删除本地服务器上的图片
 			File file = new File(posterSysPathlast);
