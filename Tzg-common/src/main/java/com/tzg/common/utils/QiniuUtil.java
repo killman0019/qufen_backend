@@ -150,6 +150,13 @@ public class QiniuUtil {
 		return newUrl;
 	}
 
+	/**
+	 * 本地地址上传到七牛云服务器
+	 * 
+	 * @param path
+	 * @param fileName
+	 * @return
+	 */
 	public static String uploadLocalPic(String path, String fileName) {
 		Auth auth = Auth.create(ACCESS_KEY, SECRET_KEY);
 		Configuration cfg = new Configuration(getZone());
@@ -169,6 +176,6 @@ public class QiniuUtil {
 			System.err.println(r.toString());
 			return null;
 		}
-		return fileName;
+		return DOMAIN + "/" + fileName;
 	}
 }

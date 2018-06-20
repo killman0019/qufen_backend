@@ -1376,7 +1376,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				PhotoParams photoParams = new PhotoParams();
 				photoParams.setFileUrl(photoOUrl.getFileUrl());
 				photoParams.setExtension("ext");
-				photoParams.setFileName("name");
+				photoParams.setFileName("qufen");
 				photoParams.setIsExist(true);
 				picNewArray.add(photoParams);
 			}
@@ -4079,17 +4079,18 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			PhotoParams photoParams = new PhotoParams();
 			photoParams.setFileUrl(photoIviews);
 			// 取后缀名
-			String[] str = photoIviews.split("\\.");
-			logger.info(str[0]);
-			logger.info(str[1]);
-			photoParams.setExtension(str[1]);
+			// String[] str = photoIviews.split("\\.");
+			// logger.info(str[0]);
+			// logger.info(str[1]);
+			photoParams.setExtension("ext");
 
-			logger.info(str[0].lastIndexOf("/"));
-			str[0].substring(str[0].lastIndexOf("/") + 1);
-			logger.info(str[0].substring(str[0].lastIndexOf("/") + 1));
+			// logger.info(str[0].lastIndexOf("/"));
+			// str[0].substring(str[0].lastIndexOf("/") + 1);
+			// /logger.info(str[0].substring(str[0].lastIndexOf("/") + 1));
 			// imgUrl.substring(imgUrl.lastIndexOf("/")+1);
 			/** 88888888888888888888888888 ***/
-			photoParams.setFileName(str[0].substring(str[0].lastIndexOf("/") + 1));
+			// photoParams.setFileName(str[0].substring(str[0].lastIndexOf("/") + 1));
+			photoParams.setFileName("qufen");
 			photoParams.setIsExist(true);
 			// 截取位置
 			// String
@@ -5654,7 +5655,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			PhotoParams photoParams = new PhotoParams();
 			photoParams.setFileUrl(photoIviews);
 			photoParams.setExtension("ext");
-			photoParams.setFileName("name");
+			photoParams.setFileName("qufen");
 			photoParams.setSize("1");
 			photoParams.setIsExist(true);
 			PhotoParamses.add(photoParams);

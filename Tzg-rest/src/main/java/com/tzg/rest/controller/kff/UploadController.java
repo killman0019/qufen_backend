@@ -70,10 +70,10 @@ public class UploadController extends BaseController {
 		}
 		// upfile.transferTo(new File("D:\\opt\\file\\upload\\Idcard\\" + name +"." + ext));
 		// 进行压缩 大于3m 进行压缩
-		String fileName =  name + "." + ext;
-		//FileUtils.createFileLocal(fileName, upfile.getBytes());
-		
-	    String picPath = QiniuUtil.uploadStream(upfile.getInputStream(), fileName);
+		String fileName = "idcard" + name + "." + ext;
+		// FileUtils.createFileLocal(fileName, upfile.getBytes());
+
+		String picPath = QiniuUtil.uploadStream(upfile.getInputStream(), fileName);
 		resMap.put("picPath", picPath);
 		bre.setData(resMap);
 		return bre;
@@ -101,12 +101,13 @@ public class UploadController extends BaseController {
 			throw new RestServiceException("非法文件后缀" + ext);
 		}
 
-		//String fileName = picUrlAvatars + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext;
-		//FileUtils.createFileLocal(fileName, upfile.getBytes());
+		// String fileName = picUrlAvatars + DateUtil.getCurrentYearMonth() + "/" + name + "." +
+		// ext;
+		// FileUtils.createFileLocal(fileName, upfile.getBytes());
 
-		String fName =  name + "." + ext;
+		String fName = "avatars" + name + "." + ext;
 		String picPath = QiniuUtil.uploadStream(upfile.getInputStream(), fName);
-		 
+
 		resMap.put("picPath", picPath);
 		bre.setData(resMap);
 		return bre;
@@ -135,12 +136,13 @@ public class UploadController extends BaseController {
 			throw new RestServiceException("非法文件后缀" + ext);
 		}
 
-		//String fileName = picUrlPostPic + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext;
-		//FileUtils.createFileLocal(fileName, upfile.getBytes());
-		
-		String fName =  name + "." + ext;
+		// String fileName = picUrlPostPic + DateUtil.getCurrentYearMonth() + "/" + name + "." +
+		// ext;
+		// FileUtils.createFileLocal(fileName, upfile.getBytes());
+
+		String fName = "posts" + name + "." + ext;
 		String picPath = QiniuUtil.uploadStream(upfile.getInputStream(), fName);
-		
+
 		resMap.put("picPath", fName);
 		log.info("图片存入成功!++++++++++++++++++++++");
 		log.info(name + "." + ext);
@@ -173,18 +175,20 @@ public class UploadController extends BaseController {
 			throw new RestServiceException("非法文件后缀" + ext);
 		}
 
-		//String fileName = picUrlPostPicsf + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext;
-		//FileUtils.createFileLocal(fileName, upfile.getBytes());
-		
-		String fName =  name + "." + ext;
+		// String fileName = picUrlPostPicsf + DateUtil.getCurrentYearMonth() + "/" + name + "." +
+		// ext;
+		// FileUtils.createFileLocal(fileName, upfile.getBytes());
+
+		String fName = "posts" + name + "." + ext;
 		String picPath = QiniuUtil.uploadStream(upfile.getInputStream(), fName);
-		
+
 		resMap.put("file_path", picPath);
 		resMap.put("success", "true");
 		bre.setData(resMap);
-		//String file_Name = ipPicUrl + "/postPic/" + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext;
+		// String file_Name = ipPicUrl + "/postPic/" + DateUtil.getCurrentYearMonth() + "/" + name +
+		// "." + ext;
 		log.info("postPicsf图片存入成功!++++++++++++++++++++++");
-		
+
 		bre.setMsg("{\"success\":\"" + true + "\",\"file_path\":\"" + picPath + "\"}");
 		return bre;
 	}
@@ -215,8 +219,9 @@ public class UploadController extends BaseController {
 		}
 
 		// picUrlAuthentication +DateUtil.getCurrentYearMonth() + "/"+ name + "." + ext
-		//String fileName = picUrlAuthentication + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext;
-		//FileUtils.createFileLocal(fileName, upfile.getBytes());
+		// String fileName = picUrlAuthentication + DateUtil.getCurrentYearMonth() + "/" + name +
+		// "." + ext;
+		// FileUtils.createFileLocal(fileName, upfile.getBytes());
 		/*if (upfile.getSize() >= 3 * 1024 * 1024) {
 			Thumbnails.of(upfile.getInputStream()).scale(1f).outputQuality(0.25f)
 					.toFile(new File(picUrlAuthentication + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext));
@@ -224,9 +229,9 @@ public class UploadController extends BaseController {
 			upfile.transferTo(new File());
 		}*/
 
-		String fName =  name + "." + ext;
+		String fName = "auth" + name + "." + ext;
 		String picPath = QiniuUtil.uploadStream(upfile.getInputStream(), fName);
-		
+
 		log.info("authentication +++++++图片存入成功!++++++++++++++++++++++");
 		log.info(name + "." + ext);
 		resMap.put("picPath", picPath);
