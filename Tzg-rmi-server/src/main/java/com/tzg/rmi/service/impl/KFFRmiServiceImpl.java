@@ -631,18 +631,18 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (project.getProjectDesc().length() > 3000) {
 			throw new RestServiceException("项目描述信息长度超限");
 		}
-		 if(Objects.equal(1,projectRequest.getListed())&&StringUtils.isBlank(projectRequest.getIssueDateStr())){
-			 throw new RestServiceException("已上市项目请填写上市时间");
-		 }
+		if (Objects.equal(1, projectRequest.getListed()) && StringUtils.isBlank(projectRequest.getIssueDateStr())) {
+			throw new RestServiceException("已上市项目请填写上市时间");
+		}
 		project.setCreateTime(now);
 		project.setUpdateTime(now);
 		project.setState(1);// 1；待审核；2-审核通过；3-拒绝
 		project.setStatus(1);
 		// 上市时间默认提交时间
-		//project.setIssueDate(now);
-		 if(StringUtils.isNotBlank(projectRequest.getIssueDateStr())){
-			 project.setIssueDate(DateUtil.getDate(projectRequest.getIssueDateStr(), "yyyy-MM-dd"));
-		 }
+		// project.setIssueDate(now);
+		if (StringUtils.isNotBlank(projectRequest.getIssueDateStr())) {
+			project.setIssueDate(DateUtil.getDate(projectRequest.getIssueDateStr(), "yyyy-MM-dd"));
+		}
 		kffProjectService.save(project);
 		return null;
 	}
@@ -5403,12 +5403,29 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		String initPosterSysPathLast = initPosterSysPath + Create2Code.rand1To11() + ".png";// 选出随机海报图片
 		String code2Path = create2CodeNameAndPath(str);// 二维码路径
 		Create2Code.create2CodeImg(code2Path, contentselfid);// 在制定位置生成二维码
+	
 		Create2Code.overlapImage(initPosterSysPathLast, code2Path, posterSysPathlast);
 		String qiNiuUrl = QiniuUtil.uploadLocalPic(posterSysPathlast, str);
-		// 将本本地的图片服务器上的图片删除
+
 		if (StringUtils.isNotEmpty(qiNiuUrl)) {
 			// 直接删除本地服务器上的图片
 			File file = new File(posterSysPathlast);
+			if (file.exists()) {// 说明文件存在
+				if (file.isFile()) {
+					boolean delete = file.delete();
+					if (delete) {
+						logger.info("删除成功!");
+					} else {
+						logger.info("删除失败!");
+					}
+				}
+			}
+		}
+		// 将二维码生成后的照片上传到七牛云上
+		String qiNiuUrl2code = QiniuUtil.uploadLocalPic(code2Path, str);
+		if (StringUtils.isNotEmpty(qiNiuUrl2code)) {
+			// 直接删除本地服务器上的图片
+			File file = new File(code2Path);
 			if (file.exists()) {// 说明文件存在
 				if (file.isFile()) {
 					boolean delete = file.delete();
