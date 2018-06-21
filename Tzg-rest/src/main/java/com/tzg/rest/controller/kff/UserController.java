@@ -1446,7 +1446,12 @@ public class UserController extends BaseController {
 
 				try {
 					Double tokenTodaySum = kffRmiService.findTodayToken(loginUserId);
+					Integer pop = kffRmiService.findPopByToken(loginUserId);
 					map.put("tokenTodaySum", tokenTodaySum);
+					map.put("pop", pop);
+					
+					//更新弹出框状态
+					kffRmiService.updateUserKFFPop(loginUserId);
 				} catch (RestServiceException e) {
 					return this.resResult(RestErrorCode.MISSING_POLICY, e.getMessage());
 				}
