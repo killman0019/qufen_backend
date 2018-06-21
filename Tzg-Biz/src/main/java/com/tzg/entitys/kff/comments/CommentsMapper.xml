@@ -245,7 +245,7 @@
 		and post_id = #{postId}
 		</if>
 		<if test="projectId != null and projectId.trim() != ''">
-		and projectId = #{projectId}
+		and project_id = #{projectId}
 		</if>
 		<if test="postType != null and postType.trim() != ''">
 		and post_type = #{postType}
