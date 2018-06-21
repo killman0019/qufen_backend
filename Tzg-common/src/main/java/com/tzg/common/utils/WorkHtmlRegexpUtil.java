@@ -523,10 +523,10 @@ public class WorkHtmlRegexpUtil {
 	public static String deleContentsHtmlTage(String str) {
 		// <a href="http://36kr.com/user/798492498">Odaily星球日报</a>
 		// "<a[^>]*href=(\"([^\"]*)\"|\'([^\']*)\'|([^\\s>]*))[^>]*>(.*?)</a>";
-		String regex = "<a[^>]*href=(\"([^\"]*)\"|\'([^\']*)\'|([^\\s>]*))[^>]*>";
-		String replace = "<a href='http://www.qufen.top'>";
-		String replaceAll = str.replaceAll(regex, replace);
-		replaceAll = str;// 放开官网
+		// String regex = "<a[^>]*href=(\"([^\"]*)\"|\'([^\']*)\'|([^\\s>]*))[^>]*>";
+		// String replace = "<a href='http://www.qufen.top'>";
+		// String replaceAll = str.replaceAll(regex, replace);
+		String replaceAll = str;// 放开官网
 		return replaceAll;
 	}
 }
