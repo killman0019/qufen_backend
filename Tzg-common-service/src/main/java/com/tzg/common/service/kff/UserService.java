@@ -520,5 +520,22 @@ public class UserService {
 		userMapper.decreasePraiseNum(userId);
 		
 	}
+	
+	public Integer findPopByToken(Integer userId) throws RestServiceException {
+		Integer pop = userMapper.findPopByToken(userId);
+		if(null == pop)
+			pop = 0;
+		return pop;
+	}
+	
+	public void updateUserKFFPop(Integer userId) {
+
+		if (userId == null) {
+			throw new RestServiceException("用户ID不能为空");
+		}
+		
+		userMapper.updateUserKFFPop(userId);
+
+	}
 
 }

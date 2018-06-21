@@ -5742,4 +5742,14 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 		return kffTokenrecordsService.findTodayToken(loginUserId);
 	}
+	
+	@Override
+	public Integer findPopByToken(Integer loginUserId) {
+		return kffUserService.findPopByToken(loginUserId);
+	}
+	
+	@Override
+	public void updateUserKFFPop(Integer loginUserId) {
+		kffUserService.updateUserKFFPop(loginUserId);
+	}
 }

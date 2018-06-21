@@ -211,7 +211,5 @@ public class Tokenrecords implements Serializable {
 	public java.lang.String getMemo() {
 		return this.memo;
 	}
-
-	
 }
 

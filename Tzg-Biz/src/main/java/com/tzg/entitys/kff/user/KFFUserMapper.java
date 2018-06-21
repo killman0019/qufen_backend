@@ -45,4 +45,8 @@ public interface KFFUserMapper extends BaseMapper<KFFUser, java.lang.Integer> {
 	public void increasePraiseNum(Integer userId);
 	
 	public void decreasePraiseNum(Integer userId);
+	
+	public Integer findPopByToken(Integer userId);
+	
+	public void updateUserKFFPop(Integer userId);
 }

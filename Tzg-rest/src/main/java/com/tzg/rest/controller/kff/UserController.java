@@ -1446,7 +1446,12 @@ public class UserController extends BaseController {
 
 				try {
 					Double tokenTodaySum = kffRmiService.findTodayToken(loginUserId);
+					Integer pop = kffRmiService.findPopByToken(loginUserId);
 					map.put("tokenTodaySum", tokenTodaySum);
+					map.put("pop", pop);
+					
+					//更新弹出框状态
+					kffRmiService.updateUserKFFPop(loginUserId);
 				} catch (RestServiceException e) {
 					return this.resResult(RestErrorCode.MISSING_POLICY, e.getMessage());
 				}
@@ -1461,4 +1466,65 @@ public class UserController extends BaseController {
 		}
 		return bre;
 	}
+	
+	/**
+	 * 获取我的粉丝列表
+	 * 
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/getMyFanList", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public BaseResponseEntity getMyFanList(HttpServletRequest request) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		try {
+			JSONObject params = getParamMapFromRequestPolicy(request);
+			String token = (String) params.get("token");
+			Integer pageIndex = (Integer) params.get("pageIndex") == null ? 1 : (Integer) params.get("pageIndex");
+			Integer pageSize = (Integer) params.get("pageSize") == null ? 10 : (Integer) params.get("pageSize");
+			// 关注类型：2-关注话题；3-关注用户
+			Integer followType = (Integer) params.get("followType") == null ? 2 : (Integer) params.get("followType");
+
+			if (StringUtils.isBlank(token)) {
+				throw new RestServiceException(RestErrorCode.USER_NOT_LOGIN);
+			}
+			Integer userId = null;
+			try {
+				userId = AccountTokenUtil.decodeAccountToken(token);
+			} catch (Exception e) {
+				logger.error("myFollowList decodeAccountToken error:{}", e);
+				return this.resResult(RestErrorCode.PARSE_TOKEN_ERROR, e.getMessage());
+			}
+			if (userId == null) {
+				throw new RestServiceException(RestErrorCode.USER_NOT_EXIST);
+			}
+
+			KFFUser loginaccount = kffRmiService.findUserById(userId);
+
+			if (loginaccount == null) {
+				return this.resResult(RestErrorCode.USER_NOT_EXIST);
+			}
+
+			PaginationQuery query = new PaginationQuery();
+			query.addQueryData("followUserId", userId + "");
+			query.addQueryData("followType", followType + "");
+			query.addQueryData("status", "1");
+			query.setPageIndex(pageIndex);
+			query.setRowsPerPage(pageSize);
+			PageResult<FollowResponse> result = kffRmiService.findPageMyFollow(query);
+
+			map.put("myFollows", result);
+
+			bre.setData(map);
+		} catch (RestServiceException e) {
+			logger.warn("myFollowList warn:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("myFollowList error:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+		}
+		return bre;
+	}
+
 }
