@@ -1514,7 +1514,7 @@ public class UserController extends BaseController {
 			query.setRowsPerPage(pageSize);
 			PageResult<FollowResponse> result = kffRmiService.findPageMyFollow(query);
 
-			map.put("myFollows", result);
+			map.put("myFans", result);
 
 			bre.setData(map);
 		} catch (RestServiceException e) {

@@ -109,6 +109,7 @@ public class TokenrecordsService   {
 	}
 
 	public Double findTodayToken(Integer loginUserId) {
+		Double token = 0.00d;
 		Map<String, Object> map = new HashMap<>();
 		long current=System.currentTimeMillis();//当前时间毫秒数
         long zero=current/(1000*3600*24)*(1000*3600*24)-TimeZone.getDefault().getRawOffset();//今天零点零分零秒的毫秒数
@@ -118,7 +119,10 @@ public class TokenrecordsService   {
 		map.put("userId", loginUserId);
 		map.put("createTimeBegin", createTimeBegin);
 		map.put("createTimeEnd", createTimeEnd);
-		return tokenrecordsMapper.findTodayToken(map);
+		token = tokenrecordsMapper.findTodayToken(map);
+		if(null  == token)
+			token = 0.00d;
+		return token;
 	}
 	
 }
