@@ -5198,7 +5198,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 		Map<String, String> map = new HashMap<String, String>();
 		// 随机使用手机号发送信息
-		phone = sendTelephone.sendTele();
+
 		// 设置超时时间-可自行调整
 		try {
 			System.setProperty("sun.net.client.defaultConnectTimeout", "10000");
@@ -5220,7 +5220,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			// 使用post提交
 			request.setMethod(MethodType.POST);
 			// 必填:待发送手机号。支持以逗号分隔的形式进行批量调用，批量上限为1000个手机号码,批量调用相对于单条调用及时性稍有延迟,验证码类型的短信推荐使用单条调用的方式；发送国际/港澳台消息时，接收号码格式为00+国际区号+号码，如“0085200000000”
-			request.setPhoneNumbers(phone);
+			// request.setPhoneNumbers(phone);
 			// 必填:短信签名-可在短信控制台中找到
 			request.setSignName("区分");// AliyunConstant.SMS_FREE_SIGN_NAME
 			// 必填:短信模板-可在短信控制台中找到
@@ -5232,6 +5232,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				// 放置json串
 				logger.info(smsLoginTemplateCode);
 				map.put("code", dynamicValidateCode);// 放置code 验证码
+
+				phone = sendTelephone.sendTele();
+				request.setPhoneNumbers(phone);
 			}
 			// 注册
 			if (module.equals("register")) {
@@ -5239,12 +5242,16 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				// 放置json串
 				logger.info(smsRegisterTemplateCode);
 				map.put("code", dynamicValidateCode);// 放置code 验证码
+
+				phone = sendTelephone.sendTele();
+				request.setPhoneNumbers(phone);
 			}
 			// 忘记密码
 			if (module.equals("forgetPassword")) {
 				request.setTemplateCode(smsForgetpasdwoedTemplateCode);
 				// 放置json串
 				map.put("code", dynamicValidateCode);// 放置code 验证码
+				request.setPhoneNumbers(phone);
 			}
 			// request.setTemplateCode(AliyunConstant.SMS_REGISTER_TEMPLATE_CODE);
 			// 可选:模板中的变量替换JSON串,如模板内容为"亲爱的${name},您的验证码为${code}"时,此处的值为
@@ -5742,12 +5749,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 		return kffTokenrecordsService.findTodayToken(loginUserId);
 	}
-	
+
 	@Override
 	public Integer findPopByToken(Integer loginUserId) {
 		return kffUserService.findPopByToken(loginUserId);
 	}
-	
+
 	@Override
 	public void updateUserKFFPop(Integer loginUserId) {
 		kffUserService.updateUserKFFPop(loginUserId);
