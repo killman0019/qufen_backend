@@ -5232,7 +5232,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				// 放置json串
 				logger.info(smsLoginTemplateCode);
 				map.put("code", dynamicValidateCode);// 放置code 验证码
-
 				phone = sendTelephone.sendTele();
 				request.setPhoneNumbers(phone);
 			}
@@ -5242,7 +5241,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				// 放置json串
 				logger.info(smsRegisterTemplateCode);
 				map.put("code", dynamicValidateCode);// 放置code 验证码
-
 				phone = sendTelephone.sendTele();
 				request.setPhoneNumbers(phone);
 			}

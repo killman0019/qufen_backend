@@ -526,6 +526,7 @@ public class WorkHtmlRegexpUtil {
 		String regex = "<a[^>]*href=(\"([^\"]*)\"|\'([^\']*)\'|([^\\s>]*))[^>]*>";
 		String replace = "<a href='http://www.qufen.top'>";
 		String replaceAll = str.replaceAll(regex, replace);
+		replaceAll = str;// 放开官网
 		return replaceAll;
 	}
 }

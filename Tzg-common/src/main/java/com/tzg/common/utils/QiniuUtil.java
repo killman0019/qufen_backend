@@ -144,7 +144,7 @@ public class QiniuUtil {
 			return "false";
 
 		}
-		String newUrl = DOMAIN + "/" + "url" + fileName;
+		String newUrl = DOMAIN + "/" + fileName;
 		System.out.println("七牛服务器上的url:" + newUrl);
 		System.out.println("succeed upload image");
 		return newUrl;
