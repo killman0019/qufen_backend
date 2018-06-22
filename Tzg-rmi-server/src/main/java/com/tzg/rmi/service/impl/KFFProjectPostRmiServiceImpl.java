@@ -330,6 +330,7 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 							continue;
 						}else{
 							BeanUtils.copyProperties(realPost, pr);
+							pr.setTotalScore(eva.getTotalScore());
 						}
 					}else if (realPost != null){
 						BeanUtils.copyProperties(realPost, pr);
