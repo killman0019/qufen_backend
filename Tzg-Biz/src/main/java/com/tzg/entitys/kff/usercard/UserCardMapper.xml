@@ -169,7 +169,7 @@
 		FROM
 		tbusercard
 		WHERE
-		userCardNum = #{usercardNum,jdbcType=VARCHAR} `status`!=3 
+		userCardNum = #{usercardNum,jdbcType=VARCHAR} and `status`!=3 
 
 	</select>
 
