@@ -2677,12 +2677,18 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				response.setCreateUserSignature(post.getCreateUserSignature());
 				KFFProject project = kffProjectService.findById(post.getProjectId());
 				if (project != null) {
+					Evaluation eva = kffEvaluationService.findByPostId(post.getPostId());
 					response.setProjectChineseName(project.getProjectChineseName());
 					response.setProjectCode(project.getProjectCode());
 					response.setProjectEnglishName(project.getProjectEnglishName());
 					response.setProjectIcon(project.getProjectIcon());
 					response.setProjectSignature(project.getProjectSignature());
-					response.setTotalScore(project.getTotalScore());
+					if(null != eva)
+					{
+						response.setTotalScore(eva.getTotalScore());
+					}else {
+						response.setTotalScore(project.getTotalScore());
+					}
 				}
 
 				// 设置项目关注状态
