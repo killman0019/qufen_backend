@@ -687,11 +687,9 @@ public class HomeController extends BaseController {
 				throw new RestServiceException("非法文件后缀" + ext);
 			}
 
-			SystemParam systemParam = systemParamRmiService.findByCode("upload_local_path");
-			String localPath = systemParam.getVcParamValue();
-			systemParam = systemParamRmiService.findByCode("upload_file_path");
-			String urlPath = systemParam.getVcParamValue();
-			logger.info("存放路径" + systemParam);
+			//SystemParam systemParam = systemParamRmiService.findByCode("upload_local_path");
+			//String localPath = systemParam.getVcParamValue();
+			//systemParam = systemParamRmiService.findByCode("upload_file_path");
 
 			name = DateUtil.getCurrentTimeSS();
 			// jpg
@@ -712,7 +710,7 @@ public class HomeController extends BaseController {
 				urlPath = urlPath + currentTimeSS + "." + extention;*/
 
 				String fName = "avatars" + name + "." + ext;
-				urlPath = QiniuUtil.uploadStream(file.getInputStream(), fName);
+				String urlPath = QiniuUtil.uploadStream(file.getInputStream(), fName);
 
 				KFFUser account = new KFFUser();
 				account.setUserId(userId);
@@ -736,7 +734,7 @@ public class HomeController extends BaseController {
 				// urlPath = urlPath + currentTimeSS + "." + extention;
 
 				String fName = "posts" + name + "." + ext;
-				urlPath = QiniuUtil.uploadStream(file.getInputStream(), fName);
+				String urlPath = QiniuUtil.uploadStream(file.getInputStream(), fName);
 
 				resMap.put("imgUrl", urlPath);
 			} else if (imgtype == KFFConstants.IMGTYPE_PROJECTS) {
@@ -755,7 +753,7 @@ public class HomeController extends BaseController {
 				urlPath = urlPath + "/projects/" + DateUtil.getCurrentYearMonth() + "/";
 				urlPath = urlPath + currentTimeSS + "." + extention;*/
 				String fName = "projects" + name + "." + ext;
-				urlPath = QiniuUtil.uploadStream(file.getInputStream(), fName);
+				String urlPath = QiniuUtil.uploadStream(file.getInputStream(), fName);
 
 				logger.info("存放路径urlPath" + urlPath);
 				resMap.put("imgUrl", urlPath);
