@@ -1534,10 +1534,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				throw new RestServiceException("专业评测分项内容不能为空"+evaluationRequest.getProfessionalEvaDetail());
 			}
 			*/
-			for (DevaluationModel model : models) {
+			/*for (DevaluationModel model : models) {
 				totalScore = totalScore.add(model.getScore().multiply(new BigDecimal(model.getModelWeight())));
 			}
-			totalScore = totalScore.divide(new BigDecimal(100), 1, RoundingMode.HALF_DOWN).setScale(1, RoundingMode.HALF_DOWN);
+			totalScore = totalScore.divide(new BigDecimal(100), 1, RoundingMode.HALF_DOWN).setScale(1, RoundingMode.HALF_DOWN);*/
 
 			// }catch(Exception e){
 			// e.printStackTrace();
