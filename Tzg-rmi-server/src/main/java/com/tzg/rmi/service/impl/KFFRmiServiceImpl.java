@@ -1514,6 +1514,17 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (project == null) {
 			throw new RestServiceException("项目不存在" + evaluationRequest.getProjectId());
 		}
+		if (3 == evaluationRequest.getModelType()) {
+			// 单项评测 totalScore取出来
+			List<DevaluationModel> onlyevaDetail = JSON.parseArray(evaluationRequest.getProfessionalEvaDetail(), DevaluationModel.class);
+			if (CollectionUtils.isNotEmpty(onlyevaDetail)) {
+				System.out.println(onlyevaDetail.size());
+				if (onlyevaDetail.size() == 1) {
+					
+					evaluationRequest.setTotalScore(onlyevaDetail.get(0).getScore());
+				}
+			}
+		}
 		BigDecimal totalScore = evaluationRequest.getTotalScore() == null ? BigDecimal.ZERO : evaluationRequest.getTotalScore();
 		System.out.println(" evaluationRequest.getTotalScore()" + evaluationRequest.getTotalScore());
 		System.out.println("totalScore" + totalScore);
@@ -1540,6 +1551,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				model.setScore(new BigDecimal(score));
 				models.add(model);
 			}
+
 			/*
 			List<DevaluationModel> models =JSON.parseArray(evaluationRequest.getProfessionalEvaDetail(), DevaluationModel.class);
 			if(models == null || models.size() ==0){
@@ -1641,6 +1653,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		kffProjectService.increaseRaterNum(project.getProjectId());
 
 		return result;
+
 	}
 
 	@Override
