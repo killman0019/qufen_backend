@@ -306,7 +306,6 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 						}else{
 							BeanUtils.copyProperties(realPost, pr);
 						}
-						pr.setTotalScore(eva.getTotalScore());
 					}else if(realPost != null){
 						BeanUtils.copyProperties(realPost, pr);
 					}
@@ -366,7 +365,6 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 					}else{
 						pr.setFollowStatus(0);
 					}
-					pr.setTotalScore(project.getTotalScore());
 				}else if(Objects.equal(4, post.getPostType())){
 					pr.setActionDesc("关注项目下发表了新帖");
 					realPost = kffPostService.findById(post.getPostId());
