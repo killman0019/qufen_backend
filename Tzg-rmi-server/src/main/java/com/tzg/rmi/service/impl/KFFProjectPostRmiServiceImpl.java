@@ -410,6 +410,8 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 
 		DevaluationModel activeProModel = findSysActiveProModel();
 		List<DevaluationModelDetail> details = findSysEvaModelDetailList(activeProModel);
+		
+		List<DevaluationModelDetail> detailList = new ArrayList<DevaluationModelDetail>();
 
 		if (details != null && CollectionUtils.isNotEmpty(details)) {
 			Map<String,BigDecimal> detailModelTotalScore = new HashMap<String,BigDecimal>();
@@ -487,7 +489,15 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 //				result.add(detail);
 //			}
 //		  }
-		 
+		
+		/*for(DevaluationModelDetail detail:details)
+		{
+			System.out.println("====================" +detail.getTotalScore());
+			if(null != detail.getTotalScore()&&detail.getTotalScore().compareTo(BigDecimal.ZERO) !=0)
+			{
+				detailList.add(detail);
+			}
+		}*/
 		resultMap.put("projectEvaStat", details);
 		resultMap.put("totalProEvaRaterNum", totalProEvaRaterNum);
 		return resultMap;
