@@ -636,6 +636,13 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (Objects.equal(1, projectRequest.getListed()) && StringUtils.isBlank(projectRequest.getIssueDateStr())) {
 			throw new RestServiceException("已上市项目请填写上市时间");
 		}
+		if (StringUtils.isBlank(project.getProjectSignature())) {
+			throw new RestServiceException("项目标题不能为空");
+		}
+		if (project.getProjectSignature().length() > 30) {
+			throw new RestServiceException("项目标题字数大于30字");
+		}
+
 		project.setCreateTime(now);
 		project.setUpdateTime(now);
 		project.setState(1);// 1；待审核；2-审核通过；3-拒绝
@@ -1444,10 +1451,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			throw new RestServiceException("此项目信息有错");
 		}
 		if (2 == evaluationRequest.getModelType() || 4 == evaluationRequest.getModelType()) {
-			//checkProjectEvaluation(evaluationRequest, project);
+			// checkProjectEvaluation(evaluationRequest, project);
 		}
 		if (3 == evaluationRequest.getModelType()) {
-			//checkProjectOnlyEvaluation(evaluationRequest);
+			// checkProjectOnlyEvaluation(evaluationRequest);
 		}
 		Map<String, Object> result = new HashMap<>();
 		String uuid = UUID.randomUUID().toString().replace("-", "");
@@ -1987,7 +1994,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 								Tokenaward tokenaward = new Tokenaward();
 								tokenrecords.setFunctionDesc("点赞奖励(内容)");
 								tokenrecords.setFunctionType(17);
-								tokenrecords.setAmount(new BigDecimal(pc3 * createPUF+ meet2)); // 点赞奖励生成流水
+								tokenrecords.setAmount(new BigDecimal(pc3 * createPUF + meet2)); // 点赞奖励生成流水
 								tokenrecords.setUserId(createUserId);
 								tokenrecords.setTradeType(1);
 								tokenrecords.setRewardGrantType(1);
@@ -1998,12 +2005,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 								BigDecimal kffCoinNum = findByUserId.getKffCoinNum();
 								// KFFUser kffUser = new KFFUser();
-								findByUserId.setKffCoinNum(kffCoinNum.add(new BigDecimal(pc3 * createPUF+ meet2)));
+								findByUserId.setKffCoinNum(kffCoinNum.add(new BigDecimal(pc3 * createPUF + meet2)));
 								findByUserId.setUpdateTime(new Date());
 								kffUserService.update(findByUserId);
 
 								Double coinLock = findByCreateUser.getCoinLock();
-								coinLock = coinLock + (pc3 * createPUF+meet2);
+								coinLock = coinLock + (pc3 * createPUF + meet2);
 								findByCreateUser.setCoinLock(coinLock);
 								coinPropertyService.update(findByCreateUser);
 
@@ -2014,8 +2021,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 								// Double rewardToken = tokenaward.getRewardToken();
 								// Double priaiseAward = tokenaward.getPriaiseAward();
-								tokenaward.setPriaiseAward((pc3 * createPUF+meet2)); // 点赞奖励.
-								tokenaward.setInviteRewards((pc3 * createPUF+meet2));
+								tokenaward.setPriaiseAward((pc3 * createPUF + meet2)); // 点赞奖励.
+								tokenaward.setInviteRewards((pc3 * createPUF + meet2));
 								tokenaward.setCreateTime(new Date());
 								tokenaward.setAwardBalance(0d); // 线性余额 跟一次性发放的奖励没有关系 默认为0
 								KFFUser createUser = kffUserService.findById(createUserId);
@@ -2024,7 +2031,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 								kffTokenawardService.save(tokenaward);
 
 								qfIndexService.updateYxPraise(userId);
-							}else {
+							} else {
 								Tokenrecords tokenrecords = new Tokenrecords();
 								Tokenaward tokenaward = new Tokenaward();
 								tokenrecords.setFunctionDesc("点赞奖励(内容)");
@@ -2067,7 +2074,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 								qfIndexService.updateYxPraise(userId);
 							}
-							
+
 						}
 					}
 				}
