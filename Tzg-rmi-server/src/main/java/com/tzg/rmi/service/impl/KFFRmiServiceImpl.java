@@ -98,6 +98,7 @@ import com.tzg.common.utils.RegexUtil;
 import com.tzg.common.utils.ToRemoveHtml;
 import com.tzg.common.utils.WorkHtmlRegexpUtil;
 import com.tzg.common.utils.rest.AliyunConstant;
+import com.tzg.common.utils.web.HttpUtil;
 import com.tzg.common.zookeeper.ZKClient;
 import com.tzg.entitys.kff.article.Article;
 import com.tzg.entitys.kff.article.ArticleDetailResponse;
@@ -159,6 +160,7 @@ import com.tzg.entitys.photo.PhotoParams;
 import com.tzg.rest.constant.KFFRestConstants;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
+import com.tzg.rest.vo.BaseResponseEntity;
 import com.tzg.rmi.service.KFFRmiService;
 import com.tzg.rmi.service.SmsSendRmiService;
 
@@ -274,13 +276,13 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	public KFFUser registerRest(RegisterRequest registerRequest) {
 
 		KFFUser user = kffUserService.registerRest(registerRequest);
-		// 查询用户的认证表和身份认证表中的是否有数据
+		//
 
-		// 身份验证表中没有该用户
-		// 将用户是否进行身份审核等信息存放在authentication表中
+		//
+		//
 		this.setUserCardAuthentication(user.getUserId(), user.getMobile());
 
-		// 将用户信息插入认证表中
+		//
 		this.saveAuthenticationByUseId(user.getUserId());
 		awardPortService.registerAward(user.getUserId());
 		return user;
@@ -399,7 +401,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			for (Collect collect : collects.getRows()) {
 				CollectPostResponse response = new CollectPostResponse();
 				BeanUtils.copyProperties(collect, response);
-				// 查询post和project信息
+				//
 				Post post = kffPostService.findById(collect.getPostId());
 				if (post != null) {
 					response.setPostShortDesc(post.getPostShortDesc());
@@ -457,7 +459,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			for (Follow follow : follows.getRows()) {
 				FollowResponse response = new FollowResponse();
 				BeanUtils.copyProperties(follow, response);
-				// 查询post和project信息
+				//
 				// /*关注类型：1-关注项目;2-关注帖子；3-关注用户
 				if (follow.getFollowType() != null && follow.getFollowType() == 2) {
 					Post post = kffPostService.findById(follow.getFollowedId());
@@ -1209,12 +1211,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		post.setDonateNum(0);
 		post.setPageviewNum(0);
 		if (toHtmlTags != null) {
-			// h5传来的
+			//
 			toHtmlTags = H5AgainDeltagsUtil.h5AgainDeltags(toHtmlTags);
 			if (toHtmlTags.length() < 300) {
 				post.setPostShortDesc(toHtmlTags);
 			} else {
-				// 去除所有HTML标签
+				//
 				post.setPostShortDesc(toHtmlTags.substring(0, 300));
 			}
 			logger.info("去标签成功!");
@@ -1225,7 +1227,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			if (toHtmlTags.length() < 300) {
 				post.setPostShortDesc(toHtmlTags);
 			} else {
-				// 去除所有HTML标签
+				//
 				post.setPostShortDesc(toHtmlTags.substring(0, 300));
 			}
 			logger.info("去标签成功!");
@@ -1279,9 +1281,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				if (null == photoIviewses) {
 					throw new RestServiceException(RestErrorCode.PICTURE_UPLOAD_FAIL);
 				}
-				// 把前台参数传输给后台
-				// 创建图片参数对象,用于存放photo参数 将URL转化字符串对象
-				// upload/Idcard/2.jpg
+				//
+				//
+				//
 				String photoIviewStr = (String) photoIview;
 				PhotoParams photoParams = new PhotoParams();
 
@@ -1365,7 +1367,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		*//************ begin *******************/
 
 		// ************ end *******************/
-		// 对图片进行转化
+		//
 		if (StringUtils.isNotBlank(discussRequest.getDiscussImages())) {
 			List<String> picArray = JSON.parseArray(discussRequest.getDiscussImages(), String.class);
 			List<PhotoParams> picNewArray = new ArrayList<PhotoParams>();
@@ -1436,15 +1438,16 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		 * 
 		 * EOS指的是代币符号
 		 */
+		System.out.println("evaluationRequest.getTotalScore()" + evaluationRequest.getTotalScore());
 		KFFProject project = kffProjectService.findById(evaluationRequest.getProjectId());
 		if (null == project) {
 			throw new RestServiceException("此项目信息有错");
 		}
 		if (2 == evaluationRequest.getModelType() || 4 == evaluationRequest.getModelType()) {
-			checkProjectEvaluation(evaluationRequest, project);
+			//checkProjectEvaluation(evaluationRequest, project);
 		}
 		if (3 == evaluationRequest.getModelType()) {
-			checkProjectOnlyEvaluation(evaluationRequest);
+			//checkProjectOnlyEvaluation(evaluationRequest);
 		}
 		Map<String, Object> result = new HashMap<>();
 		String uuid = UUID.randomUUID().toString().replace("-", "");
@@ -1505,6 +1508,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			throw new RestServiceException("项目不存在" + evaluationRequest.getProjectId());
 		}
 		BigDecimal totalScore = evaluationRequest.getTotalScore() == null ? BigDecimal.ZERO : evaluationRequest.getTotalScore();
+		System.out.println(" evaluationRequest.getTotalScore()" + evaluationRequest.getTotalScore());
+		System.out.println("totalScore" + totalScore);
 		// 专业评测总分计算
 		if (Objects.equal(2, evaluationRequest.getModelType())) {
 			// try{
@@ -1567,7 +1572,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			post.setPostShortDesc(text.substring(0, 200));
 		}
 		logger.info(evaluationRequest.getEvauationContent());
-		// 抽取文章中的图片路径
+		//
 		/************ begin *******************/
 		Map<String, String> qiNiuMap = grabUrlAndReplaceQiniu(evaluationRequest.getEvauationContent(), createUser.getUserId());
 		String uploadIevisList = qiNiuMap.get("uploadIeviwList");
@@ -4081,9 +4086,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			throw new RestServiceException(RestErrorCode.PICTURE_UPLOAD_FAIL);
 		}
 
-		// 把前台参数传输给后台
-		// 创建图片参数对象,用于存放photo参数 将URL转化字符串对象
-		// upload/Idcard/2.jpg
+		//
+		//
+		//
 		PhotoParams photoParams = new PhotoParams();
 		photoParams.setFileUrl(photoIviews);
 		// 取后缀名
@@ -4098,10 +4103,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// imgUrl.substring(imgUrl.lastIndexOf("/")+1);
 		photoParams.setIsExist(true);
 		photoParams.setFileName("qufen");
-		// 截取位置
-		// String
-		// 将对象转化成json字符串
-		// JSON.toJSONString(photoParams);
+		//
+		//
+		//
+		//
 		return JSON.toJSONString(photoParams);
 	}
 
@@ -4117,9 +4122,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			throw new RestServiceException(RestErrorCode.PICTURE_UPLOAD_FAIL);
 		}
 
-		// 把前台参数传输给后台
-		// 创建图片参数对象,用于存放photo参数 将URL转化字符串对象
-		// upload/Idcard/2.jpg
+		//
+		//
+		//
 		List<PhotoParams> PhotoParamses = new ArrayList<PhotoParams>();
 		for (String photoIviews : photoIviewses) {
 			PhotoParams photoParams = new PhotoParams();
@@ -4130,18 +4135,18 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			// logger.info(str[1]);
 			photoParams.setExtension("ext");
 
-			// logger.info(str[0].lastIndexOf("/"));
-			// str[0].substring(str[0].lastIndexOf("/") + 1);
-			// /logger.info(str[0].substring(str[0].lastIndexOf("/") + 1));
-			// imgUrl.substring(imgUrl.lastIndexOf("/")+1);
+			//
+			//
+			//
+			//
 			/** 88888888888888888888888888 ***/
-			// photoParams.setFileName(str[0].substring(str[0].lastIndexOf("/") + 1));
+			//
 			photoParams.setFileName("qufen");
 			photoParams.setIsExist(true);
-			// 截取位置
-			// String
-			// 将对象转化成json字符串
-			// JSON.toJSONString(photoParams);
+			//
+			//
+			//
+			//
 			PhotoParamses.add(photoParams);
 		}
 		return JSON.toJSONString(PhotoParamses);
@@ -4203,7 +4208,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (null == authentication.getType()) {
 			throw new RestServiceException(RestErrorCode.SYS_ERROR);
 		}
-		// 分类型进行参数验证begin
+		//
 		// 项目方认证
 		if (1 == authentication.getType()) {
 			if (StringUtils.isBlank(authentication.getQufennickname())) {
@@ -4212,7 +4217,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			if (StringUtils.isBlank(authentication.getAuthinformation())) {
 				throw new RestServiceException(RestErrorCode.PARAMS_IS_NULL);
 			}
-			// 添加认证信息的合法性判断
+			//
 			if (authentication.getAuthinformation().length() > 30) {
 				throw new RestServiceException("认证信息不能超过30 字!");
 			}
@@ -4384,13 +4389,13 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	public KFFUser saveUserByphonePass(String phoneNumber, Integer invaUserId, String password) {
 
 		KFFUser user = kffUserService.saveUserByphonePass(phoneNumber, invaUserId, password);
-		// 查询用户的认证表和身份认证表中的是否有数据
+		//
 
-		// 身份验证表中没有该用户
-		// 将用户是否进行身份审核等信息存放在authentication表中
+		//
+		//
 		this.setUserCardAuthentication(user.getUserId(), user.getMobile());
 
-		// 将用户信息插入认证表中
+		//
 		this.saveAuthenticationByUseId(user.getUserId());
 
 		// 将用户信息同步到区分指数表
@@ -4416,9 +4421,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		kFFUserWalletMapper.save(kffUserWallet);
 
 		/******************* 关注邀请人 *********************/
-		// 根据邀请人的ID查询user表
+		//
 
-		// 有邀请人,进行关注邀请人
+		//
 		if (null != invaUserId) {
 
 			KFFUser invaUser = kffUserService.findById(invaUserId);
@@ -5802,5 +5807,58 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	@Override
 	public void updateUserKFFPop(Integer loginUserId) {
 		kffUserService.updateUserKFFPop(loginUserId);
+	}
+
+	@Override
+	public String getWeiXinTicket() {
+		String appId = "wxa034b7003154ee6c";
+		String appSecret = "7fce4f1ee0f63b62f20fe8321a31dea8";
+		BaseResponseEntity bre = new BaseResponseEntity();
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		String access_token = "";
+		String ticket = "";
+		try {
+			Object act = redisService.get("access_token");
+
+			Object apiticket = redisService.get("ticket");
+			logger.info("[act] = " + act + " [apiticket] = " + apiticket);
+			if (null == act) {
+
+				String url = "https://api.weixin.qq.com/cgi-bin/token";
+				String jsonStrToken = HttpUtil.sendGet(url, "grant_type=client_credential&appid=" + appId + "&secret=" + appSecret);
+
+				logger.debug("[jsonStrToken] = " + jsonStrToken);
+
+				JSONObject json = JSONObject.parseObject(jsonStrToken);
+
+				access_token = (String) json.getString("access_token");
+				if (access_token == null) {
+					return null;
+				}
+				redisService.put("access_token", access_token, 7200);
+				redisService.put("ticket", access_token, 7200);
+			} else {
+				access_token = (String) act;
+			}
+
+			if (null == apiticket) {
+				String url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket";
+				String jsonStrTicket = HttpUtil.sendGet(url, "access_token=" + access_token + "&type=jsapi");
+
+				logger.debug("[jsonStrTicket] = " + jsonStrTicket);
+
+				JSONObject json = JSONObject.parseObject(jsonStrTicket);
+				ticket = (String) json.get("ticket");
+
+			} else {
+				ticket = (String) apiticket;
+			}
+			map.put("ticket", ticket);
+			bre.setData(ticket);
+		} catch (Exception e) {
+			logger.info("生成失败");
+			e.printStackTrace();
+		}
+		return ticket;
 	}
 }
