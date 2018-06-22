@@ -216,7 +216,9 @@ public class UserController extends BaseController {
 			KFFUser loginaccount = null;
 			try {
 				loginaccount = kffRmiService.login(loginName, password);
-
+				if (null == loginaccount) {
+					throw new RestServiceException(RestErrorCode.LOGIN_NAME_OR_PASSWORD_INCORRECT);
+				}
 				QfIndex qfIndex = kffRmiService.findQfIndexUser(loginaccount.getUserId());
 				Integer statusHierarchyType = qfIndex.getStatusHierarchyType();
 				String statusHierarchyDesc = qfIndex.getStatusHierarchyDesc();
@@ -226,10 +228,6 @@ public class UserController extends BaseController {
 				return this.resResult(e.getErrorCode(), e.getMessage());
 			} catch (Exception e) {
 				return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
-			}
-
-			if (null == loginaccount) {
-				throw new RestServiceException(RestErrorCode.LOGIN_NAME_OR_PASSWORD_INCORRECT);
 			}
 
 			map.put("user", this.formatLoginaccount(loginaccount));
@@ -1244,7 +1242,7 @@ public class UserController extends BaseController {
 			UserInvation userInvation = kffRmiService.selectUseInvation(userId);
 			if (StringUtils.isEmpty(userInvation.getUserposterpic())) {
 				// 生成海报
-				posterUrl =  kffRmiService.creat2Code(userId);
+				posterUrl = kffRmiService.creat2Code(userId);
 				String code2Url = null;
 				kffRmiService.updataUserInvation(userId, posterUrl, code2Url);
 				map.put("url", posterUrl);
@@ -1449,8 +1447,8 @@ public class UserController extends BaseController {
 					Integer pop = kffRmiService.findPopByToken(loginUserId);
 					map.put("tokenTodaySum", tokenTodaySum);
 					map.put("pop", pop);
-					
-					//更新弹出框状态
+
+					// 更新弹出框状态
 					kffRmiService.updateUserKFFPop(loginUserId);
 				} catch (RestServiceException e) {
 					return this.resResult(RestErrorCode.MISSING_POLICY, e.getMessage());
@@ -1466,7 +1464,7 @@ public class UserController extends BaseController {
 		}
 		return bre;
 	}
-	
+
 	/**
 	 * 获取我的粉丝列表
 	 * 
