@@ -306,6 +306,7 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 						}else{
 							BeanUtils.copyProperties(realPost, pr);
 						}
+						pr.setTotalScore(eva.getTotalScore());
 					}else if(realPost != null){
 						BeanUtils.copyProperties(realPost, pr);
 					}
@@ -330,10 +331,12 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 							continue;
 						}else{
 							BeanUtils.copyProperties(realPost, pr);
-							pr.setTotalScore(eva.getTotalScore());
 						}
+						pr.setTotalScore(eva.getTotalScore());
 					}else if (realPost != null){
 						BeanUtils.copyProperties(realPost, pr);
+						Evaluation eva = kffEvaluationService.findByPostId(realPost.getPostId());
+						//pr.setTotalScore(eva.getTotalScore());
 					}
 					//讨论返回标签
 					if(realPost != null && Objects.equal(2,realPost.getPostType())){
@@ -344,6 +347,7 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 					}
 					//关注状态
 					pr.setFollowStatus(1);
+
 				}else if(Objects.equal(3, post.getPostType())){
 					user = kffUserService.findById(post.getCreateUserId());
 					pr.setActionDesc(user ==null?"匿名用户":user.getUserName() +"关注了项目");
@@ -362,6 +366,7 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 					}else{
 						pr.setFollowStatus(0);
 					}
+					pr.setTotalScore(project.getTotalScore());
 				}else if(Objects.equal(4, post.getPostType())){
 					pr.setActionDesc("关注项目下发表了新帖");
 					realPost = kffPostService.findById(post.getPostId());
@@ -372,6 +377,7 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 						}else{
 							BeanUtils.copyProperties(realPost, pr);
 						}
+						pr.setTotalScore(eva.getTotalScore());
 					}else if (realPost != null){
 						BeanUtils.copyProperties(realPost, pr);
 					}
