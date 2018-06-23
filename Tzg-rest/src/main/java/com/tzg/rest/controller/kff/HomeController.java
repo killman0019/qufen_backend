@@ -283,7 +283,7 @@ public class HomeController extends BaseController {
 				// 点赞数最多的2个评论
 				hotQuery.addQueryData("sortField", "praise_num");
 				hotQuery.setPageIndex(1);
-				hotQuery.setRowsPerPage(2);
+				hotQuery.setRowsPerPage(10);
 				List<Comments> hotComments = kffRmiService.findPageHotCommentsList(userId, postId, hotQuery);
 				map.put("hotComments", hotComments);
 			}
@@ -809,7 +809,7 @@ public class HomeController extends BaseController {
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
 			query.addQueryData("postId", postId + "");
-			query.addQueryData("parentCommentsId", commentsId + "");
+			query.addQueryData("CommentsId", commentsId + "");//parentCommentsId
 			query.addQueryData("status", KFFConstants.STATUS_ACTIVE + "");
 			PageResult<Comments> comments = kffProjectPostRmiService.findPagecommentCommentsList(userId, query);
 			map.put("comments", comments);

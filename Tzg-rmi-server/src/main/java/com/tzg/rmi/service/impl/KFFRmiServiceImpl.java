@@ -2910,7 +2910,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (comments != null && CollectionUtils.isNotEmpty(comments.getRows())) {
 			PaginationQuery childQuery = new PaginationQuery();
 			childQuery.setPageIndex(1);
-			childQuery.setRowsPerPage(2);
+			childQuery.setRowsPerPage(10);
 			// childQuery.addQueryData("postType", KFFConstants.POST_TYPE_ARTICLE + "");
 			for (Comments comment : comments.getRows()) {
 				Comments finalComment = new Comments();
@@ -4373,9 +4373,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			}
 			if (authentication.getRegistrationnum().length() == 18) {
 				// 判断15位营业执照注册号
-				String sheHuiXinYongfmt = RegexUtil.TONGYISHEHUIXINYONGDAIMA;
+				String checkCode = RegexUtil.CHECKCODE;
 				// 判断手机号码手机是否符合标注
-				if (!authentication.getRegistrationnum().matches(sheHuiXinYongfmt)) {
+				if (!authentication.getRegistrationnum().matches(checkCode)) {
 					throw new RestServiceException("统一社会信用代码格式错误!");
 				}
 			}

@@ -3,6 +3,7 @@ package com.tzg.common.service.kff;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,69 +14,102 @@ import com.tzg.entitys.kff.comments.Comments;
 import com.tzg.entitys.kff.comments.CommentsMapper;
 import com.tzg.rest.exception.rest.RestServiceException;
 
-@Service(value="KFFCommentsService")
+@Service(value = "KFFCommentsService")
 @Transactional
 public class CommentsService {
 
 	@Autowired
-	private CommentsMapper commentsMapper;	
-	   
-	@Transactional(readOnly=true)
-    public Comments findById(java.lang.Integer id) throws RestServiceException {
-    	if(id == null){
+	private CommentsMapper commentsMapper;
+
+	@Transactional(readOnly = true)
+	public Comments findById(java.lang.Integer id) throws RestServiceException {
+		if (id == null) {
 			throw new RestServiceException("id不能为空");
 		}
-        return commentsMapper.findById(id);
-    }
-	
-    public void delete(java.lang.Integer id) throws RestServiceException {
-    	if(id == null){
+		return commentsMapper.findById(id);
+	}
+
+	public void delete(java.lang.Integer id) throws RestServiceException {
+		if (id == null) {
 			throw new RestServiceException("id不能为空");
 		}
-        commentsMapper.deleteById(id);
-    }
-	
-	public void save(Comments comments) throws RestServiceException {	    
+		commentsMapper.deleteById(id);
+	}
+
+	public void save(Comments comments) throws RestServiceException {
 		commentsMapper.save(comments);
 	}
-	
-	public void update(Comments comments) throws RestServiceException {	
-		if(comments.getCommentsId() == null){
+
+	public void update(Comments comments) throws RestServiceException {
+		if (comments.getCommentsId() == null) {
 			throw new RestServiceException("id不能为空");
 		}
 		commentsMapper.update(comments);
-	}	
-	
-	@Transactional(readOnly=true)
+	}
+
+	@Transactional(readOnly = true)
 	public PageResult<Comments> findPage(PaginationQuery query) throws RestServiceException {
 		PageResult<Comments> result = null;
 		try {
-			
-			//修复子评论查询异常
-			if(query.getQueryData().get("parentCommentsId") != null && query.getQueryData().get("parentCommentsIdNull") != null)
-			{
+
+			// 修复子评论查询异常
+			if (query.getQueryData().get("parentCommentsId") != null && query.getQueryData().get("parentCommentsIdNull") != null) {
 				query.getQueryData().remove("parentCommentsIdNull");
 			}
 			Integer count = commentsMapper.findPageCount(query.getQueryData());
 			if (null != count && count.intValue() > 0) {
-				int startRecord = (query.getPageIndex() - 1)* query.getRowsPerPage();
+				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
 				query.addQueryData("startRecord", Integer.toString(startRecord));
 				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
 				List<Comments> list = commentsMapper.findPage(query.getQueryData());
-				result = new PageResult<Comments>(list,count,query);
-			} 
+				result = new PageResult<Comments>(list, count, query);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return result;
 	}
-	
-	
 
+	/**
+	 * 自己写:所有的父评论的所有子评论
+	 * 
+	 * @param query
+	 * @return
+	 * @throws RestServiceException
+	 */
+	@Transactional(readOnly = true)
+	public PageResult<Comments> findPageSelf(PaginationQuery query) throws RestServiceException {
+		PageResult<Comments> result = null;
+		try {
 
+			// 修复子评论查询异常
+			if (query.getQueryData().get("parentCommentsId") != null && query.getQueryData().get("parentCommentsIdNull") != null) {
+				query.getQueryData().remove("parentCommentsIdNull");
+			}
+			Integer count = commentsMapper.findPageCount(query.getQueryData());
+			if (null != count && count.intValue() > 0) {
+				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
+				query.addQueryData("startRecord", Integer.toString(startRecord));
+				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
+				List<Comments> list = commentsMapper.findPage(query.getQueryData());
+				if (CollectionUtils.isNotEmpty(list)) {
+					for (Comments comments : list) {
+						if(null!=comments.getBecommentedUserId()){
+							//说明有对此进行评论的人
+							
+						}
+					}
+				}
+				result = new PageResult<Comments>(list, count, query);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
 
 	public List<Comments> findAllCommentsByWhere(Map<String, Object> map) {
-		
+
 		return commentsMapper.findAllCommentsByWhere(map);
 	}
 
@@ -88,7 +122,7 @@ public class CommentsService {
 				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
 				query.addQueryData("startRecord", Integer.toString(startRecord));
 				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
-				
+
 				List<Comments> list = commentsMapper.findPageCountOrderBy(query.getQueryData());
 				result = new PageResult<Comments>(list, count, query);
 			}
@@ -97,10 +131,11 @@ public class CommentsService {
 		}
 		return result;
 	}
+
 	public void increasePraiseNum(Integer commentsId) {
-		
+
 		commentsMapper.increasePraiseNum(commentsId);
-		
+
 	}
 
 	/**
@@ -113,9 +148,9 @@ public class CommentsService {
 
 		return commentsMapper.findBidPraiseNum(postId);
 	}
-	
+
 	public void decreasePraiseNum(Integer commentsId) {
-		commentsMapper.decreasePraiseNum(commentsId);		
+		commentsMapper.decreasePraiseNum(commentsId);
 	}
 
 	@Transactional(readOnly = true)
@@ -123,9 +158,10 @@ public class CommentsService {
 		// TODO Auto-generated method stub
 		return commentsMapper.findCommentsSum();
 	}
+
 	public void updateUserInfo(Map<String, Object> map) {
 		commentsMapper.updateUserInfo(map);
-		
+
 	}
 
 	@Transactional(readOnly = true)
@@ -136,9 +172,7 @@ public class CommentsService {
 
 	public Comments findByPostId(Integer commentsId) {
 		return commentsMapper.findByPostId(commentsId);
-		
-	}
-	
 
-	
+	}
+
 }
