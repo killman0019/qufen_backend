@@ -1919,7 +1919,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 								if (kffPostService.findById(postId).getPraiseNum() == 5) {
 									tokenrecords.setFunctionDesc("点赞奖励(内容)");
 									tokenrecords.setFunctionType(17);
-									tokenrecords.setAmount(new BigDecimal(pc2 * createPUF + meet1)); // 点赞奖励生成流水
+									tokenrecords.setAmount(new BigDecimal(pc2 * createPUF + meet)); // 点赞奖励生成流水
 									tokenrecords.setUserId(createUserId);
 									tokenrecords.setTradeType(1);
 									tokenrecords.setRewardGrantType(1);
@@ -1930,12 +1930,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 									BigDecimal kffCoinNum = findByUserId.getKffCoinNum();
 									// KFFUser kffUser = new KFFUser();
-									findByUserId.setKffCoinNum(kffCoinNum.add(new BigDecimal(pc2 * createPUF + meet1)));
+									findByUserId.setKffCoinNum(kffCoinNum.add(new BigDecimal(pc2 * createPUF + meet)));
 									findByUserId.setUpdateTime(new Date());
 									kffUserService.update(findByUserId);
 
 									Double coinLock = findByCreateUser.getCoinLock();
-									coinLock = coinLock + (pc2 * createPUF + meet1);
+									coinLock = coinLock + (pc2 * createPUF + meet);
 									findByCreateUser.setCoinLock(coinLock);
 									coinPropertyService.update(findByCreateUser);
 
@@ -1945,8 +1945,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 									tokenaward.setDistributionType(2);
 									// Double rewardToken = tokenaward.getRewardToken();
 									// Double priaiseAward = tokenaward.getPriaiseAward();
-									tokenaward.setPriaiseAward((pc2 * createPUF) + meet1); // 点赞奖励.
-									tokenaward.setInviteRewards((pc2 * createPUF) + meet1);
+									tokenaward.setPriaiseAward((pc2 * createPUF) + meet); // 点赞奖励.
+									tokenaward.setInviteRewards((pc2 * createPUF) + meet);
 									tokenaward.setAwardBalance(0d); // 线性余额 跟一次性发放的奖励没有关系 默认为0
 									KFFUser createUser = kffUserService.findById(createUserId);
 									tokenaward.setUserName(createUser.getUserName());
