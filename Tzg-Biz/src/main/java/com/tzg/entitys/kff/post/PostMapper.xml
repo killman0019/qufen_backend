@@ -301,7 +301,7 @@
 						follow_user_id = #{userId}
 					AND follow_type = 3
 				  and status = 1
-				)
+				) and status = 1 
 				UNION ALL
 			
 				select distinct followed_id as post_id,createTime ,3 as post_type from tbfollow where 
@@ -331,7 +331,7 @@
 						follow_user_id = #{userId}
 					AND follow_type = 3
 				  and status = 1
-				)
+				) and status = 1 
 				)a
 	</select>
     
@@ -370,7 +370,7 @@
 							follow_user_id =  #{userId}
 						AND follow_type = 3
 					  and status = 1
-					)
+					) and status = 1 
 					UNION ALL
 					
 					select distinct followed_id as post_id,createTime ,3 as post_type ,follow_user_id as create_user_id
@@ -402,7 +402,7 @@
 							follow_user_id =  #{userId}
 						AND follow_type = 3
 					  and status = 1
-					)
+					) and status = 1 
 	   
 	     <choose>
 	            <when test="sortField != null and sortField != ''">
