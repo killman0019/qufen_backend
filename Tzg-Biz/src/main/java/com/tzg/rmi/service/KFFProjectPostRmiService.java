@@ -10,6 +10,7 @@ import com.tzg.entitys.kff.comments.Comments;
 import com.tzg.entitys.kff.devaluationModelDetail.DevaluationModelDetail;
 import com.tzg.entitys.kff.discuss.Discuss;
 import com.tzg.entitys.kff.evaluation.Evaluation;
+import com.tzg.entitys.kff.evaluation.EvaluationDetailResponse;
 import com.tzg.entitys.kff.evaluation.EvaluationRequest;
 import com.tzg.entitys.kff.post.PostResponse;
 import com.tzg.entitys.kff.projectevastat.ProjectevastatByGrade;
@@ -64,6 +65,13 @@ public interface KFFProjectPostRmiService {
 	 * @throws RestServiceException
 	 */
 	public List<PostResponse> findHotEvaList(Integer projectId) throws RestServiceException;
+
+	/**
+	 * 分页获取简单评测列表
+	 * @param query
+	 * @return
+	 */
+	public PageResult<EvaluationDetailResponse> findPageSimpleEvaluationList(PaginationQuery query);
 
 	
 }

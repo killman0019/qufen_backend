@@ -145,7 +145,7 @@ public class ProjectController extends BaseController {
 			List<Comments> hotComments = kffRmiService.findPageHotCommentsList(userId,projectId,hotQuery);
             map.put("hotComments", hotComments);
             
-            //项目评测统计信息
+            //项目简单评测统计信息
             map = kffProjectPostRmiService.findProjectEvaStatScore(projectId);
            // map.put("evaGradeStat", proEvaStat);
             
@@ -160,6 +160,56 @@ public class ProjectController extends BaseController {
 		}
 		return bre;
 	}
+	
+	/**
+	 * 
+	* @Title: evaluationList
+	* @Description: 项目 分页获取简单评测列表
+	* @param @param request
+	* @param @param response
+	* @param @return    
+	* @return BaseResponseEntity
+	* @see    
+	* @throws
+	 */
+	@RequestMapping(value="/simpleEvaluationList",method = {RequestMethod.POST,RequestMethod.GET})
+	@ResponseBody
+	public BaseResponseEntity simpleEvaluationList(HttpServletRequest request) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+        HashMap<String, Object> map = new HashMap<String, Object>();
+
+		try {
+			BaseRequest baseRequest = getParamMapFromRequestPolicy(request, BaseRequest.class);
+			String token = baseRequest.getToken();
+			Integer loginUserId = getUserIdByToken(token);
+			Integer projectId = baseRequest.getProjectId();
+			if(projectId == null){
+				throw new RestServiceException(RestErrorCode.MISSING_ARG_PROJID);
+			}	
+			PaginationQuery query = new PaginationQuery();		
+			query.addQueryData("projectId", projectId +"");	
+
+	        query.addQueryData("status", "1");
+	        //帖子类型：1-评测；2-讨论；3-文章
+	        query.addQueryData("postType", "1");
+	        query.setPageIndex(baseRequest.getPageIndex());
+	        query.setRowsPerPage(baseRequest.getPageSize());
+	        if(StringUtils.isNotBlank(baseRequest.getSortField())){
+	        	query.addQueryData("sortField", baseRequest.getSortField());
+	        }
+			PageResult<EvaluationDetailResponse> evaluations = kffProjectPostRmiService.findPageSimpleEvaluationList(query);
+            map.put("evaluations", evaluations);
+			bre.setData(map);
+		} catch (RestServiceException e) {
+			logger.error("ProjectController evaluationList:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("ProjectController evaluationList:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR,e.getMessage());
+		}
+		return bre;
+	}
+	
 	
 	/**
 	 * 

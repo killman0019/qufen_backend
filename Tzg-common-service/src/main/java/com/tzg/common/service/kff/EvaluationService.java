@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.entitys.kff.evaluation.Evaluation;
+import com.tzg.entitys.kff.evaluation.EvaluationDetailResponse;
 import com.tzg.entitys.kff.evaluation.EvaluationMapper;
 import com.tzg.rest.exception.rest.RestServiceException;
 
@@ -136,6 +137,23 @@ public class EvaluationService {
 		map.put("createUserId", createUserId);
 		map.put("modelType", modelType);
 		return evaluationMapper.findByWhere(map);
+	}
+
+	public PageResult<EvaluationDetailResponse> findPageSimpleEvaluation(PaginationQuery query) {
+		PageResult<EvaluationDetailResponse> result = null;
+		try {
+			Integer count = evaluationMapper.findPageSimpleEvaluationCount(query.getQueryData());
+			if (null != count && count.intValue() > 0) {
+				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
+				query.addQueryData("startRecord", Integer.toString(startRecord));
+				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
+				List<EvaluationDetailResponse> list = evaluationMapper.findPageSimpleEvaluation(query.getQueryData());
+				result = new PageResult<EvaluationDetailResponse>(list, count, query);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 
 }

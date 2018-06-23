@@ -61,6 +61,7 @@ import com.tzg.entitys.kff.devaluationModel.DevaluationModel;
 import com.tzg.entitys.kff.devaluationModelDetail.DevaluationModelDetail;
 import com.tzg.entitys.kff.discuss.Discuss;
 import com.tzg.entitys.kff.evaluation.Evaluation;
+import com.tzg.entitys.kff.evaluation.EvaluationDetailResponse;
 import com.tzg.entitys.kff.evaluation.EvaluationRequest;
 import com.tzg.entitys.kff.follow.Follow;
 import com.tzg.entitys.kff.post.Post;
@@ -588,6 +589,15 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 					}
 				}
 				return respones;
+	}
+
+
+
+	@Override
+	public PageResult<EvaluationDetailResponse> findPageSimpleEvaluationList(PaginationQuery query) {
+		
+		PageResult<EvaluationDetailResponse> evaList = kffEvaluationService.findPageSimpleEvaluation(query);		
+		return evaList;
 	}
 
 
