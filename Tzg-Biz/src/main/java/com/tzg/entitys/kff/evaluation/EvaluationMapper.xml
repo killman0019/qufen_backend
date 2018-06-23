@@ -53,7 +53,7 @@
 	
 	<sql id="columns">
 	    <![CDATA[
-         ,project_id ,post_id,post_uuid,model_type , , , , ,status ,createTime ,updateTime ,create_user_id 
+        evaluation_id ,project_id ,post_id,post_uuid,model_type ,total_score ,professional_eva_detail ,evauation_content ,evaluation_tags ,status ,createTime ,updateTime ,create_user_id 
 	    ]]>
 	</sql>
 
