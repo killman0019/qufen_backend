@@ -1473,7 +1473,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 		// 评测标题定义
 		if (1 == evaluationRequest.getModelType()) {
-			evaluationRequest.setPostTitle("简单评测");// 完整评测 手机上的
+			evaluationRequest.setPostTitle(project.getProjectCode() +"- 简单评测");// 完整评测 手机上的
 		}
 		if (2 == evaluationRequest.getModelType()) {
 			evaluationRequest.setPostTitle(project.getProjectCode() + "- 完整版专业评测(all)");// 完整评测
