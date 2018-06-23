@@ -2,6 +2,7 @@ package com.tzg.common.service.kff;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,8 @@ import com.tzg.entitys.kff.evaluation.Evaluation;
 import com.tzg.entitys.kff.evaluation.EvaluationMapper;
 import com.tzg.entitys.kff.post.Post;
 import com.tzg.entitys.kff.post.PostMapper;
+import com.tzg.entitys.kff.praise.Praise;
+import com.tzg.entitys.kff.praise.PraiseMapper;
 import com.tzg.entitys.kff.project.KFFProject;
 import com.tzg.entitys.kff.project.KFFProjectMapper;
 import com.tzg.entitys.kff.qfindex.QfIndex;
@@ -43,6 +47,9 @@ public class ProjectService   {
 	private EvaluationMapper evaluationMapper;
 	@Autowired
 	private QfIndexMapper qfIndexMapper;
+	@Autowired
+	private PraiseMapper praiseMapper;
+	
     private static final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 4);
 
 	
@@ -201,33 +208,69 @@ public class ProjectService   {
 		        return;
 			}
 			QfIndex qfIndex = null;
-			Integer qfScore = 100;
+			Integer ownerQfScore = 100;
+			BigDecimal totalDividor = BigDecimal.ZERO;
+			Long totalDividend = 0L;
 			for(Evaluation eva:evas){
 				BigDecimal oneDividor = BigDecimal.ZERO;
 				Long oneDividend = 0L;
 				BigDecimal oneScore = eva.getTotalScore()==null?BigDecimal.ZERO:eva.getTotalScore();
 				qfIndex = qfIndexMapper.findByUserId(eva.getCreateUserId());
 				if(qfIndex != null){
-					qfScore =  qfIndex.getStatusHierarchyType()==null?100:qfIndex.getStatusHierarchyType();
+					ownerQfScore =  qfIndex.getStatusHierarchyType()==null?100:qfIndex.getStatusHierarchyType();
 				}
 				//简单评测
 				if(Objects.equal(1, eva.getModelType())){
-					oneDividor = oneScore.multiply(new BigDecimal(qfScore)).multiply(new BigDecimal(100));
-				}else if (Objects.equal(2, eva.getModelType())){
-				 //系统专业评测	
-				}else if(Objects.equal(4, eva.getModelType())){
-				//用户自定义评测
-					
+					oneDividor = oneScore.multiply(new BigDecimal(ownerQfScore)).multiply(new BigDecimal(100));
+					oneDividend = ownerQfScore*100L;
+				}else if (Objects.equal(2, eva.getModelType()) || Objects.equal(4, eva.getModelType())){
+				 //系统专业评测	 //用户自定义评测
+					Map<String, Object> map = new HashMap<>();
+					map.put("status", "1");
+					map.put("postType","1");
+					map.put("projectId",projectId+"");
+					map.put("praiseType","1");
+					List<Praise> praises = praiseMapper.findAllActivePraisesByPostId(map);
+					if(CollectionUtils.isEmpty(praises)){
+						oneDividor = oneScore.multiply(new BigDecimal(ownerQfScore)).multiply(new BigDecimal(100));
+						oneDividend = ownerQfScore*100L;
+					}else{
+						List<Integer> praiseUserIds = new ArrayList<>();
+						for(Praise p:praises){
+							praiseUserIds.add(p.getPraiseUserId());
+						}
+						Map<String,Object> qfUsersMap = new HashMap<>();
+						String userIds = StringUtils.join(praiseUserIds.toArray(), ",");  
+						qfUsersMap.put("userIds", userIds);
+						List<QfIndex> priaseUserQfIndexs = qfIndexMapper.findByUserIds(qfUsersMap);
+						if(!CollectionUtils.isEmpty(priaseUserQfIndexs)){
+							Integer totalQf = 0; 
+							for(QfIndex qf:priaseUserQfIndexs){
+								totalQf = totalQf + (qf.getStatusHierarchyType()==null?100:qf.getStatusHierarchyType());
+							}
+							if(totalQf == 0) totalQf =100;
+							oneDividor = oneScore.multiply(new BigDecimal(ownerQfScore)).multiply(new BigDecimal(totalQf));
+							oneDividend = ownerQfScore*(Long.valueOf(totalQf));
+						}else{
+							oneDividor = oneScore.multiply(new BigDecimal(ownerQfScore)).multiply(new BigDecimal(100));
+							oneDividend = ownerQfScore*100L;
+						}
+					}				
 				}
-				
+				totalDividor = totalDividor.add(oneDividor);
+				totalDividend = totalDividend + oneDividend;
 			}
-			
-			
+			BigDecimal originalTotalScore = totalScore;
+			if(totalDividend != 0){
+				totalScore = totalDividor.divide(new BigDecimal(totalDividend),1, RoundingMode.HALF_DOWN);
+			}
 			KFFProject project = new KFFProject();
 			project.setProjectId(projectId);
 			project.setUpdateTime(new Date());
 			project.setTotalScore(totalScore);
 			projectMapper.updateTotalScore(project);
+			
+			logger.warn("------update project totalSocre for project:"+projectId+"originalScore:"+originalTotalScore+"newScore:"+totalScore);
 		}
         countDownLatch.countDown();
 	}

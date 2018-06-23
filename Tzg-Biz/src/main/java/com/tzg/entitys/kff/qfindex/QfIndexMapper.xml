@@ -167,6 +167,15 @@
 	    <![CDATA[ ORDER BY qf_index_id DESC ]]>
         <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
 	</select>
+	
+	
+	
+	<select id="findByUserIds" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbqfindex where 1=1
+		<include refid="queryWhere"/> 
+	   
+	</select>
+	
 	<!-- 查询rewardToken(赠送的奖励)个人总数量 -->
 	<!-- <select id="findUserSumRewardToken"  parameterType="java.lang.Integer">
 	select sum(*) from tbtokenaward where 1=1
@@ -213,6 +222,12 @@
 		</if>
 		<if test="updateTime != null and updateTime.trim() != ''">
 		and updateTime = #{updateTime}
+		</if>
+		<if test="userIds != null and userIds.size()>0">
+		and user_id in 
+		 <foreach collection="userIds" item="userId" index="index" open="(" separator="," close=")">
+                #{userId}
+            </foreach>
 		</if>
 		
 	</sql>
