@@ -207,7 +207,7 @@
 				notPassReason = #{notPassReason,jdbcType=VARCHAR},
 			</if>
 		</set>
-		where userId = #{userid,jdbcType=INTEGER}
+		where userId = #{userid,jdbcType=INTEGER} and status =4
 	</update>
 
 </mapper>

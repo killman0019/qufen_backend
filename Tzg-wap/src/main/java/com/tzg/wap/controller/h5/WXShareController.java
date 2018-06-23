@@ -40,11 +40,11 @@ public class WXShareController extends BaseController {
 
 	@RequestMapping(value = "/sign", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public Map<String, String> test(HttpServletRequest requesturl) throws Exception {
+	public Map<String, String> test(HttpServletRequest requesturl,String url) throws Exception {
 		String ticket = kffRmiService.getWeiXinTicket();
 
 		// 注意 URL 一定要动态获取，不能 hardcode
-		String url = requesturl.getRequestURL().toString();
+		//String url = requesturl.getRequestURL().toString();
 		Map<String, String> ret = sign(ticket, url);
 		for (Map.Entry entry : ret.entrySet()) {
 			System.out.println(entry.getKey() + ", " + entry.getValue());
