@@ -358,7 +358,7 @@ public class UserController extends BaseController {
 			account.setUserId(userId);
 			account.setUpdateTime(new Date());
 			account.setIcon(file);
-			kffRmiService.updateUser(account);
+			kffRmiService.updateUserInfo(account);
 
 			resMap.put("imgUrl", file);
 			bre.setData(resMap);
@@ -429,7 +429,7 @@ public class UserController extends BaseController {
 			account.setUserId(userId);
 			account.setUpdateTime(new Date());
 			account.setIcon(url);
-			kffRmiService.updateUser(account);
+			kffRmiService.updateUserInfo(account);
 
 			resMap.put("imgUrl", url);
 			bre.setData(resMap);
