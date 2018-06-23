@@ -434,14 +434,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						response.setProjectEnglishName(project.getProjectEnglishName());
 						response.setProjectIcon(project.getProjectIcon());
 						response.setProjectSignature(project.getProjectSignature());
-						//response.setTotalScore(project.getTotalScore());
+						response.setTotalScore(project.getTotalScore());
 					}
-					
-					//评测显示该评测分数
-					if(Objects.equal(1,post.getPostType())){
-						Evaluation eva = kffEvaluationService.findByPostId(post.getPostId());				
-						response.setTotalScore(eva==null?BigDecimal.ZERO:eva.getTotalScore());
-					}	
 					postResponse.add(response);
 				}
 			}
@@ -1867,7 +1861,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 							if (praiseId.getStatus() == 1 && validPraise > 0 && validPraise != 0) {
 								// 证明是有效赞
-								tokenrecords.setFunctionDesc("点赞奖励(内容)");
+								tokenrecords.setFunctionDesc("点赞奖励(短评)");
 								tokenrecords.setFunctionType(17);
 								tokenrecords.setAmount(new BigDecimal(pc * createPUF)); // 点赞奖励生成流水
 								tokenrecords.setUserId(createUserId);
@@ -1877,7 +1871,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 																	// 2-线性发放
 								tokenrecords.setCreateTime(new Date()); // 创建的时间
 								tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
-								tokenrecords.setMemo("用户" + user.getUserName() + "点赞奖励(内容)"); // 流水备注
+								tokenrecords.setMemo("用户" + user.getUserName() + "点赞奖励(短评)"); // 流水备注
 
 								Double coinLock = findByCreateUser.getCoinLock();
 								coinLock = coinLock + (pc * createPUF);
@@ -1894,7 +1888,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 								// 根据userId去获取
 
 								tokenaward.setUserId(createUserId);
-								tokenaward.setTokenAwardFunctionDesc("点赞奖励(内容)");
+								tokenaward.setTokenAwardFunctionDesc("点赞奖励(短评)");
 								tokenaward.setTokenAwardFunctionType(17);
 								tokenaward.setDistributionType(2);
 								// Double rewardToken = tokenaward.getInviteRewards();
@@ -1923,7 +1917,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 							if (praiseId.getStatus() == 1 && validPraise > 0 && validPraise != 0) {
 								// 证明是有效赞
 								if (kffPostService.findById(postId).getPraiseNum() == 5) {
-									tokenrecords.setFunctionDesc("点赞奖励(内容)");
+									tokenrecords.setFunctionDesc("点赞奖励(专评)");
 									tokenrecords.setFunctionType(17);
 									tokenrecords.setAmount(new BigDecimal(pc2 * createPUF + meet)); // 点赞奖励生成流水
 									tokenrecords.setUserId(createUserId);
@@ -1931,7 +1925,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 									tokenrecords.setRewardGrantType(1);
 									tokenrecords.setCreateTime(new Date());
 									tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
-									tokenrecords.setMemo("用户" + user.getUserName() + "点赞奖励(内容)"); // 流水备注
+									tokenrecords.setMemo("用户" + user.getUserName() + "点赞奖励(专评)"); // 流水备注
 									kffTokenrecordsService.save(tokenrecords);
 
 									BigDecimal kffCoinNum = findByUserId.getKffCoinNum();
@@ -1946,7 +1940,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 									coinPropertyService.update(findByCreateUser);
 
 									tokenaward.setUserId(createUserId);
-									tokenaward.setTokenAwardFunctionDesc("点赞奖励(内容)");
+									tokenaward.setTokenAwardFunctionDesc("点赞奖励(专评)");
 									tokenaward.setTokenAwardFunctionType(17);
 									tokenaward.setDistributionType(2);
 									// Double rewardToken = tokenaward.getRewardToken();
@@ -1963,7 +1957,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 									qfIndexService.updateYxPraise(userId);
 								} else {
-									tokenrecords.setFunctionDesc("点赞奖励(内容)");
+									tokenrecords.setFunctionDesc("点赞奖励(专评)");
 									tokenrecords.setFunctionType(17);
 									tokenrecords.setAmount(new BigDecimal(pc2 * createPUF)); // 点赞奖励生成流水
 									tokenrecords.setUserId(createUserId);
@@ -1971,7 +1965,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 									tokenrecords.setRewardGrantType(1);
 									tokenrecords.setCreateTime(new Date());
 									tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
-									tokenrecords.setMemo("用户" + user.getUserName() + "点赞奖励(内容)"); // 流水备注
+									tokenrecords.setMemo("用户" + user.getUserName() + "点赞奖励(专评)"); // 流水备注
 									kffTokenrecordsService.save(tokenrecords);
 
 									BigDecimal kffCoinNum = findByUserId.getKffCoinNum();
@@ -1986,7 +1980,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 									coinPropertyService.update(findByCreateUser);
 
 									tokenaward.setUserId(createUserId);
-									tokenaward.setTokenAwardFunctionDesc("点赞奖励(内容)");
+									tokenaward.setTokenAwardFunctionDesc("点赞奖励(专评)");
 									tokenaward.setTokenAwardFunctionType(17);
 									tokenaward.setDistributionType(2);
 									// Double rewardToken = tokenaward.getRewardToken();
@@ -2011,7 +2005,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 							if (kffPostService.findById(postId).getPraiseNum() == 5) {
 								Tokenrecords tokenrecords = new Tokenrecords();
 								Tokenaward tokenaward = new Tokenaward();
-								tokenrecords.setFunctionDesc("点赞奖励(内容)");
+								tokenrecords.setFunctionDesc("点赞奖励(单评)");
 								tokenrecords.setFunctionType(17);
 								tokenrecords.setAmount(new BigDecimal(pc3 * createPUF + meet2)); // 点赞奖励生成流水
 								tokenrecords.setUserId(createUserId);
@@ -2019,7 +2013,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 								tokenrecords.setRewardGrantType(1);
 								tokenrecords.setCreateTime(new Date());
 								tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
-								tokenrecords.setMemo("用户 :" + user.getUserName() + "点赞奖励(内容)"); // 流水备注
+								tokenrecords.setMemo("用户 :" + user.getUserName() + "点赞奖励(单评)"); // 流水备注
 								kffTokenrecordsService.save(tokenrecords);
 
 								BigDecimal kffCoinNum = findByUserId.getKffCoinNum();
@@ -2034,7 +2028,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 								coinPropertyService.update(findByCreateUser);
 
 								tokenaward.setUserId(createUserId);
-								tokenaward.setTokenAwardFunctionDesc("点赞奖励(内容)");
+								tokenaward.setTokenAwardFunctionDesc("点赞奖励(单评)");
 								tokenaward.setTokenAwardFunctionType(17);
 								tokenaward.setDistributionType(2);
 
@@ -2053,7 +2047,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 							} else {
 								Tokenrecords tokenrecords = new Tokenrecords();
 								Tokenaward tokenaward = new Tokenaward();
-								tokenrecords.setFunctionDesc("点赞奖励(内容)");
+								tokenrecords.setFunctionDesc("点赞奖励(单评)");
 								tokenrecords.setFunctionType(17);
 								tokenrecords.setAmount(new BigDecimal(pc3 * createPUF)); // 点赞奖励生成流水
 								tokenrecords.setUserId(createUserId);
@@ -2061,7 +2055,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 								tokenrecords.setRewardGrantType(1);
 								tokenrecords.setCreateTime(new Date());
 								tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
-								tokenrecords.setMemo("用户 :" + user.getUserName() + "点赞奖励(内容)"); // 流水备注
+								tokenrecords.setMemo("用户 :" + user.getUserName() + "点赞奖励(单评)"); // 流水备注
 								kffTokenrecordsService.save(tokenrecords);
 
 								BigDecimal kffCoinNum = findByUserId.getKffCoinNum();
@@ -2076,7 +2070,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 								coinPropertyService.update(findByCreateUser);
 
 								tokenaward.setUserId(createUserId);
-								tokenaward.setTokenAwardFunctionDesc("点赞奖励(内容)");
+								tokenaward.setTokenAwardFunctionDesc("点赞奖励(单评)");
 								tokenaward.setTokenAwardFunctionType(17);
 								tokenaward.setDistributionType(2);
 
@@ -2106,7 +2100,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						Tokenaward tokenaward = new Tokenaward();
 						if (praiseId.getStatus() == 1 && validPraise > 0 && validPraise != 0) {
 							// 证明是有效赞
-							tokenrecords.setFunctionDesc("点赞奖励(内容)");
+							tokenrecords.setFunctionDesc("点赞奖励(打假)");
 							tokenrecords.setFunctionType(17);
 							tokenrecords.setAmount(new BigDecimal(tl * createPUF)); // 点赞奖励生成流水
 							tokenrecords.setUserId(createUserId);
@@ -2114,7 +2108,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 							tokenrecords.setRewardGrantType(1);
 							tokenrecords.setCreateTime(new Date());
 							tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
-							tokenrecords.setMemo("用户" + user.getUserName() + "点赞奖励(内容)"); // 流水备注
+							tokenrecords.setMemo("用户" + user.getUserName() + "点赞奖励(打假)"); // 流水备注
 							kffTokenrecordsService.save(tokenrecords);
 
 							BigDecimal kffCoinNum = findByUserId.getKffCoinNum();
@@ -2129,7 +2123,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 							coinPropertyService.update(findByCreateUser);
 
 							tokenaward.setUserId(createUserId);
-							tokenaward.setTokenAwardFunctionDesc("点赞奖励(内容)");
+							tokenaward.setTokenAwardFunctionDesc("点赞奖励(打假)");
 							tokenaward.setTokenAwardFunctionType(17);
 							tokenaward.setDistributionType(2);
 							// Double rewardToken = tokenaward.getRewardToken();
@@ -2157,7 +2151,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 							// 证明是有效赞
 							if (praiseId.getPraiseType() == 1) {
 								if (kffPostService.findById(postId).getPraiseNum() == 5) {
-									tokenrecords.setFunctionDesc("点赞奖励(内容)");
+									tokenrecords.setFunctionDesc("点赞奖励(文章)");
 									tokenrecords.setFunctionType(17);
 									tokenrecords.setAmount(new BigDecimal(wz * createPUF + meet1)); // 点赞奖励生成流水
 									tokenrecords.setUserId(createUserId);
@@ -2165,7 +2159,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 									tokenrecords.setRewardGrantType(1);
 									tokenrecords.setCreateTime(new Date());
 									tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
-									tokenrecords.setMemo("用户" + user.getUserName() + "点赞奖励(内容)"); // 流水备注
+									tokenrecords.setMemo("用户" + user.getUserName() + "点赞奖励(文章)"); // 流水备注
 									kffTokenrecordsService.save(tokenrecords);
 
 									BigDecimal kffCoinNum = findByUserId.getKffCoinNum();
@@ -2180,7 +2174,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 									coinPropertyService.update(findByCreateUser);
 
 									tokenaward.setUserId(createUserId);
-									tokenaward.setTokenAwardFunctionDesc("点赞奖励(内容)");
+									tokenaward.setTokenAwardFunctionDesc("点赞奖励(文章)");
 									tokenaward.setTokenAwardFunctionType(17);
 									tokenaward.setDistributionType(2);
 									// Double rewardToken = tokenaward.getRewardToken();
@@ -2195,7 +2189,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 									kffTokenawardService.save(tokenaward);
 									qfIndexService.updateYxPraise(userId);
 								} else {
-									tokenrecords.setFunctionDesc("点赞奖励(内容)");
+									tokenrecords.setFunctionDesc("点赞奖励(文章)");
 									tokenrecords.setFunctionType(17);
 									tokenrecords.setAmount(new BigDecimal(wz * createPUF)); // 点赞奖励生成流水
 									tokenrecords.setUserId(createUserId);
@@ -2203,7 +2197,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 									tokenrecords.setRewardGrantType(1);
 									tokenrecords.setCreateTime(new Date());
 									tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
-									tokenrecords.setMemo("用户" + user.getUserName() + "点赞奖励(内容)"); // 流水备注
+									tokenrecords.setMemo("用户" + user.getUserName() + "点赞奖励(文章)"); // 流水备注
 									kffTokenrecordsService.save(tokenrecords);
 
 									BigDecimal kffCoinNum = findByUserId.getKffCoinNum();
@@ -2218,7 +2212,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 									coinPropertyService.update(findByCreateUser);
 
 									tokenaward.setUserId(createUserId);
-									tokenaward.setTokenAwardFunctionDesc("点赞奖励(内容)");
+									tokenaward.setTokenAwardFunctionDesc("点赞奖励(文章)");
 									tokenaward.setTokenAwardFunctionType(17);
 									tokenaward.setDistributionType(2);
 									// Double rewardToken = tokenaward.getRewardToken();
