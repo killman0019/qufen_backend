@@ -41,7 +41,6 @@
 		<result property="createTime" jdbcType="TIMESTAMP" column="createTime"/>
 		<result property="updateTime" jdbcType="TIMESTAMP" column="updateTime"/>
 		<result property="status" jdbcType="INTEGER" column="status"/>
-		<result property="uuid" jdbcType="VARCHAR" column="uuid"/>
 		<result property="stickTop" jdbcType="INTEGER" column="stick_top"/>
 		<result property="stickUpdateTime" jdbcType="TIMESTAMP" column="stick_updateTime"/>
 		<result property="modelType" jdbcType="INTEGER" column="model_type" />
