@@ -1520,7 +1520,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			if (CollectionUtils.isNotEmpty(onlyevaDetail)) {
 				System.out.println(onlyevaDetail.size());
 				if (onlyevaDetail.size() == 1) {
-					
+
 					evaluationRequest.setTotalScore(onlyevaDetail.get(0).getScore());
 				}
 			}
@@ -1906,7 +1906,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 							}
 						}
 					}
-					if (evaluation.getModelType() == 2) {
+					if (evaluation.getModelType() == 2 || evaluation.getModelType() == 4) {
 						// 系统自定义专业完整版评测
 
 						if (null != praiseId && praiseId.getPraiseType() == 1) {
@@ -2683,10 +2683,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					response.setProjectEnglishName(project.getProjectEnglishName());
 					response.setProjectIcon(project.getProjectIcon());
 					response.setProjectSignature(project.getProjectSignature());
-					if(null != eva)
-					{
+					if (null != eva) {
 						response.setTotalScore(eva.getTotalScore());
-					}else {
+					} else {
 						response.setTotalScore(project.getTotalScore());
 					}
 				}
