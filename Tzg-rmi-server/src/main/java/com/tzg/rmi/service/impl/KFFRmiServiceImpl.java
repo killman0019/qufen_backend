@@ -434,8 +434,14 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						response.setProjectEnglishName(project.getProjectEnglishName());
 						response.setProjectIcon(project.getProjectIcon());
 						response.setProjectSignature(project.getProjectSignature());
-						response.setTotalScore(project.getTotalScore());
+						//response.setTotalScore(project.getTotalScore());
 					}
+					
+					//评测显示该评测分数
+					if(Objects.equal(1,post.getPostType())){
+						Evaluation eva = kffEvaluationService.findByPostId(post.getPostId());				
+						response.setTotalScore(eva==null?BigDecimal.ZERO:eva.getTotalScore());
+					}	
 					postResponse.add(response);
 				}
 			}
