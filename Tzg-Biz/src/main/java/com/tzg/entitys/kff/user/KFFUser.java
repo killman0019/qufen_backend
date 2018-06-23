@@ -28,7 +28,7 @@ public class KFFUser implements Serializable {
     /**
      * 性别:1男；2女
      */ 	
-	private java.lang.Integer sex = 1;
+	private java.lang.Integer sex;
     /**
      * 头像
      */ 	
@@ -60,7 +60,7 @@ public class KFFUser implements Serializable {
     /**
      * 预留字段 用户等级：1-普通用户；2-高级用户;3-VIP
      */ 	
-	private java.lang.Integer userDegree = 1;
+	private java.lang.Integer userDegree ;
     /**
      * 个人简介
      */ 	
@@ -68,27 +68,27 @@ public class KFFUser implements Serializable {
     /**
      * 粉丝数量
      */ 	
-	private java.lang.Integer fansNum = 0;
+	private java.lang.Integer fansNum ;
     /**
      * 收获点赞数量
      */ 	
-	private java.lang.Integer praiseNum = 0;
+	private java.lang.Integer praiseNum ;
     /**
      * 发表评测数量
      */ 	
-	private java.lang.Integer evaluationNum = 0;
+	private java.lang.Integer evaluationNum ;
     /**
      * 发表讨论数量
      */ 	
-	private java.lang.Integer discussNum  = 0;
+	private java.lang.Integer discussNum  ;
     /**
      * 发表文章数量
      */ 	
-	private java.lang.Integer articleNum  = 0;
+	private java.lang.Integer articleNum  ;
     /**
      * 账号币值
      */ 	
-	private BigDecimal kffCoinNum  = BigDecimal.ZERO;
+	private BigDecimal kffCoinNum ;
     /**
      * 所在地区域名称:浙江省杭州市
      */ 	
@@ -109,7 +109,7 @@ public class KFFUser implements Serializable {
     /**
      * 状态：0-删除；1-有效
      */ 	
-	private java.lang.Integer status = 1;
+	private java.lang.Integer status ;
     /**
      * 备注信息
      */ 	
@@ -133,7 +133,7 @@ public class KFFUser implements Serializable {
     /**
      * 推荐等级:0-没有推荐人;1-一级推荐人...
      */ 	
-	private java.lang.Integer referLevel = 0;
+	private java.lang.Integer referLevel ;
 
 	
 	
