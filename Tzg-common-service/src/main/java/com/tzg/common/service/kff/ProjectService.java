@@ -6,24 +6,46 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
+import com.google.common.base.Objects;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
+import com.tzg.entitys.kff.evaluation.Evaluation;
+import com.tzg.entitys.kff.evaluation.EvaluationMapper;
+import com.tzg.entitys.kff.post.Post;
+import com.tzg.entitys.kff.post.PostMapper;
 import com.tzg.entitys.kff.project.KFFProject;
 import com.tzg.entitys.kff.project.KFFProjectMapper;
+import com.tzg.entitys.kff.qfindex.QfIndex;
+import com.tzg.entitys.kff.qfindex.QfIndexMapper;
 import com.tzg.rest.exception.rest.RestServiceException;
 
 @Service(value="KFFProjectService")
 @Transactional
 public class ProjectService   {
+	private static final Log logger = LogFactory.getLog(ProjectService.class);
 
 	@Autowired
 	private KFFProjectMapper projectMapper;	
-	   
+	@Autowired
+	private PostMapper postMapper;
+	@Autowired
+	private EvaluationMapper evaluationMapper;
+	@Autowired
+	private QfIndexMapper qfIndexMapper;
+    private static final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 4);
+
+	
 	@Transactional(readOnly=true)
     public KFFProject findById(java.lang.Integer id) throws RestServiceException {
     	if(id == null){
@@ -134,5 +156,80 @@ public class ProjectService   {
 	}
 
 	
+	public void caculateProjectTotalScore() {
+
+		List<Post> projects = postMapper.getProjectIdsGreateThanTenEvas();
+		if(CollectionUtils.isEmpty(projects)){
+			logger.warn("no projects with more than 10 evaluations");
+			return;
+		}
+        final CountDownLatch countDownLatch = new CountDownLatch(projects.size());
+
+		for(Post p:projects){
+		 final Integer projectId = p.getProjectId();
+            newFixedThreadPool.execute(new Runnable() {            	 
+            	@Override
+            	public void run() {
+            	try {
+            		caculateOneScore(projectId,countDownLatch);
+            	} catch (Exception e) {
+            	// TODO Auto-generated catch block
+            	 e.printStackTrace();
+            	}
+            	}
+            	});
+		
+		}
+		try {
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+	}
+
+	private void caculateOneScore(Integer projectId,CountDownLatch countDownLatch){
+		BigDecimal totalScore;
+		
+		KFFProject originalProject = projectMapper.findById(projectId);
+		if(originalProject != null){
+			totalScore = originalProject.getTotalScore();
+			
+			//获取简单评测，全面专业评测 和 自定义评测统计
+			List<Evaluation> evas = evaluationMapper.getAllEvasExceptPartByProjectId(projectId);
+			if(CollectionUtils.isEmpty(evas)){
+		        countDownLatch.countDown();
+		        return;
+			}
+			QfIndex qfIndex = null;
+			Integer qfScore = 100;
+			for(Evaluation eva:evas){
+				BigDecimal oneDividor = BigDecimal.ZERO;
+				Long oneDividend = 0L;
+				BigDecimal oneScore = eva.getTotalScore()==null?BigDecimal.ZERO:eva.getTotalScore();
+				qfIndex = qfIndexMapper.findByUserId(eva.getCreateUserId());
+				if(qfIndex != null){
+					qfScore =  qfIndex.getStatusHierarchyType()==null?100:qfIndex.getStatusHierarchyType();
+				}
+				//简单评测
+				if(Objects.equal(1, eva.getModelType())){
+					oneDividor = oneScore.multiply(new BigDecimal(qfScore)).multiply(new BigDecimal(100));
+				}else if (Objects.equal(2, eva.getModelType())){
+				 //系统专业评测	
+				}else if(Objects.equal(4, eva.getModelType())){
+				//用户自定义评测
+					
+				}
+				
+			}
+			
+			
+			KFFProject project = new KFFProject();
+			project.setProjectId(projectId);
+			project.setUpdateTime(new Date());
+			project.setTotalScore(totalScore);
+			projectMapper.updateTotalScore(project);
+		}
+        countDownLatch.countDown();
+	}
 	
 }
