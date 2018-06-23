@@ -386,7 +386,7 @@
 		tbproject
 		WHERE
 		project_code = #{projectCode}
-		AND project_chinese_name = #{projectChineseName}
+		AND project_chinese_name = #{projectChineseName} and status=1
 	</select>
 
 </mapper>
