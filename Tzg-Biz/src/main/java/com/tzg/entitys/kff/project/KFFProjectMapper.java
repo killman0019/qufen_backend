@@ -23,4 +23,5 @@ public interface KFFProjectMapper extends BaseMapper<KFFProject, java.lang.Integ
 
 	void updateTotalScore(KFFProject project);
 
+
 }

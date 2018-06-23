@@ -23,6 +23,9 @@ public interface EvaluationMapper extends BaseMapper<Evaluation, java.lang.Integ
 
 	Integer findPageSimpleEvaluationCount(Map<String, Object> queryData);
 
-	List<EvaluationDetailResponse> findPageSimpleEvaluation(Map<String, Object> queryData);	
+	List<EvaluationDetailResponse> findPageSimpleEvaluation(Map<String, Object> queryData);
+
+	//除部分评测外的所有评测
+	List<Evaluation> getAllEvasExceptPartByProjectId(Integer projectId);	
 
 }

@@ -43,6 +43,7 @@
     <!-- ref指定的是任务类  method是指定需要运行的方法 cron是定时任务的表达式-->
          <task:scheduled ref="taskJobService" method="updateByGrantType" cron="0 0 0 * * ? "/>   
          <task:scheduled ref="taskJobService" method="updateByGrantType2" cron="0 0 0 * * ? "/>   
+         <task:scheduled ref="taskJobService" method="caculateProjectTotalScore" cron="0 1 0 * * ? "/> 
     </task:scheduled-tasks>  
 	
 

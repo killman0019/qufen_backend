@@ -177,6 +177,15 @@
 	    <![CDATA[ ORDER BY evaluation_id DESC ]]>
         <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
 	</select>
+	
+	<select id="getAllEvasExceptPartByProjectId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="columns" />
+		from tbevaluation where status=1 and model_type != 3
+		and project_id = #{projectId} 
+	 
+	</select>
+	
 
 	<select id="findByWhere" resultMap="BaseResultMap" parameterType="java.util.Map">
 		select
