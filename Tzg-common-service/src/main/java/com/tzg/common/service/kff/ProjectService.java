@@ -195,6 +195,7 @@ public class ProjectService   {
 	}
 
 	private void caculateOneScore(Integer projectId,CountDownLatch countDownLatch){
+		try{
 		BigDecimal totalScore;
 		
 		KFFProject originalProject = projectMapper.findById(projectId);
@@ -272,7 +273,11 @@ public class ProjectService   {
 			
 			logger.warn("------update project totalSocre for project:"+projectId+"originalScore:"+originalTotalScore+"newScore:"+totalScore);
 		}
-        countDownLatch.countDown();
+		}catch(Exception e){
+			logger.error("failed update project totalScore for project:"+projectId+",error:{}"+e.getMessage());
+		}finally{
+			countDownLatch.countDown();
+		}
 	}
 	
 }

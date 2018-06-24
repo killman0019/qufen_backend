@@ -223,7 +223,7 @@
 		<if test="updateTime != null and updateTime.trim() != ''">
 		and updateTime = #{updateTime}
 		</if>
-		<if test="userIds != null and userIds.size()>0">
+		<if test="userIds != null and userIds.trim() != ''">
 		and user_id in 
 		 <foreach collection="userIds" item="userId" index="index" open="(" separator="," close=")">
                 #{userId}
