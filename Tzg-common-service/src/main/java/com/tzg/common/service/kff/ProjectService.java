@@ -273,6 +273,8 @@ public class ProjectService   {
 			projectMapper.updateTotalScore(project);
 			
 			logger.warn("------update project totalSocre for project:"+projectId+"originalScore:"+originalTotalScore+"newScore:"+totalScore);
+		
+			
 		}
 		}catch(Exception e){
 			logger.error("failed update project totalScore for project:"+projectId+",error:{}"+e.getMessage());
