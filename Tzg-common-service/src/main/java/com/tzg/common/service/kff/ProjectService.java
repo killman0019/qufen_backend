@@ -229,6 +229,7 @@ public class ProjectService   {
 					Map<String, Object> map = new HashMap<>();
 					map.put("status", "1");
 					map.put("postType","1");
+					map.put("postId", eva.getPostId());
 					map.put("projectId",projectId+"");
 					map.put("praiseType","1");
 					List<Praise> praises = praiseMapper.findAllActivePraisesByPostId(map);

@@ -1637,17 +1637,13 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		evaluation.setStatus(KFFConstants.STATUS_ACTIVE);
 		evaluation.setTotalScore(totalScore);
 		kffEvaluationService.save(evaluation);
-		try {
-			redisService.put(KFFRestConstants.REDIS_KEY_PROJECT_SYNC_SCORE, String.valueOf(project.getProjectId()), 24 * 60 * 60);
-		} catch (Exception e) {
-			logger.error("put redis key REDIS_KEY_PROJECT_SYNC_SCORE error " + project.getProjectId());
-		}
+
 		result.put("postId", newPost.getPostId());
 		result.put("postType", newPost.getPostType());
 		result.put("modelType", evaluationRequest.getModelType());
 		// 更新用户发帖数
 		kffUserService.increasePostNum(createUser.getUserId(), KFFConstants.POST_TYPE_EVALUATION);
-		// 更新项目总分
+		// 更新项目总分 改为定时任务每天晚上1点计算 统计超过 10份评测的项目
 		kffProjectService.updateTotalScore(project.getProjectId(), totalScore);
 		// 更新评测人数
 		kffProjectService.increaseRaterNum(project.getProjectId());
