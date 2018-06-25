@@ -114,6 +114,13 @@
 	]]>
 	</select>
 	
+	
+	<select id="findAllActivePraisesByPostId" resultMap="BaseResultMap" parameterType="java.util.Map">
+	    SELECT <include refid="columns"/>	FROM tbpraise WHERE 1=1
+		 <include refid="queryWhere"/> 					
+	</select>	
+	
+	
 	<select id="findByPraiseId" resultMap="BaseResultMap" parameterType="java.util.Map">
 	    SELECT <include refid="columns"/> 
 	<![CDATA[
