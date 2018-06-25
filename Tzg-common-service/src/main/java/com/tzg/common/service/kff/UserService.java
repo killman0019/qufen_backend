@@ -125,6 +125,16 @@ public class UserService {
 		user.setUpdateTime(createTime);
 		user.setUserType(1);
 		user.setStatus(1);
+		user.setSex(1);
+		user.setUserDegree(1);
+		user.setFansNum(0);
+		user.setPraiseNum(0);
+		user.setEvaluationNum(0);
+		user.setDiscussNum(0);
+		user.setArticleNum(0);
+		user.setKffCoinNum(BigDecimal.ZERO);
+		user.setStatus(1);
+		user.setReferLevel(0);
 
 		userMapper.save(user);
 		QfIndex qfIndex = new QfIndex();
