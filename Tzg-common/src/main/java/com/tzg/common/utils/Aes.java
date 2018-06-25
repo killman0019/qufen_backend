@@ -6,6 +6,7 @@ import java.security.SecureRandom;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import sun.misc.BASE64Decoder;
@@ -170,6 +171,23 @@ public class Aes {
 			return null;
 		}
 	}
+	
+	public static byte[] AES_CBC_Decrypt(byte[] data, byte[] key, byte[] iv) throws Exception{
+        Cipher cipher = getCipher(Cipher.DECRYPT_MODE, key, iv);
+        return cipher.doFinal(data);
+    }
+
+    private static Cipher getCipher(int mode, byte[] key, byte[] iv) throws Exception{
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+
+        //因为AES的加密块大小是128bit(16byte), 所以key是128、192、256bit无关
+        //System.out.println("cipher.getBlockSize()： " + cipher.getBlockSize());
+
+        SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
+        cipher.init(mode, secretKeySpec, new IvParameterSpec(iv));
+
+        return cipher;
+    }
 	
 	public static void main(String[] args) throws Exception {
 		try {

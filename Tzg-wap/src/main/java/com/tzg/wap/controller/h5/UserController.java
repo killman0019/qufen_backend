@@ -27,6 +27,8 @@ import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.redis.RedisService;
 import com.tzg.common.utils.AccountTokenUtil;
+import com.tzg.common.utils.Aes;
+import com.tzg.common.utils.AesWapUtils;
 import com.tzg.common.utils.Create2Code;
 import com.tzg.common.utils.EnumConstant.SmsBuss;
 import com.tzg.common.utils.CookieUtil;
@@ -64,7 +66,7 @@ public class UserController extends BaseController {
 	// "http://192.168.10.196:5000/user/registerSmp?invaUIH=";
 
 	private static Logger log = Logger.getLogger(UserController.class);
-
+	private static final String KEY = "abcdefgabcdefg12";
 	@Autowired
 	private KFFRmiService kffRmiService;
 	@Autowired
@@ -90,6 +92,19 @@ public class UserController extends BaseController {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		// 验证手机号的合法性
+		if (null == password) {
+			map.put("reStatus", 0);// 1注册成功 0 注册不成功
+			map.put("reason", "请输入密码!");
+			bre.setData(map);
+			return bre;
+		}
+		String passwordAes = null;
+		try {
+			passwordAes = AesWapUtils.aesDecrypt(password, KEY);
+			System.out.println("passwordAes" + passwordAes);
+		} catch (Exception e1) {
+			logger.info("解密失败!");
+		}
 		if (null == phoneNumber) {
 			throw new RestServiceException(RestErrorCode.PHONE_NULL);
 		}
@@ -116,32 +131,27 @@ public class UserController extends BaseController {
 		// 验证手机是否已经注册
 		KFFUser user = kffRmiService.findUserByPhoneNumber(phoneNumber);
 		if (null != user) {
-			//throw new RestServiceException(RestErrorCode.PHONE_ALREADY_EXIST);
+			// throw new RestServiceException(RestErrorCode.PHONE_ALREADY_EXIST);
 			map.put("reStatus", 0);// 1注册成功 0 注册不成功
 			map.put("reason", "该手机已经被注册!");
 			bre.setData(map);
 			return bre;
 		}
-		if (null == password) {
-			//throw new RestServiceException("登陆密码不能为空");
-			map.put("reStatus", 0);// 1注册成功 0 注册不成功
-			map.put("reason", "登陆密码不能为空");
-			bre.setData(map);
-			return bre;
-		}
+
 		// 判断密码的合法性
 		// String pwdFmt =
 		// "^((?=.*?\\d)(?=.*?[A-Za-z])|(?=.*?\\d)(?=.*?[!@#$%^&])|(?=.*?[A-Za-z])(?=.*?[!@#$%^&]))[\\dA-Za-z!@#$%^&]{8,20}$";
 		// //由字母、数字组成，8-20位
-		String pwdFmt = "^.{8,20}$";
-		if (!password.matches(pwdFmt)) {
-			//throw new RestServiceException(RestErrorCode.PASSWORD_FORMAT_ERROR);
-			map.put("reStatus", 0);// 1注册成功 0 注册不成功
-			map.put("reason", "密码不符合要求，必须为8-20位，且数字和字母的组合");
-			bre.setData(map);
-			return bre;
+		if (null != passwordAes) {
+			String pwdFmt = "^.{8,20}$";
+			if (!passwordAes.matches(pwdFmt)) {
+				// throw new RestServiceException(RestErrorCode.PASSWORD_FORMAT_ERROR);
+				map.put("reStatus", 0);// 1注册成功 0 注册不成功
+				map.put("reason", "密码不符合要求，必须为8-20位，且数字和字母的组合");
+				bre.setData(map);
+				return bre;
+			}
 		}
-
 		// 校验手机验证 判断输入手机验证码和送到手机的验证码是否一致
 		String cacheCode = null;
 		try {
@@ -175,7 +185,7 @@ public class UserController extends BaseController {
 			map.put("reason", "此用户已注册");
 			bre.setData(map);
 
-			//throw new RestServiceException("注册失败请稍后重试!");
+			// throw new RestServiceException("注册失败请稍后重试!");
 
 		}
 		if (null != KffUser) {
@@ -246,7 +256,7 @@ public class UserController extends BaseController {
 			UserInvation userInvation = kffRmiService.selectUseInvation(userId);
 			if (StringUtils.isEmpty(userInvation.getUserposterpic())) {
 				// 生成海报
-				posterUrl =  kffRmiService.creat2Code(userId);
+				posterUrl = kffRmiService.creat2Code(userId);
 				String code2Url = null;
 				kffRmiService.updataUserInvation(userId, posterUrl, code2Url);
 				System.out.println("posterUrl" + posterUrl);

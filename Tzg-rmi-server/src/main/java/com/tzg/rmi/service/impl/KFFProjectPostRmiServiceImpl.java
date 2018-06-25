@@ -255,8 +255,11 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 				childQuery.addQueryData("parentCommentsId", comment.getCommentsId() + "");
 				PageResult<Comments> childComments = kffCommentsService.findPage(childQuery);
 				if (childComments != null && CollectionUtils.isNotEmpty(childComments.getRows())) {
-					comment.setChildCommentsList(childComments.getRows());
-					comment.setChildCommentsNum(childComments.getRowCount());
+					// comment.setChildCommentsList(childComments.getRows());
+					// comment.setChildCommentsNum(childComments.getRowCount());
+					for (Comments comments2 : childComments.getRows()) {
+						list.add(comments2);
+					}
 
 				}
 				// 登录用户判断点赞状态
