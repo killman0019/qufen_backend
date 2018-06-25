@@ -371,6 +371,16 @@ public class UserService {
 		user.setUpdateTime(createTime);
 		user.setUserType(1);
 		user.setStatus(1);
+		user.setSex(1);
+		user.setUserDegree(1);
+		user.setFansNum(0);
+		user.setPraiseNum(0);
+		user.setEvaluationNum(0);
+		user.setDiscussNum(0);
+		user.setArticleNum(0);
+		user.setKffCoinNum(BigDecimal.ZERO);
+		user.setStatus(1);
+		user.setReferLevel(0);
 		// 不为null 判断邀请人是第几等级
 		if (null != invaUserId) {
 			// 根据invauserID 查询用户user表 进行查询
