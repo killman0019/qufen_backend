@@ -532,8 +532,9 @@
 		WHERE user_id = #{userId}
 
 	</select>
+		
 	<update id="updateUserKFFPop" parameterType="java.lang.Integer">
-		UPDATE tbuser set pop = 1
+		UPDATE tbuser set pop = 1,last_login_dateTime = sysdate()
 		WHERE
 		user_id = #{userId,jdbcType=INTEGER}
 	</update>
