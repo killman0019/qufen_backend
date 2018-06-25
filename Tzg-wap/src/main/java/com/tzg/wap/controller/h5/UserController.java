@@ -116,11 +116,18 @@ public class UserController extends BaseController {
 		// 验证手机是否已经注册
 		KFFUser user = kffRmiService.findUserByPhoneNumber(phoneNumber);
 		if (null != user) {
-			throw new RestServiceException(RestErrorCode.PHONE_ALREADY_EXIST);
-
+			//throw new RestServiceException(RestErrorCode.PHONE_ALREADY_EXIST);
+			map.put("reStatus", 0);// 1注册成功 0 注册不成功
+			map.put("reason", "该手机已经被注册!");
+			bre.setData(map);
+			return bre;
 		}
 		if (null == password) {
-			throw new RestServiceException("登陆密码不能为空");
+			//throw new RestServiceException("登陆密码不能为空");
+			map.put("reStatus", 0);// 1注册成功 0 注册不成功
+			map.put("reason", "登陆密码不能为空");
+			bre.setData(map);
+			return bre;
 		}
 		// 判断密码的合法性
 		// String pwdFmt =
@@ -128,7 +135,11 @@ public class UserController extends BaseController {
 		// //由字母、数字组成，8-20位
 		String pwdFmt = "^.{8,20}$";
 		if (!password.matches(pwdFmt)) {
-			throw new RestServiceException(RestErrorCode.PASSWORD_FORMAT_ERROR);
+			//throw new RestServiceException(RestErrorCode.PASSWORD_FORMAT_ERROR);
+			map.put("reStatus", 0);// 1注册成功 0 注册不成功
+			map.put("reason", "密码不符合要求，必须为8-20位，且数字和字母的组合");
+			bre.setData(map);
+			return bre;
 		}
 
 		// 校验手机验证 判断输入手机验证码和送到手机的验证码是否一致
@@ -164,7 +175,7 @@ public class UserController extends BaseController {
 			map.put("reason", "此用户已注册");
 			bre.setData(map);
 
-			throw new RestServiceException("注册失败请稍后重试!");
+			//throw new RestServiceException("注册失败请稍后重试!");
 
 		}
 		if (null != KffUser) {

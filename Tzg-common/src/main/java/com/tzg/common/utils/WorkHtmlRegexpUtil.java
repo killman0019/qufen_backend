@@ -260,7 +260,8 @@ public class WorkHtmlRegexpUtil {
 		        addTags(new String[]{"img"}).
 		        addAttributes("img", new String[]{"align", "alt", "height", "src", "title", "width"}).
 		        addProtocols("img", "src", new String[]{"http", "https"}));*/
-		htmlStr = htmlStr.replace(" ", "&nbsp;");
+		htmlStr = htmlStr.replace("&nbsp;", "  ");
+		htmlStr= htmlStr.replace("&nbsp", "  ");
 		htmlStr = Jsoup.clean(htmlStr, Whitelist.none());
 		return htmlStr.trim(); // 返回文本字符串
 	}
