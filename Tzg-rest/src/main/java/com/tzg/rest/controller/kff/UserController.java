@@ -1449,7 +1449,12 @@ public class UserController extends BaseController {
 					map.put("pop", pop);
 
 					// 更新弹出框状态
-					kffRmiService.updateUserKFFPop(loginUserId);
+					if(null == loginaccount.getLastLoginDateTime())
+					{
+						kffRmiService.updateUserKFFPop(loginUserId);
+					}else if(!DateUtil.isToday(loginaccount.getLastLoginDateTime().getTime())) {
+						kffRmiService.updateUserKFFPop(loginUserId);
+					}
 				} catch (RestServiceException e) {
 					return this.resResult(RestErrorCode.MISSING_POLICY, e.getMessage());
 				}

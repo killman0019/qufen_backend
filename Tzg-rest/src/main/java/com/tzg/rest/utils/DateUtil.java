@@ -124,6 +124,23 @@ public class DateUtil {
         long between_days=(time2-time1)/(1000*3600*24);  
             
        return Integer.parseInt(String.valueOf(between_days));           
-    }   
+    }
+    
+    //判断选择的日期是否是今天  
+    public static boolean isToday(long time)  
+    {  
+       return isThisTime(time,"yyyy-MM-dd");  
+    }
+    
+    private static boolean isThisTime(long time,String pattern) {  
+        Date date = new Date(time);  
+         SimpleDateFormat sdf = new SimpleDateFormat(pattern);  
+         String param = sdf.format(date);//参数时间  
+         String now = sdf.format(new Date());//当前时间  
+         if(param.equals(now)){  
+           return true;  
+         }  
+         return false;  
+    }  
 
 }
