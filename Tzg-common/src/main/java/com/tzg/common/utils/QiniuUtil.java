@@ -26,7 +26,7 @@ public class QiniuUtil {
 	public static String BUCKETNAME = "qufenpic";
 
 	// @Value("#{paramConfig['qiniu.cdns']}")
-	public static String DOMAIN = "http://pic.qufen.top";
+	public static String DOMAIN = "https://pic.qufen.top";
 
 	// @Value("#{paramConfig['qiniu.accesskey']}")
 	public static String ACCESS_KEY = "enchuqUr0dVnB_QzjnONINpEkqcaAfJJ_uiaAp0h";
