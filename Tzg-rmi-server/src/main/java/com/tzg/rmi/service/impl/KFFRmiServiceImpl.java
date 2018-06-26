@@ -1198,7 +1198,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (articleRequest.getArticleContents().length() > 60000) {
 			throw new RestServiceException("文章内容长度超过限制");
 		}
-		if (articleRequest.getPostTitle().length() > 30) {
+		if (articleRequest.getPostTitle().length() > 130) {
 			throw new RestServiceException("文章标题长度不能超过30字");
 		}
 		KFFUser createUser = kffUserService.findById(articleRequest.getCreateUserId());
