@@ -177,7 +177,8 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 			}
 			result.add(i, grade);
 		}
-		List<Evaluation> evas = kffEvaluationService.findSimpleEvaByProjectId(projectId);
+		//List<Evaluation> evas = kffEvaluationService.findSimpleEvaByProjectId(projectId);
+		List<Evaluation> evas =	kffEvaluationService.selectAllEvaExceptOnlyEvaByProjectId(projectId);
 		BigDecimal eachTotalScore = BigDecimal.ZERO;
 		BigDecimal totalScore = BigDecimal.ZERO;
 		int totalRaterNum = 0;
@@ -736,11 +737,12 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 				}
 
 			}
-
+			
 			for (DevaluationModelDetail detail : details) {
 
 				BigDecimal totalScore = BigDecimal.ZERO;
 				detail.setRaterNum(detailModelTotalRater.get(detail.getDetailName()) == null ? 0 : detailModelTotalRater.get(detail.getDetailName()));
+				
 				if (Objects.equal(0, detail.getRaterNum())) {
 					detail.setTotalScore(BigDecimal.ZERO);
 				} else {

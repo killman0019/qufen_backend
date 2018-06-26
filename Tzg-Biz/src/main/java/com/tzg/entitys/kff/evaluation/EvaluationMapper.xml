@@ -186,6 +186,8 @@
 	 
 	</select>
 	
+	
+	
 
 	<select id="findByWhere" resultMap="BaseResultMap" parameterType="java.util.Map">
 		select

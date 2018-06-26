@@ -171,4 +171,15 @@ public class EvaluationService {
 		return result;
 	}
 
+	/**
+	 * 
+	 * @param projectId
+	 * @return
+	 */
+	@Transactional(readOnly = true)
+	public List<Evaluation> selectAllEvaExceptOnlyEvaByProjectId(Integer projectId) {
+
+		return evaluationMapper.getAllEvasExceptPartByProjectId(projectId);
+	}
+
 }
