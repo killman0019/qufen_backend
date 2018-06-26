@@ -1191,7 +1191,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (StringUtils.isBlank(articleRequest.getPostTitle())) {
 			throw new RestServiceException("文章标题不能为空");
 		}
-		if (articleRequest.getArticleContents().length() > 30000) {
+		if (articleRequest.getArticleContents().length() > 60000) {
 			throw new RestServiceException("文章内容长度超过限制");
 		}
 		if (articleRequest.getPostTitle().length() > 30) {
@@ -1644,7 +1644,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// 更新用户发帖数
 		kffUserService.increasePostNum(createUser.getUserId(), KFFConstants.POST_TYPE_EVALUATION);
 		// 更新项目总分 改为定时任务每天晚上1点计算 统计超过 10份评测的项目
-		kffProjectService.updateTotalScore(project.getProjectId(), totalScore);
+		//kffProjectService.updateTotalScore(project.getProjectId(), totalScore);
 		// 更新评测人数
 		kffProjectService.increaseRaterNum(project.getProjectId());
 
@@ -5706,9 +5706,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					if (i == 0) {
 						logger.info("原img将被代替" + img);
 						logger.info("七牛的url" + UrlQiniu);
-						contentSrcReplace = content.replaceAll(img, UrlQiniu);
+						contentSrcReplace = content.replace(img, UrlQiniu);
 					}
-					contentSrcReplace = contentSrcReplace.replaceAll(img, UrlQiniu);
+					contentSrcReplace = contentSrcReplace.replace(img, UrlQiniu);
 					logger.info(contentSrcReplace);
 					i = i + 1;
 				}
@@ -5719,6 +5719,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		logger.info("缩略图的json串" + uploadIeviwList);
 		map.put("uploadIeviwList", uploadIeviwList);
 		map.put("contentSrcReplace", contentSrcReplace);
+		//logger.info(contentSrcReplace);
 		return map;
 	}
 

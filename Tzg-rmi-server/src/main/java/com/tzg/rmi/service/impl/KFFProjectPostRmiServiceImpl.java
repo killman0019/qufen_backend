@@ -229,9 +229,10 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 
 		resultMap.put("evaGradeStat", finalList);
 		if (totalRaterNum == 0) {
-			resultMap.put("totalScore", 0);
+			// resultMap.put("totalScore", 0);
 		} else {
-			resultMap.put("totalScore", totalScore.divide(new BigDecimal(totalRaterNum), 1, RoundingMode.HALF_DOWN).setScale(1, RoundingMode.HALF_DOWN));
+			// resultMap.put("totalScore", totalScore.divide(new BigDecimal(totalRaterNum), 1,
+			// RoundingMode.HALF_DOWN).setScale(1, RoundingMode.HALF_DOWN));
 		}
 		resultMap.put("totalRaterNum", totalRaterNum);
 		return resultMap;
@@ -439,7 +440,7 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 						Integer raterNum = 0;
 						for (DevaluationModel model : models) {
 							if (StringUtils.isBlank(model.getModelName())) {
-								continue;
+								continue;// 跳过此次循环直接下次循环
 							}
 							score = detailModelTotalScore.get(model.getModelName()) == null ? BigDecimal.ZERO : detailModelTotalScore.get(model.getModelName());
 							score = score.add(model.getScore() == null ? BigDecimal.ZERO : model.getScore());
@@ -509,8 +510,8 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 				detailList.add(detail);
 			}
 		}*/
-		resultMap.put("projectEvaStat", details);
-		resultMap.put("totalProEvaRaterNum", totalProEvaRaterNum);
+		resultMap.put("projectEvaStat", details);// project主页纬度
+		resultMap.put("totalProEvaRaterNum", totalProEvaRaterNum);// 完整加自定义
 		return resultMap;
 	}
 
@@ -600,4 +601,166 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 		return evaList;
 	}
 
+	/**
+	 * 查询项目中的总分数
+	 */
+	@Override
+	public Map<String, Object> selectProjectAllTotalScore(Integer projectId) throws RestServiceException {
+		Map<String, Object> resultMap = new HashMap<>();
+		int totalProEvaRaterNum = 0;
+		if (projectId == null || projectId == 0) {
+			throw new RestServiceException("项目id不能为空" + projectId);
+		}
+
+		List<DevaluationModelDetail> result = new ArrayList<>();
+
+		DevaluationModel activeProModel = findSysActiveProModel();
+		List<DevaluationModelDetail> details = findSysEvaModelDetailList(activeProModel);
+
+		List<DevaluationModelDetail> detailList = new ArrayList<DevaluationModelDetail>();
+
+		if (details != null && CollectionUtils.isNotEmpty(details)) {
+			Map<String, BigDecimal> detailModelTotalScore = new HashMap<String, BigDecimal>();
+			Map<String, Integer> detailModelTotalRater = new HashMap<String, Integer>();
+			List<Evaluation> proEvas = kffEvaluationService.findProEvaByProjectId(projectId);// 获得单项评测纬度
+			if (CollectionUtils.isNotEmpty(proEvas)) {
+				for (Evaluation eva : proEvas) {
+					try {
+						eva.getTotalScore();
+						List<DevaluationModel> models = JSON.parseArray(eva.getProfessionalEvaDetail(), DevaluationModel.class);
+
+						if (CollectionUtils.isEmpty(models)) {
+							continue;
+						}
+						BigDecimal score = BigDecimal.ZERO;
+						Integer raterNum = 0;
+						for (DevaluationModel model : models) {
+							if (StringUtils.isBlank(model.getModelName())) {
+								continue;
+							}
+							score = detailModelTotalScore.get(model.getModelName()) == null ? BigDecimal.ZERO : detailModelTotalScore.get(model.getModelName());
+							score = score.add(model.getScore() == null ? BigDecimal.ZERO : model.getScore());
+							detailModelTotalScore.put(model.getModelName(), score);
+							raterNum = detailModelTotalRater.get(model.getModelName()) == null ? 0 : detailModelTotalRater.get(model.getModelName());
+							raterNum++;
+							detailModelTotalRater.put(model.getModelName(), raterNum);
+
+						}
+						totalProEvaRaterNum++;
+
+					} catch (Exception e) {
+						logger.error("专业评测统计解析评测内容出错,evaId:" + eva.getEvaluationId() + " details:" + eva.getProfessionalEvaDetail());
+					}
+
+				}
+
+			}
+
+			for (DevaluationModelDetail detail : details) {
+
+				BigDecimal totalScore = BigDecimal.ZERO;
+				detail.setRaterNum(detailModelTotalRater.get(detail.getDetailName()) == null ? 0 : detailModelTotalRater.get(detail.getDetailName()));
+				if (Objects.equal(0, detail.getRaterNum())) {
+					detail.setTotalScore(BigDecimal.ZERO);
+				} else {
+					totalScore = detailModelTotalScore.get(detail.getDetailName()) == null ? BigDecimal.ZERO : detailModelTotalScore
+							.get(detail.getDetailName());
+					detail.setTotalScore(totalScore.divide(new BigDecimal(detail.getRaterNum()), 1, RoundingMode.HALF_DOWN).setScale(1, RoundingMode.HALF_DOWN));
+				}
+
+			}
+		}
+		resultMap.put("projectEvaStat", details);// project主页纬度
+		resultMap.put("totalProEvaRaterNum", totalProEvaRaterNum);// 完整加自定义
+		return resultMap;
+	}
+
+	@Override
+	public KFFProject selectProjectByProjectId(Integer projectId) {
+		KFFProject project = null;
+		if (null != projectId) {
+			project = kffProjectService.findById(projectId);
+		}
+		return project;
+	}
+
+	@Override
+	public Map<String, Object> selectProjectEvaStatSelf(Integer projectId) throws RestServiceException {
+		Map<String, Object> resultMap = new HashMap<>();
+		int totalProEvaRaterNum = 0;
+		if (projectId == null || projectId == 0) {
+			throw new RestServiceException("项目id不能为空" + projectId);
+		}
+
+		List<DevaluationModelDetail> result = new ArrayList<>();
+
+		DevaluationModel activeProModel = findSysActiveProModel();
+		List<DevaluationModelDetail> details = findSysEvaModelDetailList(activeProModel);
+
+		List<DevaluationModelDetail> detailList = new ArrayList<DevaluationModelDetail>();
+
+		if (details != null && CollectionUtils.isNotEmpty(details)) {
+			Map<String, BigDecimal> detailModelTotalScore = new HashMap<String, BigDecimal>();
+			Map<String, Integer> detailModelTotalRater = new HashMap<String, Integer>();
+			List<Evaluation> proEvas = kffEvaluationService.selectProOnlyEvaByProjectId(projectId);// 项目中的单项评测的内容
+			if (CollectionUtils.isNotEmpty(proEvas)) {
+				for (Evaluation eva : proEvas) {
+					try {
+						eva.getTotalScore();
+						List<DevaluationModel> models = JSON.parseArray(eva.getProfessionalEvaDetail(), DevaluationModel.class);
+						if (models.size() == 1) {
+							if (CollectionUtils.isEmpty(models)) {
+								continue;
+							}
+							BigDecimal score = BigDecimal.ZERO;
+							Integer raterNum = 0;
+							for (DevaluationModel model : models) {
+								if (StringUtils.isBlank(model.getModelName())) {
+									continue;// 跳过此次循环直接下次循环
+								}
+								score = detailModelTotalScore.get(model.getModelName()) == null ? BigDecimal.ZERO : detailModelTotalScore.get(model
+										.getModelName());
+								score = score.add(model.getScore() == null ? BigDecimal.ZERO : model.getScore());
+								detailModelTotalScore.put(model.getModelName(), score);
+								raterNum = detailModelTotalRater.get(model.getModelName()) == null ? 0 : detailModelTotalRater.get(model.getModelName());
+								raterNum++;
+								detailModelTotalRater.put(model.getModelName(), raterNum);
+
+							}
+							totalProEvaRaterNum++;
+						}
+					} catch (Exception e) {
+						logger.error("专业评测统计解析评测内容出错,evaId:" + eva.getEvaluationId() + " details:" + eva.getProfessionalEvaDetail());
+					}
+
+				}
+
+			}
+
+			for (DevaluationModelDetail detail : details) {
+
+				BigDecimal totalScore = BigDecimal.ZERO;
+				detail.setRaterNum(detailModelTotalRater.get(detail.getDetailName()) == null ? 0 : detailModelTotalRater.get(detail.getDetailName()));
+				if (Objects.equal(0, detail.getRaterNum())) {
+					detail.setTotalScore(BigDecimal.ZERO);
+				} else {
+					totalScore = detailModelTotalScore.get(detail.getDetailName()) == null ? BigDecimal.ZERO : detailModelTotalScore
+							.get(detail.getDetailName());
+					detail.setTotalScore(totalScore.divide(new BigDecimal(detail.getRaterNum()), 1, RoundingMode.HALF_DOWN).setScale(1, RoundingMode.HALF_DOWN));
+				}
+
+			}
+		}
+
+		resultMap.put("projectEvaStat", details);// project主页纬度
+		for (DevaluationModelDetail devaluationModelDetail : details) {
+			logger.info("devaluationModelDetail.getDetailName()"+devaluationModelDetail.getDetailName());
+			logger.info("devaluationModelDetail.getDetailWeight()"+devaluationModelDetail.getDetailWeight());
+			logger.info("devaluationModelDetail.getTotalScore()"+devaluationModelDetail.getTotalScore());
+			
+			
+		}
+		resultMap.put("totalProEvaRaterNum", totalProEvaRaterNum);// 完整加自定义
+		return resultMap;
+	}
 }

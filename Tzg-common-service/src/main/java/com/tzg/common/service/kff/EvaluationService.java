@@ -85,28 +85,42 @@ public class EvaluationService {
 		// TODO Auto-generated method stub
 		return evaluationMapper.selectEvaluationOrNotByUserId(evaluation);
 	}
-	public Evaluation findByPostId(Integer postId) throws RestServiceException{
-		if(postId == null){
+
+	public Evaluation findByPostId(Integer postId) throws RestServiceException {
+		if (postId == null) {
 			throw new RestServiceException("postId不能为空");
 		}
 		return evaluationMapper.findByPostId(postId);
 	}
 
-	public List<Evaluation> findProEvaByProjectId(Integer projectId) throws RestServiceException{
-		if(projectId == null){
+	public List<Evaluation> findProEvaByProjectId(Integer projectId) throws RestServiceException {
+		if (projectId == null) {
 			throw new RestServiceException("project不能为空");
 		}
 		Map<String, Object> map = new HashMap<>();
 		map.put("projectId", projectId + "");
 		map.put("status", "1");
-		map.put("modelType", "2");
+		map.put("modelType", "2");// 全面评测
 		List<Evaluation> list = evaluationMapper.findByWhere(map);
 
 		return list;
 	}
-	
-	public List<Evaluation> findAllTypeByProjectId(Integer projectId) throws RestServiceException{
-		if(projectId == null){
+
+	public List<Evaluation> selectProOnlyEvaByProjectId(Integer projectId) throws RestServiceException {
+		if (projectId == null) {
+			throw new RestServiceException("project不能为空");
+		}
+		Map<String, Object> map = new HashMap<>();
+		map.put("projectId", projectId + "");
+		map.put("status", "1");
+		map.put("modelType", "3");// 单项评测
+		List<Evaluation> list = evaluationMapper.findByWhere(map);
+
+		return list;
+	}
+
+	public List<Evaluation> findAllTypeByProjectId(Integer projectId) throws RestServiceException {
+		if (projectId == null) {
 			throw new RestServiceException("project不能为空");
 		}
 		Map<String, Object> map = new HashMap<>();
@@ -117,8 +131,8 @@ public class EvaluationService {
 		return list;
 	}
 
-	public List<Evaluation> findSimpleEvaByProjectId(Integer projectId) throws RestServiceException{
-		if(projectId == null){
+	public List<Evaluation> findSimpleEvaByProjectId(Integer projectId) throws RestServiceException {
+		if (projectId == null) {
 			throw new RestServiceException("project不能为空");
 		}
 		Map<String, Object> map = new HashMap<>();
@@ -129,6 +143,7 @@ public class EvaluationService {
 
 		return list;
 	}
+
 	@Transactional(readOnly = true)
 	public List<Evaluation> selectEvaluationByParam(Integer projectId, Integer createUserId, Integer modelType) {
 		// TODO Auto-generated method stub
