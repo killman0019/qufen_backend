@@ -1053,10 +1053,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		List<KFFUser> activeUsers = findProjectActiveUsers(projectId);
 		if (CollectionUtils.isNotEmpty(activeUsers)) {
 			for (KFFUser user : activeUsers) {
-				userquery.addQueryData("followedId", user.getUserId() + "");
-				PageResult<Follow> followsuser = kffFollowService.findPage(userquery);
-				if (followsuser != null && CollectionUtils.isNotEmpty(followsuser.getRows())) {
-					user.setFollowStatus(KFFConstants.STATUS_ACTIVE);
+				if (null != user) {
+					userquery.addQueryData("followedId", user.getUserId() + "");
+					PageResult<Follow> followsuser = kffFollowService.findPage(userquery);
+					if (followsuser != null && CollectionUtils.isNotEmpty(followsuser.getRows())) {
+						user.setFollowStatus(KFFConstants.STATUS_ACTIVE);
+					}
 				}
 			}
 		}
@@ -1087,7 +1089,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				for (Post post : posts) {
 					KFFUser user = new KFFUser();
 					user = kffUserService.findById(post.getCreateUserId());
-					activeUsers.add(user);
+					if (null != user) {
+						activeUsers.add(user);
+					}
 				}
 			}
 		}
@@ -1473,7 +1477,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 		// 评测标题定义
 		if (1 == evaluationRequest.getModelType()) {
-			evaluationRequest.setPostTitle(project.getProjectCode() +"- 简单评测");// 完整评测 手机上的
+			evaluationRequest.setPostTitle(project.getProjectCode() + "- 简单评测");// 完整评测 手机上的
 		}
 		if (2 == evaluationRequest.getModelType()) {
 			evaluationRequest.setPostTitle(project.getProjectCode() + "- 完整版专业评测(all)");// 完整评测
@@ -1644,7 +1648,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// 更新用户发帖数
 		kffUserService.increasePostNum(createUser.getUserId(), KFFConstants.POST_TYPE_EVALUATION);
 		// 更新项目总分 改为定时任务每天晚上1点计算 统计超过 10份评测的项目
-		//kffProjectService.updateTotalScore(project.getProjectId(), totalScore);
+		// kffProjectService.updateTotalScore(project.getProjectId(), totalScore);
 		// 更新评测人数
 		kffProjectService.increaseRaterNum(project.getProjectId());
 
@@ -5719,7 +5723,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		logger.info("缩略图的json串" + uploadIeviwList);
 		map.put("uploadIeviwList", uploadIeviwList);
 		map.put("contentSrcReplace", contentSrcReplace);
-		//logger.info(contentSrcReplace);
+		// logger.info(contentSrcReplace);
 		return map;
 	}
 
