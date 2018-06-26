@@ -932,9 +932,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				} else {
 					// 过滤掉简单评测
 					// https://www.tapd.cn/21950911/bugtrace/bugs/view?bug_id=1121950911001000461
-					if (Objects.equal(1, eva.getModelType())) {
+					/*if (Objects.equal(1, eva.getModelType())) {
 						continue;
-					}
+					}*/
 					response.setProfessionalEvaDetail(eva.getProfessionalEvaDetail());
 					response.setEvaluationTags(eva.getEvaluationTags());
 					response.setEvaluationId(eva.getEvaluationId());

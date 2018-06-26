@@ -18,9 +18,9 @@ public class KFFRestConstants {
 	public static final int PLATFORM_IOS_299 = 3;
 
 	public static final String USER_NAME_PREFIX = "区分者_";
-	public static final String DEFAULT_USER_ICON1 = "http://pic.qufen.top/Avatar1.png";
-	public static final String DEFAULT_USER_ICON2 = "http://pic.qufen.top/Avatar2.png";
-	public static final String DEFAULT_USER_ICON3 = "http://pic.qufen.top/Avatar3.png";
+	public static final String DEFAULT_USER_ICON1 = "https://pic.qufen.top/Avatar1.png";
+	public static final String DEFAULT_USER_ICON2 = "https://pic.qufen.top/Avatar2.png";
+	public static final String DEFAULT_USER_ICON3 = "https://pic.qufen.top/Avatar3.png";
 	public static String REDIS_KEY_PROJECT_SYNC_SCORE = "redis_key_rest_sync_proect_";
 
 }
