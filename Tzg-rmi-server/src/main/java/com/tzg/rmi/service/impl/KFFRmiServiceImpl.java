@@ -1262,7 +1262,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		post.setProjectId(project.getProjectId());
 		post.setStatus(KFFConstants.STATUS_ACTIVE);
 		post.setUuid(uuid);
-		post.setStickTop(0);
+		post.setStickTop(0);// '是否推荐：0-否，1-是'
 		kffPostService.save(post);
 		Post newPost = kffPostService.findByUUID(uuid);
 		if (newPost == null) {
@@ -5717,7 +5717,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						contentSrcReplace = content.replace(img, UrlQiniu);
 					}
 					contentSrcReplace = contentSrcReplace.replace(img, UrlQiniu);
-					logger.info(contentSrcReplace);
+					// logger.info(contentSrcReplace);
 					i = i + 1;
 				}
 			}
