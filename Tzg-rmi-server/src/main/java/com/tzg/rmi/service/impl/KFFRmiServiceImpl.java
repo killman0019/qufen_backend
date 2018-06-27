@@ -1195,7 +1195,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (StringUtils.isBlank(articleRequest.getPostTitle())) {
 			throw new RestServiceException("文章标题不能为空");
 		}
-		if (articleRequest.getArticleContents().length() > 2147480647) {
+		logger.info("长度"+articleRequest.getArticleContents().length());
+		if (articleRequest.getArticleContents().length() >  16777215) {
 			throw new RestServiceException("文章内容长度超过限制");
 		}
 		if (articleRequest.getPostTitle().length() > 130) {
@@ -1505,7 +1506,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (StringUtils.isBlank(evaluationRequest.getPostTitle())) {
 			throw new RestServiceException("评测标题不能为空");
 		}
-		if (evaluationRequest.getEvauationContent().length() > 2147480647) {
+		if (evaluationRequest.getEvauationContent().length() > 16777215) {
 			throw new RestServiceException("评测内容长度超过限制");
 		}
 		if (evaluationRequest.getPostTitle().length() > 30) {
