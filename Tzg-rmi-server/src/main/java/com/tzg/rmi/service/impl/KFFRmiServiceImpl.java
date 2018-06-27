@@ -1195,11 +1195,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (StringUtils.isBlank(articleRequest.getPostTitle())) {
 			throw new RestServiceException("文章标题不能为空");
 		}
-		logger.info("长度"+articleRequest.getArticleContents().length());
-		if (articleRequest.getArticleContents().length() >  16777215) {
+		logger.info("长度" + articleRequest.getArticleContents().length());
+		if (articleRequest.getArticleContents().length() > 16777215) {
 			throw new RestServiceException("文章内容长度超过限制");
 		}
-		if (articleRequest.getPostTitle().length() > 130) {
+		if (articleRequest.getPostTitle().length() > 120) {
 			throw new RestServiceException("文章标题长度不能超过30字");
 		}
 		KFFUser createUser = kffUserService.findById(articleRequest.getCreateUserId());
@@ -1262,6 +1262,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		post.setProjectId(project.getProjectId());
 		post.setStatus(KFFConstants.STATUS_ACTIVE);
 		post.setUuid(uuid);
+		post.setStickTop(0);
 		kffPostService.save(post);
 		Post newPost = kffPostService.findByUUID(uuid);
 		if (newPost == null) {
@@ -1344,8 +1345,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (discussRequest.getDisscussContents().length() > 3000) {
 			throw new RestServiceException("讨论内容长度超过限制");
 		}
-		if (discussRequest.getPostTitle().length() > 30) {
-			throw new RestServiceException("讨论标题长度不能超过30字");
+		if (discussRequest.getPostTitle().length() > 120) {
+			throw new RestServiceException("讨论标题长度不能超过60字");
 		}
 		KFFUser createUser = kffUserService.findById(discussRequest.getCreateUserId());
 		if (createUser == null) {
@@ -1409,6 +1410,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		post.setProjectId(project.getProjectId());
 		post.setStatus(KFFConstants.STATUS_ACTIVE);
 		post.setUuid(uuid);
+		post.setStickTop(0);
 		kffPostService.save(post);
 
 		Post newPost = kffPostService.findByUUID(uuid);
@@ -1509,8 +1511,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (evaluationRequest.getEvauationContent().length() > 16777215) {
 			throw new RestServiceException("评测内容长度超过限制");
 		}
-		if (evaluationRequest.getPostTitle().length() > 30) {
-			throw new RestServiceException("评测标题长度不能超过30字");
+		if (evaluationRequest.getPostTitle().length() > 120) {
+			throw new RestServiceException("评测标题长度不能超过60字");
 		}
 		KFFUser createUser = kffUserService.findById(evaluationRequest.getCreateUserId());
 		if (createUser == null) {
@@ -1614,6 +1616,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		post.setProjectId(project.getProjectId());
 		post.setStatus(KFFConstants.STATUS_ACTIVE);
 		post.setUuid(uuid);
+		post.setStickTop(0);
 		Integer postId = kffPostService.save(post);
 		logger.warn("保存评测inserted postId is:" + postId + ",and UUID is:" + uuid);
 		logger.warn("保存评测inserted post对象中的postId is:" + post.getPostId() + ",and UUID is:" + uuid);
