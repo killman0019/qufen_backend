@@ -13,23 +13,21 @@
      http://code.alibabatech.com/schema/dubbo/dubbo.xsd ">
 
 	<dubbo:reference id="systemParamRmiService" interface="com.tzg.rmi.service.SystemParamRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}"
-		retries="0" />
+		retries="0"  check="false"/>
 
-	<dubbo:reference id="redisService" interface="com.tzg.common.redis.RedisService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0" />
+	<dubbo:reference id="redisService" interface="com.tzg.common.redis.RedisService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0" check="false"/>
 
-	<dubbo:reference id="kffRmiService" interface="com.tzg.rmi.service.KFFRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0" />
+	<dubbo:reference id="kffRmiService" interface="com.tzg.rmi.service.KFFRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0" check="false"/>
 
-	<dubbo:reference id="kffProjectPostRmiService" interface="com.tzg.rmi.service.KFFProjectPostRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}"
-		retries="0" />
+	<dubbo:reference id="kffProjectPostRmiService" interface="com.tzg.rmi.service.KFFProjectPostRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0" check="false"/>
 
-	<dubbo:reference id="areainfoRmiService" interface="com.tzg.rmi.service.AreainfoRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" />
+	<dubbo:reference id="areainfoRmiService" interface="com.tzg.rmi.service.AreainfoRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" check="false"/>
 
-	<dubbo:reference id="smsSendRmiService" interface="com.tzg.rmi.service.SmsSendRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0" />
+	<dubbo:reference id="smsSendRmiService" interface="com.tzg.rmi.service.SmsSendRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0" check="false"/>
 
-	<dubbo:reference id="cmsRmiService" interface="com.tzg.rmi.service.CmsRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0" />
+	<dubbo:reference id="cmsRmiService" interface="com.tzg.rmi.service.CmsRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0" check="false"/>
 
-	<dubbo:reference id="producerMQService" interface="com.tzg.rmi.service.ProducerMQService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0" />
-	<dubbo:reference id="rocketMQRmiService" interface="com.tzg.rmi.service.RocketMQRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}"
-		retries="0" />
+	<dubbo:reference id="producerMQService" interface="com.tzg.rmi.service.ProducerMQService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0" check="false"/>
+	<dubbo:reference id="rocketMQRmiService" interface="com.tzg.rmi.service.RocketMQRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}"retries="0" check="false"/>
 
 </beans>
