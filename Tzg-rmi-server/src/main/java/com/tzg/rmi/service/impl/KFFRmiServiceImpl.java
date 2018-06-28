@@ -5841,8 +5841,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 	@Override
 	public String getWeiXinTicket() {
-		String appId = "wxa034b7003154ee6c";
-		String appSecret = "7fce4f1ee0f63b62f20fe8321a31dea8";
+		String appId = "wxd207589d26688a4a";
+		String appSecret = "df7d6c8619af7d6ade27e1bcea22adf1";
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		String access_token = "";
