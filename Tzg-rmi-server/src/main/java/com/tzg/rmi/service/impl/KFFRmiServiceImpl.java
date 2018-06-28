@@ -5862,11 +5862,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				JSONObject json = JSONObject.parseObject(jsonStrToken);
 
 				access_token = (String) json.getString("access_token");
+				logger.info("access_token" + access_token);
 				if (access_token == null) {
 					return null;
 				}
 				redisService.put("access_token", access_token, 7200);
-				redisService.put("ticket", access_token, 7200);
+				//redisService.put("ticket", access_token, 7200);
 			} else {
 				access_token = (String) act;
 			}
@@ -5879,7 +5880,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 				JSONObject json = JSONObject.parseObject(jsonStrTicket);
 				ticket = (String) json.get("ticket");
-
+				redisService.put("ticket", ticket, 7200);
 			} else {
 				ticket = (String) apiticket;
 			}
