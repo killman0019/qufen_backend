@@ -11,6 +11,7 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -35,21 +36,25 @@ public class WXShareController extends BaseController {
 	private RedisService redisService;
 	@Autowired
 	private KFFRmiService kffRmiService;
-	private String appId = "wxa034b7003154ee6c";
-	private String appSecret = "7fce4f1ee0f63b62f20fe8321a31dea8";
+	private String appId = "wxd207589d26688a4a";
+	private String appSecret = "df7d6c8619af7d6ade27e1bcea22adf1";
 
 	@RequestMapping(value = "/sign", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public Map<String, String> test(HttpServletRequest requesturl,String url) throws Exception {
+	public Map<String, String> test(HttpServletRequest requesturl, String url) throws Exception {
+		url = StringEscapeUtils.escapeHtml(url);
+		if (url.contains("&")) {
+			url = url.replace("&amp;amp;", "&");
+		}
 		String ticket = kffRmiService.getWeiXinTicket();
-
+		System.out.println("url-----" + url);
 		// 注意 URL 一定要动态获取，不能 hardcode
-		//String url = requesturl.getRequestURL().toString();
+		// String url = requesturl.getRequestURL().toString();
 		Map<String, String> ret = sign(ticket, url);
 		for (Map.Entry entry : ret.entrySet()) {
 			System.out.println(entry.getKey() + ", " + entry.getValue());
 		}
-		// ret.put("appId", weiXinRequest.appId);
+
 		return ret;
 	};
 
