@@ -42,9 +42,10 @@ public class WXShareController extends BaseController {
 	@RequestMapping(value = "/sign", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public Map<String, String> test(HttpServletRequest requesturl, String url) throws Exception {
-		url = StringEscapeUtils.escapeHtml(url);
-		if (url.contains("&")) {
-			url = url.replace("&amp;amp;", "&");
+		System.out.println(url);
+		url = StringEscapeUtils.unescapeHtml(url);
+		if (url.contains("&amp;")) {
+			url = url.replace("&amp;", "&");
 		}
 		String ticket = kffRmiService.getWeiXinTicket();
 		System.out.println("url-----" + url);
