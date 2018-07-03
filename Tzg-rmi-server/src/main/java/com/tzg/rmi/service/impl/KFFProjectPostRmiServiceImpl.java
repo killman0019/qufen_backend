@@ -71,6 +71,7 @@ import com.tzg.entitys.kff.praise.Praise;
 import com.tzg.entitys.kff.project.KFFProject;
 import com.tzg.entitys.kff.projectevastat.Projectevastat;
 import com.tzg.entitys.kff.projectevastat.ProjectevastatByGrade;
+import com.tzg.entitys.kff.qfindex.QfIndex;
 import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rmi.service.KFFProjectPostRmiService;
@@ -142,7 +143,8 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 	private TokenawardService kffTokenawardService;
 	@Autowired
 	private AwardPortService awardPortService;
-
+	@Autowired
+	private PraiseService praiseService;
 	@Autowired
 	private ZKClient zkClient;
 	@Autowired
@@ -177,8 +179,8 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 			}
 			result.add(i, grade);
 		}
-		//List<Evaluation> evas = kffEvaluationService.findSimpleEvaByProjectId(projectId);
-		List<Evaluation> evas =	kffEvaluationService.selectAllEvaExceptOnlyEvaByProjectId(projectId);
+		// List<Evaluation> evas = kffEvaluationService.findSimpleEvaByProjectId(projectId);
+		List<Evaluation> evas = kffEvaluationService.selectAllEvaExceptOnlyEvaByProjectId(projectId);
 		BigDecimal eachTotalScore = BigDecimal.ZERO;
 		BigDecimal totalScore = BigDecimal.ZERO;
 		int totalRaterNum = 0;
@@ -246,10 +248,11 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 			user = kffUserService.findById(userId);
 		}
 		PageResult<Comments> comments = kffCommentsService.findPage(query);
+		System.err.println("1comments" + JSON.toJSONString(comments));
 		if (comments != null && CollectionUtils.isNotEmpty(comments.getRows())) {
 			PaginationQuery childQuery = new PaginationQuery();
 			childQuery.setPageIndex(1);
-			childQuery.setRowsPerPage(1000);// 2
+			childQuery.setRowsPerPage(2);// 2
 			logger.info("评论数量" + comments.getRows().size());
 			// 添加数组
 			List<Comments> list = new ArrayList<Comments>();
@@ -257,10 +260,20 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 				childQuery.addQueryData("parentCommentsId", comment.getCommentsId() + "");
 				PageResult<Comments> childComments = kffCommentsService.findPage(childQuery);
 				if (childComments != null && CollectionUtils.isNotEmpty(childComments.getRows())) {
-					// comment.setChildCommentsList(childComments.getRows());
-					// comment.setChildCommentsNum(childComments.getRowCount());
-					for (Comments comments2 : childComments.getRows()) {
-						list.add(comments2);
+
+					for (Comments commentsone : childComments.getRows()) {
+						System.err.println("孩子" + JSON.toJSONString(commentsone));
+						if (null != commentsone.getParentCommentsId()) {
+							list.add(commentsone);
+
+						}
+						while (CollectionUtils.isNotEmpty(commentsone.getChildCommentsList())) {
+
+							list.addAll(commentsone.getChildCommentsList());
+
+						}
+						comment.setChildCommentsList(list);
+						comment.setChildCommentsNum(childComments.getRowCount());
 					}
 
 				}
@@ -274,9 +287,9 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 					comment.setPraiseStatus(KFFConstants.PRAISE_STATUS_NOSHOW);
 				}
 			}
-			comments.setRows(list);
-		}
 
+		}
+		System.err.println("comments" + JSON.toJSONString(comments));
 		return comments;
 
 	}
@@ -402,6 +415,7 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 					continue;
 				}
 				pr.setActionType(post.getPostType());
+				pr.setCommentsNum(post.getCommentsNum());
 				rows.add(pr);
 			}
 			result.setRows(rows);
@@ -704,51 +718,100 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 			Map<String, BigDecimal> detailModelTotalScore = new HashMap<String, BigDecimal>();
 			Map<String, Integer> detailModelTotalRater = new HashMap<String, Integer>();
 			List<Evaluation> proEvas = kffEvaluationService.selectProOnlyEvaByProjectId(projectId);// 项目中的单项评测的内容
+			QfIndex qfIndex = null;
+			Integer ownerQfScore = 100;
+			BigDecimal totalDividor = BigDecimal.ZERO;
+			Long totalDividend = 0L;
+			Integer raterNum = 0;
 			if (CollectionUtils.isNotEmpty(proEvas)) {
 				for (Evaluation eva : proEvas) {
-					try {
-						eva.getTotalScore();
-						List<DevaluationModel> models = JSON.parseArray(eva.getProfessionalEvaDetail(), DevaluationModel.class);
-						if (models.size() == 1) {
-							if (CollectionUtils.isEmpty(models)) {
-								continue;
-							}
-							BigDecimal score = BigDecimal.ZERO;
-							Integer raterNum = 0;
-							for (DevaluationModel model : models) {
-								if (StringUtils.isBlank(model.getModelName())) {
-									continue;// 跳过此次循环直接下次循环
-								}
-								score = detailModelTotalScore.get(model.getModelName()) == null ? BigDecimal.ZERO : detailModelTotalScore.get(model
-										.getModelName());
-								score = score.add(model.getScore() == null ? BigDecimal.ZERO : model.getScore());
-								detailModelTotalScore.put(model.getModelName(), score);
-								raterNum = detailModelTotalRater.get(model.getModelName()) == null ? 0 : detailModelTotalRater.get(model.getModelName());
-								raterNum++;
-								detailModelTotalRater.put(model.getModelName(), raterNum);
-
-							}
-							totalProEvaRaterNum++;
+					BigDecimal oneDividor = BigDecimal.ZERO;
+					Long oneDividend = 0L;
+					BigDecimal oneScore = eva.getTotalScore() == null ? BigDecimal.ZERO : eva.getTotalScore();// 取分数
+					List<DevaluationModel> models = JSON.parseArray(eva.getProfessionalEvaDetail(), DevaluationModel.class);
+					if (models.size() == 1) {
+						qfIndex = qfIndexService.findByUserId(eva.getCreateUserId());
+						if (qfIndex != null) {
+							ownerQfScore = qfIndex.getStatusHierarchyType() == null ? 100 : qfIndex.getStatusHierarchyType();// 取区分指数
 						}
-					} catch (Exception e) {
-						logger.error("专业评测统计解析评测内容出错,evaId:" + eva.getEvaluationId() + " details:" + eva.getProfessionalEvaDetail());
+						// 单项评测
+						if (Objects.equal(3, eva.getModelType())) {
+
+							List<Praise> praises = praiseService.findAllActivePraisesByPostId(eva, projectId);// 获取单项评测点赞对象
+							if (CollectionUtils.isEmpty(praises)) {// 没有赞
+								oneDividor = oneScore.multiply(new BigDecimal(ownerQfScore)).multiply(new BigDecimal(100));
+								oneDividend = ownerQfScore * 100L;
+							} else {// 有赞
+								// 判断赞的个数
+								List<QfIndex> priaseUserQfIndexs = new ArrayList<QfIndex>();
+								if (praises.size() != 1) {
+									List<Integer> praiseUserIds = new ArrayList<>();
+									for (Praise p : praises) {
+										praiseUserIds.add(p.getPraiseUserId());
+									}
+									Map<String, Object> qfUsersMap = new HashMap<>();
+									String userIds = StringUtils.join(praiseUserIds.toArray(), ",");
+									qfUsersMap.put("userIds", userIds);
+									priaseUserQfIndexs = qfIndexService.findByUserIds(qfUsersMap); // qfIndexMapper.findByUserIds(qfUsersMap);
+								} else {
+
+									QfIndex priaseqfIndexUser = qfIndexService.findByUserId(praises.get(0).getPraiseUserId());
+									if (null != priaseqfIndexUser) {
+										priaseUserQfIndexs.add(priaseqfIndexUser);
+									}
+								}
+
+								if (!CollectionUtils.isEmpty(priaseUserQfIndexs)) {
+									Integer totalQf = 0;
+									for (QfIndex qf : priaseUserQfIndexs) {
+										totalQf = totalQf + (qf.getStatusHierarchyType() == null ? 100 : qf.getStatusHierarchyType());
+									}
+									if (totalQf == 0)
+										totalQf = 100;
+									oneDividor = oneScore.multiply(new BigDecimal(ownerQfScore)).multiply(new BigDecimal(totalQf));
+									oneDividend = ownerQfScore * (Long.valueOf(totalQf));
+								} else {
+									oneDividor = oneScore.multiply(new BigDecimal(ownerQfScore)).multiply(new BigDecimal(100));
+									oneDividend = ownerQfScore * 100L;
+								}
+							}
+							raterNum = detailModelTotalRater.get(models.get(0).getModelName()) == null ? 0 : detailModelTotalRater.get(models.get(0)
+									.getModelName());
+							raterNum++;
+							detailModelTotalRater.put(models.get(0).getModelName(), raterNum);
+						}
+						totalDividor = totalDividor.add(oneDividor);
+						totalDividend = totalDividend + oneDividend;
 					}
-
+					BigDecimal totalScore = BigDecimal.ZERO;
+					logger.info("分子" + totalDividor);
+					logger.info("分母" + totalDividend);
+					if (totalDividend != 0) {
+						totalScore = totalDividor.divide(new BigDecimal(totalDividend), 1, RoundingMode.HALF_DOWN);
+						logger.info("totalScore" + totalScore);
+						detailModelTotalScore.put(models.get(0).getModelName(), totalScore);
+						logger.info("key" + models.get(0).getModelName());
+					}
 				}
-
 			}
-			
+
 			for (DevaluationModelDetail detail : details) {
 
 				BigDecimal totalScore = BigDecimal.ZERO;
 				detail.setRaterNum(detailModelTotalRater.get(detail.getDetailName()) == null ? 0 : detailModelTotalRater.get(detail.getDetailName()));
-				
+				logger.info("key2: " + detail.getDetailName());
 				if (Objects.equal(0, detail.getRaterNum())) {
 					detail.setTotalScore(BigDecimal.ZERO);
 				} else {
-					totalScore = detailModelTotalScore.get(detail.getDetailName()) == null ? BigDecimal.ZERO : detailModelTotalScore
+					/*totalScore = detailModelTotalScore.get(detail.getDetailName()) == null ? BigDecimal.ZERO : detailModelTotalScore
 							.get(detail.getDetailName());
 					detail.setTotalScore(totalScore.divide(new BigDecimal(detail.getRaterNum()), 1, RoundingMode.HALF_DOWN).setScale(1, RoundingMode.HALF_DOWN));
+					*/
+					// 单项评测添加区分指数计算
+					totalScore = detailModelTotalScore.get(detail.getDetailName()) == null ? BigDecimal.ZERO : detailModelTotalScore
+							.get(detail.getDetailName());
+					logger.info("totalScore2: " + totalScore);
+					detail.setTotalScore(totalScore);
 				}
 
 			}
@@ -756,13 +819,13 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 
 		resultMap.put("projectEvaStat", details);// project主页纬度
 		for (DevaluationModelDetail devaluationModelDetail : details) {
-			logger.info("devaluationModelDetail.getDetailName()"+devaluationModelDetail.getDetailName());
-			logger.info("devaluationModelDetail.getDetailWeight()"+devaluationModelDetail.getDetailWeight());
-			logger.info("devaluationModelDetail.getTotalScore()"+devaluationModelDetail.getTotalScore());
-			
-			
+			logger.info("devaluationModelDetail.getDetailName()" + devaluationModelDetail.getDetailName());
+			logger.info("devaluationModelDetail.getDetailWeight()" + devaluationModelDetail.getDetailWeight());
+			logger.info("devaluationModelDetail.getTotalScore()" + devaluationModelDetail.getTotalScore());
+
 		}
 		resultMap.put("totalProEvaRaterNum", totalProEvaRaterNum);// 完整加自定义
+		logger.info("totalProEvaRaterNum" + totalProEvaRaterNum);
 		return resultMap;
 	}
 }

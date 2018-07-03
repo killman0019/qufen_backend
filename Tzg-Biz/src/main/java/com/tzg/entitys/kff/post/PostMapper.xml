@@ -439,7 +439,7 @@
 	
 	<select id="getProjectIdsGreateThanTenEvas" resultMap="BaseResultMap" parameterType="java.util.Map">
 		select count(*) as comments_num,project_id from tbpost where post_type=1 and status = 1 GROUP BY project_id
-		having comments_num > 10 ; 
+		having comments_num  > 0 ; 
 	</select>
 	
 	<sql id="queryWhere">

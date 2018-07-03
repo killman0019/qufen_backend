@@ -18,11 +18,15 @@
 		<result property="createTime" jdbcType="TIMESTAMP" column="createTime" />
 		<result property="updateTime" jdbcType="TIMESTAMP" column="updateTime" />
 		<result property="status" jdbcType="INTEGER" column="status" />
+		<result property="becommentedId" jdbcType="INTEGER" column="becommentedId" />
+		<result property="floor" jdbcType="INTEGER" column="floor" />
+		<result property="commentUUID" jdbcType="VARCHAR" column="commentUUID" />
 	</resultMap>
 
 	<sql id="columns">
 	    <![CDATA[
-        comments_id ,comment_user_id ,comment_user_icon ,comment_user_name ,comment_content ,project_id,post_id ,post_type ,praise_num ,parent_comments_id ,becommented_user_id ,becommented_user_name ,becommented_user_icon ,createTime ,updateTime ,status 
+        comments_id ,comment_user_id ,comment_user_icon ,comment_user_name ,comment_content ,project_id,post_id ,post_type ,praise_num ,parent_comments_id ,becommented_user_id ,becommented_user_name ,becommented_user_icon ,createTime ,updateTime ,status
+        , becommentedId,floor,commentUUID
 	    ]]>
 	</sql>
 	
@@ -46,7 +50,10 @@
         	becommented_user_icon ,
         	createTime ,
         	updateTime ,
-        	status 
+        	status ,
+        	becommentedId,
+        	floor,
+        	commentUUID
 		) VALUES (
         	#{commentUserId,jdbcType=INTEGER} ,
         	#{commentUserIcon,jdbcType=VARCHAR} ,
@@ -62,7 +69,11 @@
         	#{becommentedUserIcon,jdbcType=VARCHAR} ,
         	#{createTime,jdbcType=TIMESTAMP} ,
         	#{updateTime,jdbcType=TIMESTAMP} ,
-        	#{status,jdbcType=INTEGER} 
+        	#{status,jdbcType=INTEGER} ,
+        	#{becommentedId,jdbcType=INTEGER} ,
+        	#{floor,jdbcType=INTEGER},
+        	#{commentUUID,jdbcType=VARCHAR}
+        	
 		)
 	]]>
 	</insert>
@@ -111,6 +122,15 @@
 	        </if>
 			<if test="status != null">
 	        status = #{status,jdbcType=INTEGER} 
+	        </if>
+	        <if test="becommentedId != null">
+	        becommentedId = #{becommentedId,jdbcType=INTEGER} 
+	        </if>
+	        <if test="floor != null">
+	        floor = #{floor,jdbcType=INTEGER} 
+	        </if>
+	         <if test="commentUUID != null">
+	        commentUUID = #{commentUUID,jdbcType=VARCHAR} 
 	        </if>
 	    </set>
 		WHERE 
@@ -283,6 +303,17 @@
 		<if test="status != null and status.trim() != ''">
 		and status = #{status}
 		</if>
+		
+		<if test="becommentedId != null and becommentedId.trim() != ''">
+		and becommentedId = #{becommentedId}
+		</if>
+		
+		<if test="floor != null and floor.trim() != ''">
+		and floor = #{floor}
+		</if>
+		<if test="commentUUID != null and commentUUID.trim() != ''">
+		and commentUUID = #{commentUUID}
+		</if>
 	</sql>
 	<select id="findBidPraiseNum" resultMap="BaseResultMap" parameterType="java.lang.Integer">
 		select
@@ -321,7 +352,19 @@
 		FROM tbcomments
 		WHERE comments_id = #{commentsId}
 	</select>
+	
+	<select id="selectIdByCommentUUID" resultMap="BaseResultMap" parameterType="java.lang.String">
 
+		SELECT
+		<include refid="columns" />
+		FROM tbcomments
+		WHERE commentUUID = #{commentUUID}
+	</select>
+	
+	<select id="findParentCommentsSum" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+		select count(*) from tbcomments where status = 1 and parent_comments_id is NULL and post_id = #{postId}
+	</select>
+	
 </mapper>
 
 

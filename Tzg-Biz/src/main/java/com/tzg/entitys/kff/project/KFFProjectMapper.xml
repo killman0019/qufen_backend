@@ -30,11 +30,12 @@
 		<result property="followerNum" jdbcType="INTEGER" column="follower_num" />
 		<result property="commentsNum" jdbcType="INTEGER" column="comments_num" />
 		<result property="collectNum" jdbcType="INTEGER" column="collect_num" />
+		<result property="totalRaterNum" jdbcType="INTEGER" column="totalRaterNum" />
 	</resultMap>
 
 	<sql id="columns">
 	    <![CDATA[
-        project_id ,project_icon ,state ,project_code ,project_english_name ,project_chinese_name ,project_signature ,website_url ,listed ,issue_date ,issue_num ,whitepaper_url ,project_type_name ,project_type_id ,project_desc ,submit_user_id ,submit_user_type,submit_user_contact_info,submit_reason ,status ,createTime ,publishTime ,updateTime ,total_score ,rater_num ,follower_num ,comments_num ,collect_num 
+        project_id ,project_icon ,state ,project_code ,project_english_name ,project_chinese_name ,project_signature ,website_url ,listed ,issue_date ,issue_num ,whitepaper_url ,project_type_name ,project_type_id ,project_desc ,submit_user_id ,submit_user_type,submit_user_contact_info,submit_reason ,status ,createTime ,publishTime ,updateTime ,total_score ,rater_num ,follower_num ,comments_num ,collect_num,totalRaterNum 
 	    ]]>
 	</sql>
 
@@ -70,7 +71,8 @@
         	rater_num ,
         	follower_num ,
         	comments_num ,
-        	collect_num 
+        	collect_num ,
+        	totalRaterNum
 		) VALUES (
         	#{projectIcon,jdbcType=VARCHAR} ,
         	#{state,jdbcType=INTEGER} ,
@@ -98,7 +100,8 @@
         	#{raterNum,jdbcType=INTEGER} ,
         	#{followerNum,jdbcType=INTEGER} ,
         	#{commentsNum,jdbcType=INTEGER} ,
-        	#{collectNum,jdbcType=INTEGER} 
+        	#{collectNum,jdbcType=INTEGER} ,
+        	#{totalRaterNum,jdbcType=INTEGER} 
 		)
 	]]>
 	</insert>
@@ -187,6 +190,9 @@
 			<if test="collectNum != null">
 				collect_num = #{collectNum,jdbcType=INTEGER}
 			</if>
+			<if test="totalRaterNum != null">
+				totalRaterNum = #{totalRaterNum,jdbcType=INTEGER}
+			</if>
 		</set>
 		WHERE
 		project_id = #{projectId,jdbcType=INTEGER}
@@ -198,20 +204,20 @@
 		WHERE
 		project_id = #{projectId,jdbcType=INTEGER}
 	</update>
-	
+
 	<update id="updateTotalScore" parameterType="com.tzg.entitys.kff.project.KFFProject">
-		UPDATE tbproject set total_score =  #{totalScore,jdbcType=DECIMAL} 
+		UPDATE tbproject set total_score = #{totalScore,jdbcType=DECIMAL},totalRaterNum = #{totalRaterNum,jdbcType=INTEGER}
 		WHERE
 		project_id = #{projectId,jdbcType=INTEGER}
 	</update>
-	
+
 	<update id="increaseRaterNum" parameterType="java.lang.Integer">
-		UPDATE tbproject set rater_num = rater_num + 1		
-		WHERE 
-	    project_id = #{projectId,jdbcType=INTEGER} 
+		UPDATE tbproject set rater_num = rater_num + 1
+		WHERE
+		project_id = #{projectId,jdbcType=INTEGER}
 	</update>
-	
-	
+
+
 	<update id="decreaseFollowerNum" parameterType="java.lang.Integer">
 		UPDATE tbproject set follower_num = follower_num - 1
 		WHERE
@@ -227,7 +233,8 @@
 	</delete>
 
 	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
-	    SELECT <include refid="columns"/> 
+		SELECT
+		<include refid="columns" /> 
 	<![CDATA[
 		FROM tbproject 
 		WHERE 
@@ -241,13 +248,15 @@
 	</select>
 
 	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
-		select <include refid="columns"/>  from tbproject where status=1
-		<include refid="queryWhere"/> 
-		 <choose>
-	            <when test="sortField != null and sortField != ''">
-	               ORDER BY ${sortField} DESC
-	            </when>
-	            <otherwise>
+		select
+		<include refid="columns" />
+		from tbproject where status=1
+		<include refid="queryWhere" />
+		<choose>
+			<when test="sortField != null and sortField != ''">
+				ORDER BY ${sortField} DESC
+			</when>
+			<otherwise>
 	                <![CDATA[ ORDER BY project_id desc ]]>
 			</otherwise>
 		</choose>
@@ -256,13 +265,15 @@
 
 
 	<select id="findProjectByCode" resultMap="BaseResultMap" parameterType="java.util.Map">
-		select <include refid="columns"/>  from tbproject where status=1
-		<include refid="queryWhereByCode"/> 
-		 <choose>
-	            <when test="sortField != null and sortField != ''">
-	               ORDER BY ${sortField} DESC
-	            </when>
-	            <otherwise>
+		select
+		<include refid="columns" />
+		from tbproject where status=1
+		<include refid="queryWhereByCode" />
+		<choose>
+			<when test="sortField != null and sortField != ''">
+				ORDER BY ${sortField} DESC
+			</when>
+			<otherwise>
 	                <![CDATA[ ORDER BY project_code ASC ]]>
 			</otherwise>
 		</choose>
@@ -275,7 +286,7 @@
 			and state = #{state}
 		</if>
 		<if test="projectCode != null and projectCode.trim() != ''">
-		and ( project_code like CONCAT('%', #{projectCode},'%') or project_english_name like CONCAT('%', #{projectCode},'%') or project_chinese_name like CONCAT('%', #{projectCode},'%'))
+			and ( project_code like CONCAT('%', #{projectCode},'%') or project_english_name like CONCAT('%', #{projectCode},'%') or project_chinese_name like CONCAT('%', #{projectCode},'%'))
 		</if>
 
 	</sql>
@@ -370,6 +381,9 @@
 		</if>
 		<if test="collectNum != null and collectNum.trim() != ''">
 			and collect_num = #{collectNum}
+		</if>
+		<if test="totalRaterNum != null and totalRaterNum.trim() != ''">
+			and totalRaterNum = #{totalRaterNum}
 		</if>
 	</sql>
 	<select id="findProjectName" resultMap="BaseResultMap">

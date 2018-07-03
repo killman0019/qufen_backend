@@ -1,5 +1,6 @@
 package com.tzg.wap;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,9 +13,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.alibaba.fastjson.JSON;
+import com.tzg.common.utils.QiniuUtil;
 import com.tzg.common.utils.SubimitHtml;
 import com.tzg.common.utils.ToRemoveHtml;
 import com.tzg.common.utils.WorkHtmlRegexpUtil;
+import com.tzg.common.utils.sendTelephone;
 import com.tzg.entitys.kff.project.KFFProject;
 import com.tzg.entitys.photo.PhotoIview;
 import com.tzg.rest.exception.rest.RestServiceException;
@@ -36,14 +39,42 @@ public class BaseTest {
 		System.out.println();
 		System.out.println(WorkHtmlRegexpUtil.delHTMLTag(result1).replace("&nbsp;", " "));
 		*/
-		System.out.println(getMillis());
+		/*System.out.println(getMillis());
 		System.out.println(getCurrentTimeSS());
-		String str1 = "http:www.baidu.com";
+		String str1 = "http://app.qufen.top/";
 		String str2 = "www.qufem.io";
 
-		String str = "asdadadadadadasdsdevswezxvcewgacsdfgwdzgw//sfsaacwfsxvshttp:www.baidu.comaadasdadaf//asfdada//asdadaf/asfasddd";
-		String str3 = str.replaceAll(str1, str2);
-		System.out.println(str3);
+		String str = "http://app.qufen.top//upload/projects/201806/2018061217495937";
+		String str4 = "http://" + "app.qufen.top" + "/";
+		str = str.replaceAll(str4, "");
+		System.out.println(str);*/
+
+		/*String str5 = "http://t11.baidu.com/it/u=2559796420,1427899438&fm=170&s=42F210D74FE3709C8C85A0630300F073&w=360&h=360&img.JPEG";
+		String str6 = "http://p3.pstatp.com/large/pgc-image/15289075482782fed3b5757";// 头条
+		String str7 = "https://bihu2001.oss-cn-shanghai.aliyuncs.com/img/bb4e1a30ea53c00acf0770cfb416ded5.jpg?x-oss-process=style/size_md";
+		String str8 = "https://pic.36krcnd.com/201806/14021231/7plndf83a4pzlnix.JPG!1200";// 36氪
+		String str9 = "https://mmbiz.qpic.cn/mmbiz_jpg/GA0ru2kvgLmlcPVR4kPcticM46Yu9Yw35LL9k5jiaUJ5XjQHzrzREWswWpf4Yxic4b1YM7QfSyQlhJpL4p0LQXMJw/640?wx_fmt=jpeg&tp=webp&wxfrom=5&wx_lazy=1";// 微信号
+		String str10 = "5b0988e595225.cdn.sohucs.com/images/20180613/264ed5e03b8b495789965c3aae1bfa13.jpeg";// 搜狐
+		String str11 = "http://n.sinaimg.cn/news/1_img/upload/2b0c102b/781/w550h231/20180614/3aCf-hcwpcmq6607016.jpg";
+		QiniuUtil.changeToLocalUrl(str6, "test6");
+		QiniuUtil.changeToLocalUrl(str5, "test5");
+		QiniuUtil.changeToLocalUrl(str7, "test7");
+		QiniuUtil.changeToLocalUrl(str8, "test8");
+		QiniuUtil.changeToLocalUrl(str9, "test9");
+		QiniuUtil.changeToLocalUrl(str10, "test10");
+		QiniuUtil.changeToLocalUrl(str11, "test11");*/
+		/*String str = "D:\\opt\\file\\upload\\poster\\5add9a8.png";
+		File file = new File(str);
+		boolean delete = file.delete();
+		if (delete) {
+			System.out.println("删除成功!");
+		}*/
+		/*for (int i = 0; i < 100; i++) {
+			String sendTele = sendTelephone.sendTele();
+			System.out.println(sendTele);
+		}*/
+		String str  ="a";
+		System.out.println(str.length());
 	}
 
 	public static String test(String str) {

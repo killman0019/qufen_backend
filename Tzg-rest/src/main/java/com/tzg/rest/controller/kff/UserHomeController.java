@@ -122,7 +122,7 @@ public class UserHomeController extends BaseController {
 	        }
 	        query.setPageIndex(baseRequest.getPageIndex());
 	        query.setRowsPerPage(baseRequest.getPageSize());
-			PageResult<EvaluationDetailResponse> evaluations = kffRmiService.findPageEvaluationList(query);
+			PageResult<EvaluationDetailResponse> evaluations = kffRmiService.findPageEvaluationListUserHome(query);
             map.put("evaluations", evaluations);
 			bre.setData(map);
 		} catch (RestServiceException e) {

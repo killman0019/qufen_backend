@@ -58,7 +58,7 @@
 
 	<sql id="fullpostcolumns">
 	    <![CDATA[
-        p.post_id ,p.project_id ,p.project_icon ,p.project_code ,p.project_english_name ,p.project_chinese_name,p.post_title ,p.post_type ,p.post_short_desc ,p.post_small_images ,p.comments_num ,p.praise_num ,p.pageview_num ,p.donate_num ,p.collect_num ,p.create_user_id ,p.create_user_icon ,p.create_user_signature ,p.create_user_name ,p.createTime ,p.updateTime ,p.status,p.uuid,p.stick_top,p.stick_updateTime 
+        p.post_id ,p.project_id ,p.project_icon ,p.project_code ,p.project_english_name ,p.project_chinese_name,p.post_title ,p.post_type ,p.post_short_desc ,p.post_small_images ,p.comments_num ,p.praise_num ,p.pageview_num ,p.donate_num ,p.collect_num ,p.create_user_id ,p.create_user_icon ,p.create_user_signature ,p.create_user_name ,p.createTime ,p.updateTime ,p.status,p.uuid,p.stick_top,p.stick_updateTime
 	    ,e.evaluation_id,e.total_score,e.professional_eva_detail,e.evauation_content,e.evaluation_tags
 	    ]]>
 	</sql>
@@ -167,6 +167,11 @@
 	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
 		select count(*) from tbevaluation where 1=1
 		<include refid="queryWhere" />
+	</select>
+	
+	<select id="countEvaExportOnlyEva" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+		select count(*) from tbevaluation where 1=1
+		and status=1 and model_type != 3 and project_id = #{projectId} 
 	</select>
 
 	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">

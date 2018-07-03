@@ -166,7 +166,7 @@
 		<if test="praiseType != null and praiseType.trim() != ''">
 		and praise_type = #{praiseType}
 		</if>		
-		<if test="postId != null and postId.trim() != ''">
+		<if test="postId != null  ">
 		and post_id = #{postId}
 		</if>
 		<if test="postType != null and postType.trim() != ''">

@@ -169,6 +169,7 @@ public class UploadController extends BaseController {
 		if (upfile.getSize() >= 5 * 1024 * 1024) {
 			throw new RestServiceException("图片大于5M");
 		}
+		
 		String name = UUID.randomUUID().toString().replaceAll("-", "");
 		name = DateUtil.getCurrentTimeSS();
 		// jpg

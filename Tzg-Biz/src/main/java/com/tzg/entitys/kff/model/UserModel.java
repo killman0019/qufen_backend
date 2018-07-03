@@ -5,6 +5,16 @@ public class UserModel {
 	private String userNick;
 	// 用户头像绝对路径
 	private String icon;
+	// 用户的类型
+	private Integer userType;
+
+	public Integer getUserType() {
+		return userType;
+	}
+
+	public void setUserType(Integer userType) {
+		this.userType = userType;
+	}
 
 	public String getIcon() {
 		return icon;

@@ -199,7 +199,7 @@ public interface KFFRmiService {
 	 * @param comment
 	 * @throws RestServiceException
 	 */
-	public void saveComment(CommentsRequest comment) throws RestServiceException;
+	public Map<String, Object> saveComment(CommentsRequest comment) throws RestServiceException;
 
 	/**
 	 * 
@@ -827,4 +827,35 @@ public interface KFFRmiService {
 	public void updateUserKFFPop(Integer loginUserId);
 
 	public String getWeiXinTicket() throws RestServiceException;
+
+	/**
+	 * 用户主页的评测展示
+	 * 
+	 * @param query
+	 * @return
+	 * @throws RestServiceException
+	 */
+	public PageResult<EvaluationDetailResponse> findPageEvaluationListUserHome(PaginationQuery query) throws RestServiceException;
+
+	/**
+	 * self 获取最新的评论
+	 * 
+	 * @param userId
+	 * @param postId
+	 * @param query
+	 * @return
+	 * @throws RestServiceException
+	 */
+	public PageResult<Comments> findPageNewestCommentsSelf(Integer userId, Integer postId, PaginationQuery query) throws RestServiceException;
+
+	/**
+	 * self 获取最热的评论
+	 * 
+	 * @param userId
+	 * @param postId
+	 * @param query
+	 * @return
+	 * @throws RestServiceException
+	 */
+	public List<Comments> findPageHotCommentsListSelf(Integer userId, Integer postId, PaginationQuery query) throws RestServiceException;
 }

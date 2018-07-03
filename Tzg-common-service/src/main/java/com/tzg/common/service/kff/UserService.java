@@ -109,6 +109,13 @@ public class UserService {
 		if (StringUtils.isNotBlank(registerRequest.getPassword())) {
 			user.setPassword(SHAUtil.encode(registerRequest.getPassword()));
 		}
+		if (null != registerRequest.getPassword()) {
+			String pwdFmt = RegexUtil.PASSWORD_LOGIN_REGISTER;
+			if (!registerRequest.getPassword().matches(pwdFmt)) {
+				throw new RestServiceException(RestErrorCode.PASSWORD_FORMAT_ERROR);
+
+			}
+		}
 		user.setUserName(KFFRestConstants.USER_NAME_PREFIX + RandomUtil.produceStringAndNumber(8));
 		Integer randomNumber = RandomUtil.randomNumber(1, 3);
 		String userIconstr = null;
@@ -520,40 +527,40 @@ public class UserService {
 		} else if (postType == KFFConstants.POST_TYPE_DISCUSS) {
 			userMapper.increaseDiscussNum(userId);
 		}
-		
+
 	}
 
 	public void increasePraiseNum(Integer userId) {
-		if(userId == null){
+		if (userId == null) {
 			throw new RestServiceException("用户不能为空");
 		}
-		
+
 		userMapper.increasePraiseNum(userId);
-		
+
 	}
 
 	public void decreasePraiseNum(Integer userId) {
-		if(userId == null){
+		if (userId == null) {
 			throw new RestServiceException("用户不能为空");
 		}
-		
+
 		userMapper.decreasePraiseNum(userId);
-		
+
 	}
-	
+
 	public Integer findPopByToken(Integer userId) throws RestServiceException {
 		Integer pop = userMapper.findPopByToken(userId);
-		if(null == pop)
+		if (null == pop)
 			pop = 0;
 		return pop;
 	}
-	
+
 	public void updateUserKFFPop(Integer userId) {
 
 		if (userId == null) {
 			throw new RestServiceException("用户ID不能为空");
 		}
-		
+
 		userMapper.updateUserKFFPop(userId);
 
 	}

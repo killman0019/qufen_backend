@@ -30,5 +30,11 @@ public interface EvaluationMapper extends BaseMapper<Evaluation, java.lang.Integ
 	// 除部分评测外的所有评测
 	List<Evaluation> getAllEvasExceptPartByProjectId(Integer projectId);
 
-
+	/**
+	 * 根据projectID查询简单全面,自定义的评论人数
+	 * 
+	 * @param projectId
+	 * @return
+	 */
+	Integer countEvaExportOnlyEva(Integer projectId);
 }

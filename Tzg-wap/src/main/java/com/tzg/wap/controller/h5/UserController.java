@@ -496,6 +496,7 @@ public class UserController extends BaseController {
 			userModel.setAuthenticationStatus(authenticationStatus);
 			userModel.setUserNick(loginaccount.getUserName());
 			userModel.setIcon(loginaccount.getIcon());
+			userModel.setUserType(loginaccount.getUserType());// 用户类型:1-普通用户；2-项目方；3-评测机构；4-机构用户
 			map.put("userModel", userModel);
 			map.put("s", token);
 			bre.setData(map);

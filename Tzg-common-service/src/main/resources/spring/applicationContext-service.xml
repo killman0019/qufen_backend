@@ -37,13 +37,16 @@
 			"0 10,44 14 ? 3 WED"    三月的每周三的14：10和14：44触发 
 			"0 15 10 ? * MON-FRI"    每个周一、周二、周三、周四、周五的10：15触发 
 			"0 0 0 * * ? *"    每天 的00：00触发 
+			0 0 1 * * ?       每天 的01：00触发
+			30 * * * * ?    每半分钟触发一次
      -->
 	<task:scheduler id="scheduler" pool-size="2" />
     <task:scheduled-tasks>   
     <!-- ref指定的是任务类  method是指定需要运行的方法 cron是定时任务的表达式-->
          <task:scheduled ref="taskJobService" method="updateByGrantType" cron="0 0 0 * * ? "/>   
          <task:scheduled ref="taskJobService" method="updateByGrantType2" cron="0 0 0 * * ? "/>   
-         <task:scheduled ref="taskJobService" method="caculateProjectTotalScore" cron="0 0 1 * * ? "/> 
+       <!--  <task:scheduled ref="taskJobService" method="caculateProjectTotalScore" cron="0 0 1 * * ? "/> -->
+       <!--  <task:scheduled ref="taskJobService" method="caculateProjectTotalScore" cron="5 * * * * ? "/> -->
     </task:scheduled-tasks>  
 	
 

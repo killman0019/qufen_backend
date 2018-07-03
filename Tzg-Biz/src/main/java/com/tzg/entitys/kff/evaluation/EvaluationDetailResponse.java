@@ -145,8 +145,17 @@ public class EvaluationDetailResponse implements Serializable {
 	/**
 	 * 用户昵称
 	 */
+	private Integer stickTop;
 	private java.lang.String createUserName;
 	private Integer userType;
+
+	public Integer getStickTop() {
+		return stickTop;
+	}
+
+	public void setStickTop(Integer stickTop) {
+		this.stickTop = stickTop;
+	}
 
 	public Integer getUserType() {
 		return userType;

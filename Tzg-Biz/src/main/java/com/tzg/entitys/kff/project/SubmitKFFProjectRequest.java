@@ -127,6 +127,16 @@ public class SubmitKFFProjectRequest extends BaseRequest implements Serializable
 	 */
 	private java.lang.Integer collectNum = 0;
 
+	private Integer totalRaterNum = 0;
+
+	public Integer getTotalRaterNum() {
+		return totalRaterNum;
+	}
+
+	public void setTotalRaterNum(Integer totalRaterNum) {
+		this.totalRaterNum = totalRaterNum;
+	}
+
 	public java.lang.String getSubmitUserContactInfo() {
 		return submitUserContactInfo;
 	}
@@ -207,7 +217,6 @@ public class SubmitKFFProjectRequest extends BaseRequest implements Serializable
 		this.listed = listed;
 	}
 
-
 	public java.lang.String getIssueDateStr() {
 		return this.issueDateStr;
 	}
@@ -217,9 +226,10 @@ public class SubmitKFFProjectRequest extends BaseRequest implements Serializable
 	}
 
 	public void setIssueDateStr(String value) {
-			this.issueDateStr = value;
-		
+		this.issueDateStr = value;
+
 	}
+
 	public java.lang.Long getIssueNum() {
 		return this.issueNum;
 	}

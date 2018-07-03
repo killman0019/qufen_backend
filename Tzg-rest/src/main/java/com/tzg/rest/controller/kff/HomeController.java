@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tzg.common.base.BaseRequest;
 import com.tzg.common.constants.KFFConstants;
@@ -271,7 +272,8 @@ public class HomeController extends BaseController {
 			newQuery.addQueryData("parentCommentsIdNull", "YES");
 			newQuery.setPageIndex(params.getPageIndex());
 			newQuery.setRowsPerPage(params.getPageSize());
-			PageResult<Comments> newestComments = kffRmiService.findPageNewestComments(userId, postId, newQuery);
+			PageResult<Comments> newestComments = kffRmiService.findPageNewestCommentsSelf(userId, postId, newQuery);
+			// System.err.println("这个是最新评论newestComments" + JSON.toJSONString(newestComments));
 			map.put("newestComments", newestComments);
 
 			if (params.getPageIndex() == null || params.getPageIndex() == 1) {
@@ -283,8 +285,9 @@ public class HomeController extends BaseController {
 				// 点赞数最多的2个评论
 				hotQuery.addQueryData("sortField", "praise_num");
 				hotQuery.setPageIndex(1);
-				hotQuery.setRowsPerPage(10);
-				List<Comments> hotComments = kffRmiService.findPageHotCommentsList(userId, postId, hotQuery);
+				hotQuery.setRowsPerPage(2);
+				List<Comments> hotComments = kffRmiService.findPageHotCommentsListSelf(userId, postId, hotQuery);
+				// System.err.println("这个是热门评论hotComments" + JSON.toJSONString(hotComments));
 				map.put("hotComments", hotComments);
 			}
 			bre.setData(map);
@@ -515,7 +518,8 @@ public class HomeController extends BaseController {
 			newQuery.addQueryData("parentCommentsIdNull", "YES");
 			newQuery.setPageIndex(params.getPageIndex());
 			newQuery.setRowsPerPage(params.getPageSize());
-			PageResult<Comments> newestComments = kffRmiService.findPageNewestComments(userId, postId, newQuery);
+			PageResult<Comments> newestComments = kffRmiService.findPageNewestCommentsSelf(userId, postId, newQuery);
+			//System.err.println("最新评论newestComments" + JSONObject.toJSONString(newestComments));
 			map.put("newestComments", newestComments);
 
 			if (params.getPageIndex() == null || params.getPageIndex() == 1) {
@@ -528,7 +532,8 @@ public class HomeController extends BaseController {
 				hotQuery.addQueryData("sortField", "praise_num");
 				hotQuery.setPageIndex(1);
 				hotQuery.setRowsPerPage(2);
-				List<Comments> hotComments = kffRmiService.findPageHotCommentsList(userId, postId, hotQuery);
+				List<Comments> hotComments = kffRmiService.findPageHotCommentsListSelf(userId, postId, hotQuery);
+			//	System.err.println("最新评论hotComments" + JSONObject.toJSONString(hotComments));
 				map.put("hotComments", hotComments);
 			}
 			bre.setData(map);
@@ -688,9 +693,9 @@ public class HomeController extends BaseController {
 				throw new RestServiceException("非法文件后缀" + ext);
 			}
 
-			//SystemParam systemParam = systemParamRmiService.findByCode("upload_local_path");
-			//String localPath = systemParam.getVcParamValue();
-			//systemParam = systemParamRmiService.findByCode("upload_file_path");
+			// SystemParam systemParam = systemParamRmiService.findByCode("upload_local_path");
+			// String localPath = systemParam.getVcParamValue();
+			// systemParam = systemParamRmiService.findByCode("upload_file_path");
 
 			name = DateUtil.getCurrentTimeSS();
 			// jpg
@@ -809,7 +814,7 @@ public class HomeController extends BaseController {
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
 			query.addQueryData("postId", postId + "");
-			query.addQueryData("CommentsId", commentsId + "");//parentCommentsId
+			query.addQueryData("parentCommentsId", commentsId + "");// parentCommentsId
 			query.addQueryData("status", KFFConstants.STATUS_ACTIVE + "");
 			PageResult<Comments> comments = kffProjectPostRmiService.findPagecommentCommentsList(userId, query);
 			map.put("comments", comments);

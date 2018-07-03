@@ -135,6 +135,7 @@ public class ProjectService {
 	}
 
 	public void updateTotalScore(Integer projectId, BigDecimal totalScore) {
+
 		if (projectId == null || projectId == 0) {
 			// throw new RestServiceException("项目ID错误");
 			return;
@@ -166,7 +167,7 @@ public class ProjectService {
 
 		List<Post> projects = postMapper.getProjectIdsGreateThanTenEvas();
 		if (CollectionUtils.isEmpty(projects)) {
-			logger.warn("no projects with more than 10 evaluations");
+			logger.warn("no projects with more than 1 evaluations");
 			return;
 		}
 		final CountDownLatch countDownLatch = new CountDownLatch(projects.size());
@@ -196,13 +197,15 @@ public class ProjectService {
 	private void caculateOneScore(Integer projectId, CountDownLatch countDownLatch) {
 		try {
 			BigDecimal totalScore;
-
+			
 			KFFProject originalProject = projectMapper.findById(projectId);
 			if (originalProject != null) {
 				totalScore = originalProject.getTotalScore();
 
 				// 获取简单评测，全面专业评测 和 自定义评测统计
 				List<Evaluation> evas = evaluationMapper.getAllEvasExceptPartByProjectId(projectId);
+				// 根据projectid统计简单评测,完整评测和自定义评测的打分人数
+				Integer totalRaterNum = evaluationMapper.countEvaExportOnlyEva(projectId);
 				if (CollectionUtils.isEmpty(evas)) {
 					countDownLatch.countDown();
 					return;
@@ -214,10 +217,10 @@ public class ProjectService {
 				for (Evaluation eva : evas) {
 					BigDecimal oneDividor = BigDecimal.ZERO;
 					Long oneDividend = 0L;
-					BigDecimal oneScore = eva.getTotalScore() == null ? BigDecimal.ZERO : eva.getTotalScore();//取区分指数
+					BigDecimal oneScore = eva.getTotalScore() == null ? BigDecimal.ZERO : eva.getTotalScore();// 取分数
 					qfIndex = qfIndexMapper.findByUserId(eva.getCreateUserId());
 					if (qfIndex != null) {
-						ownerQfScore = qfIndex.getStatusHierarchyType() == null ? 100 : qfIndex.getStatusHierarchyType();
+						ownerQfScore = qfIndex.getStatusHierarchyType() == null ? 100 : qfIndex.getStatusHierarchyType();// 取区分指数
 					}
 					// 简单评测
 					if (Objects.equal(1, eva.getModelType())) {
@@ -232,10 +235,10 @@ public class ProjectService {
 						map.put("projectId", projectId + "");
 						map.put("praiseType", "1");
 						List<Praise> praises = praiseMapper.findAllActivePraisesByPostId(map);
-						if (CollectionUtils.isEmpty(praises)) {//没有赞
+						if (CollectionUtils.isEmpty(praises)) {// 没有赞
 							oneDividor = oneScore.multiply(new BigDecimal(ownerQfScore)).multiply(new BigDecimal(100));
 							oneDividend = ownerQfScore * 100L;
-						} else {//有赞
+						} else {// 有赞
 							List<Integer> praiseUserIds = new ArrayList<>();
 							for (Praise p : praises) {
 								praiseUserIds.add(p.getPraiseUserId());
@@ -270,9 +273,11 @@ public class ProjectService {
 				project.setProjectId(projectId);
 				project.setUpdateTime(new Date());
 				project.setTotalScore(totalScore);
+				project.setTotalRaterNum(totalRaterNum);
 				projectMapper.updateTotalScore(project);
 
-				logger.warn("------update project totalSocre for project:" + projectId + "originalScore:" + originalTotalScore + "newScore:" + totalScore);
+				logger.warn("------update project totalSocre for project: " + projectId + "originalScore: " + originalTotalScore + "newScore: " + totalScore
+						+ "totalRaterNum: " + totalRaterNum);
 
 			}
 		} catch (Exception e) {
@@ -317,8 +322,8 @@ public class ProjectService {
 					}
 					// 简单评测
 					if (Objects.equal(1, eva.getModelType())) {
-						oneDividor = oneScore.multiply(new BigDecimal(ownerQfScore)).multiply(new BigDecimal(100));//上
-						oneDividend = ownerQfScore * 100L;//下
+						oneDividor = oneScore.multiply(new BigDecimal(ownerQfScore)).multiply(new BigDecimal(100));// 上
+						oneDividend = ownerQfScore * 100L;// 下
 					} else if (Objects.equal(2, eva.getModelType()) || Objects.equal(4, eva.getModelType())) {
 						// 系统专业评测 //用户自定义评测
 						Map<String, Object> map = new HashMap<>();

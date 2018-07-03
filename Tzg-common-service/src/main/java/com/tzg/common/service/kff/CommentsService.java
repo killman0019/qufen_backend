@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.entitys.kff.comments.Comments;
@@ -36,8 +38,8 @@ public class CommentsService {
 		commentsMapper.deleteById(id);
 	}
 
-	public void save(Comments comments) throws RestServiceException {
-		commentsMapper.save(comments);
+	public Integer save(Comments comments) throws RestServiceException {
+		return commentsMapper.save(comments);
 	}
 
 	public void update(Comments comments) throws RestServiceException {
@@ -61,13 +63,27 @@ public class CommentsService {
 				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
 				query.addQueryData("startRecord", Integer.toString(startRecord));
 				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
+				System.out.println(query.getQueryData().get("parentCommentsId"));
 				List<Comments> list = commentsMapper.findPage(query.getQueryData());
+				// System.err.println("list" + JSON.toJSONString(list));
+				// query.setRowsPerPage(10);
 				result = new PageResult<Comments>(list, count, query);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return result;
+	}
+
+	@Transactional(readOnly = true)
+	public Integer selectfloor(PaginationQuery query) throws RestServiceException {
+		// 修复子评论查询异常
+		if (query.getQueryData().get("parentCommentsId") != null && query.getQueryData().get("parentCommentsIdNull") != null) {
+			query.getQueryData().remove("parentCommentsIdNull");
+		}
+		Integer count = commentsMapper.findPageCount(query.getQueryData());
+
+		return count;
 	}
 
 	/**
@@ -94,10 +110,7 @@ public class CommentsService {
 				List<Comments> list = commentsMapper.findPage(query.getQueryData());
 				if (CollectionUtils.isNotEmpty(list)) {
 					for (Comments comments : list) {
-						if(null!=comments.getBecommentedUserId()){
-							//说明有对此进行评论的人
-							
-						}
+						System.err.println("comments" + JSONObject.toJSONString(comments));
 					}
 				}
 				result = new PageResult<Comments>(list, count, query);
@@ -169,10 +182,21 @@ public class CommentsService {
 
 		return commentsMapper.findFlootOrderById(postId);
 	}
-
+	@Transactional(readOnly = true)
 	public Comments findByPostId(Integer commentsId) {
 		return commentsMapper.findByPostId(commentsId);
 
 	}
+	@Transactional(readOnly = true)
+	public Comments selectIdByCommentUUID(String commnetUUID) {
+		// TODO Auto-generated method stub
+		return commentsMapper.selectIdByCommentUUID(commnetUUID);
+	}
+	@Transactional(readOnly = true)
+	public Integer findParentCommentsSum(Integer postid) {
+		// TODO Auto-generated method stub
+		return commentsMapper.findParentCommentsSum(postid);
+	}
+	
 
 }
