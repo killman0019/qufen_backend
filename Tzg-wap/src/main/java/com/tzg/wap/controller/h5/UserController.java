@@ -147,7 +147,7 @@ public class UserController extends BaseController {
 		// "^((?=.*?\\d)(?=.*?[A-Za-z])|(?=.*?\\d)(?=.*?[!@#$%^&])|(?=.*?[A-Za-z])(?=.*?[!@#$%^&]))[\\dA-Za-z!@#$%^&]{8,20}$";
 		// //由字母、数字组成，8-20位
 		if (null != passwordAes) {
-			String pwdFmt = "^.{8,20}$";
+			String pwdFmt = RegexUtil.PASSWORD_LOGIN_REGISTER;// "^.{8,20}$";
 			if (!passwordAes.matches(pwdFmt)) {
 				// throw new RestServiceException(RestErrorCode.PASSWORD_FORMAT_ERROR);
 				map.put("reStatus", 0);// 1注册成功 0 注册不成功
@@ -183,7 +183,7 @@ public class UserController extends BaseController {
 			invaUserId = HexUtil.code2ToUserId(invaUIH);
 		}
 
-		KFFUser KffUser = kffRmiService.saveUserByphonePass(phoneNumber, invaUserId, password);
+		KFFUser KffUser = kffRmiService.saveUserByphonePass(phoneNumber, invaUserId, passwordAes);
 		if (null == KffUser) {
 			map.put("reStatus", 0);// 1注册成功 0 注册不成功
 			map.put("reason", "此用户已注册");
