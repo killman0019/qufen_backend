@@ -3050,16 +3050,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			PaginationQuery childQuery = new PaginationQuery();
 			childQuery.setPageIndex(1);
 			childQuery.setRowsPerPage(10);
-			List<Comments> commentList = kffCommentsService.findFlootOrderById(postId);
+			
 			for (Comments comment : comments.getRows()) {
 				Comments finalComment = new Comments();
 				BeanUtils.copyProperties(comment, finalComment);
-				for (Comments commentListone : commentList) {
-					if (commentListone.getCommentsId().equals(comment.getCommentsId())) {
-						finalComment.setFloor(commentList.indexOf(commentListone) + 1);
-					}
-				}
-				// 添加楼层end
 				query.addQueryData("parentCommentsId", comment.getCommentsId() + "");
 				PageResult<Comments> childComments = kffCommentsService.findPage(query);
 				if (childComments != null && CollectionUtils.isNotEmpty(childComments.getRows())) {

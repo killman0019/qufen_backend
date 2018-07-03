@@ -282,8 +282,9 @@ public class HomeController extends BaseController {
 				hotQuery.addQueryData("postId", postId + "");
 				hotQuery.addQueryData("postType", KFFConstants.POST_TYPE_ARTICLE + "");
 				hotQuery.addQueryData("parentCommentsIdNull", "YES");
-				// 点赞数最多的2个评论
+				// 点赞数最多的2个评论 点赞数量超过10个
 				hotQuery.addQueryData("sortField", "praise_num");
+				hotQuery.addQueryData("praiseNum", "10");
 				hotQuery.setPageIndex(1);
 				hotQuery.setRowsPerPage(2);
 				List<Comments> hotComments = kffRmiService.findPageHotCommentsListSelf(userId, postId, hotQuery);
@@ -426,6 +427,7 @@ public class HomeController extends BaseController {
 			query.addQueryData("status", KFFConstants.STATUS_ACTIVE + "");
 			query.addQueryData("postType", KFFConstants.POST_TYPE_DISCUSS + "");
 			query.addQueryData("parentCommentsIdNull", "YES");
+			
 			PageResult<Comments> comments = kffRmiService.findPageDiscussCommentsList(userId, query);
 			map.put("comments", comments);
 
@@ -519,7 +521,7 @@ public class HomeController extends BaseController {
 			newQuery.setPageIndex(params.getPageIndex());
 			newQuery.setRowsPerPage(params.getPageSize());
 			PageResult<Comments> newestComments = kffRmiService.findPageNewestCommentsSelf(userId, postId, newQuery);
-			//System.err.println("最新评论newestComments" + JSONObject.toJSONString(newestComments));
+			// System.err.println("最新评论newestComments" + JSONObject.toJSONString(newestComments));
 			map.put("newestComments", newestComments);
 
 			if (params.getPageIndex() == null || params.getPageIndex() == 1) {
@@ -530,10 +532,11 @@ public class HomeController extends BaseController {
 				newQuery.addQueryData("parentCommentsIdNull", "YES");
 				// 点赞数最多的2个评论
 				hotQuery.addQueryData("sortField", "praise_num");
+				hotQuery.addQueryData("praiseNum", "10");
 				hotQuery.setPageIndex(1);
 				hotQuery.setRowsPerPage(2);
 				List<Comments> hotComments = kffRmiService.findPageHotCommentsListSelf(userId, postId, hotQuery);
-			//	System.err.println("最新评论hotComments" + JSONObject.toJSONString(hotComments));
+				// System.err.println("最新评论hotComments" + JSONObject.toJSONString(hotComments));
 				map.put("hotComments", hotComments);
 			}
 			bre.setData(map);

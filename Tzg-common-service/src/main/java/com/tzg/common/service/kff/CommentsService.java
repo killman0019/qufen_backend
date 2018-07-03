@@ -65,8 +65,7 @@ public class CommentsService {
 				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
 				System.out.println(query.getQueryData().get("parentCommentsId"));
 				List<Comments> list = commentsMapper.findPage(query.getQueryData());
-				// System.err.println("list" + JSON.toJSONString(list));
-				// query.setRowsPerPage(10);
+
 				result = new PageResult<Comments>(list, count, query);
 			}
 		} catch (Exception e) {
@@ -182,21 +181,25 @@ public class CommentsService {
 
 		return commentsMapper.findFlootOrderById(postId);
 	}
+
 	@Transactional(readOnly = true)
 	public Comments findByPostId(Integer commentsId) {
 		return commentsMapper.findByPostId(commentsId);
 
 	}
+
 	@Transactional(readOnly = true)
 	public Comments selectIdByCommentUUID(String commnetUUID) {
 		// TODO Auto-generated method stub
 		return commentsMapper.selectIdByCommentUUID(commnetUUID);
 	}
+
 	@Transactional(readOnly = true)
 	public Integer findParentCommentsSum(Integer postid) {
 		// TODO Auto-generated method stub
 		return commentsMapper.findParentCommentsSum(postid);
 	}
+
 	
 
 }

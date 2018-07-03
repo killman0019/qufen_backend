@@ -34,4 +34,5 @@ public interface CommentsMapper extends BaseMapper<Comments, java.lang.Integer> 
 
 	Integer findParentCommentsSum(Integer postId);
 
+	
 }

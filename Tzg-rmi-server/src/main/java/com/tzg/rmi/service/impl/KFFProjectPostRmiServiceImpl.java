@@ -729,59 +729,61 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 					Long oneDividend = 0L;
 					BigDecimal oneScore = eva.getTotalScore() == null ? BigDecimal.ZERO : eva.getTotalScore();// 取分数
 					List<DevaluationModel> models = JSON.parseArray(eva.getProfessionalEvaDetail(), DevaluationModel.class);
-					if (models.size() == 1) {
-						qfIndex = qfIndexService.findByUserId(eva.getCreateUserId());
-						if (qfIndex != null) {
-							ownerQfScore = qfIndex.getStatusHierarchyType() == null ? 100 : qfIndex.getStatusHierarchyType();// 取区分指数
-						}
-						// 单项评测
-						if (Objects.equal(3, eva.getModelType())) {
+					if (CollectionUtils.isNotEmpty(models) || models.size() > 0) {
+						if (models.size() == 1) {
+							qfIndex = qfIndexService.findByUserId(eva.getCreateUserId());
+							if (qfIndex != null) {
+								ownerQfScore = qfIndex.getStatusHierarchyType() == null ? 100 : qfIndex.getStatusHierarchyType();// 取区分指数
+							}
+							// 单项评测
+							if (Objects.equal(3, eva.getModelType())) {
 
-							List<Praise> praises = praiseService.findAllActivePraisesByPostId(eva, projectId);// 获取单项评测点赞对象
-							if (CollectionUtils.isEmpty(praises)) {// 没有赞
-								oneDividor = oneScore.multiply(new BigDecimal(ownerQfScore)).multiply(new BigDecimal(100));
-								oneDividend = ownerQfScore * 100L;
-							} else {// 有赞
-								// 判断赞的个数
-								List<QfIndex> priaseUserQfIndexs = new ArrayList<QfIndex>();
-								if (praises.size() != 1) {
-									List<Integer> praiseUserIds = new ArrayList<>();
-									for (Praise p : praises) {
-										praiseUserIds.add(p.getPraiseUserId());
-									}
-									Map<String, Object> qfUsersMap = new HashMap<>();
-									String userIds = StringUtils.join(praiseUserIds.toArray(), ",");
-									qfUsersMap.put("userIds", userIds);
-									priaseUserQfIndexs = qfIndexService.findByUserIds(qfUsersMap); // qfIndexMapper.findByUserIds(qfUsersMap);
-								} else {
-
-									QfIndex priaseqfIndexUser = qfIndexService.findByUserId(praises.get(0).getPraiseUserId());
-									if (null != priaseqfIndexUser) {
-										priaseUserQfIndexs.add(priaseqfIndexUser);
-									}
-								}
-
-								if (!CollectionUtils.isEmpty(priaseUserQfIndexs)) {
-									Integer totalQf = 0;
-									for (QfIndex qf : priaseUserQfIndexs) {
-										totalQf = totalQf + (qf.getStatusHierarchyType() == null ? 100 : qf.getStatusHierarchyType());
-									}
-									if (totalQf == 0)
-										totalQf = 100;
-									oneDividor = oneScore.multiply(new BigDecimal(ownerQfScore)).multiply(new BigDecimal(totalQf));
-									oneDividend = ownerQfScore * (Long.valueOf(totalQf));
-								} else {
+								List<Praise> praises = praiseService.findAllActivePraisesByPostId(eva, projectId);// 获取单项评测点赞对象
+								if (CollectionUtils.isEmpty(praises)) {// 没有赞
 									oneDividor = oneScore.multiply(new BigDecimal(ownerQfScore)).multiply(new BigDecimal(100));
 									oneDividend = ownerQfScore * 100L;
+								} else {// 有赞
+									// 判断赞的个数
+									List<QfIndex> priaseUserQfIndexs = new ArrayList<QfIndex>();
+									if (praises.size() != 1) {
+										List<Integer> praiseUserIds = new ArrayList<>();
+										for (Praise p : praises) {
+											praiseUserIds.add(p.getPraiseUserId());
+										}
+										Map<String, Object> qfUsersMap = new HashMap<>();
+										String userIds = StringUtils.join(praiseUserIds.toArray(), ",");
+										qfUsersMap.put("userIds", userIds);
+										priaseUserQfIndexs = qfIndexService.findByUserIds(qfUsersMap); // qfIndexMapper.findByUserIds(qfUsersMap);
+									} else {
+
+										QfIndex priaseqfIndexUser = qfIndexService.findByUserId(praises.get(0).getPraiseUserId());
+										if (null != priaseqfIndexUser) {
+											priaseUserQfIndexs.add(priaseqfIndexUser);
+										}
+									}
+
+									if (!CollectionUtils.isEmpty(priaseUserQfIndexs)) {
+										Integer totalQf = 0;
+										for (QfIndex qf : priaseUserQfIndexs) {
+											totalQf = totalQf + (qf.getStatusHierarchyType() == null ? 100 : qf.getStatusHierarchyType());
+										}
+										if (totalQf == 0)
+											totalQf = 100;
+										oneDividor = oneScore.multiply(new BigDecimal(ownerQfScore)).multiply(new BigDecimal(totalQf));
+										oneDividend = ownerQfScore * (Long.valueOf(totalQf));
+									} else {
+										oneDividor = oneScore.multiply(new BigDecimal(ownerQfScore)).multiply(new BigDecimal(100));
+										oneDividend = ownerQfScore * 100L;
+									}
 								}
+								raterNum = detailModelTotalRater.get(models.get(0).getModelName()) == null ? 0 : detailModelTotalRater.get(models.get(0)
+										.getModelName());
+								raterNum++;
+								detailModelTotalRater.put(models.get(0).getModelName(), raterNum);
 							}
-							raterNum = detailModelTotalRater.get(models.get(0).getModelName()) == null ? 0 : detailModelTotalRater.get(models.get(0)
-									.getModelName());
-							raterNum++;
-							detailModelTotalRater.put(models.get(0).getModelName(), raterNum);
+							totalDividor = totalDividor.add(oneDividor);
+							totalDividend = totalDividend + oneDividend;
 						}
-						totalDividor = totalDividor.add(oneDividor);
-						totalDividend = totalDividend + oneDividend;
 					}
 					BigDecimal totalScore = BigDecimal.ZERO;
 					logger.info("分子" + totalDividor);
