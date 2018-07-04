@@ -538,6 +538,16 @@
 		WHERE
 		user_id = #{userId,jdbcType=INTEGER}
 	</update>
+	
+	
+	<select id="findUserStatusByPhoneNumber" parameterType="java.lang.String" resultMap="BaseResultMap">
+		SELECT 
+		<include refid="columns" />
+		FROM tbuser
+		WHERE mobile = #{mobile}
+
+	</select>
+	
 </mapper>
 
 

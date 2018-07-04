@@ -565,4 +565,9 @@ public class UserService {
 
 	}
 
+	public KFFUser findUserStatusByPhoneNumber(String phone) {
+		
+		return userMapper.findUserStatusByPhoneNumber(phone);
+	}
+
 }

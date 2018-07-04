@@ -29,6 +29,7 @@ import com.tzg.common.constants.KFFConstants;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.utils.AccountTokenUtil;
+import com.tzg.common.utils.DozerMapperUtils;
 import com.tzg.common.utils.FileUtils;
 import com.tzg.common.utils.QiniuUtil;
 import com.tzg.common.utils.RandomUtil;
@@ -89,8 +90,8 @@ public class HomeController extends BaseController {
 			PaginationQuery query = new PaginationQuery();
 			query.addQueryData("status", "1");
 			query.addQueryData("stickTop", "1");
-
 			query.addQueryData("sortField", "stick_updateTime");
+			query.addQueryData("praiseNum", "10");
 			// 帖子类型：1-评测；2-讨论；3-文章
 			// query.addQueryData("postType", "1");
 			query.setPageIndex(baseRequest.getPageIndex());
@@ -722,10 +723,11 @@ public class HomeController extends BaseController {
 				String urlPath = QiniuUtil.uploadStream(file.getInputStream(), fName);
 
 				KFFUser account = new KFFUser();
-				account.setUserId(userId);
-				account.setUpdateTime(new Date());
-				account.setIcon(urlPath);
-				kffRmiService.updateUser(account);
+				KFFUser OldUser = kffRmiService.findUserById(userId);
+				//account.setUserId(userId);
+				OldUser.setUpdateTime(new Date());
+				OldUser.setIcon(urlPath);
+				kffRmiService.updateUser(OldUser);
 				resMap.put("imgUrl", urlPath);
 			} else if (imgtype == KFFConstants.IMGTYPE_POSTS) {
 				/*localPath = localPath + "postPic/" + DateUtil.getCurrentYearMonth() + "/";

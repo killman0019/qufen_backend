@@ -49,4 +49,6 @@ public interface KFFUserMapper extends BaseMapper<KFFUser, java.lang.Integer> {
 	public Integer findPopByToken(Integer userId);
 	
 	public void updateUserKFFPop(Integer userId);
+
+	public KFFUser findUserStatusByPhoneNumber(String mobile);
 }

@@ -14,58 +14,58 @@ import com.tzg.entitys.kff.post.PostMapper;
 import com.tzg.entitys.kff.project.KFFProject;
 import com.tzg.rest.exception.rest.RestServiceException;
 
-
-@Service(value="KFFPostService")
+@Service(value = "KFFPostService")
 @Transactional
 public class PostService {
 
 	@Autowired
-	private PostMapper postMapper;	
-	   
-	@Transactional(readOnly=true)
-    public Post findById(java.lang.Integer id) throws RestServiceException {
-    	if(id == null){
+	private PostMapper postMapper;
+
+	@Transactional(readOnly = true)
+	public Post findById(java.lang.Integer id) throws RestServiceException {
+		if (id == null) {
 			throw new RestServiceException("id不能为空");
 		}
-        return postMapper.findById(id);
-    }
-	
+		return postMapper.findById(id);
+	}
+
 	public Post findByUUID(String uuid) {
-		if(uuid == null){
+		if (uuid == null) {
 			throw new RestServiceException("uuid不能为空");
 		}
-        return postMapper.findByUUID(uuid);
+		return postMapper.findByUUID(uuid);
 	}
-    public void delete(java.lang.Integer id) throws RestServiceException {
-    	if(id == null){
+
+	public void delete(java.lang.Integer id) throws RestServiceException {
+		if (id == null) {
 			throw new RestServiceException("id不能为空");
 		}
-        postMapper.deleteById(id);
-    }
-	
-	public Integer save(Post post) throws RestServiceException {	    
+		postMapper.deleteById(id);
+	}
+
+	public Integer save(Post post) throws RestServiceException {
 		return postMapper.save(post);
 	}
-	
-	public void update(Post post) throws RestServiceException {	
-		if(post.getPostId() == null){
+
+	public void update(Post post) throws RestServiceException {
+		if (post.getPostId() == null) {
 			throw new RestServiceException("id不能为空");
 		}
 		postMapper.update(post);
-	}	
-	
-	@Transactional(readOnly=true)
+	}
+
+	@Transactional(readOnly = true)
 	public PageResult<Post> findPage(PaginationQuery query) throws RestServiceException {
 		PageResult<Post> result = null;
 		try {
 			Integer count = postMapper.findPageCount(query.getQueryData());
 			if (null != count && count.intValue() > 0) {
-				int startRecord = (query.getPageIndex() - 1)* query.getRowsPerPage();
+				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
 				query.addQueryData("startRecord", Integer.toString(startRecord));
 				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
 				List<Post> list = postMapper.findPage(query.getQueryData());
-				result = new PageResult<Post>(list,count,query);
-			} 
+				result = new PageResult<Post>(list, count, query);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -73,60 +73,76 @@ public class PostService {
 	}
 
 	public List<Post> findProjectActiveUsers(Map<String, Object> map) {
-		
+
 		return postMapper.findProjectActiveUsers(map);
 	}
 
 	public void updateDonateNum(Integer postId) {
 		postMapper.updateDonateNum(postId);
-		
+
 	}
 
 	public void increasePraiseNum(Integer postId) {
 		postMapper.increasePraiseNum(postId);
-		
+
 	}
 
 	public void decreasePraiseNum(Integer postId) {
-		postMapper.decreasePraiseNum(postId);		
+		postMapper.decreasePraiseNum(postId);
 	}
 
 	public void increaseCollectNum(Integer postId) {
-		
+
 		postMapper.increaseCollectNum(postId);
 	}
-	
+
 	public void increasePageviewNum(Integer postId) {
-		
+
 		postMapper.increasePageviewNum(postId);
 	}
 
 	public void decreaseCollectNum(Integer postId) {
-		postMapper.decreaseCollectNum(postId);	
-		
+		postMapper.decreaseCollectNum(postId);
+
 	}
 
 	public void updateUserInfo(Map<String, Object> postMap) {
-		
+
 		postMapper.updateUserInfo(postMap);
 	}
-
+	@Transactional(readOnly = true)
 	public PageResult<Post> findMyPageFollowList(PaginationQuery query) {
 		PageResult<Post> result = null;
 		try {
 			Integer count = postMapper.findMyPageFollowListCount(query.getQueryData());
 			if (null != count && count.intValue() > 0) {
-				int startRecord = (query.getPageIndex() - 1)* query.getRowsPerPage();
+				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
 				query.addQueryData("startRecord", Integer.toString(startRecord));
 				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
 				List<Post> list = postMapper.findMyPageFollowList(query.getQueryData());
-				result = new PageResult<Post>(list,count,query);
-			} 
+				result = new PageResult<Post>(list, count, query);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	@Transactional(readOnly = true)
+	public PageResult<Post> findPageRecommendList(PaginationQuery query) {
+		PageResult<Post> result = null;
+		try {
+			Integer count = postMapper.findPageCountRecommendList(query.getQueryData());
+			if (null != count && count.intValue() > 0) {
+				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
+				query.addQueryData("startRecord", Integer.toString(startRecord));
+				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
+				List<Post> list = postMapper.findPageRecommendList(query.getQueryData());
+				result = new PageResult<Post>(list, count, query);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return result;
 	}
 
-	
 }

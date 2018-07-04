@@ -23,4 +23,6 @@ public interface PostMapper extends BaseMapper<Post, java.lang.Integer> {
 	List<Post> findMyPageFollowList(Map<String, Object> map);
 	//查询评测数量大于0的所有项目id列表
 	List<Post> getProjectIdsGreateThanTenEvas();
+	List<Post> findPageRecommendList(Map<String, Object> queryData);
+	Integer findPageCountRecommendList(Map<String, Object> queryData);
 }

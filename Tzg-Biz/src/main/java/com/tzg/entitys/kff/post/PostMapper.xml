@@ -522,6 +522,108 @@
 		and stick_top = #{stickTop}
 		</if>
 	</sql>
+	
+	<select id="findPageRecommendList" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbpost where 1=1
+		<include refid="queryWhereRecommend"/> 
+	   
+	     <choose>
+	            <when test="sortField != null and sortField != ''">
+	               ORDER BY ${sortField} DESC
+	            </when>
+	            <otherwise>
+	                <![CDATA[ ORDER BY post_id desc ]]>
+	            </otherwise>
+	        </choose>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<select id="findPageCountRecommendList" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from tbpost where 1=1
+		<include refid="queryWhereRecommend"/>
+	</select>
+	
+	<sql id="queryWhereRecommend">
+		<if test="postId != null and postId.trim() != ''">
+		and post_id = #{postId}
+		</if>
+		<if test="projectId != null and projectId.trim() != ''">
+		and project_id = #{projectId}
+		</if>
+		<if test="projectIcon != null and projectIcon.trim() != ''">
+		and project_icon = #{projectIcon}
+		</if>
+		<if test="projectCode != null and projectCode.trim() != ''">
+		and project_code = #{projectCode}
+		</if>
+		<if test="projectEnglishName != null and projectEnglishName.trim() != ''">
+		and project_english_name = #{projectEnglishName}
+		</if>
+		<if test="projectChineseName != null and projectChineseName.trim() != ''">
+		and project_chinese_name = #{projectChineseName}
+		</if>
+		<if test="postTitle != null and postTitle.trim() != ''">
+		and post_title = #{postTitle}
+		</if>
+		<if test="postType != null and postType.trim() != ''">
+		and post_type = #{postType}
+		</if>
+		<if test="postShortDesc != null and postShortDesc.trim() != ''">
+		and post_short_desc = #{postShortDesc}
+		</if>
+		<if test="postSmallImages != null and postSmallImages.trim() != ''">
+		and post_small_images = #{postSmallImages}
+		</if>
+		<if test="commentsNum != null and commentsNum.trim() != ''">
+		and comments_num = #{commentsNum}
+		</if>
+		<if test="praiseNum != null and praiseNum.trim() != ''">
+		and praise_num >= #{praiseNum}
+		</if>
+		<if test="pageviewNum != null and pageviewNum.trim() != ''">
+		and pageview_num = #{pageviewNum}
+		</if>
+		<if test="donateNum != null and donateNum.trim() != ''">
+		and donate_num = #{donateNum}
+		</if>
+		<if test="collectNum != null and collectNum.trim() != ''">
+		and collect_num = #{collectNum}
+		</if>
+		<if test="createUserId != null and createUserId.trim() != ''">
+		and create_user_id = #{createUserId}
+		</if>
+		<if test="createUserIcon != null and createUserIcon.trim() != ''">
+		and create_user_icon = #{createUserIcon}
+		</if>
+		<if test="createUserSignature != null and createUserSignature.trim() != ''">
+		and create_user_signature = #{createUserSignature}
+		</if>
+		<if test="createUserName != null and createUserName.trim() != ''">
+		and create_user_name = #{createUserName}
+		</if>
+		<if test="createTimeBegin != null and createTimeBegin.trim() != ''">
+		and createTime >= #{createTimeBegin}
+		</if>
+		<if test="createTimeEnd != null and createTimeEnd.trim() != ''">
+		and createTime &lt;= #{createTimeEnd}
+		</if>
+		<if test="updateTimeBegin != null and updateTimeBegin.trim() != ''">
+		and updateTime >= #{updateTimeBegin}
+		</if>
+		<if test="updateTimeEnd != null and updateTimeEnd.trim() != ''">
+		and updateTime &lt;= #{updateTimeEnd}
+		</if>
+		<if test="status != null and status.trim() != ''">
+		and status = #{status}
+		</if>		
+		<if test="uuid != null and uuid.trim() != ''">
+		and uuid = #{uuid}
+		</if>
+		<if test="stickTop != null and stickTop.trim() != ''">
+		or stick_top = #{stickTop}
+		</if>
+	</sql>
+	
 </mapper>
 
 

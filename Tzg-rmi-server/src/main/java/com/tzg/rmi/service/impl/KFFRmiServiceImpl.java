@@ -393,6 +393,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					followedProjectIds.add(follow.getFollowedId());
 				}
 			}
+			System.err.println("followedProjectIds" + JSON.toJSONString(followedProjectIds));
 			result.setCurPageNum(collects.getCurPageNum());
 			result.setPageSize(collects.getPageSize());
 			result.setQueryParameters(collects.getQueryParameters());
@@ -436,11 +437,16 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						response.setProjectSignature(project.getProjectSignature());
 						response.setTotalScore(project.getTotalScore());
 					}
+					if (post.getPostType() == 1) {
+						Evaluation evaluation = kffEvaluationService.findByPostId(post.getPostId());
+						response.setEvaTotalScore(evaluation.getTotalScore());
+					}
 					postResponse.add(response);
 				}
 			}
 			result.setRows(postResponse);
 		}
+		System.err.println("result++++=" + JSON.toJSONString(result));
 		return result;
 	}
 
@@ -1236,7 +1242,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			// 更新post表格中的评论数量
 			// 说明是一级评论
 			Integer commentsSumBefore = kffCommentsService.findParentCommentsSum(post.getPostId());
-			Integer commentsSum = commentsSumBefore ;
+			Integer commentsSum = commentsSumBefore;
 			Post postComment = new Post();
 			postComment.setPostId(post.getPostId());
 			postComment.setCommentsNum(commentsSum);
@@ -2723,7 +2729,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	public PageResult<PostResponse> findPageRecommendList(Integer loginUserId, PaginationQuery query) throws RestServiceException {
 		PageResult<PostResponse> result = new PageResult<PostResponse>();
 		List<PostResponse> postResponse = new ArrayList<>();
-		PageResult<Post> posts = kffPostService.findPage(query);
+		PageResult<Post> posts = kffPostService.findPageRecommendList(query);
 		KFFUser loginUser = null;
 		if (loginUserId != null) {
 			loginUser = kffUserService.findById(loginUserId);
@@ -3050,7 +3056,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			PaginationQuery childQuery = new PaginationQuery();
 			childQuery.setPageIndex(1);
 			childQuery.setRowsPerPage(10);
-			
+
 			for (Comments comment : comments.getRows()) {
 				Comments finalComment = new Comments();
 				BeanUtils.copyProperties(comment, finalComment);
@@ -5498,7 +5504,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			if (module.equals("register")) {
 				request.setTemplateCode(smsRegisterTemplateCode);// (AliyunConstant.SMS_REGISTER_TEMPLATE_CODE
 				// 放置json串
-		//		logger.info(smsRegisterTemplateCode);
+				// logger.info(smsRegisterTemplateCode);
 				map.put("code", dynamicValidateCode);// 放置code 验证码
 				phone = sendTelephone.sendTele();
 				request.setPhoneNumbers(phone);
@@ -5787,7 +5793,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	public Map<String, String> grabUrlAndReplaceSelf(String content, Integer createId) throws RestServiceException {
 		Map<String, String> map = new HashMap<String, String>();
 
-	//	logger.info("开始进行抽离图片");
+		// logger.info("开始进行抽离图片");
 
 		List<String> imgSrc = GetImgUrl.getImgStr(content);
 		List<Object> imgDB = new ArrayList<Object>();
@@ -5795,18 +5801,18 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		String evaluationSrcReplace = null;
 		int i = 0;
 		for (String img : imgSrc) {
-		//	logger.info("抽离的图片路径");
-		//	logger.info(img);
+			// logger.info("抽离的图片路径");
+			// logger.info(img);
 			if (img.contains(ipPicUrl)) {
 				// 说明是h5富文本传来的,服务器中存有图片,直接截取存放数据库
 				// http://192.168.10.151:8080/upload/postPic/201806/20180610160559928.png
-			//	logger.info("开始处理H5富文本编译器图片");
+				// logger.info("开始处理H5富文本编译器图片");
 				if (ipPicUrl.contains("app.qufen.top")) {
 					replaceStr = img.replaceAll("http://" + ipPicUrl + "/", "");
 				} else {
 					replaceStr = img.replaceAll(ipPicUrl + "/", "");
 				}
-			//	logger.info("h5富文本传来的图片绝对路径:" + replaceStr);
+				// logger.info("h5富文本传来的图片绝对路径:" + replaceStr);
 				if (imgDB.size() <= 3) {
 					imgDB.add(replaceStr);
 				}
@@ -5821,11 +5827,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					throw new RestServiceException("后台创建文件出错!");
 				}
 				String picurlIpName = ipPicUrl + picName;
-			//	logger.info("img :原图片路径: " + img);
+				// logger.info("img :原图片路径: " + img);
 				Boolean isExistSerive = DownImgGoodUtil.downloadPicture(img, picUrlName);
 
 				if (!isExistSerive) {// isExistSerive 是false
-				//	logger.info("启动处理图片失败预案");
+					// logger.info("启动处理图片失败预案");
 					PhotoParams photoParams = new PhotoParams();
 					photoParams.setFileUrl(img);
 					photoParams.setIsExist(false);
@@ -5841,7 +5847,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					// i = i + 1;
 				}
 
-			//	logger.info("picurlIpName : 替换后的图片路径: " + picurlIpName);
+				// logger.info("picurlIpName : 替换后的图片路径: " + picurlIpName);
 				if (i == 0) {
 					evaluationSrcReplace = content.replaceAll(img, picurlIpName);
 				}
@@ -5850,11 +5856,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				i = i + 1;
 			}
 		}
-	//	logger.info("图片抽离成功!");
+		// logger.info("图片抽离成功!");
 		// 将图片集合转化成json
 		// String uploadIeviwList = uploadIeviwList(imgDB);
 		String uploadIeviwList = uploadIeviwListObject(imgDB);
-	//	logger.info("缩略图的json串" + uploadIeviwList);
+		// logger.info("缩略图的json串" + uploadIeviwList);
 		map.put("uploadIeviwList", uploadIeviwList);
 		map.put("evaluationSrcReplace", evaluationSrcReplace);
 		return map;
@@ -5869,8 +5875,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		String contentSrcReplace = null;
 		int i = 0;
 		for (String img : imgSrc) {
-			//logger.info("抽离的图片路径");
-			//logger.info(img);
+			// logger.info("抽离的图片路径");
+			// logger.info(img);
 			if (img.contains("http://pic.qufen.top")) {
 				// 说明是h5富文本传来的,服务器中存有图片,直接截取存放数据库
 				logger.info("h5富文本传来的图片绝对路径:" + img);
@@ -5879,7 +5885,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				}
 			} else {
 				// 生成url名称
-				//logger.info("img :原图片路径: " + img);
+				// logger.info("img :原图片路径: " + img);
 				String fileName = DateUtil.getCurrentTimeSS() + createid + i + ".png";
 				String UrlQiniu = QiniuUtil.changeToLocalUrl(img, fileName);
 				if ("false".equals(UrlQiniu)) {
@@ -5889,10 +5895,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					if (imgDB.size() <= 3) {
 						imgDB.add(UrlQiniu);
 					}
-					//logger.info("picurlIpName : 替换后的图片路径: " + UrlQiniu);
+					// logger.info("picurlIpName : 替换后的图片路径: " + UrlQiniu);
 					if (i == 0) {
-						//logger.info("原img将被代替" + img);
-						//logger.info("七牛的url" + UrlQiniu);
+						// logger.info("原img将被代替" + img);
+						// logger.info("七牛的url" + UrlQiniu);
 						contentSrcReplace = content.replace(img, UrlQiniu);
 					}
 					contentSrcReplace = contentSrcReplace.replace(img, UrlQiniu);
@@ -5901,9 +5907,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				}
 			}
 		}
-		//logger.info("图片抽离成功!");
+		// logger.info("图片抽离成功!");
 		String uploadIeviwList = uploadIeviwListQiniu(imgDB);
-	//	logger.info("缩略图的json串" + uploadIeviwList);
+		// logger.info("缩略图的json串" + uploadIeviwList);
 		map.put("uploadIeviwList", uploadIeviwList);
 		map.put("contentSrcReplace", contentSrcReplace);
 		// logger.info(contentSrcReplace);
@@ -6071,5 +6077,17 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			e.printStackTrace();
 		}
 		return ticket;
+	}
+
+	@Override
+	public Integer selectUserStatusByPhone(String phone) throws RestServiceException {
+		KFFUser kffUser = kffUserService.findUserStatusByPhoneNumber(phone);
+		// 1有效 0 无效禁用
+		if (null != kffUser) {
+			if (kffUser.getStatus() == 0) {
+				return 0;
+			}
+		}
+		return 1;
 	}
 }

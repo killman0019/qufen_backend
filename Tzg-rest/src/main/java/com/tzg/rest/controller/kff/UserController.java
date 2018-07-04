@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.redis.RedisService;
 import com.tzg.common.utils.AccountTokenUtil;
+import com.tzg.common.utils.DozerMapperUtils;
 import com.tzg.common.utils.EnumConstant.SmsBuss;
 import com.tzg.common.utils.FileUtils;
 import com.tzg.common.utils.HexUtil;
@@ -90,6 +92,7 @@ public class UserController extends BaseController {
 
 		try {
 			RegisterRequest registerRequest = getParamMapFromRequestPolicy(request, RegisterRequest.class);
+
 			validateForm(registerRequest);
 
 			KFFUser user = kffRmiService.registerRest(registerRequest);
@@ -174,11 +177,17 @@ public class UserController extends BaseController {
 					new RestServiceException(RestErrorCode.PHONE_FORMAT_ERROR);
 				}
 			}
+			Integer userStatus = kffRmiService.selectUserStatusByPhone(phone);
+			if (userStatus == 0) {
+				// bre.setCode(999);
+				throw new RestServiceException("手机号已被禁用,请联系客服!");
+			}
 			if (kffRmiService.verifyLoginaccount("mobile", phone)) {
 				resMap.put("isRegister", 1);
 			} else {
 				resMap.put("isRegister", 0);
 			}
+
 			bre.setData(resMap);
 		} catch (RestServiceException e) {
 			logger.error("RegisterController phoneAvailable reason:{}", e);
@@ -302,6 +311,7 @@ public class UserController extends BaseController {
 
 			// 更新密码
 			KFFUser accounts = new KFFUser();
+			DozerMapperUtils.map(account, accounts);
 			accounts.setUserId(account.getUserId());
 			accounts.setPassword(SHAUtil.encode(password));
 			accounts.setUpdateTime(new Date());
@@ -491,6 +501,7 @@ public class UserController extends BaseController {
 			}
 
 			KFFUser account = new KFFUser();
+			com.tzg.common.utils.DozerMapperUtils.map(loginaccount, account);
 			account.setUserId(loginaccount.getUserId());
 			if (StringUtils.isNotBlank(userName)) {
 				account.setUserName(userName);
@@ -608,6 +619,7 @@ public class UserController extends BaseController {
 			query.addQueryData("collectUserId", userId + "");
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
+			query.addQueryData("status", "1");
 			PageResult<CollectPostResponse> result = kffRmiService.findPageMyCollectRecords(query);
 
 			map.put("myTokenRecords", result);
@@ -1445,14 +1457,14 @@ public class UserController extends BaseController {
 				try {
 					Double tokenTodaySum = kffRmiService.findTodayToken(loginUserId);
 					Integer pop = kffRmiService.findPopByToken(loginUserId);
+					// tokenTodaySum = 9999.999;
 					map.put("tokenTodaySum", tokenTodaySum);
-					map.put("pop", pop);
+					map.put("pop", pop);// '弹出框:0-弹出;1-不弹'
 
 					// 更新弹出框状态
-					if(null == loginaccount.getLastLoginDateTime())
-					{
+					if (null == loginaccount.getLastLoginDateTime()) {
 						kffRmiService.updateUserKFFPop(loginUserId);
-					}else if(!DateUtil.isToday(loginaccount.getLastLoginDateTime().getTime())) {
+					} else if (!DateUtil.isToday(loginaccount.getLastLoginDateTime().getTime()/1000)) {
 						kffRmiService.updateUserKFFPop(loginUserId);
 					}
 				} catch (RestServiceException e) {

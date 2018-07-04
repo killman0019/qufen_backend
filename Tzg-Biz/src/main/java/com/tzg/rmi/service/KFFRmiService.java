@@ -858,4 +858,13 @@ public interface KFFRmiService {
 	 * @throws RestServiceException
 	 */
 	public List<Comments> findPageHotCommentsListSelf(Integer userId, Integer postId, PaginationQuery query) throws RestServiceException;
+
+	/**
+	 * 根据手机号码查询此手机号是否是禁用状态
+	 * 
+	 * @param phone
+	 * @return
+	 * @throws RestServiceException
+	 */
+	public Integer selectUserStatusByPhone(String phone) throws RestServiceException;
 }

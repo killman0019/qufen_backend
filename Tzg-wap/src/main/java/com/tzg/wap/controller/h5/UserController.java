@@ -132,6 +132,14 @@ public class UserController extends BaseController {
 		if (!checkCode.equalsIgnoreCase(phoneCode)) {
 			throw new RestServiceException(RestErrorCode.CHECK_CODE_ERROE);
 		}
+		Integer userStatus = kffRmiService.selectUserStatusByPhone(phoneNumber);
+		if(userStatus==0){
+			logger.info("手机号码已经被禁用!");
+			map.put("reStatus", 0);// 1注册成功 0 注册不成功
+			map.put("reason", "手机号已被禁用,请联系客服!");
+			bre.setData(map);
+			return bre;
+		}
 		// 验证手机是否已经注册
 		KFFUser user = kffRmiService.findUserByPhoneNumber(phoneNumber);
 		if (null != user) {

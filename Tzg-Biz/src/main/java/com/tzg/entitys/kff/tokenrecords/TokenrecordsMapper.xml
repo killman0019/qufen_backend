@@ -144,9 +144,9 @@
         AND
         reward_grant_type = 2
 		AND
-		createTime >= #{createTimeBegin}
+		createTime <![CDATA[ >= ]]> #{createTimeBegin}
 		AND
-		createTime &lt;= #{createTimeEnd}
+		createTime <![CDATA[ <= ]]> #{createTimeEnd}
 	</select>
 	<select id="findAllTokenrecordsUserId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
 	    SELECT *
