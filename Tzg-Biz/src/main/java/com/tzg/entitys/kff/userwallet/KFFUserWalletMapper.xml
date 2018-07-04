@@ -172,7 +172,7 @@
 	]]>
 	</select>
 	<select id="findbyWallet" resultMap="BaseResultMap" parameterType="com.tzg.entitys.kff.userwallet.KFFUserWallet">
-    	select SELECT <include refid="columns"/> 
+    	SELECT <include refid="columns"/> 
 		<![CDATA[
 		FROM tbuserwallet 
 		WHERE 

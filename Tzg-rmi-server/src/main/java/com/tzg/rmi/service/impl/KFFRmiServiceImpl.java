@@ -1297,7 +1297,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (StringUtils.isBlank(articleRequest.getPostTitle())) {
 			throw new RestServiceException("文章标题不能为空");
 		}
-		logger.info("长度" + articleRequest.getArticleContents().length());
+	//	logger.info("长度" + articleRequest.getArticleContents().length());
 		if (articleRequest.getArticleContents().length() > 16777215) {
 			throw new RestServiceException("文章内容长度超过限制");
 		}
@@ -1333,7 +1333,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				//
 				post.setPostShortDesc(toHtmlTags.substring(0, 300));
 			}
-			logger.info("去标签成功!");
+			//logger.info("去标签成功!");
 		}
 		if (toHtmlTags == null) {
 			String text = WorkHtmlRegexpUtil.delHTMLTag(articleRequest.getArticleContents());
@@ -1344,14 +1344,14 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				//
 				post.setPostShortDesc(toHtmlTags.substring(0, 300));
 			}
-			logger.info("去标签成功!");
+			//logger.info("去标签成功!");
 		}
 
 		/************ begin *******************/
 		Map<String, String> qiNiuMap = grabUrlAndReplaceQiniu(articleRequest.getArticleContents(), createUser.getUserId());
 		String uploadIevisList = qiNiuMap.get("uploadIeviwList");
 		String contentSrcReplace = qiNiuMap.get("contentSrcReplace");
-		logger.info("缩略图的json串" + uploadIevisList);
+		//logger.info("缩略图的json串" + uploadIevisList);
 		/************ end *******************/
 		post.setPostSmallImages(uploadIevisList);
 		post.setPostTitle(articleRequest.getPostTitle());
@@ -1405,23 +1405,23 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				photoParams.setFileUrl(photoIviewStr);
 				// 取后缀名
 				String[] str = photoIviewStr.split("\\.");
-				logger.info(str[0]);
-				logger.info(str[1]);
+			//	logger.info(str[0]);
+			//	logger.info(str[1]);
 				photoParams.setExtension(str[1]);
-				logger.info(str[0].lastIndexOf("/"));
+			//	logger.info(str[0].lastIndexOf("/"));
 				str[0].substring(str[0].lastIndexOf("/") + 1);
-				logger.info(str[0].substring(str[0].lastIndexOf("/") + 1));
+			//	logger.info(str[0].substring(str[0].lastIndexOf("/") + 1));
 				photoParams.setFileName(str[0].substring(str[0].lastIndexOf("/") + 1));
 				photoParams.setIsExist(true);
 				PhotoParamses.add(photoParams);
 			} else if (photoIview instanceof PhotoParams) {
-				logger.info("全路径:" + photoIview);
+			//	logger.info("全路径:" + photoIview);
 				PhotoParams photoIviewStr = (PhotoParams) photoIview;
 				PhotoParamses.add(photoIviewStr);
 			}
 		}
 		String jsonString = JSON.toJSONString(PhotoParamses);
-		logger.info("存储数据库的字符串:" + jsonString);
+	//	logger.info("存储数据库的字符串:" + jsonString);
 		return jsonString;
 	}
 
@@ -1627,7 +1627,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			// 单项评测 totalScore取出来
 			List<DevaluationModel> onlyevaDetail = JSON.parseArray(evaluationRequest.getProfessionalEvaDetail(), DevaluationModel.class);
 			if (CollectionUtils.isNotEmpty(onlyevaDetail)) {
-				System.out.println(onlyevaDetail.size());
+				//System.out.println(onlyevaDetail.size());
 				if (onlyevaDetail.size() == 1) {
 
 					evaluationRequest.setTotalScore(onlyevaDetail.get(0).getScore());
@@ -1635,8 +1635,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			}
 		}
 		BigDecimal totalScore = evaluationRequest.getTotalScore() == null ? BigDecimal.ZERO : evaluationRequest.getTotalScore();
-		System.out.println(" evaluationRequest.getTotalScore()" + evaluationRequest.getTotalScore());
-		System.out.println("totalScore" + totalScore);
+		//System.out.println(" evaluationRequest.getTotalScore()" + evaluationRequest.getTotalScore());
+		//System.out.println("totalScore" + totalScore);
 		// 专业评测总分计算
 		if (Objects.equal(2, evaluationRequest.getModelType())) {
 			// try{
@@ -1691,21 +1691,21 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		post.setCreateUserSignature(createUser.getUserSignature());
 		post.setDonateNum(0);
 		post.setPageviewNum(0);
-		logger.info("开始截取字符串");
+	//	logger.info("开始截取字符串");
 		String text = WorkHtmlRegexpUtil.delHTMLTag(evaluationRequest.getEvauationContent()).replace("&nbsp;", " ");
-		logger.info("无标签文本" + text);
+	//	logger.info("无标签文本" + text);
 		if (text.length() < 200) {
 			post.setPostShortDesc(text);
 		} else {
 			post.setPostShortDesc(text.substring(0, 200));
 		}
-		logger.info(evaluationRequest.getEvauationContent());
+	//	logger.info(evaluationRequest.getEvauationContent());
 		//
 		/************ begin *******************/
 		Map<String, String> qiNiuMap = grabUrlAndReplaceQiniu(evaluationRequest.getEvauationContent(), createUser.getUserId());
 		String uploadIevisList = qiNiuMap.get("uploadIeviwList");
 		String contentSrcReplace = qiNiuMap.get("contentSrcReplace");
-		logger.info("缩略图的json串" + uploadIevisList);
+	//	logger.info("缩略图的json串" + uploadIevisList);
 		/************ end *******************/
 		post.setPostSmallImages(uploadIevisList);
 		post.setPostTitle(evaluationRequest.getPostTitle());
@@ -2843,7 +2843,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				// 设置post和project信息
 				response.setPostShortDesc(post.getPostShortDesc());
 				response.setPostSmallImages(post.getPostSmallImages());
-				logger.info("post.getPostSmallImages()" + post.getPostSmallImages());
+			//	logger.info("post.getPostSmallImages()" + post.getPostSmallImages());
 				if (StringUtils.isNotBlank(post.getPostSmallImages())) {
 					try {
 						List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
@@ -4307,13 +4307,13 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		photoParams.setFileUrl(photoIviews);
 		// 取后缀名
 		String[] str = photoIviews.split("\\.");
-		logger.info(str[0]);
-		logger.info(str[1]);
+		//logger.info(str[0]);
+		//logger.info(str[1]);
 		photoParams.setExtension("ext");
 
-		logger.info(str[0].lastIndexOf("/"));
+	//	logger.info(str[0].lastIndexOf("/"));
 		str[0].substring(str[0].lastIndexOf("/") + 1);
-		logger.info(str[0].substring(str[0].lastIndexOf("/") + 1));
+	//	logger.info(str[0].substring(str[0].lastIndexOf("/") + 1));
 		// imgUrl.substring(imgUrl.lastIndexOf("/")+1);
 		photoParams.setIsExist(true);
 		photoParams.setFileName("qufen");
@@ -4556,7 +4556,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 
 		if (StringUtils.isNotEmpty(authentication.getRegistrationnum())) {
-			logger.info("营业执照的号码长度" + authentication.getRegistrationnum().length());
+			//logger.info("营业执照的号码长度" + authentication.getRegistrationnum().length());
 			if (authentication.getRegistrationnum().length() != 15 && authentication.getRegistrationnum().length() != 18) {
 				throw new RestServiceException("营业执照注册号错误");
 			}
@@ -4931,8 +4931,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			throw new RestServiceException("请选择项目名称!");
 		}
 		String[] str = projectName.split("\\/");
-		System.out.println(str[0]);
-		System.out.println(str[1]);
+	//	System.out.println(str[0]);
+	//	System.out.println(str[1]);
 		KFFProject kffProject = new KFFProject();
 		kffProject.setProjectChineseName(str[1]);
 		kffProject.setProjectCode(str[0]);
@@ -5676,7 +5676,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		Create2Code.create2CodeImg(code2Path, contentselfid);// 在制定位置生成二维码
 
 		Create2Code.overlapImage(initPosterSysPathLast, code2Path, posterSysPathlast);
-		logger.info("posterSysPathlast" + posterSysPathlast);
+		//logger.info("posterSysPathlast" + posterSysPathlast);
 		String posterQiniuName = str + "qufen" + DateUtil.getCurrentTimeSS();
 		String qiNiuUrl = QiniuUtil.uploadLocalPic(posterSysPathlast, posterQiniuName);
 		logger.info("qiNiuUrl" + qiNiuUrl);
@@ -5852,7 +5852,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					evaluationSrcReplace = content.replaceAll(img, picurlIpName);
 				}
 				evaluationSrcReplace = evaluationSrcReplace.replaceAll(img, picurlIpName);
-				logger.info(evaluationSrcReplace);
+			//	logger.info(evaluationSrcReplace);
 				i = i + 1;
 			}
 		}
