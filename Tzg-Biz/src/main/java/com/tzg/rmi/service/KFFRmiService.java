@@ -867,4 +867,11 @@ public interface KFFRmiService {
 	 * @throws RestServiceException
 	 */
 	public Integer selectUserStatusByPhone(String phone) throws RestServiceException;
+
+	/**
+	 * 将用户的pop状态设置成0
+	 * @param loginUserId
+	 * @throws RestServiceException
+	 */
+	public void updateUserKFFsetPopZero(Integer loginUserId) throws RestServiceException;
 }

@@ -3,11 +3,15 @@ package com.tzg.test;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.velocity.tools.config.Data;
+
 import com.tzg.common.utils.AccountTokenUtil;
+import com.tzg.rest.utils.DateUtil;
 import com.tzg.rest.utils.PolicyUtil;
 
 public class RestTest {
@@ -22,13 +26,15 @@ public class RestTest {
 	 */
 	public static void main(String[] args){
 	
-		System.out.println("token:"+AccountTokenUtil.getAccountToken(8669));
+		/*System.out.println("token:"+AccountTokenUtil.getAccountToken(8669));
 		String policy = "";
 		System.out.println("encrypted:"+PolicyUtil.encryptPolicy(policy));
 		
 		BigDecimal amount = BigDecimal.valueOf(1000000);
 		System.out.println(formatWanForApp(amount));
-		baseTest();
+		baseTest();*/
+		
+		DateUtil.isToday(new Date().getTime()/1000);
 		
 		
 	}

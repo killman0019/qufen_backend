@@ -4,15 +4,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alibaba.fastjson.JSON;
+import com.tzg.common.constants.KFFConstants;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.entitys.kff.evaluation.Evaluation;
 import com.tzg.entitys.kff.evaluation.EvaluationDetailResponse;
 import com.tzg.entitys.kff.evaluation.EvaluationMapper;
+import com.tzg.entitys.kff.praise.Praise;
+import com.tzg.entitys.kff.praise.PraiseMapper;
 import com.tzg.rest.exception.rest.RestServiceException;
 
 @Service(value = "KFFEvaluationService")
@@ -21,6 +26,9 @@ public class EvaluationService {
 
 	@Autowired
 	private EvaluationMapper evaluationMapper;
+
+	@Autowired
+	private PraiseMapper praiseMapper;
 
 	@Transactional(readOnly = true)
 	public Evaluation findById(java.lang.Integer id) throws RestServiceException {
@@ -154,7 +162,7 @@ public class EvaluationService {
 		return evaluationMapper.findByWhere(map);
 	}
 
-	public PageResult<EvaluationDetailResponse> findPageSimpleEvaluation(PaginationQuery query) {
+	public PageResult<EvaluationDetailResponse> findPageSimpleEvaluation(PaginationQuery query, Integer userId) {
 		PageResult<EvaluationDetailResponse> result = null;
 		try {
 			Integer count = evaluationMapper.findPageSimpleEvaluationCount(query.getQueryData());
@@ -163,6 +171,40 @@ public class EvaluationService {
 				query.addQueryData("startRecord", Integer.toString(startRecord));
 				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
 				List<EvaluationDetailResponse> list = evaluationMapper.findPageSimpleEvaluation(query.getQueryData());
+				// 判断点赞状态
+				// 用户判断点赞状态
+				if (CollectionUtils.isNotEmpty(list) && list.size() > 0) {
+					for (EvaluationDetailResponse response : list) {
+						// 判断用户否为登陆状态 默认是2 未登录
+						// 判断用户是否已经点赞
+						Map<String, Object> map = new HashMap<String, Object>();
+						map.put("bepraiseUserId", response.getCreateUserId());
+						map.put("praiseUserId", userId);
+						map.put("praiseType", "1");
+						Praise praise = praiseMapper.findByPraiseId(map);
+						System.err.println("prai" + JSON.toJSONString(praise));
+						if (response.getCreateUserId().equals(userId)) {// 说明是自己写的帖子 已点赞
+							response.setPraiseStatus(KFFConstants.PRAISE_STATUS_NO);
+						} else {
+							if (null == praise) {
+								// 0-未点赞；1-已点赞，2-未登录用户不显示 数字
+								// 说明没有进行点赞 没有对帖子进行点赞
+								response.setPraiseStatus(KFFConstants.PRAISE_STATUS_NO);
+							} else {
+								// 说明已经点过赞
+								response.setPraiseStatus(KFFConstants.PRAISE_STATUS_YES);
+							}
+						}
+						Map<String, Object> mappraise = new HashMap<String, Object>();
+						mappraise.put("postId", response.getPostId());
+						mappraise.put("status", "1");
+						Integer praiseNum = praiseMapper.findPageCount(mappraise);
+						response.setPraiseNum(praiseNum);
+
+					}
+
+				}
+				System.out.println("response" + JSON.toJSONString(list));
 				result = new PageResult<EvaluationDetailResponse>(list, count, query);
 			}
 		} catch (Exception e) {

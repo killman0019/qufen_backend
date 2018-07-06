@@ -202,7 +202,7 @@ public class ProjectController extends BaseController {
 			if (StringUtils.isNotBlank(baseRequest.getSortField())) {
 				query.addQueryData("sortField", baseRequest.getSortField());
 			}
-			PageResult<EvaluationDetailResponse> evaluations = kffProjectPostRmiService.findPageSimpleEvaluationList(query);
+			PageResult<EvaluationDetailResponse> evaluations = kffProjectPostRmiService.findPageSimpleEvaluationList(query,loginUserId);
 			map.put("evaluations", evaluations);
 			bre.setData(map);
 		} catch (RestServiceException e) {

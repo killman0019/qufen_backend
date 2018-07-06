@@ -723,6 +723,25 @@ public class DateUtil {
 		return temp;
 	}
 
+	 //判断选择的日期是否是今天  
+    public static boolean isToday(long time)  
+    {  
+       return isThisTime(time,"yyyy-MM-dd");  
+    }
+    
+    private static boolean isThisTime(long time,String pattern) {  
+        Date date = new Date(time);  
+         SimpleDateFormat sdf = new SimpleDateFormat(pattern);  
+         String param = sdf.format(date);//参数时间  
+         String now = sdf.format(new Date());//当前时间  
+         System.out.println("param"+param);
+         System.out.println("now"+now);
+         if(param.equals(now)){  
+           return true;  
+         }  
+         return false;  
+    }  
+	
 	public static void main(String arsg[]) {
 		Date d1 = new Date(System.currentTimeMillis() - 60 * 60 * 24 * 1000);
 		Date d2 = new Date();

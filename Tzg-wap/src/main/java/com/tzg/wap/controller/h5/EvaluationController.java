@@ -68,9 +68,9 @@ public class EvaluationController extends BaseController {
 			Integer userId = getUserIdByToken(token);
 			evaluationRequest.setCreateUserId(userId);
 			KFFProject project = kffRmiService.selectProjectByprojectName(projectName);
-			
+
 			evaluationRequest.setProjectId(project.getProjectId());
-			// 
+			//
 			evaluationRequest.setModelType(evaluationData.getModelType());
 			/*if (2 == evaluationRequest.getModelType() || 4 == evaluationRequest.getModelType()) {
 				Evaluation evaluationDB = new Evaluation();
@@ -86,6 +86,7 @@ public class EvaluationController extends BaseController {
 				}
 			}*/
 			evaluationRequest.setTotalScore(evaluationData.getTotalScore());
+			evaluationRequest.setPostTitle(evaluationData.getPostTitle());
 			Map<String, Object> saveEvaluation = null;
 			if (null != evaluationRequest) {
 				saveEvaluation = kffRmiService.saveEvaluation(evaluationRequest);

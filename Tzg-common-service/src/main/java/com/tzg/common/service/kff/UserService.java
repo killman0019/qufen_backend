@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.tzg.common.constants.KFFConstants;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
+import com.tzg.common.utils.DateUtil;
 import com.tzg.common.utils.RandomUtil;
 import com.tzg.common.utils.RegexUtil;
 import com.tzg.common.utils.SHAUtil;
@@ -267,6 +268,14 @@ public class UserService {
 		if (user != null) {
 			// KFFUser updateLastLoginTime = new KFFUser();
 			// updateLastLoginTime.setUserId(user.getUserId());
+			if (null == user.getLastLoginDateTime()) {
+				updateUserKFFsetPopZero(user.getUserId());// 0
+			} 
+			if (!DateUtil.isToday(user.getLastLoginDateTime().getTime())) {// 最后一次登陆时间不是今天
+				// 并把时间设置成今天
+				updateUserKFFsetPopZero(user.getUserId());// 0
+
+			}
 			user.setLastLoginDateTime(new Date());
 			userMapper.update(user);
 		}
@@ -566,8 +575,15 @@ public class UserService {
 	}
 
 	public KFFUser findUserStatusByPhoneNumber(String phone) {
-		
+
 		return userMapper.findUserStatusByPhoneNumber(phone);
+	}
+
+	public void updateUserKFFsetPopZero(Integer loginUserId) {
+		if (null == loginUserId) {
+			throw new RestServiceException("用户ID不能为空");
+		}
+		userMapper.updateUserKFFsetPopZero(loginUserId);
 	}
 
 }

@@ -137,6 +137,8 @@ public class DateUtil {
          SimpleDateFormat sdf = new SimpleDateFormat(pattern);  
          String param = sdf.format(date);//参数时间  
          String now = sdf.format(new Date());//当前时间  
+         System.out.println("param"+param);
+         System.out.println("now"+now);
          if(param.equals(now)){  
            return true;  
          }  

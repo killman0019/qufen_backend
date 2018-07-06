@@ -19,7 +19,7 @@ public class EvaluationDetailResponse implements Serializable {
 
 	// "0 未关注；1-已关注；2-不显示关注按钮"
 	private java.lang.Integer followStatus = 2;
-	// "0 未关注；1-已关注；2-不显示关注按钮"
+	// 0-未点赞；1-已点赞，2-未登录用户不显示 数字
 	private java.lang.Integer praiseStatus = 2;
 
 	private java.lang.Integer collectStatus = 2;
