@@ -82,7 +82,14 @@
 	<!--开封府相关服务 -->
 	<bean id="kffRmiService" class="com.tzg.rmi.service.impl.KFFRmiServiceImpl" />
 	<dubbo:service interface="com.tzg.rmi.service.KFFRmiService" ref="kffRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0" />
+	
+	<!-- 快讯列表服务 -->
+	<bean id="newsFlashRmiService" class="com.tzg.rmi.service.impl.NewsFlashRmiServiceImpl" />
+	<dubbo:service interface="com.tzg.rmi.service.NewsFlashRmiService" ref="newsFlashRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0" />
 
+	<!-- 快讯轮播图服务 -->
+	<bean id="newsFlashImgRmiService" class="com.tzg.rmi.service.impl.NewsFlashImgRmiServiceImpl" />
+	<dubbo:service interface="com.tzg.rmi.service.NewsFlashImgRmiService" ref="newsFlashImgRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0" />
 
 	<bean id="kffProjectPostRmiService" class="com.tzg.rmi.service.impl.KFFProjectPostRmiServiceImpl" />
 	<dubbo:service interface="com.tzg.rmi.service.KFFProjectPostRmiService" ref="kffProjectPostRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0"/>

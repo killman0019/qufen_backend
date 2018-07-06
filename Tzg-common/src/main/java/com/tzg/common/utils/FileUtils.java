@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -129,5 +130,21 @@ public class FileUtils {
 		result.add("GIF");
 		return result;
 
+	}
+	
+	public static String createUploadFileNameQiuniu(String oriFileName, Integer itype) {
+		// String suffix = oriFileName.substring(oriFileName.lastIndexOf("."));
+		Date date = new Date();
+		String typeString = "";
+		if (itype == 1) {
+			typeString = "avatars";
+		} else if (itype == 2) {
+			typeString = "projects";
+		} else if (itype == 3) {
+			typeString = "posts";
+		} else if (itype == 4) {
+			return oriFileName;
+		}
+		return typeString + date.getTime() + RandomUtil.produceNumber(6);
 	}
 }

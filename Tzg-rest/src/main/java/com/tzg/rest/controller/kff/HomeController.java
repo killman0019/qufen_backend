@@ -727,7 +727,7 @@ public class HomeController extends BaseController {
 				//account.setUserId(userId);
 				OldUser.setUpdateTime(new Date());
 				OldUser.setIcon(urlPath);
-				kffRmiService.updateUser(OldUser);
+				kffRmiService.updateUserInfo(OldUser);
 				resMap.put("imgUrl", urlPath);
 			} else if (imgtype == KFFConstants.IMGTYPE_POSTS) {
 				/*localPath = localPath + "postPic/" + DateUtil.getCurrentYearMonth() + "/";

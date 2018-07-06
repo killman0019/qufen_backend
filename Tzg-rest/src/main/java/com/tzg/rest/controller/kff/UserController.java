@@ -56,6 +56,7 @@ import com.tzg.rest.utils.DateUtil;
 import com.tzg.rest.vo.BaseResponseEntity;
 import com.tzg.rmi.service.KFFRmiService;
 import com.tzg.rmi.service.SystemParamRmiService;
+import com.vdurmont.emoji.EmojiParser;
 
 @Controller(value = "KFFUserController")
 @RequestMapping("/kff/user")
@@ -482,7 +483,9 @@ public class UserController extends BaseController {
 			if (sex != null && sex != 1 && sex != 2) {
 				throw new RestServiceException(RestErrorCode.USER_SEX_WRONG);
 			}
-
+			// 去除表情
+			userName = EmojiParser.removeAllEmojis(userName);
+			userSignature = EmojiParser.removeAllEmojis(userSignature);
 			Integer userId = null;
 			try {
 				userId = AccountTokenUtil.decodeAccountToken(token);
@@ -1455,6 +1458,11 @@ public class UserController extends BaseController {
 			} else {
 
 				try {
+					// 先判断是否是首次登陆,是的话pop更换成0
+					if (null == loginaccount.getLastLoginDateTime()) {
+						kffRmiService.updateUserKFFsetPopZero(loginUserId);// 0
+					}
+					// 进行计算弹出窗口
 					Double tokenTodaySum = kffRmiService.findTodayToken(loginUserId);
 					Integer pop = kffRmiService.findPopByToken(loginUserId);
 					// tokenTodaySum = 9999.999;
@@ -1462,10 +1470,10 @@ public class UserController extends BaseController {
 					map.put("pop", pop);// '弹出框:0-弹出;1-不弹'
 
 					// 更新弹出框状态
-					if (null == loginaccount.getLastLoginDateTime()) {
-						kffRmiService.updateUserKFFPop(loginUserId);
-					} else if (!DateUtil.isToday(loginaccount.getLastLoginDateTime().getTime()/1000)) {
-						kffRmiService.updateUserKFFPop(loginUserId);
+					if (DateUtil.isToday(loginaccount.getLastLoginDateTime().getTime())) {// 最后一次登陆时间不是今天
+						// 并把时间设置成今天
+						kffRmiService.updateUserKFFPop(loginUserId);// 1
+
 					}
 				} catch (RestServiceException e) {
 					return this.resResult(RestErrorCode.MISSING_POLICY, e.getMessage());

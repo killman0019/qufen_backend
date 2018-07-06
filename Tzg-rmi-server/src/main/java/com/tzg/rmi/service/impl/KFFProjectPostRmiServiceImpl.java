@@ -611,9 +611,9 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 	}
 
 	@Override
-	public PageResult<EvaluationDetailResponse> findPageSimpleEvaluationList(PaginationQuery query) {
+	public PageResult<EvaluationDetailResponse> findPageSimpleEvaluationList(PaginationQuery query,Integer userId) {
 
-		PageResult<EvaluationDetailResponse> evaList = kffEvaluationService.findPageSimpleEvaluation(query);
+		PageResult<EvaluationDetailResponse> evaList = kffEvaluationService.findPageSimpleEvaluation(query,userId);
 		return evaList;
 	}
 

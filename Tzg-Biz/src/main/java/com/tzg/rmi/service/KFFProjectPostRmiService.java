@@ -74,9 +74,10 @@ public interface KFFProjectPostRmiService {
 	 * 分页获取简单评测列表
 	 * 
 	 * @param query
+	 * @param loginUserId 
 	 * @return
 	 */
-	public PageResult<EvaluationDetailResponse> findPageSimpleEvaluationList(PaginationQuery query);
+	public PageResult<EvaluationDetailResponse> findPageSimpleEvaluationList(PaginationQuery query, Integer loginUserId);
 
 	/**
 	 * 计算项目的总分

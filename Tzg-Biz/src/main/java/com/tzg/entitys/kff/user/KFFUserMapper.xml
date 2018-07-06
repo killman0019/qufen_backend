@@ -540,6 +540,13 @@
 	</update>
 	
 	
+	<update id="updateUserKFFsetPopZero" parameterType="java.lang.Integer">
+		UPDATE tbuser set pop = 0,last_login_dateTime = sysdate()
+		WHERE
+		user_id = #{userId,jdbcType=INTEGER}
+	</update>
+	
+	
 	<select id="findUserStatusByPhoneNumber" parameterType="java.lang.String" resultMap="BaseResultMap">
 		SELECT 
 		<include refid="columns" />

@@ -51,4 +51,6 @@ public interface KFFUserMapper extends BaseMapper<KFFUser, java.lang.Integer> {
 	public void updateUserKFFPop(Integer userId);
 
 	public KFFUser findUserStatusByPhoneNumber(String mobile);
+	
+	public void updateUserKFFsetPopZero(Integer userId);
 }

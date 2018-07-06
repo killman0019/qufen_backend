@@ -80,12 +80,13 @@ public class PolicyUtil {
 //        date.setTime(1453507200000L);
 //        System.out.println(date);
 //
-        String str = "{\"phoneNumber\":\"15967158998\",\"password\":\"11111111\",\"dynamicVerifyCode\":\"488258\"}";
-       // String str = "{\"phone\":\"15967158998\",\"module\":\"register\"}";
+//        String str = "{\"phoneNumber\":\"15967158998\",\"password\":\"11111111\",\"dynamicVerifyCode\":\"488258\"}";
+        String str = "{\"id\":\"9\",\"rise\":\"1\",\"fall\":\"0\"}";
 
         String a = encryptPolicy(str);
         System.out.println(encryptPolicy(str));
 //
 //        System.out.println(decryptAES(a));
+        
     }
 }
