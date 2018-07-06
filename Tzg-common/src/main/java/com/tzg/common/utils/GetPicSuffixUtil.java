@@ -46,7 +46,7 @@ public class GetPicSuffixUtil {
 		mFileTypes.put("3026B2758E66CF11", ".asf");
 		mFileTypes.put("4D546864", ".mid");
 		mFileTypes.put("1F8B08", ".gz");
-		//mFileTypes.put("52494646", "webp");
+		mFileTypes.put("52494646", ".webp");
 	}
 
 	public static String getimagSuffix(String strUrl) {
