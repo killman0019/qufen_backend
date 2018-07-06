@@ -114,6 +114,22 @@
 	]]>
 	</select>
 	
+	<select id="findevaByPostId" resultMap="BaseResultMap" parameterType="java.util.Map">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbpraise 
+		WHERE 
+		  praise_type = #{praiseType}
+		  and
+          post_id = #{postId}
+          and  
+          praise_user_id = #{praiseUserId}
+          and 
+          post_type =1
+          limit 1
+	]]>
+	</select>
+	
 	
 	<select id="findAllActivePraisesByPostId" resultMap="BaseResultMap" parameterType="java.util.Map">
 	    SELECT <include refid="columns"/>	FROM tbpraise WHERE 1=1

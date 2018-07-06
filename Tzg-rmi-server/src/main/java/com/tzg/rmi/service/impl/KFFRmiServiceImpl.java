@@ -5478,7 +5478,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	@Override
 	public void updataUserInvation(Integer userId, String posterUrl, String code2Url) throws RestServiceException {
 		String str = HexUtil.userIdTo2code(userId);
-		code2Url = "http://pic.qufen.top/" + "2code" + str + "qufen";
+		code2Url = "https://pic.qufen.top/" + "2code" + str + "qufen";
 		userInvationService.updataUserInvation(userId, posterUrl, code2Url);
 
 	}
@@ -5529,7 +5529,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				// 放置json串
 				logger.info(smsLoginTemplateCode);
 				map.put("code", dynamicValidateCode);// 放置code 验证码
-				//phone = sendTelephone.sendTele();
+				// phone = sendTelephone.sendTele();
 				request.setPhoneNumbers(phone);
 			}
 			// 注册
@@ -5538,7 +5538,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				// 放置json串
 				// logger.info(smsRegisterTemplateCode);
 				map.put("code", dynamicValidateCode);// 放置code 验证码
-				//phone = sendTelephone.sendTele();
+				// phone = sendTelephone.sendTele();
 				request.setPhoneNumbers(phone);
 			}
 			// 忘记密码
@@ -5909,7 +5909,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		for (String img : imgSrc) {
 			// logger.info("抽离的图片路径");
 			// logger.info(img);
-			if (img.contains("http://pic.qufen.top")) {
+			if (img.contains("https://pic.qufen.top") || img.contains("http://pic.qufen.top")) {
 				// 说明是h5富文本传来的,服务器中存有图片,直接截取存放数据库
 				logger.info("h5富文本传来的图片绝对路径:" + img);
 				if (imgDB.size() <= 3) {
@@ -5920,7 +5920,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				// logger.info("img :原图片路径: " + img);
 				// 获取图片后缀
 				String imagSuffix = GetPicSuffixUtil.getimagSuffix(img);
-				String fileName = DateUtil.getCurrentTimeSS() + createid + i  + imagSuffix;
+				String fileName = DateUtil.getCurrentTimeSS() + createid + i + imagSuffix;// ?imageView2/0/format/png
 				String UrlQiniu = QiniuUtil.changeToLocalUrl(img, fileName);
 				if ("false".equals(UrlQiniu)) {
 					logger.info(img + "上传七牛失败!");
@@ -5933,7 +5933,15 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					if (i == 0) {
 						// logger.info("原img将被代替" + img);
 						// logger.info("七牛的url" + UrlQiniu);
+						if (imagSuffix.trim() == "") {
+							UrlQiniu = UrlQiniu + "?imageView2/0/format/png";
+							logger.info("UrlQiniu" + UrlQiniu);
+						}
 						contentSrcReplace = content.replace(img, UrlQiniu);
+					}
+					if (imagSuffix.trim() == "") {
+						UrlQiniu = UrlQiniu + "?imageView2/0/format/png";
+						logger.info("UrlQiniu" + UrlQiniu);
 					}
 					contentSrcReplace = contentSrcReplace.replace(img, UrlQiniu);
 					// logger.info(contentSrcReplace);
@@ -6129,5 +6137,30 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	public void updateUserKFFsetPopZero(Integer loginUserId) throws RestServiceException {
 
 		kffUserService.updateUserKFFsetPopZero(loginUserId);
+	}
+
+	@Override
+	public boolean isAllowedPulish(Integer userId, KFFProject project, Integer postType, Integer modeltype) throws RestServiceException {
+		Map<String, Object> map = new HashMap<String, Object>();
+		Date now = new Date();
+		map.put("createUserId", userId);
+		if (null != project) {
+			map.put("projectId", project.getProjectId());
+			if (postType == KFFConstants.POST_TYPE_EVALUATION) {
+				map.put("modelType", modeltype);
+				List<Evaluation> evaluations = kffEvaluationService.selectEvaByMap(map);
+				if (CollectionUtils.isNotEmpty(evaluations)) {
+					Evaluation evaluation = evaluations.get(0);
+					Date updateTime = evaluation.getUpdateTime();
+					int countDays = DateUtil.countDays(now, updateTime);
+					if (countDays > 15) {
+						return true;
+					}
+				} else {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }

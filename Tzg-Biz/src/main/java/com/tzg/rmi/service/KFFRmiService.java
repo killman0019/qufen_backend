@@ -870,8 +870,21 @@ public interface KFFRmiService {
 
 	/**
 	 * 将用户的pop状态设置成0
+	 * 
 	 * @param loginUserId
 	 * @throws RestServiceException
 	 */
 	public void updateUserKFFsetPopZero(Integer loginUserId) throws RestServiceException;
+
+	/**
+	 * 根据用户的id project 以及帖子类型判断此用户是否允许发表内容(15天)
+	 * 
+	 * @param userId
+	 * @param project
+	 * @param postType
+	 * @param modeltype
+	 * @return true 允许发布,false 禁止发布
+	 * @throws RestServiceException
+	 */
+	public boolean isAllowedPulish(Integer userId, KFFProject project, Integer postType, Integer modeltype) throws RestServiceException;
 }

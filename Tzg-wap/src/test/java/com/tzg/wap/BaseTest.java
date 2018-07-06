@@ -125,7 +125,9 @@ public class BaseTest {
 			System.out.println(EmojiParser.removeAllEmojisExcept(str, collection));
 			System.out.println(EmojiParser.removeEmojis(str, collection));
 		*/
-
+		if ("" == "") {
+			System.err.println("aaaa");
+		}
 	}
 
 	class ExcutDemo {
