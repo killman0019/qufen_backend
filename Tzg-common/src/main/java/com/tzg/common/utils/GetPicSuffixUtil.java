@@ -21,7 +21,7 @@ public class GetPicSuffixUtil {
 		mFileTypes.put("FFD8FF", ".jpg");
 		mFileTypes.put("89504E47", ".png");
 		mFileTypes.put("47494638", ".gif");
-		mFileTypes.put("49492A00", ".tif");
+		/*mFileTypes.put("49492A00", ".tif");
 		mFileTypes.put("424D", ".bmp");
 		mFileTypes.put("41433130", ".dwg"); // CAD
 		mFileTypes.put("38425053", ".psd");
@@ -46,7 +46,7 @@ public class GetPicSuffixUtil {
 		mFileTypes.put("3026B2758E66CF11", ".asf");
 		mFileTypes.put("4D546864", ".mid");
 		mFileTypes.put("1F8B08", ".gz");
-		mFileTypes.put("52494646", ".webp");
+		mFileTypes.put("52494646", ".webp");*/
 	}
 
 	public static String getimagSuffix(String strUrl) {

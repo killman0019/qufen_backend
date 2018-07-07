@@ -178,22 +178,33 @@ public class EvaluationService {
 						// 判断用户否为登陆状态 默认是2 未登录
 						// 判断用户是否已经点赞
 						Map<String, Object> map = new HashMap<String, Object>();
-						map.put("bepraiseUserId", response.getCreateUserId());
+						/*map.put("bepraiseUserId", response.getCreateUserId());
 						map.put("praiseUserId", userId);
 						map.put("praiseType", "1");
-						Praise praise = praiseMapper.findByPraiseId(map);
-						System.err.println("prai" + JSON.toJSONString(praise));
-						if (response.getCreateUserId().equals(userId)) {// 说明是自己写的帖子 已点赞
-							response.setPraiseStatus(KFFConstants.PRAISE_STATUS_NO);
-						} else {
-							if (null == praise) {
-								// 0-未点赞；1-已点赞，2-未登录用户不显示 数字
-								// 说明没有进行点赞 没有对帖子进行点赞
-								response.setPraiseStatus(KFFConstants.PRAISE_STATUS_NO);
+						Praise praise = praiseMapper.findByPraiseId(map);*/
+						/*	map.put("postId", response.getPostId());
+							map.put("praiseType", 2);
+							map.put("praiseUserId", userId);
+							Praise praise = praiseMapper.findByPostId(map);
+							System.err.println("prai" + JSON.toJSONString(praise));
+							if (response.getCreateUserId().equals(userId)) {// 说明是自己写的帖子 已点赞
+								// response.setPraiseStatus(KFFConstants.PRAISE_STATUS_NO);
 							} else {
-								// 说明已经点过赞
-								response.setPraiseStatus(KFFConstants.PRAISE_STATUS_YES);
+								if (praise != null) {
+									// 说明已经点过赞
+									response.setPraiseStatus(praise.getStatus());
+								}
+							}*/
+						map.put("postId", response.getPostId());
+						map.put("praiseType", 1);
+						map.put("praiseUserId", userId);
+						if (userId != null) {
+							Praise praise = praiseMapper.findevaByPostId(map);
+							if (praise != null) {
+								response.setPraiseStatus(praise.getStatus());
 							}
+						} else {// 0-未点赞；1-已点赞，2-未登录用户不显示 数字
+							response.setPraiseStatus(KFFConstants.PRAISE_STATUS_NOSHOW);
 						}
 						Map<String, Object> mappraise = new HashMap<String, Object>();
 						mappraise.put("postId", response.getPostId());
@@ -222,6 +233,12 @@ public class EvaluationService {
 	public List<Evaluation> selectAllEvaExceptOnlyEvaByProjectId(Integer projectId) {
 
 		return evaluationMapper.getAllEvasExceptPartByProjectId(projectId);
+	}
+
+	@Transactional(readOnly = true)
+	public List<Evaluation> selectEvaByMap(Map<String, Object> map) {
+		return evaluationMapper.findByWhere(map);
+
 	}
 
 }

@@ -1465,7 +1465,7 @@ public class UserController extends BaseController {
 					// 进行计算弹出窗口
 					Double tokenTodaySum = kffRmiService.findTodayToken(loginUserId);
 					Integer pop = kffRmiService.findPopByToken(loginUserId);
-					// tokenTodaySum = 9999.999;
+					 //tokenTodaySum = 9999.999;
 					map.put("tokenTodaySum", tokenTodaySum);
 					map.put("pop", pop);// '弹出框:0-弹出;1-不弹'
 
