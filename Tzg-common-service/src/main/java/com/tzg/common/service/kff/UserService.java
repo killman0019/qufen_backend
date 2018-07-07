@@ -270,15 +270,14 @@ public class UserService {
 			// updateLastLoginTime.setUserId(user.getUserId());
 			if (null == user.getLastLoginDateTime()) {
 				updateUserKFFsetPopZero(user.getUserId());// 0
-			}
-			user.setLastLoginDateTime(new Date());
+				user.setLastLoginDateTime(new Date());
+			}			
 			if (!DateUtil.isToday(user.getLastLoginDateTime().getTime())) {// 最后一次登陆时间不是今天
 				// 并把时间设置成今天
 				updateUserKFFsetPopZero(user.getUserId());// 0
 
 			}
 
-			
 			userMapper.update(user);
 		}
 
@@ -325,7 +324,19 @@ public class UserService {
 		List<KFFUser> users = userMapper.findAllPage(map);
 		if (CollectionUtils.isNotEmpty(users)) {
 			awardPortService.issue(users.get(0).getUserId());
-			return users.get(0);
+			KFFUser kffUser = users.get(0);
+			if (null == kffUser.getLastLoginDateTime()) {
+				kffUser.setLastLoginDateTime(new Date());
+				updateUserKFFsetPopZero(kffUser.getUserId());// 0
+			}
+			if (!DateUtil.isToday(kffUser.getLastLoginDateTime().getTime())) {// 最后一次登陆时间不是今天
+				// 并把时间设置成今天
+				updateUserKFFsetPopZero(kffUser.getUserId());// 0
+
+			}
+			kffUser.setLastLoginDateTime(new Date());
+			userMapper.update(kffUser);
+			return kffUser;
 
 		}
 		return null;
