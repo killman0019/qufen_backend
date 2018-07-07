@@ -1466,6 +1466,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (project == null) {
 			throw new RestServiceException("项目不存在" + discussRequest.getProjectId());
 		}
+		discussRequest.setDisscussContents(EmojiParser.removeAllEmojis(discussRequest.getDisscussContents()));
+		if (StringUtils.isBlank(discussRequest.getDisscussContents())) {
+			throw new RestServiceException("文章内容不合法");
+		}
 		Post post = new Post();
 		Date now = new Date();
 		post.setCollectNum(0);
@@ -5938,13 +5942,15 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 							logger.info("UrlQiniu" + UrlQiniu);
 						}
 						contentSrcReplace = content.replace(img, UrlQiniu);
+					} else {
+						if (imagSuffix.trim() == "") {
+							UrlQiniu = UrlQiniu + "?imageView2/0/format/png";
+							logger.info("UrlQiniu" + UrlQiniu);
+						}
+						contentSrcReplace = contentSrcReplace.replace(img, UrlQiniu);
+						// logger.info(contentSrcReplace);
 					}
-					if (imagSuffix.trim() == "") {
-						UrlQiniu = UrlQiniu + "?imageView2/0/format/png";
-						logger.info("UrlQiniu" + UrlQiniu);
-					}
-					contentSrcReplace = contentSrcReplace.replace(img, UrlQiniu);
-					// logger.info(contentSrcReplace);
+
 					i = i + 1;
 				}
 			}
