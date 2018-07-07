@@ -33,16 +33,6 @@ public class KFFNewsFlash implements Serializable {
     
     private Integer isProminent;
     
-    private String outUrl;
-    
-    public String getOutUrl() {
-		return outUrl;
-	}
-
-	public void setOutUrl(String outUrl) {
-		this.outUrl = outUrl;
-	}
-    
     public String getCreateDt() {
 		return createDt;
 	}

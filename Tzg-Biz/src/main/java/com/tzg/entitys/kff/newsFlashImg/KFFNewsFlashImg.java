@@ -29,16 +29,6 @@ public class KFFNewsFlashImg implements Serializable {
 
     private Integer sort;
     
-    private String outUrl;
-    
-    public String getOutUrl() {
-		return outUrl;
-	}
-
-	public void setOutUrl(String outUrl) {
-		this.outUrl = outUrl;
-	}
-    
     public String getCreateDt() {
 		return createDt;
 	}

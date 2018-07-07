@@ -13,11 +13,10 @@
     <result column="type" jdbcType="SMALLINT" property="type" />
     <result column="article_id" jdbcType="INTEGER" property="articleId" />
     <result column="sort" jdbcType="INTEGER" property="sort" />
-    <result column="out_url" jdbcType="VARCHAR" property="outUrl" />
   </resultMap>
   <sql id="Base_Column_List">
     id, created_at, updated_at, title, img_path, author, state, is_check_details, type, 
-    article_id, sort,out_url
+    article_id, sort
   </sql>
   
   <sql id="table_name">
@@ -39,11 +38,11 @@
     insert into system_news_flash_img (id, created_at, updated_at, 
       title, img_path, author, 
       state, is_check_details, type, 
-      article_id, sort,out_url)
+      article_id, sort)
     values (#{id,jdbcType=INTEGER}, #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, 
       #{title,jdbcType=VARCHAR}, #{imgPath,jdbcType=VARCHAR}, #{author,jdbcType=VARCHAR}, 
       #{state,jdbcType=SMALLINT}, #{isCheckDetails,jdbcType=SMALLINT}, #{type,jdbcType=SMALLINT}, 
-      #{articleId,jdbcType=INTEGER}, #{sort,jdbcType=INTEGER},#{outUrl,jdbcType=VARCHAR})
+      #{articleId,jdbcType=INTEGER}, #{sort,jdbcType=INTEGER})
       <selectKey resultType="int" keyProperty="id">  
         SELECT  
         LAST_INSERT_ID()  
@@ -84,16 +83,13 @@
       <if test="sort != null">
         sort = #{sort,jdbcType=INTEGER},
       </if>
-      <if test="outUrl != ''">
-        out_url = #{outUrl,jdbcType=VARCHAR},
-      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
   
   <sql id="columns">
 	    <![CDATA[
-        id, created_at, updated_at, title, img_path, author, state, is_check_details, type, article_id, sort,out_url
+        id, created_at, updated_at, title, img_path, author, state, is_check_details, type, article_id, sort
 	    ]]>
 	</sql>
 	
