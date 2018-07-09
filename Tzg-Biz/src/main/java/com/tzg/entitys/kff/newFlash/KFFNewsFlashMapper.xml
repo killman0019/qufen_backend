@@ -15,10 +15,11 @@
     <result column="type" jdbcType="INTEGER" property="type" />
     <result column="article_id" jdbcType="INTEGER" property="articleId" />
     <result column="is_prominent" jdbcType="INTEGER" property="isProminent" />
+    <result column="out_url" jdbcType="VARCHAR" property="outUrl" />
   </resultMap>
   
   <sql id="Base_Column_List">
-    id, created_at, updated_at, title, content, rise, fall,state,author,is_check_details,type,article_id,is_prominent
+    id, created_at, updated_at, title, content, rise, fall,state,author,is_check_details,type,article_id,is_prominent,out_url
   </sql>
   
   	<sql id="table_name">
@@ -41,12 +42,12 @@
   
 	<insert id="save" parameterType="com.tzg.entitys.kff.newFlash.KFFNewsFlash"  useGeneratedKeys="true" keyProperty="id" keyColumn="id"> 
         insert into <include refid="table_name" />(
-	        created_at, updated_at,title, content, rise, fall,state,author,is_check_details,type,article_id,is_prominent
+	        created_at, updated_at,title, content, rise, fall,state,author,is_check_details,type,article_id,is_prominent,out_url
 	        ) values(
 	         #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, 
      		 #{title,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, #{rise,jdbcType=INTEGER}, 
              #{fall,jdbcType=INTEGER},#{state,jdbcType=INTEGER},#{author,jdbcType=VARCHAR},#{isCheckDetails,jdbcType=INTEGER}
-             ,#{type,jdbcType=INTEGER},#{articleId,jdbcType=INTEGER},#{isProminent,jdbcType=INTEGER}
+             ,#{type,jdbcType=INTEGER},#{articleId,jdbcType=INTEGER},#{isProminent,jdbcType=INTEGER},#{outUrl,jdbcType=VARCHAR}
 	        )
 	        <selectKey resultType="int" keyProperty="id">  
 	          SELECT  
@@ -100,6 +101,9 @@
 	      <if test="isProminent != null">
 	        is_prominent = #{isProminent,jdbcType=INTEGER},
 	      </if>
+	      <if test="outUrl != ''">
+	        out_url = #{outUrl,jdbcType=VARCHAR},
+	      </if>
 	    </set>
 	    where id = #{id,jdbcType=INTEGER}   
 	</update>
@@ -119,7 +123,7 @@
 	
 	<sql id="columns">
 	    <![CDATA[
-        id ,created_at, updated_at,title, content, rise, fall,state,author,is_check_details,type,article_id,is_prominent
+        id ,created_at, updated_at,title, content, rise, fall,state,author,is_check_details,type,article_id,is_prominent,out_url
 	    ]]>
 	</sql>
 	
