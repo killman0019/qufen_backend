@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.xwpf.usermodel.TOC;
+import org.apache.velocity.app.event.ReferenceInsertionEventHandler.referenceInsertExecutor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -396,7 +397,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					followedProjectIds.add(follow.getFollowedId());
 				}
 			}
-			System.err.println("followedProjectIds" + JSON.toJSONString(followedProjectIds));
+			// System.err.println("followedProjectIds" + JSON.toJSONString(followedProjectIds));
 			result.setCurPageNum(collects.getCurPageNum());
 			result.setPageSize(collects.getPageSize());
 			result.setQueryParameters(collects.getQueryParameters());
@@ -449,7 +450,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			}
 			result.setRows(postResponse);
 		}
-		System.err.println("result++++=" + JSON.toJSONString(result));
+		// System.err.println("result++++=" + JSON.toJSONString(result));
 		return result;
 	}
 
@@ -1566,7 +1567,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		 * 
 		 * EOS指的是代币符号
 		 */
-		System.out.println("evaluationRequest.getTotalScore()" + evaluationRequest.getTotalScore());
+		// System.out.println("evaluationRequest.getTotalScore()" +
+		// evaluationRequest.getTotalScore());
 		KFFProject project = kffProjectService.findById(evaluationRequest.getProjectId());
 		if (null == project) {
 			throw new RestServiceException("此项目信息有错");
@@ -1853,8 +1855,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 		Date now = new Date();
 		boolean praiseNumIncrease = false;
-		Praise praise = kffPraiseService.findByPostId(userId, postId);
-		if (praise == null) {
+		Praise praise = kffPraiseService.findByPostId(userId, postId);//判断是否已经进行点赞  
+		if (praise == null) {//没有点赞
 			Praise save = new Praise();
 			save.setBepraiseUserId(post.getCreateUserId());
 			save.setCreateTime(now);
@@ -1867,8 +1869,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			save.setPraiseType(KFFConstants.PRAISE_TYPE_POST);
 			kffPraiseService.save(save);
 			praiseNumIncrease = true;
-		} else {
-			if (praise.getStatus() != null && praise.getStatus() == 0) {
+		} else {//有点赞   状态:0-取消点赞;1-点赞有效'
+			if (praise.getStatus() != null && praise.getStatus() == 0) {  //说明此帖子是已经取消的赞,不需要新加数据直接更新原数据为有效赞
 				praise.setUpdateTime(now);
 				praise.setStatus(KFFConstants.STATUS_ACTIVE);
 				kffPraiseService.update(praise);
@@ -1879,7 +1881,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			}
 		}
 		// 帖子点赞数加1
-		if (praiseNumIncrease) {
+		if (praiseNumIncrease) {//添加点赞通知消息
 			kffPostService.increasePraiseNum(postId);
 			kffUserService.increasePraiseNum(post.getCreateUserId());
 			// 被点赞用户消息
@@ -1912,21 +1914,21 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			System.err.println("我是帖子类型 :" + postType);
 			// 根据点赞人的id 去查看他的有效点赞
 			QfIndex qfIndexPraiseUser = qfIndexService.findByUserId(userId);
-			Integer qfIndexId = qfIndexPraiseUser.getQfIndexId();
-			Integer yxPraise = qfIndexPraiseUser.getYxpraise();
+			Integer qfIndexId = qfIndexPraiseUser.getQfIndexId();//区分指数
+			Integer yxPraise = qfIndexPraiseUser.getYxpraise();//有效赞
 			// 根据帖子的id 去获取内容贡献者的id
 			System.err.println("帖子的id: " + postId);
 			Post creatUserPost = kffPostService.findById(postId);
-			Integer createUserId = creatUserPost.getCreateUserId();
+			Integer createUserId = creatUserPost.getCreateUserId();//获取创建人的id
 			System.err.println("内容贡献者的id: " + createUserId);
 			// 根据内容贡献值的id去获取本身的区分指数
-			QfIndex qfIndex = qfIndexService.findByUserId(createUserId);
+			QfIndex qfIndex = qfIndexService.findByUserId(createUserId);//获取创建人的区分指数
 			Integer createPostUserQFIndex = 0;
 			Double createPUF = 0.0d;
-			if (null != qfIndex) {
-				createPostUserQFIndex = qfIndex.getStatusHierarchyType();
+			if (null != qfIndex) {//区分指数不为空
+				createPostUserQFIndex = qfIndex.getStatusHierarchyType();//获取区分指数分数
 				// 发帖人赞的收益系数
-				createPUF = createPostUserQFIndex * 0.01d;
+				createPUF = createPostUserQFIndex * 0.01d;//得到发帖子的收益系数
 			}
 
 			// 满足点赞条件额外送币
@@ -1935,13 +1937,13 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			Double meet2 = 2000.00000000d;
 			// 创建生成交易流水的交易日期
 			Date date = new Date();
-			String stringDate = DateUtil.getDate(date, "yyyy-MM-dd");
+			String stringDate = DateUtil.getDate(date, "yyyy-MM-dd");//生成交易时间字符串 
 			String replaceAllDate = stringDate.replaceAll("-", "");
 			// 创建业务记录id+
-			Praise praiseId = kffPraiseService.findByPraiseId(createUserId, userId);
+			Praise praiseId = kffPraiseService.findByPraiseId(createUserId, userId);//获取点赞记录
 			String format = "";
 			if (null != praiseId)
-				format = String.format("%010d", praiseId.getPraiseId());
+				format = String.format("%010d", praiseId.getPraiseId());//
 			// 判断点赞人是否实名认证
 			UserCard findBycreateUserId = userCardService.findByUserid(createUserId);//
 			// 看创建帖子的人是不是实名认证
@@ -5713,7 +5715,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 		Create2Code.overlapImage(initPosterSysPathLast, code2Path, posterSysPathlast);
 		// logger.info("posterSysPathlast" + posterSysPathlast);
-		String posterQiniuName = str + "qufen" + DateUtil.getCurrentTimeSS();
+		String posterQiniuName = str + "qufen" + DateUtil.getCurrentTimeSS()+".png";
 		String qiNiuUrl = QiniuUtil.uploadLocalPic(posterSysPathlast, posterQiniuName);
 		logger.info("qiNiuUrl" + qiNiuUrl);
 		if (StringUtils.isNotEmpty(qiNiuUrl)) {
@@ -6149,10 +6151,13 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	public boolean isAllowedPulish(Integer userId, KFFProject project, Integer postType, Integer modeltype) throws RestServiceException {
 		Map<String, Object> map = new HashMap<String, Object>();
 		Date now = new Date();
+		if (null == userId) {
+			return false;
+		}
 		map.put("createUserId", userId);
 		if (null != project) {
 			map.put("projectId", project.getProjectId());
-			if (postType == KFFConstants.POST_TYPE_EVALUATION) {
+			if (postType == KFFConstants.POST_TYPE_EVALUATION) {// 短评简单1 精评全面2和自定义3
 				map.put("modelType", modeltype);
 				List<Evaluation> evaluations = kffEvaluationService.selectEvaByMap(map);
 				if (CollectionUtils.isNotEmpty(evaluations)) {

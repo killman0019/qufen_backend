@@ -48,12 +48,12 @@ public class CommentsController extends BaseController {
 
 		try {
 			CommentsRequest comment = getParamMapFromRequestPolicy(request, CommentsRequest.class);
-			System.err.println("comment" + JSON.toJSONString(comment));
+			//System.err.println("comment" + JSON.toJSONString(comment));
 			String token = comment.getToken();
 			Integer userId = getUserIdByToken(token);
 			comment.setCommentUserId(userId);
 			Map<String, Object> saveComment = kffRmiService.saveComment(comment);
-			System.err.println(JSON.toJSON(saveComment));
+			//System.err.println(JSON.toJSON(saveComment));
 			bre.setData(saveComment);
 		} catch (RestServiceException e) {
 			logger.error("CommentsController saveComment:{}", e);

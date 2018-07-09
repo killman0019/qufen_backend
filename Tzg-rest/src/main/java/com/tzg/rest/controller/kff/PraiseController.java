@@ -39,7 +39,7 @@ public class PraiseController extends BaseController {
 	 */
 	@RequestMapping(value="/savePostPraise",method = {RequestMethod.POST,RequestMethod.GET})
 	@ResponseBody
-	public BaseResponseEntity savePostPraise(HttpServletRequest request) {
+	public BaseResponseEntity sendQiniuToken(HttpServletRequest request) {
 		BaseResponseEntity bre = new BaseResponseEntity();
         HashMap<String, Object> map = new HashMap<String, Object>();
 
