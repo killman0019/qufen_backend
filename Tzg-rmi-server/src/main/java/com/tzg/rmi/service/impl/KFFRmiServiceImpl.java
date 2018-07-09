@@ -1326,7 +1326,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			throw new RestServiceException("请对所发表的内容进行文字描述");
 		}
 		articleRequest.setArticleContents(EmojiParser.removeAllEmojis(articleRequest.getArticleContents()));
-		toHtmlTags = EmojiParser.removeAllEmojis(toHtmlTags);
+		if (null != toHtmlTags) {
+			toHtmlTags = EmojiParser.removeAllEmojis(toHtmlTags);
+		}
 		if (StringUtils.isBlank(articleRequest.getArticleContents())) {
 			throw new RestServiceException("文章内容不合法");
 		}

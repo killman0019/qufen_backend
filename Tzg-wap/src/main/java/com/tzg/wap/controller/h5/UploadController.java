@@ -59,7 +59,7 @@ public class UploadController extends BaseController {
 		}
 		// 大于10M
 		if (upfile.getSize() >= 5 * 1024 * 1024) {
-			throw new RestServiceException("图片大于5M");
+			throw new RestServiceException("单张图片大于5M");
 		}
 		// 保存图片到
 		String name = UUID.randomUUID().toString().replaceAll("-", "");
@@ -92,7 +92,7 @@ public class UploadController extends BaseController {
 		}
 		// 大于10M
 		if (upfile.getSize() >= 5 * 1024 * 1024) {
-			throw new RestServiceException("图片大于5M");
+			throw new RestServiceException("单张图片大于5M");
 		}
 		// 保存图片到
 		String name = UUID.randomUUID().toString().replaceAll("-", "");
@@ -128,7 +128,7 @@ public class UploadController extends BaseController {
 		}
 		// 大于10M
 		if (upfile.getSize() >= 5 * 1024 * 1024) {
-			throw new RestServiceException("图片大于5M");
+			throw new RestServiceException("单张图片大于5M");
 		}
 		String name = UUID.randomUUID().toString().replaceAll("-", "");
 		name = DateUtil.getCurrentTimeSS();
@@ -167,7 +167,7 @@ public class UploadController extends BaseController {
 		}
 		// 大于10M
 		if (upfile.getSize() >= 5 * 1024 * 1024) {
-			throw new RestServiceException("图片大于5M");
+			throw new RestServiceException("单张图片大于5M");
 		}
 		
 		String name = UUID.randomUUID().toString().replaceAll("-", "");
@@ -208,7 +208,7 @@ public class UploadController extends BaseController {
 		}
 		// 大于10M
 		if (upfile.getSize() >= 5 * 1024 * 1024) {
-			throw new RestServiceException("图片大于5M");
+			throw new RestServiceException("单张图片大于5M");
 		}
 		String name = UUID.randomUUID().toString().replaceAll("-", "");
 		name = DateUtil.getCurrentTimeSS();
