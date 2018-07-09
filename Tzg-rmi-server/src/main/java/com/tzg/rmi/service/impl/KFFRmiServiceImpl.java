@@ -1166,6 +1166,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (StringUtils.isBlank(comment.getCommentContent())) {
 			throw new RestServiceException("评论内容不能为空");
 		}
+		comment.setCommentContent(EmojiParser.removeAllEmojis(comment.getCommentContent()));
+		if (StringUtils.isBlank(comment.getCommentContent())) {
+			throw new RestServiceException("评论内容不能全为emoji表情");
+		}
 		if (comment.getCommentContent().length() > 30000) {
 			throw new RestServiceException("文章内容长度超过限制");
 		}
@@ -1316,6 +1320,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (project == null) {
 			throw new RestServiceException("项目不存在" + articleRequest.getProjectId());
 		}
+		// 禁止发纯图片的文章
+		String delHTMLTag = WorkHtmlRegexpUtil.delHTMLTag(articleRequest.getArticleContents());
+		if (null == delHTMLTag || delHTMLTag.length() == 0) {
+			throw new RestServiceException("请对所发表的内容进行文字描述");
+		}
 		articleRequest.setArticleContents(EmojiParser.removeAllEmojis(articleRequest.getArticleContents()));
 		toHtmlTags = EmojiParser.removeAllEmojis(toHtmlTags);
 		if (StringUtils.isBlank(articleRequest.getArticleContents())) {
@@ -1345,7 +1354,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			// logger.info("去标签成功!");
 		}
 		if (toHtmlTags == null) {
-			String text = WorkHtmlRegexpUtil.delHTMLTag(articleRequest.getArticleContents());
+			String text = delHTMLTag;
 			toHtmlTags = H5AgainDeltagsUtil.h5AgainDeltags(text);
 			if (toHtmlTags.length() < 300) {
 				post.setPostShortDesc(toHtmlTags);
@@ -1449,6 +1458,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 		if (StringUtils.isBlank(discussRequest.getDisscussContents())) {
 			throw new RestServiceException("讨论内容不能为空");
+		}
+		String delHTMLTag = WorkHtmlRegexpUtil.delHTMLTag(discussRequest.getDisscussContents());
+		if (null == delHTMLTag || delHTMLTag.length() == 0) {
+			throw new RestServiceException("请对所发表的内容进行文字描述");
 		}
 		if (StringUtils.isBlank(discussRequest.getPostTitle())) {
 			throw new RestServiceException("讨论标题不能为空");
@@ -1621,6 +1634,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (StringUtils.isBlank(evaluationRequest.getEvauationContent())) {
 			throw new RestServiceException("评测内容不能为空");
 		}
+		String delHTMLTag = WorkHtmlRegexpUtil.delHTMLTag(evaluationRequest.getEvauationContent());
+		if (null == delHTMLTag || delHTMLTag.length() == 0) {
+			throw new RestServiceException("请对所发表的内容进行文字描述");
+		}
 		if (StringUtils.isBlank(evaluationRequest.getPostTitle())) {
 			throw new RestServiceException("评测标题不能为空");
 		}
@@ -1711,7 +1728,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		post.setDonateNum(0);
 		post.setPageviewNum(0);
 		// logger.info("开始截取字符串");
-		String text = WorkHtmlRegexpUtil.delHTMLTag(evaluationRequest.getEvauationContent()).replace("&nbsp;", " ");
+		String text = delHTMLTag.replace("&nbsp;", " ");
 		// logger.info("无标签文本" + text);
 		if (text.length() < 200) {
 			post.setPostShortDesc(text);
@@ -1855,8 +1872,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 		Date now = new Date();
 		boolean praiseNumIncrease = false;
-		Praise praise = kffPraiseService.findByPostId(userId, postId);//判断是否已经进行点赞  
-		if (praise == null) {//没有点赞
+		Praise praise = kffPraiseService.findByPostId(userId, postId);// 判断是否已经进行点赞
+		if (praise == null) {// 没有点赞
 			Praise save = new Praise();
 			save.setBepraiseUserId(post.getCreateUserId());
 			save.setCreateTime(now);
@@ -1869,8 +1886,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			save.setPraiseType(KFFConstants.PRAISE_TYPE_POST);
 			kffPraiseService.save(save);
 			praiseNumIncrease = true;
-		} else {//有点赞   状态:0-取消点赞;1-点赞有效'
-			if (praise.getStatus() != null && praise.getStatus() == 0) {  //说明此帖子是已经取消的赞,不需要新加数据直接更新原数据为有效赞
+		} else {// 有点赞 状态:0-取消点赞;1-点赞有效'
+			if (praise.getStatus() != null && praise.getStatus() == 0) { // 说明此帖子是已经取消的赞,不需要新加数据直接更新原数据为有效赞
 				praise.setUpdateTime(now);
 				praise.setStatus(KFFConstants.STATUS_ACTIVE);
 				kffPraiseService.update(praise);
@@ -1881,7 +1898,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			}
 		}
 		// 帖子点赞数加1
-		if (praiseNumIncrease) {//添加点赞通知消息
+		if (praiseNumIncrease) {// 添加点赞通知消息
 			kffPostService.increasePraiseNum(postId);
 			kffUserService.increasePraiseNum(post.getCreateUserId());
 			// 被点赞用户消息
@@ -1914,21 +1931,21 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			System.err.println("我是帖子类型 :" + postType);
 			// 根据点赞人的id 去查看他的有效点赞
 			QfIndex qfIndexPraiseUser = qfIndexService.findByUserId(userId);
-			Integer qfIndexId = qfIndexPraiseUser.getQfIndexId();//区分指数
-			Integer yxPraise = qfIndexPraiseUser.getYxpraise();//有效赞
+			Integer qfIndexId = qfIndexPraiseUser.getQfIndexId();// 区分指数
+			Integer yxPraise = qfIndexPraiseUser.getYxpraise();// 有效赞
 			// 根据帖子的id 去获取内容贡献者的id
 			System.err.println("帖子的id: " + postId);
 			Post creatUserPost = kffPostService.findById(postId);
-			Integer createUserId = creatUserPost.getCreateUserId();//获取创建人的id
+			Integer createUserId = creatUserPost.getCreateUserId();// 获取创建人的id
 			System.err.println("内容贡献者的id: " + createUserId);
 			// 根据内容贡献值的id去获取本身的区分指数
-			QfIndex qfIndex = qfIndexService.findByUserId(createUserId);//获取创建人的区分指数
+			QfIndex qfIndex = qfIndexService.findByUserId(createUserId);// 获取创建人的区分指数
 			Integer createPostUserQFIndex = 0;
 			Double createPUF = 0.0d;
-			if (null != qfIndex) {//区分指数不为空
-				createPostUserQFIndex = qfIndex.getStatusHierarchyType();//获取区分指数分数
+			if (null != qfIndex) {// 区分指数不为空
+				createPostUserQFIndex = qfIndex.getStatusHierarchyType();// 获取区分指数分数
 				// 发帖人赞的收益系数
-				createPUF = createPostUserQFIndex * 0.01d;//得到发帖子的收益系数
+				createPUF = createPostUserQFIndex * 0.01d;// 得到发帖子的收益系数
 			}
 
 			// 满足点赞条件额外送币
@@ -1937,20 +1954,20 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			Double meet2 = 2000.00000000d;
 			// 创建生成交易流水的交易日期
 			Date date = new Date();
-			String stringDate = DateUtil.getDate(date, "yyyy-MM-dd");//生成交易时间字符串 
+			String stringDate = DateUtil.getDate(date, "yyyy-MM-dd");// 生成交易时间字符串
 			String replaceAllDate = stringDate.replaceAll("-", "");
 			// 创建业务记录id+
-			Praise praiseId = kffPraiseService.findByPraiseId(createUserId, userId);//获取点赞记录
+			Praise praiseId = kffPraiseService.findByPraiseId(createUserId, userId);// 获取点赞记录
 			String format = "";
 			if (null != praiseId)
-				format = String.format("%010d", praiseId.getPraiseId());//
+				format = String.format("%010d", praiseId.getPraiseId());// 生成包含id在内的十位字符串,不足补零
 			// 判断点赞人是否实名认证
 			UserCard findBycreateUserId = userCardService.findByUserid(createUserId);//
 			// 看创建帖子的人是不是实名认证
-			UserCard findByUserid = userCardService.findByUserid(userId);
+			UserCard findByUserid = userCardService.findByUserid(userId);// 判断点赞人是否已经实名认证
 
-			System.err.println("findBycreateUserId:" + findBycreateUserId);
-			System.err.println("findByUserid : " + findByUserid);
+			System.err.println("findBycreateUserId:" + findBycreateUserId);// 创建帖子的id
+			System.err.println("findByUserid : " + findByUserid);// 看帖子人的id
 			// 判断所点赞的文章是不是有效(1有效,0删除,无效)
 			// QfIndex byUserId = qfIndexService.findByUserId(createUserId);
 
@@ -1960,7 +1977,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				 * 
 				 */
 				System.err.println("我终于执行了");
-				Integer validPraise = (int) Math.floor(yxPraise);
+				Integer validPraise = (int) Math.floor(yxPraise);// 取数值最近数四舍五入 有效赞的个数
 				// 判断 帖子类型是1-评测 , 2-讨论 , 3-文章
 				Double pc = 5.00d; // 普通评测点赞奖励
 				Double pc2 = 50.00d; // 专业评测点赞奖励
@@ -1968,7 +1985,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				Double tl = 20.00d; // 讨论点赞奖励
 				Double wz = 20.00d; // 文章点赞奖励
 				KFFUser findByUserId = kffUserService.findById(createUserId);
-				CoinProperty findByCreateUser = coinPropertyService.findByUserId(createUserId);
+				CoinProperty findByCreateUser = coinPropertyService.findByUserId(createUserId);// 获取可以使用的币值
 				if (postType == 1) {
 					// 证明是评测的帖子
 					// 判断评测的类型 (1-简单评测, 2-全面专业评测 , 3-部分系统单项评测)
@@ -5715,7 +5732,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 		Create2Code.overlapImage(initPosterSysPathLast, code2Path, posterSysPathlast);
 		// logger.info("posterSysPathlast" + posterSysPathlast);
-		String posterQiniuName = str + "qufen" + DateUtil.getCurrentTimeSS()+".png";
+		String posterQiniuName = str + "qufen" + DateUtil.getCurrentTimeSS() + ".png";
 		String qiNiuUrl = QiniuUtil.uploadLocalPic(posterSysPathlast, posterQiniuName);
 		logger.info("qiNiuUrl" + qiNiuUrl);
 		if (StringUtils.isNotEmpty(qiNiuUrl)) {
@@ -6173,5 +6190,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public void sendPraiseAwardToPraiser(Integer userId, Integer validPraise) throws RestServiceException {
+
 	}
 }

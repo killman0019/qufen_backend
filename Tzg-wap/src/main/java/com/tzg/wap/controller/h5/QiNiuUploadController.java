@@ -60,9 +60,13 @@ public class QiNiuUploadController extends BaseController {
 
 	@RequestMapping(value = "/sendToken", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public BaseResponseEntity sendToken(HttpServletRequest request) {
+	public BaseResponseEntity sendToken(HttpServletRequest request, String token) {
 		BaseResponseEntity bre = new BaseResponseEntity();
-        HashMap<String, Object> map = new HashMap<String, Object>();
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		/*Integer userId = getUserIdByToken(token);
+		if (null == userId) {
+			throw new RestServiceException("请先登录账户");
+		}*/
 		String upToken = null;
 		// 从Redis中获取uptoken
 		try {
@@ -70,11 +74,11 @@ public class QiNiuUploadController extends BaseController {
 			if (null == upToken) {
 				upToken = getUpToken();
 				// 把upToken 存放在Redis中
-				redisService.put("upToken", upToken, 24 * 60 * 60);
+				redisService.put("upToken", upToken, 60 * 60);
 			}
 			map.put("upToken", upToken);
 			bre.setData(map);
-			
+
 		} catch (RestServiceException e) {
 			logger.error("QiNiuUploadController sendToken:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());

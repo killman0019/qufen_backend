@@ -275,7 +275,7 @@ public class UserService {
 			if (!DateUtil.isToday(user.getLastLoginDateTime().getTime())) {// 最后一次登陆时间不是今天
 				// 并把时间设置成今天
 				updateUserKFFsetPopZero(user.getUserId());// 0
-
+				user.setLastLoginDateTime(new Date());
 			}
 
 			userMapper.update(user);

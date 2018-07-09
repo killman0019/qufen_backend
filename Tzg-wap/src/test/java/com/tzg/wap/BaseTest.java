@@ -125,9 +125,11 @@ public class BaseTest {
 			System.out.println(EmojiParser.removeAllEmojisExcept(str, collection));
 			System.out.println(EmojiParser.removeEmojis(str, collection));
 		*/
-		if ("" == "") {
+		/*if ("" == "") {
 			System.err.println("aaaa");
-		}
+		}*/
+		String format = String.format("%010d", 11);
+		System.out.println(format);
 	}
 
 	class ExcutDemo {

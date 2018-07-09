@@ -57,7 +57,6 @@ import com.tzg.entitys.loginaccount.RegisterRequest;
 import com.tzg.entitys.photo.PhotoParams;
 import com.tzg.rest.exception.rest.RestServiceException;
 
-
 /**
  * kff 相关远程服务调用
  * 
@@ -888,4 +887,15 @@ public interface KFFRmiService {
 	 * @throws RestServiceException
 	 */
 	public boolean isAllowedPulish(Integer userId, KFFProject project, Integer postType, Integer modeltype) throws RestServiceException;
+
+	/**
+	 * 想点赞人发送token奖励只要是有效赞，给点赞人奖励
+	 * 
+	 * 评测、爆料、文章都给予点赞人10个FIND奖励
+	 * 
+	 * @param userId 用户的id
+	 * @param validPraise 用户有效赞个数
+	 * @throws RestServiceException
+	 */
+	public void sendPraiseAwardToPraiser(Integer userId,Integer validPraise) throws RestServiceException;
 }
