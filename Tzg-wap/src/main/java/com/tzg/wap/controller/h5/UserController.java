@@ -266,6 +266,9 @@ public class UserController extends BaseController {
 			// 查询数据库判断是否已经生成专属海报
 			String posterUrl = null;
 			UserInvation userInvation = kffRmiService.selectUseInvation(userId);
+			if(null==userInvation){
+				throw new RestServiceException("生成海拔出错请联系客服!");
+			}
 			if (StringUtils.isEmpty(userInvation.getUserposterpic())) {
 				// 生成海报
 				posterUrl = kffRmiService.creat2Code(userId);
