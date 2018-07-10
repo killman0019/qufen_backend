@@ -477,6 +477,7 @@ public class UserController extends BaseController {
 			Integer sex = (Integer) jsonObject.get("sex");
 			String userSignature = (String) jsonObject.get("userSignature");
 			String areaName = (String) jsonObject.get("areaName");
+			String userIcon = (String) jsonObject.get("userIcon");
 			if (StringUtils.isBlank(token)) {
 				throw new RestServiceException(RestErrorCode.USER_NOT_LOGIN);
 			}
@@ -517,6 +518,9 @@ public class UserController extends BaseController {
 			}
 			if (sex != null) {
 				account.setSex(sex);
+			}
+			if (StringUtils.isNotBlank(userIcon)) {
+				account.setIcon(userIcon);
 			}
 			account.setUpdateTime(new Date());
 			kffRmiService.updateUserInfo(account);
@@ -827,7 +831,7 @@ public class UserController extends BaseController {
 			}
 		}
 		if (StringUtils.isBlank(registerRequest.getDynamicVerifyCode())) {
-			 throw new RestServiceException(RestErrorCode.DYNAMIC_VERIFY_CODE_ERROR);
+			throw new RestServiceException(RestErrorCode.DYNAMIC_VERIFY_CODE_ERROR);
 		} else {
 			String code = this.redisService.get(new StringBuffer(RestConstants.key_rest).append(SmsBuss.注册效验码.getBus())
 					.append(registerRequest.getPhoneNumber()).toString());
@@ -1465,7 +1469,7 @@ public class UserController extends BaseController {
 					// 进行计算弹出窗口
 					Double tokenTodaySum = kffRmiService.findTodayToken(loginUserId);
 					Integer pop = kffRmiService.findPopByToken(loginUserId);
-					 //tokenTodaySum = 9999.999;
+					// tokenTodaySum = 9999.999;
 					map.put("tokenTodaySum", tokenTodaySum);
 					map.put("pop", pop);// '弹出框:0-弹出;1-不弹'
 

@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -40,6 +41,10 @@ public class DynamicValidateCodeController extends BaseController {
 	@Autowired
 	private KFFRmiService kffRmiService;
 
+	@Value("#{paramConfig['sendType']}")
+	private Integer sendType;
+
+	
 	/**
 	 * 发送手机验证码
 	 * 
@@ -188,7 +193,7 @@ public class DynamicValidateCodeController extends BaseController {
 		Map<String, Object> data = new HashMap<String, Object>();
 		// String module = "register";
 		try {
-
+			
 			if (StringUtils.isBlank(module) || StringUtils.isBlank(phone)) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
 			}
@@ -224,6 +229,12 @@ public class DynamicValidateCodeController extends BaseController {
 			this.redisService.put(smsStormCheckKey, "1", 50); // 有效期50秒防止短信轰炸
 			logger.info("dynamicValidateCode:rest:" + module + ":" + dynamicValidateCode);
 			kffRmiService.aLiYunSmsApi(phone, module, dynamicValidateCode, cacheKey, smsStormCheckKey);
+			/*if(sendType==1){//1代表是线上
+				kffRmiService.aLiYunSmsApi(phone, module, dynamicValidateCode, cacheKey, smsStormCheckKey);
+			}else {
+				redisService.put(cacheKey, dynamicValidateCode, 60 * 10);// 设置10分钟
+			}*/
+			
 
 			logger.info("cacheKey:" + cacheKey);
 

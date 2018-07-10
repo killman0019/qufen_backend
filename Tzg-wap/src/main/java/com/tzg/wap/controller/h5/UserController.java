@@ -136,7 +136,7 @@ public class UserController extends BaseController {
 			throw new RestServiceException(RestErrorCode.CHECK_CODE_ERROE);
 		}
 		Integer userStatus = kffRmiService.selectUserStatusByPhone(phoneNumber);
-		if(userStatus==0){
+		if (userStatus == 0) {
 			logger.info("手机号码已经被禁用!");
 			map.put("reStatus", 0);// 1注册成功 0 注册不成功
 			map.put("reason", "手机号已被禁用,请联系客服!");
@@ -269,7 +269,7 @@ public class UserController extends BaseController {
 			// 查询数据库判断是否已经生成专属海报
 			String posterUrl = null;
 			UserInvation userInvation = kffRmiService.selectUseInvation(userId);
-			if(null==userInvation){
+			if (null == userInvation) {
 				throw new RestServiceException("生成海拔出错请联系客服!");
 			}
 			if (StringUtils.isEmpty(userInvation.getUserposterpic())) {
@@ -511,6 +511,7 @@ public class UserController extends BaseController {
 			userModel.setUserNick(loginaccount.getUserName());
 			userModel.setIcon(loginaccount.getIcon());
 			userModel.setUserType(loginaccount.getUserType());// 用户类型:1-普通用户；2-项目方；3-评测机构；4-机构用户
+			userModel.setUid(loginaccount.getUserId());
 			map.put("userModel", userModel);
 			map.put("s", token);
 			bre.setData(map);

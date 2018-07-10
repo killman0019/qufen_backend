@@ -1,12 +1,27 @@
 package com.tzg.entitys.kff.model;
 
-public class UserModel {
+import java.io.Serializable;
 
+public class UserModel implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3745098197050153069L;
 	private String userNick;
 	// 用户头像绝对路径
 	private String icon;
 	// 用户的类型
 	private Integer userType;
+	private Integer uid;
+
+	public Integer getUid() {
+		return uid;
+	}
+
+	public void setUid(Integer uid) {
+		this.uid = uid;
+	}
 
 	public Integer getUserType() {
 		return userType;
