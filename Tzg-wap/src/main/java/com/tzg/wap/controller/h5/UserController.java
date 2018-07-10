@@ -91,6 +91,9 @@ public class UserController extends BaseController {
 			String dynamicVerifyCode, String invaUIH, String password) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(true){
+			throw new RestServiceException("内测用户已到达额定人数,暂时停止注册!");
+		}
 		// 验证手机号的合法性
 		if (null == password) {
 			map.put("reStatus", 0);// 1注册成功 0 注册不成功
