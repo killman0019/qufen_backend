@@ -2769,21 +2769,14 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		List<PostResponse> postResponse = new ArrayList<>();
 		PageResult<Post> posts = kffPostService.findPageRecommendList(query);
 		KFFUser loginUser = null;
-		if (loginUserId != null) {
-			loginUser = kffUserService.findById(loginUserId);
-		}
 		/**
 		 * 
 		 * 解决登录送奖励问题
-		 * 
-		 * 
 		 */
 		if (loginUserId != null) {
-
+			loginUser = kffUserService.findById(loginUserId);
 			registerAward(loginUserId);
-
 		}
-
 		if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
 			result.setCurPageNum(posts.getCurPageNum());
 			result.setPageSize(posts.getPageSize());
@@ -2847,7 +2840,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					}
 				}
 				postResponse.add(response);
-
 			}
 		}
 		result.setRows(postResponse);
