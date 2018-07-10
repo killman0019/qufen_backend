@@ -93,6 +93,7 @@ import com.tzg.common.utils.HexUtil;
 import com.tzg.common.utils.DownImgGoodUtil;
 import com.tzg.common.utils.QiniuUtil;
 import com.tzg.common.utils.sendTelephone;
+import com.tzg.common.utils.sysGlobals;
 import com.tzg.common.utils.rest.AliyunConstant;
 import com.tzg.common.utils.Numbers;
 import com.tzg.common.utils.RandomUtil;
@@ -275,6 +276,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 	@Value("#{paramConfig['ipPicUrl']}")
 	private String ipPicUrl;
+	@Value("#{paramConfig['DEV_ENVIRONMENT']}")
+	private String devEnvironment;
 
 	@Override
 	public KFFUser registerRest(RegisterRequest registerRequest) {
@@ -5575,13 +5578,17 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			// 可选:outId为提供给业务方扩展字段,最终在短信回执消息中将此值带回给调用者
 			// request.setOutId("yourOutId");
 			// 请求失败这里会抛ClientException异常
-			SendSmsResponse sendSmsResponse = acsClient.getAcsResponse(request);
-			logger.info(sendSmsResponse.getCode());
-			System.out.println(sendSmsResponse.getCode());
-			redisService.put(cacheKey, dynamicValidateCode, 60 * 10);// 设置10分钟
-			if (sendSmsResponse.getCode() != null && sendSmsResponse.getCode().equals("OK")) {
-				System.out.println("短信发送成功!");
-				System.out.println(sendSmsResponse.getCode());
+			//读取配置文件中的DEV_ENVIRONMENT值为FORMAL，则去发短信
+			if(StringUtils.isNotBlank(devEnvironment)&&
+					devEnvironment.equals(sysGlobals.DEV_ENVIRONMENT)) {
+				SendSmsResponse sendSmsResponse = acsClient.getAcsResponse(request);
+				if (sendSmsResponse.getCode() != null && sendSmsResponse.getCode().equals("OK")) {
+					System.out.println("短信发送成功!");
+					System.out.println(sendSmsResponse.getCode());
+					redisService.put(cacheKey, dynamicValidateCode, 60 * 10);// 设置10分钟
+				}
+			}else {
+				logger.info("非正式环境保存到redis");
 				redisService.put(cacheKey, dynamicValidateCode, 60 * 10);// 设置10分钟
 			}
 		} catch (ServerException e) {
