@@ -60,7 +60,6 @@ public class Evaluation implements Serializable {
      */ 	
 	private java.lang.Integer createUserId;
 
-	
 	public java.lang.Integer getPostId() {
 		return postId;
 	}

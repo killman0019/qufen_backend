@@ -22,6 +22,18 @@ public class Article implements Serializable {
      * 文章内容，目前限定30000字，图片信息用富文本保存在里边
      */ 	
 	private java.lang.String articleContents;
+	/**
+	 * 标签ID，名称的json串
+     */ 	
+	private String tagInfos;
+	
+	public String getTagInfos() {
+		return tagInfos;
+	}
+
+	public void setTagInfos(String tagInfos) {
+		this.tagInfos = tagInfos;
+	}
 
 	
 	public void setArticleId(java.lang.Integer value) {

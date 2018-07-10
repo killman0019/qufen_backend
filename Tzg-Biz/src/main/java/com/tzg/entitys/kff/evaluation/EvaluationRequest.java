@@ -59,8 +59,6 @@ public class EvaluationRequest implements Serializable {
 
 	private String postSmallImages;
 	
-	
-	
 	public String getPostSmallImages() {
 		return postSmallImages;
 	}

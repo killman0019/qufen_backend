@@ -1,16 +1,11 @@
 package com.tzg.rmi.service;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
-import com.tzg.common.utils.DateUtil;
-import com.tzg.common.utils.DownImgGoodUtil;
-import com.tzg.common.utils.FileUtils;
-import com.tzg.common.utils.GetImgUrl;
 import com.tzg.entitys.kff.article.ArticleDetailResponse;
 import com.tzg.entitys.kff.article.ArticleRequest;
 import com.tzg.entitys.kff.authentication.Authentication;
@@ -46,7 +41,6 @@ import com.tzg.entitys.kff.qfindex.QfIndex;
 import com.tzg.entitys.kff.suggest.SuggestRequest;
 import com.tzg.entitys.kff.tokenaward.Tokenaward;
 import com.tzg.entitys.kff.tokenaward.TokenawardReturn;
-import com.tzg.entitys.kff.tokenaward.TokenawardReturn;
 import com.tzg.entitys.kff.tokenrecords.Tokenrecords;
 import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.entitys.kff.user.KFFUserHomeResponse;
@@ -54,7 +48,6 @@ import com.tzg.entitys.kff.userInvation.UserInvation;
 import com.tzg.entitys.kff.usercard.UserCard;
 import com.tzg.entitys.kff.userwallet.KFFUserWallet;
 import com.tzg.entitys.loginaccount.RegisterRequest;
-import com.tzg.entitys.photo.PhotoParams;
 import com.tzg.rest.exception.rest.RestServiceException;
 
 /**
@@ -301,7 +294,7 @@ public interface KFFRmiService {
 	 * @return
 	 * @throws RestServiceException
 	 */
-	public List<ProjectResponse> findProjectByCode(int sortType, Integer userId, String projectCode) throws RestServiceException;
+	public PageResult<ProjectResponse> findProjectByCode(int sortType, Integer userId, String projectCode,Integer pageIndex,Integer pageSize) throws RestServiceException;
 
 	/**
 	 * 更新用户信息

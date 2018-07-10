@@ -93,6 +93,7 @@ import com.tzg.common.utils.HexUtil;
 import com.tzg.common.utils.DownImgGoodUtil;
 import com.tzg.common.utils.QiniuUtil;
 import com.tzg.common.utils.sendTelephone;
+import com.tzg.common.utils.sysGlobals;
 import com.tzg.common.utils.rest.AliyunConstant;
 import com.tzg.common.utils.Numbers;
 import com.tzg.common.utils.RandomUtil;
@@ -171,7 +172,7 @@ import com.vdurmont.emoji.EmojiParser;
 public class KFFRmiServiceImpl implements KFFRmiService {
 
 	private static final Log logger = LogFactory.getLog(KFFRmiServiceImpl.class);
-
+	
 	@Autowired
 	private ArticleService kffArticleService;
 	@Autowired
@@ -275,6 +276,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 	@Value("#{paramConfig['ipPicUrl']}")
 	private String ipPicUrl;
+	@Value("#{paramConfig['DEV_ENVIRONMENT']}")
+	private String devEnvironment;
 
 	@Override
 	public KFFUser registerRest(RegisterRequest registerRequest) {
@@ -673,27 +676,46 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public List<ProjectResponse> findProjectByCode(int sortType, Integer userId, String projectCode) throws RestServiceException {
-		// if(StringUtils.isBlank(projectCode)){
-		// throw new RestServiceException("查询条件:项目关键字不能为空");
-		// }
-		List<KFFProject> projects = new ArrayList<>();
-		List<ProjectResponse> result = new ArrayList<>();
-		Map<String, Object> map = new HashMap<>();
-		map.put("state", "2");
-		map.put("status", "1");
+	public PageResult<ProjectResponse> findProjectByCode(int sortType, Integer userId, String projectCode
+			,Integer pageIndex,Integer pageSize) throws RestServiceException {
+		PageResult<ProjectResponse> result = new PageResult<ProjectResponse>();
+//		List<KFFProject> projects = new ArrayList<>();
+		List<ProjectResponse> resultc = new ArrayList<ProjectResponse>();
+//		Map<String, Object> map = new HashMap<>();
+//		map.put("state", "2");
+//		map.put("status", "1");
+//		if (StringUtils.isNotBlank(projectCode)) {
+//			map.put("projectCode", projectCode);
+//		}
+//		if (sortType == 1) {
+//			map.put("sortField", "follower_num");
+//		}else if(sortType == 2){
+//			map.put("sortField", "project_code");
+//		}
+//		projects = kffProjectService.findProjectByCode(map);
+		PaginationQuery querys = new PaginationQuery();
+		querys.addQueryData("status", "1");
+		querys.addQueryData("state", "2");
 		if (StringUtils.isNotBlank(projectCode)) {
-			map.put("projectCode", projectCode);
+			querys.addQueryData("projectCode", projectCode);
 		}
 		if (sortType == 1) {
-			map.put("sortField", "follower_num");
+			querys.addQueryData("sortField", "follower_num");
+		}else if(sortType == 2){
+			querys.addQueryData("sortField", "project_code");
 		}
-		// else if(sortType == 2){
-		// map.put("sortField", "project_code");
-		// }
-		projects = kffProjectService.findProjectByCode(map);
-		if (CollectionUtils.isNotEmpty(projects)) {
-
+		querys.setPageIndex(pageIndex);
+		querys.setRowsPerPage(pageSize);
+		PageResult<KFFProject> projects = kffProjectService.findPage(querys);
+		
+		if (projects != null && CollectionUtils.isNotEmpty(projects.getRows())) {
+			result.setCurPageNum(projects.getCurPageNum());
+			result.setPageSize(projects.getPageSize());
+			result.setQueryParameters(projects.getQueryParameters());
+			result.setRowCount(projects.getRowCount());
+			result.setRowsPerPage(projects.getRowsPerPage());
+			
+			
 			Set<Integer> followedProjectIds = new HashSet<Integer>();
 			// 登录用户查关注项目列表
 			if (userId != null && userId != 0) {
@@ -713,7 +735,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					}
 				}
 			}
-			for (KFFProject project : projects) {
+			for (KFFProject project : projects.getRows()) {
 				ProjectResponse response = new ProjectResponse();
 				BeanUtils.copyProperties(project, response);
 				// 登录用户
@@ -722,11 +744,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						response.setFollowStatus(1);
 					}
 				}
-				result.add(response);
+				resultc.add(response);
 			}
-
+			result.setRows(resultc);
 		}
-
 		return result;
 	}
 
@@ -1401,6 +1422,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 		article.setPostId(newPost.getPostId());
 		article.setPostUuid(uuid);
+		if(StringUtils.isNotBlank(articleRequest.getTagInfos())) {
+			article.setTagInfos(articleRequest.getTagInfos());
+		}
 		kffArticleService.save(article);
 		result.put("postId", newPost.getPostId());
 		result.put("postType", newPost.getPostType());
@@ -1474,6 +1498,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (discussRequest.getPostTitle().length() > 120) {
 			throw new RestServiceException("讨论标题长度不能超过60字");
 		}
+		if (StringUtils.isBlank(discussRequest.getTagInfos())) {
+			throw new RestServiceException("爆料的标签不能为空！");
+		}
+		
 		KFFUser createUser = kffUserService.findById(discussRequest.getCreateUserId());
 		if (createUser == null) {
 			throw new RestServiceException("用户不存在" + discussRequest.getCreateUserId());
@@ -1776,7 +1804,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		evaluation.setPostId(newPost.getPostId());
 		evaluation.setProjectId(project.getProjectId());
 		evaluation.setPostUuid(uuid);
-		evaluation.setEvaluationTags(evaluationRequest.getEvaluationTags());
+		if(StringUtils.isNotBlank(evaluationRequest.getEvaluationTags())) {
+			evaluation.setEvaluationTags(evaluationRequest.getEvaluationTags());
+		}
 		evaluation.setProfessionalEvaDetail(evaDetail);
 		evaluation.setCreateTime(now);
 		evaluation.setUpdateTime(now);
@@ -5575,13 +5605,17 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			// 可选:outId为提供给业务方扩展字段,最终在短信回执消息中将此值带回给调用者
 			// request.setOutId("yourOutId");
 			// 请求失败这里会抛ClientException异常
-			SendSmsResponse sendSmsResponse = acsClient.getAcsResponse(request);
-			logger.info(sendSmsResponse.getCode());
-			System.out.println(sendSmsResponse.getCode());
-			redisService.put(cacheKey, dynamicValidateCode, 60 * 10);// 设置10分钟
-			if (sendSmsResponse.getCode() != null && sendSmsResponse.getCode().equals("OK")) {
-				System.out.println("短信发送成功!");
-				System.out.println(sendSmsResponse.getCode());
+			//读取配置文件中的DEV_ENVIRONMENT值为FORMAL，则去发短信
+			if(StringUtils.isNotBlank(devEnvironment)&&
+					devEnvironment.equals(sysGlobals.DEV_ENVIRONMENT)) {
+				SendSmsResponse sendSmsResponse = acsClient.getAcsResponse(request);
+				if (sendSmsResponse.getCode() != null && sendSmsResponse.getCode().equals("OK")) {
+					System.out.println("短信发送成功!");
+					System.out.println(sendSmsResponse.getCode());
+					redisService.put(cacheKey, dynamicValidateCode, 60 * 10);// 设置10分钟
+				}
+			}else {
+				logger.info("非正式环境保存到redis");
 				redisService.put(cacheKey, dynamicValidateCode, 60 * 10);// 设置10分钟
 			}
 		} catch (ServerException e) {

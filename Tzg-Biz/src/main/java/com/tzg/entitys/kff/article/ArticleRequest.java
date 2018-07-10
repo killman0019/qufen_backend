@@ -28,6 +28,19 @@ public class ArticleRequest implements Serializable {
 	private java.lang.String articleContents;
 
 	private String postSmallImages;
+	
+	/**
+	 * 标签ID，名称的json串
+     */ 	
+	private String tagInfos;
+	
+	public String getTagInfos() {
+		return tagInfos;
+	}
+
+	public void setTagInfos(String tagInfos) {
+		this.tagInfos = tagInfos;
+	}
 
 	public void setArticleContents(java.lang.String value) {
 		this.articleContents = value;
