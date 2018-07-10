@@ -827,7 +827,7 @@ public class UserController extends BaseController {
 			}
 		}
 		if (StringUtils.isBlank(registerRequest.getDynamicVerifyCode())) {
-			// throw new RestServiceException(RestErrorCode.DYNAMIC_VERIFY_CODE_ERROR);
+			 throw new RestServiceException(RestErrorCode.DYNAMIC_VERIFY_CODE_ERROR);
 		} else {
 			String code = this.redisService.get(new StringBuffer(RestConstants.key_rest).append(SmsBuss.注册效验码.getBus())
 					.append(registerRequest.getPhoneNumber()).toString());
