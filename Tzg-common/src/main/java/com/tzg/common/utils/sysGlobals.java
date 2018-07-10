@@ -10,4 +10,7 @@ public final class sysGlobals{
 	public static final Integer ENABLE = 0;
 	/**状态禁用-1*/
 	public static final Integer DISABLE = 1;
+	/**判断正式环境才发送短信*/
+	public static final String DEV_ENVIRONMENT="FORMAL";
+	
 }
