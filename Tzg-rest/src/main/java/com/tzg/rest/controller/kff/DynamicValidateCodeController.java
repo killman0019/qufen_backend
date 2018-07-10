@@ -129,58 +129,58 @@ public class DynamicValidateCodeController extends BaseController {
 	 * @see
 	 * @throws
 	 */
-//	@RequestMapping(value = "/verify", method = { RequestMethod.POST, RequestMethod.GET })
-//	@ResponseBody
-//	public BaseResponseEntity verify(HttpServletRequest request) {
-//		BaseResponseEntity bre = new BaseResponseEntity();
-//		try {
-//			JSONObject map = getParamMapFromRequestPolicy(request);
-//			String phone = (String) map.get("phone");
-//			String module = (String) map.get("module");
-//			String code = (String) map.get("code");
-//			if (StringUtils.isBlank(module) || StringUtils.isBlank(phone) || StringUtils.isBlank(code)) {
-//				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
-//			}
-//
-//			String cacheKey = new StringBuffer(RestConstants.key_rest).append(module).append(phone).toString();
-//			String cacheCode = this.redisService.get(cacheKey);
-//			if (!StringUtils.isEmpty(cacheCode)) {
-//				if (!(cacheCode).equalsIgnoreCase(code)) {
-//					throw new RestServiceException(RestErrorCode.DYNAMIC_VERIFY_CODE_ERROR);
-//				}
-//			} else {
-//				throw new RestServiceException(RestErrorCode.DYNAMIC_VERIFY_CODE_EXPIRED);
-//			}
-//
-//			KFFUser user = null;
-//			if (SmsBuss.登录校验码.getBus().equals(module)) {
-//				if (kffRmiService.verifyLoginaccount("mobile", phone)) {
-//					// 老用户登录
-//					user = kffRmiService.findUserByPhoneNumber(phone);
-//				} else {
-//					// 新用户注册
-//					RegisterRequest registerRequest = new RegisterRequest();
-//					registerRequest.setPhoneNumber(phone);
-//					user = kffRmiService.registerRest(registerRequest);
-//				}
-//				if (user != null) {
-//					// 生成account token
-//					String token = AccountTokenUtil.getAccountToken(user.getUserId());
-//					map.put("user", user);
-//					map.put("token", token);
-//				}
-//			}
-//			// this.redisService.del(cacheKey);
-//			bre.setData(map);
-//		} catch (RestServiceException e) {
-//			logger.error("DynamicValidateCodeController verify:{}", e);
-//			return this.resResult(e.getErrorCode(), e.getMessage());
-//		} catch (Exception e) {
-//			logger.error("DynamicValidateCodeController verify:{}", e);
-//			return this.resResult(RestErrorCode.SYS_ERROR);
-//		}
-//		return bre;
-//	}
+	@RequestMapping(value = "/verify", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public BaseResponseEntity verify(HttpServletRequest request) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+		try {
+			JSONObject map = getParamMapFromRequestPolicy(request);
+			String phone = (String) map.get("phone");
+			String module = (String) map.get("module");
+			String code = (String) map.get("code");
+			if (StringUtils.isBlank(module) || StringUtils.isBlank(phone) || StringUtils.isBlank(code)) {
+				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
+			}
+
+			String cacheKey = new StringBuffer(RestConstants.key_rest).append(module).append(phone).toString();
+			String cacheCode = this.redisService.get(cacheKey);
+			if (!StringUtils.isEmpty(cacheCode)) {
+				if (!(cacheCode).equalsIgnoreCase(code)) {
+					throw new RestServiceException(RestErrorCode.DYNAMIC_VERIFY_CODE_ERROR);
+				}
+			} else {
+				throw new RestServiceException(RestErrorCode.DYNAMIC_VERIFY_CODE_EXPIRED);
+			}
+
+			KFFUser user = null;
+			if (SmsBuss.登录校验码.getBus().equals(module)) {
+				if (kffRmiService.verifyLoginaccount("mobile", phone)) {
+					// 老用户登录
+					user = kffRmiService.findUserByPhoneNumber(phone);
+				} else {
+					// 新用户注册
+					RegisterRequest registerRequest = new RegisterRequest();
+					registerRequest.setPhoneNumber(phone);
+					user = kffRmiService.registerRest(registerRequest);
+				}
+				if (user != null) {
+					// 生成account token
+					String token = AccountTokenUtil.getAccountToken(user.getUserId());
+					map.put("user", user);
+					map.put("token", token);
+				}
+			}
+			// this.redisService.del(cacheKey);
+			bre.setData(map);
+		} catch (RestServiceException e) {
+			logger.error("DynamicValidateCodeController verify:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("DynamicValidateCodeController verify:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR);
+		}
+		return bre;
+	}
 
 	
 	/**
