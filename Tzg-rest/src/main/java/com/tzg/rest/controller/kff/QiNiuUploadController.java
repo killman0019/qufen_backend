@@ -1,4 +1,4 @@
-package com.tzg.wap.controller.h5;
+package com.tzg.rest.controller.kff;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,12 +12,11 @@ import org.apache.http.protocol.HTTP;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import com.qiniu.common.QiniuException;
 import com.qiniu.common.Zone;
@@ -30,9 +29,8 @@ import com.qiniu.storage.persistent.FileRecorder;
 import com.qiniu.util.Auth;
 import com.qiniu.util.StringMap;
 import com.tzg.common.redis.RedisService;
-import com.tzg.entitys.kff.token.Token;
-import com.tzg.entitys.kff.user.KFFUserLogin;
 import com.tzg.rest.constant.KFFRestConstants;
+import com.tzg.rest.controller.BaseController;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
@@ -64,23 +62,28 @@ public class QiNiuUploadController extends BaseController {
 
 	@RequestMapping(value = "/sendToken", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public BaseResponseEntity sendToken(HttpServletRequest request, @RequestBody String data) {
+	public BaseResponseEntity sendToken(HttpServletRequest request) {
+
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
-		Token token = JSON.parseObject(data, Token.class);
-		Integer userId = getUserIdByToken(token.getToken());
+		/*Integer userId = getUserIdByToken(token);
 		if (null == userId) {
 			throw new RestServiceException("请先登录账户");
-		}
+		}*/
 		String upToken = null;
 		// 从Redis中获取uptoken
 		try {
+			JSONObject jsonObject = getParamMapFromRequestPolicy(request);
+			String token = (String) jsonObject.get("token");
+			Integer userId = getUserIdByToken(token);
+			if (null == userId) {
+				throw new RestServiceException("请先登录账户");
+			}
 			upToken = getUpToken();
 			// 把upToken 存放在Redis中
-			map.put("upToken", upToken);
 			map.put("uid", userId);
+			map.put("upToken", upToken);
 			bre.setData(map);
-
 		} catch (RestServiceException e) {
 			logger.error("QiNiuUploadController sendToken:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
