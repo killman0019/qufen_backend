@@ -6197,4 +6197,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	public void sendPraiseAwardToPraiser(Integer userId, Integer validPraise) throws RestServiceException {
 
 	}
+
+	@Override
+	public void updataQfIndexUser(QfIndex qfIndexUser) throws RestServiceException {
+		qfIndexService.update(qfIndexUser);
+		
+	}
 }
