@@ -643,12 +643,12 @@ public class HomeController extends BaseController {
 	 */
 	@RequestMapping(value = "/uploadImgFile", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public BaseResponseEntity uploadImgFile(HttpServletRequest request, String token, Integer imgtype, HttpServletResponse response) {
+	public BaseResponseEntity uploadImgFile(HttpServletRequest request, String token, Integer imgtype,String userIcon, HttpServletResponse response) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		Map<String, Object> resMap = new HashMap<String, Object>();
 		try {
-			JSONObject params = getParamMapFromRequestPolicy(request);
-			String userIcon = (String) params.get("userIcon");
+			//JSONObject params = getParamMapFromRequestPolicy(request);
+			//String userIcon = (String) params.get("userIcon");
 			MultipartFile file = null;
 			CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver(request.getSession().getServletContext());
 			if (multipartResolver.isMultipart(request)) {
