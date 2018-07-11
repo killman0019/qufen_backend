@@ -477,7 +477,7 @@ public class HomeController extends BaseController {
 			query.addQueryData("status", KFFConstants.STATUS_ACTIVE + "");
 			query.addQueryData("postType", KFFConstants.POST_TYPE_DISCUSS + "");
 			query.addQueryData("parentCommentsIdNull", "YES");
-			
+
 			PageResult<Comments> comments = kffRmiService.findPageDiscussCommentsList(userId, query);
 			map.put("comments", comments);
 
@@ -696,8 +696,8 @@ public class HomeController extends BaseController {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		Map<String, Object> resMap = new HashMap<String, Object>();
 		try {
-			// JSONObject params = getParamMapFromRequestPolicy(request);
-			// @RequestParam("uploadfile") MultipartFile file,
+			JSONObject params = getParamMapFromRequestPolicy(request);
+			String userIcon = (String) params.get("userIcon");
 			MultipartFile file = null;
 			CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver(request.getSession().getServletContext());
 			if (multipartResolver.isMultipart(request)) {
@@ -768,14 +768,20 @@ public class HomeController extends BaseController {
 				urlPath = urlPath + "/avatars/" + DateUtil.getCurrentYearMonth() + "/";
 				urlPath = urlPath + currentTimeSS + "." + extention;*/
 
-				String fName = "avatars" + name + "." + ext;
-				String urlPath = QiniuUtil.uploadStream(file.getInputStream(), fName);
-
+				String urlPath = "";
 				KFFUser account = new KFFUser();
 				KFFUser OldUser = kffRmiService.findUserById(userId);
-				//account.setUserId(userId);
+				// account.setUserId(userId);
 				OldUser.setUpdateTime(new Date());
-				OldUser.setIcon(urlPath);
+				if (StringUtils.isBlank(userIcon)) {
+					String fName = "avatars" + name + "." + ext;
+					urlPath = QiniuUtil.uploadStream(file.getInputStream(), fName);
+					OldUser.setIcon(urlPath);
+				} else {
+					urlPath = userIcon;
+					OldUser.setIcon(urlPath);
+				}
+
 				kffRmiService.updateUserInfo(OldUser);
 				resMap.put("imgUrl", urlPath);
 			} else if (imgtype == KFFConstants.IMGTYPE_POSTS) {

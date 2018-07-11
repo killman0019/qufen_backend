@@ -33,7 +33,7 @@
 	<!--dubbo 服务提供者应用名称 -->
 	<dubbo:application name="tzg-rmi" />
 	<!--服务提供者 端口 -->
-	<dubbo:protocol name="#{sysConfig['dubbo.protocol.name']}" port="#{sysConfig['dubbo.protocol.rmi.port']}" />
+	<dubbo:protocol name="#{sysConfig['dubbo.protocol.name']}" port="#{sysConfig['dubbo.protocol.rmi.port']}" threads="800"/>
 	<!--dubbo 注册中心 -->
 	<dubbo:registry address="#{sysConfig['dubbo.registry']}" />
 	<!-- <dubbo:monitor protocol="registry"/> -->
