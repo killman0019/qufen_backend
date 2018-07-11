@@ -52,6 +52,8 @@ public class UserService {
 	private AwardPortService awardPortService;
 	@Autowired
 	private KFFUserWalletMapper kFFUserWalletMapper;
+	@Autowired
+	private UserCardService userCardService;
 
 	@Transactional(readOnly = true)
 	public KFFUser findById(java.lang.Integer id) throws RestServiceException {
@@ -335,6 +337,11 @@ public class UserService {
 
 			}
 			kffUser.setLastLoginDateTime(new Date());
+			if(kffUser.getUsercardStatus()==null){
+			Integer	userCardStatus =  userCardService.selectUserCardStatusByUserId(kffUser.getUserId());
+			kffUser.setUsercardStatus(userCardStatus);
+				
+			}
 			userMapper.update(kffUser);
 			return kffUser;
 

@@ -26,7 +26,7 @@ public class UserCardService {
 		if (id == null) {
 			throw new RestServiceException(RestErrorCode.USER_NOT_LOGIN);
 		}
-		return  userCardMapper.selectStatusByUserID(id);
+		return userCardMapper.selectStatusByUserID(id);
 	}
 
 	public void saveUserIdCard(UserCard userCard) throws RestServiceException {
@@ -37,14 +37,26 @@ public class UserCardService {
 		userCardMapper.updateUserCard(userCard);
 
 	}
-	
+
 	public UserCard findByUserid(java.lang.Integer userId) {
 		return userCardMapper.findByUserid(userId);
-		
+
 	}
+
 	@Transactional(readOnly = true)
 	public Integer selectUserCardNum(String userCardNum) {
 		return userCardMapper.selectUserCardNum(userCardNum);
+
+	}
+
+	public Integer selectUserCardStatusByUserId(Integer userId) {
+		List<UserCard> userCards = selectStatusByUserID(userId);
+		if (userCards.size() == 0) {
+			return 5;
+		}
+
+		UserCard userCard = userCards.get(0);
+		return userCard.getStatus();
 
 	}
 

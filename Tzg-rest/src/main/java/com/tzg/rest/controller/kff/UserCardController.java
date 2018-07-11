@@ -184,6 +184,9 @@ public class UserCardController extends BaseController {
 
 			// 并将status设置成待审核状态
 			kffRmiService.updataUserIdStstus(userRealName, userCardNum, photoIviews, userId);
+			KFFUser kffuser = kffRmiService.findUserById(userId);
+			kffuser.setUsercardStatus(1);
+			kffRmiService.updateUser(kffuser);
 			map.put("status", 1);
 			bre.setData(map);
 		} catch (RestServiceException e) {

@@ -245,7 +245,14 @@ public class UserController extends BaseController {
 			// 生成account token
 			String token = AccountTokenUtil.getAccountToken(loginaccount.getUserId());
 			map.put("token", token);
-			Integer userCardStatus = kffRmiService.selectUserCardStatusByUserId(loginaccount.getUserId());
+			Integer userCardStatus = null;
+			if (loginaccount.getUsercardStatus() == null) {
+				userCardStatus = kffRmiService.selectUserCardStatusByUserId(loginaccount.getUserId());
+				loginaccount.setUsercardStatus(userCardStatus);
+				kffRmiService.updateUser(loginaccount);
+			} else {
+				userCardStatus = loginaccount.getUsercardStatus();
+			}
 			map.put("userCardStatus", userCardStatus);
 			bre.setData(map);
 		} catch (RestServiceException e) {
