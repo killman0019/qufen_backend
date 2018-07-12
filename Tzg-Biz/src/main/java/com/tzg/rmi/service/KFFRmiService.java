@@ -295,7 +295,9 @@ public interface KFFRmiService {
 	 * @return
 	 * @throws RestServiceException
 	 */
-	public PageResult<ProjectResponse> findProjectByCode(int sortType, Integer userId, String projectCode,Integer pageIndex,Integer pageSize) throws RestServiceException;
+	public PageResult<ProjectResponse> findProjectByCodePage(int sortType, Integer userId, String projectCode,Integer pageIndex,Integer pageSize) throws RestServiceException;
+	
+	public List<ProjectResponse> findProjectByCode(int sortType, Integer userId, String projectCode) throws RestServiceException;
 
 	/**
 	 * 更新用户信息
