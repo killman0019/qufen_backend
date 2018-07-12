@@ -67,7 +67,7 @@ public class UploadController extends BaseController {
 		// jpg
 		String ext = FilenameUtils.getExtension(upfile.getOriginalFilename());
 		if (!FileUtils.allowedExtensionSet().contains(ext)) {
-			throw new RestServiceException("非法文件后缀" + ext);
+			throw new RestServiceException("此文件后缀为" + ext + ",请更换图片后缀或者联系客服!");
 		}
 
 		// String fileName = picUrlIdCard + DateUtil.getCurrentYearMonth() + "/" + name + "." + ext;
@@ -100,7 +100,7 @@ public class UploadController extends BaseController {
 		// jpg
 		String ext = FilenameUtils.getExtension(upfile.getOriginalFilename());
 		if (!FileUtils.allowedExtensionSet().contains(ext)) {
-			throw new RestServiceException("非法文件后缀" + ext);
+			throw new RestServiceException("此文件后缀为" + ext + ",请更换图片后缀或者联系客服!");
 		}
 
 		// String fileName = picUrlAvatars + DateUtil.getCurrentYearMonth() + "/" + name + "." +
@@ -135,7 +135,7 @@ public class UploadController extends BaseController {
 		// jpg
 		String ext = FilenameUtils.getExtension(upfile.getOriginalFilename());
 		if (!FileUtils.allowedExtensionSet().contains(ext)) {
-			throw new RestServiceException("非法文件后缀" + ext);
+			throw new RestServiceException("此文件后缀为" + ext + ",请更换图片后缀或者联系客服!");
 		}
 
 		// String fileName = picUrlPostPic + DateUtil.getCurrentYearMonth() + "/" + name + "." +
@@ -169,13 +169,13 @@ public class UploadController extends BaseController {
 		if (upfile.getSize() >= 5 * 1024 * 1024) {
 			throw new RestServiceException("单张图片大于5M");
 		}
-		
+
 		String name = UUID.randomUUID().toString().replaceAll("-", "");
 		name = DateUtil.getCurrentTimeSS();
 		// jpg
 		String ext = FilenameUtils.getExtension(upfile.getOriginalFilename());
 		if (!FileUtils.allowedExtensionSet().contains(ext)) {
-			throw new RestServiceException("非法文件后缀" + ext);
+			throw new RestServiceException("此文件后缀为" + ext + ",请更换图片后缀或者联系客服!");
 		}
 
 		// String fileName = picUrlPostPicsf + DateUtil.getCurrentYearMonth() + "/" + name + "." +
@@ -215,7 +215,7 @@ public class UploadController extends BaseController {
 		// jpg
 		String ext = FilenameUtils.getExtension(upfile.getOriginalFilename());
 		if (!FileUtils.allowedExtensionSet().contains(ext)) {
-			throw new RestServiceException("非法文件后缀" + ext);
+			throw new RestServiceException("此文件后缀为" + ext + ",请更换图片后缀或者联系客服!");
 		}
 		/*if (upfile.getSize() >= 3 * 1024 * 1024) {
 			Thumbnails.of(upfile.getInputStream()).scale(1f).outputQuality(0.25f)

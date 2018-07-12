@@ -66,7 +66,7 @@ public class UploadController extends BaseController {
 		// jpg
 		String ext = FilenameUtils.getExtension(upfile.getOriginalFilename());
 		if (!FileUtils.allowedExtensionSet().contains(ext)) {
-			throw new RestServiceException("非法文件后缀" + ext);
+			throw new RestServiceException("此文件后缀为" + ext + ",请更换图片后缀或者联系客服!");
 		}
 		// upfile.transferTo(new File("D:\\opt\\file\\upload\\Idcard\\" + name +"." + ext));
 		// 进行压缩 大于3m 进行压缩
@@ -98,7 +98,7 @@ public class UploadController extends BaseController {
 		// jpg
 		String ext = FilenameUtils.getExtension(upfile.getOriginalFilename());
 		if (!FileUtils.allowedExtensionSet().contains(ext)) {
-			throw new RestServiceException("非法文件后缀" + ext);
+			throw new RestServiceException("此文件后缀为" + ext + ",请更换图片后缀或者联系客服!");
 		}
 
 		// String fileName = picUrlAvatars + DateUtil.getCurrentYearMonth() + "/" + name + "." +
@@ -133,7 +133,7 @@ public class UploadController extends BaseController {
 		// jpg
 		String ext = FilenameUtils.getExtension(upfile.getOriginalFilename());
 		if (!FileUtils.allowedExtensionSet().contains(ext)) {
-			throw new RestServiceException("非法文件后缀" + ext);
+			throw new RestServiceException("此文件后缀为" + ext + ",请更换图片后缀或者联系客服!");
 		}
 
 		// String fileName = picUrlPostPic + DateUtil.getCurrentYearMonth() + "/" + name + "." +
@@ -172,7 +172,7 @@ public class UploadController extends BaseController {
 		// jpg
 		String ext = FilenameUtils.getExtension(upfile.getOriginalFilename());
 		if (!FileUtils.allowedExtensionSet().contains(ext)) {
-			throw new RestServiceException("非法文件后缀" + ext);
+			throw new RestServiceException("此文件后缀为" + ext + ",请更换图片后缀或者联系客服!");
 		}
 
 		// String fileName = picUrlPostPicsf + DateUtil.getCurrentYearMonth() + "/" + name + "." +
@@ -215,7 +215,7 @@ public class UploadController extends BaseController {
 		// jpg
 		String ext = FilenameUtils.getExtension(upfile.getOriginalFilename());
 		if (!FileUtils.allowedExtensionSet().contains(ext)) {
-			throw new RestServiceException("非法文件后缀" + ext);
+			throw new RestServiceException("此文件后缀为" + ext + ",请更换图片后缀或者联系客服!");
 		}
 
 		// picUrlAuthentication +DateUtil.getCurrentYearMonth() + "/"+ name + "." + ext

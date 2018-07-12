@@ -694,7 +694,7 @@ public class HomeController extends BaseController {
 			// jpg
 			String ext = FilenameUtils.getExtension(file.getOriginalFilename());
 			if (!FileUtils.allowedExtensionSet().contains(ext)) {
-				throw new RestServiceException("非法文件后缀" + ext);
+				throw new RestServiceException("此文件后缀为" + ext+",请更换图片后缀或者联系客服!");
 			}
 
 			// SystemParam systemParam = systemParamRmiService.findByCode("upload_local_path");
