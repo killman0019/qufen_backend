@@ -229,6 +229,7 @@ public class HomeController extends BaseController {
 			query.addQueryData("status", "1");
 			query.addQueryData("state", "2");
 			query.addQueryData("sortField", "total_score");
+			query.addQueryData("sortSequence", "desc");
 			query.setPageIndex(1);
 			query.setRowsPerPage(20);
 			List<ProjectResponse> rankList = kffRmiService.findPageProjectRankList(userId, query);

@@ -125,6 +125,19 @@ public class ArticleDetailResponse implements Serializable {
 	private java.lang.String createUserName;
 
 	private Integer userType;
+	
+	 /**
+     * 标签ID，名称的json串
+     */ 	
+	private String tagInfos;
+	
+	public String getTagInfos() {
+		return tagInfos;
+	}
+
+	public void setTagInfos(String tagInfos) {
+		this.tagInfos = tagInfos;
+	}
 
 	public Integer getUserType() {
 		return userType;

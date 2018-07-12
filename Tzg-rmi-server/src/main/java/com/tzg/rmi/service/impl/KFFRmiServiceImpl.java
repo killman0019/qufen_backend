@@ -168,6 +168,8 @@ import com.tzg.rmi.service.KFFRmiService;
 import com.tzg.rmi.service.SmsSendRmiService;
 import com.vdurmont.emoji.Emoji;
 import com.vdurmont.emoji.EmojiParser;
+import com.tzg.common.utils.Numbers;
+import com.tzg.common.utils.sysGlobals;
 
 public class KFFRmiServiceImpl implements KFFRmiService {
 
@@ -701,8 +703,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 		if (sortType == 1) {
 			querys.addQueryData("sortField", "follower_num");
+			querys.addQueryData("sortSequence", "desc");
 		}else if(sortType == 2){
 			querys.addQueryData("sortField", "project_code");
+			querys.addQueryData("sortSequence", "asc");
 		}
 		querys.setPageIndex(pageIndex);
 		querys.setRowsPerPage(pageSize);
@@ -2857,7 +2861,13 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						response.setTotalScore(project.getTotalScore());
 					}
 				}
-
+				//查询爆料的标签
+				Discuss discuss = kffDiscussService.findByPostId(post.getPostId());
+				if(null!=discuss) {
+					response.setTagInfos(discuss.getTagInfos());
+				}else {
+					response.setTagInfos(null);
+				}
 				// 设置项目关注状态
 				if (loginUser == null) {
 					response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
@@ -3004,6 +3014,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 		Article article = kffArticleService.findByPostId(postId);
 		response.setArticleContents(article == null ? "" : article.getArticleContents());
+		//标签
+		if(null!=article) {
+			response.setTagInfos(article.getTagInfos());
+		}
+		
 		// 关注状态
 		if (loginUser == null) {
 			response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);

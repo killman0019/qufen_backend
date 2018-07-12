@@ -163,9 +163,7 @@ public class PostResponse implements Serializable {
      * 评测表标签
      */ 	
 	private java.lang.String evaluationTags;
-	
-	
-	
+
 	public BigDecimal getEvaTotalScore() {
 		return evaTotalScore;
 	}
