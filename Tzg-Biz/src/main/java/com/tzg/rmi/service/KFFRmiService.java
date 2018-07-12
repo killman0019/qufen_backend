@@ -39,6 +39,7 @@ import com.tzg.entitys.kff.message.KFFMessage;
 import com.tzg.entitys.kff.mobileversionupdate.Mobileversionupdate;
 import com.tzg.entitys.kff.notice.KFFNotice;
 import com.tzg.entitys.kff.post.PostResponse;
+import com.tzg.entitys.kff.praise.Praise;
 import com.tzg.entitys.kff.project.KFFProject;
 import com.tzg.entitys.kff.project.ProjectResponse;
 import com.tzg.entitys.kff.project.SubmitKFFProjectRequest;
@@ -893,11 +894,18 @@ public interface KFFRmiService {
 	 * 
 	 * 评测、爆料、文章都给予点赞人10个FIND奖励
 	 * 
-	 * @param userId 用户的id
-	 * @param validPraise 用户有效赞个数
+	 * @param userId
+	 *            用户的id
+	 * @param validPraise
+	 *            用户有效赞个数
+	 * @param praiseId
+	 *            当前赞对象
+	 * @param format
+	 * @param replaceAllDate
 	 * @throws RestServiceException
-	 */
-	public void sendPraiseAwardToPraiser(Integer userId,Integer validPraise) throws RestServiceException;
-
-	public void updataQfIndexUser(QfIndex qfIndexUser)throws RestServiceException;
+	 *//*
+	public Boolean sendPraiseAwardToPraiser(Integer userId, Integer validPraise, Praise praiseId, String format, String replaceAllDate)
+			throws RestServiceException;
+*/
+	public void updataQfIndexUser(QfIndex qfIndexUser) throws RestServiceException;
 }

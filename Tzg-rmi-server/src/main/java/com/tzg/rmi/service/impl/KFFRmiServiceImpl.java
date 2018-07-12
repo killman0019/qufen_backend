@@ -1861,6 +1861,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	@Override
 	public int savePraise(Integer userId, Integer postId) throws RestServiceException {
 		int result = 0;
+		Boolean isSendPraiseToken = true;
 		if (userId == null) {
 			throw new RestServiceException("用户id不能为空");
 		}
@@ -1975,8 +1976,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			System.err.println("findByUserid : " + findByUserid);// 看帖子人的id
 			// 判断所点赞的文章是不是有效(1有效,0删除,无效)
 			// QfIndex byUserId = qfIndexService.findByUserId(createUserId);
-
-			if (post.getStatus() == 1 && findBycreateUserId != null && findByUserid != null) {
+			// if (post.getStatus() == 1 && findBycreateUserId != null && findByUserid != null)
+			if (post.getStatus() == 1 /*&& findBycreateUserId != null && findByUserid != null*/) {
 				/**
 				 * 有效赞
 				 * 
@@ -1991,6 +1992,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				Double wz = 20.00d; // 文章点赞奖励
 				KFFUser findByUserId = kffUserService.findById(createUserId);
 				CoinProperty findByCreateUser = coinPropertyService.findByUserId(createUserId);// 获取可以使用的币值
+				// isSendPraiseToken = sendPraiseAwardToPraiser(userId, validPraise, praiseId,
+				// format, replaceAllDate); 等同个代码
 				if (postType == 1) {
 					// 证明是评测的帖子
 					// 判断评测的类型 (1-简单评测, 2-全面专业评测 , 3-部分系统单项评测)
@@ -2052,6 +2055,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 								qfIndexService.updateYxPraise(userId);
 							}
 						}
+
 					}
 					if (evaluation.getModelType() == 2 || evaluation.getModelType() == 4) {
 						// 系统自定义专业完整版评测
@@ -2247,7 +2251,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						Tokenaward tokenaward = new Tokenaward();
 						if (praiseId.getStatus() == 1 && validPraise > 0 && validPraise != 0) {
 							// 证明是有效赞
-							tokenrecords.setFunctionDesc("点赞奖励(打假)");
+							tokenrecords.setFunctionDesc("点赞奖励(爆料)");
 							tokenrecords.setFunctionType(17);
 							tokenrecords.setAmount(new BigDecimal(tl * createPUF)); // 点赞奖励生成流水
 							tokenrecords.setUserId(createUserId);
@@ -2255,7 +2259,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 							tokenrecords.setRewardGrantType(1);
 							tokenrecords.setCreateTime(new Date());
 							tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
-							tokenrecords.setMemo("用户" + user.getUserName() + "点赞奖励(打假)"); // 流水备注
+							tokenrecords.setMemo("用户" + user.getUserName() + "点赞奖励(爆料)"); // 流水备注
 							kffTokenrecordsService.save(tokenrecords);
 
 							BigDecimal kffCoinNum = findByUserId.getKffCoinNum();
@@ -2270,7 +2274,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 							coinPropertyService.update(findByCreateUser);
 
 							tokenaward.setUserId(createUserId);
-							tokenaward.setTokenAwardFunctionDesc("点赞奖励(打假)");
+							tokenaward.setTokenAwardFunctionDesc("点赞奖励(爆料)");
 							tokenaward.setTokenAwardFunctionType(17);
 							tokenaward.setDistributionType(2);
 							// Double rewardToken = tokenaward.getRewardToken();
@@ -5578,16 +5582,15 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			// 可选:outId为提供给业务方扩展字段,最终在短信回执消息中将此值带回给调用者
 			// request.setOutId("yourOutId");
 			// 请求失败这里会抛ClientException异常
-			//读取配置文件中的DEV_ENVIRONMENT值为FORMAL，则去发短信
-			if(StringUtils.isNotBlank(devEnvironment)&&
-					devEnvironment.equals(sysGlobals.DEV_ENVIRONMENT)) {
+			// 读取配置文件中的DEV_ENVIRONMENT值为FORMAL，则去发短信
+			if (StringUtils.isNotBlank(devEnvironment) && devEnvironment.equals(sysGlobals.DEV_ENVIRONMENT)) {
 				SendSmsResponse sendSmsResponse = acsClient.getAcsResponse(request);
 				if (sendSmsResponse.getCode() != null && sendSmsResponse.getCode().equals("OK")) {
 					System.out.println("短信发送成功!");
 					System.out.println(sendSmsResponse.getCode());
 					redisService.put(cacheKey, dynamicValidateCode, 60 * 10);// 设置10分钟
 				}
-			}else {
+			} else {
 				logger.info("非正式环境保存到redis");
 				redisService.put(cacheKey, dynamicValidateCode, 60 * 10);// 设置10分钟
 			}
@@ -6193,14 +6196,72 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		return false;
 	}
 
-	@Override
-	public void sendPraiseAwardToPraiser(Integer userId, Integer validPraise) throws RestServiceException {
+	@SuppressWarnings("unused")
+	private Boolean sendPraiseAwardToPraiser(Integer userId, Integer validPraise, Praise praiseId, String format, String replaceAllDate)
+			throws RestServiceException {
+
+		try {
+			// 点赞人的id 有效赞的个数 当前赞这个对象吧 format replaceAllDate 固定参数
+			Tokenrecords tokenrecords = new Tokenrecords();// 创建流水表
+			Tokenaward tokenaward = new Tokenaward();// 创建奖励表
+			Double zanToken = 10.00d;// 有效赞点赞给点赞人的奖励
+			KFFUser Dzanuser = kffUserService.findById(userId);// 获得点赞人这个对象
+			if (null != Dzanuser) {
+				if (praiseId.getStatus() == 1 && validPraise > 0 && validPraise != 0) {// 如果这个赞是点赞并且有效赞
+					// 证明是有效赞
+					tokenrecords.setFunctionDesc("给予点赞人奖励");
+					tokenrecords.setFunctionType(23);
+					tokenrecords.setAmount(new BigDecimal(zanToken)); // 点赞奖励10 点赞奖励生成流水
+					tokenrecords.setUserId(userId);
+					tokenrecords.setTradeType(1);
+					tokenrecords.setRewardGrantType(1);
+					tokenrecords.setCreateTime(new Date());
+					tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
+					tokenrecords.setMemo("给予点赞人奖励"); // 流水备注
+					CoinProperty findByCreateUser = coinPropertyService.findByUserId(userId);// 获取可以使用的币值
+					if (null != findByCreateUser) {
+						Double coinLock = findByCreateUser.getCoinLock();// 获得当前锁定的token
+						coinLock = coinLock + (zanToken);// 增加当前锁定后的token币然后添加点赞币
+						findByCreateUser.setCoinLock(coinLock);
+						coinPropertyService.update(findByCreateUser);// 更新token币表
+						BigDecimal kffCoinNum = Dzanuser.getKffCoinNum();// 获得用户的token值
+						Dzanuser.setKffCoinNum(kffCoinNum.add(new BigDecimal(zanToken)));// 添加用户的资产
+						Dzanuser.setUpdateTime(new Date());
+						kffUserService.update(Dzanuser);// 更新用户的信息
+						kffTokenrecordsService.save(tokenrecords);// 生成流水表单
+					}
+					// 根据userId去获取
+					tokenaward.setUserId(userId);
+					tokenaward.setTokenAwardFunctionDesc("给予点赞人奖励");
+					tokenaward.setTokenAwardFunctionType(23);
+					tokenaward.setDistributionType(2);
+					// Double rewardToken = tokenaward.getInviteRewards();
+					// Double priaiseAward = tokenaward.getPriaiseAward();
+					tokenaward.setPriaiseAward(zanToken); // 点赞奖励.
+					tokenaward.setInviteRewards(zanToken);
+					tokenaward.setCreateTime(new Date());
+					tokenaward.setAwardBalance(0d); // 线性余额 跟一次性发放的奖励没有关系 默认为0
+					tokenaward.setUserName(Dzanuser.getUserName());
+					tokenaward.setMobile(Dzanuser.getMobile());
+					kffTokenawardService.save(tokenaward);// 生成奖励表单
+					// qfIndexService.updateYxPraise(userId);
+
+				} else {
+					return false;
+				}
+			}
+		} catch (Exception e) {
+			// TODO 有异常抛出并且返回奖励弹框失败
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 
 	}
 
 	@Override
 	public void updataQfIndexUser(QfIndex qfIndexUser) throws RestServiceException {
 		qfIndexService.update(qfIndexUser);
-		
+
 	}
 }
