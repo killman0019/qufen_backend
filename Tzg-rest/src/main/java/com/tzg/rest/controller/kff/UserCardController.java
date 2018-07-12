@@ -20,6 +20,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.tzg.common.utils.AccountTokenUtil;
 import com.tzg.common.utils.RegexUtil;
 import com.tzg.entitys.kff.authentication.Authentication;
+import com.tzg.entitys.kff.qfindex.QfIndex;
 import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.entitys.kff.usercard.UserCard;
 import com.tzg.rest.controller.BaseController;
@@ -184,6 +185,13 @@ public class UserCardController extends BaseController {
 
 			// 并将status设置成待审核状态
 			kffRmiService.updataUserIdStstus(userRealName, userCardNum, photoIviews, userId);
+			KFFUser kffuser = kffRmiService.findUserById(userId);
+			kffuser.setUsercardStatus(1);
+			kffRmiService.updateUser(kffuser);
+			QfIndex qfIndexUser = kffRmiService.findQfIndexUser(userId);
+			qfIndexUser.setStatusHierarchyDesc("刁民");
+			qfIndexUser.setStatusHierarchyType(0);
+			kffRmiService.updataQfIndexUser(qfIndexUser);
 			map.put("status", 1);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -225,7 +233,7 @@ public class UserCardController extends BaseController {
 			userCard.setUpdatatime(new Date());
 			userCard.setUserid(userId);
 			kffRmiService.saveUserIdCard(userCard);
-
+			
 			// 向前台展示信息
 			List<Authentication> authenticationFromDB = kffRmiService.selectAuthenticationByUserId(userId);
 			if (CollectionUtils.isNotEmpty(authenticationFromDB)) {

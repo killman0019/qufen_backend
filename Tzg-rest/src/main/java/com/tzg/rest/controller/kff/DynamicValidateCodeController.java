@@ -157,6 +157,7 @@ public class DynamicValidateCodeController extends BaseController {
 				if (kffRmiService.verifyLoginaccount("mobile", phone)) {
 					// 老用户登录
 					user = kffRmiService.findUserByPhoneNumber(phone);
+					
 				} else {
 					// 新用户注册
 					RegisterRequest registerRequest = new RegisterRequest();

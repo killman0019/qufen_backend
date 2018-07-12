@@ -891,4 +891,6 @@ public interface KFFRmiService {
 	 * @throws RestServiceException
 	 */
 	public void sendPraiseAwardToPraiser(Integer userId,Integer validPraise) throws RestServiceException;
+
+	public void updataQfIndexUser(QfIndex qfIndexUser)throws RestServiceException;
 }

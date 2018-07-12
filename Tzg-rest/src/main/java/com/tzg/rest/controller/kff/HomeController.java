@@ -692,12 +692,12 @@ public class HomeController extends BaseController {
 	 */
 	@RequestMapping(value = "/uploadImgFile", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public BaseResponseEntity uploadImgFile(HttpServletRequest request, String token, Integer imgtype, HttpServletResponse response) {
+	public BaseResponseEntity uploadImgFile(HttpServletRequest request, String token, Integer imgtype,String userIcon, HttpServletResponse response) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		Map<String, Object> resMap = new HashMap<String, Object>();
 		try {
-			JSONObject params = getParamMapFromRequestPolicy(request);
-			String userIcon = (String) params.get("userIcon");
+			//JSONObject params = getParamMapFromRequestPolicy(request);
+			//String userIcon = (String) params.get("userIcon");
 			MultipartFile file = null;
 			CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver(request.getSession().getServletContext());
 			if (multipartResolver.isMultipart(request)) {
@@ -743,7 +743,7 @@ public class HomeController extends BaseController {
 			// jpg
 			String ext = FilenameUtils.getExtension(file.getOriginalFilename());
 			if (!FileUtils.allowedExtensionSet().contains(ext)) {
-				throw new RestServiceException("非法文件后缀" + ext);
+				throw new RestServiceException("此文件后缀为" + ext+",请更换图片后缀或者联系客服!");
 			}
 
 			// SystemParam systemParam = systemParamRmiService.findByCode("upload_local_path");

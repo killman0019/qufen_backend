@@ -51,7 +51,7 @@
        <!--  <task:scheduled ref="taskJobService" method="caculateProjectTotalScore" cron="0 0 1 * * ? "/> -->
        <!--  <task:scheduled ref="taskJobService" method="caculateProjectTotalScore" cron="10 * * * * ? "/> -->
        <!--  <task:scheduled ref="taskJobService" method="updateUserPop" cron="10 * * * * ? "/>  -->
-             <task:scheduled ref="taskJobService" method="caculateProjectTotalScore" cron="0 0/10 * * * ? "/>  
+             <task:scheduled ref="taskJobService" method="caculateProjectTotalScore" cron="0 0 0/2 * * ? "/>  
     </task:scheduled-tasks>   
 	
 

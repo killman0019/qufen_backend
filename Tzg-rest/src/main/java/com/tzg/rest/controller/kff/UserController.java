@@ -234,19 +234,26 @@ public class UserController extends BaseController {
 				String statusHierarchyDesc = qfIndex.getStatusHierarchyDesc();
 				map.put("statusHierarchyType", statusHierarchyType);
 				map.put("statusHierarchyDesc", statusHierarchyDesc);
+				
+			
 			} catch (RestServiceException e) {
 				return this.resResult(e.getErrorCode(), e.getMessage());
 			} catch (Exception e) {
 				return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
-			}
-
-			map.put("user", this.formatLoginaccount(loginaccount));
-
+			}			
 			// 生成account token
 			String token = AccountTokenUtil.getAccountToken(loginaccount.getUserId());
 			map.put("token", token);
-			Integer userCardStatus = kffRmiService.selectUserCardStatusByUserId(loginaccount.getUserId());
+			Integer userCardStatus = null;
+			if (loginaccount.getUsercardStatus() == null) {
+				userCardStatus = kffRmiService.selectUserCardStatusByUserId(loginaccount.getUserId());
+				loginaccount.setUsercardStatus(userCardStatus);
+				kffRmiService.updateUser(loginaccount);
+			} else {
+				userCardStatus = loginaccount.getUsercardStatus();
+			}
 			map.put("userCardStatus", userCardStatus);
+			map.put("user", this.formatLoginaccount(loginaccount));
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.warn("login warn:{}", e);
@@ -419,7 +426,7 @@ public class UserController extends BaseController {
 			// 文件后缀
 			String extention = FileUtils.getFileExtension(file.getOriginalFilename());
 			if (!FileUtils.allowedExtensionSet().contains(extention)) {
-				throw new RestServiceException("非法文件后缀" + extention);
+				throw new RestServiceException("此文件后缀为" + extention + ",请更换图片后缀或者联系客服!");
 			}
 
 			SystemParam systemParam = systemParamRmiService.findByCode("upload_local_path");
@@ -1405,8 +1412,7 @@ public class UserController extends BaseController {
 
 			if (null == loginaccount) {
 				throw new RestServiceException(RestErrorCode.LOGIN_NAME_OR_PASSWORD_INCORRECT);
-			}
-			map.put("user", this.formatLoginaccount(loginaccount));
+			}			
 			Integer userCardStatus = kffRmiService.selectUserCardStatusByUserId(loginaccount.getUserId());
 			map.put("userCardStatus", userCardStatus);
 			QfIndex qfIndex = kffRmiService.findQfIndexUser(loginUserId);
@@ -1416,7 +1422,7 @@ public class UserController extends BaseController {
 				map.put("statusHierarchyType", statusHierarchyType);
 				map.put("statusHierarchyDesc", statusHierarchyDesc);
 			}
-
+			map.put("user", this.formatLoginaccount(loginaccount));
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.warn("getUserInfo warn:{}", e);

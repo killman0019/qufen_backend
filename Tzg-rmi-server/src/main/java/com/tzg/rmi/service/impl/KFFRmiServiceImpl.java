@@ -2090,7 +2090,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 							Tokenaward tokenaward = new Tokenaward();
 							if (praiseId.getStatus() == 1 && validPraise > 0 && validPraise != 0) {
 								// 证明是有效赞
-								if (kffPostService.findById(postId).getPraiseNum() == 5) {
+								if (kffPostService.findById(postId).getPraiseNum() == 50) {
 									tokenrecords.setFunctionDesc("点赞奖励(专评)");
 									tokenrecords.setFunctionType(17);
 									tokenrecords.setAmount(new BigDecimal(pc2 * createPUF + meet)); // 点赞奖励生成流水
@@ -2176,7 +2176,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					if (evaluation.getModelType() == 3) {
 						// 用户自定义单项评测
 						if (null != praiseId && praiseId.getStatus() == 1 && validPraise > 0 && validPraise != 0) {
-							if (kffPostService.findById(postId).getPraiseNum() == 5) {
+							if (kffPostService.findById(postId).getPraiseNum() == 50) {
 								Tokenrecords tokenrecords = new Tokenrecords();
 								Tokenaward tokenaward = new Tokenaward();
 								tokenrecords.setFunctionDesc("点赞奖励(单评)");
@@ -2324,7 +2324,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						if (praiseId.getStatus() == 1 && validPraise > 0 && validPraise != 0) {
 							// 证明是有效赞
 							if (praiseId.getPraiseType() == 1) {
-								if (kffPostService.findById(postId).getPraiseNum() == 5) {
+								if (kffPostService.findById(postId).getPraiseNum() == 50) {
 									tokenrecords.setFunctionDesc("点赞奖励(文章)");
 									tokenrecords.setFunctionType(17);
 									tokenrecords.setAmount(new BigDecimal(wz * createPUF + meet1)); // 点赞奖励生成流水
@@ -6223,5 +6223,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	@Override
 	public void sendPraiseAwardToPraiser(Integer userId, Integer validPraise) throws RestServiceException {
 
+	}
+
+	@Override
+	public void updataQfIndexUser(QfIndex qfIndexUser) throws RestServiceException {
+		qfIndexService.update(qfIndexUser);
+		
 	}
 }
