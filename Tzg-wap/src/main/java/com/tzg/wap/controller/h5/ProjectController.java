@@ -281,21 +281,34 @@ public class ProjectController extends BaseController {
 	 */
 	@RequestMapping(value = "/searchProjects", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public BaseResponseEntity searchProjects(HttpServletRequest request, HttpServletResponse response, String projectCode, Integer sortType) {
+	public BaseResponseEntity searchProjects(HttpServletRequest request, HttpServletResponse response, 
+			String projectCode, Integer sortType,Integer pageIndex,Integer pageSize) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 
 		try {
+//			String token = (String) request.getSession().getAttribute("token");
+//			Integer userId = getUserIdByToken(token);
+//			if (null == sortType) {
+//				sortType = 2;
+//			}
+//
+//			if (StringUtils.isBlank(projectCode)) {
+//				throw new RestServiceException("查询内容不能为空");
+//			}
+//			List<ProjectResponse> projects = kffRmiService.findProjectByCode(sortType, userId, projectCode);
 			String token = (String) request.getSession().getAttribute("token");
-			Integer userId = getUserIdByToken(token);
+			pageIndex=pageIndex==null||pageIndex<1?1:pageIndex;
+			pageSize=pageSize==null||pageSize<1?20:pageSize;
+			Integer userId = null;
+			if (StringUtils.isNotBlank(token)) {
+				userId = getUserIdByToken(token);
+			}
+			// 1-按关注数量倒序；2-按名称排序
 			if (null == sortType) {
 				sortType = 2;
 			}
-
-			if (StringUtils.isBlank(projectCode)) {
-				throw new RestServiceException("查询内容不能为空");
-			}
-			List<ProjectResponse> projects = kffRmiService.findProjectByCode(sortType, userId, projectCode);
+			PageResult<ProjectResponse> projects = kffRmiService.findProjectByCode(sortType, userId, projectCode,pageIndex,pageSize);
 			map.put("projects", projects);
 			bre.setData(map);
 		} catch (RestServiceException e) {

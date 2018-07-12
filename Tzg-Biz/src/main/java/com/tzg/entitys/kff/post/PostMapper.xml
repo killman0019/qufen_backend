@@ -414,19 +414,20 @@
 	        </choose>
         <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
 	</select>
+	
+	<sql id="orderBy">
+        <if test="sql_keyword_orderBy!=null">
+    		order by ${sql_keyword_orderBy} ${sql_keyword_sort}
+    	</if>
+    	<if test="sql_keyword_orderByc!=null">
+    		order by ${sql_keyword_orderByc} ${sql_keyword_sortc}
+    	</if>
+    </sql>
     
 	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
 		select <include refid="columns"/>  from tbpost where 1=1
 		<include refid="queryWhere"/> 
-	   
-	     <choose>
-	            <when test="sortField != null and sortField != ''">
-	               ORDER BY ${sortField} DESC
-	            </when>
-	            <otherwise>
-	                <![CDATA[ ORDER BY post_id desc ]]>
-	            </otherwise>
-	        </choose>
+	   	<include refid="orderBy"/>
         <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
 	</select>
 	
@@ -577,9 +578,17 @@
 		<if test="commentsNum != null and commentsNum.trim() != ''">
 		and comments_num = #{commentsNum}
 		</if>
-		<if test="praiseNum != null and praiseNum.trim() != ''">
+		
+		<if test="praiseNum != null and stickTop == null">
 		and praise_num >= #{praiseNum}
 		</if>
+		<if test="praiseNum == null and stickTop != null">
+		and stick_top = #{stickTop}
+		</if>
+		<if test="praiseNum != null and stickTop != null">
+		and (praise_num >= #{praiseNum} or stick_top = #{stickTop})
+		</if>
+		
 		<if test="pageviewNum != null and pageviewNum.trim() != ''">
 		and pageview_num = #{pageviewNum}
 		</if>
@@ -602,13 +611,13 @@
 		and create_user_name = #{createUserName}
 		</if>
 		<if test="createTimeBegin != null and createTimeBegin.trim() != ''">
-		and createTime >= #{createTimeBegin}
+		and createTime &gt;= #{createTimeBegin}
 		</if>
 		<if test="createTimeEnd != null and createTimeEnd.trim() != ''">
 		and createTime &lt;= #{createTimeEnd}
 		</if>
 		<if test="updateTimeBegin != null and updateTimeBegin.trim() != ''">
-		and updateTime >= #{updateTimeBegin}
+		and updateTime &gt;= #{updateTimeBegin}
 		</if>
 		<if test="updateTimeEnd != null and updateTimeEnd.trim() != ''">
 		and updateTime &lt;= #{updateTimeEnd}
@@ -618,9 +627,6 @@
 		</if>		
 		<if test="uuid != null and uuid.trim() != ''">
 		and uuid = #{uuid}
-		</if>
-		<if test="stickTop != null and stickTop.trim() != ''">
-		or stick_top = #{stickTop}
 		</if>
 	</sql>
 	

@@ -254,7 +254,7 @@
 		<include refid="queryWhere" />
 		<choose>
 			<when test="sortField != null and sortField != ''">
-				ORDER BY ${sortField} DESC
+				ORDER BY ${sortField} ${sortSequence}
 			</when>
 			<otherwise>
 	                <![CDATA[ ORDER BY project_id desc ]]>

@@ -77,11 +77,11 @@ public class UserController extends BaseController {
 	/**
 	 * 用户注册后生成邀请链接 (免密码登陆**** 手机号码*** 图片生成验证码*** 手机验证码*** 发到手机的验证码 密码) 邀请码 app 端注册 adasdadad
 	 * 
-	 * @param phoneNumberqdhtml
-	 * @param checkCodeqdhtml
-	 * @param phoneCodeqdhtml
-	 * @param dynamicVerifyCodeqdhtml
-	 * @param invaUserIdHexqdhtml
+	 * @param phoneNumber
+	 * @param checkCode
+	 * @param phoneCode
+	 * @param dynamicVerifyCode
+	 * @param invaUserIdHex
 	 * @return
 	 * @throws Exception
 	 */
@@ -91,9 +91,6 @@ public class UserController extends BaseController {
 			String dynamicVerifyCode, String invaUIH, String password) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
-		/*if(true){
-			throw new RestServiceException("内测用户已到达额定人数,暂时停止注册!");
-		}*/
 		// 验证手机号的合法性
 		if (null == password) {
 			map.put("reStatus", 0);// 1注册成功 0 注册不成功

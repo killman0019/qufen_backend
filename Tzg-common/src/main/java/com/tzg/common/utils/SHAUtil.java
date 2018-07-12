@@ -28,7 +28,7 @@ public class SHAUtil {
     }
     
     public static void main(String[] args) {
-    	String pwd = encode("99999");
+    	String pwd = encode("11111111");
     	System.out.println(pwd);
 		System.out.println(encode(pwd));
 		System.out.println(pwd.length());

@@ -6,11 +6,12 @@
 		<result property="postId" jdbcType="INTEGER" column="post_id"/>
 		<result property="postUuid" jdbcType="INTEGER" column="post_uuid"/>
 		<result property="articleContents" jdbcType="LONGVARCHAR" column="article_contents"/>
+		<result property="tagInfos" jdbcType="VARCHAR" column="tag_infos"/>
     </resultMap>
 	
 	<sql id="columns">
 	    <![CDATA[
-        article_id ,post_id ,post_uuid,article_contents 
+        article_id ,post_id ,post_uuid,article_contents ,tag_infos 
 	    ]]>
 	</sql>
 	
@@ -22,11 +23,13 @@
 		INSERT INTO tbarticle (
         	post_id ,
         	post_uuid,
-        	article_contents 
+        	article_contents,
+        	tag_infos 
 		) VALUES (
         	#{postId,jdbcType=INTEGER} ,
         	#{postUuid,jdbcType=VARCHAR} ,
-        	#{articleContents,jdbcType=LONGVARCHAR} 
+        	#{articleContents,jdbcType=LONGVARCHAR} ,
+        	#{tagInfos,jdbcType=VARCHAR} 
 		)
 	]]>
 	</insert>
@@ -38,7 +41,10 @@
 	        post_id = #{postId,jdbcType=INTEGER} ,
 	        </if>
 			<if test="articleContents != null">
-	        article_contents = #{articleContents,jdbcType=LONGVARCHAR} 
+	        article_contents = #{articleContents,jdbcType=LONGVARCHAR} ,
+	        </if>
+	        <if test="tagInfos != null">
+	        	tag_infos = #{tagInfos,jdbcType=VARCHAR} 
 	        </if>
 	    </set>
 		WHERE 
@@ -95,6 +101,9 @@
 		</if>
 		<if test="articleContents != null and articleContents.trim() != ''">
 		and article_contents = #{articleContents}
+		</if>
+		<if test="tagInfos != null and tagInfos.trim() != ''">
+			and tag_infos = #{tagInfos}
 		</if>
 	</sql>
 

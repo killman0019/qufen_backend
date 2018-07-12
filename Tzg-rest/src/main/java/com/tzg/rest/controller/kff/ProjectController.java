@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -21,18 +20,13 @@ import com.tzg.common.base.BaseRequest;
 import com.tzg.common.constants.KFFConstants;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
-import com.tzg.common.utils.AccountTokenUtil;
 import com.tzg.entitys.kff.comments.Comments;
-import com.tzg.entitys.kff.devaluationModelDetail.DevaluationModelDetail;
-import com.tzg.entitys.kff.discuss.Discuss;
 import com.tzg.entitys.kff.dprojectType.DprojectType;
-import com.tzg.entitys.kff.evaluation.Evaluation;
 import com.tzg.entitys.kff.evaluation.EvaluationDetailResponse;
 import com.tzg.entitys.kff.post.PostResponse;
 import com.tzg.entitys.kff.project.KFFProject;
 import com.tzg.entitys.kff.project.ProjectResponse;
 import com.tzg.entitys.kff.project.SubmitKFFProjectRequest;
-import com.tzg.entitys.kff.projectevastat.ProjectevastatByGrade;
 import com.tzg.rest.controller.BaseController;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
@@ -234,8 +228,8 @@ public class ProjectController extends BaseController {
 
 		try {
 			BaseRequest baseRequest = getParamMapFromRequestPolicy(request, BaseRequest.class);
-			String token = baseRequest.getToken();
-			Integer loginUserId = getUserIdByToken(token);
+//			String token = baseRequest.getToken();
+//			Integer loginUserId = getUserIdByToken(token);
 			Integer projectId = baseRequest.getProjectId();
 			if (projectId == null) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARG_PROJID);
@@ -249,7 +243,11 @@ public class ProjectController extends BaseController {
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
 			if (StringUtils.isNotBlank(baseRequest.getSortField())) {
-				query.addQueryData("sortField", baseRequest.getSortField());
+				query.addQueryData("sql_keyword_orderByc", baseRequest.getSortField());
+				query.addQueryData("sql_keyword_sortc", "desc");
+			}else {
+				query.addQueryData("sql_keyword_orderBy", "post_id");
+				query.addQueryData("sql_keyword_sort", "desc");
 			}
 			PageResult<EvaluationDetailResponse> evaluations = kffRmiService.findPageEvaluationList(query);
 			map.put("evaluations", evaluations);
@@ -283,8 +281,8 @@ public class ProjectController extends BaseController {
 
 		try {
 			BaseRequest baseRequest = getParamMapFromRequestPolicy(request, BaseRequest.class);
-			String token = baseRequest.getToken();
-			Integer loginUserId = getUserIdByToken(token);
+//			String token = baseRequest.getToken();
+//			Integer loginUserId = getUserIdByToken(token);
 			Integer projectId = baseRequest.getProjectId();
 			if (projectId == null) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARG_PROJID);
@@ -295,7 +293,11 @@ public class ProjectController extends BaseController {
 			// 帖子类型：1-评测；2-讨论；3-文章
 			query.addQueryData("postType", "2");
 			if (StringUtils.isNotBlank(baseRequest.getSortField())) {
-				query.addQueryData("sortField", baseRequest.getSortField());
+				query.addQueryData("sql_keyword_orderByc", baseRequest.getSortField());
+				query.addQueryData("sql_keyword_sortc", "desc");
+			}else {
+				query.addQueryData("sql_keyword_orderBy", "post_id");
+				query.addQueryData("sql_keyword_sort", "desc");
 			}
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
@@ -331,8 +333,8 @@ public class ProjectController extends BaseController {
 
 		try {
 			BaseRequest baseRequest = getParamMapFromRequestPolicy(request, BaseRequest.class);
-			String token = baseRequest.getToken();
-			Integer loginUserId = getUserIdByToken(token);
+//			String token = baseRequest.getToken();
+//			Integer loginUserId = getUserIdByToken(token);
 			Integer projectId = baseRequest.getProjectId();
 			if (projectId == null) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARG_PROJID);
@@ -343,7 +345,11 @@ public class ProjectController extends BaseController {
 			// 帖子类型：1-评测；2-讨论；3-文章
 			query.addQueryData("postType", "3");
 			if (StringUtils.isNotBlank(baseRequest.getSortField())) {
-				query.addQueryData("sortField", baseRequest.getSortField());
+				query.addQueryData("sql_keyword_orderByc", baseRequest.getSortField());
+				query.addQueryData("sql_keyword_sortc", "desc");
+			}else {
+				query.addQueryData("sql_keyword_orderBy", "post_id");
+				query.addQueryData("sql_keyword_sort", "desc");
 			}
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
@@ -440,19 +446,21 @@ public class ProjectController extends BaseController {
 	public BaseResponseEntity searchProjects(HttpServletRequest request) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
-
 		try {
 			JSONObject params = getParamMapFromRequestPolicy(request);
 			String token = (String) params.get("token");
 			String projectCode = (String) params.get("projectCode");
+			Integer pageIndex = (Integer) params.get("pageIndex");
+			Integer pageSize = (Integer) params.get("pageSize");
+			pageIndex=pageIndex==null||pageIndex<1?1:pageIndex;
+			pageSize=pageSize==null||pageSize<1?20:pageSize;
 			Integer userId = null;
 			if (StringUtils.isNotBlank(token)) {
 				userId = getUserIdByToken(token);
 			}
 			// 1-按关注数量倒序；2-按名称排序
 			int sortType = (Integer) params.get("sortType") == null ? 2 : (Integer) params.get("sortType");
-
-			List<ProjectResponse> projects = kffRmiService.findProjectByCode(sortType, userId, projectCode);
+			PageResult<ProjectResponse> projects = kffRmiService.findProjectByCode(sortType, userId, projectCode,pageIndex,pageSize);
 			map.put("projects", projects);
 			bre.setData(map);
 		} catch (RestServiceException e) {

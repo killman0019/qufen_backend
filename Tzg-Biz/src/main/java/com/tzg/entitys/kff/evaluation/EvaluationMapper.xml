@@ -15,6 +15,7 @@
 		<result property="createTime" jdbcType="TIMESTAMP" column="createTime" />
 		<result property="updateTime" jdbcType="TIMESTAMP" column="updateTime" />
 		<result property="createUserId" jdbcType="INTEGER" column="create_user_id" />
+		<result property="tagInfos" jdbcType="VARCHAR" column="tag_infos"/>
 	</resultMap>
 
 
@@ -52,7 +53,8 @@
 	
 	<sql id="columns">
 	    <![CDATA[
-        evaluation_id ,project_id ,post_id,post_uuid,model_type ,total_score ,professional_eva_detail ,evauation_content ,evaluation_tags ,status ,createTime ,updateTime ,create_user_id 
+        evaluation_id ,project_id ,post_id,post_uuid,model_type ,total_score ,professional_eva_detail ,evauation_content ,
+        evaluation_tags ,status ,createTime ,updateTime ,create_user_id
 	    ]]>
 	</sql>
 
@@ -80,7 +82,7 @@
         	status ,
         	createTime ,
         	updateTime ,
-        	create_user_id 
+        	create_user_id
 		) VALUES (
         	#{projectId,jdbcType=INTEGER} ,
         	#{postId,jdbcType=INTEGER} ,
@@ -93,7 +95,7 @@
         	#{status,jdbcType=INTEGER} ,
         	#{createTime,jdbcType=TIMESTAMP} ,
         	#{updateTime,jdbcType=TIMESTAMP} ,
-        	#{createUserId,jdbcType=INTEGER} 
+        	#{createUserId,jdbcType=INTEGER}
 		)
 	]]>
 	</insert>
@@ -190,9 +192,6 @@
 		and project_id = #{projectId} 
 	 
 	</select>
-	
-	
-	
 
 	<select id="findByWhere" resultMap="BaseResultMap" parameterType="java.util.Map">
 		select

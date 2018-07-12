@@ -168,11 +168,13 @@ import com.tzg.rmi.service.KFFRmiService;
 import com.tzg.rmi.service.SmsSendRmiService;
 import com.vdurmont.emoji.Emoji;
 import com.vdurmont.emoji.EmojiParser;
+import com.tzg.common.utils.Numbers;
+import com.tzg.common.utils.sysGlobals;
 
 public class KFFRmiServiceImpl implements KFFRmiService {
 
 	private static final Log logger = LogFactory.getLog(KFFRmiServiceImpl.class);
-
+	
 	@Autowired
 	private ArticleService kffArticleService;
 	@Autowired
@@ -676,27 +678,48 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public List<ProjectResponse> findProjectByCode(int sortType, Integer userId, String projectCode) throws RestServiceException {
-		// if(StringUtils.isBlank(projectCode)){
-		// throw new RestServiceException("查询条件:项目关键字不能为空");
-		// }
-		List<KFFProject> projects = new ArrayList<>();
-		List<ProjectResponse> result = new ArrayList<>();
-		Map<String, Object> map = new HashMap<>();
-		map.put("state", "2");
-		map.put("status", "1");
+	public PageResult<ProjectResponse> findProjectByCode(int sortType, Integer userId, String projectCode
+			,Integer pageIndex,Integer pageSize) throws RestServiceException {
+		PageResult<ProjectResponse> result = new PageResult<ProjectResponse>();
+//		List<KFFProject> projects = new ArrayList<>();
+		List<ProjectResponse> resultc = new ArrayList<ProjectResponse>();
+//		Map<String, Object> map = new HashMap<>();
+//		map.put("state", "2");
+//		map.put("status", "1");
+//		if (StringUtils.isNotBlank(projectCode)) {
+//			map.put("projectCode", projectCode);
+//		}
+//		if (sortType == 1) {
+//			map.put("sortField", "follower_num");
+//		}else if(sortType == 2){
+//			map.put("sortField", "project_code");
+//		}
+//		projects = kffProjectService.findProjectByCode(map);
+		PaginationQuery querys = new PaginationQuery();
+		querys.addQueryData("status", "1");
+		querys.addQueryData("state", "2");
 		if (StringUtils.isNotBlank(projectCode)) {
-			map.put("projectCode", projectCode);
+			querys.addQueryData("projectCode", projectCode);
 		}
 		if (sortType == 1) {
-			map.put("sortField", "follower_num");
+			querys.addQueryData("sortField", "follower_num");
+			querys.addQueryData("sortSequence", "desc");
+		}else if(sortType == 2){
+			querys.addQueryData("sortField", "project_code");
+			querys.addQueryData("sortSequence", "asc");
 		}
-		// else if(sortType == 2){
-		// map.put("sortField", "project_code");
-		// }
-		projects = kffProjectService.findProjectByCode(map);
-		if (CollectionUtils.isNotEmpty(projects)) {
-
+		querys.setPageIndex(pageIndex);
+		querys.setRowsPerPage(pageSize);
+		PageResult<KFFProject> projects = kffProjectService.findPage(querys);
+		
+		if (projects != null && CollectionUtils.isNotEmpty(projects.getRows())) {
+			result.setCurPageNum(projects.getCurPageNum());
+			result.setPageSize(projects.getPageSize());
+			result.setQueryParameters(projects.getQueryParameters());
+			result.setRowCount(projects.getRowCount());
+			result.setRowsPerPage(projects.getRowsPerPage());
+			
+			
 			Set<Integer> followedProjectIds = new HashSet<Integer>();
 			// 登录用户查关注项目列表
 			if (userId != null && userId != 0) {
@@ -716,7 +739,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					}
 				}
 			}
-			for (KFFProject project : projects) {
+			for (KFFProject project : projects.getRows()) {
 				ProjectResponse response = new ProjectResponse();
 				BeanUtils.copyProperties(project, response);
 				// 登录用户
@@ -725,11 +748,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						response.setFollowStatus(1);
 					}
 				}
-				result.add(response);
+				resultc.add(response);
 			}
-
+			result.setRows(resultc);
 		}
-
 		return result;
 	}
 
@@ -1404,6 +1426,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 		article.setPostId(newPost.getPostId());
 		article.setPostUuid(uuid);
+		if(StringUtils.isNotBlank(articleRequest.getTagInfos())) {
+			article.setTagInfos(articleRequest.getTagInfos());
+		}
 		kffArticleService.save(article);
 		result.put("postId", newPost.getPostId());
 		result.put("postType", newPost.getPostType());
@@ -1477,6 +1502,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (discussRequest.getPostTitle().length() > 120) {
 			throw new RestServiceException("讨论标题长度不能超过60字");
 		}
+		if (StringUtils.isBlank(discussRequest.getTagInfos())) {
+			throw new RestServiceException("爆料的标签不能为空！");
+		}
+		
 		KFFUser createUser = kffUserService.findById(discussRequest.getCreateUserId());
 		if (createUser == null) {
 			throw new RestServiceException("用户不存在" + discussRequest.getCreateUserId());
@@ -1779,7 +1808,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		evaluation.setPostId(newPost.getPostId());
 		evaluation.setProjectId(project.getProjectId());
 		evaluation.setPostUuid(uuid);
-		evaluation.setEvaluationTags(evaluationRequest.getEvaluationTags());
+		if(StringUtils.isNotBlank(evaluationRequest.getEvaluationTags())) {
+			evaluation.setEvaluationTags(evaluationRequest.getEvaluationTags());
+		}
 		evaluation.setProfessionalEvaDetail(evaDetail);
 		evaluation.setCreateTime(now);
 		evaluation.setUpdateTime(now);
@@ -2834,7 +2865,13 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						response.setTotalScore(project.getTotalScore());
 					}
 				}
-
+				//查询爆料的标签
+				Discuss discuss = kffDiscussService.findByPostId(post.getPostId());
+				if(null!=discuss) {
+					response.setTagInfos(discuss.getTagInfos());
+				}else {
+					response.setTagInfos(null);
+				}
 				// 设置项目关注状态
 				if (loginUser == null) {
 					response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
@@ -2981,6 +3018,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 		Article article = kffArticleService.findByPostId(postId);
 		response.setArticleContents(article == null ? "" : article.getArticleContents());
+		//标签
+		if(null!=article) {
+			response.setTagInfos(article.getTagInfos());
+		}
+		
 		// 关注状态
 		if (loginUser == null) {
 			response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);

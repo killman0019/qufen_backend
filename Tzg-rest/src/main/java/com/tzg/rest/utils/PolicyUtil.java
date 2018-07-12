@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * Created by wj.song on 2016/5/4 0004.
@@ -71,6 +73,27 @@ public class PolicyUtil {
         }
         return null;
     }
+    
+    // MD5変換
+    public static String Md5(String str) {
+       if (str != null && !str.equals("")) {
+          try {
+             MessageDigest md5 = MessageDigest.getInstance("MD5");
+             char[] HEX = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+             byte[] md5Byte = md5.digest(str.getBytes("UTF8"));
+             StringBuffer sb = new StringBuffer();
+             for (int i = 0; i < md5Byte.length; i++) {
+                sb.append(HEX[(int) (md5Byte[i] & 0xff) / 16]);
+                sb.append(HEX[(int) (md5Byte[i] & 0xff) % 16]);
+             }
+             str = sb.toString();
+          } catch (NoSuchAlgorithmException e) {
+          } catch (Exception e) {
+          }
+       }
+       return str;
+    }
+    
 
     public static void main(String[] args) {
 
@@ -81,10 +104,11 @@ public class PolicyUtil {
 //        System.out.println(date);
 //
 //        String str = "{\"phoneNumber\":\"15967158998\",\"password\":\"11111111\",\"dynamicVerifyCode\":\"488258\"}";
-        String str = "{\"id\":\"9\",\"rise\":\"1\",\"fall\":\"0\"}";
+        String ssr = "{\"phoneNumber\":\"18332331296\",\"password\":\"s232332326\",\"dynamicVerifyCode\":\"\"}";
 
-        String a = encryptPolicy(str);
-        System.out.println(encryptPolicy(str));
+//        String a = encryptPolicy(str);
+        System.out.println("policy:"+encryptPolicy(ssr));
+        System.out.println("sign:"+Md5(ssr));
 //
 //        System.out.println(decryptAES(a));
         

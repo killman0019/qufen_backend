@@ -1,5 +1,6 @@
 package com.tzg.rest.controller.kff;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -108,7 +110,54 @@ public class HomeController extends BaseController {
 		}
 		return bre;
 	}
-
+	
+	/** 
+	* @Title: getBurstList 
+	* @Description: TODO <获取爆料列表>
+	* @author linj <方法创建作者>
+	* @create 上午10:23:11
+	* @param @param request
+	* @param @return <参数说明>
+	* @return BaseResponseEntity 
+	* @throws 
+	* @update 上午10:23:11
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	*/
+	@ResponseBody
+	@RequestMapping(value = "/getBurstList", method = { RequestMethod.POST, RequestMethod.GET })
+	public BaseResponseEntity getBurstList(HttpServletRequest request) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		try {
+			BaseRequest baseRequest = getParamMapFromRequestPolicy(request, BaseRequest.class);
+			String token = baseRequest.getToken();
+			Integer userId = null;
+			if (StringUtils.isNotBlank(token)) {
+				userId = getUserIdByToken(token);
+			}
+			PaginationQuery query = new PaginationQuery();
+			query.addQueryData("status", "1");
+//			query.addQueryData("stickTop", "1");
+			query.addQueryData("sortField", "stick_updateTime");
+//			query.addQueryData("praiseNum", "10");
+			// 帖子类型：2-爆料
+			query.addQueryData("postType", "2");
+			query.setPageIndex(baseRequest.getPageIndex());
+			query.setRowsPerPage(baseRequest.getPageSize());
+			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query);
+			map.put("recommends", recommends);
+			bre.setData(map);
+		} catch (RestServiceException e) {
+			logger.error("HomeController recommendList:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("HomeController recommendList:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+		}
+		return bre;
+	}
+	
 	/**
 	 * 
 	 * @Title: followList
@@ -180,6 +229,7 @@ public class HomeController extends BaseController {
 			query.addQueryData("status", "1");
 			query.addQueryData("state", "2");
 			query.addQueryData("sortField", "total_score");
+			query.addQueryData("sortSequence", "desc");
 			query.setPageIndex(1);
 			query.setRowsPerPage(20);
 			List<ProjectResponse> rankList = kffRmiService.findPageProjectRankList(userId, query);
