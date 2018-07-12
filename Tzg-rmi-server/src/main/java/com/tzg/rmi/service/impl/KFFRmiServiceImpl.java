@@ -676,9 +676,67 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 		return kffDprojectTypeService.findAllProjectTypes();
 	}
+	
+	@Override
+	public List<ProjectResponse> findProjectByCode(int sortType, Integer userId, String projectCode) throws RestServiceException {
+		// if(StringUtils.isBlank(projectCode)){
+		// throw new RestServiceException("查询条件:项目关键字不能为空");
+		// }
+		List<KFFProject> projects = new ArrayList<>();
+		List<ProjectResponse> result = new ArrayList<>();
+		Map<String, Object> map = new HashMap<>();
+		map.put("state", "2");
+		map.put("status", "1");
+		if (StringUtils.isNotBlank(projectCode)) {
+			map.put("projectCode", projectCode);
+		}
+		if (sortType == 1) {
+			map.put("sortField", "follower_num");
+		}
+		// else if(sortType == 2){
+		// map.put("sortField", "project_code");
+		// }
+		projects = kffProjectService.findProjectByCode(map);
+		if (CollectionUtils.isNotEmpty(projects)) {
+
+			Set<Integer> followedProjectIds = new HashSet<Integer>();
+			// 登录用户查关注项目列表
+			if (userId != null && userId != 0) {
+				PaginationQuery query = new PaginationQuery();
+				query.addQueryData("followUserId", userId + "");
+				query.addQueryData("followType", "1"); // 关注类型：1-关注项目;2-关注帖子；3-关注用户
+				query.addQueryData("status", "1");
+				query.setPageIndex(1);
+				query.setRowsPerPage(1000);
+				// query.addQueryData("followedProjectId",
+				// project.getProjectId()+"");
+				PageResult<Follow> follows = kffFollowService.findPage(query);
+
+				if (follows != null && CollectionUtils.isNotEmpty(follows.getRows())) {
+					for (Follow follow : follows.getRows()) {
+						followedProjectIds.add(follow.getFollowedId());
+					}
+				}
+			}
+			for (KFFProject project : projects) {
+				ProjectResponse response = new ProjectResponse();
+				BeanUtils.copyProperties(project, response);
+				// 登录用户
+				if (userId != null && userId != 0) {
+					if (followedProjectIds != null && followedProjectIds.contains(project.getProjectId())) {
+						response.setFollowStatus(1);
+					}
+				}
+				result.add(response);
+			}
+
+		}
+
+		return result;
+	}
 
 	@Override
-	public PageResult<ProjectResponse> findProjectByCode(int sortType, Integer userId, String projectCode
+	public PageResult<ProjectResponse> findProjectByCodePage(int sortType, Integer userId, String projectCode
 			,Integer pageIndex,Integer pageSize) throws RestServiceException {
 		PageResult<ProjectResponse> result = new PageResult<ProjectResponse>();
 //		List<KFFProject> projects = new ArrayList<>();
