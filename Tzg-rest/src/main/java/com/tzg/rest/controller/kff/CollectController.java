@@ -56,6 +56,7 @@ public class CollectController extends BaseController {
         HashMap<String, Object> map = new HashMap<String, Object>();
 
 		try {
+			System.out.println("djqwkdwqkdqwwqdwqdqdqdqw");
 			JSONObject params = getParamMapFromRequestPolicy(request);
             String token = (String) params.get("token");
             Integer postId = (Integer) params.get("postId");            
