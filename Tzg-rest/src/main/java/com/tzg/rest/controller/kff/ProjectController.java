@@ -296,7 +296,7 @@ public class ProjectController extends BaseController {
 				query.addQueryData("sql_keyword_orderByc", baseRequest.getSortField());
 				query.addQueryData("sql_keyword_sortc", "desc");
 			}else {
-				query.addQueryData("sql_keyword_orderBy", "post_id");
+				query.addQueryData("sql_keyword_orderBy", "createTime");
 				query.addQueryData("sql_keyword_sort", "desc");
 			}
 			query.setPageIndex(baseRequest.getPageIndex());
