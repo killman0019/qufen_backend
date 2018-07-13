@@ -1748,6 +1748,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (project == null) {
 			throw new RestServiceException("项目不存在" + evaluationRequest.getProjectId());
 		}
+		boolean allowedPulish = isAllowedPulish(evaluationRequest.getCreateUserId(), project, KFFConstants.POST_TYPE_EVALUATION, null);
+		if (!allowedPulish) {
+			throw new RestServiceException("同一项目15天内只能发起一次评测");
+		}
 		if (3 == evaluationRequest.getModelType()) {
 			// 单项评测 totalScore取出来
 			List<DevaluationModel> onlyevaDetail = JSON.parseArray(evaluationRequest.getProfessionalEvaDetail(), DevaluationModel.class);
@@ -2087,7 +2091,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						Double pc = 5.00d; // 普通评测点赞奖励
 						Double pc2 = 50.00d; // 专业评测点赞奖励
 						Double pc3 = 20.00d; // 单项评测点赞奖励
-						Double tl = 20.00d; // 讨论点赞奖励
+						Double tl = 50.00d; // 讨论点赞奖励
 						Double wz = 20.00d; // 文章点赞奖励
 						Double zanToken = 10.00d;// 有效赞点赞给点赞人的奖励
 						// KFFUser findByUserId = kffUserService.findById(createUserId);
@@ -6322,8 +6326,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		kffUserService.updateUserKFFsetPopZero(loginUserId);
 	}
 
-	@Override
-	public boolean isAllowedPulish(Integer userId, KFFProject project, Integer postType, Integer modeltype) throws RestServiceException {
+	@SuppressWarnings("unused")
+	private boolean isAllowedPulish(Integer userId, KFFProject project, Integer postType, Integer modeltype) throws RestServiceException {
 		Map<String, Object> map = new HashMap<String, Object>();
 		Date now = new Date();
 		if (null == userId) {
