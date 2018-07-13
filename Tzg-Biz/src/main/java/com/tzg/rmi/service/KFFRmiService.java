@@ -295,7 +295,8 @@ public interface KFFRmiService {
 	 * @return
 	 * @throws RestServiceException
 	 */
-	public PageResult<ProjectResponse> findProjectByCode(int sortType, Integer userId, String projectCode,Integer pageIndex,Integer pageSize) throws RestServiceException;
+	public PageResult<ProjectResponse> findProjectByCode(int sortType, Integer userId, String projectCode, Integer pageIndex, Integer pageSize)
+			throws RestServiceException;
 
 	/**
 	 * 更新用户信息
@@ -380,7 +381,7 @@ public interface KFFRmiService {
 	 */
 	public List<KFFUser> findProjectActiveUsers(Integer projectId) throws RestServiceException;
 
-	public int savePraise(Integer userId, Integer postId) throws RestServiceException;
+	public Map<String, Object> savePraise(Integer userId, Integer postId) throws RestServiceException;
 
 	public int cancelPraise(Integer userId, Integer postId) throws RestServiceException;
 
@@ -882,7 +883,8 @@ public interface KFFRmiService {
 	 */
 	public boolean isAllowedPulish(Integer userId, KFFProject project, Integer postType, Integer modeltype) throws RestServiceException;
 
-	/**
+	/*
+		*//**
 	 * 想点赞人发送token奖励只要是有效赞，给点赞人奖励
 	 * 
 	 * 评测、爆料、文章都给予点赞人10个FIND奖励
@@ -896,9 +898,10 @@ public interface KFFRmiService {
 	 * @param format
 	 * @param replaceAllDate
 	 * @throws RestServiceException
-	 *//*
-	public Boolean sendPraiseAwardToPraiser(Integer userId, Integer validPraise, Praise praiseId, String format, String replaceAllDate)
-			throws RestServiceException;
-*/
+	 */
+	/*
+	public Boolean sendPraiseAwardToPraiser(Integer userId, Integer postId)
+		throws RestServiceException;*/
+
 	public void updataQfIndexUser(QfIndex qfIndexUser) throws RestServiceException;
 }

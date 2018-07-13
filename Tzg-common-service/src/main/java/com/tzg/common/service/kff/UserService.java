@@ -27,6 +27,7 @@ import com.tzg.entitys.kff.qfindex.QfIndex;
 import com.tzg.entitys.kff.tokenaward.Tokenaward;
 import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.entitys.kff.user.KFFUserMapper;
+import com.tzg.entitys.kff.usercard.UserCard;
 import com.tzg.entitys.kff.userqfindex.Userqfindex;
 import com.tzg.entitys.kff.userqfindex.UserqfindexMapper;
 import com.tzg.entitys.kff.userwallet.KFFUserWallet;
@@ -273,11 +274,16 @@ public class UserService {
 			if (null == user.getLastLoginDateTime()) {
 				updateUserKFFsetPopZero(user.getUserId());// 0
 				user.setLastLoginDateTime(new Date());
-			}			
+			}
 			if (!DateUtil.isToday(user.getLastLoginDateTime().getTime())) {// 最后一次登陆时间不是今天
 				// 并把时间设置成今天
 				updateUserKFFsetPopZero(user.getUserId());// 0
 				user.setLastLoginDateTime(new Date());
+			}
+			if (null == user.getUsercardStatus()) {
+				Integer userCardStatus = userCardService.selectUserCardStatusByUserId(user.getUserId());
+				user.setUsercardStatus(userCardStatus);
+
 			}
 
 			userMapper.update(user);
@@ -337,10 +343,10 @@ public class UserService {
 
 			}
 			kffUser.setLastLoginDateTime(new Date());
-			if(kffUser.getUsercardStatus()==null){
-			Integer	userCardStatus =  userCardService.selectUserCardStatusByUserId(kffUser.getUserId());
-			kffUser.setUsercardStatus(userCardStatus);
-				
+			if (kffUser.getUsercardStatus() == null) {
+				Integer userCardStatus = userCardService.selectUserCardStatusByUserId(kffUser.getUserId());
+				kffUser.setUsercardStatus(userCardStatus);
+
 			}
 			userMapper.update(kffUser);
 			return kffUser;
