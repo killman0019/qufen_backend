@@ -881,9 +881,9 @@ public interface KFFRmiService {
 	 * @param modeltype
 	 * @return true 允许发布,false 禁止发布
 	 * @throws RestServiceException
-	 */
+	 *//*
 	public boolean isAllowedPulish(Integer userId, KFFProject project, Integer postType, Integer modeltype) throws RestServiceException;
-
+*/
 	/*
 		*//**
 	 * 想点赞人发送token奖励只要是有效赞，给点赞人奖励
