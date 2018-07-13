@@ -2948,12 +2948,36 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						response.setTotalScore(project.getTotalScore());
 					}
 				}
-				// 查询爆料的标签
-				Discuss discuss = kffDiscussService.findByPostId(post.getPostId());
-				if (null != discuss) {
-					response.setTagInfos(discuss.getTagInfos());
-				} else {
-					response.setTagInfos(null);
+				Integer postType = post.getPostType();
+				if(null==postType) {
+					throw new RuntimeException("post没有类型");
+				}
+				if(1==postType) {
+					//查询评测和文章的标签
+					Evaluation evation = kffEvaluationService.findByPostId(post.getPostId());
+					if (null != evation) {
+						response.setEvaluationTags(evation.getEvaluationTags());
+					} else {
+						response.setEvaluationTags(null);
+					}
+				}
+				if(2==postType) {
+					// 查询爆料的标签
+					Discuss discuss = kffDiscussService.findByPostId(post.getPostId());
+					if (null != discuss) {
+						response.setTagInfos(discuss.getTagInfos());
+					} else {
+						response.setTagInfos(null);
+					}
+				}
+				if(3==postType) {
+					//查询文章的标签
+					Article ac = kffArticleService.findByPostId(post.getPostId());
+					if (null != ac) {
+						response.setTagInfos(ac.getTagInfos());
+					} else {
+						response.setTagInfos(null);
+					}
 				}
 				// 设置人的关注状态
 				if (loginUser == null) {
@@ -2966,9 +2990,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
 					}
 				}
-				
-				
-				
 				postResponse.add(response);
 			}
 		}
