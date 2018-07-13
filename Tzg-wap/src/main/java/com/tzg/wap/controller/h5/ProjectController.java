@@ -279,9 +279,9 @@ public class ProjectController extends BaseController {
 	 * @param sortType
 	 * @return
 	 */
-	@RequestMapping(value = "/searchProjects", method = { RequestMethod.POST, RequestMethod.GET })
+	@RequestMapping(value = "/getProjectPage", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public BaseResponseEntity searchProjects(HttpServletRequest request, HttpServletResponse response, 
+	public BaseResponseEntity getProjectPage(HttpServletRequest request, HttpServletResponse response, 
 			String projectCode, Integer sortType,Integer pageIndex,Integer pageSize) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
@@ -308,7 +308,46 @@ public class ProjectController extends BaseController {
 			if (null == sortType) {
 				sortType = 2;
 			}
-			PageResult<ProjectResponse> projects = kffRmiService.findProjectByCode(sortType, userId, projectCode,pageIndex,pageSize);
+			PageResult<ProjectResponse> projects = kffRmiService.findProjectByCodePage(sortType, userId, projectCode,pageIndex,pageSize);
+			map.put("projects", projects);
+			bre.setData(map);
+		} catch (RestServiceException e) {
+			logger.error("ProjectController searchProjects:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("ProjectController searchProjects:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+		}
+		return bre;
+	}
+	
+	/**
+	 * 搜索项目
+	 * 
+	 * @param request
+	 * @param response
+	 * @param token
+	 * @param projectCode
+	 * @param sortType
+	 * @return
+	 */
+	@RequestMapping(value = "/searchProjects", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public BaseResponseEntity searchProjects(HttpServletRequest request, HttpServletResponse response, String projectCode, Integer sortType) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+		HashMap<String, Object> map = new HashMap<String, Object>();
+
+		try {
+			String token = (String) request.getSession().getAttribute("token");
+			Integer userId = getUserIdByToken(token);
+			if (null == sortType) {
+				sortType = 2;
+			}
+
+			if (StringUtils.isBlank(projectCode)) {
+				throw new RestServiceException("查询内容不能为空");
+			}
+			List<ProjectResponse> projects = kffRmiService.findProjectByCode(sortType, userId, projectCode);
 			map.put("projects", projects);
 			bre.setData(map);
 		} catch (RestServiceException e) {

@@ -429,7 +429,7 @@ public class ProjectController extends BaseController {
 		}
 		return bre;
 	}
-
+	
 	/**
 	 * 
 	 * @Title: searchProjects
@@ -446,6 +446,47 @@ public class ProjectController extends BaseController {
 	public BaseResponseEntity searchProjects(HttpServletRequest request) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
+
+		try {
+			JSONObject params = getParamMapFromRequestPolicy(request);
+			String token = (String) params.get("token");
+			String projectCode = (String) params.get("projectCode");
+			Integer userId = null;
+			if (StringUtils.isNotBlank(token)) {
+				userId = getUserIdByToken(token);
+			}
+			// 1-按关注数量倒序；2-按名称排序
+			int sortType = (Integer) params.get("sortType") == null ? 2 : (Integer) params.get("sortType");
+
+			List<ProjectResponse> projects = kffRmiService.findProjectByCode(sortType, userId, projectCode);
+			map.put("projects", projects);
+			bre.setData(map);
+		} catch (RestServiceException e) {
+			logger.error("ProjectController searchProjects:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("ProjectController searchProjects:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+		}
+		return bre;
+	}
+
+	/**
+	 * 
+	 * @Title: getProjectPage
+	 * @Description: 分页搜索获取项目类型列表
+	 * @param @param request
+	 * @param @param response
+	 * @param @return
+	 * @return BaseResponseEntity
+	 * @see
+	 * @throws
+	 */
+	@RequestMapping(value = "/getProjectPage", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public BaseResponseEntity getProjectPage(HttpServletRequest request) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+		HashMap<String, Object> map = new HashMap<String, Object>();
 		try {
 			JSONObject params = getParamMapFromRequestPolicy(request);
 			String token = (String) params.get("token");
@@ -460,7 +501,7 @@ public class ProjectController extends BaseController {
 			}
 			// 1-按关注数量倒序；2-按名称排序
 			int sortType = (Integer) params.get("sortType") == null ? 2 : (Integer) params.get("sortType");
-			PageResult<ProjectResponse> projects = kffRmiService.findProjectByCode(sortType, userId, projectCode,pageIndex,pageSize);
+			PageResult<ProjectResponse> projects = kffRmiService.findProjectByCodePage(sortType, userId, projectCode,pageIndex,pageSize);
 			map.put("projects", projects);
 			bre.setData(map);
 		} catch (RestServiceException e) {
