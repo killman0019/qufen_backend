@@ -146,9 +146,22 @@ public class EvaluationDetailResponse implements Serializable {
 	 * 用户昵称
 	 */
 	private Integer stickTop;
+	
 	private java.lang.String createUserName;
 	private Integer userType;
 
+	/**
+     * 标签ID，名称的json串
+     */ 	
+	private String tagInfos;
+	
+	public String getTagInfos() {
+		return tagInfos;
+	}
+
+	public void setTagInfos(String tagInfos) {
+		this.tagInfos = tagInfos;
+	}
 	public Integer getStickTop() {
 		return stickTop;
 	}
