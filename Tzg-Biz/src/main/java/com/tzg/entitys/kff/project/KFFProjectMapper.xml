@@ -391,7 +391,7 @@
 		DISTINCT
 		project_code , project_chinese_name
 		FROM
-		tbproject where status = 1 and project_icon =2
+		tbproject where status = 1 and state =2
 	</select>
 	<select id="findProjectIdByCodeAndChineseName" resultMap="BaseResultMap">
 		SELECT
