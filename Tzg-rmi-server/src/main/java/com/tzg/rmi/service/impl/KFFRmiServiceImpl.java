@@ -1755,6 +1755,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (!allowedPulish) {
 			throw new RestServiceException("同一项目15天内只能发起一次评测");
 		}
+		allowedPulish = isAllowedPulish(evaluationRequest.getCreateUserId(), project, KFFConstants.POST_TYPE_EVALUATION, 4);
+		if (!allowedPulish) {
+			throw new RestServiceException("同一项目15天内只能发起一次评测");
+		}
 		if (3 == evaluationRequest.getModelType()) {
 			// 单项评测 totalScore取出来
 			List<DevaluationModel> onlyevaDetail = JSON.parseArray(evaluationRequest.getProfessionalEvaDetail(), DevaluationModel.class);
