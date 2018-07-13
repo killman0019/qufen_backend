@@ -1,3 +1,4 @@
+
 package com.tzg.rest.controller.kff;
 
 import java.io.OutputStream;
@@ -56,7 +57,7 @@ public class CollectController extends BaseController {
         HashMap<String, Object> map = new HashMap<String, Object>();
 
 		try {
-			System.out.println("linj  ni zhenhao ");
+			System.out.println("dasdadas");
 			JSONObject params = getParamMapFromRequestPolicy(request);
             String token = (String) params.get("token");
             Integer postId = (Integer) params.get("postId");            
@@ -117,5 +118,4 @@ public class CollectController extends BaseController {
 		return bre;
 	}
 }
-
 
