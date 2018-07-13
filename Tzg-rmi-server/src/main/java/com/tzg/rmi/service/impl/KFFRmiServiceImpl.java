@@ -1144,7 +1144,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						logger.error("文章列表解析帖子缩略图json出错:{}", e);
 					}
 				}
-
+				//取文章的标签！（表设计的有问题，这里暂时这么取）
+				Article article = kffArticleService.findByPostId(post.getPostId());
+				response.setTagInfos(article.getTagInfos());
 				respones.add(response);
 			}
 			result.setRows(respones);
@@ -3663,10 +3665,15 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		totalMap.put("status", "1");
 		BigDecimal commendationNum = kffCommendationService.findCommendationNum(totalMap);
 		response.setCommendationNum(commendationNum);
-
 		kffPostService.increasePageviewNum(postId);
 
 		response.setCommentsNum(post.getCommentsNum());
+		
+		Article article = kffArticleService.findByPostId(postId);
+		// 标签
+		if (null != article) {
+			response.setTagInfos(article.getTagInfos());
+		}
 		return response;
 
 	}
