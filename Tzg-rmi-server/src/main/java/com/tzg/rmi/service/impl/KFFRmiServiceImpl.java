@@ -2955,17 +2955,20 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				} else {
 					response.setTagInfos(null);
 				}
-				// 设置项目关注状态
+				// 设置人的关注状态
 				if (loginUser == null) {
 					response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
 				} else {
-					Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT, post.getProjectId());
+					Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER, post.getProjectId());
 					if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
 						response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
 					} else {
 						response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
 					}
 				}
+				
+				
+				
 				postResponse.add(response);
 			}
 		}
