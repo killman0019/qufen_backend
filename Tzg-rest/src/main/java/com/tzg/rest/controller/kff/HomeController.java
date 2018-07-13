@@ -139,7 +139,7 @@ public class HomeController extends BaseController {
 			PaginationQuery query = new PaginationQuery();
 			query.addQueryData("status", "1");
 //			query.addQueryData("stickTop", "1");
-			query.addQueryData("sortField", "stick_updateTime");
+			query.addQueryData("sortField", "createTime");
 //			query.addQueryData("praiseNum", "10");
 			// 帖子类型：2-爆料
 			query.addQueryData("postType", "2");
