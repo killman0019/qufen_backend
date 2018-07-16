@@ -304,6 +304,9 @@
 		<if test="projectCode != null and projectCode.trim() != ''">
 			and project_code = #{projectCode}
 		</if>
+		<if test="projectCodec != null">
+			and ( project_code like CONCAT('%', #{projectCodec},'%') or project_english_name like CONCAT('%', #{projectCodec},'%') or project_chinese_name like CONCAT('%', #{projectCodec},'%'))
+		</if>
 		<if test="projectEnglishName != null and projectEnglishName.trim() != ''">
 			and project_english_name = #{projectEnglishName}
 		</if>
