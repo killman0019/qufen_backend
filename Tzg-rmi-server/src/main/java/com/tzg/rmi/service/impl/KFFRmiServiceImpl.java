@@ -1145,7 +1145,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				}
 				// 取文章的标签！（表设计的有问题，这里暂时这么取）
 				Article article = kffArticleService.findByPostId(post.getPostId());
-				response.setTagInfos(article.getTagInfos());
+				if (null != article) {
+					response.setTagInfos(article.getTagInfos());
+				}
+
 				respones.add(response);
 			}
 			result.setRows(respones);
@@ -1405,7 +1408,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			throw new RestServiceException("项目不存在" + articleRequest.getProjectId());
 		}
 		// 禁止发纯图片的文章
-		String delHTMLTag = WorkHtmlRegexpUtil.delHTMLTag(articleRequest.getArticleContents());
+		String delHTMLTag = H5AgainDeltagsUtil.h5AgainDeltags(articleRequest.getArticleContents());
 		if (null == delHTMLTag || delHTMLTag.length() == 0) {
 			throw new RestServiceException("请对所发表的内容进行文字描述");
 		}
@@ -2994,7 +2997,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				if (loginUser == null) {
 					response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
 				} else {
-					Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER, post.getProjectId());
+					Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT, post.getProjectId());
 					if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
 						response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
 					} else {
@@ -3281,32 +3284,18 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	@Override
 	public List<Comments> findPageHotCommentsListDis(Integer userId, Integer postId, PaginationQuery query) throws RestServiceException {
 		KFFUser user = null;
+		PageResult<Comments> resultPa = new PageResult<Comments>();
 		if (userId != null && userId != 0) {
 			user = kffUserService.findById(userId);
 		}
 		List<Comments> result = new ArrayList<>();
-		List<Comments> resultp = new ArrayList<>();
-
 		PageResult<Comments> comments = kffCommentsService.findPage(query);
-		int i = 0;
-		for (Comments comments2 : comments.getRows()) {
-
-			if (comments2.getParentCommentsId() == null) {
-				i = i + 1;
-				resultp.add(comments2);
-				if (i == 2) {
-					break;
-				}
-
-			}
-		}
-
-		if (resultp != null && CollectionUtils.isNotEmpty(resultp)) {
+		if (comments != null && CollectionUtils.isNotEmpty(comments.getRows())) {
 			PaginationQuery childQuery = new PaginationQuery();
 			childQuery.setPageIndex(1);
-			childQuery.setRowsPerPage(2);
-			childQuery.addQueryData("postType", KFFConstants.POST_TYPE_DISCUSS + "");
-			for (Comments comment : resultp) {
+			childQuery.setRowsPerPage(10);
+
+			for (Comments comment : comments.getRows()) {
 				Comments finalComment = new Comments();
 				BeanUtils.copyProperties(comment, finalComment);
 				query.addQueryData("parentCommentsId", comment.getCommentsId() + "");
@@ -3315,10 +3304,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					finalComment.setChildCommentsList(childComments.getRows());
 					finalComment.setChildCommentsNum(childComments.getRowCount());
 				}
-
 				// 登录用户判断点赞状态
 				if (user != null) {
-					Praise praise = kffPraiseService.findByPostId(userId, comment.getCommentsId());
+					Praise praise = kffPraiseService.findByCommentsId(userId, comment.getCommentsId());
 					if (praise != null) {
 						finalComment.setPraiseStatus(praise.getStatus());
 					}
@@ -3328,6 +3316,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				result.add(finalComment);
 			}
 		}
+
 		return result;
 	}
 
@@ -3616,6 +3605,36 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			comments.setRows(result);
 		}
 		return comments;
+	}
+
+	private List<Comments> findPageDiscussCommentsListShare(PaginationQuery query, Integer postId) throws RestServiceException {
+
+		List<Comments> result = new ArrayList<>();
+		Map<String, Object> map = new HashMap<String, Object>();
+		query.addQueryData("postId", postId + "");
+		query.addQueryData("status", KFFConstants.STATUS_ACTIVE + "");
+
+		PageResult<Comments> comments = kffCommentsService.findPage(query);
+		if (CollectionUtils.isNotEmpty(comments.getRows())) {
+			PaginationQuery childQuery = new PaginationQuery();
+			childQuery.setPageIndex(1);
+			childQuery.setRowsPerPage(2);
+			childQuery.addQueryData("postType", KFFConstants.POST_TYPE_DISCUSS + "");
+			for (Comments comment : comments.getRows()) {
+				Comments finalComment = new Comments();
+				BeanUtils.copyProperties(comment, finalComment);
+				childQuery.addQueryData("parentCommentsId", comment.getCommentsId() + "");
+				PageResult<Comments> childComments = kffCommentsService.findPage(childQuery);
+				if (childComments != null && CollectionUtils.isNotEmpty(childComments.getRows())) {
+					finalComment.setChildCommentsList(childComments.getRows());
+					finalComment.setChildCommentsNum(childComments.getRowCount());
+				}
+				// 登录用户判断点赞状态
+
+				result.add(finalComment);
+			}
+		}
+		return result;
 	}
 
 	@Override
@@ -5207,7 +5226,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		post.setUuid(null);
 		post.setUpdateTime(null);
 		discussShare.setPost(post);
-
+		discussShare.setDiscuss(discuss);
 		// 赞赏用户列表最多8个
 		List<Commendation> donateUsers = new ArrayList<>();
 		PaginationQuery query = new PaginationQuery();
@@ -5270,27 +5289,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			hotQuery.addQueryData("postType", KFFConstants.POST_TYPE_DISCUSS + "");
 			// 点赞数最多的2个评论
 			hotQuery.addQueryData("sortField", "praise_num");
+			hotQuery.setPageIndex(1);
+			hotQuery.setRowsPerPage(2);
+			List<Comments> hotComments = findPageDiscussCommentsListShare(hotQuery, postId);
 
-			List<Comments> hotComments = this.findPageHotCommentsListDis(post.getCreateUserId(), postId, hotQuery);
-			List<CommentShareFloot> commenthotfl = new ArrayList<>();
-
-			for (Comments commentUserHot : hotComments) {
-
-				CommentShareFloot commentShareFloot = new CommentShareFloot();
-				BeanUtils.copyProperties(commentUserHot, commentShareFloot);
-				int indexOfhot = 0;
-
-				for (Comments commentsli : commentsList) {
-					if (commentsli.getCommentsId() == commentUserHot.getCommentsId()) {
-						int indexOf = commentsList.indexOf(commentsli);
-						indexOfhot = indexOf + 1;
-					}
-				}
-
-				commentShareFloot.setFloot(indexOfhot);
-				commenthotfl.add(commentShareFloot);
-			}
-			discussShare.setCommentsehot(commenthotfl);
+			discussShare.setCommentsehot(hotComments);
 		}
 		/******************* 新的2个评论 目前不用 **************************/
 		/*
@@ -5304,7 +5307,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		 * this.findPageNewestCommentsDis(post.getCreateUserId(), postId,
 		 * newQuery);
 		 * 
-		 * List<CommentShareFloot> commentnewfl = new ArrayList<>(); for
+		
 		 * (Comments commentUsernew : newestComments) {
 		 * 
 		 * CommentShareFloot commentShareFloot = new CommentShareFloot();
@@ -5347,8 +5350,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 		// discussShare.setCommentseZanDuoOnly(commentShareFlootZanDuoOnly);
 		// 设置评论总数
-		Integer commentsSum = kffCommentsService.findCommentsSum();
-		discussShare.setCommentseSum(commentsSum);
+		/*Integer commentsSum = kffCommentsService.findCommentsSum();
+		discussShare.setCommentseSum(commentsSum);*/
 		return discussShare;
 	}
 

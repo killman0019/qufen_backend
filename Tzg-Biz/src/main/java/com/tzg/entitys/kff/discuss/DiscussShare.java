@@ -3,6 +3,7 @@ package com.tzg.entitys.kff.discuss;
 import java.io.Serializable;
 import java.util.List;
 
+import com.tzg.common.page.PageResult;
 import com.tzg.entitys.kff.commendation.Commendation;
 import com.tzg.entitys.kff.comments.CommentShareFloot;
 import com.tzg.entitys.kff.comments.Comments;
@@ -14,12 +15,21 @@ public class DiscussShare implements Serializable {
 	 */
 	private static final long serialVersionUID = 2948067706016260207L;
 	private String tagInfo;
-	private List<CommentShareFloot> commentsehot;
-	private List<CommentShareFloot> commentseNew;
-	private List<CommentShareFloot> commentseZanDuo;
+	private List<Comments> commentsehot;
+	private List<Comments> commentseNew;
+	private List<Comments> commentseZanDuo;
 	private CommentShareFloot commentseZanDuoOnly;
 	private Integer commentseSum;
 	private Integer cUsertype;
+	private Discuss discuss;
+
+	public Discuss getDiscuss() {
+		return discuss;
+	}
+
+	public void setDiscuss(Discuss discuss) {
+		this.discuss = discuss;
+	}
 
 	public Integer getcUsertype() {
 		return cUsertype;
@@ -68,27 +78,27 @@ public class DiscussShare implements Serializable {
 		return post;
 	}
 
-	public List<CommentShareFloot> getCommentsehot() {
+	public List<Comments> getCommentsehot() {
 		return commentsehot;
 	}
 
-	public void setCommentsehot(List<CommentShareFloot> commentsehot) {
+	public void setCommentsehot(List<Comments> commentsehot) {
 		this.commentsehot = commentsehot;
 	}
 
-	public List<CommentShareFloot> getCommentseNew() {
+	public List<Comments> getCommentseNew() {
 		return commentseNew;
 	}
 
-	public void setCommentseNew(List<CommentShareFloot> commentseNew) {
+	public void setCommentseNew(List<Comments> commentseNew) {
 		this.commentseNew = commentseNew;
 	}
 
-	public List<CommentShareFloot> getCommentseZanDuo() {
+	public List<Comments> getCommentseZanDuo() {
 		return commentseZanDuo;
 	}
 
-	public void setCommentseZanDuo(List<CommentShareFloot> commentseZanDuo) {
+	public void setCommentseZanDuo(List<Comments> commentseZanDuo) {
 		this.commentseZanDuo = commentseZanDuo;
 	}
 

@@ -261,7 +261,19 @@ public class WorkHtmlRegexpUtil {
 		        addAttributes("img", new String[]{"align", "alt", "height", "src", "title", "width"}).
 		        addProtocols("img", "src", new String[]{"http", "https"}));*/
 		htmlStr = htmlStr.replace("&nbsp;", "  ");
-		htmlStr= htmlStr.replace("&nbsp", "  ");
+		htmlStr = htmlStr.replace("&nbsp", "  ");
+		htmlStr = htmlStr.replace("&amp;nbsp;", " ");
+		// 除去&lt;h1&gt;
+		// 除去&ldquo;
+		htmlStr = htmlStr.replace("&ldquo;", " ");
+		System.out.println("=============去标签begin==================");
+		// 去除&rdquo;
+		htmlStr = htmlStr.replace("&rdquo;", " ");
+		// 除去&lt;h1&gt;
+		htmlStr = htmlStr.replace("&lt;h1&gt;", " ");
+		// 去除&nbsp;
+		htmlStr = htmlStr.replace("&nbsp;", " ");
+		htmlStr = htmlStr.replace("&nbsp", " ");
 		htmlStr = htmlStr.replaceAll("[\ud800\udc00-\udbff\udfff\ud800-\udfff]", "");
 		htmlStr = Jsoup.clean(htmlStr, Whitelist.none());
 		return htmlStr.trim(); // 返回文本字符串
