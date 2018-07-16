@@ -18,6 +18,8 @@ import com.tzg.entitys.kff.evaluation.EvaluationDetailResponse;
 import com.tzg.entitys.kff.evaluation.EvaluationMapper;
 import com.tzg.entitys.kff.praise.Praise;
 import com.tzg.entitys.kff.praise.PraiseMapper;
+import com.tzg.entitys.kff.user.KFFUser;
+import com.tzg.entitys.kff.user.KFFUserMapper;
 import com.tzg.rest.exception.rest.RestServiceException;
 
 @Service(value = "KFFEvaluationService")
@@ -29,6 +31,9 @@ public class EvaluationService {
 
 	@Autowired
 	private PraiseMapper praiseMapper;
+
+	@Autowired
+	private KFFUserMapper kFFUserMapper;
 
 	@Transactional(readOnly = true)
 	public Evaluation findById(java.lang.Integer id) throws RestServiceException {
@@ -211,7 +216,10 @@ public class EvaluationService {
 						mappraise.put("status", "1");
 						Integer praiseNum = praiseMapper.findPageCount(mappraise);
 						response.setPraiseNum(praiseNum);
-
+						KFFUser createUser = kFFUserMapper.findById(response.getCreateUserId());
+						if (null != createUser) {
+							response.setUserType(createUser.getUserType());
+						}
 					}
 
 				}

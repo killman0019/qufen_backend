@@ -191,6 +191,9 @@ public class UserService {
 				// 账号或者密码错误
 				return null;
 			}
+			if (loninUser.getStatus() == 0) {
+				throw new RestServiceException("当前账户因违规已暂停使用，请联系客服");
+			}
 			Integer userId = loninUser.getUserId();
 			System.err.println("登录用户的ID  :" + userId);
 			// 根据用户id去tokenaward表中获取发放状态 grantType
@@ -230,6 +233,9 @@ public class UserService {
 			if (null == loninUser) {
 				// 账号或者密码错误
 				return null;
+			}
+			if (loninUser.getStatus() == 0) {
+				throw new RestServiceException("当前账户因违规已暂停使用，请联系客服");
 			}
 			Integer userId = loninUser.getUserId();
 			// 根据用户id去tokenaward表中获取发放状态 grantType

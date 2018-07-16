@@ -8,160 +8,161 @@ import com.tzg.common.utils.DateUtil;
 
 public class PostResponse implements Serializable {
 
-	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -2265875960205049361L;
-	
-	//0 未关注；1-已关注；2-不显示关注按钮
+
+	// 0 未关注；1-已关注；2-不显示关注按钮
 	private java.lang.Integer followStatus = 2;
-	
+
 	private java.lang.String actionDesc;
-	
+
 	private java.lang.Integer actionType;
-	
+
 	/**
-     * postId
-     */ 	
+	 * postId
+	 */
 	private java.lang.Integer postId;
-    /**
-     * 项目ID
-     */ 	
+	/**
+	 * 项目ID
+	 */
 	private java.lang.Integer projectId;
-    /**
-     * projectIcon
-     */ 	
+	/**
+	 * projectIcon
+	 */
 	private java.lang.String projectIcon;
-    /**
-     * projectCode
-     */ 	
+	/**
+	 * projectCode
+	 */
 	private java.lang.String projectCode;
-    /**
-     * projectEnglishName
-     */ 	
+	/**
+	 * projectEnglishName
+	 */
 	private java.lang.String projectEnglishName;
-	
-    /**
-     * projectChineseName
-     */ 	
+
+	/**
+	 * projectChineseName
+	 */
 	private java.lang.String projectChineseName;
-	
-    /**
-     * 项目标题
-     */ 	
+
+	/**
+	 * 项目标题
+	 */
 	private java.lang.String projectSignature;
-	
-    /**
-     * 项目总评分：1-10精确到1位
-     */ 	
+
+	/**
+	 * 项目总评分：1-10精确到1位
+	 */
 	private BigDecimal totalScore = BigDecimal.ZERO;
-	
-    /**
-     * 帖子标题
-     */ 	
+
+	/**
+	 * 帖子标题
+	 */
 	private java.lang.String postTitle;
-    /**
-     * 帖子类型：1-评测；2-讨论；3-文章
-     */ 	
+	/**
+	 * 帖子类型：1-评测；2-讨论；3-文章
+	 */
 	private java.lang.Integer postType;
-    /**
-     * 剪短描述
-     */ 	
+	/**
+	 * 剪短描述
+	 */
 	private java.lang.String postShortDesc;
-	
-    /**
-     * 缩略图json，目前最多三张图的url等信息
-     */ 	
+
+	/**
+	 * 缩略图json，目前最多三张图的url等信息
+	 */
 	private List<PostFile> postSmallImagesList;
-	
-    /**
-     * 缩略图json，目前最多三张图的url等信息
-     */ 	
+
+	/**
+	 * 缩略图json，目前最多三张图的url等信息
+	 */
 	private java.lang.String postSmallImages;
-    /**
-     * 评论数量
-     */ 	
+	/**
+	 * 评论数量
+	 */
 	private java.lang.Integer commentsNum;
-    /**
-     * 点赞数
-     */ 	
+	/**
+	 * 点赞数
+	 */
 	private java.lang.Integer praiseNum;
-    /**
-     * 浏览量
-     */ 	
+	/**
+	 * 浏览量
+	 */
 	private java.lang.Integer pageviewNum;
-    /**
-     * 捐赠人数
-     */ 	
+	/**
+	 * 捐赠人数
+	 */
 	private java.lang.Integer donateNum;
-    /**
-     * 收藏人数
-     */ 	
+	/**
+	 * 收藏人数
+	 */
 	private java.lang.Integer collectNum;
-    /**
-     * 用户ID
-     */ 	
+	/**
+	 * 用户ID
+	 */
 	private java.lang.Integer createUserId;
-    /**
-     * 用户头像
-     */ 	
+	/**
+	 * 用户头像
+	 */
 	private java.lang.String createUserIcon;
-    /**
-     * 用户签名
-     */ 	
+	/**
+	 * 用户签名
+	 */
 	private java.lang.String createUserSignature;
-    /**
-     * 用户昵称
-     */ 	
+	/**
+	 * 用户昵称
+	 */
 	private java.lang.String createUserName;
-    /**
-     * createTime
-     */ 	
+	/**
+	 * 用户类型
+	 */
+	private Integer userType;
+	/**
+	 * createTime
+	 */
 	private java.util.Date createTime;
 	private java.lang.String createTimeStr;
-    /**
-     * updateTime
-     */ 	
+	/**
+	 * updateTime
+	 */
 	private java.util.Date updateTime;
 	private java.lang.String updateTimeStr;
-    /**
-     * 状态：0-删除；1-有效
-     */ 	
+	/**
+	 * 状态：0-删除；1-有效
+	 */
 	private java.lang.Integer status;
 
-	
-	//discuss内容
+	// discuss内容
 	/**
-     * discussId
-     */ 	
+	 * discussId
+	 */
 	private java.lang.Integer discussId;
-    /**
-     * 讨论内容
-     */ 	
+	/**
+	 * 讨论内容
+	 */
 	private java.lang.String disscussContents;
-    /**
-     * 标签ID，名称的json串
-     */ 	
+	/**
+	 * 标签ID，名称的json串
+	 */
 	private java.lang.String tagInfos;
-	
-	
-	//eva内容
-    /**
-     * 1-10，小数点1位
-     */ 	
+
+	// eva内容
+	/**
+	 * 1-10，小数点1位
+	 */
 	private BigDecimal evaTotalScore = BigDecimal.ZERO;
-    /**
-     * 专业评测各子项评测内容详情json字符串
-     */ 	
+	/**
+	 * 专业评测各子项评测内容详情json字符串
+	 */
 	private java.lang.String professionalEvaDetail;
-    /**
-     * 评测描述信息
-     */ 	
+	/**
+	 * 评测描述信息
+	 */
 	private java.lang.String evauationContent;
-    /**
-     * 评测表标签
-     */ 	
+	/**
+	 * 评测表标签
+	 */
 	private java.lang.String evaluationTags;
 
 	public BigDecimal getEvaTotalScore() {
@@ -231,53 +232,51 @@ public class PostResponse implements Serializable {
 	public void setPostId(java.lang.Integer value) {
 		this.postId = value;
 	}
-	
+
 	public java.lang.Integer getPostId() {
 		return this.postId;
 	}
-	
+
 	public void setProjectId(java.lang.Integer value) {
 		this.projectId = value;
 	}
-	
+
 	public java.lang.Integer getProjectId() {
 		return this.projectId;
 	}
-	
+
 	public void setProjectIcon(java.lang.String value) {
 		this.projectIcon = value;
 	}
-	
+
 	public java.lang.String getProjectIcon() {
 		return this.projectIcon;
 	}
-	
+
 	public void setProjectCode(java.lang.String value) {
 		this.projectCode = value;
 	}
-	
+
 	public java.lang.String getProjectCode() {
 		return this.projectCode;
 	}
-	
+
 	public void setProjectEnglishName(java.lang.String value) {
 		this.projectEnglishName = value;
 	}
-	
+
 	public java.lang.String getProjectEnglishName() {
 		return this.projectEnglishName;
 	}
-	
+
 	public void setPostTitle(java.lang.String value) {
 		this.postTitle = value;
 	}
-	
+
 	public java.lang.String getPostTitle() {
 		return this.postTitle;
 	}
-	
-	
-	
+
 	public java.lang.Integer getPostType() {
 		return postType;
 	}
@@ -289,13 +288,10 @@ public class PostResponse implements Serializable {
 	public void setPostShortDesc(java.lang.String value) {
 		this.postShortDesc = value;
 	}
-	
+
 	public java.lang.String getPostShortDesc() {
 		return this.postShortDesc;
 	}
-	
-	
-	
 
 	public List<PostFile> getPostSmallImagesList() {
 		return postSmallImagesList;
@@ -316,105 +312,105 @@ public class PostResponse implements Serializable {
 	public void setCommentsNum(java.lang.Integer value) {
 		this.commentsNum = value;
 	}
-	
+
 	public java.lang.Integer getCommentsNum() {
 		return this.commentsNum;
 	}
-	
+
 	public void setPraiseNum(java.lang.Integer value) {
 		this.praiseNum = value;
 	}
-	
+
 	public java.lang.Integer getPraiseNum() {
 		return this.praiseNum;
 	}
-	
+
 	public void setPageviewNum(java.lang.Integer value) {
 		this.pageviewNum = value;
 	}
-	
+
 	public java.lang.Integer getPageviewNum() {
 		return this.pageviewNum;
 	}
-	
+
 	public void setDonateNum(java.lang.Integer value) {
 		this.donateNum = value;
 	}
-	
+
 	public java.lang.Integer getDonateNum() {
 		return this.donateNum;
 	}
-	
+
 	public void setCollectNum(java.lang.Integer value) {
 		this.collectNum = value;
 	}
-	
+
 	public java.lang.Integer getCollectNum() {
 		return this.collectNum;
 	}
-	
+
 	public void setCreateUserId(java.lang.Integer value) {
 		this.createUserId = value;
 	}
-	
+
 	public java.lang.Integer getCreateUserId() {
 		return this.createUserId;
 	}
-	
+
 	public void setCreateUserIcon(java.lang.String value) {
 		this.createUserIcon = value;
 	}
-	
+
 	public java.lang.String getCreateUserIcon() {
 		return this.createUserIcon;
 	}
-	
+
 	public void setCreateUserSignature(java.lang.String value) {
 		this.createUserSignature = value;
 	}
-	
+
 	public java.lang.String getCreateUserSignature() {
 		return this.createUserSignature;
 	}
-	
+
 	public void setCreateUserName(java.lang.String value) {
 		this.createUserName = value;
 	}
-	
+
 	public java.lang.String getCreateUserName() {
 		return this.createUserName;
 	}
-	
+
 	public void setcreateTime(java.util.Date value) {
-		this.createTimeStr =DateUtil.getDate(value, "yyyy-MM-dd HH:mm:ss");
+		this.createTimeStr = DateUtil.getDate(value, "yyyy-MM-dd HH:mm:ss");
 		this.createTime = value;
 	}
-	
+
 	public java.util.Date getcreateTime() {
 		return this.createTime;
 	}
-	
+
 	public java.lang.String getcreateTimeStr() {
 		return this.createTimeStr;
 	}
-	
+
 	public void setUpdateTime(java.util.Date value) {
-		this.updateTimeStr =DateUtil.getDate(value, "yyyy-MM-dd HH:mm:ss");
+		this.updateTimeStr = DateUtil.getDate(value, "yyyy-MM-dd HH:mm:ss");
 		this.updateTime = value;
 	}
-	
+
 	public java.util.Date getUpdateTime() {
 		return this.updateTime;
 	}
-	
+
 	public java.lang.String getUpdateTimeStr() {
 		return this.updateTimeStr;
 	}
-	
+
 	public void setStatus(java.lang.Integer value) {
 		this.status = value;
 	}
-	
+
 	public java.lang.Integer getStatus() {
 		return this.status;
 	}
@@ -435,7 +431,6 @@ public class PostResponse implements Serializable {
 		this.projectSignature = projectSignature;
 	}
 
-	
 	public BigDecimal getTotalScore() {
 		return totalScore;
 	}
@@ -460,6 +455,12 @@ public class PostResponse implements Serializable {
 		this.actionType = actionType;
 	}
 
-	
-}
+	public Integer getUserType() {
+		return userType;
+	}
 
+	public void setUserType(Integer userType) {
+		this.userType = userType;
+	}
+
+}

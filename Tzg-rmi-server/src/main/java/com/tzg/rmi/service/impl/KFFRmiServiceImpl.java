@@ -1033,6 +1033,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					response.setEvauationContent(eva.getEvauationContent());
 					response.setTotalScore(eva.getTotalScore());
 				}
+				if (null != post) {
+					KFFUser createUser = kffUserService.findByUserId(post.getCreateUserId());
+					if (null != createUser) {
+						response.setUserType(createUser.getUserType());
+					}
+				}
 				respones.add(response);
 			}
 			result.setRows(respones);
@@ -1113,6 +1119,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					response.setDisscussContents(discuss.getDisscussContents());
 					response.setTagInfos(discuss.getTagInfos());
 				}
+				if (null != post) {
+					KFFUser createUser = kffUserService.findByUserId(post.getCreateUserId());
+					if (null != createUser) {
+						response.setUserType(createUser.getUserType());
+					}
+				}
 				respones.add(response);
 			}
 			result.setRows(respones);
@@ -1148,7 +1160,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				if (null != article) {
 					response.setTagInfos(article.getTagInfos());
 				}
-
+				if (null != post) {
+					KFFUser createUser = kffUserService.findByUserId(post.getCreateUserId());
+					if (null != createUser) {
+						response.setUserType(createUser.getUserType());
+					}
+				}
 				respones.add(response);
 			}
 			result.setRows(respones);
@@ -3128,6 +3145,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (userId != null) {
 			loginUser = kffUserService.findById(userId);
 		}
+
 		if (postId == null || postId == 0) {
 			throw new RestServiceException(RestErrorCode.MISSING_ARG_POSTID);
 		}
@@ -3203,6 +3221,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 		kffPostService.increasePageviewNum(postId);
 		response.setCommentsNum(post.getCommentsNum());
+
+		KFFUser createUser = kffUserService.findByUserId(post.getCreateUserId());
+		if (null != createUser) {
+			response.setUserType(createUser.getUserType());
+		}
 		return response;
 	}
 

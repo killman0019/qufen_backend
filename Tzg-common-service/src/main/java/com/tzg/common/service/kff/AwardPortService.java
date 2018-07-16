@@ -138,7 +138,7 @@ public class AwardPortService {
 	public void method1(Integer userId) {
 		KFFUser user = kffUserService.findByUserId(userId);
 		// 判断如果用户没有被邀请 并且是普通用户
-		if (user.getReferLevel() == 0 && (user.getUserType() == 1 || user.getUserType() == 4)) {
+		if (user.getReferLevel() == 0 && (user.getUserType() == 1 || user.getUserType() == 4)) {// 没有邀请人并且是普通用户或者机构用户
 			m0 = 50000d;
 			// 没有邀请人
 			// 将用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
@@ -199,14 +199,14 @@ public class AwardPortService {
 			kffTokenrecordsService.save(tokenrecords);*/
 
 			// 有邀请人,并且注册的是普通用户
-		} else if (user.getReferLevel() == 1 && (user.getUserType() == 1 || user.getUserType() == 4)) {
+		} else if (user.getReferLevel() == 1 && (user.getUserType() == 1 || user.getUserType() == 4)) {// 有邀请人且是普通用户或者机构用户
 			// 获取邀请人的id
 			Integer referUserId = user.getReferUserId();
 			// 获取邀请人的对象
 			KFFUser user2 = kffUserService.findById(referUserId);
 
 			// 判断邀请人是普通用户，并且没有上一级邀请
-			if ((user2.getUserType() == 1 || user2.getUserType() == 4) && user2.getReferLevel() == 0) {
+			if ((user2.getUserType() == 1 || user2.getUserType() == 4) && user2.getReferLevel() == 0) {// 邀请人的是普通用户或者机构用户且邀请人没上上级邀请人
 				m0 = 50000d;
 				m1 = 2500d;
 				// 将注册用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
@@ -242,8 +242,8 @@ public class AwardPortService {
 				// List<Tokenaward> findByUserId2 =
 				// kffTokenawardService.findByUserId(user2.getUserId());
 				// 获取邀请人邀请的钱数的总额
-				Double sum = kffTokenawardService.reawardSum1(user2.getUserId());
-				if (sum < 50000) {
+				Double sum = kffTokenawardService.reawardSum1(user2.getUserId());// 上级邀请人获得邀请奖励总和
+				if (sum < 50000) {// 总和小于50000
 					// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 					Tokenaward tokenaward2 = new Tokenaward();
 					tokenaward2.setUserId(user2.getUserId());
@@ -281,8 +281,8 @@ public class AwardPortService {
 					kffTokenrecordsService.save(tokenrecords2);*/
 
 				}
-			} else if ((user2.getUserType() == 2 || user2.getUserType() == 3) && user2.getReferLevel() == 0) {
-				Integer findReferCount = kffUserService.findReferCount(user2.getUserId());
+			} else if ((user2.getUserType() == 2 || user2.getUserType() == 3) && user2.getReferLevel() == 0) {// 邀请人是项目方或者评测媒体且邀请人没有上级邀请人
+				Integer findReferCount = kffUserService.findReferCount(user2.getUserId());// 邀请人一共邀请了多少用户
 				if (findReferCount <= 1000) {
 					m0 = 50000d * 150 / 100;
 					m1 = 2500d * 150 / 100;
@@ -360,11 +360,11 @@ public class AwardPortService {
 					kffTokenrecordsService.save(tokenrecords2);*/
 
 				}
-			} else if ((user2.getUserType() == 1 || user2.getUserType() == 4) && user2.getReferLevel() == 1) {
+			} else if ((user2.getUserType() == 1 || user2.getUserType() == 4) && user2.getReferLevel() == 1) {// 有上级邀请人,且上级邀请人是普通用户或者机构用户
 				// 获取上上级的用户表
-				KFFUser user3 = kffUserService.findById(user2.getReferUserId());
+				KFFUser user3 = kffUserService.findById(user2.getReferUserId());//查找上级邀请人的上级邀请人对象
 				// 判断注册用户的上上级是普通用户
-				if ((user3.getUserType() == 1 || user3.getUserType() == 4)) {
+				if ((user3.getUserType() == 1 || user3.getUserType() == 4)) {//如果二级邀请人是普通用户或者机构用户
 					m0 = 50000d;
 					m1 = 2500d;
 					m2 = 500d;
@@ -481,7 +481,7 @@ public class AwardPortService {
 
 				}
 
-				else if ((user3.getUserType() == 2 || user3.getUserType() == 3)) {
+				else if ((user3.getUserType() == 2 || user3.getUserType() == 3)) {//如果二级邀请人是项目方或者评测机构
 					Integer findReferCount = kffUserService.findReferCount(user3.getUserId());
 					if (findReferCount <= 1000) {
 						m0 = 50000d;
@@ -673,7 +673,7 @@ public class AwardPortService {
 					 */
 				}
 				// 如果上级邀请人是是项目方，并且有上级邀请人
-			} else if ((user2.getUserType() == 2 || user2.getUserType() == 3) && user2.getReferLevel() == 1) {
+			} else if ((user2.getUserType() == 2 || user2.getUserType() == 3) && user2.getReferLevel() == 1) {// 有上级用户且上级用户是项目方或者评测机构
 
 				// 获取上上级的用户表
 				KFFUser user3 = kffUserService.findById(user2.getReferUserId());

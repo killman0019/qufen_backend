@@ -72,9 +72,20 @@ public class FollowService {
 		map.put("followUserId", userId + "");
 		map.put("followType", followType + "");
 		map.put("followedId", followedId + "");
+		
 		return followMapper.findByWhere(map);
 	}
 
+	public Follow findByUserIdAndFollowTypeShow(Integer userId, Integer followType, Integer followedId) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("followUserId", userId + "");
+		map.put("followType", followType + "");
+		map.put("followedId", followedId + "");
+		map.put("status", "1");
+		return followMapper.findByWhere(map);
+	}
+
+	
 	public void updateUserInfo(Map<String, Object> followMap) {
 
 		followMapper.updateUserInfo(followMap);
