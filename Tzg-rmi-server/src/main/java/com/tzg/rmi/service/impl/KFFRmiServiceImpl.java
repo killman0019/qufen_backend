@@ -736,28 +736,28 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public PageResult<ProjectResponse> findProjectByCodePage(int sortType, Integer userId, String projectCode, Integer pageIndex, Integer pageSize)
-			throws RestServiceException {
+	public PageResult<ProjectResponse> findProjectByCodePage(int sortType, Integer userId, String projectCode
+			,Integer pageIndex,Integer pageSize) throws RestServiceException {
 		PageResult<ProjectResponse> result = new PageResult<ProjectResponse>();
-		// List<KFFProject> projects = new ArrayList<>();
+//		List<KFFProject> projects = new ArrayList<>();
 		List<ProjectResponse> resultc = new ArrayList<ProjectResponse>();
-		// Map<String, Object> map = new HashMap<>();
-		// map.put("state", "2");
-		// map.put("status", "1");
-		// if (StringUtils.isNotBlank(projectCode)) {
-		// map.put("projectCode", projectCode);
-		// }
-		// if (sortType == 1) {
-		// map.put("sortField", "follower_num");
-		// }else if(sortType == 2){
-		// map.put("sortField", "project_code");
-		// }
-		// projects = kffProjectService.findProjectByCode(map);
+//		Map<String, Object> map = new HashMap<>();
+//		map.put("state", "2");
+//		map.put("status", "1");
+//		if (StringUtils.isNotBlank(projectCode)) {
+//			map.put("projectCode", projectCode);
+//		}
+//		if (sortType == 1) {
+//			map.put("sortField", "follower_num");
+//		}else if(sortType == 2){
+//			map.put("sortField", "project_code");
+//		}
+//		projects = kffProjectService.findProjectByCode(map);
 		PaginationQuery querys = new PaginationQuery();
 		querys.addQueryData("status", "1");
 		querys.addQueryData("state", "2");
 		if (StringUtils.isNotBlank(projectCode)) {
-			querys.addQueryData("projectCode", projectCode);
+			querys.addQueryData("projectCodec", projectCode);
 		}
 		if (sortType == 1) {
 			querys.addQueryData("sortField", "follower_num");
@@ -3014,7 +3014,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				if (loginUser == null) {
 					response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
 				} else {
-					Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT, post.getProjectId());
+					Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER, post.getCreateUserId());
 					if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
 						response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
 					} else {
