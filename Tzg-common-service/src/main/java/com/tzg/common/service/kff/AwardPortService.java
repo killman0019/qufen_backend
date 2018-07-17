@@ -70,7 +70,7 @@ public class AwardPortService {
 
 			if (userId != null && userId != 0) {
 				// 判断注册用户在哪个区间
-				if (userId > 0 && userId <= 50000) {
+				if (userId > 0 && userId <= 50000) {//用户的id在0到50000 区间
 
 					List<Tokenaward> findByUserId = kffTokenawardService.findByUserId(userId);
 

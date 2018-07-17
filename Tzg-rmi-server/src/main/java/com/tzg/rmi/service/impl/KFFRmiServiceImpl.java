@@ -1157,6 +1157,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			result.setRowsPerPage(posts.getRowsPerPage());
 
 			for (Post post : posts.getRows()) {
+				post.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(post.getPostShortDesc()));
 				PostResponse response = new PostResponse();
 				BeanUtils.copyProperties(post, response);
 				if (StringUtils.isNotBlank(post.getPostSmallImages())) {
@@ -1178,6 +1179,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						response.setUserType(createUser.getUserType());
 					}
 				}
+				if (response != null) {
+					String delHTMLTag = WorkHtmlRegexpUtil.delHTMLTag(response.getPostShortDesc());
+					response.setPostShortDesc(delHTMLTag);
+				}
+
 				respones.add(response);
 			}
 			result.setRows(respones);
@@ -1437,9 +1443,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			throw new RestServiceException("项目不存在" + articleRequest.getProjectId());
 		}
 		// 禁止发纯图片的文章
-		String delHTMLTag = H5AgainDeltagsUtil.h5AgainDeltags(articleRequest.getArticleContents());
-		delHTMLTag = WorkHtmlRegexpUtil.delHTMLTag(delHTMLTag);
-		articleRequest.setArticleContents(delHTMLTag);
+		String delHTMLTag = WorkHtmlRegexpUtil.delHTMLTag(articleRequest.getArticleContents());
+		delHTMLTag = H5AgainDeltagsUtil.h5AgainDeltags(delHTMLTag);
 		if (null == delHTMLTag || delHTMLTag.length() == 0) {
 			throw new RestServiceException("请对所发表的内容进行文字描述");
 		}
@@ -2951,6 +2956,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			result.setRowCount(posts.getRowCount());
 			result.setRowsPerPage(posts.getRowsPerPage());
 			for (Post post : posts.getRows()) {
+				post.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(post.getPostShortDesc()));
 				PostResponse response = new PostResponse();
 				response.setcreateTime(post.getCreateTime());
 				response.setCreateUserId(post.getCreateUserId());
