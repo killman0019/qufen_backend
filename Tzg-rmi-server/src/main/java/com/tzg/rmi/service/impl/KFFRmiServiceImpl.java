@@ -3035,7 +3035,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 							response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
 						}
 					}else if(type==1) {
-						Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT, post.getPostId());
+						Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT, post.getProjectId());
 						if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
 							response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
 						} else {
