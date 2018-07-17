@@ -323,6 +323,7 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 				PostResponse pr = new PostResponse();
 				Post realPost = null;
 				// 评测去除简单评测
+
 				if (null != post) {
 					if (StringUtils.isNotBlank(post.getPostShortDesc())) {
 						post.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(post.getPostShortDesc()));
@@ -395,6 +396,8 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 					user = kffUserService.findById(post.getCreateUserId());
 					pr.setActionDesc(user == null ? "匿名用户" : user.getUserName() + "关注了项目");
 					KFFProject project = kffProjectService.findById(post.getPostId());
+					//realPost = kffPostService.findById(post.getPostId());
+					//realPost.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(realPost.getPostShortDesc()));
 					if (project != null) {
 						BeanUtils.copyProperties(project, pr);
 					}
@@ -413,6 +416,7 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 				} else if (Objects.equal(4, post.getPostType())) {
 					pr.setActionDesc("关注项目下发表了新帖");
 					realPost = kffPostService.findById(post.getPostId());
+					realPost.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(realPost.getPostShortDesc()));
 					if (realPost != null && Objects.equal(1, realPost.getPostType())) {
 						Evaluation eva = kffEvaluationService.findByPostId(realPost.getPostId());
 						if (eva != null && Objects.equal(1, eva.getModelType())) {
