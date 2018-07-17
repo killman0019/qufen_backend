@@ -2916,7 +2916,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public PageResult<PostResponse> findPageRecommendList(Integer loginUserId, PaginationQuery query) throws RestServiceException {
+	public PageResult<PostResponse> findPageRecommendList(Integer loginUserId, 
+			PaginationQuery query,Integer type) throws RestServiceException {
 		PageResult<PostResponse> result = new PageResult<PostResponse>();
 		List<PostResponse> postResponse = new ArrayList<>();
 		PageResult<Post> posts = kffPostService.findPageRecommendList(query);
@@ -3014,11 +3015,20 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				if (loginUser == null) {
 					response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
 				} else {
-					Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER, post.getCreateUserId());
-					if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
-						response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
-					} else {
-						response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+					if(type==2) {
+						Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER, post.getCreateUserId());
+						if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+						} else {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+						}
+					}else if(type==1) {
+						Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT, post.getPostId());
+						if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+						} else {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+						}
 					}
 				}
 				postResponse.add(response);
