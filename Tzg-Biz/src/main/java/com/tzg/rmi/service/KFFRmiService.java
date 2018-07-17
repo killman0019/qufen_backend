@@ -394,7 +394,7 @@ public interface KFFRmiService {
 
 	public void cancelCollect(Integer userId, Integer postId) throws RestServiceException;
 
-	public PageResult<PostResponse> findPageRecommendList(Integer loginUserId, PaginationQuery query) throws RestServiceException;
+	public PageResult<PostResponse> findPageRecommendList(Integer loginUserId, PaginationQuery query,Integer type) throws RestServiceException;
 
 	public PageResult<PostResponse> findPageFollowList(Integer loginUserId, PaginationQuery query) throws RestServiceException;
 
