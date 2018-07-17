@@ -146,7 +146,7 @@ public class HomeController extends BaseController {
 			query.addQueryData("postType", "2");
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
-			Integer type = 2;//取关注项目
+			Integer type = 2;//取关注人
 			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query,type);
 			map.put("recommends", recommends);
 			bre.setData(map);
