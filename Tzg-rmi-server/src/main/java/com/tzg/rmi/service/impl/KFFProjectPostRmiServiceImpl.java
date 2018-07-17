@@ -323,7 +323,11 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 				PostResponse pr = new PostResponse();
 				Post realPost = null;
 				// 评测去除简单评测
-				post.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(post.getPostShortDesc()));// 去标签
+				if (null != post) {
+					if (StringUtils.isNotBlank(post.getPostShortDesc())) {
+						post.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(post.getPostShortDesc()));
+					}
+				}// 去标签
 				if (Objects.equal(1, post.getPostType())) {
 					user = kffUserService.findById(post.getCreateUserId());
 					pr.setActionDesc(user == null ? "匿名用户" : user.getUserName() + "点赞了帖子");
