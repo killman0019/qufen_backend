@@ -1084,6 +1084,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					response.setEvauationContent(eva.getEvauationContent());
 					response.setTotalScore(eva.getTotalScore());
 				}
+				if (post != null) {
+					KFFUser createUser = kffUserService.findByUserId(post.getCreateUserId());
+					if (null != createUser) {
+						response.setUserType(createUser.getUserType());
+					}
+				}
 				respones.add(response);
 			}
 			result.setRows(respones);
@@ -1121,6 +1127,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				}
 				if (null != post) {
 					KFFUser createUser = kffUserService.findByUserId(post.getCreateUserId());
+					if (null != createUser) {
+						response.setUserType(createUser.getUserType());
+					}
+				}
+				if (post != null) {
+					KFFUser createUser = kffUserService.findById(post.getCreateUserId());
 					if (null != createUser) {
 						response.setUserType(createUser.getUserType());
 					}
@@ -3166,6 +3178,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		BeanUtils.copyProperties(post, response);
 
 		Article article = kffArticleService.findByPostId(postId);
+		if (null != article) {
+			article.setArticleContents(H5AgainDeltagsUtil.h5AgainDeltags(article.getArticleContents()));
+		}
 		response.setArticleContents(article == null ? "" : article.getArticleContents());
 		// 标签
 		if (null != article) {
@@ -3308,6 +3323,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				} else {
 					finalComment.setPraiseStatus(KFFConstants.PRAISE_STATUS_NOSHOW);
 				}
+				if (null != comment) {
+					KFFUser createUser = kffUserService.findByUserId(comment.getCommentsId());
+					if (null != createUser) {
+						comment.setUserType(createUser.getUserType());
+					}
+				}
 				result.add(finalComment);
 			}
 		}
@@ -3433,6 +3454,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					}
 				} else {
 					finalComment.setPraiseStatus(KFFConstants.PRAISE_STATUS_NOSHOW);
+				}
+				if (null != comment) {
+					KFFUser createUser = kffUserService.findByUserId(comment.getCommentUserId());
+					if (null != createUser) {
+						finalComment.setUserType(createUser.getUserType());
+					}
 				}
 				finalCommentList.add(finalComment);
 			}
@@ -4199,6 +4226,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					response.setDiscussId(discuss.getDiscussId());
 					response.setDisscussContents(discuss.getDisscussContents());
 					response.setTagInfos(discuss.getTagInfos());
+				}
+				if (null != post) {
+					KFFUser createUser = kffUserService.findByUserId(post.getCreateUserId());
+					if (null != createUser) {
+						response.setUserType(createUser.getUserType());
+					}
 				}
 				respones.add(response);
 			}
@@ -6271,6 +6304,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
 					} else {
 						response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+					}
+				}
+				if (null != post) {
+					KFFUser createUser = kffUserService.findByUserId(post.getCreateUserId());
+					if (null != createUser) {
+						response.setUserType(createUser.getUserType());
 					}
 				}
 				postResponse.add(response);

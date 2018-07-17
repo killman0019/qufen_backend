@@ -86,6 +86,8 @@ public class Comments implements Serializable {
 	 * becommentedUserIcon
 	 */
 	private java.lang.String becommentedUserIcon;
+	
+	private Integer userType;
 	/**
 	 * createTime
 	 */
@@ -285,6 +287,14 @@ public class Comments implements Serializable {
 
 	public void setCommentUUID(String commentUUID) {
 		this.commentUUID = commentUUID;
+	}
+
+	public Integer getUserType() {
+		return userType;
+	}
+
+	public void setUserType(Integer userType) {
+		this.userType = userType;
 	}
 
 }

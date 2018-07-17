@@ -287,6 +287,12 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 				} else {
 					comment.setPraiseStatus(KFFConstants.PRAISE_STATUS_NOSHOW);
 				}
+				if (null != comment) {
+					KFFUser createUser = kffUserService.findByUserId(comment.getCommentUserId());
+					if (null != createUser) {
+						comment.setUserType(createUser.getUserType());
+					}
+				}
 			}
 
 		}
@@ -618,6 +624,12 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 					response.setEvaTotalScore(eva.getTotalScore());
 					response.setEvauationContent(eva.getEvauationContent());
 					response.setProfessionalEvaDetail(eva.getProfessionalEvaDetail());
+				}
+				if (null != post) {
+					KFFUser createUser = kffUserService.findByUserId(post.getCreateUserId());
+					if (null != createUser) {
+						response.setUserType(createUser.getUserType());
+					}
 				}
 				respones.add(response);
 			}
