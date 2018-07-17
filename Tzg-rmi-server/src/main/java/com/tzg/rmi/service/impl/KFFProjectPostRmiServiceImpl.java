@@ -396,8 +396,8 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 					user = kffUserService.findById(post.getCreateUserId());
 					pr.setActionDesc(user == null ? "匿名用户" : user.getUserName() + "关注了项目");
 					KFFProject project = kffProjectService.findById(post.getPostId());
-					//realPost = kffPostService.findById(post.getPostId());
-					//realPost.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(realPost.getPostShortDesc()));
+					// realPost = kffPostService.findById(post.getPostId());
+					// realPost.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(realPost.getPostShortDesc()));
 					if (project != null) {
 						BeanUtils.copyProperties(project, pr);
 					}
@@ -448,6 +448,10 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 				}
 				pr.setActionType(post.getPostType());
 				pr.setCommentsNum(post.getCommentsNum());
+				if (StringUtils.isNotBlank(pr.getPostShortDesc())) {
+					pr.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(pr.getPostShortDesc()));
+				}
+
 				rows.add(pr);
 			}
 			result.setRows(rows);
