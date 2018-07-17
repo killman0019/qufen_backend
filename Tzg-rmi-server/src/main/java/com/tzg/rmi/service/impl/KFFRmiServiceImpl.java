@@ -1438,6 +1438,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 		// 禁止发纯图片的文章
 		String delHTMLTag = H5AgainDeltagsUtil.h5AgainDeltags(articleRequest.getArticleContents());
+		delHTMLTag = WorkHtmlRegexpUtil.delHTMLTag(delHTMLTag);
+		articleRequest.setArticleContents(delHTMLTag);
 		if (null == delHTMLTag || delHTMLTag.length() == 0) {
 			throw new RestServiceException("请对所发表的内容进行文字描述");
 		}
