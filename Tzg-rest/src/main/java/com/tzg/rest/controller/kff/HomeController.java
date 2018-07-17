@@ -98,7 +98,8 @@ public class HomeController extends BaseController {
 			// query.addQueryData("postType", "1");
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
-			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query);
+			Integer type = 1;//取关注项目
+			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query,type);
 			map.put("recommends", recommends);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -145,7 +146,8 @@ public class HomeController extends BaseController {
 			query.addQueryData("postType", "2");
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
-			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query);
+			Integer type = 2;//取关注项目
+			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query,type);
 			map.put("recommends", recommends);
 			bre.setData(map);
 		} catch (RestServiceException e) {
