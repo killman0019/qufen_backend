@@ -3186,9 +3186,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		BeanUtils.copyProperties(post, response);
 
 		Article article = kffArticleService.findByPostId(postId);
-		if (null != article) {
+		/*if (null != article) {
 			article.setArticleContents(H5AgainDeltagsUtil.h5AgainDeltags(article.getArticleContents()));
-		}
+		}*/
 		response.setArticleContents(article == null ? "" : article.getArticleContents());
 		// 标签
 		if (null != article) {

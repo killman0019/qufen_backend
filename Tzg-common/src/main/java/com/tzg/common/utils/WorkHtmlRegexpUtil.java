@@ -260,8 +260,8 @@ public class WorkHtmlRegexpUtil {
 		        addTags(new String[]{"img"}).
 		        addAttributes("img", new String[]{"align", "alt", "height", "src", "title", "width"}).
 		        addProtocols("img", "src", new String[]{"http", "https"}));*/
-		htmlStr = htmlStr.replace("&nbsp;", "  ");
-		htmlStr = htmlStr.replace("&nbsp", "  ");
+		// htmlStr = htmlStr.replace("&nbsp;", "  ");
+		// htmlStr = htmlStr.replace("&nbsp", "  ");
 		htmlStr = htmlStr.replace("&amp;nbsp;", " ");
 		// 除去&lt;h1&gt;
 		// 除去&ldquo;
@@ -275,7 +275,7 @@ public class WorkHtmlRegexpUtil {
 		htmlStr = htmlStr.replace("&nbsp;", " ");
 		htmlStr = htmlStr.replace("&nbsp", " ");
 		htmlStr = htmlStr.replaceAll("[\ud800\udc00-\udbff\udfff\ud800-\udfff]", "");
-	
+
 		return htmlStr.trim(); // 返回文本字符串
 	}
 
