@@ -77,19 +77,22 @@ public class HomeController extends BaseController {
 			pageSize = 10;
 		}
 		try {
-			String token = (String) request.getSession().getAttribute("token");
+//			String token = (String) request.getSession().getAttribute("token");
 			Integer userId = null;
-			if (StringUtils.isNotBlank(token)) {
-				userId = getUserIdByToken(token);
-			}
+//			if (StringUtils.isNotBlank(token)) {
+//				userId = getUserIdByToken(token);
+//			}
 			PaginationQuery query = new PaginationQuery();
 			query.addQueryData("status", "1");
-			query.addQueryData("sortField", "pageviewNum");
+			query.addQueryData("stickTop", "1");
+			query.addQueryData("sortField", "stick_updateTime");
+			query.addQueryData("praiseNum", "10");
 			// 帖子类型：1-评测；2-讨论；3-文章
 			// query.addQueryData("postType", "1");
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
-			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query);
+			Integer type = 1;//取关项目
+			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query,type);
 			map.put("recommends", recommends);
 			bre.setData(map);
 		} catch (RestServiceException e) {
