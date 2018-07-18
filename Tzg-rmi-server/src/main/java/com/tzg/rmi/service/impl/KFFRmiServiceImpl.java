@@ -1019,6 +1019,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			result.setRowsPerPage(posts.getRowsPerPage());
 			for (Post post : posts.getRows()) {
 				EvaluationDetailResponse response = new EvaluationDetailResponse();
+				if (null != post) {
+					post.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(post.getPostShortDesc()));
+				}
 				BeanUtils.copyProperties(post, response);
 				if (StringUtils.isNotBlank(post.getPostSmallImages())) {
 					try {
@@ -1070,6 +1073,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			result.setRowsPerPage(posts.getRowsPerPage());
 			for (Post post : posts.getRows()) {
 				EvaluationDetailResponse response = new EvaluationDetailResponse();
+				if (null != post) {
+					post.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(post.getPostShortDesc()));
+				}
+
 				BeanUtils.copyProperties(post, response);
 				if (StringUtils.isNotBlank(post.getPostSmallImages())) {
 					try {
@@ -1158,7 +1165,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	@Override
 	public PageResult<PostResponse> findPageArticleList(PaginationQuery query) throws RestServiceException {
 		PageResult<PostResponse> result = new PageResult<PostResponse>();
-		List<PostResponse> respones = new ArrayList<>();		
+		List<PostResponse> respones = new ArrayList<>();
 		PageResult<Post> posts = kffPostService.findPage(query);
 		if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
 			result.setCurPageNum(posts.getCurPageNum());
@@ -1778,7 +1785,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			throw new RestServiceException("评测内容不能为空");
 		}
 		String delHTMLTag = WorkHtmlRegexpUtil.delHTMLTag(evaluationRequest.getEvauationContent());
-		delHTMLTag=	H5AgainDeltagsUtil.h5AgainDeltags(delHTMLTag);
+		delHTMLTag = H5AgainDeltagsUtil.h5AgainDeltags(delHTMLTag);
 		if (null == delHTMLTag || delHTMLTag.length() == 0) {
 			throw new RestServiceException("请对所发表的内容进行文字描述");
 		}
