@@ -171,11 +171,11 @@ public class UserController extends BaseController {
 			JSONObject map = getParamMapFromRequestPolicy(request);
 			String phone = (String) map.get("phone");
 			if (StringUtils.isBlank(phone)) {
-				new RestServiceException(RestErrorCode.PHONE_NULL);
+				throw	new RestServiceException(RestErrorCode.PHONE_NULL);
 			} else {
 				String phonefmt = RegexUtil.PHONEREGEX;
 				if (!phone.matches(phonefmt)) {
-					new RestServiceException(RestErrorCode.PHONE_FORMAT_ERROR);
+				throw	new RestServiceException(RestErrorCode.PHONE_FORMAT_ERROR);
 				}
 			}
 			Integer userStatus = kffRmiService.selectUserStatusByPhone(phone);

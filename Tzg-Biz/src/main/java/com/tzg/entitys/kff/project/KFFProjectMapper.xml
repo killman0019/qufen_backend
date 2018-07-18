@@ -238,7 +238,7 @@
 	<![CDATA[
 		FROM tbproject 
 		WHERE 
-        project_id = #{projectId} 
+        project_id = #{projectId}  and status=1
 	]]>
 	</select>
 
