@@ -34,7 +34,7 @@ public class UserCardService {
 		userCardMapper.save(userCard);
 	}
 
-	@Transactional(readOnly = true)
+	
 	public void updataUserIdCard(UserCard userCard) {
 		userCardMapper.updateUserCard(userCard);
 
