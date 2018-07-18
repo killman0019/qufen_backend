@@ -101,7 +101,7 @@ public class CollectPostResponse implements Serializable {
 	 * 用户昵称
 	 */
 	private java.lang.String createUserName;
-
+	private Integer userType;
 	// 评测总分
 	private java.math.BigDecimal totalScore = BigDecimal.ZERO;
 	// project表来源
@@ -361,6 +361,14 @@ public class CollectPostResponse implements Serializable {
 
 	public java.lang.String getUpdateTimeStr() {
 		return this.updateTimeStr;
+	}
+
+	public Integer getUserType() {
+		return userType;
+	}
+
+	public void setUserType(Integer userType) {
+		this.userType = userType;
 	}
 
 }

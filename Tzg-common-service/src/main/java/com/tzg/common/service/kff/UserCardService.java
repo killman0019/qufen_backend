@@ -7,6 +7,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import com.tzg.entitys.kff.usercard.UserCard;
 import com.tzg.entitys.kff.usercard.UserCardMapper;
@@ -33,13 +34,22 @@ public class UserCardService {
 		userCardMapper.save(userCard);
 	}
 
+	@Transactional(readOnly = true)
 	public void updataUserIdCard(UserCard userCard) {
 		userCardMapper.updateUserCard(userCard);
 
 	}
 
+	@Transactional(readOnly = true)
 	public UserCard findByUserid(java.lang.Integer userId) {
-		return userCardMapper.findByUserid(userId);
+		UserCard userCard = null;
+		List<UserCard> userCards = userCardMapper.findByUserid(userId);
+		if (!CollectionUtils.isEmpty(userCards)) {
+			if (userCards.size() != 0) {
+				userCard = userCards.get(0);
+			}
+		}
+		return userCard;
 
 	}
 

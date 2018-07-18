@@ -275,7 +275,7 @@ public class WorkHtmlRegexpUtil {
 		htmlStr = htmlStr.replace("&nbsp;", " ");
 		htmlStr = htmlStr.replace("&nbsp", " ");
 		htmlStr = htmlStr.replaceAll("[\ud800\udc00-\udbff\udfff\ud800-\udfff]", "");
-
+		htmlStr = Jsoup.clean(htmlStr, Whitelist.none());
 		return htmlStr.trim(); // 返回文本字符串
 	}
 

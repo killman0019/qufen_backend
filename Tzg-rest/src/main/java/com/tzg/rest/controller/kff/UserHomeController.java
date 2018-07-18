@@ -122,6 +122,8 @@ public class UserHomeController extends BaseController {
 	        }
 	        query.setPageIndex(baseRequest.getPageIndex());
 	        query.setRowsPerPage(baseRequest.getPageSize());
+	        query.addQueryData("sql_keyword_orderBy", "createTime");
+			query.addQueryData("sql_keyword_sort", "desc");
 			PageResult<EvaluationDetailResponse> evaluations = kffRmiService.findPageEvaluationListUserHome(query);
             map.put("evaluations", evaluations);
 			bre.setData(map);
@@ -171,6 +173,8 @@ public class UserHomeController extends BaseController {
 	        }
 	        query.setPageIndex(baseRequest.getPageIndex());
 	        query.setRowsPerPage(baseRequest.getPageSize());
+	        query.addQueryData("sql_keyword_orderBy", "createTime");
+			query.addQueryData("sql_keyword_sort", "desc");
 			PageResult<PostResponse> discusses = kffRmiService.findPageDisscussList(query);
 			//20180507志远去除 我的最新讨论记录 微信群
 			//PostResponse myLatestDiscuss = kffRmiService.findMyLatestDiscuss(loginUserId);
@@ -224,6 +228,8 @@ public class UserHomeController extends BaseController {
 	        }
 	        query.setPageIndex(baseRequest.getPageIndex());
 	        query.setRowsPerPage(baseRequest.getPageSize());
+	        query.addQueryData("sql_keyword_orderBy", "createTime");
+			query.addQueryData("sql_keyword_sort", "desc");
 			PageResult<PostResponse> articles = kffRmiService.findPageArticleList(query);
             map.put("articles", articles);
 			bre.setData(map);

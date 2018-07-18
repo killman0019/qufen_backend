@@ -24,6 +24,6 @@ public interface UserCardMapper extends BaseMapper<UserCard, java.lang.Integer> 
 
 	void updateUserCard(UserCard userCard);
 
-	UserCard findByUserid(Integer userId);
+	List<UserCard> findByUserid(Integer userId);
 
 }

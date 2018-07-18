@@ -432,7 +432,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					response.setCreateUserIcon(post.getCreateUserIcon());
 					response.setCreateUserName(post.getCreateUserName());
 					response.setCreateUserSignature(post.getCreateUserSignature());
-
+					KFFUser createUser = kffUserService.findByUserId(post.getCreateUserId());
+					if (null != createUser) {
+						response.setUserType(createUser.getUserType());
+					}
 					if (followedProjectIds != null && followedProjectIds.contains(post.getProjectId())) {
 						response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
 					}
@@ -497,6 +500,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						response.setCreateUserIcon(post.getCreateUserIcon());
 						response.setCreateUserName(post.getCreateUserName());
 						response.setCreateUserSignature(post.getCreateUserSignature());
+						if (post != null) {
+							KFFUser createUser = kffUserService.findByUserId(post.getCreateUserId());
+							if (null != createUser) {
+								response.setUserType(createUser.getUserType());
+							}
+						}
 						// response.setTotalScore(post.get);
 						KFFProject project = kffProjectService.findById(post.getProjectId());
 						if (project != null) {
@@ -572,8 +581,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					KFFUser user = kffUserService.findById(message.getSenderUserId());
 					if (user != null) {
 						message.setSenderUserIcon(user.getIcon());
+						message.setUserType(user.getUserType());
 					}
 				}
+
 			}
 		}
 		return result;
@@ -736,23 +747,23 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public PageResult<ProjectResponse> findProjectByCodePage(int sortType, Integer userId, String projectCode
-			,Integer pageIndex,Integer pageSize) throws RestServiceException {
+	public PageResult<ProjectResponse> findProjectByCodePage(int sortType, Integer userId, String projectCode, Integer pageIndex, Integer pageSize)
+			throws RestServiceException {
 		PageResult<ProjectResponse> result = new PageResult<ProjectResponse>();
-//		List<KFFProject> projects = new ArrayList<>();
+		// List<KFFProject> projects = new ArrayList<>();
 		List<ProjectResponse> resultc = new ArrayList<ProjectResponse>();
-//		Map<String, Object> map = new HashMap<>();
-//		map.put("state", "2");
-//		map.put("status", "1");
-//		if (StringUtils.isNotBlank(projectCode)) {
-//			map.put("projectCode", projectCode);
-//		}
-//		if (sortType == 1) {
-//			map.put("sortField", "follower_num");
-//		}else if(sortType == 2){
-//			map.put("sortField", "project_code");
-//		}
-//		projects = kffProjectService.findProjectByCode(map);
+		// Map<String, Object> map = new HashMap<>();
+		// map.put("state", "2");
+		// map.put("status", "1");
+		// if (StringUtils.isNotBlank(projectCode)) {
+		// map.put("projectCode", projectCode);
+		// }
+		// if (sortType == 1) {
+		// map.put("sortField", "follower_num");
+		// }else if(sortType == 2){
+		// map.put("sortField", "project_code");
+		// }
+		// projects = kffProjectService.findProjectByCode(map);
 		PaginationQuery querys = new PaginationQuery();
 		querys.addQueryData("status", "1");
 		querys.addQueryData("state", "2");
@@ -1147,7 +1158,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	@Override
 	public PageResult<PostResponse> findPageArticleList(PaginationQuery query) throws RestServiceException {
 		PageResult<PostResponse> result = new PageResult<PostResponse>();
-		List<PostResponse> respones = new ArrayList<>();
+		List<PostResponse> respones = new ArrayList<>();		
 		PageResult<Post> posts = kffPostService.findPage(query);
 		if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
 			result.setCurPageNum(posts.getCurPageNum());
@@ -1767,6 +1778,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			throw new RestServiceException("评测内容不能为空");
 		}
 		String delHTMLTag = WorkHtmlRegexpUtil.delHTMLTag(evaluationRequest.getEvauationContent());
+		delHTMLTag=	H5AgainDeltagsUtil.h5AgainDeltags(delHTMLTag);
 		if (null == delHTMLTag || delHTMLTag.length() == 0) {
 			throw new RestServiceException("请对所发表的内容进行文字描述");
 		}
@@ -2126,7 +2138,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					// System.err.println("Dzuser : " + JSON.toJSONString(Dzuser));// 看帖子人的id
 					// 判断所点赞的文章是不是有效(1有效,0删除,无效)
 
-					if (post.getStatus() == 1 && findByUserId != null && Dzuser != null /*&& createUserCard == 2 && userCardStatus == 2*/) {
+					if (post.getStatus() == 1 && findByUserId != null && Dzuser != null && createUserCard == 2 && userCardStatus == 2) {
 						/**
 						 * 有效赞
 						 * 
@@ -2935,8 +2947,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public PageResult<PostResponse> findPageRecommendList(Integer loginUserId, 
-			PaginationQuery query,Integer type) throws RestServiceException {
+	public PageResult<PostResponse> findPageRecommendList(Integer loginUserId, PaginationQuery query, Integer type) throws RestServiceException {
 		PageResult<PostResponse> result = new PageResult<PostResponse>();
 		List<PostResponse> postResponse = new ArrayList<>();
 		PageResult<Post> posts = kffPostService.findPageRecommendList(query);
@@ -3035,15 +3046,17 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				if (loginUser == null) {
 					response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
 				} else {
-					if(type==2) {
-						Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER, post.getCreateUserId());
+					if (type == 2) {
+						Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER,
+								post.getCreateUserId());
 						if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
 							response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
 						} else {
 							response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
 						}
-					}else if(type==1) {
-						Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT, post.getProjectId());
+					} else if (type == 1) {
+						Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT,
+								post.getProjectId());
 						if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
 							response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
 						} else {
@@ -3469,6 +3482,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						finalComment.setUserType(createUser.getUserType());
 					}
 				}
+
 				finalCommentList.add(finalComment);
 			}
 			result.setRows(finalCommentList);

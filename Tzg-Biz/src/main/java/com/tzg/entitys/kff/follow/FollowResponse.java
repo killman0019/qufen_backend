@@ -68,7 +68,7 @@ public class FollowResponse implements Serializable {
 	private java.util.Date updateTime;
 	private java.lang.String updateTimeStr;
 
-	
+	private Integer userType;
 	
 	//post表来源
 	// 帖子标题
@@ -397,6 +397,14 @@ public class FollowResponse implements Serializable {
 
 	public void setFollowedPostId(java.lang.Integer followedPostId) {
 		this.followedPostId = followedPostId;
+	}
+
+	public Integer getUserType() {
+		return userType;
+	}
+
+	public void setUserType(Integer userType) {
+		this.userType = userType;
 	}
 
 	
