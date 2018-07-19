@@ -946,6 +946,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		message.setUpdateTime(now);
 		message.setUserId(receiveUser.getUserId());
 		message.setSenderUserId(sendUser.getUserId());
+		message.setPostId(post.getPostId());
+		message.setPostType(post.getPostType());
 		kffMessageService.save(message);
 		praiseContent = message.getContent();
 
@@ -1444,6 +1446,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		message.setUpdateTime(now);
 		message.setUserId(post.getCreateUserId());
 		message.setSenderUserId(commentUser.getUserId());
+		message.setPostId(post.getPostId());
+		message.setPostType(post.getPostType());
 		kffMessageService.save(message);
 		praiseContent = message.getContent();
 		//个推APP推送消息
@@ -2127,6 +2131,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			message.setUpdateTime(now);
 			message.setUserId(post.getCreateUserId());
 			message.setSenderUserId(user.getUserId());
+			message.setPostId(postId);
+			message.setPostType(post.getPostType());
 			kffMessageService.save(message);
 			praiseContent = message.getContent();
 
@@ -4008,6 +4014,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			kffCommentsService.increasePraiseNum(commentsId);
 			kffUserService.increasePraiseNum(comments.getCommentUserId());
 			// 被点赞用户消息
+			Post post = kffPostService.findById(comments.getPostId());
 			KFFMessage message = new KFFMessage();
 			message.setContent(user.getUserName() + "点赞了您的评论!");
 			message.setCreateTime(now);
@@ -4019,6 +4026,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			message.setUpdateTime(now);
 			message.setUserId(comments.getCommentUserId());
 			message.setSenderUserId(user.getUserId());
+			message.setPostId(post.getPostId());
+			message.setPostType(post.getPostType());
 			kffMessageService.save(message);
 			praiseContent = message.getContent();
 		}

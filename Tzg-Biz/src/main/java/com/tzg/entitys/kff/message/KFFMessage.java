@@ -62,6 +62,26 @@ public class KFFMessage implements Serializable {
 	private java.lang.String jumpInfo;
 
 	private Integer userType;
+	
+	private Integer postId;
+	
+	private Integer postType;
+
+	public Integer getPostId() {
+		return postId;
+	}
+
+	public void setPostId(Integer postId) {
+		this.postId = postId;
+	}
+
+	public Integer getPostType() {
+		return postType;
+	}
+
+	public void setPostType(Integer postType) {
+		this.postType = postType;
+	}
 
 	public Integer getUserType() {
 		return userType;
