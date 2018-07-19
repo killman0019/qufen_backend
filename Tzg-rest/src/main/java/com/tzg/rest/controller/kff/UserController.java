@@ -215,6 +215,7 @@ public class UserController extends BaseController {
 			JSONObject params = getParamMapFromRequestPolicy(request);
 			String loginName = (String) params.get("loginName");
 			String password = (String) params.get("password");
+			String clientId = (String) params.get("clientId");
 
 			if (StringUtils.isBlank(loginName)) {
 				throw new RestServiceException(RestErrorCode.LOGIN_NAME_NULL);
@@ -225,7 +226,7 @@ public class UserController extends BaseController {
 
 			KFFUser loginaccount = null;
 			try {
-				loginaccount = kffRmiService.login(loginName, password);
+				loginaccount = kffRmiService.login(loginName, password,clientId);
 				if (null == loginaccount) {
 					throw new RestServiceException(RestErrorCode.LOGIN_NAME_OR_PASSWORD_INCORRECT);
 				}

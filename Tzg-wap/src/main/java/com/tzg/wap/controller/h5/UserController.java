@@ -468,7 +468,7 @@ public class UserController extends BaseController {
 			KFFUser loginaccount = null;
 			try {
 				// 用户登陆
-				loginaccount = kffRmiService.login(loginName, password);
+				loginaccount = kffRmiService.login(loginName, password,null);
 				if (null == loginaccount) {
 					throw new RestServiceException(RestErrorCode.LOGIN_NAME_OR_PASSWORD_INCORRECT);
 				}

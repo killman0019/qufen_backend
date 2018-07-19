@@ -70,9 +70,20 @@ public class RegisterRequest implements Serializable {
 	 */
 	private String username;
 	
+	/**
+	 * 用户个推手机唯一编码
+	 */
+	private String clientId;
 	
-    
-    public String getUsername() {
+    public String getClientId() {
+		return clientId;
+	}
+
+	public void setClientId(String clientId) {
+		this.clientId = clientId;
+	}
+
+	public String getUsername() {
 		return username;
 	}
 

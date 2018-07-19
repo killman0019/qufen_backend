@@ -131,5 +131,37 @@ public class PageResult<T> implements Serializable{
 	public void setQueryParameters(String queryParameters) {
 		this.queryParameters = queryParameters;
 	}
-    
+	/**
+	 * 根据总记录数计算总页数
+	 * 
+	 * @return 总页数
+	 */
+	public int getPageCount() {
+		if (getRowCount() < 0) {
+			return -1;
+		}
+		int pageCount = getRowCount() / getRowsPerPage();
+		if (getRowCount() % getRowsPerPage() > 0) {
+			pageCount++;
+		}
+		return pageCount;
+	}
+	
+	/**
+	 * 判断查询结果是否还有下一页
+	 * 
+	 * @return
+	 */
+	public boolean isHasNext() {
+		return getCurPageNum() + 1 <= this.getPageCount();
+	}
+
+	/**
+	 * 获取下一页数
+	 * 
+	 * @return
+	 */
+	public int getNextPage() {
+		return isHasNext() ? getCurPageNum() + 1 : getCurPageNum();
+	}
 }

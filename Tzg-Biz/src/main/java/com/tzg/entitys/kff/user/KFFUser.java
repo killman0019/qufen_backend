@@ -134,6 +134,19 @@ public class KFFUser implements Serializable {
 	private java.lang.Integer referLevel;
 
 	private Integer usercardStatus;
+	
+	/**
+	 * 用户个推手机唯一编码
+	 */
+	private String clientId;
+	
+    public String getClientId() {
+		return clientId;
+	}
+
+	public void setClientId(String clientId) {
+		this.clientId = clientId;
+	}
 
 	public Integer getUsercardStatus() {
 		return usercardStatus;

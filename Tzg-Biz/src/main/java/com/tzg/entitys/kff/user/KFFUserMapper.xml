@@ -32,11 +32,14 @@
 		<result property="referLevel" jdbcType="INTEGER" column="refer_level"/>
 		<result property="lastLoginDateTime" jdbcType="TIMESTAMP" column="last_login_dateTime"/>
 		<result property="usercardStatus" jdbcType="INTEGER" column="usercardStatus"/>
+		<result property="clientId" jdbcType="VARCHAR" column="client_id"/>
     </resultMap>
 	
 	<sql id="columns">
 	    <![CDATA[
-        user_id ,user_name ,sex ,icon ,mobile ,email ,wechat ,password ,pay_password ,user_type ,user_degree ,user_signature ,fans_num ,praise_num ,evaluation_num ,discuss_num ,article_num ,kff_coin_num ,area_name ,createTime ,updateTime ,status ,memo ,province_code ,city_code ,area_code ,refer_user_id ,refer_level,last_login_dateTime,usercardStatus  
+        user_id ,user_name ,sex ,icon ,mobile ,email ,wechat ,password ,pay_password ,user_type ,user_degree ,user_signature ,fans_num ,praise_num ,evaluation_num ,
+        discuss_num ,article_num ,kff_coin_num ,area_name ,createTime ,updateTime ,status ,memo ,province_code ,city_code ,area_code ,refer_user_id ,refer_level,
+        last_login_dateTime,usercardStatus,client_id
 	    ]]>
 	</sql>
 	
@@ -74,7 +77,8 @@
         	refer_user_id ,
         	refer_level ,
         	last_login_dateTime,
-        	usercardStatus 
+        	usercardStatus ,
+        	client_id
 		) VALUES (
         	#{userName,jdbcType=VARCHAR} ,
         	#{sex,jdbcType=INTEGER} ,
@@ -104,7 +108,8 @@
         	#{referUserId,jdbcType=INTEGER} ,
         	#{referLevel,jdbcType=INTEGER} ,
         	#{lastLoginDateTime,jdbcType=TIMESTAMP} ,
-        	#{usercardStatus,jdbcType=INTEGER}
+        	#{usercardStatus,jdbcType=INTEGER},
+        	#{clientId,jdbcType=VARCHAR}
 		)
 	]]>
 	</insert>
@@ -139,7 +144,8 @@
         	refer_user_id ,
         	refer_level ,
         	last_login_dateTime ,
-        	usercardStatus
+        	usercardStatus ,
+        	client_id
 		) VALUES (#{userId,jdbcType=INTEGER},
         	#{userName,jdbcType=VARCHAR} ,
         	#{sex,jdbcType=INTEGER} ,
@@ -169,7 +175,8 @@
         	#{referUserId,jdbcType=INTEGER} ,
         	#{referLevel,jdbcType=INTEGER} ,
         	#{lastLoginDateTime,jdbcType=TIMESTAMP} ,
-        	#{usercardStatus,jdbcType=INTEGER}
+        	#{usercardStatus,jdbcType=INTEGER},
+        	#{clientId,jdbcType=VARCHAR}
 		)
 	</insert>
 
@@ -262,6 +269,9 @@
 	        </if>
 	        <if test="usercardStatus != null">
 	        usercardStatus = #{usercardStatus,jdbcType=INTEGER}  ,
+	        </if>
+	        <if test="clientId != null">
+	        client_id = #{clientId,jdbcType=VARCHAR}  ,
 	        </if>
 	    </set>
 		WHERE 
@@ -375,6 +385,18 @@
         <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
 	</select>
 	
+	<select id="findPageWithCID" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select client_id  from tbuser where 1=1
+		<include refid="queryWhere"/> 
+	    <![CDATA[ ORDER BY user_id DESC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<select id="findListByAttr" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select user_id,client_id  from tbuser where 1=1
+		<include refid="queryWhere"/> 
+	</select>
+	
 	<!-- 根据邀请人用户id 查询已邀请个数 -->
 	<select id="findReferUserIdByUserCount" resultType="java.lang.Integer" parameterType="java.lang.Integer">
     	select count(*) from tbuser where 1=1
@@ -481,6 +503,9 @@
 		</if>
 		<if test="usercardStatus != null and usercardStatus.trim() != ''">
 		and usercardStatus = #{usercardStatus}
+		</if>
+		<if test="clientId != null and clientId.trim() != ''">
+		and client_id = #{clientId}
 		</if>
 	</sql>
 	

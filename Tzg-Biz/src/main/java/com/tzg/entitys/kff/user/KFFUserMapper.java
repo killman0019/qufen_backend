@@ -1,7 +1,6 @@
 package com.tzg.entitys.kff.user;
 
 import com.tzg.common.base.BaseMapper;
-
 import java.util.List;
 import java.util.Map;
 
@@ -53,4 +52,8 @@ public interface KFFUserMapper extends BaseMapper<KFFUser, java.lang.Integer> {
 	public KFFUser findUserStatusByPhoneNumber(String mobile);
 	
 	public void updateUserKFFsetPopZero(Integer userId);
+	
+	public List<KFFUser> findPageWithCID(Map<String, Object> map);
+	public List<KFFUser> findListByAttr(Map<String, Object> map);
+	
 }
