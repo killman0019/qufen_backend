@@ -451,6 +451,12 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 				if (StringUtils.isNotBlank(pr.getPostShortDesc())) {
 					pr.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(pr.getPostShortDesc()));
 				}
+				if (post != null) {
+					KFFUser createUser = kffUserService.findByUserId(post.getCreateUserId());
+					if (null != createUser) {
+						pr.setUserType(createUser.getUserType());
+					}
+				}
 
 				rows.add(pr);
 			}

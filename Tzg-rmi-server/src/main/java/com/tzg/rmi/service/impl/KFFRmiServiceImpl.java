@@ -307,9 +307,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public KFFUser login(String loginName, String password,String clientId) {
+	public KFFUser login(String loginName, String password, String clientId) {
 
-		return kffUserService.login(loginName, password,clientId);
+		return kffUserService.login(loginName, password, clientId);
 	}
 
 	@Override
@@ -535,6 +535,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						response.setTotalScore(project.getTotalScore());
 					}
 				}
+				if (follow != null) {
+					KFFUser followedUser = kffUserService.findByUserId(follow.getFollowedUserId());
+					if (null != followedUser) {
+						response.setUserType(followedUser.getUserType());
+					}
+				}
 				followResponses.add(response);
 			}
 			result.setRows(followResponses);
@@ -749,23 +755,23 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public PageResult<ProjectResponse> findProjectByCodePage(int sortType, Integer userId, String projectCode
-			,Integer pageIndex,Integer pageSize) throws RestServiceException {
+	public PageResult<ProjectResponse> findProjectByCodePage(int sortType, Integer userId, String projectCode, Integer pageIndex, Integer pageSize)
+			throws RestServiceException {
 		PageResult<ProjectResponse> result = new PageResult<ProjectResponse>();
-//		List<KFFProject> projects = new ArrayList<>();
+		// List<KFFProject> projects = new ArrayList<>();
 		List<ProjectResponse> resultc = new ArrayList<ProjectResponse>();
-//		Map<String, Object> map = new HashMap<>();
-//		map.put("state", "2");
-//		map.put("status", "1");
-//		if (StringUtils.isNotBlank(projectCode)) {
-//			map.put("projectCode", projectCode);
-//		}
-//		if (sortType == 1) {
-//			map.put("sortField", "follower_num");
-//		}else if(sortType == 2){
-//			map.put("sortField", "project_code");
-//		}
-//		projects = kffProjectService.findProjectByCode(map);
+		// Map<String, Object> map = new HashMap<>();
+		// map.put("state", "2");
+		// map.put("status", "1");
+		// if (StringUtils.isNotBlank(projectCode)) {
+		// map.put("projectCode", projectCode);
+		// }
+		// if (sortType == 1) {
+		// map.put("sortField", "follower_num");
+		// }else if(sortType == 2){
+		// map.put("sortField", "project_code");
+		// }
+		// projects = kffProjectService.findProjectByCode(map);
 		PaginationQuery querys = new PaginationQuery();
 		querys.addQueryData("status", "1");
 		querys.addQueryData("state", "2");
@@ -964,22 +970,22 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		} else {
 			resultMap.put("donateNum", 0);
 		}
-		
-		//个推APP推送消息
-		//查询被点赞的用户
+
+		// 个推APP推送消息
+		// 查询被点赞的用户
 		KFFUser kffUserc = kffUserService.findByUserId(post.getCreateUserId());
-		if(null!=kffUserc) {
+		if (null != kffUserc) {
 			Integer linkedType = null;
-			if(post.getPostType()==1) {
+			if (post.getPostType() == 1) {
 				linkedType = LinkedType.CUSTOMEVALUATING.getValue();
 			}
-			if(post.getPostType()==2) {
+			if (post.getPostType() == 2) {
 				linkedType = LinkedType.COUNTERFEIT.getValue();
 			}
-			if(post.getPostType()==3) {
+			if (post.getPostType() == 3) {
 				linkedType = LinkedType.ARTICLE.getValue();
 			}
-			appNewsPush(linkedType,post.getPostId(),kffUserc.getMobile(),praiseContent);
+			appNewsPush(linkedType, post.getPostId(), kffUserc.getMobile(), praiseContent);
 		}
 		return resultMap;
 	}
@@ -1425,16 +1431,16 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			map.put("commentId", commentSqls.getCommentsId());
 		}
 		// 帖子用户消息
-		//set 到message中的content modfiy by linj 2018-7-17
+		// set 到message中的content modfiy by linj 2018-7-17
 		String praiseContent = "";
 		KFFMessage message = new KFFMessage();
 		if (comment.getParentCommentsId() != null) {
-			message.setContent(commentUser.getUserName() + "回复了您:"+comment.getCommentContent());
+			message.setContent(commentUser.getUserName() + "回复了您:" + comment.getCommentContent());
 			message.setTitle("回复被评论");
 			message.setType(KFFConstants.MESSAGE_TYPE_COMMENT_REPLY);
 
 		} else {
-			message.setContent(commentUser.getUserName() + "评论了您:"+comment.getCommentContent());
+			message.setContent(commentUser.getUserName() + "评论了您:" + comment.getCommentContent());
 			message.setTitle("评论");
 			message.setType(KFFConstants.MESSAGE_TYPE_COMMENT);
 		}
@@ -1450,26 +1456,26 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		message.setPostType(post.getPostType());
 		kffMessageService.save(message);
 		praiseContent = message.getContent();
-		//个推APP推送消息
+		// 个推APP推送消息
 		KFFUser kffUserc = new KFFUser();
-		if(comment.getBecommentedId()!=null) {
+		if (comment.getBecommentedId() != null) {
 			Comments ccm = kffCommentsService.findById(comment.getBecommentedId());
 			kffUserc = kffUserService.findByUserId(ccm.getCommentUserId());
-		}else {
+		} else {
 			kffUserc = kffUserService.findByUserId(post.getCreateUserId());
 		}
-		if(null!=kffUserc) {
+		if (null != kffUserc) {
 			Integer linkedType = null;
-			if(post.getPostType()==1) {
+			if (post.getPostType() == 1) {
 				linkedType = LinkedType.CUSTOMEVALUATING.getValue();
 			}
-			if(post.getPostType()==2) {
+			if (post.getPostType() == 2) {
 				linkedType = LinkedType.COUNTERFEIT.getValue();
 			}
-			if(post.getPostType()==3) {
+			if (post.getPostType() == 3) {
 				linkedType = LinkedType.ARTICLE.getValue();
 			}
-			appNewsPush(linkedType,post.getPostId(),kffUserc.getMobile(),praiseContent);
+			appNewsPush(linkedType, post.getPostId(), kffUserc.getMobile(), praiseContent);
 		}
 		return map;
 
@@ -2623,21 +2629,21 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				}
 			}
 		}
-		//个推APP推送消息
-		//查询被点赞的用户
+		// 个推APP推送消息
+		// 查询被点赞的用户
 		KFFUser kffUserc = kffUserService.findByUserId(post.getCreateUserId());
-		if(null!=kffUserc) {
+		if (null != kffUserc) {
 			Integer linkedType = null;
-			if(post.getPostType()==1) {
+			if (post.getPostType() == 1) {
 				linkedType = LinkedType.CUSTOMEVALUATING.getValue();
 			}
-			if(post.getPostType()==2) {
+			if (post.getPostType() == 2) {
 				linkedType = LinkedType.COUNTERFEIT.getValue();
 			}
-			if(post.getPostType()==3) {
+			if (post.getPostType() == 3) {
 				linkedType = LinkedType.ARTICLE.getValue();
 			}
-			appNewsPush(linkedType,postId,kffUserc.getMobile(),praiseContent);
+			appNewsPush(linkedType, postId, kffUserc.getMobile(), praiseContent);
 		}
 		Post latestPost = kffPostService.findById(postId);
 		if (latestPost != null) {
@@ -2649,23 +2655,23 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// System.err.println("map参数展示" + JSON.toJSON(map));
 		return map;
 	}
-	
-	/** 
-	* @Title: appNewsPush 
-	* @Description: TODO <用一句话描述这个方法的作用>
-	* @author linj <方法创建作者>
-	* @create 下午5:10:16
-	* @param @param linkedType 链接类型:0-完整版专业评测，1-自定义评测，2-文章，3-打假，4-单项评测，5-关注
-	* @param @param id 类型id (包括：文章id,爆料id等等)
-	* @param @param mobile APP消息推送的用户
-	* @return void 
-	* @throws 
-	* @update 下午5:10:16
-	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
-	* @updateContext <修改内容>
-	*/
-	public void appNewsPush(Integer linkedType,Integer id,String mobile,String praiseContent) {
-		//个推APP推送消息
+
+	/**
+	 * @Title: appNewsPush
+	 * @Description: TODO <用一句话描述这个方法的作用>
+	 * @author linj <方法创建作者>
+	 * @create 下午5:10:16
+	 * @param @param linkedType 链接类型:0-完整版专业评测，1-自定义评测，2-文章，3-打假，4-单项评测，5-关注
+	 * @param @param id 类型id (包括：文章id,爆料id等等)
+	 * @param @param mobile APP消息推送的用户
+	 * @return void
+	 * @throws
+	 * @update 下午5:10:16
+	 * @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	 * @updateContext <修改内容>
+	 */
+	public void appNewsPush(Integer linkedType, Integer id, String mobile, String praiseContent) {
+		// 个推APP推送消息
 		NewsPush newsPush = new NewsPush();
 		newsPush.setLinkedType(Short.valueOf(linkedType.toString()));
 		newsPush.setArticleId(id);
@@ -2674,10 +2680,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		newsPush.setContent(praiseContent);
 		StringBuffer buff = new StringBuffer();
 		buff.append("{type:");
-		buff.append("\""+newsPush.getLinkedType()+"\",");
+		buff.append("\"" + newsPush.getLinkedType() + "\",");
 		buff.append("id:");
-		buff.append("\""+newsPush.getArticleId()+"\"}");
-		logger.info("----KFFnewsPush start---"); 
+		buff.append("\"" + newsPush.getArticleId() + "\"}");
+		logger.info("----KFFnewsPush start---");
 		try {
 			kffUserService.sendNewsToBatchUser(newsPush, buff.toString());
 		} catch (Exception e) {
@@ -2685,7 +2691,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			e.printStackTrace();
 		}
 	}
-	
 
 	@Override
 	public int cancelPraise(Integer userId, Integer postId) throws RestServiceException {
@@ -2861,12 +2866,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				praiseContent = message.getContent();
 			}
 		}
-		
-		//个推APP推送消息
-		//查询被点赞的用户
+
+		// 个推APP推送消息
+		// 查询被点赞的用户
 		KFFUser kffUserc = kffUserService.findByUserId(followedUserId);
-		if(null!=kffUserc) {
-			appNewsPush(LinkedType.FOLLOW.getValue(),userId,kffUserc.getMobile(),praiseContent);
+		if (null != kffUserc) {
+			appNewsPush(LinkedType.FOLLOW.getValue(), userId, kffUserc.getMobile(), praiseContent);
 		}
 	}
 
@@ -3072,8 +3077,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public PageResult<PostResponse> findPageRecommendList(Integer loginUserId, 
-			PaginationQuery query,Integer type) throws RestServiceException {
+	public PageResult<PostResponse> findPageRecommendList(Integer loginUserId, PaginationQuery query, Integer type) throws RestServiceException {
 		PageResult<PostResponse> result = new PageResult<PostResponse>();
 		List<PostResponse> postResponse = new ArrayList<>();
 		PageResult<Post> posts = kffPostService.findPageRecommendList(query);
@@ -3123,6 +3127,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				response.setCreateUserName(post.getCreateUserName());
 				response.setCreateUserSignature(post.getCreateUserSignature());
 				response.setCommentsNum(post.getCommentsNum());
+				if (post != null) {
+					KFFUser createUser = kffUserService.findByUserId(post.getCreateUserId());
+					response.setUserType(createUser.getUserType());
+				}
 				KFFProject project = kffProjectService.findById(post.getProjectId());
 				if (project != null) {
 					Evaluation eva = kffEvaluationService.findByPostId(post.getPostId());
@@ -3805,6 +3813,13 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				} else {
 					finalComment.setPraiseStatus(KFFConstants.PRAISE_STATUS_NOSHOW);
 				}
+
+				if (null != finalComment) {
+					KFFUser createUser = kffUserService.findByUserId(finalComment.getCommentUserId());
+					if (null != createUser) {
+						finalComment.setUserType(createUser.getUserType());
+					}
+				}
 				result.add(finalComment);
 
 				loopCounter++;
@@ -4276,21 +4291,21 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 				}
 				result = comments.getPraiseNum() == null ? 1 : (comments.getPraiseNum() + 1);
-				//个推APP推送消息
-				//查询被点赞的用户
+				// 个推APP推送消息
+				// 查询被点赞的用户
 				KFFUser kffUserc = kffUserService.findByUserId(findByPostId.getCommentUserId());
-				if(null!=kffUserc) {
+				if (null != kffUserc) {
 					Integer linkedType = null;
-					if(post.getPostType()==1) {
+					if (post.getPostType() == 1) {
 						linkedType = LinkedType.CUSTOMEVALUATING.getValue();
 					}
-					if(post.getPostType()==2) {
+					if (post.getPostType() == 2) {
 						linkedType = LinkedType.COUNTERFEIT.getValue();
 					}
-					if(post.getPostType()==3) {
+					if (post.getPostType() == 3) {
 						linkedType = LinkedType.ARTICLE.getValue();
 					}
-					appNewsPush(linkedType,postId,kffUserc.getMobile(),praiseContent);
+					appNewsPush(linkedType, postId, kffUserc.getMobile(), praiseContent);
 				}
 			}
 		} catch (NullPointerException e) {
