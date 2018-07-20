@@ -16,10 +16,11 @@
     <result column="article_id" jdbcType="INTEGER" property="articleId" />
     <result column="is_prominent" jdbcType="INTEGER" property="isProminent" />
     <result column="out_url" jdbcType="VARCHAR" property="outUrl" />
+    <result column="coin_dog_id" jdbcType="INTEGER" property="coinDogId" />
   </resultMap>
   
   <sql id="Base_Column_List">
-    id, created_at, updated_at, title, content, rise, fall,state,author,is_check_details,type,article_id,is_prominent,out_url
+    id, created_at, updated_at, title, content, rise, fall,state,author,is_check_details,type,article_id,is_prominent,out_url,coin_dog_id
   </sql>
   
   	<sql id="table_name">
@@ -42,12 +43,13 @@
   
 	<insert id="save" parameterType="com.tzg.entitys.kff.newFlash.KFFNewsFlash"  useGeneratedKeys="true" keyProperty="id" keyColumn="id"> 
         insert into <include refid="table_name" />(
-	        created_at, updated_at,title, content, rise, fall,state,author,is_check_details,type,article_id,is_prominent,out_url
+	        created_at, updated_at,title, content, rise, fall,state,author,is_check_details,type,article_id,is_prominent,out_url,coin_dog_id
 	        ) values(
 	         #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, 
      		 #{title,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, #{rise,jdbcType=INTEGER}, 
              #{fall,jdbcType=INTEGER},#{state,jdbcType=INTEGER},#{author,jdbcType=VARCHAR},#{isCheckDetails,jdbcType=INTEGER}
-             ,#{type,jdbcType=INTEGER},#{articleId,jdbcType=INTEGER},#{isProminent,jdbcType=INTEGER},#{outUrl,jdbcType=VARCHAR}
+             ,#{type,jdbcType=INTEGER},#{articleId,jdbcType=INTEGER},#{isProminent,jdbcType=INTEGER},#{outUrl,jdbcType=VARCHAR},
+             #{coinDogId,jdbcType=INTEGER}
 	        )
 	        <selectKey resultType="int" keyProperty="id">  
 	          SELECT  
@@ -104,6 +106,9 @@
 	      <if test="outUrl != ''">
 	        out_url = #{outUrl,jdbcType=VARCHAR},
 	      </if>
+	      <if test="coinDogId != null">
+	        coin_dog_id = #{coinDogId,jdbcType=INTEGER},
+	      </if>
 	    </set>
 	    where id = #{id,jdbcType=INTEGER}   
 	</update>
@@ -123,7 +128,7 @@
 	
 	<sql id="columns">
 	    <![CDATA[
-        id ,created_at, updated_at,title, content, rise, fall,state,author,is_check_details,type,article_id,is_prominent,out_url
+        id ,created_at, updated_at,title, content, rise, fall,state,author,is_check_details,type,article_id,is_prominent,out_url,coin_dog_id
 	    ]]>
 	</sql>
 	
@@ -151,6 +156,9 @@
 			<if test="state != null">
 			and state = #{state}
 			</if>
+			<if test="coinDogId != null">
+	        and	coin_dog_id = #{coinDogId}
+	      	</if>
 			<if test="startTime!=null and endTime==null">
     		  and created_at &gt;= #{startTime}
     		</if>

@@ -34,6 +34,15 @@ public class KFFNewsFlash implements Serializable {
     private Integer isProminent;
     
     private String outUrl;
+    private Integer coinDogId;
+    
+    public Integer getCoinDogId() {
+		return coinDogId;
+	}
+
+	public void setCoinDogId(Integer coinDogId) {
+		this.coinDogId = coinDogId;
+	}
     
     public String getOutUrl() {
 		return outUrl;
