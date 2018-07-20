@@ -1855,17 +1855,21 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			throw new RestServiceException("项目不存在" + evaluationRequest.getProjectId());
 		}
 		boolean allowedPulish = isAllowedPulish(evaluationRequest.getCreateUserId(), project, KFFConstants.POST_TYPE_EVALUATION, 2);
-		if (!allowedPulish) {
-			throw new RestServiceException("同一项目15天内只能发起一次评测");
+		if (createUser.getUserType() == 1) {
+			if (!allowedPulish) {
+				throw new RestServiceException("同一项目15天内只能发起一次评测");
+			}
+			allowedPulish = isAllowedPulish(evaluationRequest.getCreateUserId(), project, KFFConstants.POST_TYPE_EVALUATION, 3);
+			if (!allowedPulish) {
+				throw new RestServiceException("同一项目15天内只能发起一次评测");
+			}
+			allowedPulish = isAllowedPulish(evaluationRequest.getCreateUserId(), project, KFFConstants.POST_TYPE_EVALUATION, 4);
+			if (!allowedPulish) {
+				throw new RestServiceException("同一项目15天内只能发起一次评测");
+			}
+
 		}
-		allowedPulish = isAllowedPulish(evaluationRequest.getCreateUserId(), project, KFFConstants.POST_TYPE_EVALUATION, 3);
-		if (!allowedPulish) {
-			throw new RestServiceException("同一项目15天内只能发起一次评测");
-		}
-		allowedPulish = isAllowedPulish(evaluationRequest.getCreateUserId(), project, KFFConstants.POST_TYPE_EVALUATION, 4);
-		if (!allowedPulish) {
-			throw new RestServiceException("同一项目15天内只能发起一次评测");
-		}
+
 		if (3 == evaluationRequest.getModelType()) {
 			// 单项评测 totalScore取出来
 			List<DevaluationModel> onlyevaDetail = JSON.parseArray(evaluationRequest.getProfessionalEvaDetail(), DevaluationModel.class);
@@ -5043,6 +5047,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				}
 			}
 		}
+
+		if (StringUtils.isNotBlank(authentication.getLink())) {
+			if (authentication.getLink().length() > 100) {
+				throw new RestServiceException("评测内容链接过长!请筛选出主要链接进行填写");
+			}
+		}
 		// 分类型进行参数判断 end
 		authentication.setCreatedata(new Date());
 		authentication.setStatus(1);
@@ -5126,6 +5136,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			followUser.setCreateTime(new Date());
 			followUser.setUpdateTime(new Date());
 			kffFollowService.save(followUser);
+			kffUserService.increaseFansNum(user.getUserId());
 		}
 		return user;
 
