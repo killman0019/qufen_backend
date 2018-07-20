@@ -171,11 +171,11 @@ public class UserController extends BaseController {
 			JSONObject map = getParamMapFromRequestPolicy(request);
 			String phone = (String) map.get("phone");
 			if (StringUtils.isBlank(phone)) {
-				throw	new RestServiceException(RestErrorCode.PHONE_NULL);
+				throw new RestServiceException(RestErrorCode.PHONE_NULL);
 			} else {
 				String phonefmt = RegexUtil.PHONEREGEX;
 				if (!phone.matches(phonefmt)) {
-				throw	new RestServiceException(RestErrorCode.PHONE_FORMAT_ERROR);
+					throw new RestServiceException(RestErrorCode.PHONE_FORMAT_ERROR);
 				}
 			}
 			Integer userStatus = kffRmiService.selectUserStatusByPhone(phone);
@@ -226,7 +226,7 @@ public class UserController extends BaseController {
 
 			KFFUser loginaccount = null;
 			try {
-				loginaccount = kffRmiService.login(loginName, password,clientId);
+				loginaccount = kffRmiService.login(loginName, password, clientId);
 				if (null == loginaccount) {
 					throw new RestServiceException(RestErrorCode.LOGIN_NAME_OR_PASSWORD_INCORRECT);
 				}
@@ -235,13 +235,12 @@ public class UserController extends BaseController {
 				String statusHierarchyDesc = qfIndex.getStatusHierarchyDesc();
 				map.put("statusHierarchyType", statusHierarchyType);
 				map.put("statusHierarchyDesc", statusHierarchyDesc);
-				
-			
+
 			} catch (RestServiceException e) {
 				return this.resResult(e.getErrorCode(), e.getMessage());
 			} catch (Exception e) {
 				return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
-			}			
+			}
 			// 生成account token
 			String token = AccountTokenUtil.getAccountToken(loginaccount.getUserId());
 			map.put("token", token);
@@ -1413,7 +1412,7 @@ public class UserController extends BaseController {
 
 			if (null == loginaccount) {
 				throw new RestServiceException(RestErrorCode.LOGIN_NAME_OR_PASSWORD_INCORRECT);
-			}			
+			}
 			Integer userCardStatus = kffRmiService.selectUserCardStatusByUserId(loginaccount.getUserId());
 			map.put("userCardStatus", userCardStatus);
 			QfIndex qfIndex = kffRmiService.findQfIndexUser(loginUserId);

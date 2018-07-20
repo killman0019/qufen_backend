@@ -54,7 +54,7 @@ public class KFFUser implements Serializable {
 	/**
 	 * 用户类型:1-普通用户；2-项目方；3-评测机构；4-机构用户
 	 */
-	private java.lang.Integer userType = 1;
+	private java.lang.Integer userType;
 	/**
 	 * 预留字段 用户等级：1-普通用户；2-高级用户;3-VIP
 	 */
@@ -134,13 +134,13 @@ public class KFFUser implements Serializable {
 	private java.lang.Integer referLevel;
 
 	private Integer usercardStatus;
-	
+
 	/**
 	 * 用户个推手机唯一编码
 	 */
 	private String clientId;
-	
-    public String getClientId() {
+
+	public String getClientId() {
 		return clientId;
 	}
 
