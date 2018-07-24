@@ -2631,20 +2631,20 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 		// 个推APP推送消息
 		// 查询被点赞的用户
-		KFFUser kffUserc = kffUserService.findByUserId(post.getCreateUserId());
-		if (null != kffUserc) {
-			Integer linkedType = null;
-			if (post.getPostType() == 1) {
-				linkedType = LinkedType.CUSTOMEVALUATING.getValue();
-			}
-			if (post.getPostType() == 2) {
-				linkedType = LinkedType.COUNTERFEIT.getValue();
-			}
-			if (post.getPostType() == 3) {
-				linkedType = LinkedType.ARTICLE.getValue();
-			}
-			appNewsPush(linkedType, postId, kffUserc.getMobile(), praiseContent);
-		}
+//		KFFUser kffUserc = kffUserService.findByUserId(post.getCreateUserId());
+//		if (null != kffUserc) {
+//			Integer linkedType = null;
+//			if (post.getPostType() == 1) {
+//				linkedType = LinkedType.CUSTOMEVALUATING.getValue();
+//			}
+//			if (post.getPostType() == 2) {
+//				linkedType = LinkedType.COUNTERFEIT.getValue();
+//			}
+//			if (post.getPostType() == 3) {
+//				linkedType = LinkedType.ARTICLE.getValue();
+//			}
+//			appNewsPush(linkedType, postId, kffUserc.getMobile(), praiseContent);
+//		}
 		Post latestPost = kffPostService.findById(postId);
 		if (latestPost != null) {
 			result = latestPost.getPraiseNum() == null ? 0 : (latestPost.getPraiseNum());
