@@ -31,11 +31,17 @@
 		<result property="commentsNum" jdbcType="INTEGER" column="comments_num" />
 		<result property="collectNum" jdbcType="INTEGER" column="collect_num" />
 		<result property="totalRaterNum" jdbcType="INTEGER" column="totalRaterNum" />
+		<result property="cmcId" jdbcType="INTEGER" column="cmc_id" />
+		<result property="github" jdbcType="VARCHAR" column="github" />
+		<result property="bsjCirculateData" jdbcType="VARCHAR" column="bsj_circulate_data" />
 	</resultMap>
 
 	<sql id="columns">
 	    <![CDATA[
-        project_id ,project_icon ,state ,project_code ,project_english_name ,project_chinese_name ,project_signature ,website_url ,listed ,issue_date ,issue_num ,whitepaper_url ,project_type_name ,project_type_id ,project_desc ,submit_user_id ,submit_user_type,submit_user_contact_info,submit_reason ,status ,createTime ,publishTime ,updateTime ,total_score ,rater_num ,follower_num ,comments_num ,collect_num,totalRaterNum 
+        project_id ,project_icon ,state ,project_code ,project_english_name ,project_chinese_name ,project_signature ,
+        website_url ,listed ,issue_date ,issue_num ,whitepaper_url ,project_type_name ,project_type_id ,project_desc ,
+        submit_user_id ,submit_user_type,submit_user_contact_info,submit_reason ,status ,createTime ,publishTime ,updateTime ,
+        total_score ,rater_num ,follower_num ,comments_num ,collect_num,totalRaterNum,cmc_id,github,bsj_circulate_data
 	    ]]>
 	</sql>
 
@@ -72,7 +78,10 @@
         	follower_num ,
         	comments_num ,
         	collect_num ,
-        	totalRaterNum
+        	totalRaterNum,
+        	cmc_id,
+        	github,
+        	bsj_circulate_data
 		) VALUES (
         	#{projectIcon,jdbcType=VARCHAR} ,
         	#{state,jdbcType=INTEGER} ,
@@ -101,7 +110,10 @@
         	#{followerNum,jdbcType=INTEGER} ,
         	#{commentsNum,jdbcType=INTEGER} ,
         	#{collectNum,jdbcType=INTEGER} ,
-        	#{totalRaterNum,jdbcType=INTEGER} 
+        	#{totalRaterNum,jdbcType=INTEGER} ,
+            #{cmcId,jdbcType=INTEGER},
+            #{github,jdbcType=VARCHAR},
+        	#{bsjCirculateData,jdbcType=VARCHAR}
 		)
 	]]>
 	</insert>
@@ -188,10 +200,19 @@
 				comments_num = #{commentsNum,jdbcType=INTEGER} ,
 			</if>
 			<if test="collectNum != null">
-				collect_num = #{collectNum,jdbcType=INTEGER}
+				collect_num = #{collectNum,jdbcType=INTEGER},
 			</if>
 			<if test="totalRaterNum != null">
-				totalRaterNum = #{totalRaterNum,jdbcType=INTEGER}
+				totalRaterNum = #{totalRaterNum,jdbcType=INTEGER},
+			</if>
+			<if test="cmcId != null">
+				cmc_id = #{cmcId,jdbcType=INTEGER},
+			</if>
+			<if test="github != null">
+				github = #{github,jdbcType=VARCHAR},
+			</if>
+			<if test="bsjCirculateData != null">
+				bsj_circulate_data = #{bsjCirculateData,jdbcType=VARCHAR}
 			</if>
 		</set>
 		WHERE
@@ -290,10 +311,20 @@
 		</if>
 
 	</sql>
+	
+	<select id="findListByMap" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select project_id,project_chinese_name,project_icon  from tbproject where 1=1
+		<include refid="queryWhere"/> 
+		ORDER BY follower_num DESC
+		LIMIT ${startRecord},${endRecord}
+	</select>
 
 	<sql id="queryWhere">
 		<if test="projectId != null and projectId.trim() != ''">
 			and project_id = #{projectId}
+		</if>
+		<if test="hotProject != null">
+			and follower_num > #{hotProject}
 		</if>
 		<if test="projectIcon != null and projectIcon.trim() != ''">
 			and project_icon = #{projectIcon}
@@ -387,6 +418,15 @@
 		</if>
 		<if test="totalRaterNum != null and totalRaterNum.trim() != ''">
 			and totalRaterNum = #{totalRaterNum}
+		</if>
+		<if test="cmcId != null">
+			and cmc_id = #{cmcId,jdbcType=INTEGER}
+		</if>
+		<if test="github != null">
+			and github = #{github,jdbcType=VARCHAR}
+		</if>
+		<if test="bsjCirculateData != null">
+			and bsj_circulate_data = #{bsjCirculateData,jdbcType=VARCHAR}
 		</if>
 	</sql>
 	<select id="findProjectName" resultMap="BaseResultMap">

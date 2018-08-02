@@ -140,6 +140,36 @@ public class ProjectResponse implements Serializable {
 	private java.lang.Integer collectNum = 0;
 
 	private Integer totalRaterNum = 0;
+	
+	private Integer cmcId;
+	
+	private String github;
+	
+	private String bsjCirculateData;
+
+	public Integer getCmcId() {
+		return cmcId;
+	}
+
+	public void setCmcId(Integer cmcId) {
+		this.cmcId = cmcId;
+	}
+
+	public String getGithub() {
+		return github;
+	}
+
+	public void setGithub(String github) {
+		this.github = github;
+	}
+
+	public String getBsjCirculateData() {
+		return bsjCirculateData;
+	}
+
+	public void setBsjCirculateData(String bsjCirculateData) {
+		this.bsjCirculateData = bsjCirculateData;
+	}
 
 	public Integer getTotalRaterNum() {
 		return totalRaterNum;
