@@ -106,5 +106,9 @@ public class FollowService {
 		map.put("status", "1");
 		return followMapper.findFollowedProjects(map);
 	}
+	
+	public List<Follow> findListByAttr(Map<String, Object> map) {
+		return followMapper.findFollowedProjects(map);
+	}
 
 }

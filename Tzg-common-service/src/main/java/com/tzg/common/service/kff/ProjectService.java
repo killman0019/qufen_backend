@@ -32,6 +32,7 @@ import com.tzg.entitys.kff.project.KFFProject;
 import com.tzg.entitys.kff.project.KFFProjectMapper;
 import com.tzg.entitys.kff.qfindex.QfIndex;
 import com.tzg.entitys.kff.qfindex.QfIndexMapper;
+import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.rest.exception.rest.RestServiceException;
 
 @Service(value = "KFFProjectService")
@@ -52,6 +53,10 @@ public class ProjectService {
 
 	private static final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 4);
 
+	public List<KFFProject> findListByMap(Map<String, Object> map) {
+		return projectMapper.findListByMap(map);
+	}
+	
 	@Transactional(readOnly = true)
 	public KFFProject findById(java.lang.Integer id) throws RestServiceException {
 		if (id == null) {

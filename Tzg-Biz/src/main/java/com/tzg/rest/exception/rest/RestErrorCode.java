@@ -15,6 +15,7 @@ public enum RestErrorCode {
 	
     MISSING_ARGS(9998, "缺失参数"),
     
+    NO_DATA_MSG(500,"暂无数据"),
     
     MISSING_POLICY(9996, "缺失参数POLICY"),
     

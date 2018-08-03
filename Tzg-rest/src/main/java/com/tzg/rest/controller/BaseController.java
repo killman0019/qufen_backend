@@ -258,6 +258,40 @@ public abstract class BaseController {
 			return resultmap;
 			
 		}
+		
+		/** 
+		* @Title: getParamJsonFromRequestPolicy 
+		* @Description: TODO <解析policy参数>
+		* @author linj <方法创建作者>
+		* @create 上午9:28:27
+		* @param @param request
+		* @param @return
+		* @param @throws IOException <参数说明>
+		* @return JSONObject 
+		* @throws 
+		* @update 上午9:28:27
+		* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+		* @updateContext <修改内容>
+		*/
+		public JSONObject getParamJsonFromRequestPolicy(HttpServletRequest request) throws IOException {
+			JSONObject parsePolicy = new JSONObject();
+			String policy = request.getParameter("policy");
+			if(StringUtils.isBlank(policy)){
+				throw new RestServiceException(RestErrorCode.MISSING_POLICY);
+			}
+			try{
+				policy = PolicyUtil.decryptPolicy(policy);
+				if(StringUtil.isBlank(policy)) {
+					throw new RestServiceException(RestErrorCode.MISSING_POLICY);
+				}
+				parsePolicy = JSONObject.parseObject(policy);
+			}catch(Exception e){
+				e.printStackTrace();
+				throw new RestServiceException(RestErrorCode.DECRYPT_POLICY_ERROR);
+			}
+			return parsePolicy;
+		}
+		
 	 	
 	
 		public String getTerminalDeviceType(HttpServletRequest request) {

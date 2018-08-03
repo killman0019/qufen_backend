@@ -86,7 +86,7 @@ public interface KFFRmiService {
 	 * @return
 	 * @throws RestServiceException
 	 */
-	public KFFUser login(String loginName, String password,String clientId) throws RestServiceException;
+	public KFFUser login(String loginName, String password,String clientId,Integer appType) throws RestServiceException;
 
 	/**
 	 * 按类型获取最新升级信息

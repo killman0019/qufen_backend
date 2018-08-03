@@ -9,6 +9,7 @@ import com.gexin.rp.sdk.base.impl.Target;
 import com.gexin.rp.sdk.http.IGtPush;
 import com.gexin.rp.sdk.template.NotificationTemplate;
 import com.gexin.rp.sdk.template.style.Style0;
+import com.tzg.common.enums.AppType;
 import com.tzg.common.utils.sysGlobals;
 
 /** 
@@ -41,6 +42,9 @@ public class PushList {
         for (int i = 0; i < cids.size(); i++) {
         	Target target = new Target();
         	target.setAppId(sysGlobals.appId);
+        	if(AppType.ANDROID.getValue().toString().equals(cids.get(i).toString())) {
+        		continue;
+        	}
         	target.setClientId(cids.get(i).toString());
         	targets.add(target);
 		}

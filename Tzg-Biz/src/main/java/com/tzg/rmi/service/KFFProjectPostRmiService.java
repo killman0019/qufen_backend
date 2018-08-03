@@ -5,16 +5,10 @@ import java.util.Map;
 
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
-import com.tzg.entitys.kff.article.ArticleRequest;
 import com.tzg.entitys.kff.comments.Comments;
-import com.tzg.entitys.kff.devaluationModelDetail.DevaluationModelDetail;
-import com.tzg.entitys.kff.discuss.Discuss;
-import com.tzg.entitys.kff.evaluation.Evaluation;
 import com.tzg.entitys.kff.evaluation.EvaluationDetailResponse;
-import com.tzg.entitys.kff.evaluation.EvaluationRequest;
 import com.tzg.entitys.kff.post.PostResponse;
 import com.tzg.entitys.kff.project.KFFProject;
-import com.tzg.entitys.kff.projectevastat.ProjectevastatByGrade;
 import com.tzg.rest.exception.rest.RestServiceException;
 
 /**
@@ -104,4 +98,6 @@ public interface KFFProjectPostRmiService {
 	 * @throws RestServiceException
 	 */
 	public Map<String, Object> selectProjectEvaStatSelf(Integer projectId) throws RestServiceException;
+	
+	public List<KFFProject> findListByMap(Map<String, Object> map);
 }

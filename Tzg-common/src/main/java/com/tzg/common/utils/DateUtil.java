@@ -15,9 +15,11 @@ public class DateUtil {
 		return fromat.format(new Date());
 	}
 
-	private static String datePattern = "yyyy-MM-dd";
+	public static String datePattern = "yyyy-MM-dd";
 
-	private static String timePattern = "HH:mm:ss";
+	public static String timePattern = "HH:mm:ss";
+	
+	public static String dateTimePattern = "yyyy-MM-dd HH:mm:ss";
 
 	public static String getCurrentTimeSS() {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");

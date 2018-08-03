@@ -31,6 +31,16 @@ public class KFFNewsFlashImg implements Serializable {
     
     private String outUrl;
     
+    private Integer newsFlashWay;
+    
+    public Integer getNewsFlashWay() {
+		return newsFlashWay;
+	}
+
+	public void setNewsFlashWay(Integer newsFlashWay) {
+		this.newsFlashWay = newsFlashWay;
+	}
+    
     public String getOutUrl() {
 		return outUrl;
 	}

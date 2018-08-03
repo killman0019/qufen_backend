@@ -154,6 +154,11 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 	private RedisService redisService;
 	@Autowired
 	private ThreadPoolTaskExecutor taskExecutor;
+	
+	public List<KFFProject> findListByMap(Map<String, Object> map) {
+		return kffProjectService.findListByMap(map);
+	}
+	
 
 	@Override
 	public Map<String, Object> findProjectEvaStatScore(Integer projectId) throws RestServiceException {

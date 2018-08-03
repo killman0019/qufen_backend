@@ -33,13 +33,14 @@
 		<result property="lastLoginDateTime" jdbcType="TIMESTAMP" column="last_login_dateTime"/>
 		<result property="usercardStatus" jdbcType="INTEGER" column="usercardStatus"/>
 		<result property="clientId" jdbcType="VARCHAR" column="client_id"/>
+		<result property="appType" jdbcType="INTEGER" column="app_type"/>
     </resultMap>
 	
 	<sql id="columns">
 	    <![CDATA[
         user_id ,user_name ,sex ,icon ,mobile ,email ,wechat ,password ,pay_password ,user_type ,user_degree ,user_signature ,fans_num ,praise_num ,evaluation_num ,
         discuss_num ,article_num ,kff_coin_num ,area_name ,createTime ,updateTime ,status ,memo ,province_code ,city_code ,area_code ,refer_user_id ,refer_level,
-        last_login_dateTime,usercardStatus,client_id
+        last_login_dateTime,usercardStatus,client_id,app_type
 	    ]]>
 	</sql>
 	
@@ -78,7 +79,8 @@
         	refer_level ,
         	last_login_dateTime,
         	usercardStatus ,
-        	client_id
+        	client_id,
+        	app_type
 		) VALUES (
         	#{userName,jdbcType=VARCHAR} ,
         	#{sex,jdbcType=INTEGER} ,
@@ -109,7 +111,8 @@
         	#{referLevel,jdbcType=INTEGER} ,
         	#{lastLoginDateTime,jdbcType=TIMESTAMP} ,
         	#{usercardStatus,jdbcType=INTEGER},
-        	#{clientId,jdbcType=VARCHAR}
+        	#{clientId,jdbcType=VARCHAR},
+        	#{appType,jdbcType=INTEGER}
 		)
 	]]>
 	</insert>
@@ -145,7 +148,8 @@
         	refer_level ,
         	last_login_dateTime ,
         	usercardStatus ,
-        	client_id
+        	client_id,
+        	app_type
 		) VALUES (#{userId,jdbcType=INTEGER},
         	#{userName,jdbcType=VARCHAR} ,
         	#{sex,jdbcType=INTEGER} ,
@@ -176,7 +180,8 @@
         	#{referLevel,jdbcType=INTEGER} ,
         	#{lastLoginDateTime,jdbcType=TIMESTAMP} ,
         	#{usercardStatus,jdbcType=INTEGER},
-        	#{clientId,jdbcType=VARCHAR}
+        	#{clientId,jdbcType=VARCHAR},
+        	#{appType,jdbcType=INTEGER}
 		)
 	</insert>
 
@@ -272,6 +277,9 @@
 	        </if>
 	        <if test="clientId != null">
 	        client_id = #{clientId,jdbcType=VARCHAR}  ,
+	        </if>
+	        <if test="appType != null">
+	        app_type = #{appType,jdbcType=INTEGER}  ,
 	        </if>
 	    </set>
 		WHERE 
@@ -393,8 +401,15 @@
 	</select>
 	
 	<select id="findListByAttr" resultMap="BaseResultMap" parameterType="java.util.Map">
-		select user_id,client_id  from tbuser where 1=1
+		select user_id,client_id,user_name,icon  from tbuser where 1=1
 		<include refid="queryWhere"/> 
+	</select>
+	
+	<select id="findListByMap" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select user_id,user_name,icon  from tbuser where 1=1
+		<include refid="queryWhere"/> 
+		ORDER BY fans_num DESC
+		LIMIT ${startRecord},${endRecord}
 	</select>
 	
 	<!-- 根据邀请人用户id 查询已邀请个数 -->
@@ -411,6 +426,11 @@
 	</select>
 	
 	<sql id="queryWhere">
+		
+		<if test="hotUser != null">
+		and fans_num &gt; #{hotUser}
+		</if>
+	
 		<if test="userId != null and userId.trim() != ''">
 		and user_id = #{userId}
 		</if>
@@ -506,6 +526,9 @@
 		</if>
 		<if test="clientId != null and clientId.trim() != ''">
 		and client_id = #{clientId}
+		</if>
+		<if test="appType != null">
+		and app_type = #{appType}
 		</if>
 	</sql>
 	

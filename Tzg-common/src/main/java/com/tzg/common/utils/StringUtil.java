@@ -1,5 +1,7 @@
 package com.tzg.common.utils;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,6 +15,31 @@ public class StringUtil extends StringUtils {
 
     public StringUtil() {
     }
+    
+    
+	// 判断Object是空
+	public static boolean isEmptyObject(Object obj) {
+		if (obj == null) {
+			return true;
+		}
+		if ((obj instanceof List)) {
+			return ((List) obj).size() == 0;
+		}
+		if ((obj instanceof String)) {
+			return ((String) obj).trim().equals("");
+		}
+		return false;
+	}
+
+	/**
+	 * 判断对象不为空
+	 * 
+	 * @param obj 对象名
+	 * @return 是否不为空
+	 */
+	public static boolean isNotEmpty(Object obj) {
+		return !isEmptyObject(obj);
+	}
 
     /**
      * 手机号隐藏 例 ：158*****5566
@@ -350,10 +377,6 @@ public class StringUtil extends StringUtils {
         return s;
     }
 
-    public static void main(String[] args) {
-        System.out.println(stringToList("1,11,s,s,s"));
-    }
-
     /**
      * 将二进制转化为16进制字符串
      * 
@@ -449,4 +472,55 @@ public class StringUtil extends StringUtils {
         List<String> res = Arrays.asList(param.split(","));
         return res;
     }
+    
+    /**2个BigDecimal相乘，四舍五入保留2位小数*/
+	public static BigDecimal mvtilBigDecimal(BigDecimal d1,BigDecimal d2){
+		DecimalFormat df = new DecimalFormat("0.00"); // 保留2位小数
+		BigDecimal dd = d1.multiply(d2);
+		if(dd.compareTo(new BigDecimal("0"))==0||
+				dd.compareTo(new BigDecimal("0.0"))==0||
+				dd.compareTo(new BigDecimal("0.00"))==0){
+			return new BigDecimal("0.00");
+		}
+		dd.divide(dd, 2, BigDecimal.ROUND_HALF_UP);
+		return new BigDecimal(df.format(dd));
+	}
+	
+	/**2个BigDecimal相除，四舍五入保留2位小数*/
+	public static BigDecimal divBigDecimal(BigDecimal d1,BigDecimal d2){
+		DecimalFormat df = new DecimalFormat("0.00"); // 保留2位小数
+		BigDecimal dd = d1.divide(d2,2, BigDecimal.ROUND_HALF_UP);
+		if(dd.compareTo(new BigDecimal("0"))==0||
+				dd.compareTo(new BigDecimal("0.0"))==0||
+				dd.compareTo(new BigDecimal("0.00"))==0){
+			return new BigDecimal("0.00");
+		}
+		return new BigDecimal(df.format(dd));
+	}
+	
+	/**2个BigDecimal相减，四舍五入保留2位小数*/
+	public static BigDecimal subBigDecimal(BigDecimal d1,BigDecimal d2){
+		DecimalFormat df = new DecimalFormat("0.00"); // 保留2位小数
+		BigDecimal dd = d1.subtract(d2);
+		if(dd.compareTo(new BigDecimal("0"))==0||
+				dd.compareTo(new BigDecimal("0.0"))==0||
+				dd.compareTo(new BigDecimal("0.00"))==0){
+			return new BigDecimal("0.00");
+		}
+		dd.divide(dd, 2, BigDecimal.ROUND_HALF_UP);
+		return new BigDecimal(df.format(dd));
+	}
+	
+	/**2个BigDecimal相加，四舍五入保留2位小数*/
+	public static BigDecimal addBigDecimal(BigDecimal d1,BigDecimal d2){
+		DecimalFormat df = new DecimalFormat("0.00"); // 保留2位小数
+		BigDecimal dd = d1.add(d2);
+		if(dd.compareTo(new BigDecimal("0"))==0||
+				dd.compareTo(new BigDecimal("0.0"))==0||
+				dd.compareTo(new BigDecimal("0.00"))==0){
+			return new BigDecimal("0.00");
+		}
+		dd.divide(dd, 2, BigDecimal.ROUND_HALF_UP);
+		return new BigDecimal(df.format(dd));
+	}
 }

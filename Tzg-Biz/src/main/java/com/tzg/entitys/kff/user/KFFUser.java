@@ -139,6 +139,18 @@ public class KFFUser implements Serializable {
 	 * 用户个推手机唯一编码
 	 */
 	private String clientId;
+	/**
+	 * app的类型:0-android,1-iOS
+	 * */
+	private Integer appType;
+
+	public Integer getAppType() {
+		return appType;
+	}
+
+	public void setAppType(Integer appType) {
+		this.appType = appType;
+	}
 
 	public String getClientId() {
 		return clientId;

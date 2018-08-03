@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.tzg.common.base.BaseRequest;
+import com.tzg.common.enums.NewsFlashWay;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.utils.sysGlobals;
@@ -19,6 +20,7 @@ import com.tzg.rest.controller.BaseController;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
+import com.tzg.rmi.service.MiningActivityRmiService;
 import com.tzg.rmi.service.NewsFlashImgRmiService;
 
 /** 
@@ -35,6 +37,8 @@ public class NewsFlashImgController extends BaseController {
 	
 	@Autowired
 	private NewsFlashImgRmiService newsFlashImgRmiService;
+	@Autowired
+	private MiningActivityRmiService miningActivityRmiService;
 	
 	/** 
 	* @Title: getNewsFlashPageList 
@@ -58,6 +62,7 @@ public class NewsFlashImgController extends BaseController {
 			BaseRequest baseRequest = getParamMapFromRequestPolicy(request, BaseRequest.class);
 			PaginationQuery query = new PaginationQuery();
 	        query.addQueryData("state", sysGlobals.ENABLE);
+	        query.addQueryData("newsFlashWay", NewsFlashWay.NEWSFLASHLIST.getValue());
 	        query.setPageIndex(baseRequest.getPageIndex());
 	        query.setRowsPerPage(baseRequest.getPageSize());
 			PageResult<KFFNewsFlashImg> data = newsFlashImgRmiService.findNewsFlashImgPage(query);
@@ -73,6 +78,45 @@ public class NewsFlashImgController extends BaseController {
 		return bre;
 	}
 	
+	/** 
+	* @Title: getNewsFlashImgListForFound 
+	* @Description: TODO <获取发现的轮播图列表>
+	* @author linj <方法创建作者>
+	* @create 下午12:00:12
+	* @param @param request
+	* @param @return <参数说明>
+	* @return BaseResponseEntity 
+	* @throws 
+	* @update 下午12:00:12
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	*/
+	@ResponseBody
+	@RequestMapping(value="/getNewsFlashImgListForFound")
+	public BaseResponseEntity getNewsFlashImgListForFound(HttpServletRequest request) {
+		
+		miningActivityRmiService.manualActivity();
+		BaseResponseEntity bre = new BaseResponseEntity();
+        HashMap<String, Object> map = new HashMap<String, Object>();
+		try {
+			BaseRequest baseRequest = getParamMapFromRequestPolicy(request, BaseRequest.class);
+			PaginationQuery query = new PaginationQuery();
+	        query.addQueryData("state", sysGlobals.ENABLE);
+	        query.addQueryData("newsFlashWay", NewsFlashWay.FOUNDLIST.getValue());
+	        query.setPageIndex(baseRequest.getPageIndex());
+	        query.setRowsPerPage(baseRequest.getPageSize());
+			PageResult<KFFNewsFlashImg> data = newsFlashImgRmiService.findNewsFlashImgPage(query);
+            map.put("data", data);
+			bre.setData(map);
+		} catch (RestServiceException e) {
+			logger.error("NewsFlashImgController getNewsFlashImgList:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("NewsFlashImgController getNewsFlashImgList:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR,e.getMessage());
+		}
+		return bre;
+	}
 }
 
 

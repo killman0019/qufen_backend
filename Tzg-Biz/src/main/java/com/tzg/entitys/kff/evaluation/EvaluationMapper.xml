@@ -247,6 +247,15 @@
 		<if test="createUserId != null ">
 			and create_user_id = #{createUserId}
 		</if>
+		<if test="startTime!=null and endTime==null">
+   		  and createTime &gt;= #{startTime}
+   		</if>
+   		<if test="startTime==null and endTime!=null">
+   		  and createTime &lt;= #{endTime}
+   		</if>
+   		<if test="startTime!=null and endTime!=null">
+   		  and createTime &gt;= #{startTime} and createTime &lt;= #{endTime}
+   		</if>
 	</sql>
 	<select id="selectEvaluationByPostId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
 		SELECT

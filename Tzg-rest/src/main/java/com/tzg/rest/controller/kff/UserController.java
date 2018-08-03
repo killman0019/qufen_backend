@@ -216,6 +216,7 @@ public class UserController extends BaseController {
 			String loginName = (String) params.get("loginName");
 			String password = (String) params.get("password");
 			String clientId = (String) params.get("clientId");
+			Integer appType = (Integer) params.get("appType");
 
 			if (StringUtils.isBlank(loginName)) {
 				throw new RestServiceException(RestErrorCode.LOGIN_NAME_NULL);
@@ -226,7 +227,7 @@ public class UserController extends BaseController {
 
 			KFFUser loginaccount = null;
 			try {
-				loginaccount = kffRmiService.login(loginName, password, clientId);
+				loginaccount = kffRmiService.login(loginName, password, clientId,appType);
 				if (null == loginaccount) {
 					throw new RestServiceException(RestErrorCode.LOGIN_NAME_OR_PASSWORD_INCORRECT);
 				}

@@ -307,9 +307,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public KFFUser login(String loginName, String password, String clientId) {
+	public KFFUser login(String loginName, String password, String clientId,Integer appType) {
 
-		return kffUserService.login(loginName, password, clientId);
+		return kffUserService.login(loginName, password, clientId,appType);
 	}
 
 	@Override

@@ -34,4 +34,25 @@ public final class sysGlobals{
 	public static Integer GETUI_SET_TIME=1;
 	/**个推通知标题*/
 	public static String GETUI_NOTIFY="区分";
+	/**区分官方的币名称*/
+	public static String QDKL_CION ="FIND";
+	/**Tokenrecords的setFunctionDesc*/
+	public static String SET_FUNCTION_DESC ="完成挖矿活动FIND币直接发放！";
+	/**Tokenrecords的setMeno*/
+	public static String SET_MENO ="完成挖矿活动奖励！";
+	/**Tokenrecords的setFunctionType*/
+	public static Integer SET_FUNCTION_TYPE=80;
+	/**tokenaward的setTokenAwardFunctionDesc*/
+	public static String SET_TOKENAWARD_FUNCTIONDESC ="完成挖矿活动奖励";
+	/**tokenaward的setTokenAwardFunctionType*/
+	public static Integer SET_TOKENAWARD_FUNCTIONTYPE=80;
+	/**tokenaward的setIssuer*/
+	public static String SET_ISSUER ="系统程序";
+	/**tokenaward的setRemark*/
+	public static String SET_REMARK ="完成挖矿活动奖励为FIND币，系统程序直接发放";
+	
+	/**发现-活跃用户数量（粉丝）大于30*/
+	public static Integer HOT_USER=30;
+	/**发现-热门项目(关注超过500人)*/
+	public static Integer HOT_PROJECT=500;
 }

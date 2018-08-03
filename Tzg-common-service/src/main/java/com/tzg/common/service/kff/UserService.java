@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.tzg.common.constants.KFFConstants;
+import com.tzg.common.enums.AppType;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.utils.DateUtil;
@@ -29,6 +30,7 @@ import com.tzg.common.utils.ThreadPoolUtils;
 import com.tzg.common.utils.sysGlobals;
 import com.tzg.common.utils.Calculation.CalculationUtils;
 import com.tzg.common.utils.getui.PushList;
+import com.tzg.common.utils.getui.iOSPushList;
 import com.tzg.entitys.kff.app.NewsPush;
 import com.tzg.entitys.kff.qfindex.QfIndex;
 import com.tzg.entitys.kff.user.KFFUser;
@@ -63,7 +65,16 @@ public class UserService {
 		}
 		return userMapper.findById(id);
 	}
-
+	
+	public List<KFFUser> findListByAttr(Map<String, Object> map) {
+		return userMapper.findListByAttr(map);
+	}
+	
+	public List<KFFUser> findListByMap(Map<String, Object> map) {
+		return userMapper.findListByMap(map);
+	}
+	
+	
 	public void delete(java.lang.Integer id) throws RestServiceException {
 		if (id == null) {
 			throw new RestServiceException("id不能为空");
@@ -172,7 +183,7 @@ public class UserService {
 		return findUserByPhoneNumber(registerRequest.getPhoneNumber());
 	}
 
-	public KFFUser login(String loginName, String password,String clientId) throws RestServiceException {
+	public KFFUser login(String loginName, String password,String clientId,Integer appType) throws RestServiceException {
 		KFFUser user = null;
 		if (StringUtils.isBlank(loginName)) {
 			throw new RestServiceException(RestErrorCode.USER_ID_BLANK);
@@ -302,6 +313,11 @@ public class UserService {
 			if(StringUtils.isNotBlank(clientId)){
 				if(StringUtils.isBlank(uclientId)) {
 					user.setClientId(clientId);
+				}
+				if(null==appType) {
+					user.setAppType(AppType.ANDROID.getValue());
+				}else {
+					user.setAppType(appType);
 				}
 				//判断clientid 在数据库中存在与否，存在即清空先
 				Map<String,Object> seMap = new HashMap<String,Object>();
@@ -680,6 +696,13 @@ public class UserService {
 	        				if(null!=usersList.get(j)) {
 		        				if(StringUtils.isNotBlank(usersList.get(j).getClientId())) {
 		        					list.add(usersList.get(j).getClientId());
+		        					//判断给android还是ios推送消息
+									Integer apptt = usersList.get(j).getAppType();
+									if(null==apptt) {
+										list.add(AppType.ANDROID.getValue().toString());
+									}else {
+										list.add(apptt.toString());
+									}
 		        				}
 	        				}
 	        			}
@@ -710,6 +733,13 @@ public class UserService {
 				if(null!=user) {
     				if( StringUtils.isNotBlank(user.getClientId())) {
     					list.add(user.getClientId());
+    					//判断给android还是ios推送消息
+						Integer apptt = user.getAppType();
+						if(null==apptt) {
+							list.add(AppType.ANDROID.getValue().toString());
+						}else {
+							list.add(apptt.toString());
+						}
     				}
 				}
 			}
@@ -741,7 +771,15 @@ public class UserService {
 	       String title = (String)arrs.get("title");
 	       String content = (String)arrs.get("content");
 	       if(arrc.size()>0) {
-	    	   PushList.pushMsg(arrc, msg,title,content);
+	    	   for (int i = 0; i < arrc.size(); i++) {
+					String str =(String) arrc.get(i);
+					if(str.equals(AppType.ANDROID.getValue().toString())) {
+						PushList.pushMsg(arrc, msg, title, content);
+					}
+					if(str.equals(AppType.IOS.getValue().toString())) {
+						iOSPushList.iOSPushMsg(arrc, msg, title, content);
+					}
+				}
 	       }
 	       logger.info("个推执行的函数--->"+arrc.toString());
 	       logger.info("task 完毕--->"+arrs+"执行完毕");

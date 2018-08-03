@@ -4,6 +4,7 @@ import java.util.Map;
 
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
+import com.tzg.entitys.kff.app.NewsFlash;
 import com.tzg.entitys.kff.newFlash.KFFNewsFlash;
 import com.tzg.rest.exception.rest.RestServiceException;
 
@@ -18,8 +19,12 @@ public interface NewsFlashRmiService {
 
 	public PageResult<KFFNewsFlash> findNewsFlashPage(PaginationQuery query) throws RestServiceException;
 	
+	public PageResult<NewsFlash> findAppNewsFlashPage(PaginationQuery query);
+	
 	public void updateByMap(Map<String,Object> map) throws RestServiceException;
 	
 	public KFFNewsFlash findById(Integer id);
-
+	
+	public NewsFlash findAppNewsFlashById(Integer id);
+	
 }

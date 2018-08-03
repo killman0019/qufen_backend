@@ -55,5 +55,6 @@ public interface KFFUserMapper extends BaseMapper<KFFUser, java.lang.Integer> {
 	
 	public List<KFFUser> findPageWithCID(Map<String, Object> map);
 	public List<KFFUser> findListByAttr(Map<String, Object> map);
+	public List<KFFUser> findListByMap(Map<String, Object> map);
 	
 }

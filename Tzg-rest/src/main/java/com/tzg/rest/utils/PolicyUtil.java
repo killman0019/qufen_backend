@@ -4,6 +4,8 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.tzg.common.utils.AccountTokenUtil;
+
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
@@ -104,12 +106,13 @@ public class PolicyUtil {
 //        System.out.println(date);
 //
 //        String str = "{\"phoneNumber\":\"15967158998\",\"password\":\"11111111\",\"dynamicVerifyCode\":\"488258\"}";
-        String ssr = "{\"phoneNumber\":\"18332331296\",\"password\":\"s232332326\",\"dynamicVerifyCode\":\"\"}";
-
-//        String a = encryptPolicy(str);
+        String ssr = "{\"id\":16,\"rise\":1,\"fall\":0,}";
+//    	 String ssr = "{\"token\":\"MToxNTMyOTQ1NDMyMTUyOjZkNDJjMjg0YTdjMWEwNGM4YWQxMjE3ZDc5OGMzYjM2\"}";
         System.out.println("policy:"+encryptPolicy(ssr));
         System.out.println("sign:"+Md5(ssr));
-//
+        
+        String token = AccountTokenUtil.getAccountToken(6);
+        System.out.println(token);
 //        System.out.println(decryptAES(a));
         
     }

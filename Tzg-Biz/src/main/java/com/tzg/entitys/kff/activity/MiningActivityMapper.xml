@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.kff.activity.MiningActivityMapper">
+  <resultMap id="BaseResultMap" type="com.tzg.entitys.kff.activity.MiningActivity">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="project_id" jdbcType="INTEGER" property="projectId" />
+    <result column="project_code" jdbcType="VARCHAR" property="projectCode" />
+    <result column="token_name" jdbcType="VARCHAR" property="tokenName" />
+    <result column="token_count" jdbcType="INTEGER" property="tokenCount" />
+    <result column="token_cash" jdbcType="DECIMAL" property="tokenCash" />
+    <result column="token_num" jdbcType="INTEGER" property="tokenNum" />
+    <result column="activity_remark" jdbcType="VARCHAR" property="activityRemark" />
+    <result column="begin_dt" jdbcType="VARCHAR" property="beginDt" />
+    <result column="end_dt" jdbcType="VARCHAR" property="endDt" />
+    <result column="activity_step" jdbcType="VARCHAR" property="activityStep" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="article_id" jdbcType="INTEGER" property="articleId" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="token_unclaimed" jdbcType="DECIMAL" property="tokenUnclaimed" />
+    <result column="token_every_count" jdbcType="DECIMAL" property="tokenEveryCount" />
+    <result column="token_surplus_num" jdbcType="INTEGER" property="tokenSurplusNum" />
+    <result column="version" jdbcType="INTEGER" property="version" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, created_at, updated_at, title, project_id, project_code,token_name, token_count, token_cash, 
+    token_num, activity_remark, begin_dt, end_dt, activity_step, type, article_id, status,token_unclaimed,
+    token_surplus_num,token_every_count,version
+  </sql>
+  
+  <sql id="table_name">
+		activity_mining_activity
+  </sql>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from <include refid="table_name" />
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from <include refid="table_name" />
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <delete id="deleteById" parameterType="java.lang.Integer" >
+		delete from <include refid="table_name" />  where id=#{id} 
+  </delete>
+   
+  <insert id="save" parameterType="com.tzg.entitys.kff.activity.MiningActivity" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+    insert into activity_mining_activity (id, created_at, updated_at, 
+      title, project_id,project_code, token_name, 
+      token_count, token_cash, token_num, 
+      activity_remark, begin_dt, end_dt, 
+      activity_step, type, article_id, 
+      status,token_unclaimed,token_every_count,token_surplus_num,version)
+    values (#{id,jdbcType=INTEGER}, #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, 
+      #{title,jdbcType=VARCHAR}, #{projectId,jdbcType=INTEGER},#{projectCode,jdbcType=VARCHAR},#{tokenName,jdbcType=VARCHAR}, 
+      #{tokenCount,jdbcType=INTEGER}, #{tokenCash,jdbcType=DECIMAL}, #{tokenNum,jdbcType=INTEGER}, 
+      #{activityRemark,jdbcType=VARCHAR}, #{beginDt,jdbcType=VARCHAR}, #{endDt,jdbcType=VARCHAR}, 
+      #{activityStep,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, #{articleId,jdbcType=INTEGER}, 
+      #{status,jdbcType=INTEGER},#{tokenUnclaimed,jdbcType=INTEGER},#{tokenEveryCount,jdbcType=DECIMAL},#{tokenSurplusNum,jdbcType=INTEGER},
+      #{version,jdbcType=INTEGER})
+     <selectKey resultType="int" keyProperty="id">  
+       SELECT  
+       LAST_INSERT_ID()  
+     </selectKey>
+  </insert>
+  
+  <update id="update" parameterType="com.tzg.entitys.kff.activity.MiningActivity">
+    update activity_mining_activity
+    <set>
+      <if test="createdAt != null">
+        created_at = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null">
+        updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="projectId != null">
+        project_id = #{projectId,jdbcType=INTEGER},
+      </if>
+      <if test="projectCode != null">
+        project_code = #{projectCode,jdbcType=VARCHAR},
+      </if>
+      <if test="tokenName != null">
+        token_name = #{tokenName,jdbcType=VARCHAR},
+      </if>
+      <if test="tokenCount != null">
+        token_count = #{tokenCount,jdbcType=INTEGER},
+      </if>
+      <if test="tokenCash != null">
+        token_cash = #{tokenCash,jdbcType=DECIMAL},
+      </if>
+      <if test="tokenNum != null">
+        token_num = #{tokenNum,jdbcType=INTEGER},
+      </if>
+      <if test="activityRemark != null">
+        activity_remark = #{activityRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="beginDt != null">
+        begin_dt = #{beginDt,jdbcType=VARCHAR},
+      </if>
+      <if test="endDt != null">
+        end_dt = #{endDt,jdbcType=VARCHAR},
+      </if>
+      <if test="activityStep != null">
+        activity_step = #{activityStep,jdbcType=VARCHAR},
+      </if>
+      <if test="type != ''">
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="articleId != ''">
+        article_id = #{articleId,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="tokenUnclaimed != null">
+        token_unclaimed = #{tokenUnclaimed,jdbcType=INTEGER},
+      </if>
+      <if test="tokenSurplusNum != null">
+        token_surplus_num = #{tokenSurplusNum,jdbcType=INTEGER},
+      </if>
+      <if test="tokenEveryCount != null">
+        token_every_count = #{tokenEveryCount,jdbcType=DECIMAL},
+      </if>
+      <if test="version != null">
+        version = #{version,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <update id="updateByOptimisticLock" parameterType="com.tzg.entitys.kff.activity.MiningActivity">
+    update activity_mining_activity
+    <set>
+      <if test="tokenUnclaimed != null">
+        token_unclaimed = #{tokenUnclaimed,jdbcType=INTEGER},
+      </if>
+      <if test="tokenSurplusNum != null">
+        token_surplus_num = #{tokenSurplusNum,jdbcType=INTEGER},
+      </if>
+      <if test="version != null">
+        version = #{version,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER} and version &lt; #{version,jdbcType=INTEGER}
+  </update>
+  
+    <select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) FROM 
+    	activity_mining_activity as mnact 
+		LEFT JOIN tbproject as tpj on tpj.project_id=mnact.project_id
+		<include refid="condition"/>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select mnact.*, 
+			tpj.project_icon as projectIcon,
+			tpj.project_chinese_name  as projectChineseName
+		FROM 
+    	activity_mining_activity as mnact 
+		LEFT JOIN tbproject as tpj on tpj.project_id=mnact.project_id
+		<include refid="condition"/>
+	    <![CDATA[ ORDER BY id DESC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<sql id="condition">
+    	<where>
+	    	<if test="id != null">
+			 id = #{id,jdbcType=INTEGER}
+			</if>
+			<if test="title != null">
+			and title like "%"#{title}"%" 
+			</if>
+			<if test="state!=null">
+    		  and status = #{state}
+    		</if>
+    		<if test="status1!=null">
+    		  and (mnact.status = #{status1} or mnact.status = #{status2} or mnact.status = #{status3})
+    		</if>
+    		<if test="status4!=null">
+    		  and (mnact.status = #{status4} or mnact.status = #{status5})
+    		</if>
+    		<if test="nowBeginDt!=null">
+    		  and begin_dt &lt;= #{nowBeginDt}
+    		</if>
+    		<if test="nowEndDt!=null">
+    		  and end_dt &lt;= #{nowEndDt}
+    		</if>
+			<if test="startTime!=null and endTime==null">
+    		  and created_at &gt;= #{startTime}
+    		</if>
+    		<if test="startTime==null and endTime!=null">
+    		  and created_at &lt;= #{endTime}
+    		</if>
+    		<if test="startTime!=null and endTime!=null">
+    		  and created_at &gt;= #{startTime} and created_at &lt;= #{endTime}
+    		</if>
+    	</where>
+    </sql>
+    
+    <update id="updateByMap" parameterType="java.util.Map">
+	     update <include refid="table_name" /> 
+	    <set>
+	      <if test="status != null">
+	        status = #{status},
+	      </if>
+	    </set>
+	    <include refid="condition"/>
+	</update>
+    
+    <select id="findListByAttr" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select * from <include refid="table_name" />
+		<include refid="condition"/>
+	    <![CDATA[ ORDER BY id DESC ]]>
+	</select>
+</mapper>

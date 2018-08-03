@@ -90,10 +90,37 @@
 	<!-- 快讯轮播图服务 -->
 	<bean id="newsFlashImgRmiService" class="com.tzg.rmi.service.impl.NewsFlashImgRmiServiceImpl" />
 	<dubbo:service interface="com.tzg.rmi.service.NewsFlashImgRmiService" ref="newsFlashImgRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0" />
+	
+	<!-- 挖矿活动服务 -->
+	<bean id="miningActivityRmiService" class="com.tzg.rmi.service.impl.MiningActivityRmiServiceImpl" />
+	<dubbo:service interface="com.tzg.rmi.service.MiningActivityRmiService" ref="miningActivityRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0" />
 
+	<!-- 挖矿活动介绍服务 -->
+	<bean id="explainActivityRmiService" class="com.tzg.rmi.service.impl.ExplainActivityRmiServiceImpl" />
+	<dubbo:service interface="com.tzg.rmi.service.ExplainActivityRmiService" ref="explainActivityRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0" />
+
+	<!-- 项目评测服务 -->
+	<bean id="evaluationRmiService" class="com.tzg.rmi.service.impl.EvaluationRmiServiceImpl" />
+	<dubbo:service interface="com.tzg.rmi.service.EvaluationRmiService" ref="evaluationRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0" />
+
+	<!-- 项目关注服务 -->
+	<bean id="followRmiService" class="com.tzg.rmi.service.impl.FollowRmiServiceImpl" />
+	<dubbo:service interface="com.tzg.rmi.service.FollowRmiService" ref="followRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0" />
+
+	<!-- post分享服务 -->
+	<bean id="postShareRmiService" class="com.tzg.rmi.service.impl.PostShareRmiServiceImpl" />
+	<dubbo:service interface="com.tzg.rmi.service.PostShareRmiService" ref="postShareRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0" />
+	
+	<!-- 活动奖励服务 -->
+	<bean id="rewardDetailRmiService" class="com.tzg.rmi.service.impl.RewardDetailRmiServiceImpl" />
+	<dubbo:service interface="com.tzg.rmi.service.RewardDetailRmiService" ref="rewardDetailRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0" />
+	
 	<bean id="kffProjectPostRmiService" class="com.tzg.rmi.service.impl.KFFProjectPostRmiServiceImpl" />
 	<dubbo:service interface="com.tzg.rmi.service.KFFProjectPostRmiService" ref="kffProjectPostRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0"/>
-
+	
+	<!-- 用户服务 -->
+	<bean id="userRmiService" class="com.tzg.rmi.service.impl.KFFUserRmiServiceImpl" />
+	<dubbo:service interface="com.tzg.rmi.service.KFFUserRmiService" ref="userRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0" />
 
 	<!-- 地区 -->
 	<bean id="areainfoRmiService" class="com.tzg.rmi.service.impl.AreainfoRmiServiceImpl" />

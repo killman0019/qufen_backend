@@ -171,46 +171,46 @@
 	</select>
 	
 	<sql id="queryWhere">
-		<if test="followId != null and followId.trim() != ''">
+		<if test="followId != null">
 		and follow_id = #{followId}
 		</if>
-		<if test="followUserId != null and followUserId.trim() != ''">
+		<if test="followUserId != null">
 		and follow_user_id = #{followUserId}
 		</if>
-		<if test="followType != null and followType.trim() != ''">
+		<if test="followType != null">
 		and follow_type = #{followType}
 		</if>
-		<if test="followerUserName != null and followerUserName.trim() != ''">
+		<if test="followerUserName != null">
 		and follower_user_name = #{followerUserName}
 		</if>
-		<if test="followedUserId != null and followedUserId.trim() != ''">
+		<if test="followedUserId != null">
 		and followed_user_id = #{followedUserId}
 		</if>
-		<if test="followedUserSignature != null and followedUserSignature.trim() != ''">
+		<if test="followedUserSignature != null">
 		and followed_user_signature = #{followedUserSignature}
 		</if>
-		<if test="followedUserIcon != null and followedUserIcon.trim() != ''">
+		<if test="followedUserIcon != null">
 		and followed_user_icon = #{followedUserIcon}
 		</if>
-		<if test="followedUserName != null and followedUserName.trim() != ''">
+		<if test="followedUserName != null">
 		and followed_user_name = #{followedUserName}
 		</if>
-		<if test="followedId != null and followedId.trim() != ''">
+		<if test="followedId != null">
 		and followed_id = #{followedId}
 		</if>
-		<if test="status != null and status.trim() != ''">
+		<if test="status != null">
 		and status = #{status}
 		</if>
-		<if test="createTimeBegin != null and createTimeBegin.trim() != ''">
+		<if test="createTimeBegin != null">
 		and createTime >= #{createTimeBegin}
 		</if>
-		<if test="createTimeEnd != null and createTimeEnd.trim() != ''">
+		<if test="createTimeEnd != null">
 		and createTime &lt;= #{createTimeEnd}
 		</if>
-		<if test="updateTimeBegin != null and updateTimeBegin.trim() != ''">
+		<if test="updateTimeBegin != null">
 		and updateTime >= #{updateTimeBegin}
 		</if>
-		<if test="updateTimeEnd != null and updateTimeEnd.trim() != ''">
+		<if test="updateTimeEnd != null">
 		and updateTime &lt;= #{updateTimeEnd}
 		</if>
 		
