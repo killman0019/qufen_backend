@@ -20,6 +20,12 @@
 	<dubbo:reference id="kffRmiService" interface="com.tzg.rmi.service.KFFRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0"
 		check="false" />
 		
+	<dubbo:reference id="kffPostRmiService" interface="com.tzg.rmi.service.KFFPostRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0"
+		check="false" />
+		
+	<dubbo:reference id="kffProjectRmiService" interface="com.tzg.rmi.service.KFFProjectRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0"
+		check="false" />
+		
 	<dubbo:reference id="newsFlashRmiService" interface="com.tzg.rmi.service.NewsFlashRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0"
 		check="false" />
 		
@@ -39,7 +45,8 @@
 		check="false" />
 		
 	<dubbo:reference id="userRmiService" interface="com.tzg.rmi.service.KFFUserRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0"
-		check="false" />
+	retries="0"	check="false" />
+
 		
 	<dubbo:reference id="postShareRmiService" interface="com.tzg.rmi.service.PostShareRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0"
 		check="false" />

@@ -34,7 +34,7 @@ public class ProjectResponse implements Serializable {
 	/**
 	 * 审核状态：1；待审核；2-审核通过；3-拒绝
 	 */
-	private java.lang.Integer state = 1;
+	private java.lang.Integer state ;
 	/**
 	 * 代币名称
 	 */
@@ -58,7 +58,7 @@ public class ProjectResponse implements Serializable {
 	/**
 	 * 是否上市：0-未上市；1-已上市
 	 */
-	private java.lang.Integer listed = 0;
+	private java.lang.Integer listed ;
 	/**
 	 * 发行时间
 	 */
@@ -67,7 +67,7 @@ public class ProjectResponse implements Serializable {
 	/**
 	 * 发行数量
 	 */
-	private java.lang.Long issueNum = 0L;
+	private java.lang.Long issueNum ;
 	/**
 	 * 白皮书地址
 	 */

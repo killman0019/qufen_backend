@@ -72,7 +72,25 @@ public class Tokenrecords implements Serializable {
 	 */
 	private java.lang.Integer rewardGrantType;
 	
+	private Integer postId;
+	private Integer praiseId;
 	
+	public Integer getPostId() {
+		return postId;
+	}
+
+	public void setPostId(Integer postId) {
+		this.postId = postId;
+	}
+
+	public Integer getPraiseId() {
+		return praiseId;
+	}
+
+	public void setPraiseId(Integer praiseId) {
+		this.praiseId = praiseId;
+	}
+
 	public java.lang.Integer getRewardGrantType() {
 		return rewardGrantType;
 	}

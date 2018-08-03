@@ -108,6 +108,14 @@ public class RegexUtil {
 	 * 《GB_32100-2015_法人和其他组织统一社会信用代码编码规则.》
 	 */
 	public static final String TONGYISHEHUIXINYONGDAIMA = "/[0-9A-HJ-NPQRTUWXY]{2}\\d{6}[0-9A-HJ-NPQRTUWXY]{10}/";
+	/**
+	 * 匹配base64 格式的图片格式(用于将base64 的字符串中的base64相关格式置空)
+	 */
+	public static final String BASE64PICNULL = "data:([a-z]+\\/[a-z0-9-+.]+(;[a-z-]+=[a-z0-9-]+)?)?(;base64)?,";
+	/**
+	 * 匹配base64格式的字符串,判断此字符串是不是base64 的字符串
+	 */
+	public static final String BASE64PICREG = "(data:([a-z]+\\/[a-z0-9-+.]+(;[a-z-]+=[a-z0-9-]+)?)?(;base64)?,).*";
 
 	/**
 	 * 校验value是否匹配regex所指定的格式

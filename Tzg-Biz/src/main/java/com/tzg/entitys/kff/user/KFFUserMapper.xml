@@ -389,7 +389,15 @@
 	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
 		select <include refid="columns"/>  from tbuser where 1=1
 		<include refid="queryWhere"/> 
+	
+		<choose>
+			<when test="sortField != null and sortField != ''">
+				ORDER BY ${sortField} ${sortSequence}
+			</when>
+		<otherwise>
 	    <![CDATA[ ORDER BY user_id DESC ]]>
+	    </otherwise>
+	    </choose>
         <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
 	</select>
 	
@@ -529,6 +537,9 @@
 		</if>
 		<if test="appType != null">
 		and app_type = #{appType}
+		</if>
+		<if test="DYFansNum != null and DYFansNum.trim() != ''">
+		and fans_num >= #{DYFansNum}
 		</if>
 	</sql>
 	

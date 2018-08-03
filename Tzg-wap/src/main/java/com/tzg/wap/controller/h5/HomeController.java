@@ -15,9 +15,12 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.tzg.common.base.BaseRequest;
 import com.tzg.common.constants.KFFConstants;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
@@ -25,11 +28,14 @@ import com.tzg.common.utils.AccountTokenUtil;
 import com.tzg.common.utils.HtmlUtils;
 import com.tzg.common.utils.RandomUtil;
 import com.tzg.common.utils.rest.Base64Util;
+import com.tzg.entitys.dataparam.DataParam;
 import com.tzg.entitys.kff.article.ArticleDetailResponse;
 import com.tzg.entitys.kff.comments.Comments;
 import com.tzg.entitys.kff.comments.CommentsShareRequest;
 import com.tzg.entitys.kff.discuss.DiscussDetailResponse;
 import com.tzg.entitys.kff.discuss.DiscussShare;
+import com.tzg.entitys.kff.evaluation.EvaluationRequest;
+import com.tzg.entitys.kff.evaluation.ProjectEvaluationDetailResponse;
 import com.tzg.entitys.kff.evaluation.ProjectEvaluationDetailShareResponse;
 import com.tzg.entitys.kff.post.PostResponse;
 import com.tzg.entitys.kff.project.ProjectResponse;
@@ -251,7 +257,10 @@ public class HomeController extends BaseController {
 		HashMap<String, Object> map = new HashMap<String, Object>();
 
 		try {
-
+			JSONObject requestContent = HtmlUtils.getRequestContent(request);
+			if (null != requestContent) {
+				postId = Integer.valueOf((String) requestContent.get("postId"));
+			}
 			if (postId == null || postId == 0) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARG_POSTID);
 			}
@@ -463,7 +472,10 @@ public class HomeController extends BaseController {
 		HashMap<String, Object> map = new HashMap<String, Object>();
 
 		try {
-
+			JSONObject requestContent = HtmlUtils.getRequestContent(request);
+			if (null != requestContent) {
+				postId = Integer.valueOf((String) requestContent.get("postId"));
+			}
 			if (postId == null || postId == 0) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARG_POSTID);
 			}
@@ -536,7 +548,8 @@ public class HomeController extends BaseController {
 		HashMap<String, Object> map = new HashMap<String, Object>();
 
 		try {
-
+			JSONObject requestContent = HtmlUtils.getRequestContent(request);
+			postId = Integer.valueOf((String) requestContent.get("postId"));
 			if (postId == null || postId == 0) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARG_POSTID);
 			}

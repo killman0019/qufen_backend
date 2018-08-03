@@ -93,13 +93,14 @@ public class HomeController extends BaseController {
 			query.addQueryData("status", "1");
 			query.addQueryData("stickTop", "1");
 			query.addQueryData("sortField", "stick_updateTime");
-			query.addQueryData("praiseNum", "10");
+			//query.addQueryData("praiseNum", "10");
 			// 帖子类型：1-评测；2-讨论；3-文章
 			// query.addQueryData("postType", "1");
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
-			Integer type = 1;//取关注项目
-			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query,type);
+			Integer type = 1;// 取关注项目
+			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query, type);
+			System.err.println("recommends++++++++++++" + JSONObject.toJSONString(recommends));
 			map.put("recommends", recommends);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -111,20 +112,20 @@ public class HomeController extends BaseController {
 		}
 		return bre;
 	}
-	
-	/** 
-	* @Title: getBurstList 
-	* @Description: TODO <获取爆料列表>
-	* @author linj <方法创建作者>
-	* @create 上午10:23:11
-	* @param @param request
-	* @param @return <参数说明>
-	* @return BaseResponseEntity 
-	* @throws 
-	* @update 上午10:23:11
-	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
-	* @updateContext <修改内容>
-	*/
+
+	/**
+	 * @Title: getBurstList
+	 * @Description: TODO <获取爆料列表>
+	 * @author linj <方法创建作者>
+	 * @create 上午10:23:11
+	 * @param @param request
+	 * @param @return <参数说明>
+	 * @return BaseResponseEntity
+	 * @throws
+	 * @update 上午10:23:11
+	 * @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	 * @updateContext <修改内容>
+	 */
 	@ResponseBody
 	@RequestMapping(value = "/getBurstList", method = { RequestMethod.POST, RequestMethod.GET })
 	public BaseResponseEntity getBurstList(HttpServletRequest request) {
@@ -139,15 +140,15 @@ public class HomeController extends BaseController {
 			}
 			PaginationQuery query = new PaginationQuery();
 			query.addQueryData("status", "1");
-//			query.addQueryData("stickTop", "1");
+			// query.addQueryData("stickTop", "1");
 			query.addQueryData("sortField", "createTime");
-//			query.addQueryData("praiseNum", "10");
+			// query.addQueryData("praiseNum", "10");
 			// 帖子类型：2-爆料
 			query.addQueryData("postType", "2");
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
-			Integer type = 2;//取关注人
-			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query,type);
+			Integer type = 2;// 取关注人
+			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query, type);
 			map.put("recommends", recommends);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -159,7 +160,7 @@ public class HomeController extends BaseController {
 		}
 		return bre;
 	}
-	
+
 	/**
 	 * 
 	 * @Title: followList
@@ -695,12 +696,12 @@ public class HomeController extends BaseController {
 	 */
 	@RequestMapping(value = "/uploadImgFile", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public BaseResponseEntity uploadImgFile(HttpServletRequest request, String token, Integer imgtype,String userIcon, HttpServletResponse response) {
+	public BaseResponseEntity uploadImgFile(HttpServletRequest request, String token, Integer imgtype, String userIcon, HttpServletResponse response) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		Map<String, Object> resMap = new HashMap<String, Object>();
 		try {
-			//JSONObject params = getParamMapFromRequestPolicy(request);
-			//String userIcon = (String) params.get("userIcon");
+			// JSONObject params = getParamMapFromRequestPolicy(request);
+			// String userIcon = (String) params.get("userIcon");
 			MultipartFile file = null;
 			CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver(request.getSession().getServletContext());
 			if (multipartResolver.isMultipart(request)) {
@@ -746,7 +747,7 @@ public class HomeController extends BaseController {
 			// jpg
 			String ext = FilenameUtils.getExtension(file.getOriginalFilename());
 			if (!FileUtils.allowedExtensionSet().contains(ext)) {
-				throw new RestServiceException("此文件后缀为" + ext+",请更换图片后缀或者联系客服!");
+				throw new RestServiceException("此文件后缀为" + ext + ",请更换图片后缀或者联系客服!");
 			}
 
 			// SystemParam systemParam = systemParamRmiService.findByCode("upload_local_path");

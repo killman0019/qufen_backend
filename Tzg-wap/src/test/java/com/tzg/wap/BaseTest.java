@@ -1,19 +1,31 @@
 package com.tzg.wap;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.poi.hssf.record.SSTRecord;
+import org.json.JSONArray;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,11 +33,14 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.google.gson.JsonObject;
 import com.tzg.common.utils.DateUtil;
 import com.tzg.common.utils.QiniuUtil;
 import com.tzg.common.utils.SubimitHtml;
 import com.tzg.common.utils.ToRemoveHtml;
 import com.tzg.common.utils.WorkHtmlRegexpUtil;
+import com.tzg.common.utils.getHttpClientUrl;
 import com.tzg.common.utils.sendTelephone;
 import com.tzg.entitys.kff.project.KFFProject;
 import com.tzg.entitys.photo.PhotoIview;
@@ -65,20 +80,30 @@ public class BaseTest {
 		str = str.replaceAll(str4, "");
 		System.out.println(str);*/
 
-		/*String str5 = "http://t11.baidu.com/it/u=2559796420,1427899438&fm=170&s=42F210D74FE3709C8C85A0630300F073&w=360&h=360&img.JPEG";
-		String str6 = "http://p3.pstatp.com/large/pgc-image/15289075482782fed3b5757";// 头条
-		String str7 = "https://bihu2001.oss-cn-shanghai.aliyuncs.com/img/bb4e1a30ea53c00acf0770cfb416ded5.jpg?x-oss-process=style/size_md";
-		String str8 = "https://pic.36krcnd.com/201806/14021231/7plndf83a4pzlnix.JPG!1200";// 36氪
-		String str9 = "https://mmbiz.qpic.cn/mmbiz_jpg/GA0ru2kvgLmlcPVR4kPcticM46Yu9Yw35LL9k5jiaUJ5XjQHzrzREWswWpf4Yxic4b1YM7QfSyQlhJpL4p0LQXMJw/640?wx_fmt=jpeg&tp=webp&wxfrom=5&wx_lazy=1";// 微信号
-		String str10 = "5b0988e595225.cdn.sohucs.com/images/20180613/264ed5e03b8b495789965c3aae1bfa13.jpeg";// 搜狐
-		String str11 = "http://n.sinaimg.cn/news/1_img/upload/2b0c102b/781/w550h231/20180614/3aCf-hcwpcmq6607016.jpg";
-		QiniuUtil.changeToLocalUrl(str6, "test6");
-		QiniuUtil.changeToLocalUrl(str5, "test5");
-		QiniuUtil.changeToLocalUrl(str7, "test7");
-		QiniuUtil.changeToLocalUrl(str8, "test8");
-		QiniuUtil.changeToLocalUrl(str9, "test9");
-		QiniuUtil.changeToLocalUrl(str10, "test10");
-		QiniuUtil.changeToLocalUrl(str11, "test11");*/
+		// String str5 =
+		// "http://t11.baidu.com/it/u=2559796420,1427899438&fm=170&s=42F210D74FE3709C8C85A0630300F073&w=360&h=360&img.JPEG";
+		// String str6 = "http://p3.pstatp.com/large/pgc-image/15289075482782fed3b5757";// 头条
+		// String str7 =
+		// "https://bihu2001.oss-cn-shanghai.aliyuncs.com/img/bb4e1a30ea53c00acf0770cfb416ded5.jpg?x-oss-process=style/size_md";
+		// //String str8 = "https://pic.36krcnd.com/201806/14021231/7plndf83a4pzlnix.JPG!1200";//
+		// 36氪
+		// String str9 =
+		// "https://mmbiz.qpic.cn/mmbiz_jpg/GA0ru2kvgLmlcPVR4kPcticM46Yu9Yw35LL9k5jiaUJ5XjQHzrzREWswWpf4Yxic4b1YM7QfSyQlhJpL4p0LQXMJw/640?wx_fmt=jpeg&tp=webp&wxfrom=5&wx_lazy=1";//
+		// 微信号
+		// String str10 =
+		// "5b0988e595225.cdn.sohucs.com/images/20180613/264ed5e03b8b495789965c3aae1bfa13.jpeg";//
+		// 搜狐
+		// String str11 =
+		// "http://n.sinaimg.cn/news/1_img/upload/2b0c102b/781/w550h231/20180614/3aCf-hcwpcmq6607016.jpg";
+		// QiniuUtil.changeToLocalUrl(str6, "test6");
+		// QiniuUtil.changeToLocalUrl(str5, "test5");
+		// QiniuUtil.changeToLocalUrl(str7, "test7");
+		// QiniuUtil.changeToLocalUrl(str8, "test8");
+		// QiniuUtil.changeToLocalUrl(str9, "test9");
+		// QiniuUtil.changeToLocalUrl(str10, "test10");
+		// String str11
+		// ="https://img.bishijie.com/coinpic-bitcoin-cash.jpg?imageMogr2/thumbnail/100x";
+		// QiniuUtil.changeToLocalUrl(str11, "BTC");
 		/*String str = "D:\\opt\\file\\upload\\poster\\5add9a8.png";
 		File file = new File(str);
 		boolean delete = file.delete();
@@ -128,8 +153,90 @@ public class BaseTest {
 		/*if ("" == "") {
 			System.err.println("aaaa");
 		}*/
-		String format = String.format("%010d", 11);
-		System.out.println(format);
+		// String format = String.format("%010d", 11);
+		// System.out.println(format);
+		// String url = "https://api.coinmarketcap.com/v2/ticker";
+		// String getDateByUrl = getHttpClientUrl.getGetDateByUrl(url);
+		// org.json.JSONObject b = new org.json.JSONObject(getDateByUrl);
+		// JSONArray data = b.getJSONArray("data");
+		// System.err.println(getDateByUrl);
+		// System.err.println("+++++++++++++++++++++++++++++++++++++++++++++");
+		/*for (int i = 0; i < data.length(); i++) {
+			String string = data.getJSONObject(i).getString("name");
+			System.err.println(string);
+		}*/
+
+		/*List<Integer> projectIds = new ArrayList<Integer>();
+		for (int i = 0; i < 10; i++) {
+			projectIds.add(i);
+		}
+		String projectIdListDB = StringUtils.join(projectIds.toArray(), ",");// 进入数据库的查询参数
+		System.err.println("projectIdListDB+++++++++++" + projectIdListDB);*/
+
+		/*OkHttpClient client = new OkHttpClient();
+		Response response = null;
+		Request request = new Request.Builder().url("https://data.block.cc/api/v1/markets").get().build();
+
+		try {
+			response = client.newCall(request).execute();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.err.println(JSON.toJSON(request));*/
+
+		/*URL url = new URL("http://api.baidu.com/[urlAddress]");
+		
+		URLConnection uc = url.openConnection(); 
+		
+		BufferedReader in = new BufferedReader(new InputStreamReader(uc.getInputStream(),"utf-8"));
+
+		            String str =null;
+		            while((str=in.readline())!=null){
+		                  System.out.print(str)
+		                  }
+		*/
+		/*	String str = "adc";
+			str = str + ",";
+			String[] split = str.split(",");
+			for (String string : split) {
+				if (StringUtils.isNotEmpty(string) && string.trim() != " " && string != " ") {
+					System.err.println(string);
+				}
+			}
+			System.err.println("===========================");
+			for (String string : split) {
+				if (StringUtils.isNotEmpty(string)) {
+					if ("a".equals(string)) {
+						string = "";
+					}
+				}
+			}
+			System.err.println("===========================");
+			for (String string : split) {
+				if (StringUtils.isNotEmpty(string) && string.trim() != " " && string != " ") {
+					System.err.println(string);
+				}
+			}*/
+
+		ExecutorService fixedThreadPool = Executors.newFixedThreadPool(3);
+		for (int i = 0; i < 1000; i++) {
+			final int index = i;
+			fixedThreadPool.execute(new Runnable() {
+
+				@Override
+				public void run() {
+					try {
+						System.out.println(index);
+						Thread.sleep(2000);
+					} catch (InterruptedException e) {
+						// TODO 抛出异常
+
+						e.printStackTrace();
+					}
+				}
+			});
+		}
 	}
 
 	class ExcutDemo {

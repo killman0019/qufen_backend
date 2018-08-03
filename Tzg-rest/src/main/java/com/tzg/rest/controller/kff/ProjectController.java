@@ -1,5 +1,6 @@
 package com.tzg.rest.controller.kff;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tzg.common.base.BaseRequest;
 import com.tzg.common.constants.KFFConstants;
@@ -27,11 +29,14 @@ import com.tzg.entitys.kff.post.PostResponse;
 import com.tzg.entitys.kff.project.KFFProject;
 import com.tzg.entitys.kff.project.ProjectResponse;
 import com.tzg.entitys.kff.project.SubmitKFFProjectRequest;
+import com.tzg.entitys.kff.projectManage.ProjectManageTabResponse;
+import com.tzg.entitys.kff.transactionpair.TransactionPairResponse;
 import com.tzg.rest.controller.BaseController;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
 import com.tzg.rmi.service.KFFProjectPostRmiService;
+import com.tzg.rmi.service.KFFProjectRmiService;
 import com.tzg.rmi.service.KFFRmiService;
 
 @Controller(value = "KFFProjectController")
@@ -43,6 +48,9 @@ public class ProjectController extends BaseController {
 	private KFFRmiService kffRmiService;
 	@Autowired
 	private KFFProjectPostRmiService kffProjectPostRmiService;
+
+	@Autowired
+	private KFFProjectRmiService kFFProjectRmiService;
 
 	/**
 	 * 
@@ -196,7 +204,7 @@ public class ProjectController extends BaseController {
 			if (StringUtils.isNotBlank(baseRequest.getSortField())) {
 				query.addQueryData("sortField", baseRequest.getSortField());
 			}
-			PageResult<EvaluationDetailResponse> evaluations = kffProjectPostRmiService.findPageSimpleEvaluationList(query,loginUserId);
+			PageResult<EvaluationDetailResponse> evaluations = kffProjectPostRmiService.findPageSimpleEvaluationList(query, loginUserId);
 			map.put("evaluations", evaluations);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -228,8 +236,8 @@ public class ProjectController extends BaseController {
 
 		try {
 			BaseRequest baseRequest = getParamMapFromRequestPolicy(request, BaseRequest.class);
-//			String token = baseRequest.getToken();
-//			Integer loginUserId = getUserIdByToken(token);
+			// String token = baseRequest.getToken();
+			// Integer loginUserId = getUserIdByToken(token);
 			Integer projectId = baseRequest.getProjectId();
 			if (projectId == null) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARG_PROJID);
@@ -245,7 +253,7 @@ public class ProjectController extends BaseController {
 			if (StringUtils.isNotBlank(baseRequest.getSortField())) {
 				query.addQueryData("sql_keyword_orderByc", baseRequest.getSortField());
 				query.addQueryData("sql_keyword_sortc", "desc");
-			}else {
+			} else {
 				query.addQueryData("sql_keyword_orderBy", "post_id");
 				query.addQueryData("sql_keyword_sort", "desc");
 			}
@@ -281,8 +289,8 @@ public class ProjectController extends BaseController {
 
 		try {
 			BaseRequest baseRequest = getParamMapFromRequestPolicy(request, BaseRequest.class);
-//			String token = baseRequest.getToken();
-//			Integer loginUserId = getUserIdByToken(token);
+			// String token = baseRequest.getToken();
+			// Integer loginUserId = getUserIdByToken(token);
 			Integer projectId = baseRequest.getProjectId();
 			if (projectId == null) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARG_PROJID);
@@ -295,7 +303,7 @@ public class ProjectController extends BaseController {
 			if (StringUtils.isNotBlank(baseRequest.getSortField())) {
 				query.addQueryData("sql_keyword_orderByc", baseRequest.getSortField());
 				query.addQueryData("sql_keyword_sortc", "desc");
-			}else {
+			} else {
 				query.addQueryData("sql_keyword_orderBy", "createTime");
 				query.addQueryData("sql_keyword_sort", "desc");
 			}
@@ -333,8 +341,8 @@ public class ProjectController extends BaseController {
 
 		try {
 			BaseRequest baseRequest = getParamMapFromRequestPolicy(request, BaseRequest.class);
-//			String token = baseRequest.getToken();
-//			Integer loginUserId = getUserIdByToken(token);
+			// String token = baseRequest.getToken();
+			// Integer loginUserId = getUserIdByToken(token);
 			Integer projectId = baseRequest.getProjectId();
 			if (projectId == null) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARG_PROJID);
@@ -347,7 +355,7 @@ public class ProjectController extends BaseController {
 			if (StringUtils.isNotBlank(baseRequest.getSortField())) {
 				query.addQueryData("sql_keyword_orderByc", baseRequest.getSortField());
 				query.addQueryData("sql_keyword_sortc", "desc");
-			}else {
+			} else {
 				query.addQueryData("sql_keyword_orderBy", "post_id");
 				query.addQueryData("sql_keyword_sort", "desc");
 			}
@@ -429,7 +437,7 @@ public class ProjectController extends BaseController {
 		}
 		return bre;
 	}
-	
+
 	/**
 	 * 
 	 * @Title: searchProjects
@@ -493,15 +501,15 @@ public class ProjectController extends BaseController {
 			String projectCode = (String) params.get("projectCode");
 			Integer pageIndex = (Integer) params.get("pageIndex");
 			Integer pageSize = (Integer) params.get("pageSize");
-			pageIndex=pageIndex==null||pageIndex<1?1:pageIndex;
-			pageSize=pageSize==null||pageSize<1?20:pageSize;
+			pageIndex = pageIndex == null || pageIndex < 1 ? 1 : pageIndex;
+			pageSize = pageSize == null || pageSize < 1 ? 20 : pageSize;
 			Integer userId = null;
 			if (StringUtils.isNotBlank(token)) {
 				userId = getUserIdByToken(token);
 			}
 			// 1-按关注数量倒序；2-按名称排序
 			int sortType = (Integer) params.get("sortType") == null ? 2 : (Integer) params.get("sortType");
-			PageResult<ProjectResponse> projects = kffRmiService.findProjectByCodePage(sortType, userId, projectCode,pageIndex,pageSize);
+			PageResult<ProjectResponse> projects = kffRmiService.findProjectByCodePage(sortType, userId, projectCode, pageIndex, pageSize);
 			map.put("projects", projects);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -514,4 +522,108 @@ public class ProjectController extends BaseController {
 		return bre;
 	}
 
+	/**
+	 * 获得项目tab栏
+	 * 
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/getProjectTab", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public BaseResponseEntity getProjectTab(HttpServletRequest request) {
+
+		BaseResponseEntity bre = new BaseResponseEntity();
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		try {
+
+			List<ProjectManageTabResponse> tabs = kFFProjectRmiService.showTab();
+			System.err.println("tabs+++++++++++++++++" + JSON.toJSONString(tabs));
+			map.put("tabs", tabs);
+			bre.setData(map);
+		} catch (RestServiceException e) {
+			logger.error("ProjectController getProjectTab:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("ProjectController getProjectTab:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+		}
+		return bre;
+	}
+
+	/**
+	 * 根据前台传来的tabid展示相关的project;列表
+	 * 
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "getProjectByTabId", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public BaseResponseEntity getProjectByTabId(HttpServletRequest request) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		try {
+			JSONObject params = getParamMapFromRequestPolicy(request);
+			String token = (String) params.get("token");
+			Integer pageIndex = (Integer) params.get("pageIndex");
+			Integer pageSize = (Integer) params.get("pageSize");
+			Integer tabId = (Integer) params.get("tabId");
+			Integer userId = null;
+			if (StringUtils.isNotBlank(token)) {
+				userId = getUserIdByToken(token);
+			}
+			if (null == tabId) {
+				throw new RestServiceException("项目tab栏异常,请联系客服");
+			}
+			PaginationQuery query = new PaginationQuery();
+			query.setPageIndex(pageIndex);
+			query.setRowsPerPage(pageSize);
+			PageResult<ProjectResponse> projectResponsePage = kFFProjectRmiService.showProjectList(tabId, userId, query);
+			System.err.println("projectResponsePage+++++++++++++++++++++++" + JSON.toJSONString(projectResponsePage));
+			map.put("projectResponsePage", projectResponsePage);
+			bre.setData(map);
+		} catch (RestServiceException e) {
+			logger.error("ProjectController getProjectTab:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("ProjectController getProjectTab:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+		}
+		return bre;
+	}
+
+	/**
+	 * 根据传来的projectId获取交易所和相关交易对
+	 * 
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "getExchangeAndTranPair", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public BaseResponseEntity getExchangeAndTranPair(HttpServletRequest request) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		try {
+			JSONObject params = getParamMapFromRequestPolicy(request);
+			Integer pageIndex = (Integer) params.get("pageIndex");
+			Integer pageSize = (Integer) params.get("pageSize");
+			Integer projectId = (Integer) params.get("projectId");
+			if (null == projectId) {
+				throw new RestServiceException("项目相关信息出错");
+			}
+			PaginationQuery query = new PaginationQuery();
+			query.setPageIndex(pageIndex);
+			query.setRowsPerPage(pageSize);
+			PageResult<TransactionPairResponse> exchangeAndPtranPairPage = kFFProjectRmiService.selectExchangeAndTranPair(projectId, query);
+			map.put("TransactionPairResponse", exchangeAndPtranPairPage);
+			bre.setData(map);
+			System.err.println("exchangeAndPtranPairPage" + JSON.toJSONString(exchangeAndPtranPairPage));
+		} catch (RestServiceException e) {
+			logger.error("ProjectController getExchangeAndTranPair:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("ProjectController getExchangeAndTranPair:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+		}
+		return bre;
+	}
 }

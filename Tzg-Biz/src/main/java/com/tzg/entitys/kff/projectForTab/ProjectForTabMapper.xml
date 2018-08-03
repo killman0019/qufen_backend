@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzg.entitys.kff.projectForTab.ProjectForTabMapper" >
+  <resultMap id="BaseResultMap" type="com.tzg.entitys.kff.projectForTab.ProjectForTab" >
+    <id column="project_tab_id" property="projectTabId" jdbcType="INTEGER" />
+    <result column="project_code" property="projectCode" jdbcType="VARCHAR" />
+    <result column="project_chinese_name" property="projectChineseName" jdbcType="VARCHAR" />
+    <result column="tab_id" property="tabId" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="columns" >
+    project_tab_id, project_code, project_chinese_name, tab_id, status
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="columns" />
+    from tbprojectfortab
+    where project_tab_id = #{projectTabId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from tbprojectfortab
+    where project_tab_id = #{projectTabId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.tzg.entitys.kff.projectForTab.ProjectForTabMapper" >
+    insert into tbprojectfortab (project_tab_id, project_code, project_chinese_name, 
+      tab_id, status)
+    values (#{projectTabId,jdbcType=INTEGER}, #{projectCode,jdbcType=VARCHAR}, #{projectChineseName,jdbcType=VARCHAR}, 
+      #{tabId,jdbcType=INTEGER}, #{status,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.tzg.entitys.kff.projectForTab.ProjectForTabMapper" >
+    insert into tbprojectfortab
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="projectTabId != null" >
+        project_tab_id,
+      </if>
+      <if test="projectCode != null" >
+        project_code,
+      </if>
+      <if test="projectChineseName != null" >
+        project_chinese_name,
+      </if>
+      <if test="tabId != null" >
+        tab_id,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="projectTabId != null" >
+        #{projectTabId,jdbcType=INTEGER},
+      </if>
+      <if test="projectCode != null" >
+        #{projectCode,jdbcType=VARCHAR},
+      </if>
+      <if test="projectChineseName != null" >
+        #{projectChineseName,jdbcType=VARCHAR},
+      </if>
+      <if test="tabId != null" >
+        #{tabId,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.tzg.entitys.kff.projectForTab.ProjectForTabMapper" >
+    update tbprojectfortab
+    <set >
+      <if test="projectCode != null" >
+        project_code = #{projectCode,jdbcType=VARCHAR},
+      </if>
+      <if test="projectChineseName != null" >
+        project_chinese_name = #{projectChineseName,jdbcType=VARCHAR},
+      </if>
+      <if test="tabId != null" >
+        tab_id = #{tabId,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+    </set>
+    where project_tab_id = #{projectTabId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.tzg.entitys.kff.projectForTab.ProjectForTabMapper" >
+    update tbprojectfortab
+    set project_code = #{projectCode,jdbcType=VARCHAR},
+      project_chinese_name = #{projectChineseName,jdbcType=VARCHAR},
+      tab_id = #{tabId,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER}
+    where project_tab_id = #{projectTabId,jdbcType=INTEGER}
+  </update>
+  
+   <select id="findByMap" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select 
+    <include refid="columns" />
+    from tbprojectfortab
+    where 1=1
+     <include refid="queryWhere" />
+     
+  </select>
+  
+  
+  <sql id="queryWhere">
+  
+  <if test="projectCode != null" >
+       and project_code = #{projectCode,jdbcType=VARCHAR}
+      </if>
+      <if test="projectChineseName != null" >
+    and    project_chinese_name = #{projectChineseName,jdbcType=VARCHAR}
+      </if>
+      <if test="tabId != null" >
+   and     tab_id = #{tabId,jdbcType=INTEGER}
+      </if>
+      <if test="status != null" >
+     and   status = #{status,jdbcType=INTEGER}
+      </if>
+      
+      <if test="projectTabId != null" >
+     and   project_tab_id = #{projectTabId,jdbcType=INTEGER}
+      </if>
+  
+  
+  </sql>
+  
+</mapper>

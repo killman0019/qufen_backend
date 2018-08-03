@@ -17,14 +17,14 @@ public class Post implements Serializable {
 	 * 项目ID
 	 */
 	private java.lang.Integer stickTop;
-	
+
 	/**
 	 * 推荐操作时间
 	 */
-	private java.util.Date  stickUpdateTime;
-    /**
-     * 项目ID
-     */ 	
+	private java.util.Date stickUpdateTime;
+	/**
+	 * 项目ID
+	 */
 	private java.lang.Integer projectId;
 	/**
 	 * projectIcon
@@ -110,7 +110,11 @@ public class Post implements Serializable {
 	private java.lang.Integer status;
 
 	private java.lang.String uuid;
-	
+
+	private Double praiseIncome;
+	private Double donateIncome;
+	private Double postTotalIncome;
+
 	public java.lang.String getUuid() {
 		return uuid;
 	}
@@ -321,6 +325,28 @@ public class Post implements Serializable {
 		this.stickUpdateTime = stickUpdateTime;
 	}
 
-	
-	
+	public Double getPraiseIncome() {
+		return praiseIncome;
+	}
+
+	public void setPraiseIncome(Double praiseIncome) {
+		this.praiseIncome = praiseIncome;
+	}
+
+	public Double getDonateIncome() {
+		return donateIncome;
+	}
+
+	public void setDonateIncome(Double donateIncome) {
+		this.donateIncome = donateIncome;
+	}
+
+	public Double getPostTotalIncome() {
+		return postTotalIncome;
+	}
+
+	public void setPostTotalIncome(Double postTotalIncome) {
+		this.postTotalIncome = postTotalIncome;
+	}
+
 }

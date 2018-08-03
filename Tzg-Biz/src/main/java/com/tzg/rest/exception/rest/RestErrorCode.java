@@ -46,7 +46,7 @@ public enum RestErrorCode {
     
     SEC_ID_NULL(11003, "唯一识别号不能为空"),
     
-    LOGIN_NAME_OR_PASSWORD_INCORRECT(11004, "帐号或密码错误,请修改密码或者联系客服"),
+    LOGIN_NAME_OR_PASSWORD_INCORRECT(11004, "帐号或密码错误,请修改密码"),
     
     LOGIN_NAME_NULL(11005, "登录帐号不能为空"),
     

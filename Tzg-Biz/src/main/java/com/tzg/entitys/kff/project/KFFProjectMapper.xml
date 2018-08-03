@@ -284,6 +284,36 @@
         <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
 	</select>
 
+	<select id="findPageCountInList" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(*) from tbproject where 1=1 and status=1
+		<include refid="queryWhereInProjectId" />
+	</select>
+
+	<select id="findPageInList" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select 
+		<include refid="columns" /> 
+		from tbproject where 1=1 and status =1
+		<include refid="queryWhereInProjectId" />
+		
+		<choose>
+			<when test="sortField != null and sortField != ''">
+				ORDER BY ${sortField} ${sortSequence}
+			</when>
+			<otherwise>
+	                <![CDATA[ ORDER BY project_code ASC ]]>
+			</otherwise>
+		</choose>
+		
+	</select>
+
+	<sql id="queryWhereInProjectId">
+		<if test="inList != null and inList.trim() != ''">
+			and project_id in ( ${inList} )
+		</if>	
+		<if test="projectId != null and projectId.trim() != ''">
+			and project_id = #{projectId}
+		</if>	
+	</sql>
 
 	<select id="findProjectByCode" resultMap="BaseResultMap" parameterType="java.util.Map">
 		select
@@ -428,6 +458,13 @@
 		<if test="bsjCirculateData != null">
 			and bsj_circulate_data = #{bsjCirculateData,jdbcType=VARCHAR}
 		</if>
+			<if test="DYtotalRaterNum != null and DYtotalRaterNum.trim() != ''">
+			and totalRaterNum >= #{DYtotalRaterNum}
+		</if>
+		<if test="DYfollowerNum != null and DYfollowerNum.trim() != ''">
+			and follower_num >= #{DYfollowerNum}
+		</if>
+		
 	</sql>
 	<select id="findProjectName" resultMap="BaseResultMap">
 		SELECT
@@ -444,6 +481,16 @@
 		WHERE
 		project_code = #{projectCode}
 		AND project_chinese_name = #{projectChineseName} and status=1
+	</select>
+	
+	<select id="findByMap" resultMap="BaseResultMap" parameterType="java.util.Map">
+		SELECT
+		<include refid="columns" />
+		FROM
+		tbproject
+		WHERE
+		1=1
+		<include refid="queryWhere"></include>
 	</select>
 
 </mapper>

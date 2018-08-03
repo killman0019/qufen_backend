@@ -104,7 +104,7 @@ public class PolicyUtil {
 //        Date date = new Date();
 //        date.setTime(1453507200000L);
 //        System.out.println(date);
-//
+//    mytoken ==MzI6MTUzMjY1ODU1MDUwMTphY2ZhMWE3YTM0YzY2MTM2NzMxMjZhZmY0MTkwZDY4Nw==
 //        String str = "{\"phoneNumber\":\"15967158998\",\"password\":\"11111111\",\"dynamicVerifyCode\":\"488258\"}";
         String ssr = "{\"id\":16,\"rise\":1,\"fall\":0,}";
 //    	 String ssr = "{\"token\":\"MToxNTMyOTQ1NDMyMTUyOjZkNDJjMjg0YTdjMWEwNGM4YWQxMjE3ZDc5OGMzYjM2\"}";

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils.Null;
@@ -633,6 +634,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		BeanUtils.copyProperties(projectRequest, project);
 		if (StringUtils.isBlank(project.getProjectCode())) {
 			throw new RestServiceException("代币名称不能为空");
+		}
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("projectCode", project.getProjectCode());
+		List<KFFProject> projectList = kffProjectService.findByMap(map);
+		if (!CollectionUtils.isEmpty(projectList)) {
+			throw new RestServiceException("此项目已提交");
 		}
 		if (StringUtils.isBlank(project.getProjectEnglishName())) {
 			throw new RestServiceException("项目英文名称不能为空");
@@ -2080,6 +2087,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	@Override
 	public Map<String, Object> savePraise(Integer userId, Integer postId) throws RestServiceException {
 		Map<String, Object> map = new HashMap<String, Object>();
+		Integer praiseDBId = null;
 		int result = 0;
 		Boolean isSendPraiseToken = false;
 		Double retrueDzan = 0.0;
@@ -2113,6 +2121,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			save.setUpdateTime(now);
 			save.setPraiseType(KFFConstants.PRAISE_TYPE_POST);
 			kffPraiseService.save(save);
+			praiseDBId = save.getPraiseId();
 			praiseNumIncrease = true;
 		} else {// 有点赞 状态:0-取消点赞;1-点赞有效'
 			if (praise.getStatus() != null && praise.getStatus() == 0) { // 说明此帖子是已经取消的赞,不需要新加数据直接更新原数据为有效赞
@@ -2158,6 +2167,16 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 			// 根据 文章详情对象praise 获取帖子类型
 			Post posts = kffPostService.findById(postId);
+			if (null != posts) {
+				// 判断post的点赞数10 ,将推荐状态重置成1 进行推荐
+				if (posts.getPraiseNum() == 10) {
+					Post postDB = new Post();
+					postDB.setPostId(posts.getPostId());
+					postDB.setStickUpdateTime(now);
+					postDB.setStickTop(1);
+					kffPostService.update(postDB);
+				}
+			}
 			Integer postType = posts.getPostType();
 			System.err.println("我是帖子类型 :" + postType);
 			// 根据点赞人的id 去查看他的有效点赞
@@ -2259,7 +2278,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 										tokenrecords.setCreateTime(new Date()); // 创建的时间
 										tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
 										tokenrecords.setMemo("用户" + user.getUserName() + "点赞奖励(短评)"); // 流水备注
-
+										tokenrecords.setPostId(postId);
+										tokenrecords.setPraiseId(praiseDBId);
 										Double coinLock = findByCreateUser.getCoinLock();
 										coinLock = coinLock + (pc * createPUF);
 										findByCreateUser.setCoinLock(coinLock);
@@ -2287,6 +2307,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 										KFFUser createUser = kffUserService.findById(createUserId);
 										tokenaward.setUserName(createUser.getUserName());
 										tokenaward.setMobile(createUser.getMobile());
+										tokenaward.setPraiseId(praiseDBId);
+										tokenaward.setPostId(postId);
+										tokenaward.setPraiseId(praiseDBId);
 										kffTokenawardService.save(tokenaward);
 
 										qfIndexService.updateYxPraise(userId);
@@ -2314,6 +2337,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 											tokenrecords.setCreateTime(new Date());
 											tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
 											tokenrecords.setMemo("用户" + user.getUserName() + "点赞奖励(专评)"); // 流水备注
+											tokenrecords.setPostId(postId);
+											tokenrecords.setPraiseId(praiseDBId);
 											kffTokenrecordsService.save(tokenrecords);
 
 											BigDecimal kffCoinNum = findByUserId.getKffCoinNum();
@@ -2341,7 +2366,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 											tokenaward.setUserName(createUser.getUserName());
 											tokenaward.setMobile(createUser.getMobile());
 											tokenaward.setCreateTime(new Date());
-
+											tokenaward.setPostId(postId);
+											tokenaward.setPraiseId(praiseDBId);
 											kffTokenawardService.save(tokenaward);
 
 											qfIndexService.updateYxPraise(userId);
@@ -2355,6 +2381,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 											tokenrecords.setCreateTime(new Date());
 											tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
 											tokenrecords.setMemo("用户" + user.getUserName() + "点赞奖励(专评)"); // 流水备注
+											tokenrecords.setPostId(postId);
+											tokenrecords.setPraiseId(praiseDBId);
 											kffTokenrecordsService.save(tokenrecords);
 
 											BigDecimal kffCoinNum = findByUserId.getKffCoinNum();
@@ -2382,6 +2410,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 											KFFUser createUser = kffUserService.findById(createUserId);
 											tokenaward.setUserName(createUser.getUserName());
 											tokenaward.setMobile(createUser.getMobile());
+											tokenaward.setPostId(postId);
+											tokenaward.setPraiseId(praiseDBId);
 											kffTokenawardService.save(tokenaward);
 											qfIndexService.updateYxPraise(userId);
 										}
@@ -2404,6 +2434,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 										tokenrecords.setCreateTime(new Date());
 										tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
 										tokenrecords.setMemo("用户 :" + user.getUserName() + "点赞奖励(单评)"); // 流水备注
+										tokenrecords.setPostId(postId);
+										tokenrecords.setPraiseId(praiseDBId);
 										kffTokenrecordsService.save(tokenrecords);
 
 										BigDecimal kffCoinNum = findByUserId.getKffCoinNum();
@@ -2431,6 +2463,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 										KFFUser createUser = kffUserService.findById(createUserId);
 										tokenaward.setUserName(createUser.getUserName());
 										tokenaward.setMobile(createUser.getMobile());
+										tokenaward.setPostId(postId);
+										tokenaward.setPraiseId(praiseDBId);
 										kffTokenawardService.save(tokenaward);
 
 										qfIndexService.updateYxPraise(userId);
@@ -2446,6 +2480,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 										tokenrecords.setCreateTime(new Date());
 										tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
 										tokenrecords.setMemo("用户 :" + user.getUserName() + "点赞奖励(单评)"); // 流水备注
+										tokenrecords.setPostId(postId);
+										tokenrecords.setPraiseId(praiseDBId);
 										kffTokenrecordsService.save(tokenrecords);
 
 										BigDecimal kffCoinNum = findByUserId.getKffCoinNum();
@@ -2473,6 +2509,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 										KFFUser createUser = kffUserService.findById(createUserId);
 										tokenaward.setUserName(createUser.getUserName());
 										tokenaward.setMobile(createUser.getMobile());
+										tokenaward.setPostId(postId);
+										tokenaward.setPraiseId(praiseDBId);
 										kffTokenawardService.save(tokenaward);
 
 										qfIndexService.updateYxPraise(userId);
@@ -2499,6 +2537,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 									tokenrecords.setCreateTime(new Date());
 									tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
 									tokenrecords.setMemo("用户" + user.getUserName() + "点赞奖励(爆料)"); // 流水备注
+									tokenrecords.setPostId(postId);
+									tokenrecords.setPraiseId(praiseDBId);
 									kffTokenrecordsService.save(tokenrecords);
 
 									BigDecimal kffCoinNum = findByUserId.getKffCoinNum();
@@ -2525,6 +2565,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 									KFFUser createUser = kffUserService.findById(createUserId);
 									tokenaward.setUserName(createUser.getUserName());
 									tokenaward.setMobile(createUser.getMobile());
+									tokenaward.setPostId(postId);
+									tokenaward.setPraiseId(praiseDBId);
 									kffTokenawardService.save(tokenaward);
 									qfIndexService.updateYxPraise(userId);
 								}
@@ -2550,6 +2592,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 											tokenrecords.setCreateTime(new Date());
 											tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
 											tokenrecords.setMemo("用户" + user.getUserName() + "点赞奖励(文章)"); // 流水备注
+											tokenrecords.setPostId(postId);
+											tokenrecords.setPraiseId(praiseDBId);
 											kffTokenrecordsService.save(tokenrecords);
 
 											BigDecimal kffCoinNum = findByUserId.getKffCoinNum();
@@ -2577,6 +2621,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 											KFFUser createUser = kffUserService.findById(createUserId);
 											tokenaward.setUserName(createUser.getUserName());
 											tokenaward.setMobile(createUser.getMobile());
+											tokenaward.setPostId(postId);
+											tokenaward.setPraiseId(praiseDBId);
 											kffTokenawardService.save(tokenaward);
 											qfIndexService.updateYxPraise(userId);
 										} else {
@@ -2589,6 +2635,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 											tokenrecords.setCreateTime(new Date());
 											tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
 											tokenrecords.setMemo("用户" + user.getUserName() + "点赞奖励(文章)"); // 流水备注
+											tokenrecords.setPostId(postId);
+											tokenrecords.setPraiseId(praiseDBId);
 											kffTokenrecordsService.save(tokenrecords);
 
 											BigDecimal kffCoinNum = findByUserId.getKffCoinNum();
@@ -2616,6 +2664,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 											KFFUser createUser = kffUserService.findById(createUserId);
 											tokenaward.setUserName(createUser.getUserName());
 											tokenaward.setMobile(createUser.getMobile());
+											tokenaward.setPostId(postId);
+											tokenaward.setPraiseId(praiseDBId);
 											kffTokenawardService.save(tokenaward);
 											qfIndexService.updateYxPraise(userId);
 
@@ -3105,10 +3155,15 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				response.setPostType(post.getPostType());
 				response.setProjectId(post.getProjectId());
 				response.setStatus(post.getStatus());
-
+				response.setPraiseIncome(post.getPraiseIncome());
+				response.setDonateIncome(post.getDonateIncome());
+				response.setPostTotalIncome(post.getPostTotalIncome());
 				// 设置post和project信息
 				response.setPostShortDesc(post.getPostShortDesc());
 				response.setPostSmallImages(post.getPostSmallImages());
+				response.setPraiseIncome(post.getPraiseIncome());
+				response.setDonateIncome(post.getDonateIncome());
+				response.setPostTotalIncome(post.getPostTotalIncome());
 				if (StringUtils.isNotBlank(post.getPostSmallImages())) {
 					try {
 						List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
@@ -6368,35 +6423,48 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				// 生成url名称
 				// logger.info("img :原图片路径: " + img);
 				// 获取图片后缀
-				String imagSuffix = GetPicSuffixUtil.getimagSuffix(img);
-				String fileName = DateUtil.getCurrentTimeSS() + createid + i + imagSuffix;// ?imageView2/0/format/png
-				String UrlQiniu = QiniuUtil.changeToLocalUrl(img, fileName);
-				if ("false".equals(UrlQiniu)) {
-					logger.info(img + "上传七牛失败!");
-					logger.info("坑逼百度!!!!");
-				} else {
-					if (imgDB.size() <= 3) {
-						imgDB.add(UrlQiniu);
-					}
-					// logger.info("picurlIpName : 替换后的图片路径: " + UrlQiniu);
-					if (i == 0) {
-						// logger.info("原img将被代替" + img);
-						// logger.info("七牛的url" + UrlQiniu);
-						if (imagSuffix.trim() == "") {
-							UrlQiniu = UrlQiniu + "?imageView2/0/format/png";
-							logger.info("UrlQiniu" + UrlQiniu);
-						}
-						contentSrcReplace = content.replace(img, UrlQiniu);
-					} else {
-						if (imagSuffix.trim() == "") {
-							UrlQiniu = UrlQiniu + "?imageView2/0/format/png";
-							logger.info("UrlQiniu" + UrlQiniu);
-						}
-						contentSrcReplace = contentSrcReplace.replace(img, UrlQiniu);
-						// logger.info(contentSrcReplace);
-					}
+				String UrlQiniu = "";
+				String imagSuffix = "";
 
-					i = i + 1;
+				if (Pattern.matches(RegexUtil.BASE64PICREG, img)) {
+					String replaceAllimg = img.replaceAll(RegexUtil.BASE64PICNULL, "");
+					String fileName = DateUtil.getCurrentTimeSS() + createid + i;
+					UrlQiniu = QiniuUtil.uploadBase64Str(replaceAllimg, fileName);
+					System.err.println("UrlQiniu++++++++++" + UrlQiniu);
+				} else {
+					imagSuffix = GetPicSuffixUtil.getimagSuffix(img);
+					String fileName = DateUtil.getCurrentTimeSS() + createid + i + imagSuffix;// ?imageView2/0/format/png
+					UrlQiniu = QiniuUtil.changeToLocalUrl(img, fileName);
+
+				}
+				if (!StringUtils.isEmpty(UrlQiniu)) {
+					if ("false".equals(UrlQiniu)) {
+						logger.info(img + "上传七牛失败!");
+						logger.info("坑逼百度!!!!");
+					} else {
+						if (imgDB.size() <= 3) {
+							imgDB.add(UrlQiniu);
+						}
+						// logger.info("picurlIpName : 替换后的图片路径: " + UrlQiniu);
+						if (i == 0) {
+							// logger.info("原img将被代替" + img);
+							// logger.info("七牛的url" + UrlQiniu);
+							if (imagSuffix.trim() == "") {
+								UrlQiniu = UrlQiniu + "?imageView2/0/format/png";
+								logger.info("UrlQiniu" + UrlQiniu);
+							}
+							contentSrcReplace = content.replace(img, UrlQiniu);
+						} else {
+							if (imagSuffix.trim() == "") {
+								UrlQiniu = UrlQiniu + "?imageView2/0/format/png";
+								logger.info("UrlQiniu" + UrlQiniu);
+							}
+							contentSrcReplace = contentSrcReplace.replace(img, UrlQiniu);
+							// logger.info(contentSrcReplace);
+						}
+
+						i = i + 1;
+					}
 				}
 			}
 		}
@@ -6608,6 +6676,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			map.put("projectId", project.getProjectId());
 			if (postType == KFFConstants.POST_TYPE_EVALUATION) {// 短评简单1 精评全面2和自定义3
 				map.put("modelType", modeltype);
+				map.put("status", "1");
 				List<Evaluation> evaluations = kffEvaluationService.selectEvaByMap(map);
 				if (CollectionUtils.isNotEmpty(evaluations)) {
 					Evaluation evaluation = evaluations.get(0);

@@ -24,6 +24,11 @@ public interface KFFProjectMapper extends BaseMapper<KFFProject, java.lang.Integ
 
 	void updateTotalScore(KFFProject project);
 
+	Integer findPageCountInList(Map<String, Object> queryData);
+
+	List<KFFProject> findPageInList(Map<String, Object> queryData);
+
+	List<KFFProject> findByMap(Map<String, Object> map);
 	public List<KFFProject> findListByMap(Map<String, Object> map);
 
 }

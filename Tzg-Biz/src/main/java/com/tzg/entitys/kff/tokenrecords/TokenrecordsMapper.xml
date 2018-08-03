@@ -16,11 +16,15 @@
 		<result property="status" jdbcType="INTEGER" column="status"/>
 		<result property="memo" jdbcType="VARCHAR" column="memo"/>
 		<result property="rewardGrantType" jdbcType="INTEGER" column="reward_grant_type"/>
+		<result property="postId" jdbcType="INTEGER" column="postId"/>
+		<result property="praiseId" jdbcType="INTEGER" column="praiseId"/>
     </resultMap>
 	
 	<sql id="columns">
 	    <![CDATA[
         token_records_id ,user_id ,trade_code ,trade_type ,function_desc ,function_type ,amount ,trade_date ,balance ,createTime ,updateTime ,status ,memo ,reward_grant_type
+	   ,postId,praiseId
+	   
 	    ]]>
 	</sql>
 	
@@ -42,7 +46,9 @@
         	updateTime ,
         	status ,
         	memo ,
-        	reward_grant_type
+        	reward_grant_type ,
+        	postId ,
+        	praiseId
 		) VALUES (
         	#{userId,jdbcType=INTEGER} ,
         	#{tradeCode,jdbcType=VARCHAR} ,
@@ -56,7 +62,9 @@
         	#{updateTime,jdbcType=TIMESTAMP} ,
         	#{status,jdbcType=INTEGER} ,
         	#{memo,jdbcType=VARCHAR} ,
-        	#{rewardGrantType,jdbcType=INTEGER} 
+        	#{rewardGrantType,jdbcType=INTEGER} ,
+        	#{postId,jdbcType=INTEGER} ,
+        	#{praiseId,jdbcType=INTEGER}
 		)
 	]]>
 	</insert>
@@ -102,6 +110,12 @@
 	        </if>
 	        <if test="rewardGrantType != null">
 	        reward_grant_type = #{rewardGrantType,jdbcType=INTEGER} 
+	        </if>
+	         <if test="postId != null">
+	        postId = #{postId,jdbcType=INTEGER} 
+	        </if>
+	         <if test="praiseId != null">
+	        praiseId = #{praiseId,jdbcType=INTEGER} 
 	        </if>
 	    </set>
 		WHERE 
@@ -225,7 +239,20 @@
 		<if test="rewardGrantType != null and rewardToken.trim() != ''">
 		and rewardGrantType = #{rewardGrantType}
 		</if>
+		
+		<if test="postId != null and postId.trim() != ''">
+		and postId = #{postId}
+		</if>
+		<if test="praiseId != null and praiseId.trim() != ''">
+		and praiseId = #{praiseId}
+		</if>
 	</sql>
+	
+	<select id="findAllPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbtokenrecords where 1=1
+		<include refid="queryWhere"/> 
+	</select>
+	
 </mapper>
 
 

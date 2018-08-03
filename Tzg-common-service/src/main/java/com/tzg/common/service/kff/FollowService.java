@@ -1,5 +1,6 @@
 package com.tzg.common.service.kff;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -109,6 +110,30 @@ public class FollowService {
 	
 	public List<Follow> findListByAttr(Map<String, Object> map) {
 		return followMapper.findFollowedProjects(map);
+	}
+	
+		/**
+	 * 根据类型用户查询用户的相关关注列表 (获得1-关注项目;2-关注帖子；3-关注用户 1关注 0 未关注)
+	 * @param userId
+	 * @param followType
+	 * @return
+	 */
+	public List<Integer> getUserFollow(Integer userId, Integer followType) {
+		List<Integer> followedProjectIds = new ArrayList<Integer>();
+		// 判断此项目是否被这个用户 关注
+		PaginationQuery queryFollow = new PaginationQuery();
+		queryFollow.addQueryData("followUserId", userId + "");
+		queryFollow.addQueryData("followType", followType + ""); // 关注类型：1-关注项目;2-关注帖子；3-关注用户
+		queryFollow.addQueryData("status", "1");
+		queryFollow.setPageIndex(1);
+		queryFollow.setRowsPerPage(2000);
+		PageResult<Follow> follows = findPage(queryFollow);
+		if (follows != null && !CollectionUtils.isEmpty((follows.getRows()))) {
+			for (Follow follow : follows.getRows()) {
+				followedProjectIds.add(follow.getFollowedId());
+			}
+		}
+		return followedProjectIds;
 	}
 
 }

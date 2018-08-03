@@ -19,9 +19,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.base.Objects;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
+import com.tzg.common.utils.DozerMapperUtils;
 import com.tzg.entitys.kff.evaluation.Evaluation;
 import com.tzg.entitys.kff.evaluation.EvaluationMapper;
 import com.tzg.entitys.kff.post.Post;
@@ -30,6 +32,7 @@ import com.tzg.entitys.kff.praise.Praise;
 import com.tzg.entitys.kff.praise.PraiseMapper;
 import com.tzg.entitys.kff.project.KFFProject;
 import com.tzg.entitys.kff.project.KFFProjectMapper;
+import com.tzg.entitys.kff.project.ProjectResponse;
 import com.tzg.entitys.kff.qfindex.QfIndex;
 import com.tzg.entitys.kff.qfindex.QfIndexMapper;
 import com.tzg.entitys.kff.user.KFFUser;
@@ -388,6 +391,41 @@ public class ProjectService {
 		} finally {
 			countDownLatch.countDown();
 		}
+	}
+
+	@Transactional(readOnly = true)
+	public PageResult<ProjectResponse> selectPage(PaginationQuery query) {
+		// TODO 使用in 进行分页查询
+		List<ProjectResponse> projectResponses = new ArrayList<ProjectResponse>();
+		PageResult<ProjectResponse> result = null;
+		try {
+			Integer count = projectMapper.findPageCountInList(query.getQueryData());
+			if (null != count && count.intValue() > 0) {
+				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
+				query.addQueryData("startRecord", Integer.toString(startRecord));
+				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
+				List<KFFProject> list = projectMapper.findPageInList(query.getQueryData());
+				if (!CollectionUtils.isEmpty(list)) {
+					System.err.println("list" + JSON.toJSONString(list));
+					for (KFFProject kffProject : list) {
+						System.err.println("kffProject" + JSON.toJSONString(kffProject));
+						ProjectResponse projectResponse = new ProjectResponse();
+						DozerMapperUtils.map(kffProject, projectResponse);
+						projectResponses.add(projectResponse);
+					}
+				}
+				result = new PageResult<ProjectResponse>(projectResponses, count, query);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+
+	}
+
+	public List<KFFProject> findByMap(Map<String, Object> map) {
+		// TODO Auto-generated method stub
+		return projectMapper.findByMap(map);
 	}
 
 }

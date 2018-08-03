@@ -67,14 +67,15 @@ public class QiNiuUploadController extends BaseController {
 	public BaseResponseEntity sendToken(HttpServletRequest request, @RequestBody String data) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
-		Token token = JSON.parseObject(data, Token.class);
-		Integer userId = getUserIdByToken(token.getToken());
-		if (null == userId) {
-			throw new RestServiceException("请先登录账户");
-		}
-		String upToken = null;
-		// 从Redis中获取uptoken
+
 		try {
+			Token token = JSON.parseObject(data, Token.class);
+			Integer userId = getUserIdByToken(token.getToken());
+			if (null == userId) {
+				throw new RestServiceException("请先登录账户");
+			}
+			String upToken = null;
+			// 从Redis中获取uptoken
 			upToken = getUpToken();
 			// 把upToken 存放在Redis中
 			map.put("upToken", upToken);

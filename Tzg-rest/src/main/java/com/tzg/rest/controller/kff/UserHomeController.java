@@ -40,209 +40,205 @@ import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
 import com.tzg.rmi.service.KFFRmiService;
 
-@Controller(value="KFFUserHomeController")
+@Controller(value = "KFFUserHomeController")
 @RequestMapping("/kff/userhome")
 public class UserHomeController extends BaseController {
 	private static Logger logger = Logger.getLogger(UserHomeController.class);
-	
+
 	@Autowired
 	private KFFRmiService kffRmiService;
-	
-	
+
 	/**
 	 * 
-	* @Title: 用户首页
-	* @Description: 用户首页 基本信息展示
-	* @param @param request
-	* @param @param response
-	* @param @return    
-	* @return BaseResponseEntity
-	* @see    
-	* @throws
+	 * @Title: 用户首页
+	 * @Description: 用户首页 基本信息展示
+	 * @param @param request
+	 * @param @param response
+	 * @param @return
+	 * @return BaseResponseEntity
+	 * @see
+	 * @throws
 	 */
-	@RequestMapping(value="/index",method = {RequestMethod.POST,RequestMethod.GET})
+	@RequestMapping(value = "/index", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public BaseResponseEntity index(HttpServletRequest request) {
 		BaseResponseEntity bre = new BaseResponseEntity();
-        HashMap<String, Object> map = new HashMap<String, Object>();
+		HashMap<String, Object> map = new HashMap<String, Object>();
 
 		try {
 			JSONObject params = getParamMapFromRequestPolicy(request);
-			String token = (String)params.get("token");
-			Integer userId = (Integer)params.get("userId");
+			String token = (String) params.get("token");
+			Integer userId = (Integer) params.get("userId");
 			Integer loginUserId = getUserIdByToken(token);
-			KFFUserHomeResponse userResp = null;		
-			userResp =  kffRmiService.findUserHomeByUserId(loginUserId,userId);
+			KFFUserHomeResponse userResp = null;
+			userResp = kffRmiService.findUserHomeByUserId(loginUserId, userId);
 			map.put("user", userResp);
-            bre.setData(map);
+			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("UserHomeController index:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
 		} catch (Exception e) {
 			logger.error("UserHomeController index:{}", e);
-			return this.resResult(RestErrorCode.SYS_ERROR,e.getMessage());
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
 		}
 		return bre;
 	}
-	
-	
+
 	/**
 	 * 
-	* @Title: evaluationList
-	* @Description: 获取评测列表
-	* @param @param request
-	* @param @param response
-	* @param @return    
-	* @return BaseResponseEntity
-	* @see    
-	* @throws
+	 * @Title: evaluationList
+	 * @Description: 获取评测列表
+	 * @param @param request
+	 * @param @param response
+	 * @param @return
+	 * @return BaseResponseEntity
+	 * @see
+	 * @throws
 	 */
-	@RequestMapping(value="/evaluationList",method = {RequestMethod.POST,RequestMethod.GET})
+	@RequestMapping(value = "/evaluationList", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public BaseResponseEntity evaluationList(HttpServletRequest request) {
 		BaseResponseEntity bre = new BaseResponseEntity();
-        HashMap<String, Object> map = new HashMap<String, Object>();
+		HashMap<String, Object> map = new HashMap<String, Object>();
 
 		try {
 			BaseRequest baseRequest = getParamMapFromRequestPolicy(request, BaseRequest.class);
 			String token = baseRequest.getToken();
 			Integer loginUserId = getUserIdByToken(token);
-			Integer userId = baseRequest.getUserId();			
+			Integer userId = baseRequest.getUserId();
 			PaginationQuery query = new PaginationQuery();
-			if(userId != null && userId > 0){
-	          query.addQueryData("createUserId", userId +"");
-			}else{
-			  query.addQueryData("createUserId", loginUserId +"");	
+			if (userId != null && userId > 0) {
+				query.addQueryData("createUserId", userId + "");
+			} else {
+				query.addQueryData("createUserId", loginUserId + "");
 			}
-	        query.addQueryData("status", "1");
-	        //帖子类型：1-评测；2-讨论；3-文章
-	        query.addQueryData("postType", "1");
-	        if(StringUtils.isNotBlank(baseRequest.getSortField())){
-	        	query.addQueryData("sortField", baseRequest.getSortField());
-	        }
-	        query.setPageIndex(baseRequest.getPageIndex());
-	        query.setRowsPerPage(baseRequest.getPageSize());
-	        query.addQueryData("sql_keyword_orderBy", "createTime");
+			query.addQueryData("status", "1");
+			// 帖子类型：1-评测；2-讨论；3-文章
+			query.addQueryData("postType", "1");
+			if (StringUtils.isNotBlank(baseRequest.getSortField())) {
+				query.addQueryData("sortField", baseRequest.getSortField());
+			}
+			query.setPageIndex(baseRequest.getPageIndex());
+			query.setRowsPerPage(baseRequest.getPageSize());
+			query.addQueryData("sql_keyword_orderBy", "createTime");
 			query.addQueryData("sql_keyword_sort", "desc");
 			PageResult<EvaluationDetailResponse> evaluations = kffRmiService.findPageEvaluationListUserHome(query);
-            map.put("evaluations", evaluations);
+			map.put("evaluations", evaluations);
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("UserHomeController evaluationList:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
 		} catch (Exception e) {
 			logger.error("UserHomeController evaluationList:{}", e);
-			return this.resResult(RestErrorCode.SYS_ERROR,e.getMessage());
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
 		}
 		return bre;
 	}
-	
+
 	/**
 	 * 
-	* @Title: discussList
-	* @Description: 获取讨论列表
-	* @param @param request
-	* @param @param response
-	* @param @return    
-	* @return BaseResponseEntity
-	* @see    
-	* @throws
+	 * @Title: discussList
+	 * @Description: 获取讨论列表
+	 * @param @param request
+	 * @param @param response
+	 * @param @return
+	 * @return BaseResponseEntity
+	 * @see
+	 * @throws
 	 */
-	@RequestMapping(value="/discussList",method = {RequestMethod.POST,RequestMethod.GET})
+	@RequestMapping(value = "/discussList", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public BaseResponseEntity discussList(HttpServletRequest request) {
 		BaseResponseEntity bre = new BaseResponseEntity();
-        HashMap<String, Object> map = new HashMap<String, Object>();
+		HashMap<String, Object> map = new HashMap<String, Object>();
 
 		try {
 			BaseRequest baseRequest = getParamMapFromRequestPolicy(request, BaseRequest.class);
 			String token = baseRequest.getToken();
 			Integer loginUserId = getUserIdByToken(token);
-			Integer userId = baseRequest.getUserId();			
+			Integer userId = baseRequest.getUserId();
 			PaginationQuery query = new PaginationQuery();
-			if(userId != null && userId > 0){
-	          query.addQueryData("createUserId", userId +"");
-			}else{
-			  query.addQueryData("createUserId", loginUserId +"");	
+			if (userId != null && userId > 0) {
+				query.addQueryData("createUserId", userId + "");
+			} else {
+				query.addQueryData("createUserId", loginUserId + "");
 			}
-	        query.addQueryData("status", "1");
-	        //帖子类型：1-评测；2-讨论；3-文章
-	        query.addQueryData("postType", "2");
-	        if(StringUtils.isNotBlank(baseRequest.getSortField())){
-	        	query.addQueryData("sortField", baseRequest.getSortField());
-	        }
-	        query.setPageIndex(baseRequest.getPageIndex());
-	        query.setRowsPerPage(baseRequest.getPageSize());
-	        query.addQueryData("sql_keyword_orderBy", "createTime");
+			query.addQueryData("status", "1");
+			// 帖子类型：1-评测；2-讨论；3-文章
+			query.addQueryData("postType", "2");
+			if (StringUtils.isNotBlank(baseRequest.getSortField())) {
+				query.addQueryData("sortField", baseRequest.getSortField());
+			}
+			query.setPageIndex(baseRequest.getPageIndex());
+			query.setRowsPerPage(baseRequest.getPageSize());
+			query.addQueryData("sql_keyword_orderBy", "createTime");
 			query.addQueryData("sql_keyword_sort", "desc");
 			PageResult<PostResponse> discusses = kffRmiService.findPageDisscussList(query);
-			//20180507志远去除 我的最新讨论记录 微信群
-			//PostResponse myLatestDiscuss = kffRmiService.findMyLatestDiscuss(loginUserId);
-            map.put("discusses", discusses);
-            //map.put("myLatestDiscuss", myLatestDiscuss);
+			// 20180507志远去除 我的最新讨论记录 微信群
+			// PostResponse myLatestDiscuss = kffRmiService.findMyLatestDiscuss(loginUserId);
+			//System.err.println("discusses++++++++++++++" + JSONObject.toJSONString(discusses));
+			map.put("discusses", discusses);
+			// map.put("myLatestDiscuss", myLatestDiscuss);
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("UserHomeController discussList:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
 		} catch (Exception e) {
 			logger.error("UserHomeController discussList:{}", e);
-			return this.resResult(RestErrorCode.SYS_ERROR,e.getMessage());
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
 		}
 		return bre;
 	}
-	
-	
+
 	/**
 	 * 
-	* @Title: messageList
-	* @Description: 获取文章列表
-	* @param @param request
-	* @param @param response
-	* @param @return    
-	* @return BaseResponseEntity
-	* @see    
-	* @throws
+	 * @Title: messageList
+	 * @Description: 获取文章列表
+	 * @param @param request
+	 * @param @param response
+	 * @param @return
+	 * @return BaseResponseEntity
+	 * @see
+	 * @throws
 	 */
-	@RequestMapping(value="/articleList",method = {RequestMethod.POST,RequestMethod.GET})
+	@RequestMapping(value = "/articleList", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public BaseResponseEntity articleList(HttpServletRequest request) {
 		BaseResponseEntity bre = new BaseResponseEntity();
-        HashMap<String, Object> map = new HashMap<String, Object>();
+		HashMap<String, Object> map = new HashMap<String, Object>();
 
 		try {
 			BaseRequest baseRequest = getParamMapFromRequestPolicy(request, BaseRequest.class);
 			String token = baseRequest.getToken();
 			Integer loginUserId = getUserIdByToken(token);
-			Integer userId = baseRequest.getUserId();			
+			Integer userId = baseRequest.getUserId();
 			PaginationQuery query = new PaginationQuery();
-			if(userId != null && userId > 0){
-	          query.addQueryData("createUserId", userId +"");
-			}else{
-			  query.addQueryData("createUserId", loginUserId +"");	
+			if (userId != null && userId > 0) {
+				query.addQueryData("createUserId", userId + "");
+			} else {
+				query.addQueryData("createUserId", loginUserId + "");
 			}
-	        query.addQueryData("status", "1");
-	        //帖子类型：1-评测；2-讨论；3-文章
-	        query.addQueryData("postType", "3");
-	        if(StringUtils.isNotBlank(baseRequest.getSortField())){
-	        	query.addQueryData("sortField", baseRequest.getSortField());
-	        }
-	        query.setPageIndex(baseRequest.getPageIndex());
-	        query.setRowsPerPage(baseRequest.getPageSize());
-	        query.addQueryData("sql_keyword_orderBy", "createTime");
+			query.addQueryData("status", "1");
+			// 帖子类型：1-评测；2-讨论；3-文章
+			query.addQueryData("postType", "3");
+			if (StringUtils.isNotBlank(baseRequest.getSortField())) {
+				query.addQueryData("sortField", baseRequest.getSortField());
+			}
+			query.setPageIndex(baseRequest.getPageIndex());
+			query.setRowsPerPage(baseRequest.getPageSize());
+			query.addQueryData("sql_keyword_orderBy", "createTime");
 			query.addQueryData("sql_keyword_sort", "desc");
 			PageResult<PostResponse> articles = kffRmiService.findPageArticleList(query);
-            map.put("articles", articles);
+			map.put("articles", articles);
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("UserHomeController articleList:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
 		} catch (Exception e) {
 			logger.error("UserHomeController articleList:{}", e);
-			return this.resResult(RestErrorCode.SYS_ERROR,e.getMessage());
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
 		}
 		return bre;
 	}
-	
+
 }
-
-

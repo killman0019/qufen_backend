@@ -1,46 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.tzg.entitys.kff.post.PostMapper">	
+<mapper namespace="com.tzg.entitys.kff.post.PostMapper">
 	<resultMap id="BaseResultMap" type="com.tzg.entitys.kff.post.Post">
-		<result property="postId" jdbcType="INTEGER" column="post_id"/>
-		<result property="projectId" jdbcType="INTEGER" column="project_id"/>
-		<result property="projectIcon" jdbcType="VARCHAR" column="project_icon"/>
-		<result property="projectCode" jdbcType="VARCHAR" column="project_code"/>
-		<result property="projectEnglishName" jdbcType="VARCHAR" column="project_english_name"/>
-		<result property="projectChineseName" jdbcType="VARCHAR" column="project_chinese_name"/>		
-		<result property="postTitle" jdbcType="VARCHAR" column="post_title"/>
-		<result property="postType" jdbcType="INTEGER" column="post_type"/>
-		<result property="postShortDesc" jdbcType="VARCHAR" column="post_short_desc"/>
-		<result property="postSmallImages" jdbcType="VARCHAR" column="post_small_images"/>
-		<result property="commentsNum" jdbcType="INTEGER" column="comments_num"/>
-		<result property="praiseNum" jdbcType="INTEGER" column="praise_num"/>
-		<result property="pageviewNum" jdbcType="INTEGER" column="pageview_num"/>
-		<result property="donateNum" jdbcType="INTEGER" column="donate_num"/>
-		<result property="collectNum" jdbcType="INTEGER" column="collect_num"/>
-		<result property="createUserId" jdbcType="INTEGER" column="create_user_id"/>
-		<result property="createUserIcon" jdbcType="VARCHAR" column="create_user_icon"/>
-		<result property="createUserSignature" jdbcType="VARCHAR" column="create_user_signature"/>
-		<result property="createUserName" jdbcType="VARCHAR" column="create_user_name"/>
-		<result property="createTime" jdbcType="TIMESTAMP" column="createTime"/>
-		<result property="updateTime" jdbcType="TIMESTAMP" column="updateTime"/>
-		<result property="status" jdbcType="INTEGER" column="status"/>
-		<result property="uuid" jdbcType="VARCHAR" column="uuid"/>
-		<result property="stickTop" jdbcType="INTEGER" column="stick_top"/>
-		<result property="stickUpdateTime" jdbcType="TIMESTAMP" column="stick_updateTime"/>
+		<result property="postId" jdbcType="INTEGER" column="post_id" />
+		<result property="projectId" jdbcType="INTEGER" column="project_id" />
+		<result property="projectIcon" jdbcType="VARCHAR" column="project_icon" />
+		<result property="projectCode" jdbcType="VARCHAR" column="project_code" />
+		<result property="projectEnglishName" jdbcType="VARCHAR" column="project_english_name" />
+		<result property="projectChineseName" jdbcType="VARCHAR" column="project_chinese_name" />
+		<result property="postTitle" jdbcType="VARCHAR" column="post_title" />
+		<result property="postType" jdbcType="INTEGER" column="post_type" />
+		<result property="postShortDesc" jdbcType="VARCHAR" column="post_short_desc" />
+		<result property="postSmallImages" jdbcType="VARCHAR" column="post_small_images" />
+		<result property="commentsNum" jdbcType="INTEGER" column="comments_num" />
+		<result property="praiseNum" jdbcType="INTEGER" column="praise_num" />
+		<result property="pageviewNum" jdbcType="INTEGER" column="pageview_num" />
+		<result property="donateNum" jdbcType="INTEGER" column="donate_num" />
+		<result property="collectNum" jdbcType="INTEGER" column="collect_num" />
+		<result property="createUserId" jdbcType="INTEGER" column="create_user_id" />
+		<result property="createUserIcon" jdbcType="VARCHAR" column="create_user_icon" />
+		<result property="createUserSignature" jdbcType="VARCHAR" column="create_user_signature" />
+		<result property="createUserName" jdbcType="VARCHAR" column="create_user_name" />
+		<result property="createTime" jdbcType="TIMESTAMP" column="createTime" />
+		<result property="updateTime" jdbcType="TIMESTAMP" column="updateTime" />
+		<result property="status" jdbcType="INTEGER" column="status" />
+		<result property="uuid" jdbcType="VARCHAR" column="uuid" />
+		<result property="stickTop" jdbcType="INTEGER" column="stick_top" />
+		<result property="stickUpdateTime" jdbcType="TIMESTAMP" column="stick_updateTime" />
+		<result property="praiseIncome" jdbcType="DOUBLE" column="praise_income" />
+		<result property="donateIncome" jdbcType="DOUBLE" column="donate_income" />
+		<result property="postTotalIncome" jdbcType="DOUBLE" column="post_total_income" />
 
+	</resultMap>
 
-    </resultMap>
-	
 	<sql id="columns">
 	    <![CDATA[
-        post_id ,project_id ,project_icon ,project_code ,project_english_name ,project_chinese_name,post_title ,post_type ,post_short_desc ,post_small_images ,comments_num ,praise_num ,pageview_num ,donate_num ,collect_num ,create_user_id ,create_user_icon ,create_user_signature ,create_user_name ,createTime ,updateTime ,status,uuid,stick_top,stick_updateTime 
+        post_id ,project_id ,project_icon ,project_code ,project_english_name ,project_chinese_name,post_title ,post_type ,post_short_desc ,post_small_images ,comments_num ,praise_num ,pageview_num ,donate_num ,collect_num ,create_user_id ,create_user_icon ,create_user_signature ,create_user_name ,createTime ,updateTime ,status,uuid,stick_top,stick_updateTime,
+         praise_income,donate_income,post_total_income
 	    ]]>
 	</sql>
-	
+
 	<insert id="save" parameterType="com.tzg.entitys.kff.post.Post" useGeneratedKeys="true" keyProperty="postId">
-		<selectKey resultType="java.lang.Integer" keyProperty="postId" order="AFTER" >
-	      SELECT LAST_INSERT_ID() AS post_id
-	    </selectKey>
+		<selectKey resultType="java.lang.Integer" keyProperty="postId" order="AFTER">
+			SELECT LAST_INSERT_ID() AS post_id
+		</selectKey>
 	<![CDATA[
 		INSERT INTO tbpost (
         	project_id ,
@@ -66,7 +69,10 @@
         	status ,
         	uuid,
         	stick_top,
-        	stick_updateTime
+        	stick_updateTime,
+        	praise_income,
+        	donate_income,
+        	post_total_income
 		) VALUES (
         	#{projectId,jdbcType=INTEGER} ,
         	#{projectIcon,jdbcType=VARCHAR} ,
@@ -91,8 +97,10 @@
         	#{status,jdbcType=INTEGER} ,
         	#{uuid,jdbcType=VARCHAR},
         	#{stickTop,jdbcType=INTEGER},
-        	#{stickUpdateTime,jdbcType=TIMESTAMP} 
-        	
+        	#{stickUpdateTime,jdbcType=TIMESTAMP} ,
+        	#{praiseIncome,jdbcType=DOUBLE} ,
+        	#{donateIncome,jdbcType=DOUBLE} ,
+        	#{postTotalIncome,jdbcType=DOUBLE} 
 		)
 	]]>
 	</insert>
@@ -101,152 +109,162 @@
 		UPDATE tbpost
 		<set>
 			<if test="projectId != null">
-	        project_id = #{projectId,jdbcType=INTEGER} ,
-	        </if>
+				project_id = #{projectId,jdbcType=INTEGER} ,
+			</if>
 			<if test="projectIcon != null">
-	        project_icon = #{projectIcon,jdbcType=VARCHAR} ,
-	        </if>
+				project_icon = #{projectIcon,jdbcType=VARCHAR} ,
+			</if>
 			<if test="projectCode != null">
-	        project_code = #{projectCode,jdbcType=VARCHAR} ,
-	        </if>
+				project_code = #{projectCode,jdbcType=VARCHAR} ,
+			</if>
 			<if test="projectEnglishName != null">
-	        project_english_name = #{projectEnglishName,jdbcType=VARCHAR} ,
-	        </if>
-	        <if test="projectChineseName != null">
-	        project_chinese_name = #{projectChineseName,jdbcType=VARCHAR} ,
-	        </if>
-	        
+				project_english_name = #{projectEnglishName,jdbcType=VARCHAR} ,
+			</if>
+			<if test="projectChineseName != null">
+				project_chinese_name = #{projectChineseName,jdbcType=VARCHAR} ,
+			</if>
+
 			<if test="postTitle != null">
-	        post_title = #{postTitle,jdbcType=VARCHAR} ,
-	        </if>
+				post_title = #{postTitle,jdbcType=VARCHAR} ,
+			</if>
 			<if test="postType != null">
-	        post_type = #{postType,jdbcType=INTEGER} ,
-	        </if>
+				post_type = #{postType,jdbcType=INTEGER} ,
+			</if>
 			<if test="postShortDesc != null">
-	        post_short_desc = #{postShortDesc,jdbcType=VARCHAR} ,
-	        </if>
+				post_short_desc = #{postShortDesc,jdbcType=VARCHAR} ,
+			</if>
 			<if test="postSmallImages != null">
-	        post_small_images = #{postSmallImages,jdbcType=VARCHAR} ,
-	        </if>
+				post_small_images = #{postSmallImages,jdbcType=VARCHAR} ,
+			</if>
 			<if test="commentsNum != null">
-	        comments_num = #{commentsNum,jdbcType=INTEGER} ,
-	        </if>
+				comments_num = #{commentsNum,jdbcType=INTEGER} ,
+			</if>
 			<if test="praiseNum != null">
-	        praise_num = #{praiseNum,jdbcType=INTEGER} ,
-	        </if>
+				praise_num = #{praiseNum,jdbcType=INTEGER} ,
+			</if>
 			<if test="pageviewNum != null">
-	        pageview_num = #{pageviewNum,jdbcType=INTEGER} ,
-	        </if>
+				pageview_num = #{pageviewNum,jdbcType=INTEGER} ,
+			</if>
 			<if test="donateNum != null">
-	        donate_num = #{donateNum,jdbcType=INTEGER} ,
-	        </if>
+				donate_num = #{donateNum,jdbcType=INTEGER} ,
+			</if>
 			<if test="collectNum != null">
-	        collect_num = #{collectNum,jdbcType=INTEGER} ,
-	        </if>
+				collect_num = #{collectNum,jdbcType=INTEGER} ,
+			</if>
 			<if test="createUserId != null">
-	        create_user_id = #{createUserId,jdbcType=INTEGER} ,
-	        </if>
+				create_user_id = #{createUserId,jdbcType=INTEGER} ,
+			</if>
 			<if test="createUserIcon != null">
-	        create_user_icon = #{createUserIcon,jdbcType=VARCHAR} ,
-	        </if>
+				create_user_icon = #{createUserIcon,jdbcType=VARCHAR} ,
+			</if>
 			<if test="createUserSignature != null">
-	        create_user_signature = #{createUserSignature,jdbcType=VARCHAR} ,
-	        </if>
+				create_user_signature = #{createUserSignature,jdbcType=VARCHAR} ,
+			</if>
 			<if test="createUserName != null">
-	        create_user_name = #{createUserName,jdbcType=VARCHAR} ,
-	        </if>
+				create_user_name = #{createUserName,jdbcType=VARCHAR} ,
+			</if>
 			<if test="createTime != null">
-	        createTime = #{createTime,jdbcType=TIMESTAMP} ,
-	        </if>
+				createTime = #{createTime,jdbcType=TIMESTAMP} ,
+			</if>
 			<if test="updateTime != null">
-	        updateTime = #{updateTime,jdbcType=TIMESTAMP} ,
-	        </if>
+				updateTime = #{updateTime,jdbcType=TIMESTAMP} ,
+			</if>
 			<if test="status != null">
-	        status = #{status,jdbcType=INTEGER} 
-	        </if>
-	        <if test="stickTop != null">
-	        stick_top = #{stickTop,jdbcType=INTEGER} 
-	        </if>
-	        <if test="stickUpdateTime != null">
-	        stick_updateTime = #{stickUpdateTime,jdbcType=TIMESTAMP} 
-	        </if>	        
-	    </set>
-		WHERE 
-	        post_id = #{postId,jdbcType=INTEGER} 
+				status = #{status,jdbcType=INTEGER},
+			</if>
+			<if test="stickTop != null">
+				stick_top = #{stickTop,jdbcType=INTEGER},
+			</if>
+			<if test="stickUpdateTime != null">
+				stick_updateTime = #{stickUpdateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="praiseIncome != null">
+				praise_income = #{praiseIncome,jdbcType=DOUBLE},
+			</if>
+			<if test="donateIncome != null">
+				donate_income = #{donateIncome,jdbcType=DOUBLE},
+			</if>
+			<if test="postTotalIncome != null">
+				post_total_income = #{postTotalIncome,jdbcType=DOUBLE},
+			</if>
+		</set>
+		WHERE
+		post_id = #{postId,jdbcType=INTEGER}
 	</update>
-	
-   <update id="updateDonateNum" parameterType="java.lang.Integer">
-		UPDATE tbpost set donate_num = donate_num + 1		
-		WHERE 
-	    post_id = #{postId,jdbcType=INTEGER} 
+
+	<update id="updateDonateNum" parameterType="java.lang.Integer">
+		UPDATE tbpost set donate_num = donate_num + 1
+		WHERE
+		post_id = #{postId,jdbcType=INTEGER}
 	</update>
-	
-	
+
+
 	<update id="increasePraiseNum" parameterType="java.lang.Integer">
-		UPDATE tbpost set praise_num = praise_num + 1		
-		WHERE 
-	    post_id = #{postId,jdbcType=INTEGER} 
+		UPDATE tbpost set praise_num = praise_num + 1
+		WHERE
+		post_id = #{postId,jdbcType=INTEGER}
 	</update>
-	
+
 	<update id="decreasePraiseNum" parameterType="java.lang.Integer">
-		UPDATE tbpost set praise_num = praise_num - 1		
-		WHERE 
-	    post_id = #{postId,jdbcType=INTEGER} 
-	    and praise_num > 0
+		UPDATE tbpost set praise_num = praise_num - 1
+		WHERE
+		post_id = #{postId,jdbcType=INTEGER}
+		and praise_num > 0
 	</update>
-	
-	
+
+
 	<update id="increaseCollectNum" parameterType="java.lang.Integer">
-		UPDATE tbpost set collect_num = collect_num + 1		
-		WHERE 
-	    post_id = #{postId,jdbcType=INTEGER} 
+		UPDATE tbpost set collect_num = collect_num + 1
+		WHERE
+		post_id = #{postId,jdbcType=INTEGER}
 	</update>
-	
+
 	<update id="decreaseCollectNum" parameterType="java.lang.Integer">
-		UPDATE tbpost set collect_num = collect_num - 1		
-		WHERE 
-	    post_id = #{postId,jdbcType=INTEGER} 
-	    and praise_num > 0
+		UPDATE tbpost set collect_num = collect_num - 1
+		WHERE
+		post_id = #{postId,jdbcType=INTEGER}
+		and praise_num > 0
 	</update>
-	
+
 	<update id="increasePageviewNum" parameterType="java.lang.Integer">
-		UPDATE tbpost set pageview_num = pageview_num + 1		
-		WHERE 
-	    post_id = #{postId,jdbcType=INTEGER} 
+		UPDATE tbpost set pageview_num = pageview_num + 1
+		WHERE
+		post_id = #{postId,jdbcType=INTEGER}
 	</update>
-	
-		<update id="updateUserInfo" parameterType="java.util.Map">
-			UPDATE tbpost
-		<set>			
+
+	<update id="updateUserInfo" parameterType="java.util.Map">
+		UPDATE tbpost
+		<set>
 			<if test="createUserName != null and createUserName.trim() != ''">
-	        create_user_name = #{createUserName,jdbcType=VARCHAR} ,
-	        </if>								
+				create_user_name = #{createUserName,jdbcType=VARCHAR} ,
+			</if>
 			<if test="createUserIcon != null and createUserIcon.trim() != ''">
-	        create_user_icon = #{createUserIcon,jdbcType=VARCHAR} ,
-	        </if>
+				create_user_icon = #{createUserIcon,jdbcType=VARCHAR} ,
+			</if>
 			<if test="createUserSignature != null and createUserSignature.trim() != ''">
-	         create_user_signature = #{createUserSignature,jdbcType=VARCHAR} ,
-	        </if>			
+				create_user_signature = #{createUserSignature,jdbcType=VARCHAR} ,
+			</if>
 			<if test="updateTime != null">
-	        updateTime = now()
-	        </if>			
-	    </set>
-			WHERE 
-		   
-		     <if test="createUserId != null">
-		    	 create_user_id = #{createUserId,jdbcType=INTEGER}
-		    </if>	 	        
-		</update>
-	
+				updateTime = now()
+			</if>
+		</set>
+		WHERE
+
+		<if test="createUserId != null">
+			create_user_id = #{createUserId,jdbcType=INTEGER}
+		</if>
+	</update>
+
 	<delete id="deleteById" parameterType="java.lang.Integer">
 	<![CDATA[
 		DELETE FROM tbpost WHERE
         post_id = #{postId} 
 	]]>
 	</delete>
-    
+
 	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
-	    SELECT <include refid="columns"/> 
+		SELECT
+		<include refid="columns" /> 
 	<![CDATA[
 		FROM tbpost 
 		WHERE 
@@ -254,382 +272,404 @@
 	]]>
 	</select>
 	<select id="findByUUID" resultMap="BaseResultMap" parameterType="java.lang.String">
-	    SELECT <include refid="columns"/> 
+		SELECT
+		<include refid="columns" /> 
 	<![CDATA[
 		FROM tbpost 
 		WHERE 
         uuid = #{uuid} 
 	]]>
-	</select>	 
+	</select>
 	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
-    	select count(*) from tbpost where 1=1
-		<include refid="queryWhere"/>
-	</select>
-    
-    <select id="findMyPageFollowListCount" resultType="java.lang.Integer" parameterType="java.util.Map">
-		select count(*) from (
-				SELECT
-					post_id,createTime,1 as post_type
-				FROM
-					tbpraise
-				WHERE
-					praise_type = 1
-				AND praise_user_id IN (
-					SELECT
-						followed_id
-					FROM
-						tbfollow
-					WHERE
-						follow_user_id =  #{userId}
-					AND follow_type = 3
-				  and status = 1
-				)
-				
-				UNION ALL
-				
-				SELECT
-					post_id,createTime,2 as post_type
-				FROM
-					tbpost
-				WHERE
-				 create_user_id IN (
-					SELECT
-						followed_id
-					FROM
-						tbfollow
-					WHERE
-						follow_user_id = #{userId}
-					AND follow_type = 3
-				  and status = 1
-				) and status = 1 
-				UNION ALL
-			
-				select distinct followed_id as post_id,createTime ,3 as post_type from tbfollow where 
-				follow_user_id in (
-					SELECT
-						followed_id
-					FROM
-						tbfollow
-					WHERE
-						follow_user_id = #{userId}
-					AND follow_type = 3
-				  and status = 1
-				) and follow_type=1  
-				and status = 1
-				
-				UNION ALL
-				
-				select post_id,createTime,4 as post_type from tbpost where project_id in (
-					select followed_id from tbfollow where follow_user_id=#{userId} and follow_type = 1
-					and status = 1
-				) and create_user_id not in (
-				SELECT
-						distinct followed_id
-					FROM
-						tbfollow
-					WHERE
-						follow_user_id = #{userId}
-					AND follow_type = 3
-				  and status = 1
-				) and status = 1 
-				)a
-	</select>
-    
-    
-    <select id="findMyPageFollowList" resultMap="BaseResultMap" parameterType="java.util.Map">
-				SELECT
-						post_id,createTime,1 as post_type,praise_user_id as create_user_id
-					FROM
-						tbpraise
-					WHERE
-						praise_type = 1 
-					AND praise_user_id IN (
-						SELECT
-							followed_id
-						FROM
-							tbfollow
-						WHERE
-							follow_user_id =  #{userId}
-						AND follow_type = 3
-					  and status = 1
-					)
-					
-					UNION ALL
-					
-					SELECT
-						post_id,createTime,2 as post_type,create_user_id as create_user_id
-					FROM
-						tbpost
-					WHERE
-					 create_user_id IN (
-						SELECT
-							followed_id
-						FROM
-							tbfollow
-						WHERE
-							follow_user_id =  #{userId}
-						AND follow_type = 3
-					  and status = 1
-					) and status = 1 
-					UNION ALL
-					
-					select distinct followed_id as post_id,createTime ,3 as post_type ,follow_user_id as create_user_id
-					from tbfollow where 
-					follow_user_id in (
-						SELECT
-							followed_id
-						FROM
-							tbfollow
-						WHERE
-							follow_user_id =  #{userId}
-						AND follow_type = 3
-					  and status = 1
-					) and follow_type=1  
-					and status = 1
-					
-					UNION ALL
-					
-					select post_id,createTime,4 as post_type ,create_user_id as create_user_id 
-					from tbpost where project_id in (
-					select followed_id from tbfollow where follow_user_id= #{userId} and follow_type = 1
-					and status = 1
-					) and create_user_id not in (
-					SELECT
-							DISTINCT followed_id
-						FROM
-							tbfollow
-						WHERE
-							follow_user_id =  #{userId}
-						AND follow_type = 3
-					  and status = 1
-					) and status = 1 
-	   
-	     <choose>
-	            <when test="sortField != null and sortField != ''">
-	               ORDER BY ${sortField} DESC
-	            </when>
-	            <otherwise>
-	                <![CDATA[ ORDER BY createTime desc ]]>
-	            </otherwise>
-	        </choose>
-        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
-	</select>
-	
-	<sql id="orderBy">
-        <if test="sql_keyword_orderBy!=null">
-    		order by ${sql_keyword_orderBy} ${sql_keyword_sort}
-    	</if>
-    	<if test="sql_keyword_orderByc!=null">
-    		order by ${sql_keyword_orderByc} ${sql_keyword_sortc}
-    	</if>
-    </sql>
-    
-	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
-		select <include refid="columns"/>  from tbpost where 1=1
-		<include refid="queryWhere"/> 
-	   	<include refid="orderBy"/>
-        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
-	</select>
-	
-	<select id="findProjectActiveUsers" resultMap="BaseResultMap" parameterType="java.util.Map">
-		select count(1) as comments_num,create_user_id  from tbpost where status=1
-		and project_id = #{projectId} group by create_user_id  order by comments_num desc
-		limit 2 ;	    
+		select count(*) from tbpost where 1=1
+		<include refid="queryWhere" />
 	</select>
 
-	
-	<select id="getProjectIdsGreateThanTenEvas" resultMap="BaseResultMap" parameterType="java.util.Map">
-		select count(*) as comments_num,project_id from tbpost where post_type=1 and status = 1 GROUP BY project_id
-		having comments_num  > 0 ; 
+	<select id="findMyPageFollowListCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(*) from (
+		SELECT
+		post_id,createTime,1 as post_type
+		FROM
+		tbpraise
+		WHERE
+		praise_type = 1
+		AND praise_user_id IN (
+		SELECT
+		followed_id
+		FROM
+		tbfollow
+		WHERE
+		follow_user_id = #{userId}
+		AND follow_type = 3
+		and status = 1
+		)
+
+		UNION ALL
+
+		SELECT
+		post_id,createTime,2 as post_type
+		FROM
+		tbpost
+		WHERE
+		create_user_id IN (
+		SELECT
+		followed_id
+		FROM
+		tbfollow
+		WHERE
+		follow_user_id = #{userId}
+		AND follow_type = 3
+		and status = 1
+		) and status = 1
+		UNION ALL
+
+		select distinct followed_id as post_id,createTime ,3 as post_type from tbfollow where
+		follow_user_id in (
+		SELECT
+		followed_id
+		FROM
+		tbfollow
+		WHERE
+		follow_user_id = #{userId}
+		AND follow_type = 3
+		and status = 1
+		) and follow_type=1
+		and status = 1
+
+		UNION ALL
+
+		select post_id,createTime,4 as post_type from tbpost where project_id in (
+		select followed_id from tbfollow where follow_user_id=#{userId} and follow_type = 1
+		and status = 1
+		) and create_user_id not in (
+		SELECT
+		distinct followed_id
+		FROM
+		tbfollow
+		WHERE
+		follow_user_id = #{userId}
+		AND follow_type = 3
+		and status = 1
+		) and status = 1
+		)a
 	</select>
-	
-	<sql id="queryWhere">
-		<if test="postId != null and postId.trim() != ''">
-		and post_id = #{postId}
-		</if>
-		<if test="projectId != null and projectId.trim() != ''">
-		and project_id = #{projectId}
-		</if>
-		<if test="projectIcon != null and projectIcon.trim() != ''">
-		and project_icon = #{projectIcon}
-		</if>
-		<if test="projectCode != null and projectCode.trim() != ''">
-		and project_code = #{projectCode}
-		</if>
-		<if test="projectEnglishName != null and projectEnglishName.trim() != ''">
-		and project_english_name = #{projectEnglishName}
-		</if>
-		<if test="projectChineseName != null and projectChineseName.trim() != ''">
-		and project_chinese_name = #{projectChineseName}
-		</if>
-		<if test="postTitle != null and postTitle.trim() != ''">
-		and post_title = #{postTitle}
-		</if>
-		<if test="postType != null and postType.trim() != ''">
-		and post_type = #{postType}
-		</if>
-		<if test="postShortDesc != null and postShortDesc.trim() != ''">
-		and post_short_desc = #{postShortDesc}
-		</if>
-		<if test="postSmallImages != null and postSmallImages.trim() != ''">
-		and post_small_images = #{postSmallImages}
-		</if>
-		<if test="commentsNum != null and commentsNum.trim() != ''">
-		and comments_num = #{commentsNum}
-		</if>
-		<if test="praiseNum != null and praiseNum.trim() != ''">
-		and praise_num = #{praiseNum}
-		</if>
-		<if test="pageviewNum != null and pageviewNum.trim() != ''">
-		and pageview_num = #{pageviewNum}
-		</if>
-		<if test="donateNum != null and donateNum.trim() != ''">
-		and donate_num = #{donateNum}
-		</if>
-		<if test="collectNum != null and collectNum.trim() != ''">
-		and collect_num = #{collectNum}
-		</if>
-		<if test="createUserId != null and createUserId.trim() != ''">
-		and create_user_id = #{createUserId}
-		</if>
-		<if test="createUserIcon != null and createUserIcon.trim() != ''">
-		and create_user_icon = #{createUserIcon}
-		</if>
-		<if test="createUserSignature != null and createUserSignature.trim() != ''">
-		and create_user_signature = #{createUserSignature}
-		</if>
-		<if test="createUserName != null and createUserName.trim() != ''">
-		and create_user_name = #{createUserName}
-		</if>
-		<if test="createTimeBegin != null and createTimeBegin.trim() != ''">
-		and createTime >= #{createTimeBegin}
-		</if>
-		<if test="createTimeEnd != null and createTimeEnd.trim() != ''">
-		and createTime &lt;= #{createTimeEnd}
-		</if>
-		<if test="updateTimeBegin != null and updateTimeBegin.trim() != ''">
-		and updateTime >= #{updateTimeBegin}
-		</if>
-		<if test="updateTimeEnd != null and updateTimeEnd.trim() != ''">
-		and updateTime &lt;= #{updateTimeEnd}
-		</if>
-		<if test="status != null and status.trim() != ''">
-		and status = #{status}
-		</if>		
-		<if test="uuid != null and uuid.trim() != ''">
-		and uuid = #{uuid}
-		</if>
-		<if test="stickTop != null and stickTop.trim() != ''">
-		and stick_top = #{stickTop}
-		</if>
-	</sql>
-	
-	<select id="findPageRecommendList" resultMap="BaseResultMap" parameterType="java.util.Map">
-		select <include refid="columns"/>  from tbpost where 1=1
-		<include refid="queryWhereRecommend"/> 
-	   
-	     <choose>
-	            <when test="sortField != null and sortField != ''">
-	               ORDER BY ${sortField} DESC
-	            </when>
-	            <otherwise>
-	                <![CDATA[ ORDER BY post_id desc ]]>
-	            </otherwise>
-	        </choose>
+
+
+	<select id="findMyPageFollowList" resultMap="BaseResultMap" parameterType="java.util.Map">
+		SELECT
+		post_id,createTime,1 as post_type,praise_user_id as create_user_id
+		FROM
+		tbpraise
+		WHERE
+		praise_type = 1
+		AND praise_user_id IN (
+		SELECT
+		followed_id
+		FROM
+		tbfollow
+		WHERE
+		follow_user_id = #{userId}
+		AND follow_type = 3
+		and status = 1
+		)
+
+		UNION ALL
+
+		SELECT
+		post_id,createTime,2 as post_type,create_user_id as create_user_id
+		FROM
+		tbpost
+		WHERE
+		create_user_id IN (
+		SELECT
+		followed_id
+		FROM
+		tbfollow
+		WHERE
+		follow_user_id = #{userId}
+		AND follow_type = 3
+		and status = 1
+		) and status = 1
+		UNION ALL
+
+		select distinct followed_id as post_id,createTime ,3 as post_type ,follow_user_id as create_user_id
+		from tbfollow where
+		follow_user_id in (
+		SELECT
+		followed_id
+		FROM
+		tbfollow
+		WHERE
+		follow_user_id = #{userId}
+		AND follow_type = 3
+		and status = 1
+		) and follow_type=1
+		and status = 1
+
+		UNION ALL
+
+		select post_id,createTime,4 as post_type ,create_user_id as create_user_id
+		from tbpost where project_id in (
+		select followed_id from tbfollow where follow_user_id= #{userId} and follow_type = 1
+		and status = 1
+		) and create_user_id not in (
+		SELECT
+		DISTINCT followed_id
+		FROM
+		tbfollow
+		WHERE
+		follow_user_id = #{userId}
+		AND follow_type = 3
+		and status = 1
+		) and status = 1
+
+		<choose>
+			<when test="sortField != null and sortField != ''">
+				ORDER BY ${sortField} DESC
+			</when>
+			<otherwise>
+	                <![CDATA[ ORDER BY createTime desc ]]>
+			</otherwise>
+		</choose>
         <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
 	</select>
-	
-	<select id="findPageCountRecommendList" resultType="java.lang.Integer" parameterType="java.util.Map">
-    	select count(*) from tbpost where 1=1
-		<include refid="queryWhereRecommend"/>
-	</select>
-	
-	<sql id="queryWhereRecommend">
-		<if test="postId != null and postId.trim() != ''">
-		and post_id = #{postId}
+
+	<sql id="orderBy">
+		<if test="sql_keyword_orderBy!=null">
+			order by ${sql_keyword_orderBy} ${sql_keyword_sort}
 		</if>
-		<if test="projectId != null and projectId.trim() != ''">
-		and project_id = #{projectId}
-		</if>
-		<if test="projectIcon != null and projectIcon.trim() != ''">
-		and project_icon = #{projectIcon}
-		</if>
-		<if test="projectCode != null and projectCode.trim() != ''">
-		and project_code = #{projectCode}
-		</if>
-		<if test="projectEnglishName != null and projectEnglishName.trim() != ''">
-		and project_english_name = #{projectEnglishName}
-		</if>
-		<if test="projectChineseName != null and projectChineseName.trim() != ''">
-		and project_chinese_name = #{projectChineseName}
-		</if>
-		<if test="postTitle != null and postTitle.trim() != ''">
-		and post_title = #{postTitle}
-		</if>
-		<if test="postType != null and postType.trim() != ''">
-		and post_type = #{postType}
-		</if>
-		<if test="postShortDesc != null and postShortDesc.trim() != ''">
-		and post_short_desc = #{postShortDesc}
-		</if>
-		<if test="postSmallImages != null and postSmallImages.trim() != ''">
-		and post_small_images = #{postSmallImages}
-		</if>
-		<if test="commentsNum != null and commentsNum.trim() != ''">
-		and comments_num = #{commentsNum}
-		</if>
-		
-		<if test="praiseNum != null and stickTop == null">
-		and praise_num >= #{praiseNum}
-		</if>
-		<if test="praiseNum == null and stickTop != null">
-		and stick_top = #{stickTop}
-		</if>
-		<if test="praiseNum != null and stickTop != null">
-		and (praise_num >= #{praiseNum} or stick_top = #{stickTop})
-		</if>
-		
-		<if test="pageviewNum != null and pageviewNum.trim() != ''">
-		and pageview_num = #{pageviewNum}
-		</if>
-		<if test="donateNum != null and donateNum.trim() != ''">
-		and donate_num = #{donateNum}
-		</if>
-		<if test="collectNum != null and collectNum.trim() != ''">
-		and collect_num = #{collectNum}
-		</if>
-		<if test="createUserId != null and createUserId.trim() != ''">
-		and create_user_id = #{createUserId}
-		</if>
-		<if test="createUserIcon != null and createUserIcon.trim() != ''">
-		and create_user_icon = #{createUserIcon}
-		</if>
-		<if test="createUserSignature != null and createUserSignature.trim() != ''">
-		and create_user_signature = #{createUserSignature}
-		</if>
-		<if test="createUserName != null and createUserName.trim() != ''">
-		and create_user_name = #{createUserName}
-		</if>
-		<if test="createTimeBegin != null and createTimeBegin.trim() != ''">
-		and createTime &gt;= #{createTimeBegin}
-		</if>
-		<if test="createTimeEnd != null and createTimeEnd.trim() != ''">
-		and createTime &lt;= #{createTimeEnd}
-		</if>
-		<if test="updateTimeBegin != null and updateTimeBegin.trim() != ''">
-		and updateTime &gt;= #{updateTimeBegin}
-		</if>
-		<if test="updateTimeEnd != null and updateTimeEnd.trim() != ''">
-		and updateTime &lt;= #{updateTimeEnd}
-		</if>
-		<if test="status != null and status.trim() != ''">
-		and status = #{status}
-		</if>		
-		<if test="uuid != null and uuid.trim() != ''">
-		and uuid = #{uuid}
+		<if test="sql_keyword_orderByc!=null">
+			order by ${sql_keyword_orderByc} ${sql_keyword_sortc}
 		</if>
 	</sql>
-	
+
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="columns" />
+		from tbpost where 1=1
+		<include refid="queryWhere" />
+		<include refid="orderBy" />
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+
+	<select id="findProjectActiveUsers" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select count(1) as comments_num,create_user_id from tbpost where status=1
+		and project_id = #{projectId} group by
+		create_user_id order by comments_num desc
+		limit 2 ;
+	</select>
+
+
+	<select id="getProjectIdsGreateThanTenEvas" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select count(*) as comments_num,project_id from tbpost where post_type=1 and status = 1 GROUP BY project_id
+		having comments_num > 0 ;
+	</select>
+
+	<sql id="queryWhere">
+		<if test="postId != null and postId.trim() != ''">
+			and post_id = #{postId}
+		</if>
+		<if test="projectId != null and projectId.trim() != ''">
+			and project_id = #{projectId}
+		</if>
+		<if test="projectIcon != null and projectIcon.trim() != ''">
+			and project_icon = #{projectIcon}
+		</if>
+		<if test="projectCode != null and projectCode.trim() != ''">
+			and project_code = #{projectCode}
+		</if>
+		<if test="projectEnglishName != null and projectEnglishName.trim() != ''">
+			and project_english_name = #{projectEnglishName}
+		</if>
+		<if test="projectChineseName != null and projectChineseName.trim() != ''">
+			and project_chinese_name = #{projectChineseName}
+		</if>
+		<if test="postTitle != null and postTitle.trim() != ''">
+			and post_title = #{postTitle}
+		</if>
+		<if test="postType != null and postType.trim() != ''">
+			and post_type = #{postType}
+		</if>
+		<if test="postShortDesc != null and postShortDesc.trim() != ''">
+			and post_short_desc = #{postShortDesc}
+		</if>
+		<if test="postSmallImages != null and postSmallImages.trim() != ''">
+			and post_small_images = #{postSmallImages}
+		</if>
+		<if test="commentsNum != null and commentsNum.trim() != ''">
+			and comments_num = #{commentsNum}
+		</if>
+		<if test="praiseNum != null and praiseNum.trim() != ''">
+			and praise_num = #{praiseNum}
+		</if>
+		<if test="pageviewNum != null and pageviewNum.trim() != ''">
+			and pageview_num = #{pageviewNum}
+		</if>
+		<if test="donateNum != null and donateNum.trim() != ''">
+			and donate_num = #{donateNum}
+		</if>
+		<if test="collectNum != null and collectNum.trim() != ''">
+			and collect_num = #{collectNum}
+		</if>
+		<if test="createUserId != null and createUserId.trim() != ''">
+			and create_user_id = #{createUserId}
+		</if>
+		<if test="createUserIcon != null and createUserIcon.trim() != ''">
+			and create_user_icon = #{createUserIcon}
+		</if>
+		<if test="createUserSignature != null and createUserSignature.trim() != ''">
+			and create_user_signature = #{createUserSignature}
+		</if>
+		<if test="createUserName != null and createUserName.trim() != ''">
+			and create_user_name = #{createUserName}
+		</if>
+		<if test="createTimeBegin != null  ">
+			and createTime >= #{createTimeBegin}
+		</if>
+		<if test="createTimeEnd != null and createTimeEnd.trim() != ''">
+			and createTime &lt;= #{createTimeEnd}
+		</if>
+		<if test="updateTimeBegin != null and updateTimeBegin.trim() != ''">
+			and updateTime >= #{updateTimeBegin}
+		</if>
+		<if test="updateTimeEnd != null and updateTimeEnd.trim() != ''">
+			and updateTime &lt;= #{updateTimeEnd}
+		</if>
+		<if test="status != null and status.trim() != ''">
+			and status = #{status}
+		</if>
+		<if test="uuid != null and uuid.trim() != ''">
+			and uuid = #{uuid}
+		</if>
+		<if test="stickTop != null and stickTop.trim() != ''">
+			and stick_top = #{stickTop}
+		</if>
+		<if test="praiseIncome != null and praiseIncome.trim() != ''">
+			and praise_income = #{praiseIncome,jdbcType=DOUBLE}
+		</if>
+		<if test="donateIncome != null and donateIncome.trim() != ''">
+			and donate_income = #{donateIncome,jdbcType=DOUBLE}
+		</if>
+		<if test="postTotalIncome != null and postTotalIncome.trim() != ''">
+			and post_total_income = #{postTotalIncome,jdbcType=DOUBLE}
+		</if>
+	</sql>
+
+	<select id="findPageRecommendList" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="columns" />
+		from tbpost where 1=1
+		<include refid="queryWhereRecommend" />
+
+		<choose>
+			<when test="sortField != null and sortField != ''">
+				ORDER BY ${sortField} DESC
+			</when>
+			<otherwise>
+	                <![CDATA[ ORDER BY post_id desc ]]>
+			</otherwise>
+		</choose>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+
+	<select id="findPageCountRecommendList" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(*) from tbpost where 1=1
+		<include refid="queryWhereRecommend" />
+	</select>
+
+	<sql id="queryWhereRecommend">
+		<if test="postId != null and postId.trim() != ''">
+			and post_id = #{postId}
+		</if>
+		<if test="projectId != null and projectId.trim() != ''">
+			and project_id = #{projectId}
+		</if>
+		<if test="projectIcon != null and projectIcon.trim() != ''">
+			and project_icon = #{projectIcon}
+		</if>
+		<if test="projectCode != null and projectCode.trim() != ''">
+			and project_code = #{projectCode}
+		</if>
+		<if test="projectEnglishName != null and projectEnglishName.trim() != ''">
+			and project_english_name = #{projectEnglishName}
+		</if>
+		<if test="projectChineseName != null and projectChineseName.trim() != ''">
+			and project_chinese_name = #{projectChineseName}
+		</if>
+		<if test="postTitle != null and postTitle.trim() != ''">
+			and post_title = #{postTitle}
+		</if>
+		<if test="postType != null and postType.trim() != ''">
+			and post_type = #{postType}
+		</if>
+		<if test="postShortDesc != null and postShortDesc.trim() != ''">
+			and post_short_desc = #{postShortDesc}
+		</if>
+		<if test="postSmallImages != null and postSmallImages.trim() != ''">
+			and post_small_images = #{postSmallImages}
+		</if>
+		<if test="commentsNum != null and commentsNum.trim() != ''">
+			and comments_num = #{commentsNum}
+		</if>
+
+		<if test="praiseNum != null and stickTop == null">
+			and praise_num >= #{praiseNum}
+		</if>
+		<if test="praiseNum == null and stickTop != null">
+			and stick_top = #{stickTop}
+		</if>
+		<if test="praiseNum != null and stickTop != null">
+			and (praise_num >= #{praiseNum} or stick_top = #{stickTop})
+		</if>
+		<if test="pageviewNum != null and pageviewNum.trim() != ''">
+			and pageview_num = #{pageviewNum}
+		</if>
+		<if test="donateNum != null and donateNum.trim() != ''">
+			and donate_num = #{donateNum}
+		</if>
+		<if test="collectNum != null and collectNum.trim() != ''">
+			and collect_num = #{collectNum}
+		</if>
+		<if test="createUserId != null and createUserId.trim() != ''">
+			and create_user_id = #{createUserId}
+		</if>
+		<if test="createUserIcon != null and createUserIcon.trim() != ''">
+			and create_user_icon = #{createUserIcon}
+		</if>
+		<if test="createUserSignature != null and createUserSignature.trim() != ''">
+			and create_user_signature = #{createUserSignature}
+		</if>
+		<if test="createUserName != null and createUserName.trim() != ''">
+			and create_user_name = #{createUserName}
+		</if>
+		<if test="createTimeBegin != null and createTimeBegin.trim() != ''">
+			and createTime &gt;= #{createTimeBegin}
+		</if>
+		<if test="createTimeEnd != null and createTimeEnd.trim() != ''">
+			and createTime &lt;= #{createTimeEnd}
+		</if>
+		<if test="updateTimeBegin != null and updateTimeBegin.trim() != ''">
+			and updateTime &gt;= #{updateTimeBegin}
+		</if>
+		<if test="updateTimeEnd != null and updateTimeEnd.trim() != ''">
+			and updateTime &lt;= #{updateTimeEnd}
+		</if>
+		<if test="status != null and status.trim() != ''">
+			and status = #{status}
+		</if>
+		<if test="uuid != null and uuid.trim() != ''">
+			and uuid = #{uuid}
+		</if>
+	</sql>
+
+
+	<select id="selectAllPost" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="columns" />
+		from tbpost where 1=1
+		<include refid="queryWhere" />
+	</select>
+
 </mapper>
 
 

@@ -25,6 +25,7 @@
 		<result property="mobile" jdbcType="VARCHAR" column="mobile"/>
 		<result property="issuer" jdbcType="VARCHAR" column="issuer"/>
 		<result property="remark" jdbcType="VARCHAR" column="remark"/>
+		<result property="postId" jdbcType="INTEGER" column="postId"/>
     </resultMap>
 	
 	<sql id="columns">
@@ -51,7 +52,8 @@
         user_name ,
          mobile ,
          issuer ,
-         remark 
+         remark ,
+         postId
 	    ]]>
 	</sql>
 	
@@ -82,7 +84,8 @@
         	user_name,
         	mobile,
         	issuer ,
-        	remark 
+        	remark ,
+        	postId
 		) VALUES (
 		
         	#{userId,jdbcType=INTEGER} ,
@@ -106,7 +109,8 @@
         	#{userName,jdbcType=VARCHAR},
         	#{mobile,jdbcType=VARCHAR},
         	#{issuer,jdbcType=VARCHAR},
-        	#{remark,jdbcType=VARCHAR}
+        	#{remark,jdbcType=VARCHAR},
+        	#{postId,jdbcType=INTEGER}
         	
 		)
 	]]>
@@ -189,6 +193,9 @@
 	        </if>
 	        <if test="remark != null">
 	        remark = #{remark,jdbcType=VARCHAR} ,
+	        </if>
+	        <if test="postId != null">
+	        postId = #{postId,jdbcType=INTEGER} ,
 	        </if>
 	      
 	    </set>
@@ -374,6 +381,9 @@
 		</if>
 		<if test="remark != null and remark.trim() != ''">
 		and remark = #{remark}
+		</if>
+		<if test="postId != null and postId.trim() != ''">
+		and postId = #{postId}
 		</if>
 	</sql>
 	

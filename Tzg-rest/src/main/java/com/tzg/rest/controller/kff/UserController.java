@@ -493,8 +493,12 @@ public class UserController extends BaseController {
 				throw new RestServiceException(RestErrorCode.USER_SEX_WRONG);
 			}
 			// 去除表情
-			userName = EmojiParser.removeAllEmojis(userName);
-			userSignature = EmojiParser.removeAllEmojis(userSignature);
+			if (StringUtils.isNotEmpty(userName)) {
+				userName = EmojiParser.removeAllEmojis(userName);
+			}
+			if (StringUtils.isNotEmpty(userSignature)) {
+				userSignature = EmojiParser.removeAllEmojis(userSignature);
+			}
 			Integer userId = null;
 			try {
 				userId = AccountTokenUtil.decodeAccountToken(token);

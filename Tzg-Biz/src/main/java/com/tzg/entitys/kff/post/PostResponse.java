@@ -165,6 +165,10 @@ public class PostResponse implements Serializable {
 	 */
 	private java.lang.String evaluationTags;
 
+	private Double praiseIncome;
+	private Double donateIncome;
+	private Double postTotalIncome;
+
 	public BigDecimal getEvaTotalScore() {
 		return evaTotalScore;
 	}
@@ -461,6 +465,30 @@ public class PostResponse implements Serializable {
 
 	public void setUserType(Integer userType) {
 		this.userType = userType;
+	}
+
+	public Double getPraiseIncome() {
+		return praiseIncome;
+	}
+
+	public void setPraiseIncome(Double praiseIncome) {
+		this.praiseIncome = praiseIncome;
+	}
+
+	public Double getDonateIncome() {
+		return donateIncome;
+	}
+
+	public void setDonateIncome(Double donateIncome) {
+		this.donateIncome = donateIncome;
+	}
+
+	public Double getPostTotalIncome() {
+		return postTotalIncome;
+	}
+
+	public void setPostTotalIncome(Double postTotalIncome) {
+		this.postTotalIncome = postTotalIncome;
 	}
 
 }

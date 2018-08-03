@@ -15,7 +15,7 @@
 	    ]]>
 	</sql>
 	
-	<insert id="save" parameterType="com.tzg.entitys.kff.article.Article" useGeneratedKeys="true" keyProperty="articleId">
+	<insert id="save" parameterType="com.tzg.entitys.kff.article.Article" useGeneratedKeys="true" keyProperty="articleId" keyColumn="articleId">
 		<selectKey resultType="java.lang.Integer" keyProperty="articleId" order="AFTER" >
 	      SELECT LAST_INSERT_ID() AS articleId
 	    </selectKey>
@@ -30,7 +30,8 @@
         	#{postUuid,jdbcType=VARCHAR} ,
         	#{articleContents,jdbcType=LONGVARCHAR} ,
         	#{tagInfos,jdbcType=VARCHAR} 
-		)
+		)	
+		
 	]]>
 	</insert>
 

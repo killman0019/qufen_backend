@@ -6,6 +6,10 @@ import java.util.Map;
 import com.tzg.entitys.kff.follow.Follow;
 import com.tzg.entitys.kff.user.KFFUser;
 
+import com.tzg.common.page.PageResult;
+import com.tzg.common.page.PaginationQuery;
+import com.tzg.entitys.kff.project.ProjectResponse;
+
 /** 
 * @ClassName: NewsFlashRmiService 
 * @Description: TODO<快讯远程服务调用> 
@@ -20,4 +24,13 @@ public interface KFFUserRmiService {
 	public List<KFFUser> findListByAttr(Map<String, Object> map);
 
 	public List<KFFUser> findListByMap(Map<String, Object> map);
+	
+		/**
+	 * 查找KOL排行榜 关注人数超过30人的用户榜单，按粉丝数排名，最多20；
+	 * 
+	 * @param userId
+	 * @param query
+	 * @return
+	 */
+	public PageResult<KFFUser> selectKOLProjectPage(Integer userId, PaginationQuery query);
 }

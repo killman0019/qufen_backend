@@ -34,7 +34,7 @@ public class RestTest {
 		System.out.println(formatWanForApp(amount));
 		baseTest();*/
 		
-		DateUtil.isToday(new Date().getTime()/1000);
+	//	DateUtil.isToday(new Date().getTime()/1000);
 		
 		
 	}

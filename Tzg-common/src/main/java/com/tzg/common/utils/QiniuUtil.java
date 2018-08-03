@@ -1,6 +1,13 @@
 package com.tzg.common.utils;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+
 import org.apache.log4j.Logger;
+import org.springframework.web.multipart.MultipartFile;
+
+import sun.misc.BASE64Decoder;
 
 import com.google.gson.Gson;
 import com.qiniu.common.QiniuException;
@@ -12,9 +19,14 @@ import com.qiniu.storage.UploadManager;
 import com.qiniu.storage.model.DefaultPutRet;
 import com.qiniu.storage.persistent.FileRecorder;
 import com.qiniu.util.Auth;
+import com.qiniu.util.Base64;
 import com.qiniu.util.StringMap;
+import com.qiniu.util.UrlSafeBase64;
+import com.tzg.common.base64MultipartFile.BASE64MultipartFile;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
@@ -177,5 +189,115 @@ public class QiniuUtil {
 			return null;
 		}
 		return DOMAIN + "/" + fileName;
+	}
+
+	@SuppressWarnings("resource")
+	public static String createBase64() throws IOException {
+		String file64 = null;
+		String file = "D:\\1.jpg";// 图片路径
+		FileInputStream fis = null;
+		int l = (int) (new File(file).length());
+		byte[] src = new byte[l];
+		fis = new FileInputStream(new File(file));
+		fis.read(src);
+		file64 = Base64.encodeToString(src, 0);
+		System.err.println(file64);
+		return file64;
+
+	}
+
+	@SuppressWarnings("resource")
+	public static String uploadBase64Str(String file64, String fileName) {
+		try {
+			/*String file = "D:\\1.jpg";// 图片路径
+			FileInputStream fis = null;
+			int l = (int) (new File(file).length());
+			byte[] src = new byte[l];
+			fis = new FileInputStream(new File(file));
+			fis.read(src);
+			file64 = Base64.encodeToString(src, 0);
+			System.err.println(file64);*/
+
+			/********** 生成base64end *******************/
+
+			MultipartFile multfile = base64ToMultipart(file64);
+
+			String fileNamefile = multfile.getOriginalFilename();
+			// 获取文件后缀
+			String prefix = fileNamefile.substring(fileNamefile.lastIndexOf("."));
+
+			final File excelFile = File.createTempFile("12234", "." + prefix);
+			// MultipartFile to File
+			multfile.transferTo(excelFile);
+
+			// 你的业务逻辑
+			int l = (int) (excelFile.length());
+			// System.err.println(l);
+			String url = "http://upload-z2.qiniu.com/putb64/" + l + "/key/" + UrlSafeBase64.encodeToString(fileName);
+			// 非华东空间需要根据注意事项 1 修改上传域名
+			RequestBody rb = RequestBody.create(null, file64);
+			Request request = new Request.Builder().url(url).addHeader("Content-Type", "application/octet-stream")
+					.addHeader("Authorization", "UpToken " + getUpTokenBase64()).post(rb).build();
+			// System.out.println(request.headers());
+			OkHttpClient client = new OkHttpClient();
+			okhttp3.Response response = client.newCall(request).execute();
+			// System.out.println(response);
+			System.out.println("base图片上传成功");
+			// 程序结束时，删除临时文件
+			deleteFile(excelFile);
+			return DOMAIN + "/" + fileName;
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	public static String getUpTokenBase64() {
+		Auth auth = Auth.create(ACCESS_KEY, SECRET_KEY);
+		return auth.uploadToken(BUCKETNAME, null, 3600, new StringMap().put("insertOnly", 1));
+	}
+
+	public static void main(String[] args) throws Exception {
+		uploadBase64Str(null, "testbase6dddd33");
+	}
+
+	public static MultipartFile base64ToMultipart(String base64) {
+		try {
+			String[] baseStrs = base64.split(",");
+
+			BASE64Decoder decoder = new BASE64Decoder();
+			byte[] b = new byte[0];
+			b = decoder.decodeBuffer(base64);
+
+			for (int i = 0; i < b.length; ++i) {
+				if (b[i] < 0) {
+					b[i] += 256;
+				}
+			}
+
+			return new BASE64MultipartFile(b, baseStrs[0]);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	/**
+	 * 删除
+	 * 
+	 * @param files
+	 */
+	private static void deleteFile(File... files) {
+		for (File file : files) {
+			if (file.exists()) {
+				file.delete();
+			}
+		}
+
 	}
 }
