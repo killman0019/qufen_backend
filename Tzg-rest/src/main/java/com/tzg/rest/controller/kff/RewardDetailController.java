@@ -112,6 +112,7 @@ public class RewardDetailController extends BaseController {
 			}
 			MiningActivity mnActtc = arrangeMiningActivity(mnAct, userId);
 			Integer followType = mnActtc.getFollowType();
+			Integer commentType = mnActtc.getCommentType();
 			Integer receiveType = mnActtc.getReceiveType();
 			Integer shareType = mnActtc.getShareType();
 			if(null!=followType&&0==followType) {
@@ -119,7 +120,7 @@ public class RewardDetailController extends BaseController {
 				bre.setMsg("请先关注再领取奖励！");
 				return bre;
 			}
-			if(null!=receiveType&&0==receiveType) {
+			if(null!=commentType&&0==commentType) {
 				bre.setCode(500);
 				bre.setMsg("请先点评再领取奖励！");
 				return bre;
@@ -127,6 +128,11 @@ public class RewardDetailController extends BaseController {
 			if(null!=shareType&&0==shareType) {
 				bre.setCode(500);
 				bre.setMsg("请先分享再领取奖励！");
+				return bre;
+			}
+			if(null!=receiveType&&1==receiveType) {
+				bre.setCode(500);
+				bre.setMsg("您已经领取过奖励了！");
 				return bre;
 			}
 			Map<String, Object> reMap = ActivityUtils.checkActivityStatus(mnAct);
@@ -171,9 +177,15 @@ public class RewardDetailController extends BaseController {
 		boolean stepTwo = false;
 		boolean stepThree = false;
 		if(actp.length==3) {
-			stepOne = true;
-			stepTwo = true;
-			stepThree = true;
+			if(StringUtil.isNotBlank(actp[0])) {
+				stepOne = true;
+			}
+			if(StringUtil.isNotBlank(actp[1])) {
+				stepTwo = true;
+			}
+			if(StringUtil.isNotBlank(actp[2])) {
+				stepThree = true;
+			}
 		}
 		//活动步骤：0-关注项目，1-点评项目，2-分享活动
 		if(actp.length==2) {
