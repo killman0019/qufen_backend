@@ -121,9 +121,11 @@ public class RewardDetailService {
 			tokenaward.setTokenRecordsId(tokenrecords.getTokenRecordsId());
 			tokenaward.setTokenAwardFunctionDesc(sysGlobals.SET_TOKENAWARD_FUNCTIONDESC);
 			tokenaward.setTokenAwardFunctionType(sysGlobals.SET_TOKENAWARD_FUNCTIONTYPE);
-			tokenaward.setContainerAward(Integer.valueOf(mnAct.getTokenEveryCount().toString()));
+			Integer containerAward = Integer.parseInt(new java.text.DecimalFormat("0").format(mnAct.getTokenEveryCount()));
+			tokenaward.setContainerAward(containerAward);
 			tokenaward.setCreateTime(date);
 			tokenaward.setUpdateTime(date);
+			tokenaward.setInviteRewards(0.0);
 			tokenaward.setRewardToken(Double.valueOf(mnAct.getTokenEveryCount().toString()));
 			tokenaward.setAwardBalance(Double.valueOf(user.getKffCoinNum().toString()));
 			tokenaward.setDistributionType(2);

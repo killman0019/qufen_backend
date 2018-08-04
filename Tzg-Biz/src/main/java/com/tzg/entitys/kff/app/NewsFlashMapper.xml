@@ -104,7 +104,7 @@
     		fall as fall
 		  from <include refid="table_name" />
 		<include refid="condition"/>
-	    <![CDATA[ ORDER BY id DESC ]]>
+	    <![CDATA[ ORDER BY publish_time DESC ]]>
         <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
 	</select>
 </mapper>
