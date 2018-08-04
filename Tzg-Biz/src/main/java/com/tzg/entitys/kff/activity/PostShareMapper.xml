@@ -87,6 +87,9 @@
 	    	<if test="id != null">
 			 id = #{id,jdbcType=INTEGER}
 			</if>
+			<if test="userId!=null">
+    		  and user_id = #{userId}
+    		</if>
 			<if test="startTime!=null and endTime==null">
     		  and created_at &gt;= #{startTime}
     		</if>
