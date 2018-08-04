@@ -57,9 +57,14 @@ import com.tzg.rmi.service.KFFRmiService;
 import com.tzg.rmi.service.SmsSendRmiService;
 
 /**
- * 每篇帖子收益的实现类
  * 
- * @author Administrator
+ * ClassName: KFFPostRmiServiceImpl  
+ * Function: TODO 关于post的相关服务实现类
+ * date: 2018年8月4日 下午3:38:04  
+ * 
+ * @author zhangdd 
+ * @version  
+ * @since JDK 1.7 
  *
  */
 public class KFFPostRmiServiceImpl implements KFFPostRmiService {
@@ -145,7 +150,7 @@ public class KFFPostRmiServiceImpl implements KFFPostRmiService {
 	private BGroupMustReadService bgroupMustReadService;
 
 	/**
-	 * 暂时未使用
+	 * 暂时未使用(已在别处实现,此代码后期修改)
 	 */
 	@Override
 	public Map<String, Object> countEveryPostIncome(Integer userId) throws RestServiceException {
@@ -184,6 +189,8 @@ public class KFFPostRmiServiceImpl implements KFFPostRmiService {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("sql_keyword_orderBy", "create_time");
 		map.put("sql_keyword_sort", "DESC");
+		map.put("status", "1");
+		map.put("isShow", "1");
 		query.setQueryData(map);
 		PageResult<BGroupMustRead> bgroupMustReadPage = bgroupMustReadService.findPage(query);
 		if (null != bgroupMustReadPage && !CollectionUtils.isEmpty(bgroupMustReadPage.getRows())) {

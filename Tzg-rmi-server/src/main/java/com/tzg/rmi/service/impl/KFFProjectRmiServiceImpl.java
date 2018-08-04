@@ -223,8 +223,8 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 					if (StringUtils.isNotEmpty(projectCode)) {
 						// 根据projectcode查询project对象
 						KFFProject projectResponse = selectProjectByCode(projectCode, userId);
-
-						if (null != projectResponse) {
+						// 将审核通过的项目放入队列中
+						if (null != projectResponse && projectResponse.getState() == 2) {
 							projectIds.add(projectResponse.getProjectId());
 						}
 					}
@@ -397,7 +397,7 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 		query.addQueryData("status", "1");
 		query.addQueryData("sortField", "follower_num");
 		query.addQueryData("sortSequence", "DESC");
-		query.setRowsPerPage(20);
+		// query.setRowsPerPage(20);
 		PageResult<KFFProject> projectPage = kffProjectService.findPage(query);
 		if (null != projectPage && !CollectionUtils.isEmpty(projectPage.getRows())) {
 			List<KFFProject> projectList = projectPage.getRows();
@@ -501,6 +501,7 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 				query.addQueryData("followUserId", userId + "");
 				query.addQueryData("followType", 1 + "");
 				query.addQueryData("status", "1");
+				query.addQueryData("state", "2");
 				List<ProjectResponse> projectResponseList = new ArrayList<ProjectResponse>();
 				PageResult<FollowResponse> followPage = kffRmiService.findPageMyFollow(query);
 				System.err.println("followPage" + JSON.toJSONString(followPage));
@@ -543,6 +544,8 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("mainCode", projectCode);
 			map.put("vaild", "1");
+			map.put("sortField", "exchange_id");
+			map.put("sortSequence", "ASC");
 			query.setQueryData(map);
 			PageResult<TransactionPair> transactionPairPage = transactionPairService.findPage(query);
 			if (null != transactionPairPage && !CollectionUtils.isEmpty(transactionPairPage.getRows())) {
