@@ -45,7 +45,7 @@
 		check="false" />
 		
 	<dubbo:reference id="userRmiService" interface="com.tzg.rmi.service.KFFUserRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0"
-	retries="0"	check="false" />
+		check="false" />
 
 		
 	<dubbo:reference id="postShareRmiService" interface="com.tzg.rmi.service.PostShareRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0"
