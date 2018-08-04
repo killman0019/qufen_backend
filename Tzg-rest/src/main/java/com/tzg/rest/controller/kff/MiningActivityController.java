@@ -330,9 +330,15 @@ public class MiningActivityController extends BaseController {
 		boolean stepTwo = false;
 		boolean stepThree = false;
 		if(actp.length==3) {
-			stepOne = true;
-			stepTwo = true;
-			stepThree = true;
+			if(StringUtil.isNotBlank(actp[0])) {
+				stepOne = true;
+			}
+			if(StringUtil.isNotBlank(actp[1])) {
+				stepTwo = true;
+			}
+			if(StringUtil.isNotBlank(actp[2])) {
+				stepThree = true;
+			}
 		}
 		//活动步骤：0-关注项目，1-点评项目，2-分享活动
 		if(actp.length==2) {
