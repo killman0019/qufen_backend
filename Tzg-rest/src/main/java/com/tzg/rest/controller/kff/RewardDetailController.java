@@ -59,9 +59,6 @@ public class RewardDetailController extends BaseController {
 	@Autowired
 	private EvaluationRmiService evaluationRmiService;
 	
-	
-	
-	
 	/** 
 	* @Title: addRewardDetail 
 	* @Description: TODO <领取活动奖励接口>
