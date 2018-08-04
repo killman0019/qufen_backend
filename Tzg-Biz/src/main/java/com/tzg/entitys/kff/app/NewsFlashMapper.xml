@@ -22,11 +22,13 @@
     <result column="html" jdbcType="LONGVARCHAR" property="html" />
     <result column="rise" jdbcType="INTEGER" property="rise" />
     <result column="fall" jdbcType="INTEGER" property="fall" />
+    <result column="typec" jdbcType="INTEGER" property="typec" />
+    
   </resultMap>
   
   <sql id="Base_Column_List_c">
     id, created_at, updated_at, bzj_id, title, abstractc, host, publish_time, rank, relevance, 
-    sentiment, site, tags, url,project_code,article_events, content, html,rise,fall
+    sentiment, site, tags, url,project_code,article_events, content, html,rise,fall,typec
   </sql>
   
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -101,7 +103,8 @@
 			site as site ,
 			url as url,
     		rise as rise,
-    		fall as fall
+    		fall as fall,
+    		typec as type
 		  from <include refid="table_name" />
 		<include refid="condition"/>
 	    <![CDATA[ ORDER BY publish_time DESC ]]>

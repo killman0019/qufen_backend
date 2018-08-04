@@ -37,7 +37,7 @@ public final class sysGlobals{
 	/**区分官方的币名称*/
 	public static String QDKL_CION ="FIND";
 	/**Tokenrecords的setFunctionDesc*/
-	public static String SET_FUNCTION_DESC ="完成挖矿活动FIND币直接发放！";
+	public static String SET_FUNCTION_DESC ="点评挖矿收益";
 	/**Tokenrecords的setMeno*/
 	public static String SET_MENO ="完成挖矿活动奖励！";
 	/**Tokenrecords的setFunctionType*/

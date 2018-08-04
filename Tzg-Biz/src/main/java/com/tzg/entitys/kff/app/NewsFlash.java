@@ -50,8 +50,18 @@ public class NewsFlash implements Serializable {
 
     private Integer fall;
     
+   //类型0-新闻，1-快讯
+    private Integer typec;
     
-    public Integer getRise() {
+    public Integer getTypec() {
+		return typec;
+	}
+
+	public void setTypec(Integer typec) {
+		this.typec = typec;
+	}
+
+	public Integer getRise() {
 		return rise;
 	}
 
