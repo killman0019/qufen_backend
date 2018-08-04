@@ -156,6 +156,14 @@
 		tbtransactionpair
 		where 1=1
 		<include refid="queryWhere" />
+		<choose>
+			<when test="sortField != null and sortField != ''">
+				ORDER BY ${sortField} ${sortSequence}
+			</when>
+			<otherwise>
+	    <![CDATA[ ORDER BY exchange_id DESC ]]>
+			</otherwise>
+		</choose>
 	</select>
 
 	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
