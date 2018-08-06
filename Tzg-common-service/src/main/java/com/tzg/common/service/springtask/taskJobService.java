@@ -8,8 +8,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.tzg.common.service.kff.PostService;
 import com.tzg.common.service.kff.ProjectService;
+import com.tzg.common.service.kff.ProjectTradeService;
 import com.tzg.common.service.kff.QfIndexService;
 import com.tzg.common.service.kff.TokenawardService;
+import com.tzg.common.service.kff.TransactionPairService;
 
 @Service
 @Transactional
@@ -26,6 +28,12 @@ public class taskJobService {
 
 	@Autowired
 	private PostService postService;
+
+	@Autowired
+	private ProjectTradeService projectTradeService;
+
+	@Autowired
+	private TransactionPairService transactionPairService;
 
 	public void updateByGrantType() {
 		Integer a = 2;
@@ -55,5 +63,31 @@ public class taskJobService {
 		logger.info("--------------start caculatePostTatolIncome job---");
 		postService.caculatePostTatolIncome();
 		logger.info("-------------- end caculatePostTatolIncome job---");
+	}
+
+	/**
+	 * 
+	 * TODO 获得项目详情
+	 * @author zhangdd
+	 * @data 2018年8月6日
+	 *
+	 */
+	public void getProjectDateFromUrlTask() {
+		logger.info("--------------start getProjectDateFromUrlTask job---");
+		projectTradeService.getProjectDateFromUrlTask();
+		logger.info("-------------- end getProjectDateFromUrlTask job---");
+	}
+
+	/**
+	 * 
+	 * TODO 获得交易对信息
+	 * @author zhangdd
+	 * @data 2018年8月6日
+	 *
+	 */
+	public void getdatafromUrlByexchangeTask() {
+		logger.info("--------------start getProjectDateFromUrlTask job---");
+		transactionPairService.getdatafromUrlByexchangeTask();
+		logger.info("-------------- end getdatafromUrlByexchangeTask job---");
 	}
 }

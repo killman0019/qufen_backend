@@ -12,9 +12,18 @@
 		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
 		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
 		<result column="vaild" property="vaild" jdbcType="INTEGER" />
+		<result column="last" property="last" jdbcType="DOUBLE" />
+		<result column="high" property="high" jdbcType="DOUBLE" />
+		<result column="low" property="low" jdbcType="DOUBLE" />
+		<result column="base_volume" property="baseVolume" jdbcType="DOUBLE" />
+		<result column="vol" property="vol" jdbcType="DOUBLE" />
+		<result column="change_daily" property="changeDaily" jdbcType="DOUBLE" />
+		<result column="usd_rate" property="usdRate" jdbcType="DOUBLE" />
 	</resultMap>
 	<sql id="columns">
 		transaction_pair_id, exchange_id, status, main_code, coinpair, exchange_name, create_time,update_time,exchange_display_name,vaild
+		, last, high, low, base_volume, vol, change_daily,
+		usd_rate
 	</sql>
 	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
 		select
@@ -28,13 +37,20 @@
 	</delete>
 	<insert id="save" parameterType="com.tzg.entitys.kff.transactionpair.TransactionPair">
 		insert into tbtransactionpair (transaction_pair_id, exchange_id, status,
-		main_code, coinpair, exchange_name, create_time,update_time,exchange_display_name,vaild
+		main_code, coinpair, exchange_name, create_time,update_time,exchange_display_name,vaild,
+		last, high, low,
+		base_volume, vol, change_daily,
+		usd_rate
 		)
 		values
 		(#{transactionPairId,jdbcType=INTEGER}, #{exchangeId,jdbcType=INTEGER}, #{status,jdbcType=INTEGER},
-		#{mainCode,jdbcType=VARCHAR}, #{coinpair,jdbcType=VARCHAR},
+		#{mainCode,jdbcType=VARCHAR},
+		#{coinpair,jdbcType=VARCHAR},
 		#{exchangeName,jdbcType=VARCHAR},#{createTime,jdbcType=TIMESTAMP},#{exchangeDisplayName,jdbcType=VARCHAR},
-		#{updateTime,jdbcType=TIMESTAMP},#{vaild,jdbcType=INTEGER}}
+		#{updateTime,jdbcType=TIMESTAMP},#{vaild,jdbcType=INTEGER},
+		#{last,jdbcType=DOUBLE}, #{high,jdbcType=DOUBLE}, #{low,jdbcType=DOUBLE},
+		#{baseVolume,jdbcType=DOUBLE}, #{vol,jdbcType=DOUBLE}, #{changeDaily,jdbcType=DOUBLE},
+		#{usdRate,jdbcType=DOUBLE}}
 		)
 	</insert>
 	<insert id="insertSelective" parameterType="com.tzg.entitys.kff.transactionpair.TransactionPair">
@@ -67,6 +83,24 @@
 			<if test="vaild != null">
 				vaild,
 			</if>
+			<if test="high != null">
+				high,
+			</if>
+			<if test="low != null">
+				low,
+			</if>
+			<if test="baseVolume != null">
+				base_volume,
+			</if>
+			<if test="vol != null">
+				vol,
+			</if>
+			<if test="changeDaily != null">
+				change_daily,
+			</if>
+			<if test="usdRate != null">
+				usd_rate,
+			</if>
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			<if test="transactionPairId != null">
@@ -96,9 +130,30 @@
 			<if test="vaild != null">
 				#{vaild,jdbcType=INTEGER},
 			</if>
+			<if test="last != null">
+				#{last,jdbcType=DOUBLE},
+			</if>
+			<if test="high != null">
+				#{high,jdbcType=DOUBLE},
+			</if>
+			<if test="low != null">
+				#{low,jdbcType=DOUBLE},
+			</if>
+			<if test="baseVolume != null">
+				#{baseVolume,jdbcType=DOUBLE},
+			</if>
+			<if test="vol != null">
+				#{vol,jdbcType=DOUBLE},
+			</if>
+			<if test="changeDaily != null">
+				#{changeDaily,jdbcType=DOUBLE},
+			</if>
+			<if test="usdRate != null">
+				#{usdRate,jdbcType=DOUBLE},
+			</if>
 		</trim>
 	</insert>
-	<update id="updateByPrimaryKeySelective" parameterType="com.tzg.entitys.kff.transactionpair.TransactionPair">
+	<update id="update" parameterType="com.tzg.entitys.kff.transactionpair.TransactionPair">
 		update tbtransactionpair
 		<set>
 			<if test="exchangeId != null">
@@ -128,6 +183,27 @@
 			<if test="vaild != null">
 				vaild = #{vaild,jdbcType=INTEGER},
 			</if>
+			<if test="last != null">
+				last = #{last,jdbcType=DOUBLE},
+			</if>
+			<if test="high != null">
+				high = #{high,jdbcType=DOUBLE},
+			</if>
+			<if test="low != null">
+				low = #{low,jdbcType=DOUBLE},
+			</if>
+			<if test="baseVolume != null">
+				base_volume = #{baseVolume,jdbcType=DOUBLE},
+			</if>
+			<if test="vol != null">
+				vol = #{vol,jdbcType=DOUBLE},
+			</if>
+			<if test="changeDaily != null">
+				change_daily = #{changeDaily,jdbcType=DOUBLE},
+			</if>
+			<if test="usdRate != null">
+				usd_rate = #{usdRate,jdbcType=DOUBLE},
+			</if>
 		</set>
 		where transaction_pair_id = #{transactionPairId,jdbcType=INTEGER}
 	</update>
@@ -145,8 +221,17 @@
 		update_time =
 		#{updateTime,jdbcType=TIMESTAMP},
 		vaild =
-		#{vaild,jdbcType=INTEGER}
-		where transaction_pair_id = #{transactionPairId,jdbcType=INTEGER}
+		#{vaild,jdbcType=INTEGER},
+		last = #{last,jdbcType=DOUBLE},
+		high = #{high,jdbcType=DOUBLE},
+		low =
+		#{low,jdbcType=DOUBLE},
+		base_volume = #{baseVolume,jdbcType=DOUBLE},
+		vol = #{vol,jdbcType=DOUBLE},
+		change_daily = #{changeDaily,jdbcType=DOUBLE},
+		usd_rate = #{usdRate,jdbcType=DOUBLE}
+		where
+		transaction_pair_id = #{transactionPairId,jdbcType=INTEGER}
 	</update>
 
 	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
@@ -214,7 +299,165 @@
 		<if test="vaild != null">
 			and vaild = #{vaild,jdbcType=INTEGER}
 		</if>
+		<if test="last != null">
+			and last = #{last,jdbcType=DOUBLE}
+		</if>
+		<if test="high != null">
+			and high = #{high,jdbcType=DOUBLE}
+		</if>
+		<if test="low != null">
+			and low = #{low,jdbcType=DOUBLE}
+		</if>
+		<if test="baseVolume != null">
+			and base_volume = #{baseVolume,jdbcType=DOUBLE}
+		</if>
+		<if test="vol != null">
+			and vol = #{vol,jdbcType=DOUBLE}
+		</if>
+		<if test="changeDaily != null">
+			and change_daily = #{changeDaily,jdbcType=DOUBLE}
+		</if>
+		<if test="usdRate != null">
+			and usd_rate = #{usdRate,jdbcType=DOUBLE}
+		</if>
 
 	</sql>
+
+
+	<sql id="queryWhereList">
+		<if test="item.exchangeId != null">
+			and transaction_pair_id = #{transactionPairId,jdbcType=INTEGER}
+		</if>
+		<if test="item.exchangeId != null">
+			and exchange_id = #{exchangeId,jdbcType=INTEGER}
+		</if>
+		<if test="item.status != null">
+			and status = #{status,jdbcType=INTEGER}
+		</if>
+		<if test="item.mainCode != null">
+			and main_code = #{mainCode,jdbcType=VARCHAR}
+		</if>
+		<if test="item.coinpair != null">
+			and coinpair = #{coinpair,jdbcType=VARCHAR}
+		</if>
+		<if test="item.exchangeName != null">
+			and exchange_name = #{exchangeName,jdbcType=VARCHAR}
+		</if>
+		<if test="item.exchangeDisplayName != null">
+			and exchange_display_name = #{exchangeDisplayName,jdbcType=VARCHAR}
+		</if>
+		<if test="item.createTime != null">
+			and create_time = #{createTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="item.updateTime != null">
+			and update_time = #{updateTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="item.vaild != null">
+			and vaild = #{vaild,jdbcType=INTEGER}
+		</if>
+		<if test="item.last != null">
+			and last = #{last,jdbcType=DOUBLE}
+		</if>
+		<if test="item.high != null">
+			and high = #{high,jdbcType=DOUBLE}
+		</if>
+		<if test="item.low != null">
+			and low = #{low,jdbcType=DOUBLE}
+		</if>
+		<if test="item.baseVolume != null">
+			and base_volume = #{baseVolume,jdbcType=DOUBLE}
+		</if>
+		<if test="item.vol != null">
+			and vol = #{vol,jdbcType=DOUBLE}
+		</if>
+		<if test="item.changeDaily != null">
+			and change_daily = #{changeDaily,jdbcType=DOUBLE}
+		</if>
+		<if test="item.usdRate != null">
+			and usd_rate = #{usdRate,jdbcType=DOUBLE}
+		</if>
+
+	</sql>
+
+	<update id="updataList" parameterType="java.util.List">
+		update
+		tbtransactionpair
+		<trim prefix="set" suffixOverrides=",">
+			<trim prefix=" balance = case" suffix="end,">
+				<foreach collection="list" item="item" index="index">
+
+					<include refid="queryWhereList" />
+
+				</foreach>
+			</trim>
+		</trim>
+		where 1=1
+		<foreach collection="list" item="item" index="index">
+
+			<include refid="queryWhereList" />
+
+		</foreach>
+
+	</update>
+
+	<update id="updateByMainCode" parameterType="com.tzg.entitys.kff.transactionpair.TransactionPair">
+		update
+		tbtransactionpair
+		<set>
+			<if test="exchangeId != null">
+				exchange_id = #{exchangeId,jdbcType=INTEGER},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=INTEGER},
+			</if>
+			<if test="mainCode != null">
+				main_code = #{mainCode,jdbcType=VARCHAR},
+			</if>
+			<if test="coinpair != null">
+				coinpair = #{coinpair,jdbcType=VARCHAR},
+			</if>
+			<if test="exchangeName != null">
+				exchange_name = #{exchangeName,jdbcType=VARCHAR},
+			</if>
+			<if test="exchangeDisplayName != null">
+				exchange_display_name = #{exchangeDisplayName,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="vaild != null">
+				vaild = #{vaild,jdbcType=INTEGER},
+			</if>
+			<if test="last != null">
+				last = #{last,jdbcType=DOUBLE},
+			</if>
+			<if test="high != null">
+				high = #{high,jdbcType=DOUBLE},
+			</if>
+			<if test="low != null">
+				low = #{low,jdbcType=DOUBLE},
+			</if>
+			<if test="baseVolume != null">
+				base_volume = #{baseVolume,jdbcType=DOUBLE},
+			</if>
+			<if test="vol != null">
+				vol = #{vol,jdbcType=DOUBLE},
+			</if>
+			<if test="changeDaily != null">
+				change_daily = #{changeDaily,jdbcType=DOUBLE},
+			</if>
+			<if test="usdRate != null">
+				usd_rate = #{usdRate,jdbcType=DOUBLE},
+			</if>
+		</set>
+		where
+		main_code = #{mainCode,jdbcType=VARCHAR} and exchange_name = #{exchangeName,jdbcType=VARCHAR} and coinpair = #{coinpair,jdbcType=VARCHAR}
+
+
+
+	</update>
 
 </mapper>

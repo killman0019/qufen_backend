@@ -25,6 +25,17 @@ import com.tzg.rest.vo.BaseResponseEntity;
 import com.tzg.rmi.service.KFFProjectRmiService;
 import com.tzg.rmi.service.KFFUserRmiService;
 
+/**
+ * 
+ * ClassName: DiscoveryPageController  
+ * Function: TODO 用于排行榜的相关接口
+ * date: 2018年8月4日 下午5:52:28  
+ * 
+ * @author zhangdd 
+ * @version  
+ * @since JDK 1.7 
+ *
+ */
 @Controller(value = "RankingListController")
 @RequestMapping("/kff/rankingList")
 public class DiscoveryPageController extends BaseController {
@@ -147,6 +158,31 @@ public class DiscoveryPageController extends BaseController {
 			PageResult<KFFUser> kFFUserPage = kffUserRmiService.selectKOLProjectPage(userId, query);
 			System.err.println("kFFUserPage" + JSON.toJSONString(kFFUserPage));
 			map.put("kFFUserPage", kFFUserPage);
+			bre.setData(map);
+		} catch (RestServiceException e) {
+			logger.error("RankingListController getKOLProjectPage:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("RankingListController getKOLProjectPage:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+		}
+		return bre;
+	}
+
+	/**
+	 * 测试接口
+	 * 
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/text", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public BaseResponseEntity text(HttpServletRequest request) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		try {
+			// kFFProjectRmiService.text();
+			kFFProjectRmiService.text();
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("RankingListController getKOLProjectPage:{}", e);
