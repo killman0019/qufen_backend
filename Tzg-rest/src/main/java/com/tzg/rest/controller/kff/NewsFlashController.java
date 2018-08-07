@@ -184,7 +184,18 @@ public class NewsFlashController extends BaseController {
 				throw new RestServiceException(RestErrorCode.MISSING_ARGS); 
 			}
 	        query.addQueryData("projectCode", projectCode);
-			PageResult<NewsFlash> data = newsFlashRmiService.findAppNewsFlashPage(query);
+	        query.addQueryData("typec", 0);//先获取币种的新闻
+			PageResult<NewsFlash> data = new  PageResult<NewsFlash>(); 
+			data = newsFlashRmiService.findAppNewsFlashPage(query);
+			query.addQueryData("typec", 1);//先获取币种的快讯
+			if(null!=data) {
+				List<NewsFlash> rows = data.getRows();
+				if(rows.isEmpty()) {
+					data = newsFlashRmiService.findAppNewsFlashPage(query);
+				}
+			}else {
+				data = newsFlashRmiService.findAppNewsFlashPage(query);
+			}
             map.put("data", data);
 			bre.setData(map);
 		} catch (RestServiceException e) {

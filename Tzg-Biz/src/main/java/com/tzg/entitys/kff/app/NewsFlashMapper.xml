@@ -63,6 +63,9 @@
 			<if test="bzjId != null">
 			and bzj_id = #{bzjId}
 			</if>
+			<if test="typec != null">
+			and typec = #{typec}
+			</if>
     	</where>
     </sql>
     
@@ -104,7 +107,7 @@
 			url as url,
     		rise as rise,
     		fall as fall,
-    		typec as type
+    		typec as typec
 		  from <include refid="table_name" />
 		<include refid="condition"/>
 	    <![CDATA[ ORDER BY publish_time DESC ]]>
