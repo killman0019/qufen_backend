@@ -8,142 +8,149 @@ import com.tzg.common.utils.DateUtil;
 import com.tzg.entitys.kff.post.PostFile;
 
 public class FollowResponse implements Serializable {
-	
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 3779121295009805713L;
 	/**
-     * followId
-     */ 	
+	 * followId
+	 */
 	private java.lang.Integer followId;
-    /**
-     * followUserId
-     */ 	
+	/**
+	 * followUserId
+	 */
 	private java.lang.Integer followUserId;
-    /**
-     * 关注类型：1-关注项目;2-关注帖子；3-关注用户
-     */ 	
+	/**
+	 * 关注类型：1-关注项目;2-关注帖子；3-关注用户
+	 */
 	private java.lang.Integer followType;
-    /**
-     * followerUserName
-     */ 	
+	/**
+	 * followerUserName
+	 */
 	private java.lang.String followerUserName;
-    /**
-     * followedUserId
-     */ 	
+	/**
+	 * followedUserId
+	 */
 	private java.lang.Integer followedUserId;
-    /**
-     * followedUserSignature
-     */ 	
+	/**
+	 * followedUserSignature
+	 */
 	private java.lang.String followedUserSignature;
-    /**
-     * followedUserIcon
-     */ 	
+	/**
+	 * followedUserIcon
+	 */
 	private java.lang.String followedUserIcon;
-    /**
-     * followedUserName
-     */ 	
+	/**
+	 * followedUserName
+	 */
 	private java.lang.String followedUserName;
-    /**
-     * followedProjectId
-     */ 	
+	/**
+	 * followedProjectId
+	 */
 	private java.lang.Integer followedProjectId;
-    /**
-     * followedPostId
-     */ 	
+	/**
+	 * followedPostId
+	 */
 	private java.lang.Integer followedPostId;
-    /**
-     * 状态:0-取消收藏；1-收藏
-     */ 	
+	/**
+	 * 状态:0-取消收藏；1-收藏
+	 */
 	private java.lang.Integer status;
-    /**
-     * 用来标记帖子发表时间
-     */ 	
+	/**
+	 * 用来标记帖子发表时间
+	 */
 	private java.util.Date createTime;
 	private java.lang.String createTimeStr;
-    /**
-     * updateTime
-     */ 	
+	/**
+	 * updateTime
+	 */
 	private java.util.Date updateTime;
 	private java.lang.String updateTimeStr;
 
 	private Integer userType;
-	
-	//post表来源
+
+	// post表来源
 	// 帖子标题
 	java.lang.String postTitle;
 	/**
-     * 帖子标题剪短描述
-     */ 	
+	 * 帖子标题剪短描述
+	 */
 	private java.lang.String postShortDesc;
-	
+
 	/**
-     * 缩略图json，目前最多三张图的url等信息
-     */ 	
+	 * 缩略图json，目前最多三张图的url等信息
+	 */
 	private List<PostFile> postSmallImages;
-    /**
-     * 评论数量
-     */ 	
+	/**
+	 * 评论数量
+	 */
 	private java.lang.Integer commentsNum;
-    /**
-     * 点赞数
-     */ 	
+	/**
+	 * 点赞数
+	 */
 	private java.lang.Integer praiseNum;
-    /**
-     * 浏览量
-     */ 	
+	/**
+	 * 浏览量
+	 */
 	private java.lang.Integer pageviewNum;
-    /**
-     * 捐赠人数
-     */ 	
+	/**
+	 * 捐赠人数
+	 */
 	private java.lang.Integer donateNum;
-    /**
-     * 收藏人数
-     */ 	
+	/**
+	 * 收藏人数
+	 */
 	private java.lang.Integer collectNum;
-	
+
 	/**
-     * 用户头像
-     */ 	
+	 * 用户头像
+	 */
 	private java.lang.String createUserIcon;
-    /**
-     * 用户签名
-     */ 	
-	private java.lang.String createUserSignature;
-    /**
-     * 用户昵称
-     */ 	
-	private java.lang.String createUserName;
-	
-	
-	//评测总分
-	private java.math.BigDecimal totalScore = BigDecimal.ZERO;
-	//project表来源
-	 /**
-     * 项目图标
-     */ 	
-	private java.lang.String projectIcon;
-	
 	/**
-     * 代币名称
-     */ 	
+	 * 用户签名
+	 */
+	private java.lang.String createUserSignature;
+	/**
+	 * 用户昵称
+	 */
+	private java.lang.String createUserName;
+
+	// 评测总分
+	private java.math.BigDecimal totalScore = BigDecimal.ZERO;
+	// project表来源
+	/**
+	* 项目图标
+	*/
+	private java.lang.String projectIcon;
+
+	/**
+	 * 代币名称
+	 */
 	private java.lang.String projectCode;
-    /**
-     * 代币英文名称
-     */ 	
+	/**
+	 * 代币英文名称
+	 */
 	private java.lang.String projectEnglishName;
-    /**
-     * projectChineseName
-     */ 	
+	/**
+	 * projectChineseName
+	 */
 	private java.lang.String projectChineseName;
-    /**
-     * 项目标题
-     */ 	
+	/**
+	 * 项目标题
+	 */
 	private java.lang.String projectSignature;
-	
-	
-	
+
+	private Integer followerNum;
+
+	public Integer getFollowerNum() {
+		return followerNum;
+	}
+
+	public void setFollowerNum(Integer followerNum) {
+		this.followerNum = followerNum;
+	}
+
 	public java.lang.String getPostTitle() {
 		return postTitle;
 	}
@@ -159,8 +166,6 @@ public class FollowResponse implements Serializable {
 	public void setPostShortDesc(java.lang.String postShortDesc) {
 		this.postShortDesc = postShortDesc;
 	}
-
-	
 
 	public List<PostFile> getPostSmallImages() {
 		return postSmallImages;
@@ -234,8 +239,6 @@ public class FollowResponse implements Serializable {
 		this.createUserName = createUserName;
 	}
 
-
-
 	public java.math.BigDecimal getTotalScore() {
 		return totalScore;
 	}
@@ -284,37 +287,36 @@ public class FollowResponse implements Serializable {
 		this.projectSignature = projectSignature;
 	}
 
-	
 	public void setStatus(java.lang.Integer value) {
 		this.status = value;
 	}
-	
+
 	public java.lang.Integer getStatus() {
 		return this.status;
 	}
-	
+
 	public void setCreateTime(java.util.Date value) {
-		this.createTimeStr =DateUtil.getDate(value, "yyyy-MM-dd HH:mm:ss");
+		this.createTimeStr = DateUtil.getDate(value, "yyyy-MM-dd HH:mm:ss");
 		this.createTime = value;
 	}
-	
+
 	public java.util.Date getCreateTime() {
 		return this.createTime;
 	}
-	
+
 	public java.lang.String getCreateTimeStr() {
 		return this.createTimeStr;
 	}
-	
+
 	public void setUpdateTime(java.util.Date value) {
-		this.updateTimeStr =DateUtil.getDate(value, "yyyy-MM-dd HH:mm:ss");
+		this.updateTimeStr = DateUtil.getDate(value, "yyyy-MM-dd HH:mm:ss");
 		this.updateTime = value;
 	}
-	
+
 	public java.util.Date getUpdateTime() {
 		return this.updateTime;
 	}
-	
+
 	public java.lang.String getUpdateTimeStr() {
 		return this.updateTimeStr;
 	}
@@ -407,6 +409,4 @@ public class FollowResponse implements Serializable {
 		this.userType = userType;
 	}
 
-	
 }
-

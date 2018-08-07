@@ -539,6 +539,7 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 
 							DozerMapperUtils.map(followResponse, projectResponse);
 							projectResponse.setProjectId(followResponse.getFollowedProjectId());
+							projectResponse.setFollowerNum(followResponse.getFollowerNum());
 							Map<String, String> projectMap = new HashMap<String, String>();
 							projectMap.put("projectId", followResponse.getFollowedProjectId() + "");
 							List<ProjectTrade> projectTradeList = projectTradeService.findByMap(projectMap);
