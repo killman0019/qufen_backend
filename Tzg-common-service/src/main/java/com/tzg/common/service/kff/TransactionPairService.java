@@ -38,7 +38,7 @@ public class TransactionPairService {
 	@Autowired
 	private ExchangeMapper exchangeMapper;
 
-	private static final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 10);
+	private static final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 4);
 
 	public List<TransactionPair> findByMap(Map<String, String> map) {
 		// TODO 根据map进行查询
