@@ -55,7 +55,7 @@
 		<!-- <task:scheduled ref="taskJobService" method="updateUserPop" cron="10 * * * * ? "/> -->
 		<task:scheduled ref="taskJobService" method="getProjectDateFromUrlTask" cron="0 0/5 * * * ? " />
 		<task:scheduled ref="taskJobService" method="getdatafromUrlByexchangeTask" cron="0 0/30 * * * ? " />
-		<task:scheduled ref="taskJobService" method="caculatePostTatolIncome" cron="0 0/20  * * * ? "/>
+<!-- 		<task:scheduled ref="taskJobService" method="caculatePostTatolIncome" cron="0 0/20  * * * ? "/> -->
 	</task:scheduled-tasks>
 
 
