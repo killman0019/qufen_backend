@@ -193,14 +193,12 @@
 	</update>
 
 	<select id="findByMap" resultMap="BaseResultMap" parameterType="java.util.Map">
-
 		select
 		<include refid="columns" />
 		from
 		tbexchange
 		where 1=1
 		<include refid="queryWhere" />
-
 	</select>
 
 	<sql id="queryWhere">
@@ -243,7 +241,6 @@
 		<if test="updateTime != null">
 			and update_time = #{updateTime,jdbcType=TIMESTAMP}
 		</if>
-
 	</sql>
 
 </mapper>

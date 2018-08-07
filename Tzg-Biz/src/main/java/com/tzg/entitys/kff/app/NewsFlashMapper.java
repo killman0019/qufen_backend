@@ -8,10 +8,6 @@ import com.tzg.common.base.BaseMapper;
 
 public interface NewsFlashMapper extends BaseMapper<NewsFlash, Integer> {
 //    int deleteByPrimaryKey(Integer id);
-//
-//    int insert(NewsFlashWithBLOBs record);
-//
-//    int insertSelective(NewsFlashWithBLOBs record);
 
     NewsFlash selectById(Integer id);
 
