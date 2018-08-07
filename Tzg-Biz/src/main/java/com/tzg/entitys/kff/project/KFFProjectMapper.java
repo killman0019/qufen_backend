@@ -1,4 +1,5 @@
 package com.tzg.entitys.kff.project;
+
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +15,7 @@ public interface KFFProjectMapper extends BaseMapper<KFFProject, java.lang.Integ
 
 	void increaseFollowerNum(Integer projectId);
 
-	void decreaseFollowerNum(Integer projectId);	
+	void decreaseFollowerNum(Integer projectId);
 
 	List<KFFProject> findProjectName();
 
@@ -29,6 +30,9 @@ public interface KFFProjectMapper extends BaseMapper<KFFProject, java.lang.Integ
 	List<KFFProject> findPageInList(Map<String, Object> queryData);
 
 	List<KFFProject> findByMap(Map<String, Object> map);
+
 	public List<KFFProject> findListByMap(Map<String, Object> map);
+
+	List<ProjectResponse> findAllProjectAndTrade(Map<String, Object> queryData);
 
 }

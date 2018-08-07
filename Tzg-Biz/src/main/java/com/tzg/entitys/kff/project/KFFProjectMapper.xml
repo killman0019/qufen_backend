@@ -36,6 +36,17 @@
 		<result property="bsjCirculateData" jdbcType="VARCHAR" column="bsj_circulate_data" />
 	</resultMap>
 
+	<resultMap type="com.tzg.entitys.kff.project.ProjectResponse" id="projectAndTradeResultMap" extends="BaseResultMap">
+
+		<result column="rank" property="rank" jdbcType="INTEGER" />
+		<result column="price" property="price" jdbcType="DOUBLE" />
+		<result column="volume_24h" property="volume24h" jdbcType="DOUBLE" />
+		<result column="market_cap" property="marketCap" jdbcType="DOUBLE" />
+		<result column="percent_change_1h" property="percentChange1h" jdbcType="DOUBLE" />
+		<result column="percent_change_24h" property="percentChange24h" jdbcType="DOUBLE" />
+		<result column="percent_change_7d" property="percentChange7d" jdbcType="DOUBLE" />
+	</resultMap>
+
 	<sql id="columns">
 	    <![CDATA[
         project_id ,project_icon ,state ,project_code ,project_english_name ,project_chinese_name ,project_signature ,
@@ -229,7 +240,8 @@
 	<update id="updateTotalScore" parameterType="com.tzg.entitys.kff.project.KFFProject">
 		UPDATE tbproject set total_score = #{totalScore,jdbcType=DECIMAL},totalRaterNum = #{totalRaterNum,jdbcType=INTEGER}
 		WHERE
-		project_id = #{projectId,jdbcType=INTEGER}
+		project_id =
+		#{projectId,jdbcType=INTEGER}
 	</update>
 
 	<update id="increaseRaterNum" parameterType="java.lang.Integer">
@@ -290,11 +302,11 @@
 	</select>
 
 	<select id="findPageInList" resultMap="BaseResultMap" parameterType="java.util.Map">
-		select 
-		<include refid="columns" /> 
+		select
+		<include refid="columns" />
 		from tbproject where 1=1 and status =1
 		<include refid="queryWhereInProjectId" />
-		
+
 		<choose>
 			<when test="sortField != null and sortField != ''">
 				ORDER BY ${sortField} ${sortSequence}
@@ -303,16 +315,16 @@
 	                <![CDATA[ ORDER BY project_code ASC ]]>
 			</otherwise>
 		</choose>
-		
+
 	</select>
 
 	<sql id="queryWhereInProjectId">
 		<if test="inList != null and inList.trim() != ''">
 			and project_id in ( ${inList} )
-		</if>	
+		</if>
 		<if test="projectId != null and projectId.trim() != ''">
 			and project_id = #{projectId}
-		</if>	
+		</if>
 	</sql>
 
 	<select id="findProjectByCode" resultMap="BaseResultMap" parameterType="java.util.Map">
@@ -341,10 +353,10 @@
 		</if>
 
 	</sql>
-	
+
 	<select id="findListByMap" resultMap="BaseResultMap" parameterType="java.util.Map">
-		select project_id,project_chinese_name,project_icon  from tbproject where 1=1
-		<include refid="queryWhere"/> 
+		select project_id,project_chinese_name,project_icon from tbproject where 1=1
+		<include refid="queryWhere" />
 		ORDER BY follower_num DESC
 		LIMIT ${startRecord},${endRecord}
 	</select>
@@ -458,13 +470,13 @@
 		<if test="bsjCirculateData != null">
 			and bsj_circulate_data = #{bsjCirculateData,jdbcType=VARCHAR}
 		</if>
-			<if test="DYtotalRaterNum != null and DYtotalRaterNum.trim() != ''">
+		<if test="DYtotalRaterNum != null and DYtotalRaterNum.trim() != ''">
 			and totalRaterNum >= #{DYtotalRaterNum}
 		</if>
 		<if test="DYfollowerNum != null and DYfollowerNum.trim() != ''">
 			and follower_num >= #{DYfollowerNum}
 		</if>
-		
+
 	</sql>
 	<select id="findProjectName" resultMap="BaseResultMap">
 		SELECT
@@ -482,7 +494,7 @@
 		project_code = #{projectCode}
 		AND project_chinese_name = #{projectChineseName} and status=1
 	</select>
-	
+
 	<select id="findByMap" resultMap="BaseResultMap" parameterType="java.util.Map">
 		SELECT
 		<include refid="columns" />
@@ -491,6 +503,71 @@
 		WHERE
 		1=1
 		<include refid="queryWhere"></include>
+	</select>
+	<sql id="projectAndTradeColumns">
+		tp.project_id project_id,
+		tp.project_icon project_icon,
+		tp.state state,
+		tp.project_code project_code,
+		tp.project_english_name project_english_name,
+		tp.project_chinese_name
+		project_chinese_name,
+		tp.cmc_id cmc_id,
+		tp.project_signature project_signature,
+		tp.website_url website_url,
+		tp.listed listed,
+		tp.issue_date issue_date,
+		tp.issue_num issue_num,
+		tp.whitepaper_url
+		whitepaper_url,
+		tp.project_type_name project_type_name,
+		tp.project_type_id project_type_id,
+		tp.project_desc project_desc,
+		tp.submit_user_id submit_user_id,
+		tp.submit_user_contact_info
+		submit_user_contact_info,
+		tp.submit_user_type submit_user_type,
+		tp.submit_reason submit_reason,
+		tp.`status` STATUS,
+		tp.publishTime publishTime,
+		tp.updateTime updateTime,
+		tp.total_score total_score,
+		tp.rater_num rater_num,
+		tp.follower_num follower_num,
+		tp.comments_num comments_num,
+		tp.collect_num collect_num,
+		tp.totalRaterNum,
+		tp.cmc_id cmc_id,
+		tp.github github,
+		tp.bsj_circulate_data
+		bsj_circulate_data,
+		tpt.project_trade_id project_trade_id,
+		tpt.rank rank,
+		tpt.price price,
+		tpt.volume_24h volume_24h,
+		tpt.market_cap market_cap,
+		tpt.percent_change_1h percent_change_1h,
+		tpt.percent_change_24h percent_change_24h,
+		tpt.percent_change_7d percent_change_7d
+
+	</sql>
+	<select id="findAllProjectAndTrade" resultMap="projectAndTradeResultMap" parameterType="java.util.Map">
+
+		SELECT
+		<include refid="projectAndTradeColumns" />
+		FROM
+		tbproject tp
+		LEFT JOIN tbprojecttrade tpt ON tp.project_id = tpt.project_id
+
+		<choose>
+			<when test="sortField != null and sortField != ''">
+				ORDER BY ${sortField} ${sortSequence}
+			</when>
+			<otherwise>
+	                <![CDATA[ ORDER BY project_id ASC ]]>
+			</otherwise>
+		</choose>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
 	</select>
 
 </mapper>

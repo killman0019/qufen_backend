@@ -480,6 +480,8 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 		if (tabId == 1) {
 			// 查询全部项目
 			PageResult<ProjectResponse> projectsPage = kffRmiService.findProjectByCodePage(1, userId, null, pageIndex, pageSize);
+			// PageResult<ProjectResponse> projectsPage =
+			// kffProjectService.findAllProjectAndTrade(query);
 			if (null != projectsPage && null != projectsPage.getRows() && !CollectionUtils.isEmpty(projectsPage.getRows())) {
 				List<ProjectResponse> projectList = projectsPage.getRows();
 
@@ -608,7 +610,11 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 	@Override
 	public void text() throws RestServiceException {
 		// TODO Auto-generated method stub
-
+		PaginationQuery query = new PaginationQuery();
+		query.setPageIndex(1);
+		query.setRowsPerPage(10);
+		PageResult<ProjectResponse> findAllProjectAndTrade = kffProjectService.findAllProjectAndTrade(query);
+		System.err.println(JSON.toJSONString(findAllProjectAndTrade));
 		// transactionPairService.getdatafromUrlByexchangeTask();
 
 	}

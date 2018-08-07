@@ -465,4 +465,33 @@ public class ProjectService {
 		return projectMapper.findByMap(map);
 	}
 
+	/**
+	 * 
+	 * TODO 查询projectand trade 相关信息
+	 * @param query
+	 * @return
+	 * @author zhangdd
+	 * @data 2018年8月7日
+	 *
+	 */
+	public PageResult<ProjectResponse> findAllProjectAndTrade(PaginationQuery query) {
+		// TODO Auto-generated method stub
+		
+		PageResult<ProjectResponse> result = null;
+		try {
+			Integer count = projectMapper.findPageCount(query.getQueryData());
+			if (null != count && count.intValue() > 0) {
+				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
+				query.addQueryData("startRecord", Integer.toString(startRecord));
+				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
+				List<ProjectResponse> list = projectMapper.findAllProjectAndTrade(query.getQueryData());
+				result = new PageResult<ProjectResponse>(list, count, query);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+
+	}
+
 }
