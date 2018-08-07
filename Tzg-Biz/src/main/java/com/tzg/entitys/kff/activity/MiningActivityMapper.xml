@@ -134,7 +134,7 @@
         version = #{version,jdbcType=INTEGER},
       </if>
     </set>
-    where id = #{id,jdbcType=INTEGER}
+      where id = #{id,jdbcType=INTEGER}
   </update>
   
   <update id="updateByOptimisticLock" parameterType="com.tzg.entitys.kff.activity.MiningActivity">
