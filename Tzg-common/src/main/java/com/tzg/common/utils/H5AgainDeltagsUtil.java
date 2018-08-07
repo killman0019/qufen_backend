@@ -18,6 +18,7 @@ public class H5AgainDeltagsUtil {
 		// 去除&nbsp;
 		html = html.replace("&nbsp;", " ");
 		html = html.replace("&nbsp", " ");
+		html = html.replace("&nbsp;", " ");
 		html=html.replaceAll("[\ud800\udc00-\udbff\udfff\ud800-\udfff]", "");
 		html = Jsoup.clean(html, Whitelist.none());
 		//System.out.println("html" + html);

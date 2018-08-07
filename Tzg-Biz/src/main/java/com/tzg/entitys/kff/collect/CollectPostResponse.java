@@ -127,6 +127,16 @@ public class CollectPostResponse implements Serializable {
 	 */
 	private java.lang.String projectSignature;
 
+	private Integer createUserId;
+
+	public Integer getCreateUserId() {
+		return createUserId;
+	}
+
+	public void setCreateUserId(Integer createUserId) {
+		this.createUserId = createUserId;
+	}
+
 	private java.math.BigDecimal evaTotalScore = BigDecimal.ZERO;
 
 	public java.math.BigDecimal getEvaTotalScore() {

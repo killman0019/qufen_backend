@@ -98,6 +98,7 @@ public class ProjectTradeService {
 								if (null != projectList.get(0)) {
 									projectTrade.setProjectId(projectList.get(0).getProjectId());
 									projectTrade.setCreateTime(now);
+									projectTrade.setStatus(1);
 									projectTradeMapper.save(projectTrade);
 								}
 							}
@@ -111,6 +112,11 @@ public class ProjectTradeService {
 									projectTrade.setUpdataTime(now);
 									projectTrade.setProjectTradeId(projectTradeId);
 									projectTradeMapper.update(projectTrade);
+									/*projectTradeListUpdate.add(projectTrade);
+									if (projectTradeListUpdate.size() == 100) {
+										projectTradeMapper.updateBatch(projectTradeListUpdate);
+										projectTradeListUpdate.clear();
+									}*/
 								}
 							}
 
@@ -118,6 +124,7 @@ public class ProjectTradeService {
 					}
 				}
 
+				// projectTradeMapper.updateBatch(projectTradeListUpdate);
 			} else {
 				System.err.println("error null");
 			}
@@ -173,6 +180,19 @@ public class ProjectTradeService {
 	public List<ProjectTrade> findByMap(Map<String, String> map) {
 		// TODO Auto-generated method stub
 		return projectTradeMapper.findByMap(map);
+	}
+
+	/**
+	 * 
+	 * TODO 
+	 * @param projectTradeList
+	 * @author zhangdd
+	 * @data 2018年8月7日
+	 *
+	 */
+	public void updateBatch(List<ProjectTrade> projectTradeList) {
+		// TODO Auto-generated method stub
+		projectTradeMapper.updateBatch(projectTradeList);
 	}
 
 	/*public static void main(String[] args) {

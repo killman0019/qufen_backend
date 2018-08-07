@@ -28,4 +28,14 @@ public interface TransactionPairMapper extends BaseMapper<TransactionPair, Integ
 	 */
 	void updateByMainCode(TransactionPair transactionPair);
 
+	/**
+	 * 
+	 * TODO 批量进行数据更新
+	 * @param transactionPairList
+	 * @author zhangdd
+	 * @data 2018年8月7日
+	 *
+	 */
+	void updateBatch(List<TransactionPair> transactionPairList);
+
 }

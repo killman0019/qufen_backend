@@ -4,6 +4,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -610,13 +611,22 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 
 	@Override
 	public void text() throws RestServiceException {
+		Date now = new Date();
 		// TODO Auto-generated method stub
-		PaginationQuery query = new PaginationQuery();
+		/*PaginationQuery query = new PaginationQuery();
 		query.setPageIndex(1);
 		query.setRowsPerPage(10);
-		PageResult<ProjectResponse> findAllProjectAndTrade = kffProjectService.findAllProjectAndTrade(query);
-		System.err.println(JSON.toJSONString(findAllProjectAndTrade));
+		PageResult<ProjectResponse> findAllProjectAndTrade = kffProjectService.findAllProjectAndTrade(query);*/
+		// System.err.println(JSON.toJSONString(findAllProjectAndTrade));
 		// transactionPairService.getdatafromUrlByexchangeTask();
-
+		List<ProjectTrade> projectTradeList = new ArrayList<ProjectTrade>();
+		for (int i = 1; i < 5; i++) {
+			ProjectTrade projectTrade = new ProjectTrade();
+			projectTrade.setProjectTradeId(i);
+			projectTrade.setUpdataTime(now);
+			projectTrade.setPrice(2.0);
+			projectTradeList.add(projectTrade);
+		}
+		projectTradeService.updateBatch(projectTradeList);
 	}
 }
