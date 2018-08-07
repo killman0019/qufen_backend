@@ -184,9 +184,11 @@ public class NewsFlashController extends BaseController {
 				throw new RestServiceException(RestErrorCode.MISSING_ARGS); 
 			}
 	        query.addQueryData("projectCode", projectCode);
+	        //先获取币种新闻
 	        query.addQueryData("typec", 0);//先获取币种的新闻
 			PageResult<NewsFlash> data = new  PageResult<NewsFlash>(); 
 			data = newsFlashRmiService.findAppNewsFlashPage(query);
+			//当没有币种新闻的时候在获取币种的快讯
 			query.addQueryData("typec", 1);//先获取币种的快讯
 			if(null!=data) {
 				List<NewsFlash> rows = data.getRows();
