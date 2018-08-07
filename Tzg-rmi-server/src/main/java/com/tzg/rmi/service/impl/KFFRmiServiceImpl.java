@@ -435,6 +435,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					response.setCreateUserIcon(post.getCreateUserIcon());
 					response.setCreateUserName(post.getCreateUserName());
 					response.setCreateUserSignature(post.getCreateUserSignature());
+					response.setCreateUserId(post.getCreateUserId());
 					KFFUser createUser = kffUserService.findByUserId(post.getCreateUserId());
 					if (null != createUser) {
 						response.setUserType(createUser.getUserType());
@@ -1779,6 +1780,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 	}
 
+	@SuppressWarnings("unused")
 	@Override
 	// 根据用户的ID判断用户是否对项目进行评分,如果已经进行评分了,则抛出异常
 	public Map<String, Object> saveEvaluation(EvaluationRequest evaluationRequest) throws RestServiceException {
@@ -1868,22 +1870,23 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (project == null) {
 			throw new RestServiceException("项目不存在" + evaluationRequest.getProjectId());
 		}
-		boolean allowedPulish = isAllowedPulish(evaluationRequest.getCreateUserId(), project, KFFConstants.POST_TYPE_EVALUATION, 2);
-		if (createUser.getUserType() == 1) {
-			if (!allowedPulish) {
-				throw new RestServiceException("同一项目15天内只能发起一次评测");
-			}
-			allowedPulish = isAllowedPulish(evaluationRequest.getCreateUserId(), project, KFFConstants.POST_TYPE_EVALUATION, 3);
-			if (!allowedPulish) {
-				throw new RestServiceException("同一项目15天内只能发起一次评测");
-			}
-			allowedPulish = isAllowedPulish(evaluationRequest.getCreateUserId(), project, KFFConstants.POST_TYPE_EVALUATION, 4);
-			if (!allowedPulish) {
-				throw new RestServiceException("同一项目15天内只能发起一次评测");
-			}
+		if (!("FREE".equalsIgnoreCase(project.getProjectCode()))) {
+			boolean allowedPulish = isAllowedPulish(evaluationRequest.getCreateUserId(), project, KFFConstants.POST_TYPE_EVALUATION, 2);
+			if (createUser.getUserType() == 1) {
+				if (!allowedPulish) {
+					throw new RestServiceException("同一项目15天内只能发起一次评测");
+				}
+				allowedPulish = isAllowedPulish(evaluationRequest.getCreateUserId(), project, KFFConstants.POST_TYPE_EVALUATION, 3);
+				if (!allowedPulish) {
+					throw new RestServiceException("同一项目15天内只能发起一次评测");
+				}
+				allowedPulish = isAllowedPulish(evaluationRequest.getCreateUserId(), project, KFFConstants.POST_TYPE_EVALUATION, 4);
+				if (!allowedPulish) {
+					throw new RestServiceException("同一项目15天内只能发起一次评测");
+				}
 
+			}
 		}
-
 		if (3 == evaluationRequest.getModelType()) {
 			// 单项评测 totalScore取出来
 			List<DevaluationModel> onlyevaDetail = JSON.parseArray(evaluationRequest.getProfessionalEvaDetail(), DevaluationModel.class);

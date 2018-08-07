@@ -169,13 +169,12 @@ public class TransactionPairService {
 						transactionPair.setUpdateTime(now);
 						transactionPair.setVaild(1);
 						transactionPairMapper.updateByMainCode(transactionPair);
+						// transactionPairList.add(transactionPair);
 					}
 
 				}
 				// 进行数据库的更新
-				/*if (!CollectionUtils.isEmpty(transactionPairList)) {
-					transactionPairMapper.updataList(transactionPairList);
-				}*/
+				// transactionPairMapper.updateBatch(transactionPairList);
 			}
 		}
 

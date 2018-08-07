@@ -1178,7 +1178,7 @@ public class AwardPortService {
 				// kffTokenawardService.findByUserId(user2.getUserId());
 				// 获取邀请人邀请的钱数的总额
 				Double sum = kffTokenawardService.reawardSum1(user2.getUserId());
-				if (sum < 30000 && user2.getUserId() <= 100000 && user2.getUserId() > 50000) {
+				if (sum < 100000 && user2.getUserId() <= 100000 && user2.getUserId() > 50000) {
 					m1 = 1500d;
 					// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 					Tokenaward tokenaward2 = new Tokenaward();
@@ -1473,7 +1473,7 @@ public class AwardPortService {
 
 					}
 
-					if (sum < 30000 && user2.getUserId() <= 100000 && user2.getUserId() > 50000) {// 上上级用户
+					if (sum < 100000 && user2.getUserId() <= 100000 && user2.getUserId() > 50000) {// 上上级用户
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						m1 = 1500d;
 						Tokenaward tokenaward2 = new Tokenaward();
@@ -1512,7 +1512,7 @@ public class AwardPortService {
 
 					}
 
-					if (sum2 < 30000 && user2.getUserId() <= 100000 && user2.getUserId() > 50000) {
+					if (sum2 < 100000 && user2.getUserId() <= 100000 && user2.getUserId() > 50000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						m2 = 300d;
 						Tokenaward tokenawarde3 = new Tokenaward();
@@ -1638,7 +1638,7 @@ public class AwardPortService {
 					// 获取上上级邀请人邀请的钱数的总额
 					Double sum2 = kffTokenawardService.reawardSum1(user3.getUserId());
 
-					if (sum < 30000 && user2.getUserId() <= 100000 && user2.getUserId() > 50000) {
+					if (sum < 100000 && user2.getUserId() <= 100000 && user2.getUserId() > 50000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						m1 = 1500d;
 						Tokenaward tokenaward2 = new Tokenaward();
@@ -1716,7 +1716,7 @@ public class AwardPortService {
 
 					}
 
-					if (sum2 < 30000 && user3.getUserId() <= 100000 && user3.getUserId() > 50000) {
+					if (sum2 < 100000 && user3.getUserId() <= 100000 && user3.getUserId() > 50000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						m2 = 300d;
 						Tokenaward tokenawarde3 = new Tokenaward();
@@ -1845,7 +1845,7 @@ public class AwardPortService {
 					Double sum = kffTokenawardService.reawardSum1(user2.getUserId());
 					// 获取上上级邀请人邀请的钱数的总额
 					Double sum2 = kffTokenawardService.reawardSum1(user3.getUserId());
-					if (sum < 30000 && user2.getUserId() <= 100000 && user2.getUserId() > 50000) {
+					if (sum < 100000 && user2.getUserId() <= 100000 && user2.getUserId() > 50000) {
 						if (findReferCount < 1000) {
 							m1 = 1500d * 150 / 100;
 						} else {
@@ -1930,7 +1930,7 @@ public class AwardPortService {
 						kffCoinPropertyService.update(coinPropertyRefer);
 
 					}
-					if (sum2 < 30000 && user3.getUserId() > 50000 && user3.getUserId() <= 100000) {
+					if (sum2 < 100000 && user3.getUserId() > 50000 && user3.getUserId() <= 100000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						m2 = 300d;
 						Tokenaward tokenawarde3 = new Tokenaward();
@@ -2338,7 +2338,7 @@ public class AwardPortService {
 				// kffTokenawardService.findByUserId(user2.getUserId());
 				// 获取邀请人邀请的钱数的总额
 				Double sum = kffTokenawardService.reawardSum1(user2.getUserId());
-				if (sum < 10000 && user2.getUserId() <= 500000 && user2.getUserId() > 100000) {
+				if (sum < 100000 && user2.getUserId() <= 500000 && user2.getUserId() > 100000) {
 					// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 					m1 = 500d;
 					Tokenaward tokenaward2 = new Tokenaward();
@@ -2378,7 +2378,7 @@ public class AwardPortService {
 
 				}
 
-				if (sum < 30000 && user2.getUserId() <= 100000 && user2.getUserId() > 50000) {
+				if (sum < 100000 && user2.getUserId() <= 100000 && user2.getUserId() > 50000) {
 					// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 					m1 = 1500d;
 					Tokenaward tokenaward2 = new Tokenaward();
@@ -2676,7 +2676,7 @@ public class AwardPortService {
 					// 获取上上级邀请人邀请的钱数的总额
 					Double sum2 = kffTokenawardService.reawardSum1(user3.getUserId());
 					// kffTokenawardService.findByUserId(user2.getUserId());
-					if (sum < 10000 && user2.getUserId() <= 500000 && user2.getUserId() > 100000) {
+					if (sum < 100000 && user2.getUserId() <= 500000 && user2.getUserId() > 100000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						m1 = 500d;
 						Tokenaward tokenaward2 = new Tokenaward();
@@ -2715,7 +2715,7 @@ public class AwardPortService {
 
 					}
 
-					if (sum < 30000 && user2.getUserId() <= 100000 && user2.getUserId() > 50000) {
+					if (sum < 100000 && user2.getUserId() <= 100000 && user2.getUserId() > 50000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						m1 = 1500d;
 						Tokenaward tokenaward2 = new Tokenaward();
@@ -2792,7 +2792,7 @@ public class AwardPortService {
 						kffCoinPropertyService.update(coinPropertyRefer);
 
 					}
-					if (sum2 < 10000 && user3.getUserId() <= 500000 & user3.getUserId() > 100000) {
+					if (sum2 < 100000 && user3.getUserId() <= 500000 & user3.getUserId() > 100000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						m2 = 100d;
 						Tokenaward tokenawarde3 = new Tokenaward();
@@ -2830,7 +2830,7 @@ public class AwardPortService {
 						kffCoinPropertyService.update(coinPropertyRefer);
 					}
 
-					if (sum2 < 30000 && user3.getUserId() <= 100000 & user3.getUserId() > 50000) {
+					if (sum2 < 100000 && user3.getUserId() <= 100000 & user3.getUserId() > 50000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						m2 = 300d;
 						Tokenaward tokenawarde3 = new Tokenaward();
@@ -2955,7 +2955,7 @@ public class AwardPortService {
 					// 获取上上级邀请人邀请的钱数的总额
 					Double sum2 = kffTokenawardService.reawardSum1(user3.getUserId());
 
-					if (sum < 10000 && user2.getUserId() <= 500000 && user2.getUserId() > 100000) {
+					if (sum < 100000 && user2.getUserId() <= 500000 && user2.getUserId() > 100000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						m1 = 500d;
 						Tokenaward tokenaward2 = new Tokenaward();
@@ -2994,7 +2994,7 @@ public class AwardPortService {
 
 					}
 
-					if (sum < 30000 && user2.getUserId() <= 100000 && user2.getUserId() > 50000) {
+					if (sum < 100000 && user2.getUserId() <= 100000 && user2.getUserId() > 50000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						m1 = 1500d;
 						Tokenaward tokenaward2 = new Tokenaward();
@@ -3371,7 +3371,7 @@ public class AwardPortService {
 					}
 
 					// 上上级用户是普通用户或者是媒体用户
-					if (sum2 < 10000 && user2.getUserId() <= 500000 && user3.getUserId() > 100000) {
+					if (sum2 < 100000 && user2.getUserId() <= 500000 && user3.getUserId() > 100000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						m2 = 100d;
 						Tokenaward tokenawarde3 = new Tokenaward();
@@ -3410,7 +3410,7 @@ public class AwardPortService {
 
 					}
 
-					if (sum2 < 30000 && user2.getUserId() <= 100000 && user3.getUserId() > 50000) {
+					if (sum2 < 100000 && user2.getUserId() <= 100000 && user3.getUserId() > 50000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						m2 = 300d;
 						Tokenaward tokenawarde3 = new Tokenaward();
@@ -4024,7 +4024,7 @@ public class AwardPortService {
 
 				}
 
-				if (sum < 30000 && user2.getUserId() <= 100000 && user2.getUserId() > 50000) {
+				if (sum < 100000 && user2.getUserId() <= 100000 && user2.getUserId() > 50000) {
 					// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 					m2 = 1500d;
 					Tokenaward tokenaward2 = new Tokenaward();
@@ -4403,7 +4403,7 @@ public class AwardPortService {
 
 					}
 
-					if (sum < 10000 && user2.getUserId() <= 500000 && user2.getUserId() > 100000) {
+					if (sum < 100000 && user2.getUserId() <= 500000 && user2.getUserId() > 100000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						m1 = 500d;
 						Tokenaward tokenaward2 = new Tokenaward();
@@ -4442,7 +4442,7 @@ public class AwardPortService {
 
 					}
 
-					if (sum < 30000 && user2.getUserId() <= 100000 && user2.getUserId() > 50000) {
+					if (sum < 100000 && user2.getUserId() <= 100000 && user2.getUserId() > 50000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						m1 = 1500d;
 						Tokenaward tokenaward2 = new Tokenaward();
@@ -4559,7 +4559,7 @@ public class AwardPortService {
 
 					}
 
-					if (sum2 < 10000 && user3.getUserId() <= 500000 && user3.getUserId() > 100000) {
+					if (sum2 < 100000 && user3.getUserId() <= 500000 && user3.getUserId() > 100000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						Tokenaward tokenawarde3 = new Tokenaward();
 						m2 = 100d;
@@ -4598,7 +4598,7 @@ public class AwardPortService {
 
 					}
 
-					if (sum2 < 30000 && user3.getUserId() <= 100000 && user3.getUserId() > 50000) {
+					if (sum2 < 100000 && user3.getUserId() <= 100000 && user3.getUserId() > 50000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						m2 = 300d;
 						Tokenaward tokenawarde3 = new Tokenaward();
@@ -4768,7 +4768,7 @@ public class AwardPortService {
 
 					}
 
-					if (sum < 10000 && user2.getUserId() <= 500000 && user2.getUserId() > 100000) {
+					if (sum < 100000 && user2.getUserId() <= 500000 && user2.getUserId() > 100000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						if (findReferCount < 1000) {
 							m1 = 500d * 150 / 100;
@@ -4811,7 +4811,7 @@ public class AwardPortService {
 
 					}
 
-					if (sum < 30000 && user2.getUserId() <= 100000 && user2.getUserId() > 50000) {
+					if (sum < 100000 && user2.getUserId() <= 100000 && user2.getUserId() > 50000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						if (findReferCount < 1000) {
 							m1 = 1500d * 150 / 100;
@@ -5312,7 +5312,7 @@ public class AwardPortService {
 
 					}
 
-					if (sum2 < 10000 && user3.getUserId() <= 500000 && user3.getUserId() > 100000) {
+					if (sum2 < 100000 && user3.getUserId() <= 500000 && user3.getUserId() > 100000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						m2 = 100d;
 						Tokenaward tokenawarde3 = new Tokenaward();
@@ -5351,7 +5351,7 @@ public class AwardPortService {
 
 					}
 
-					if (sum2 < 30000 && user3.getUserId() <= 100000 && user3.getUserId() > 50000) {
+					if (sum2 < 100000 && user3.getUserId() <= 100000 && user3.getUserId() > 50000) {
 						// 将邀请用户id 奖励类型 奖励金额 当前时间 发放的方式存入奖励表中
 						m2 = 300d;
 						Tokenaward tokenawarde3 = new Tokenaward();

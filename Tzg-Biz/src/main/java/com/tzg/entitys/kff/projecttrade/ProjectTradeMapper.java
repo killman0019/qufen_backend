@@ -12,4 +12,6 @@ public interface ProjectTradeMapper extends BaseMapper<ProjectTrade, Integer> {
 
 	List<ProjectTrade> findByMap(Map<String, String> map);
 
+	void updateBatch(List<ProjectTrade> projectTradeList);
+
 }

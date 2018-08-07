@@ -460,4 +460,107 @@
 
 	</update>
 
+
+
+	<update id="updateBatch" parameterType="java.util.List">
+
+
+		update tbtransactionpair
+		<trim prefix="set" suffixOverrides=",">
+			<!-- 拼接case when 这是一种写法 -->
+			<!--<foreach collection="list" separator="" item="cus" open="c_age = case id" close="end, "> -->
+			<!--when #{cus.id} then #{cus.age} -->
+			<!--</foreach> -->
+			<!-- 拼接case when 这是另一种写法，这种写着更专业的感觉 -->
+			<trim prefix="base_volume =case" suffix="end,">
+				<foreach collection="list" item="cus">
+					<if test="cus.baseVolume!=null and cus.baseVolume!=''">
+						when main_code = #{cus.mainCode} and exchange_name = #{cus.exchangeName} and coinpair = #{cus.coinpair}
+						then #{cus.baseVolume}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="change_daily =case" suffix="end,">
+				<foreach collection="list" item="cus">
+					<if test="cus.changeDaily!=null and cus.changeDaily!=''">
+						when main_code = #{cus.mainCode} and exchange_name = #{cus.exchangeName} and coinpair = #{cus.coinpair}
+						then #{cus.changeDaily}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="vol =case" suffix="end,">
+				<foreach collection="list" item="cus">
+					<if test="cus.vol!=null and cus.vol!=''">
+						when main_code = #{cus.mainCode} and exchange_name = #{cus.exchangeName} and coinpair = #{cus.coinpair}
+						then #{cus.vol}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="usd_rate =case" suffix="end,">
+				<foreach collection="list" item="cus">
+					<if test="cus.usdRate!=null and cus.usdRate!=''">
+						when main_code = #{cus.mainCode} and exchange_name = #{cus.exchangeName} and coinpair = #{cus.coinpair}
+						then #{cus.usdRate}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="low =case" suffix="end,">
+				<foreach collection="list" item="cus">
+					<if test="cus.low!=null and cus.low!=''">
+						when main_code = #{cus.mainCode} and exchange_name = #{cus.exchangeName} and coinpair = #{cus.coinpair}
+						then #{cus.low}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="high =case" suffix="end,">
+				<foreach collection="list" item="cus">
+					<if test="cus.high!=null and cus.high!=''">
+						when main_code = #{cus.mainCode} and exchange_name = #{cus.exchangeName} and coinpair = #{cus.coinpair}
+						then #{cus.high}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="vol =case" suffix="end,">
+				<foreach collection="list" item="cus">
+					<if test="cus.vol!=null and cus.vol!=''">
+						when main_code = #{cus.mainCode} and exchange_name = #{cus.exchangeName} and coinpair = #{cus.coinpair}
+						then #{cus.vol}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="last =case" suffix="end,">
+				<foreach collection="list" item="cus">
+					<if test="cus.last!=null and cus.last!=''">
+						when main_code = #{cus.mainCode} and exchange_name = #{cus.exchangeName} and coinpair = #{cus.coinpair}
+						then #{cus.last}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="vaild =case" suffix="end,">
+				<foreach collection="list" item="cus">
+					<if test="cus.vaild!=null and cus.vaild!=''">
+						when main_code = #{cus.mainCode} and exchange_name = #{cus.exchangeName} and coinpair = #{cus.coinpair}
+						then #{cus.vaild}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="update_time =case" suffix="end,">
+				<foreach collection="list" item="cus">
+					<if test="cus.updateTime!=null and cus.updateTime!=''">
+						when main_code = #{cus.mainCode} and exchange_name = #{cus.exchangeName} and coinpair = #{cus.coinpair}
+						then #{cus.updateTime}
+					</if>
+				</foreach>
+			</trim>
+
+		</trim>
+		<where>
+			<foreach collection="list" separator="or" item="cus">
+				main_code = #{cus.mainCode} and exchange_name = #{cus.exchangeName} and coinpair = #{cus.coinpair}
+			</foreach>
+		</where>
+
+
+	</update>
+
 </mapper>
