@@ -5,7 +5,6 @@ import java.util.Date;
 
 public class Exchange implements Serializable {
 	/**
-	 * 
 	 */
 	private static final long serialVersionUID = 1099015915816636958L;
 
