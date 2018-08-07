@@ -155,22 +155,32 @@ public class ProjectTradeService {
 		strList.add("81832d80-3119-4a20-8053-e14415516417");
 		strList.add("9fd772ee-1180-4979-b58f-c8932c0df388");
 
-		/*strList.add("e6a9ddf6-b30b-443a-8fa7-d78fea278779");
-		strList.add("c916d453-b500-45ed-8b26-ded7b7cdadfb");
-		strList.add("aef1250c-609a-4b6a-8358-92de9fe817a1");
-		
-		strList.add("c6834445-048f-4737-8703-064e63d5e662");
-		strList.add("408357a1-105d-46c0-8dd2-3acd1f977ec9");
-		strList.add("ffc4a351-b594-4e60-8033-85eeb217fdcc");
-		strList.add("825c34ae-cf0f-4832-b774-90733392ffc0");
-		strList.add("81832d80-3119-4a20-8053-e14415516417");
-		strList.add("9fd772ee-1180-4979-b58f-c8932c0df388");*/
+		strList.add("624a279f-8a89-4c8b-94cf-6ea1f6508ef7");
+		strList.add("c45f4db9-e8b4-4943-892a-c59d4f87545b");
+		strList.add("55a24835-95b7-4876-b025-14617755c1bc");
+
+		strList.add("3827cbdb-87d0-4c01-9063-0b082cdb0a58");
+		strList.add("0bbedc1a-5e1f-446f-8235-db82b88be6fa");
+		strList.add("5d1e5e29-1ca9-4f89-92c1-82a96e12d35c");
+		strList.add("3c87b1c2-1863-4f48-8fe7-af485539bd07");
+		strList.add("7ed618c4-a972-4db8-9c3f-b0cc8a4e56dd");
+		strList.add("a4a4714b-57b1-49bb-8a1c-a248ff8bd9ad");
+
+		strList.add("e1b4c71a-8176-4986-b371-c2116ff5389d");
+		strList.add("ab52e7e6-cd4b-4622-9b87-010103414fc8");
+		strList.add("1ccd5e9c-658a-42e8-8d66-e86e17997101");
+		strList.add("eb9bb153-cd05-47df-8cd8-35d3f0425e29");
+		strList.add("10c40d31-3eb6-4b6b-856c-a99306256ae2");
+		strList.add("c77d6319-42a7-4992-b905-88cb27399e1d");
+
+		strList.add("f10d954a-37e4-44ec-8db0-c6e5d62cddbc");
+		strList.add("e5a49b62-1229-4634-aa02-87479052a9c0");
+		strList.add("229485b7-7f5a-4c57-8c1b-264fe2cb158f");
 
 		int hour = DateUtil.getHour();
 		int minute = DateUtil.getMinute();
-		hour = 23;
-		minute = 50;
-		int i = (hour * 60 + minute) / 150;
+
+		int i = (hour * 60 + minute) / 50;
 		System.err.println(i);
 		str = strList.get(i);
 		String strBase = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=" + str + "&convert=CNY&&limit=5000";
@@ -195,7 +205,7 @@ public class ProjectTradeService {
 		projectTradeMapper.updateBatch(projectTradeList);
 	}
 
-	/*public static void main(String[] args) {
+	public static void main(String[] args) {
 		System.err.println(getToken());
-	}*/
+	}
 }
