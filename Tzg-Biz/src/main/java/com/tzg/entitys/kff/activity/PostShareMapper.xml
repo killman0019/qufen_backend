@@ -90,6 +90,9 @@
 			<if test="userId!=null">
     		  and user_id = #{userId}
     		</if>
+    		<if test="activityId!=null">
+    		  and activity_id = #{activityId}
+    		</if>
 			<if test="startTime!=null and endTime==null">
     		  and created_at &gt;= #{startTime}
     		</if>

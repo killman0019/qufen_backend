@@ -108,16 +108,13 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
   
-  <select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
-    	select count(*) from activity_reward_detail as acd 
-    	LEFT JOIN tbproject as tpj on tpj.project_id=acd.project_id
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(1) from <include refid="table_name" />
 		<include refid="condition"/>
 	</select>
     
 	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
-		select acd.*,
-		tpj.project_chinese_name as projectChineseName  from activity_reward_detail as acd 
-		LEFT JOIN tbproject as tpj on tpj.project_id=acd.project_id
+		select *  from <include refid="table_name" />
 		<include refid="condition"/>
 	    <![CDATA[ ORDER BY id DESC ]]>
         <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
