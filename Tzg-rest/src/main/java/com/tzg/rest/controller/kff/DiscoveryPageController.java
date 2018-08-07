@@ -74,7 +74,7 @@ public class DiscoveryPageController extends BaseController {
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
 			PageResult<ProjectResponse> projectResponsePage = kFFProjectRmiService.selectHotProjectPage(userId, query);
-			System.err.println("projectResponsePage" + JSON.toJSONString(projectResponsePage));
+			//System.err.println("projectResponsePage" + JSON.toJSONString(projectResponsePage));
 			map.put("projectHot", projectResponsePage);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -115,7 +115,7 @@ public class DiscoveryPageController extends BaseController {
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
 			PageResult<ProjectResponse> projectResponsePage = kFFProjectRmiService.selectEvaProjectPage(userId, query);
-			System.err.println("projectResponsePage" + JSON.toJSONString(projectResponsePage));
+			//System.err.println("projectResponsePage" + JSON.toJSONString(projectResponsePage));
 			map.put("EvaProjectPage", projectResponsePage);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -156,7 +156,7 @@ public class DiscoveryPageController extends BaseController {
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
 			PageResult<KFFUser> kFFUserPage = kffUserRmiService.selectKOLProjectPage(userId, query);
-			System.err.println("kFFUserPage" + JSON.toJSONString(kFFUserPage));
+			//System.err.println("kFFUserPage" + JSON.toJSONString(kFFUserPage));
 			map.put("kFFUserPage", kFFUserPage);
 			bre.setData(map);
 		} catch (RestServiceException e) {

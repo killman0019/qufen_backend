@@ -3537,10 +3537,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				} else {
 					finalComment.setPraiseStatus(KFFConstants.PRAISE_STATUS_NOSHOW);
 				}
-				if (null != comment) {
+				if (null != finalComment) {
 					KFFUser createUser = kffUserService.findByUserId(comment.getCommentUserId());
 					if (null != createUser) {
-						comment.setUserType(createUser.getUserType());
+						finalComment.setUserType(createUser.getUserType());
 					}
 				}
 				result.add(finalComment);
