@@ -1,5 +1,7 @@
 package com.tzg.rmi.service.impl;
 
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -44,6 +46,7 @@ import com.tzg.common.service.kff.PraiseService;
 import com.tzg.common.service.kff.ProjectForTabService;
 import com.tzg.common.service.kff.ProjectManageService;
 import com.tzg.common.service.kff.ProjectService;
+import com.tzg.common.service.kff.ProjectTradeService;
 import com.tzg.common.service.kff.ProjectevastatService;
 import com.tzg.common.service.kff.QfIndexService;
 import com.tzg.common.service.kff.SuggestService;
@@ -64,6 +67,7 @@ import com.tzg.entitys.kff.project.ProjectResponse;
 import com.tzg.entitys.kff.projectManage.ProjectManage;
 import com.tzg.entitys.kff.projectManage.ProjectManageResponse;
 import com.tzg.entitys.kff.projectManage.ProjectManageTabResponse;
+import com.tzg.entitys.kff.projecttrade.ProjectTrade;
 import com.tzg.entitys.kff.transactionpair.TransactionPair;
 import com.tzg.entitys.kff.transactionpair.TransactionPairResponse;
 import com.tzg.entitys.kff.userwallet.KFFUserWalletMapper;
@@ -162,6 +166,8 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 
 	@Autowired
 	private TransactionPairService transactionPairService;
+	@Autowired
+	private ProjectTradeService projectTradeService;
 
 	/**
 	 * 1 全部 2 关注
@@ -216,6 +222,7 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 		}
 
 		if (null != tabId) {
+
 			List<String> projectCodes = projectForTabService.selectProjectCodeByTabid(tabId);
 			if (projectCodes.size() != 0) {
 				for (String projectCode : projectCodes) {
@@ -481,6 +488,25 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 			if (null != projectsPage && null != projectsPage.getRows() && !CollectionUtils.isEmpty(projectsPage.getRows())) {
 				List<ProjectResponse> projectList = projectsPage.getRows();
 
+				for (ProjectResponse projectResponse : projectList) {
+					if (null != projectResponse) {
+						Map<String, String> map = new HashMap<String, String>();
+
+						map.put("cmcId", projectResponse.getCmcId() + "");
+						List<ProjectTrade> projectTradeList = projectTradeService.findByMap(map);
+						if (!CollectionUtils.isEmpty(projectTradeList)) {
+							ProjectTrade projectTrade = projectTradeList.get(0);
+							projectResponse.setPercentChange1h(projectTrade.getPercentChange1h());
+							projectResponse.setPercentChange24h(projectTrade.getPercentChange24h());
+							projectResponse.setPercentChange7d(projectTrade.getPercentChange7d());
+							projectResponse.setPrice(projectTrade.getPrice());
+							projectResponse.setMarketCap(projectTrade.getMarketCap());
+							projectResponse.setVolume24h(projectTrade.getVolume24h());
+							projectResponse.setRank(projectTrade.getRank());
+						}
+					}
+				}
+
 				if (null != projectList && !CollectionUtils.isEmpty(projectList)) {
 					for (ProjectResponse projectResponse : projectList) {
 						if (null != projectResponse && null != userId) {
@@ -497,20 +523,22 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 			}
 		} else if (tabId == 2) {
 			// 查询用户关注的project列表
+			PaginationQuery queryFollow = query;
 			if (null != userId) {
-				query.addQueryData("followUserId", userId + "");
-				query.addQueryData("followType", 1 + "");
-				query.addQueryData("status", "1");
-				query.addQueryData("state", "2");
+				queryFollow.addQueryData("followUserId", userId + "");
+				queryFollow.addQueryData("followType", 1 + "");
+				queryFollow.addQueryData("status", "1");
+				// queryFollow.addQueryData("state", "2");
 				List<ProjectResponse> projectResponseList = new ArrayList<ProjectResponse>();
 				PageResult<FollowResponse> followPage = kffRmiService.findPageMyFollow(query);
-				System.err.println("followPage" + JSON.toJSONString(followPage));
+				// System.err.println("followPage" + JSON.toJSONString(followPage));
 				if (null != followPage && null != followPage.getRows() && !CollectionUtils.isEmpty(followPage.getRows())) {
 					List<FollowResponse> followResponseList = followPage.getRows();
 					for (FollowResponse followResponse : followResponseList) {
 						if (null != followResponse) {
 							ProjectResponse projectResponse = new ProjectResponse();
 							DozerMapperUtils.map(followResponse, projectResponse);
+							projectResponse.setProjectId(followResponse.getFollowedProjectId());
 							projectResponseList.add(projectResponse);
 						}
 					}
@@ -519,9 +547,10 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 			}
 		} else {
 			// 除了关注和全部
-			projectResponsePage = selectProjectsListByProjectCodePage(tabId, query, userId);
+			PaginationQuery queryOther = query;
+			projectResponsePage = selectProjectsListByProjectCodePage(tabId, queryOther, userId);
 		}
-		System.err.println("projectResponsePage" + JSON.toJSONString(projectResponsePage));
+		// System.err.println("projectResponsePage" + JSON.toJSONString(projectResponsePage));
 		return projectResponsePage;
 	}
 
@@ -561,5 +590,13 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 			}
 		}
 		return transactionPairResponsePage;
+	}
+
+	@Override
+	public void text() throws RestServiceException {
+		// TODO Auto-generated method stub
+
+		// transactionPairService.getdatafromUrlByexchangeTask();
+
 	}
 }

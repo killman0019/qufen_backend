@@ -12,7 +12,6 @@ import com.tzg.entitys.kff.projectManage.ProjectManageTabResponse;
 import com.tzg.entitys.kff.transactionpair.TransactionPairResponse;
 import com.tzg.rest.exception.rest.RestServiceException;
 
-
 /**
  * 项目的rmi相关的接口
  * 
@@ -66,5 +65,17 @@ public interface KFFProjectRmiService {
 	 * @throws RestServiceException
 	 */
 	public PageResult<TransactionPairResponse> selectExchangeAndTranPair(Integer projectId, PaginationQuery query) throws RestServiceException;
+
+	/**
+	 * 
+	 * TODO  测试接口
+	 * @throws RestServiceException
+	 * @author zhangdd
+	 * @data 2018年8月6日
+	 *
+	 */
+	public void text() throws RestServiceException;
+
+	
 
 }

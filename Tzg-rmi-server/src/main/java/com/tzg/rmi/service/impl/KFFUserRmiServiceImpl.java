@@ -40,7 +40,7 @@ public class KFFUserRmiServiceImpl implements KFFUserRmiService {
 
 	@Override
 	public PageResult<KFFUser> selectKOLProjectPage(Integer userId, PaginationQuery query) {
-		// TODO KOL��(��ע�����30�˵��û��񵥣�����˿���������20��)
+		// TODO 获得kol
 		List<Integer> userFollow = null;
 		if (null != userId) {
 			userFollow = kffFollowService.getUserFollow(userId, 3);
@@ -56,9 +56,9 @@ public class KFFUserRmiServiceImpl implements KFFUserRmiService {
 			for (KFFUser kffUser : userList) {
 				if (null != kffUser) {
 					if (!CollectionUtils.isEmpty(userFollow) && null != userId && userFollow.contains(kffUser.getUserId())) {
-						kffUser.setFollowStatus(1);// ���óɹ�ע
+						kffUser.setFollowStatus(1);// 重置成已关注
 					} else {
-						kffUser.setFollowStatus(0);// ���ó�δ��ע
+						kffUser.setFollowStatus(0);// 重置成未关注
 					}
 				}
 			}

@@ -59,9 +59,6 @@ public class HomeController extends BaseController {
 	@Autowired
 	private SystemParamRmiService systemParamRmiService;
 
-	
-	
-
 	/**
 	 * 首页推荐列表
 	 * 
@@ -87,11 +84,11 @@ public class HomeController extends BaseController {
 			pageSize = 10;
 		}
 		try {
-//			String token = (String) request.getSession().getAttribute("token");
+			// String token = (String) request.getSession().getAttribute("token");
 			Integer userId = null;
-//			if (StringUtils.isNotBlank(token)) {
-//				userId = getUserIdByToken(token);
-//			}
+			// if (StringUtils.isNotBlank(token)) {
+			// userId = getUserIdByToken(token);
+			// }
 			PaginationQuery query = new PaginationQuery();
 			query.addQueryData("status", "1");
 			query.addQueryData("stickTop", "1");
@@ -101,8 +98,8 @@ public class HomeController extends BaseController {
 			// query.addQueryData("postType", "1");
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
-			Integer type = 1;//取关项目
-			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query,type);
+			Integer type = 1;// 取关项目
+			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query, type);
 			map.put("recommends", recommends);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -549,7 +546,7 @@ public class HomeController extends BaseController {
 
 		try {
 			JSONObject requestContent = HtmlUtils.getRequestContent(request);
-			postId = Integer.valueOf((String) requestContent.get("postId"));
+			postId = (Integer) requestContent.get("postId");
 			if (postId == null || postId == 0) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARG_POSTID);
 			}

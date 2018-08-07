@@ -25,12 +25,81 @@ public class TransactionPairResponse implements Serializable {
 	private String exchangeName;
 
 	private Integer vaild;
+	private Double last;
+
+	private Double high;
+
+	private Double low;
+
+	private Double baseVolume;
+
+	private Double vol;
+
+	private Double changeDaily;
+
+	private Double usdRate;
 
 	/*private Date createTime;
 	private String createTimeStr;
 
 	private Date updateTime;
 	private String updateTimeStr;*/
+
+	public Double getLast() {
+		return last;
+	}
+
+	public void setLast(Double last) {
+		this.last = last;
+	}
+
+	public Double getHigh() {
+		return high;
+	}
+
+	public void setHigh(Double high) {
+		this.high = high;
+	}
+
+	public Double getLow() {
+		return low;
+	}
+
+	public void setLow(Double low) {
+		this.low = low;
+	}
+
+	public Double getBaseVolume() {
+		return baseVolume;
+	}
+
+	public void setBaseVolume(Double baseVolume) {
+		this.baseVolume = baseVolume;
+	}
+
+	public Double getVol() {
+		return vol;
+	}
+
+	public void setVol(Double vol) {
+		this.vol = vol;
+	}
+
+	public Double getChangeDaily() {
+		return changeDaily;
+	}
+
+	public void setChangeDaily(Double changeDaily) {
+		this.changeDaily = changeDaily;
+	}
+
+	public Double getUsdRate() {
+		return usdRate;
+	}
+
+	public void setUsdRate(Double usdRate) {
+		this.usdRate = usdRate;
+	}
 
 	public Integer getVaild() {
 		return vaild;

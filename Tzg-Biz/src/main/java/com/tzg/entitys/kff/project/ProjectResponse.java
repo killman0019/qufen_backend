@@ -34,7 +34,7 @@ public class ProjectResponse implements Serializable {
 	/**
 	 * 审核状态：1；待审核；2-审核通过；3-拒绝
 	 */
-	private java.lang.Integer state ;
+	private java.lang.Integer state;
 	/**
 	 * 代币名称
 	 */
@@ -58,7 +58,7 @@ public class ProjectResponse implements Serializable {
 	/**
 	 * 是否上市：0-未上市；1-已上市
 	 */
-	private java.lang.Integer listed ;
+	private java.lang.Integer listed;
 	/**
 	 * 发行时间
 	 */
@@ -67,7 +67,7 @@ public class ProjectResponse implements Serializable {
 	/**
 	 * 发行数量
 	 */
-	private java.lang.Long issueNum ;
+	private java.lang.Long issueNum;
 	/**
 	 * 白皮书地址
 	 */
@@ -140,12 +140,82 @@ public class ProjectResponse implements Serializable {
 	private java.lang.Integer collectNum = 0;
 
 	private Integer totalRaterNum = 0;
-	
+
 	private Integer cmcId;
-	
+
+	public Integer getRank() {
+		return rank;
+	}
+
+	public void setRank(Integer rank) {
+		this.rank = rank;
+	}
+
+	public Double getVolume24h() {
+		return volume24h;
+	}
+
+	public void setVolume24h(Double volume24h) {
+		this.volume24h = volume24h;
+	}
+
+	public Double getMarketCap() {
+		return marketCap;
+	}
+
+	public void setMarketCap(Double marketCap) {
+		this.marketCap = marketCap;
+	}
+
+	public Double getPercentChange1h() {
+		return percentChange1h;
+	}
+
+	public void setPercentChange1h(Double percentChange1h) {
+		this.percentChange1h = percentChange1h;
+	}
+
+	public Double getPercentChange7d() {
+		return percentChange7d;
+	}
+
+	public void setPercentChange7d(Double percentChange7d) {
+		this.percentChange7d = percentChange7d;
+	}
+
 	private String github;
-	
+
 	private String bsjCirculateData;
+
+	private Integer rank;
+
+	private Double price;
+
+	private Double volume24h;
+
+	private Double marketCap;
+
+	private Double percentChange1h;
+
+	private Double percentChange24h;
+
+	private Double percentChange7d;
+
+	public Double getPrice() {
+		return price;
+	}
+
+	public void setPrice(Double price) {
+		this.price = price;
+	}
+
+	public Double getPercentChange24h() {
+		return percentChange24h;
+	}
+
+	public void setPercentChange24h(Double percentChange24h) {
+		this.percentChange24h = percentChange24h;
+	}
 
 	public Integer getCmcId() {
 		return cmcId;

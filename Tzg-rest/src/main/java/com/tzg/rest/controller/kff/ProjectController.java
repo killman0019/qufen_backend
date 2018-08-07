@@ -578,7 +578,7 @@ public class ProjectController extends BaseController {
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
 			PageResult<ProjectResponse> projectResponsePage = kFFProjectRmiService.showProjectList(tabId, userId, query);
-			//System.err.println("projectResponsePage+++++++++++++++++++++++" + JSON.toJSONString(projectResponsePage));
+			System.err.println("projectResponsePage+++++++++++++++++++++++" + JSON.toJSONString(projectResponsePage));
 			map.put("projectResponsePage", projectResponsePage);
 			bre.setData(map);
 		} catch (RestServiceException e) {
