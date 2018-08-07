@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.codehaus.plexus.util.cli.CommandLineUtils.StringStreamConsumer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,7 +74,7 @@ public class FollowService {
 		map.put("followUserId", userId + "");
 		map.put("followType", followType + "");
 		map.put("followedId", followedId + "");
-		
+
 		return followMapper.findByWhere(map);
 	}
 
@@ -86,7 +87,6 @@ public class FollowService {
 		return followMapper.findByWhere(map);
 	}
 
-	
 	public void updateUserInfo(Map<String, Object> followMap) {
 
 		followMapper.updateUserInfo(followMap);
@@ -107,33 +107,41 @@ public class FollowService {
 		map.put("status", "1");
 		return followMapper.findFollowedProjects(map);
 	}
-	
+
 	public List<Follow> findListByAttr(Map<String, Object> map) {
 		return followMapper.findFollowedProjects(map);
 	}
-	
-		/**
-	 * 根据类型用户查询用户的相关关注列表 (获得1-关注项目;2-关注帖子；3-关注用户 1关注 0 未关注)
-	 * @param userId
-	 * @param followType
-	 * @return
-	 */
-	public List<Integer> getUserFollow(Integer userId, Integer followType) {
+
+	/**
+	* 根据类型用户查询用户的相关关注列表 (获得1-关注项目;2-关注帖子；3-关注用户 1关注 0 未关注)
+	* @param userId
+	* @param followType
+	* @return
+	*/
+	public Map<String, Object> getUserFollow(Integer userId, Integer followType) {
+		Map<String, Object> resultMap = new HashMap<String, Object>();
 		List<Integer> followedProjectIds = new ArrayList<Integer>();
 		// 判断此项目是否被这个用户 关注
-		PaginationQuery queryFollow = new PaginationQuery();
-		queryFollow.addQueryData("followUserId", userId + "");
-		queryFollow.addQueryData("followType", followType + ""); // 关注类型：1-关注项目;2-关注帖子；3-关注用户
-		queryFollow.addQueryData("status", "1");
-		queryFollow.setPageIndex(1);
-		queryFollow.setRowsPerPage(2000);
-		PageResult<Follow> follows = findPage(queryFollow);
-		if (follows != null && !CollectionUtils.isEmpty((follows.getRows()))) {
-			for (Follow follow : follows.getRows()) {
-				followedProjectIds.add(follow.getFollowedId());
+		Map<String, String> followMap = new HashMap<String, String>();
+		followMap.put("followUserId", userId + "");
+		followMap.put("followType", followType + ""); // 关注类型：1-关注项目;2-关注帖子；3-关注用户
+		followMap.put("status", "1");
+
+		List<Follow> followList = findByMap(followMap);
+		if (followList != null && !CollectionUtils.isEmpty((followList))) {
+			for (Follow follow : followList) {
+				if (null != follow) {
+					followedProjectIds.add(follow.getFollowedId());
+				}
 			}
 		}
-		return followedProjectIds;
+		resultMap.put("followedProjectIds", followedProjectIds);
+		resultMap.put("followList", followList);
+		return resultMap;
+	}
+
+	public List<Follow> findByMap(Map<String, String> map) {
+		return followMapper.findByMap(map);
 	}
 
 }

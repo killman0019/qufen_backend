@@ -43,7 +43,7 @@ public class KFFUserRmiServiceImpl implements KFFUserRmiService {
 		// TODO 获得kol
 		List<Integer> userFollow = null;
 		if (null != userId) {
-			userFollow = kffFollowService.getUserFollow(userId, 3);
+			userFollow = (List<Integer>) kffFollowService.getUserFollow(userId, 3).get("followedProjectIds");
 		}
 		query.addQueryData("DYFansNum", "30");
 		query.addQueryData("status", "1");

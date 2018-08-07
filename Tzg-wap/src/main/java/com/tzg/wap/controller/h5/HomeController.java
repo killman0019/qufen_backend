@@ -546,7 +546,7 @@ public class HomeController extends BaseController {
 
 		try {
 			JSONObject requestContent = HtmlUtils.getRequestContent(request);
-			postId = (Integer) requestContent.get("postId");
+			postId = Integer.valueOf((String) requestContent.get("postId"));
 			if (postId == null || postId == 0) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARG_POSTID);
 			}

@@ -14,6 +14,8 @@ public interface FollowMapper extends BaseMapper<Follow, java.lang.Integer> {
 
 	void updateUserInfo(Map<String, Object> followMap);	
 
-	List<Follow> findFollowedProjects(Map<String, Object> map);	
+	List<Follow> findFollowedProjects(Map<String, Object> map);
+
+	List<Follow> findByMap(Map<String, String> map);	
 
 }

@@ -33,6 +33,8 @@ import com.tzg.entitys.kff.praise.PraiseMapper;
 import com.tzg.entitys.kff.project.KFFProject;
 import com.tzg.entitys.kff.project.KFFProjectMapper;
 import com.tzg.entitys.kff.project.ProjectResponse;
+import com.tzg.entitys.kff.projecttrade.ProjectTrade;
+import com.tzg.entitys.kff.projecttrade.ProjectTradeMapper;
 import com.tzg.entitys.kff.qfindex.QfIndex;
 import com.tzg.entitys.kff.qfindex.QfIndexMapper;
 import com.tzg.entitys.kff.user.KFFUser;
@@ -54,12 +56,15 @@ public class ProjectService {
 	@Autowired
 	private PraiseMapper praiseMapper;
 
+	@Autowired
+	private ProjectTradeMapper projectTradeMapper;
+
 	private static final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 4);
 
 	public List<KFFProject> findListByMap(Map<String, Object> map) {
 		return projectMapper.findListByMap(map);
 	}
-	
+
 	@Transactional(readOnly = true)
 	public KFFProject findById(java.lang.Integer id) throws RestServiceException {
 		if (id == null) {
@@ -205,7 +210,7 @@ public class ProjectService {
 	private void caculateOneScore(Integer projectId, CountDownLatch countDownLatch) {
 		try {
 			BigDecimal totalScore;
-			
+
 			KFFProject originalProject = projectMapper.findById(projectId);
 			if (originalProject != null) {
 				totalScore = originalProject.getTotalScore();
@@ -393,10 +398,21 @@ public class ProjectService {
 		}
 	}
 
+	/**
+	 * 
+	 * TODO
+	 * @param query
+	 * @param projectFollowList 关注的projectIdlist
+	 * @return
+	 * @author zhangdd
+	 * @data 2018年8月7日
+	 *
+	 */
 	@Transactional(readOnly = true)
-	public PageResult<ProjectResponse> selectPage(PaginationQuery query) {
+	public PageResult<ProjectResponse> selectPage(PaginationQuery query, List<Integer> projectFollowList) {
 		// TODO 使用in 进行分页查询
 		List<ProjectResponse> projectResponses = new ArrayList<ProjectResponse>();
+
 		PageResult<ProjectResponse> result = null;
 		try {
 			Integer count = projectMapper.findPageCountInList(query.getQueryData());
@@ -408,10 +424,31 @@ public class ProjectService {
 				if (!CollectionUtils.isEmpty(list)) {
 					System.err.println("list" + JSON.toJSONString(list));
 					for (KFFProject kffProject : list) {
-						System.err.println("kffProject" + JSON.toJSONString(kffProject));
-						ProjectResponse projectResponse = new ProjectResponse();
-						DozerMapperUtils.map(kffProject, projectResponse);
-						projectResponses.add(projectResponse);
+						if (null != kffProject) {
+							System.err.println("kffProject" + JSON.toJSONString(kffProject));
+							ProjectResponse projectResponse = new ProjectResponse();
+							DozerMapperUtils.map(kffProject, projectResponse);
+							Map<String, String> projectTradeMap = new HashMap<String, String>();
+
+							projectTradeMap.put("projectId", kffProject.getProjectId() + "");
+							List<ProjectTrade> projectTradeList = projectTradeMapper.findByMap(projectTradeMap);
+							if (!CollectionUtils.isEmpty(projectTradeList)) {
+								ProjectTrade projectTrade = projectTradeList.get(0);
+								projectResponse.setPercentChange1h(projectTrade.getPercentChange1h());
+								projectResponse.setPercentChange24h(projectTrade.getPercentChange24h());
+								projectResponse.setPercentChange7d(projectTrade.getPercentChange7d());
+								projectResponse.setPrice(projectTrade.getPrice());
+								projectResponse.setMarketCap(projectTrade.getMarketCap());
+								projectResponse.setVolume24h(projectTrade.getVolume24h());
+								projectResponse.setRank(projectTrade.getRank());
+								if (!CollectionUtils.isEmpty(projectFollowList)) {
+									if (projectFollowList.contains(projectResponse.getProjectId())) {
+										projectResponse.setFollowStatus(1);
+									}
+								}
+							}
+							projectResponses.add(projectResponse);
+						}
 					}
 				}
 				result = new PageResult<ProjectResponse>(projectResponses, count, query);
