@@ -39,16 +39,6 @@ public class RewardDetail implements Serializable{
     private String projectCode; 
     
     private String projectIcon; 
-    //中文名
-    private String projectChineseName;
-    
-    public String getProjectChineseName() {
-		return projectChineseName;
-	}
-
-	public void setProjectChineseName(String projectChineseName) {
-		this.projectChineseName = projectChineseName;
-	}
 
 	public BigDecimal getCash() {
 		return cash;
