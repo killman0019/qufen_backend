@@ -187,7 +187,7 @@
     		  and (mnact.status = #{status1} or mnact.status = #{status2} or mnact.status = #{status3})
     		</if>
     		<if test="status4!=null">
-    		  and (mnact.status = #{status4} or mnact.status = #{status5})
+    		  and mnact.status = #{status4}
     		</if>
     		<if test="nowBeginDt!=null">
     		  and begin_dt &lt;= #{nowBeginDt}

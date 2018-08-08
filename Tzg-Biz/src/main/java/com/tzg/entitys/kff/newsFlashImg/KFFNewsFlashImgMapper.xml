@@ -110,7 +110,7 @@
 	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
 		select <include refid="columns" />  from <include refid="table_name" />
 		<include refid="condition"/>
-	    <![CDATA[ ORDER BY id DESC ]]>
+	    <![CDATA[ ORDER BY sort ASC ]]>
         <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
 	</select>
 	

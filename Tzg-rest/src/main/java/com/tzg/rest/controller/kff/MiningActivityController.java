@@ -313,7 +313,6 @@ public class MiningActivityController extends BaseController {
 			}
 			if(state==1) {
 				query.addQueryData("status4", 2);
-				query.addQueryData("status5", 3);
 			}
 			Integer curPage = (Integer)policyJson.get("pageIndex");
 			Integer pageSize = (Integer)policyJson.get("pageSize");
