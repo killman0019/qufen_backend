@@ -557,7 +557,7 @@
 		FROM
 		tbproject tp
 		LEFT JOIN tbprojecttrade tpt ON tp.project_id = tpt.project_id
-		where 1=1 and tp.status =1 and state=2
+		where 1=1 and tp.status =1 and tp.state=2
 		<include refid="inList" />
 		<choose>
 			<when test="sortField != null and sortField != ''">
@@ -579,7 +579,7 @@
 		LEFT JOIN tbprojecttrade tpt
 		ON
 		tp.project_id = tpt.project_id
-		where 1=1 and tp.status = 1 and state=2
+		where 1=1 and tp.status = 1 and tp.state=2
 
 		<include refid="inList" />
 	</select>
