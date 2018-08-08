@@ -547,8 +547,8 @@
 		<if test="DYFansNum != null and DYFansNum.trim() != ''">
 			and fans_num >= #{DYFansNum}
 		</if>
-		<if test="DYPostNumAll != null and DYPostNumAll.trim() != ''">
-			and ( evaluation_num + discuss_num + article_num) >= #{DYPostNumAll}
+		<if test="DYPostNumAll != null ">
+			and ( evaluation_num + discuss_num + article_num) &gt;= #{DYPostNumAll}
 		</if>
 	</sql>
 
