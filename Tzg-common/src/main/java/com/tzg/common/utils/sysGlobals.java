@@ -52,7 +52,7 @@ public final class sysGlobals{
 	public static String SET_REMARK ="完成挖矿活动奖励为FIND币，系统程序直接发放";
 	
 	/**发现-活跃用户数量（粉丝）大于30*/
-	public static Integer HOT_USER=30;
+	public static String HOT_USER="HOT_USER";
 	/**发现-热门项目(关注超过500人)*/
-	public static Integer HOT_PROJECT=500;
+	public static String HOT_PROJECT="HOT_PROJECT";
 }

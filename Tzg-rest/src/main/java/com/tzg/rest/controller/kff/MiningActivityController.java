@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -28,6 +29,7 @@ import com.tzg.entitys.kff.evaluation.Evaluation;
 import com.tzg.entitys.kff.follow.Follow;
 import com.tzg.entitys.kff.project.KFFProject;
 import com.tzg.entitys.kff.user.KFFUser;
+import com.tzg.entitys.leopard.system.SystemParam;
 import com.tzg.rest.controller.BaseController;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
@@ -40,6 +42,7 @@ import com.tzg.rmi.service.KFFUserRmiService;
 import com.tzg.rmi.service.MiningActivityRmiService;
 import com.tzg.rmi.service.PostShareRmiService;
 import com.tzg.rmi.service.RewardDetailRmiService;
+import com.tzg.rmi.service.SystemParamRmiService;
 
 /** 
 * @ClassName: MiningActivityController 
@@ -69,6 +72,40 @@ public class MiningActivityController extends BaseController {
 	private KFFProjectPostRmiService projectPostRmiService;
 	@Autowired
 	private KFFUserRmiService userRmiService;
+	@Autowired
+	private SystemParamRmiService systemParamRmiService;
+	
+	/**
+	 * @Description： 随机抽取集合中值
+	 * @author: linj
+	 * @date: 2017/04/29 17:12:00
+	 * @param list
+	 */
+	private static  Integer getProjectListArr(List<KFFProject> list){
+		if(list.isEmpty()){
+			return null;
+		}
+		Random ran = new Random();
+		int con=ran.nextInt(list.size());
+		return con;
+	}
+	
+	 /**
+		 * @Description： 随机抽取集合中值
+		 * @author: linj
+		 * @date: 2017/04/29 17:12:00
+		 * @param list
+		 */
+	private static Integer getUserListArr(List<KFFUser> list){
+		if(list.isEmpty()){
+			return null;
+		}
+		Random ran = new Random();
+		int con=ran.nextInt(list.size());
+		return con;
+	}
+
+	
 	
 	/** 
 	* @Title: getHotProjectAndHotUser 
@@ -90,33 +127,76 @@ public class MiningActivityController extends BaseController {
 		HashMap<String,Object> reMap = new HashMap<String,Object>();
 		try {
 			Map<String,Object> map = new HashMap<String,Object>();
-			map.put("hotUser", sysGlobals.HOT_USER);
-			map.put("startRecord", 0);
-			map.put("endRecord", 10);
+			SystemParam sysParm = systemParamRmiService.findByCode(sysGlobals.HOT_USER);
+			map.clear();
+			map.put("hotUser", Integer.valueOf(sysParm.getVcParamValue()));
 			List<KFFUser> users = userRmiService.findListByMap(map);
 			List<Map<String,Object>> userList = new ArrayList<Map<String,Object>>();
 			if(!users.isEmpty()) {
-				for (KFFUser kffUser : users) {
-					Map<String,Object> seMap = new HashMap<String,Object>();
-					seMap.put("userName", kffUser.getUserName());
-					seMap.put("icon", kffUser.getIcon());
-					seMap.put("userId", kffUser.getUserId());
-					userList.add(seMap);	
+				if(users.size()<11) {
+					for (KFFUser kffUser : users) {
+						Map<String,Object> seMap = new HashMap<String,Object>();
+						seMap.put("userName", kffUser.getUserName());
+						seMap.put("icon", kffUser.getIcon());
+						seMap.put("userId", kffUser.getUserId());
+						userList.add(seMap);	
+					}
+				}else {
+					List<Integer> usList = new ArrayList<Integer>();
+					for (int i = 0; i < 10; i++) {
+						boolean flag = false;
+						while (!flag) {
+							Integer usArr = getUserListArr(users);
+							if(!usList.contains(usArr)) {
+								usList.add(usArr);
+								flag = true;
+							}
+						}
+					}
+					for (int i = 0; i < usList.size(); i++) {
+						KFFUser kffUser = users.get(usList.get(i));
+						Map<String,Object> seMap = new HashMap<String,Object>();
+						seMap.put("userName", kffUser.getUserName());
+						seMap.put("icon", kffUser.getIcon());
+						seMap.put("userId", kffUser.getUserId());
+						userList.add(seMap);
+					}
 				}
 			}
+			SystemParam sysParmc = systemParamRmiService.findByCode(sysGlobals.HOT_PROJECT);
 			map.clear();
-			map.put("hotProject", sysGlobals.HOT_PROJECT);
-			map.put("startRecord", 0);
-			map.put("endRecord", 10);
+			map.put("hotProject", Integer.valueOf(sysParmc.getVcParamValue()));
 			List<KFFProject> projects = projectPostRmiService.findListByMap(map);
 			List<Map<String,Object>> projectList = new ArrayList<Map<String,Object>>();
 			if(!projects.isEmpty()) {
-				for (KFFProject kffProject : projects) {
-					Map<String,Object> seMap = new HashMap<String,Object>();
-					seMap.put("projectChineseName", kffProject.getProjectChineseName());
-					seMap.put("projectIcon", kffProject.getProjectIcon());
-					seMap.put("projectId", kffProject.getProjectId());
-					projectList.add(seMap);	
+				if(projects.size()<11) {
+					for (KFFProject kffProject : projects) {
+						Map<String,Object> seMap = new HashMap<String,Object>();
+						seMap.put("projectChineseName", kffProject.getProjectChineseName());
+						seMap.put("projectIcon", kffProject.getProjectIcon());
+						seMap.put("projectId", kffProject.getProjectId());
+						projectList.add(seMap);	
+					}
+				}else {
+					List<Integer> usList = new ArrayList<Integer>();
+					for (int i = 0; i < 10; i++) {
+						boolean flag = false;
+						while (!flag) {
+							Integer usArr = getProjectListArr(projects);
+							if(!usList.contains(usArr)) {
+								usList.add(usArr);
+								flag = true;
+							}
+						}
+					}
+					for (int i = 0; i < usList.size(); i++) {
+						KFFProject kffProject = projects.get(usList.get(i));
+						Map<String,Object> seMap = new HashMap<String,Object>();
+						seMap.put("projectChineseName", kffProject.getProjectChineseName());
+						seMap.put("projectIcon", kffProject.getProjectIcon());
+						seMap.put("projectId", kffProject.getProjectId());
+						projectList.add(seMap);	
+					}
 				}
 			}
 			reMap.put("users", userList);
