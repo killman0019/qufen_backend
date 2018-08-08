@@ -144,11 +144,17 @@ public class MiningActivityController extends BaseController {
 				}else {
 					List<Integer> usList = new ArrayList<Integer>();
 					for (int i = 0; i < 10; i++) {
-						Integer usArr = getUserListArr(users);
-						usList.add(usArr);
+						boolean flag = false;
+						while (!flag) {
+							Integer usArr = getUserListArr(users);
+							if(!usList.contains(usArr)) {
+								usList.add(usArr);
+								flag = true;
+							}
+						}
 					}
 					for (int i = 0; i < usList.size(); i++) {
-						KFFUser kffUser = users.get(i);
+						KFFUser kffUser = users.get(usList.get(i));
 						Map<String,Object> seMap = new HashMap<String,Object>();
 						seMap.put("userName", kffUser.getUserName());
 						seMap.put("icon", kffUser.getIcon());
@@ -174,11 +180,17 @@ public class MiningActivityController extends BaseController {
 				}else {
 					List<Integer> usList = new ArrayList<Integer>();
 					for (int i = 0; i < 10; i++) {
-						Integer usArr = getProjectListArr(projects);
-						usList.add(usArr);
+						boolean flag = false;
+						while (!flag) {
+							Integer usArr = getProjectListArr(projects);
+							if(!usList.contains(usArr)) {
+								usList.add(usArr);
+								flag = true;
+							}
+						}
 					}
 					for (int i = 0; i < usList.size(); i++) {
-						KFFProject kffProject = projects.get(i);
+						KFFProject kffProject = projects.get(usList.get(i));
 						Map<String,Object> seMap = new HashMap<String,Object>();
 						seMap.put("projectChineseName", kffProject.getProjectChineseName());
 						seMap.put("projectIcon", kffProject.getProjectIcon());
