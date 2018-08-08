@@ -358,7 +358,6 @@
 		select project_id,project_chinese_name,project_icon from tbproject where 1=1
 		<include refid="queryWhere" />
 		ORDER BY follower_num DESC
-		LIMIT ${startRecord},${endRecord}
 	</select>
 
 	<sql id="queryWhere">

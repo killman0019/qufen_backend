@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -15,6 +16,24 @@ public class StringUtil extends StringUtils {
 
     public StringUtil() {
     }
+    
+    /**
+	 * @Description： 随机抽取集合中值
+	 * @author: GuXiYang
+	 * @date: 2017/04/29 17:12:00
+	 * @param list
+	 */
+	private static Integer getUserListArr(List<Object> list){
+		if(list.isEmpty()){
+			return null;
+		}
+		Random ran = new Random();
+		//产生0-（list.size()）个随机数 也就是集合下标	
+		int con=ran.nextInt(list.size());
+//		String result=list.get(con).toString();
+//		System.out.println("随机下标："+con+" 值："+result);	
+		return con;
+	}
     
     
 	// 判断Object是空
