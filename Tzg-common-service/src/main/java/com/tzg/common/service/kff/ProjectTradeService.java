@@ -10,16 +10,19 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import com.tzg.common.utils.DateUtil;
 import com.tzg.common.utils.HttpUtil;
+import com.tzg.common.utils.sysGlobals;
 import com.tzg.entitys.kff.project.KFFProject;
 import com.tzg.entitys.kff.project.KFFProjectMapper;
 import com.tzg.entitys.kff.projecttrade.ProjectTrade;
@@ -34,6 +37,9 @@ public class ProjectTradeService {
 	@Autowired
 	private KFFProjectMapper kffProjectMapper;
 
+	@Value("#{paramConfig['DEV_ENVIRONMENT']}")
+	private String devEnvironment;
+
 	/**
 	 * 
 	 * TODO 进行定时获取project相关详情数据
@@ -45,94 +51,94 @@ public class ProjectTradeService {
 	 */
 	public void getProjectDateFromUrlTask() {
 		// 获得项目表中的项目列表
+		if (StringUtils.isNotBlank(devEnvironment) && devEnvironment.equals(sysGlobals.DEV_ENVIRONMENT)) {
+			try {
+				List<ProjectTrade> projectTradeListInsert = new ArrayList<ProjectTrade>();
+				List<ProjectTrade> projectTradeListUpdate = new ArrayList<ProjectTrade>();
+				Date now = new Date();
 
-		try {
-			List<ProjectTrade> projectTradeListInsert = new ArrayList<ProjectTrade>();
-			List<ProjectTrade> projectTradeListUpdate = new ArrayList<ProjectTrade>();
-			Date now = new Date();
+				String strBase = getToken();
 
-			String strBase = getToken();
+				String doGetData = HttpUtil.doGet(strBase);
+				System.err.println("doGetData" + doGetData);
+				JSONObject jsonObject = new JSONObject(doGetData);
+				System.err.println("jsonObject" + jsonObject);
+				JSONArray jsonArray = jsonObject.getJSONArray("data");
+				if (null != jsonArray && jsonArray.length() > 0) {
 
-			String doGetData = HttpUtil.doGet(strBase);
-			System.err.println("doGetData" + doGetData);
-			JSONObject jsonObject = new JSONObject(doGetData);
-			System.err.println("jsonObject" + jsonObject);
-			JSONArray jsonArray = jsonObject.getJSONArray("data");
-			if (null != jsonArray && jsonArray.length() > 0) {
-
-				for (Object object : jsonArray) {
-					JSONObject jsonData = new JSONObject(object.toString());
-					// String name = jsonData.getString("name");
-					int cmcId = jsonData.getInt("id");
-					int rank = jsonData.getInt("cmc_rank");
-					Object objectQuote = jsonData.get("quote");
-					if (null != objectQuote) {
-						JSONObject objectQuoteData = new JSONObject(objectQuote.toString());
-						Object objectCNY = objectQuoteData.get("CNY");
-						JSONObject objectCNYData = new JSONObject(objectCNY.toString());
-						double volume24h = objectCNYData.getDouble("volume_24h");
-						double percentChange1h = objectCNYData.getDouble("percent_change_1h");
-						double percentChange24h = objectCNYData.getDouble("percent_change_24h");
-						double percentChange7d = objectCNYData.getDouble("percent_change_7d");
-						double marketCap = objectCNYData.getDouble("market_cap");
-						double price = objectCNYData.getDouble("price");
-						Map<String, String> map = new HashMap<String, String>();
-						map.put("cmcId", cmcId + "");
-						List<ProjectTrade> projectTradeList = projectTradeMapper.findByMap(map);
-						ProjectTrade projectTrade = new ProjectTrade();
-						projectTrade.setCmcId(cmcId);
-						projectTrade.setMarketCap(marketCap);
-						projectTrade.setPercentChange1h(percentChange1h);
-						projectTrade.setPercentChange24h(percentChange24h);
-						projectTrade.setPercentChange7d(percentChange7d);
-						projectTrade.setPrice(price);
-						projectTrade.setRank(rank);
-						projectTrade.setUpdataTime(now);
-						projectTrade.setVolume24h(volume24h);
-						if (CollectionUtils.isEmpty(projectTradeList)) {
-							// 插入新添加数据
-							Map<String, Object> projectMap = new HashMap<String, Object>();
-							projectMap.put("cmcId", cmcId);
-							List<KFFProject> projectList = kffProjectMapper.findByMap(projectMap);
-							if (!CollectionUtils.isEmpty(projectList)) {
-								if (null != projectList.get(0)) {
-									projectTrade.setProjectId(projectList.get(0).getProjectId());
-									projectTrade.setCreateTime(now);
-									projectTrade.setStatus(1);
-									projectTradeMapper.save(projectTrade);
+					for (Object object : jsonArray) {
+						JSONObject jsonData = new JSONObject(object.toString());
+						// String name = jsonData.getString("name");
+						int cmcId = jsonData.getInt("id");
+						int rank = jsonData.getInt("cmc_rank");
+						Object objectQuote = jsonData.get("quote");
+						if (null != objectQuote) {
+							JSONObject objectQuoteData = new JSONObject(objectQuote.toString());
+							Object objectCNY = objectQuoteData.get("CNY");
+							JSONObject objectCNYData = new JSONObject(objectCNY.toString());
+							double volume24h = objectCNYData.getDouble("volume_24h");
+							double percentChange1h = objectCNYData.getDouble("percent_change_1h");
+							double percentChange24h = objectCNYData.getDouble("percent_change_24h");
+							double percentChange7d = objectCNYData.getDouble("percent_change_7d");
+							double marketCap = objectCNYData.getDouble("market_cap");
+							double price = objectCNYData.getDouble("price");
+							Map<String, String> map = new HashMap<String, String>();
+							map.put("cmcId", cmcId + "");
+							List<ProjectTrade> projectTradeList = projectTradeMapper.findByMap(map);
+							ProjectTrade projectTrade = new ProjectTrade();
+							projectTrade.setCmcId(cmcId);
+							projectTrade.setMarketCap(marketCap);
+							projectTrade.setPercentChange1h(percentChange1h);
+							projectTrade.setPercentChange24h(percentChange24h);
+							projectTrade.setPercentChange7d(percentChange7d);
+							projectTrade.setPrice(price);
+							projectTrade.setRank(rank);
+							projectTrade.setUpdataTime(now);
+							projectTrade.setVolume24h(volume24h);
+							if (CollectionUtils.isEmpty(projectTradeList)) {
+								// 插入新添加数据
+								Map<String, Object> projectMap = new HashMap<String, Object>();
+								projectMap.put("cmcId", cmcId);
+								List<KFFProject> projectList = kffProjectMapper.findByMap(projectMap);
+								if (!CollectionUtils.isEmpty(projectList)) {
+									if (null != projectList.get(0)) {
+										projectTrade.setProjectId(projectList.get(0).getProjectId());
+										projectTrade.setCreateTime(now);
+										projectTrade.setStatus(1);
+										projectTradeMapper.save(projectTrade);
+									}
 								}
-							}
 
-						} else if (!CollectionUtils.isEmpty(projectTradeList)) {
-							// 进行更新
-							if (projectTradeList.get(0) != null) {
-								ProjectTrade projectTradeForDB = projectTradeList.get(0);
-								if (null != projectTradeForDB) {
-									Integer projectTradeId = projectTradeForDB.getProjectTradeId();
-									projectTrade.setUpdataTime(now);
-									projectTrade.setProjectTradeId(projectTradeId);
-									projectTradeMapper.update(projectTrade);
-									/*projectTradeListUpdate.add(projectTrade);
-									if (projectTradeListUpdate.size() == 100) {
-										projectTradeMapper.updateBatch(projectTradeListUpdate);
-										projectTradeListUpdate.clear();
-									}*/
+							} else if (!CollectionUtils.isEmpty(projectTradeList)) {
+								// 进行更新
+								if (projectTradeList.get(0) != null) {
+									ProjectTrade projectTradeForDB = projectTradeList.get(0);
+									if (null != projectTradeForDB) {
+										Integer projectTradeId = projectTradeForDB.getProjectTradeId();
+										projectTrade.setUpdataTime(now);
+										projectTrade.setProjectTradeId(projectTradeId);
+										projectTradeMapper.update(projectTrade);
+										/*projectTradeListUpdate.add(projectTrade);
+										if (projectTradeListUpdate.size() == 100) {
+											projectTradeMapper.updateBatch(projectTradeListUpdate);
+											projectTradeListUpdate.clear();
+										}*/
+									}
 								}
-							}
 
+							}
 						}
 					}
+
+					// projectTradeMapper.updateBatch(projectTradeListUpdate);
+				} else {
+					System.err.println("error null");
 				}
-
-				// projectTradeMapper.updateBatch(projectTradeListUpdate);
-			} else {
-				System.err.println("error null");
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-
 	}
 
 	public static String getToken() {
