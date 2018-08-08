@@ -3792,8 +3792,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				response.setCollectStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
 			}
 		}
-		if (null != loginUser) {
-			response.setUserType(loginUser.getUserType());
+		if (null != post) {
+			KFFUser createUser = kffUserService.findById(post.getCreateUserId());
+			response.setUserType(createUser.getUserType());
 		}
 		// /2条超过20个点赞的，最高的 热门评论
 		List<Comments> hotCommentsresult = new ArrayList<>();
@@ -3996,7 +3997,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			}
 		}
 		if (null != loginUser) {
-			response.setUserType(loginUser.getUserType());
+			KFFUser ceateUser = kffUserService.findById(post.getCreateUserId());
+			response.setUserType(ceateUser.getUserType());
 		}
 		// 赞赏用户列表最多8个
 		List<Commendation> donateUsers = new ArrayList<>();
