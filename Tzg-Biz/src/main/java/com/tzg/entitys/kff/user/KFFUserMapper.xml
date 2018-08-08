@@ -540,6 +540,9 @@
 		<if test="DYFansNum != null and DYFansNum.trim() != ''">
 		and fans_num >= #{DYFansNum}
 		</if>
+		<if test="DYPostNum != null and DYFansNum.trim() != ''">
+		and ( evaluation_num >= #{DYPostNum} or discuss_num>= #{DYPostNum} or evaluation_num>= #{DYPostNum})
+		</if>
 	</sql>
 	
 	
