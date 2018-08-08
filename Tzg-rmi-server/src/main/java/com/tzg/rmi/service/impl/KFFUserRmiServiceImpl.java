@@ -50,7 +50,7 @@ public class KFFUserRmiServiceImpl implements KFFUserRmiService {
 		// query.setPageIndex(20);
 		query.addQueryData("sortField", "fans_num");
 		query.addQueryData("sortSequence", "DESC");
-		query.addQueryData("DYPostNum", 5 + "");
+		query.addQueryData("DYPostNumAll", 5 + "");
 		PageResult<KFFUser> userPage = userService.findPage(query);
 		if (null != userPage && !CollectionUtils.isEmpty(userPage.getRows())) {
 			List<KFFUser> userList = userPage.getRows();

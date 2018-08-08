@@ -93,7 +93,7 @@ public class HomeController extends BaseController {
 			query.addQueryData("status", "1");
 			query.addQueryData("stickTop", "1");
 			query.addQueryData("sortField", "stick_updateTime");
-			//query.addQueryData("praiseNum", "10");
+			// query.addQueryData("praiseNum", "10");
 			// 帖子类型：1-评测；2-讨论；3-文章
 			// query.addQueryData("postType", "1");
 			query.setPageIndex(baseRequest.getPageIndex());
@@ -192,6 +192,7 @@ public class HomeController extends BaseController {
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
 			PageResult<PostResponse> follows = kffProjectPostRmiService.findMyPageFollowList(userId, query);
+			System.err.println("follows" + follows);
 			map.put("follows", follows);
 			bre.setData(map);
 		} catch (RestServiceException e) {
