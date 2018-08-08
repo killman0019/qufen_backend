@@ -130,6 +130,7 @@ public class MiningActivityController extends BaseController {
 			SystemParam sysParm = systemParamRmiService.findByCode(sysGlobals.HOT_USER);
 			map.clear();
 			map.put("hotUser", Integer.valueOf(sysParm.getVcParamValue()));
+			map.put("DYPostNumAll", 5);
 			List<KFFUser> users = userRmiService.findListByMap(map);
 			List<Map<String,Object>> userList = new ArrayList<Map<String,Object>>();
 			if(!users.isEmpty()) {
