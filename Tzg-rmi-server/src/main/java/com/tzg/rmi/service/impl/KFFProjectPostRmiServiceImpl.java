@@ -154,11 +154,10 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 	private RedisService redisService;
 	@Autowired
 	private ThreadPoolTaskExecutor taskExecutor;
-	
+
 	public List<KFFProject> findListByMap(Map<String, Object> map) {
 		return kffProjectService.findListByMap(map);
 	}
-	
 
 	@Override
 	public Map<String, Object> findProjectEvaStatScore(Integer projectId) throws RestServiceException {
@@ -348,6 +347,7 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 						pr.setTotalScore(eva.getTotalScore());
 					} else if (realPost != null) {
 						BeanUtils.copyProperties(realPost, pr);
+
 					}
 
 					// 讨论返回标签
@@ -364,6 +364,10 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 						pr.setFollowStatus(1);
 					} else {
 						pr.setFollowStatus(0);
+					}
+					KFFUser createUser = kffUserService.findByUserId(realPost.getCreateUserId());
+					if (null != createUser) {
+						pr.setUserType(createUser.getUserType());
 					}
 				} else if (Objects.equal(2, post.getPostType())) {
 					user = kffUserService.findById(post.getCreateUserId());
@@ -397,6 +401,10 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 					} else {
 						pr.setFollowStatus(0);
 					}
+					KFFUser createUser = kffUserService.findByUserId(realPost.getCreateUserId());
+					if (null != createUser) {
+						pr.setUserType(createUser.getUserType());
+					}
 				} else if (Objects.equal(3, post.getPostType())) {
 					user = kffUserService.findById(post.getCreateUserId());
 					pr.setActionDesc(user == null ? "匿名用户" : user.getUserName() + "关注了项目");
@@ -416,6 +424,9 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 						pr.setFollowStatus(1);
 					} else {
 						pr.setFollowStatus(0);
+					}
+					if (null != user) {
+						pr.setUserType(user.getUserType());
 					}
 					pr.setTotalScore(project.getTotalScore());
 				} else if (Objects.equal(4, post.getPostType())) {
@@ -448,6 +459,10 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 					} else {
 						pr.setFollowStatus(0);
 					}
+					KFFUser createUser = kffUserService.findByUserId(realPost.getCreateUserId());
+					if (null != createUser) {
+						pr.setUserType(createUser.getUserType());
+					}
 				} else {
 					continue;
 				}
@@ -456,12 +471,13 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 				if (StringUtils.isNotBlank(pr.getPostShortDesc())) {
 					pr.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(pr.getPostShortDesc()));
 				}
-				if (post != null) {
+
+				/*if (post != null) {
 					KFFUser createUser = kffUserService.findByUserId(post.getCreateUserId());
 					if (null != createUser) {
 						pr.setUserType(createUser.getUserType());
 					}
-				}
+				}*/
 
 				rows.add(pr);
 			}
