@@ -536,7 +536,7 @@
 		tp.follower_num follower_num,
 		tp.comments_num comments_num,
 		tp.collect_num collect_num,
-		tp.totalRaterNum,
+		tp.totalRaterNum totalRaterNum,
 		tp.cmc_id cmc_id,
 		tp.github github,
 		tp.bsj_circulate_data
@@ -558,7 +558,8 @@
 		FROM
 		tbproject tp
 		LEFT JOIN tbprojecttrade tpt ON tp.project_id = tpt.project_id
-
+		where 1=1 and tp.status =1
+		<include refid="inList" />
 		<choose>
 			<when test="sortField != null and sortField != ''">
 				ORDER BY ${sortField} ${sortSequence}
@@ -570,6 +571,29 @@
         <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
 	</select>
 
+	<select id="findAllProjectAndTradeCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+
+		SELECT
+		count(1)
+		FROM
+		tbproject tp
+		LEFT JOIN tbprojecttrade tpt
+		ON
+		tp.project_id = tpt.project_id
+		where 1=1 and tp.status = 1
+
+		<include refid="inList" />
+	</select>
+
+
+	<sql id="inList">
+		<if test="inList != null">
+			and tp.project_id in
+			<foreach collection="inList" item="projectId" index="index" open="(" separator="," close=")">
+				#{projectId}
+			</foreach>
+		</if>
+	</sql>
 </mapper>
 
 

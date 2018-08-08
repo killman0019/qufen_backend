@@ -35,4 +35,6 @@ public interface KFFProjectMapper extends BaseMapper<KFFProject, java.lang.Integ
 
 	List<ProjectResponse> findAllProjectAndTrade(Map<String, Object> queryData);
 
+	Integer findAllProjectAndTradeCount(Map<String, Object> queryData);
+
 }

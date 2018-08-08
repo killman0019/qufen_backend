@@ -76,6 +76,17 @@ public interface KFFProjectRmiService {
 	 */
 	public void text() throws RestServiceException;
 
-	
+	/**
+	 * 
+	 * TODO 获得projectList 和行情数据
+	 * @param tabId
+	 * @param userId
+	 * @param query
+	 * @return
+	 * @author zhangdd
+	 * @data 2018年8月8日
+	 *
+	 */
+	public PageResult<ProjectResponse> showProjectListNew(Integer tabId, Integer userId, PaginationQuery query);
 
 }

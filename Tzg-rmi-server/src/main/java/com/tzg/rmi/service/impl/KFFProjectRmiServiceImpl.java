@@ -571,6 +571,142 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 		return projectResponsePage;
 	}
 
+	/**
+	 * tabid 1 全部 2 关注
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public PageResult<ProjectResponse> showProjectListNew(Integer tabId, Integer userId, PaginationQuery query) {
+		// TODO 根据tabId查询project分页展示
+		Integer pageIndex = query.getPageIndex();
+		Integer pageSize = query.getRowsPerPage();
+		PageResult<ProjectResponse> projectResponsePage = null;
+		List<Integer> projectFollow = null;
+		List<Follow> followList = null;
+		if (null != userId) {
+
+			Map<String, Object> resultMap = kffFollowService.getUserFollow(userId, 1);
+			projectFollow = (List<Integer>) resultMap.get("followedProjectIds");
+			followList = (List<Follow>) resultMap.get("followList");
+		}
+		if (null == tabId) {
+			throw new RestServiceException("tab栏参数出错");
+		}
+
+		if (tabId == 1) {
+			// 查询全部项目
+			// PageResult<ProjectResponse> projectsPage = kffRmiService.findProjectByCodePage(1,
+			// userId, null, pageIndex, pageSize);
+			query.addQueryData("sortField", "follower_num");
+			query.addQueryData("sortSequence", "desc");
+
+			PageResult<ProjectResponse> projectsPage = kffProjectService.findAllProjectAndTrade(query);
+			if (null != projectsPage && null != projectsPage.getRows() && !CollectionUtils.isEmpty(projectsPage.getRows())) {
+				List<ProjectResponse> projectList = projectsPage.getRows();
+
+				if (null != projectList && !CollectionUtils.isEmpty(projectList)) {
+					for (ProjectResponse projectResponse : projectList) {
+						if (null != projectResponse && null != userId) {
+							if (null != projectFollow && !CollectionUtils.isEmpty(projectFollow) && projectFollow.contains(projectResponse.getProjectId())) {
+								projectResponse.setFollowStatus(1);// 设置关注
+							} else {
+								projectResponse.setFollowStatus(0);// 设置未关注
+							}
+
+						}
+					}
+					projectResponsePage = new PageResult<ProjectResponse>(projectList, projectsPage.getRowCount(), query);
+				}
+			}
+		} else if (tabId == 2 && userId != null) {
+			// 查询用户关注的project列表
+			query.addQueryData("sortField", "follower_num");
+			query.addQueryData("sortSequence", "desc");
+			String inList = StringUtils.join(projectFollow.toArray(), ",");
+			System.err.println(inList);
+			query.addQueryData("inList", projectFollow);
+			PageResult<ProjectResponse> projectsPage = kffProjectService.findFansProjectAndTrade(query);
+			System.err.println(JSON.toJSONString(projectsPage));
+			if (null != projectsPage && null != projectsPage.getRows() && !CollectionUtils.isEmpty(projectsPage.getRows())) {
+				List<ProjectResponse> projectResponseList = projectsPage.getRows();
+				System.err.println(JSON.toJSONString(projectResponseList));
+				for (ProjectResponse projectResponse : projectResponseList) {
+					if (null != projectResponse) {
+						projectResponse.setFollowStatus(1);
+						
+					}
+				}
+
+				projectResponsePage = new PageResult<ProjectResponse>(projectResponseList, projectsPage.getRowCount(), query);
+			}
+
+		} else {
+			// 除了关注和全部
+			PaginationQuery queryOther = query;
+			projectResponsePage = selectProjectsListByProjectCodePageNew(tabId, queryOther, userId, projectFollow);
+		}
+		System.err.println("projectResponsePage" + JSON.toJSONString(projectResponsePage));
+		return projectResponsePage;
+	}
+
+	private PageResult<ProjectResponse> selectProjectsListByProjectCodePageNew(Integer tabId, PaginationQuery query, Integer userId, List<Integer> projectFollow) {
+		// TODO 根据projectList查询project 并用分页进行展示
+		PageResult<ProjectResponse> projectResponsePage = null;
+
+		// List<Integer> followedProjectIds = new ArrayList<Integer>();
+		List<Integer> projectIds = new ArrayList<Integer>();
+		// 判断此项目是否被这个用户 关注
+
+		if (null != tabId) {
+
+			List<String> projectCodes = projectForTabService.selectProjectCodeByTabid(tabId);
+			if (!CollectionUtils.isEmpty(projectCodes)) {
+				if (projectCodes.size() != 0) {
+					for (String projectCode : projectCodes) {
+
+						if (StringUtils.isNotEmpty(projectCode)) {
+							// 根据projectcode查询project对象
+							KFFProject projectResponse = selectProjectByCode(projectCode, userId);
+							// 将审核通过的项目放入队列中
+							if (null != projectResponse && projectResponse.getState() == 2) {
+								projectIds.add(projectResponse.getProjectId());
+							}
+						}
+					}
+				}
+				System.err.println("projectIds" + JSON.toJSONString(projectIds));
+				if (!CollectionUtils.isEmpty(projectIds)) {
+					if (projectIds.size() == 1) {
+						query.addQueryData("projectId", projectIds.get(0));
+					} else {
+						String projectIdListDB = StringUtils.join(projectIds.toArray(), ",");// 进入数据库的查询参数
+						query.addQueryData("inList", projectIds);
+					}
+				}
+			}
+			PageResult<ProjectResponse> projectsPage = kffProjectService.findAllProjectAndTrade(query);
+			if (null != projectsPage && null != projectsPage.getRows() && !CollectionUtils.isEmpty(projectsPage.getRows())) {
+				List<ProjectResponse> projectList = projectsPage.getRows();
+
+				if (null != projectList && !CollectionUtils.isEmpty(projectList)) {
+					for (ProjectResponse projectResponse : projectList) {
+						if (null != projectResponse && null != userId) {
+							if (null != projectFollow && !CollectionUtils.isEmpty(projectFollow) && projectFollow.contains(projectResponse.getProjectId())) {
+								projectResponse.setFollowStatus(1);// 设置关注
+							} else {
+								projectResponse.setFollowStatus(0);// 设置未关注
+							}
+
+						}
+					}
+					projectResponsePage = new PageResult<ProjectResponse>(projectList, projectsPage.getRowCount(), query);
+				}
+			}
+		}
+		return projectResponsePage;
+
+	}
+
 	@Override
 	public PageResult<TransactionPairResponse> selectExchangeAndTranPair(Integer projectId, PaginationQuery query) throws RestServiceException {
 		// TODO 根据projectId 查询相关的交易所和交易对

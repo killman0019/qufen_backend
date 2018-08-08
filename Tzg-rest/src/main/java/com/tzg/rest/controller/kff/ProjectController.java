@@ -537,7 +537,7 @@ public class ProjectController extends BaseController {
 		try {
 
 			List<ProjectManageTabResponse> tabs = kFFProjectRmiService.showTab();
-			//System.err.println("tabs+++++++++++++++++" + JSON.toJSONString(tabs));
+			// System.err.println("tabs+++++++++++++++++" + JSON.toJSONString(tabs));
 			map.put("tabs", tabs);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -577,8 +577,8 @@ public class ProjectController extends BaseController {
 			PaginationQuery query = new PaginationQuery();
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
-			PageResult<ProjectResponse> projectResponsePage = kFFProjectRmiService.showProjectList(tabId, userId, query);
-			//System.err.println("projectResponsePage+++++++++++++++++++++++" + JSON.toJSONString(projectResponsePage));
+			PageResult<ProjectResponse> projectResponsePage = kFFProjectRmiService.showProjectListNew(tabId, userId, query);
+			System.err.println("projectResponsePage+++++++++++++++++++++++" + JSON.toJSONString(projectResponsePage));
 			map.put("projectResponsePage", projectResponsePage);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -616,7 +616,8 @@ public class ProjectController extends BaseController {
 			PageResult<TransactionPairResponse> exchangeAndPtranPairPage = kFFProjectRmiService.selectExchangeAndTranPair(projectId, query);
 			map.put("TransactionPairResponse", exchangeAndPtranPairPage);
 			bre.setData(map);
-			//System.err.println("exchangeAndPtranPairPage" + JSON.toJSONString(exchangeAndPtranPairPage));
+			// System.err.println("exchangeAndPtranPairPage" +
+			// JSON.toJSONString(exchangeAndPtranPairPage));
 		} catch (RestServiceException e) {
 			logger.error("ProjectController getExchangeAndTranPair:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());

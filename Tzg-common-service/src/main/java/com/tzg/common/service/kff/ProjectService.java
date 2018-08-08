@@ -26,6 +26,7 @@ import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.utils.DozerMapperUtils;
 import com.tzg.entitys.kff.evaluation.Evaluation;
 import com.tzg.entitys.kff.evaluation.EvaluationMapper;
+import com.tzg.entitys.kff.follow.Follow;
 import com.tzg.entitys.kff.post.Post;
 import com.tzg.entitys.kff.post.PostMapper;
 import com.tzg.entitys.kff.praise.Praise;
@@ -476,10 +477,10 @@ public class ProjectService {
 	 */
 	public PageResult<ProjectResponse> findAllProjectAndTrade(PaginationQuery query) {
 		// TODO Auto-generated method stub
-		
+
 		PageResult<ProjectResponse> result = null;
 		try {
-			Integer count = projectMapper.findPageCount(query.getQueryData());
+			Integer count = projectMapper.findAllProjectAndTradeCount(query.getQueryData());
 			if (null != count && count.intValue() > 0) {
 				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
 				query.addQueryData("startRecord", Integer.toString(startRecord));
@@ -492,6 +493,33 @@ public class ProjectService {
 		}
 		return result;
 
+	}
+
+	/**
+	 * 
+	 * TODO 获得当前fans列表
+	 * @param query
+	 * @return
+	 * @author zhangdd
+	 * @data 2018年8月8日
+	 *
+	 */
+	public PageResult<ProjectResponse> findFansProjectAndTrade(PaginationQuery query) {
+		// TODO Auto-generated method stub
+		PageResult<ProjectResponse> result = null;
+		try {
+			Integer count = projectMapper.findAllProjectAndTradeCount(query.getQueryData());
+			if (null != count && count.intValue() > 0) {
+				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
+				query.addQueryData("startRecord", Integer.toString(startRecord));
+				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
+				List<ProjectResponse> list = projectMapper.findAllProjectAndTrade(query.getQueryData());
+				result = new PageResult<ProjectResponse>(list, count, query);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 
 }

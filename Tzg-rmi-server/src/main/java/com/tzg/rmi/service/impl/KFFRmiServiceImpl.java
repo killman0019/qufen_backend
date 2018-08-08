@@ -71,6 +71,7 @@ import com.tzg.common.service.kff.NoticeService;
 import com.tzg.common.service.kff.PostService;
 import com.tzg.common.service.kff.PraiseService;
 import com.tzg.common.service.kff.ProjectService;
+import com.tzg.common.service.kff.ProjectTradeService;
 import com.tzg.common.service.kff.ProjectevastatService;
 import com.tzg.common.service.kff.QfIndexService;
 import com.tzg.common.service.kff.SuggestService;
@@ -148,6 +149,7 @@ import com.tzg.entitys.kff.project.KFFProject;
 import com.tzg.entitys.kff.project.ProjectResponse;
 import com.tzg.entitys.kff.project.SubmitKFFProjectRequest;
 import com.tzg.entitys.kff.projectevastat.Projectevastat;
+import com.tzg.entitys.kff.projecttrade.ProjectTrade;
 import com.tzg.entitys.kff.qfindex.QfIndex;
 import com.tzg.entitys.kff.suggest.Suggest;
 import com.tzg.entitys.kff.suggest.SuggestRequest;
@@ -252,6 +254,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	private RedisService redisService;
 	@Autowired
 	private ThreadPoolTaskExecutor taskExecutor;
+	@Autowired
+	private ProjectTradeService projectTradeService;
 
 	@Value("#{paramConfig['registerUrl']}")
 	private String contentself;
@@ -1307,6 +1311,18 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			}
 		}
 		response.setOwner(owner);
+		Map<String, String> projectTradeMap = new HashMap<String, String>();
+		projectTradeMap.put("projectId", projectId + "");
+		List<ProjectTrade> projectTradeList = projectTradeService.findByMap(projectTradeMap);
+		if (CollectionUtils.isNotEmpty(projectTradeList)) {
+			ProjectTrade projectTrade = projectTradeList.get(0);
+			response.setPercentChange1h(projectTrade.getPercentChange1h());
+			response.setPercentChange24h(projectTrade.getPercentChange24h());
+			response.setPercentChange7d(projectTrade.getPercentChange7d());
+			response.setPrice(projectTrade.getPrice());
+			response.setMarketCap(projectTrade.getMarketCap());
+			response.setRank(projectTrade.getRank());
+		}
 
 		return response;
 	}
