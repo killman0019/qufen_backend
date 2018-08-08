@@ -71,12 +71,15 @@ public class HomeController extends BaseController {
 	 */
 	@RequestMapping(value = "/recommendList", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public BaseResponseEntity evaluationList(HttpServletRequest request, HttpServletResponse response) {
+	public BaseResponseEntity evaluationList(HttpServletRequest request, HttpServletResponse response,
+			Integer pageIndex,Integer pageSize) {
 		JSONObject requestContent = HtmlUtils.getRequestContent(request);
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
-		Integer pageIndex = (Integer) requestContent.get("pageIndex");
-		Integer pageSize = (Integer) requestContent.get("pageSize");
+		if(pageIndex==null&&pageSize==null) {
+			pageIndex = (Integer) requestContent.get("pageIndex");
+			pageSize = (Integer) requestContent.get("pageSize");
+		}
 		if (null == pageIndex) {
 			pageIndex = 1;
 		}
@@ -254,9 +257,11 @@ public class HomeController extends BaseController {
 		HashMap<String, Object> map = new HashMap<String, Object>();
 
 		try {
-			JSONObject requestContent = HtmlUtils.getRequestContent(request);
-			if (null != requestContent) {
-				postId = Integer.valueOf((String) requestContent.get("postId"));
+			if(null==postId) {
+				JSONObject requestContent = HtmlUtils.getRequestContent(request);
+				if (null != requestContent) {
+					postId = Integer.valueOf((String) requestContent.get("postId"));
+				}
 			}
 			if (postId == null || postId == 0) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARG_POSTID);
@@ -469,9 +474,11 @@ public class HomeController extends BaseController {
 		HashMap<String, Object> map = new HashMap<String, Object>();
 
 		try {
-			JSONObject requestContent = HtmlUtils.getRequestContent(request);
-			if (null != requestContent) {
-				postId = Integer.valueOf((String) requestContent.get("postId"));
+			if(null==postId) {
+				JSONObject requestContent = HtmlUtils.getRequestContent(request);
+				if (null != requestContent) {
+					postId = Integer.valueOf((String) requestContent.get("postId"));
+				}
 			}
 			if (postId == null || postId == 0) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARG_POSTID);
@@ -543,12 +550,13 @@ public class HomeController extends BaseController {
 	public BaseResponseEntity shareEvaluationDetail(HttpServletRequest request, HttpServletResponse response, Integer postId) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
-
 		try {
-			JSONObject requestContent = HtmlUtils.getRequestContent(request);
-			postId = Integer.valueOf((String) requestContent.get("postId"));
-			if (postId == null || postId == 0) {
-				throw new RestServiceException(RestErrorCode.MISSING_ARG_POSTID);
+			if(null==postId) {
+				JSONObject requestContent = HtmlUtils.getRequestContent(request);
+				postId = Integer.valueOf((String) requestContent.get("postId"));
+				if (postId == null || postId == 0) {
+					throw new RestServiceException(RestErrorCode.MISSING_ARG_POSTID);
+				}
 			}
 			ProjectEvaluationDetailShareResponse findEvaluationDetailForShare = kffRmiService.findEvaluationDetailForShare(postId);
 			System.out.println(findEvaluationDetailForShare + "++++++++++++++++++findEvaluationDetailForShare");
