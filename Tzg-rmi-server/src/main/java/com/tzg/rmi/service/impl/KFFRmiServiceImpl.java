@@ -1322,7 +1322,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			response.setPrice(projectTrade.getPrice());
 			response.setMarketCap(projectTrade.getMarketCap());
 			response.setRank(projectTrade.getRank());
-			response.setVolume24h(projectTrade.getPercentChange24h());
+			response.setVolume24h(projectTrade.getVolume24h());
 		}
 
 		return response;
