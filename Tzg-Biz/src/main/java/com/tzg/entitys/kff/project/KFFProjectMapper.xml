@@ -287,14 +287,24 @@
 		<include refid="queryWhere" />
 		<choose>
 			<when test="sortField != null and sortField != ''">
-				ORDER BY ${sortField} ${sortSequence}
+				<include refid="orderBy" />
 			</when>
+
 			<otherwise>
 	                <![CDATA[ ORDER BY project_id desc ]]>
 			</otherwise>
 		</choose>
         <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
 	</select>
+
+	<sql id="orderBy">
+		<if test="sortField != null and sortField != ''">
+			ORDER BY ${sortField} ${sortSequence}
+		</if>
+		<if test="sortFieldNext != null and sortFieldNext != ''">
+			, ${sortFieldNext} ${sortSequenceNext}
+		</if>
+	</sql>
 
 	<select id="findPageCountInList" resultType="java.lang.Integer" parameterType="java.util.Map">
 		select count(*) from tbproject where 1=1 and status=1
@@ -470,10 +480,10 @@
 			and bsj_circulate_data = #{bsjCirculateData,jdbcType=VARCHAR}
 		</if>
 		<if test="DYtotalRaterNum != null and DYtotalRaterNum.trim() != ''">
-			and totalRaterNum >= #{DYtotalRaterNum}
+			and totalRaterNum &gt;= #{DYtotalRaterNum}
 		</if>
 		<if test="DYfollowerNum != null and DYfollowerNum.trim() != ''">
-			and follower_num >= #{DYfollowerNum}
+			and follower_num &gt;= #{DYfollowerNum}
 		</if>
 
 	</sql>
@@ -563,6 +573,7 @@
 			<when test="sortField != null and sortField != ''">
 				ORDER BY ${sortField} ${sortSequence}
 			</when>
+
 			<otherwise>
 	                <![CDATA[ ORDER BY project_id ASC ]]>
 			</otherwise>

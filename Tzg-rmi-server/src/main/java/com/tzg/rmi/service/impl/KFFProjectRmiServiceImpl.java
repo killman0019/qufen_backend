@@ -395,6 +395,8 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 		query.addQueryData("status", "1");
 		query.addQueryData("sortField", "follower_num");
 		query.addQueryData("sortSequence", "DESC");
+		query.addQueryData("sortFieldNext", "total_score");
+		query.addQueryData("sortSequenceNext", "DESC");
 		// query.setRowsPerPage(20);
 		PageResult<KFFProject> projectPage = kffProjectService.findPage(query);
 		if (null != projectPage && !CollectionUtils.isEmpty(projectPage.getRows())) {
@@ -420,6 +422,7 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 		return projectResponsePage;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public PageResult<ProjectResponse> selectEvaProjectPage(Integer userId, PaginationQuery query) {
 		// TODO 获得项目评分榜(评分人数超过10个，按项目评分来进行排名，最多20；)
@@ -434,6 +437,8 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 		// query.setPageIndex(20);
 		query.addQueryData("sortField", "total_score");
 		query.addQueryData("sortSequence", "DESC");
+		query.addQueryData("sortFieldNext", "follower_num");
+		query.addQueryData("sortSequenceNext", "DESC");
 		PageResult<KFFProject> projectPage = kffProjectService.findPage(query);
 		if (null != projectPage && !CollectionUtils.isEmpty(projectPage.getRows())) {
 			List<KFFProject> projectList = projectPage.getRows();
@@ -633,7 +638,7 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 				for (ProjectResponse projectResponse : projectResponseList) {
 					if (null != projectResponse) {
 						projectResponse.setFollowStatus(1);
-						
+
 					}
 				}
 
