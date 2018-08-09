@@ -101,7 +101,8 @@ public class HomeController extends BaseController {
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
 			Integer type = 1;// 取关项目
-			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query, type);
+			Integer method = 1;// 推荐列表
+			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query, type, method);
 			map.put("recommends", recommends);
 			bre.setData(map);
 		} catch (RestServiceException e) {

@@ -2190,7 +2190,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			Post posts = kffPostService.findById(postId);
 			if (null != posts) {
 				// 判断post的点赞数10 ,将推荐状态重置成1 进行推荐
-				if (posts.getPraiseNum() == 50) {
+				if (posts.getPraiseNum() == 50 && posts.getPostType() != 2) {
 					Post postDB = new Post();
 					postDB.setPostId(posts.getPostId());
 					postDB.setStickUpdateTime(now);
@@ -2259,7 +2259,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						Double pc = 5.00d; // 普通评测点赞奖励
 						Double pc2 = 50.00d; // 专业评测点赞奖励
 						Double pc3 = 20.00d; // 单项评测点赞奖励
-						Double tl = 50.00d; // 讨论点赞奖励
+						Double tl = 5.00d; // 讨论点赞奖励
 						Double wz = 20.00d; // 文章点赞奖励
 						Double zanToken = 10.00d;// 有效赞点赞给点赞人的奖励
 						// KFFUser findByUserId = kffUserService.findById(createUserId);
@@ -3148,10 +3148,32 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public PageResult<PostResponse> findPageRecommendList(Integer loginUserId, PaginationQuery query, Integer type) throws RestServiceException {
+	public PageResult<PostResponse> findPageRecommendList(Integer loginUserId, PaginationQuery query, Integer type, Integer method) throws RestServiceException {
 		PageResult<PostResponse> result = new PageResult<PostResponse>();
 		List<PostResponse> postResponse = new ArrayList<>();
-		PageResult<Post> posts = kffPostService.findPageRecommendList(query);
+		PageResult<Post> posts = null;
+		// 从数据库中一个数据放在首页的第一页第一个list中
+		int pageIndex = query.getPageIndex();
+		int rowsPerPage = query.getRowsPerPage();
+
+		if (pageIndex == 1 && method == 2) {// 首页取带有置顶的页面
+			rowsPerPage = 9;
+			query.setRowsPerPage(rowsPerPage);
+			Map<String, Object> disMap = new HashMap<String, Object>();
+			disMap.put("disStickTop", 1 + "");
+			List<Discuss> discussList = kffDiscussService.findByMap(disMap);
+			if (CollectionUtils.isNotEmpty(discussList)) {
+				Discuss discuss = discussList.get(0);
+				if (null != discuss) {
+					posts = kffPostService.findPageIncludeSkick(query, discuss.getPostId());
+					System.err.println(JSON.toJSONString(posts));
+				}
+			}
+		} else {
+			posts = kffPostService.findPageRecommendList(query);
+
+		}
+
 		KFFUser loginUser = null;
 		/**
 		 * 

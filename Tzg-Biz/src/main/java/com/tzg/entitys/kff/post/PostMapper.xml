@@ -293,7 +293,8 @@
 		tbpraise
 		WHERE
 		praise_type = 1
-		AND praise_user_id IN (
+		AND
+		praise_user_id IN (
 		SELECT
 		followed_id
 		FROM
@@ -323,7 +324,8 @@
 		) and status = 1
 		UNION ALL
 
-		select distinct followed_id as post_id,createTime ,3 as post_type from tbfollow where
+		select distinct followed_id as post_id,createTime ,3 as post_type from tbfollow
+		where
 		follow_user_id in (
 		SELECT
 		followed_id
@@ -338,7 +340,8 @@
 
 		UNION ALL
 
-		select post_id,createTime,4 as post_type from tbpost where project_id in (
+		select post_id,createTime,4 as
+		post_type from tbpost where project_id in (
 		select followed_id from tbfollow where follow_user_id=#{userId} and follow_type = 1
 		and status = 1
 		) and create_user_id not in (
@@ -369,7 +372,8 @@
 		tbfollow
 		WHERE
 		follow_user_id = #{userId}
-		AND follow_type = 3
+		AND
+		follow_type = 3
 		and status = 1
 		)
 
@@ -386,7 +390,8 @@
 		FROM
 		tbfollow
 		WHERE
-		follow_user_id = #{userId}
+		follow_user_id =
+		#{userId}
 		AND follow_type = 3
 		and status = 1
 		) and status = 1
@@ -408,7 +413,8 @@
 
 		UNION ALL
 
-		select post_id,createTime,4 as post_type ,create_user_id as create_user_id
+		select post_id,createTime,4 as post_type
+		,create_user_id as create_user_id
 		from tbpost where project_id in (
 		select followed_id from tbfollow where follow_user_id= #{userId} and follow_type = 1
 		and status = 1
@@ -659,6 +665,12 @@
 		</if>
 		<if test="uuid != null and uuid.trim() != ''">
 			and uuid = #{uuid}
+		</if>
+		<if test="notDiscuss !=null">
+			and post_type !=2
+		</if>
+		<if test="delPost !=null">
+			and post_id !=#{delPost}
 		</if>
 	</sql>
 

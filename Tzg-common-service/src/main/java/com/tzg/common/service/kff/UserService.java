@@ -42,7 +42,6 @@ import com.tzg.rest.constant.KFFRestConstants;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 
-
 @Service(value = "KFFUserService")
 @Transactional
 public class UserService {
@@ -65,16 +64,15 @@ public class UserService {
 		}
 		return userMapper.findById(id);
 	}
-	
+
 	public List<KFFUser> findListByAttr(Map<String, Object> map) {
 		return userMapper.findListByAttr(map);
 	}
-	
+
 	public List<KFFUser> findListByMap(Map<String, Object> map) {
 		return userMapper.findListByMap(map);
 	}
-	
-	
+
 	public void delete(java.lang.Integer id) throws RestServiceException {
 		if (id == null) {
 			throw new RestServiceException("id不能为空");
@@ -142,9 +140,9 @@ public class UserService {
 		} else if (randomNumber == 3) {
 			userIconstr = KFFRestConstants.DEFAULT_USER_ICON3;
 		}
-		//获取APP有无传送个推的ClientId过来
+		// 获取APP有无传送个推的ClientId过来
 		String clientId = registerRequest.getClientId();
-		if(StringUtils.isNotBlank(clientId)) {
+		if (StringUtils.isNotBlank(clientId)) {
 			user.setClientId(clientId);
 		}
 		user.setIcon(userIconstr);
@@ -183,7 +181,7 @@ public class UserService {
 		return findUserByPhoneNumber(registerRequest.getPhoneNumber());
 	}
 
-	public KFFUser login(String loginName, String password,String clientId,Integer appType) throws RestServiceException {
+	public KFFUser login(String loginName, String password, String clientId, Integer appType) throws RestServiceException {
 		KFFUser user = null;
 		if (StringUtils.isBlank(loginName)) {
 			throw new RestServiceException(RestErrorCode.USER_ID_BLANK);
@@ -308,22 +306,22 @@ public class UserService {
 				user.setUsercardStatus(userCardStatus);
 
 			}
-			//将APP传送过来的个推clientid保存进去
+			// 将APP传送过来的个推clientid保存进去
 			String uclientId = user.getClientId();
-			if(StringUtils.isNotBlank(clientId)){
-				if(StringUtils.isBlank(uclientId)) {
+			if (StringUtils.isNotBlank(clientId)) {
+				if (StringUtils.isBlank(uclientId)) {
 					user.setClientId(clientId);
 				}
-				if(null==appType) {
+				if (null == appType) {
 					user.setAppType(AppType.ANDROID.getValue());
-				}else {
+				} else {
 					user.setAppType(appType);
 				}
-				//判断clientid 在数据库中存在与否，存在即清空先
-				Map<String,Object> seMap = new HashMap<String,Object>();
+				// 判断clientid 在数据库中存在与否，存在即清空先
+				Map<String, Object> seMap = new HashMap<String, Object>();
 				seMap.put("clientId", clientId);
 				List<KFFUser> uuser = userMapper.findListByAttr(seMap);
-				if(uuser.size()>0) {
+				if (uuser.size() > 0) {
 					for (KFFUser kffUser : uuser) {
 						kffUser.setClientId("");
 						userMapper.update(kffUser);
@@ -433,14 +431,6 @@ public class UserService {
 		return userMapper.findReferCount(userId);
 
 	}
-
-	/*
-	 * public Integer findReferUserIdByUserCount(Integer referUserId) {
-	 * 
-	 * return userMapper.findReferUserIdByUserCount(referUserId);
-	 * 
-	 * }
-	 */
 
 	public KFFUser saveUserByphonePass(String phoneNumber, Integer invaUserId, String password) {
 
@@ -628,8 +618,9 @@ public class UserService {
 
 	public Integer findPopByToken(Integer userId) throws RestServiceException {
 		Integer pop = userMapper.findPopByToken(userId);
-		if (null == pop)
+		if (null == pop) {
 			pop = 0;
+		}
 		return pop;
 	}
 
@@ -654,93 +645,98 @@ public class UserService {
 		}
 		userMapper.updateUserKFFsetPopZero(loginUserId);
 	}
-	//给用户APP推送消息内容
-	public boolean sendNewsToBatchUser(NewsPush newsPush,String msg) throws Exception {
+
+	// 给用户APP推送消息内容
+	public boolean sendNewsToBatchUser(NewsPush newsPush, String msg) throws Exception {
 		logger.info("----start pushNews---");
 		String mobiles = newsPush.getPeopleRange();
 		String title = newsPush.getTitle();
 		String content = newsPush.getContent();
-		List<Map<String,Object>> maps = new ArrayList<Map<String,Object>>();
+		List<Map<String, Object>> maps = new ArrayList<Map<String, Object>>();
 		ExecutorService executor = ThreadPoolUtils.newFixedThreadPool(sysGlobals.START_THREAD_COUNT);
-		//1.推送消息给全部用户
-		if(StringUtils.isBlank(mobiles)) {
+		// 1.推送消息给全部用户
+		if (StringUtils.isBlank(mobiles)) {
 			PaginationQuery query = new PaginationQuery();
 			query.setRowsPerPage(sysGlobals.DEFAULT_MSG_COUNT);
 			query.setPageIndex(1);
 			PageResult<KFFUser> page = findPageWithCID(query);
-			
-			int i=0;
+
+			int i = 0;
 			Integer ii = 1;
-	        while(page.isHasNext() || i==0){
-	        	if(i!=0){
-	        		ii = ii + 1;
-	        		query.setPageIndex(ii);
-	        		page = findPageWithCID(query);
-	        	}
-	        	if(page==null || page.getRows()==null){break;}
-	        	try {
-	        		List<KFFUser> usersList=page.getRows();
-	        		if(usersList.isEmpty()) {return false;}
-	        		Integer allCount = CalculationUtils.twoNumberDiv(usersList.size(), sysGlobals.SEND_GETUI_COUNT);
-	        		for (int k = 0; k < allCount; k++) {
-	        			Map<String,Object> map = new HashMap<String,Object>();
-	        			int be = k*100;
-	        			int endNum = 0;
-	        			if((k+1)==allCount) {
-	        				endNum = usersList.size();
-	        			}else {
-	        				endNum = 100+be;
-	        			}
-	        			List<String> list = new ArrayList<String>();
-	        			for (int j = 0+be; j < endNum; j++) {
-	        				if(null!=usersList.get(j)) {
-		        				if(StringUtils.isNotBlank(usersList.get(j).getClientId())) {
-		        					list.add(usersList.get(j).getClientId());
-		        					//判断给android还是ios推送消息
+			while (page.isHasNext() || i == 0) {
+				if (i != 0) {
+					ii = ii + 1;
+					query.setPageIndex(ii);
+					page = findPageWithCID(query);
+				}
+				if (page == null || page.getRows() == null) {
+					break;
+				}
+				try {
+					List<KFFUser> usersList = page.getRows();
+					if (usersList.isEmpty()) {
+						return false;
+					}
+					Integer allCount = CalculationUtils.twoNumberDiv(usersList.size(), sysGlobals.SEND_GETUI_COUNT);
+					for (int k = 0; k < allCount; k++) {
+						Map<String, Object> map = new HashMap<String, Object>();
+						int be = k * 100;
+						int endNum = 0;
+						if ((k + 1) == allCount) {
+							endNum = usersList.size();
+						} else {
+							endNum = 100 + be;
+						}
+						List<String> list = new ArrayList<String>();
+						for (int j = 0 + be; j < endNum; j++) {
+							if (null != usersList.get(j)) {
+								if (StringUtils.isNotBlank(usersList.get(j).getClientId())) {
+									list.add(usersList.get(j).getClientId());
+									// 判断给android还是ios推送消息
 									Integer apptt = usersList.get(j).getAppType();
-									if(null==apptt) {
+									if (null == apptt) {
 										list.add(AppType.ANDROID.getValue().toString());
-									}else {
+									} else {
 										list.add(apptt.toString());
 									}
-		        				}
-	        				}
-	        			}
-	        			map.put("arr", list);
-	        			map.put("msg", msg);
-	        			map.put("title", title);
-	        			map.put("content", content);
-	        			maps.add(map);
-	        		}
-	        		for(int e=0;e<maps.size();e++){
-	                    MyTask myTask = new MyTask(maps.get(e));
-	                    executor.execute(myTask);
-	                }
-	                executor.shutdown();
+								}
+							}
+						}
+						map.put("arr", list);
+						map.put("msg", msg);
+						map.put("title", title);
+						map.put("content", content);
+						maps.add(map);
+					}
+					for (int e = 0; e < maps.size(); e++) {
+						MyTask myTask = new MyTask(maps.get(e));
+						executor.execute(myTask);
+					}
+					executor.shutdown();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 				i++;
-	        } 
+			}
 		}
-		//2.推送消息给部分用户
-		if(StringUtils.isNotBlank(mobiles)) {
-			Map<String,Object> map = new HashMap<String,Object>();
+		// 2.推送消息给部分用户
+		if (StringUtils.isNotBlank(mobiles)) {
+			Map<String, Object> map = new HashMap<String, Object>();
 			String[] mobilec = mobiles.split(",");
 			List<String> list = new ArrayList<String>();
 			for (int j = 0; j < mobilec.length; j++) {
 				KFFUser user = userMapper.findUserStatusByPhoneNumber(mobilec[j]);
-				if(null!=user) {
-    				if( StringUtils.isNotBlank(user.getClientId())) {
-    					list.add(user.getClientId());
-    					//判断给android还是ios推送消息
+				if (null != user) {
+					if (StringUtils.isNotBlank(user.getClientId())) {
+						list.add(user.getClientId());
+						// 判断给android还是ios推送消息
 						Integer apptt = user.getAppType();
-						if(null==apptt) {
+						if (null == apptt) {
 							list.add(AppType.ANDROID.getValue().toString());
-						}else {
+						} else {
 							list.add(apptt.toString());
 						}
-    				}
+					}
 				}
 			}
 			map.put("arr", list);
@@ -748,57 +744,58 @@ public class UserService {
 			map.put("title", title);
 			map.put("content", content);
 			maps.add(map);
-			for(int e=0;e<maps.size();e++){
-                MyTask myTask = new MyTask(maps.get(e));
-                executor.execute(myTask);
-            }
-            executor.shutdown();
+			for (int e = 0; e < maps.size(); e++) {
+				MyTask myTask = new MyTask(maps.get(e));
+				executor.execute(myTask);
+			}
+			executor.shutdown();
 		}
 		return true;
 	}
-	
+
 	public class MyTask implements Runnable {
-	   private Map<String,Object> arrs;
-	   
-	   public MyTask(Map<String,Object> arr) {
-	       this.arrs = arr;
-	   }
-	   @Override
-	   public void run() {
-		   logger.info("----正在执行task---"+arrs);
-	       List arrc = (ArrayList)arrs.get("arr");
-	       String msg = (String)arrs.get("msg");
-	       String title = (String)arrs.get("title");
-	       String content = (String)arrs.get("content");
-	       if(arrc.size()>0) {
-	    	   for (int i = 0; i < arrc.size(); i++) {
-					String str =(String) arrc.get(i);
-					if(str.equals(AppType.ANDROID.getValue().toString())) {
+		private Map<String, Object> arrs;
+
+		public MyTask(Map<String, Object> arr) {
+			this.arrs = arr;
+		}
+
+		@Override
+		public void run() {
+			logger.info("----正在执行task---" + arrs);
+			List arrc = (ArrayList) arrs.get("arr");
+			String msg = (String) arrs.get("msg");
+			String title = (String) arrs.get("title");
+			String content = (String) arrs.get("content");
+			if (arrc.size() > 0) {
+				for (int i = 0; i < arrc.size(); i++) {
+					String str = (String) arrc.get(i);
+					if (str.equals(AppType.ANDROID.getValue().toString())) {
 						PushList.pushMsg(arrc, msg, title, content);
 					}
-					if(str.equals(AppType.IOS.getValue().toString())) {
+					if (str.equals(AppType.IOS.getValue().toString())) {
 						iOSPushList.iOSPushMsg(arrc, msg, title, content);
 					}
 				}
-	       }
-	       logger.info("个推执行的函数--->"+arrc.toString());
-	       logger.info("task 完毕--->"+arrs+"执行完毕");
-	   }
+			}
+			logger.info("个推执行的函数--->" + arrc.toString());
+			logger.info("task 完毕--->" + arrs + "执行完毕");
+		}
 	}
-	
-	@Transactional(readOnly=true)
+
+	@Transactional(readOnly = true)
 	public PageResult<KFFUser> findPageWithCID(PaginationQuery query) throws Exception {
 		PageResult<KFFUser> result = null;
 		try {
 			Integer count = userMapper.findPageCount(query.getQueryData());
-			
+
 			if (null != count && count.intValue() > 0) {
-				int startRecord = (query.getPageIndex() - 1)* query.getRowsPerPage();
+				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
 				query.addQueryData("startRecord", Integer.toString(startRecord));
 				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
 				List<KFFUser> list = userMapper.findPageWithCID(query.getQueryData());
-				result = new PageResult<KFFUser>(list,count,query);
-			} 
+				result = new PageResult<KFFUser>(list, count, query);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

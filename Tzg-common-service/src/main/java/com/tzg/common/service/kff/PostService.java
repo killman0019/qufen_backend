@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -20,12 +19,10 @@ import org.springframework.util.CollectionUtils;
 
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
-import com.tzg.common.utils.DateUtil;
 import com.tzg.entitys.kff.commendation.Commendation;
 import com.tzg.entitys.kff.commendation.CommendationMapper;
 import com.tzg.entitys.kff.post.Post;
 import com.tzg.entitys.kff.post.PostMapper;
-import com.tzg.entitys.kff.project.KFFProject;
 import com.tzg.entitys.kff.tokenrecords.Tokenrecords;
 import com.tzg.entitys.kff.tokenrecords.TokenrecordsMapper;
 import com.tzg.rest.exception.rest.RestServiceException;
@@ -45,7 +42,7 @@ public class PostService {
 	@Autowired
 	private TokenrecordsMapper tokenrecordsMapper;
 
-	private static final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 4);
+	private static final ExecutorService newFixedThreadPoolCaluaPostIncome = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 4);
 
 	@Transactional(readOnly = true)
 	public Post findById(java.lang.Integer id) throws RestServiceException {
@@ -110,7 +107,6 @@ public class PostService {
 
 	public void increasePraiseNum(Integer postId) {
 		postMapper.increasePraiseNum(postId);
-		
 
 	}
 
@@ -208,16 +204,15 @@ public class PostService {
 		List<Post> posts = selectAllPost();
 		if (!CollectionUtils.isEmpty(posts)) {
 			// 进行线程的跑线程
-			final CountDownLatch countDownLatch = new CountDownLatch(posts.size());
 
 			try {
 				for (Post p : posts) {
 					final Integer postId = p.getPostId();
-					newFixedThreadPool.execute(new Runnable() {
+					newFixedThreadPoolCaluaPostIncome.execute(new Runnable() {
 						@Override
 						public void run() {
 							try {
-								caculateEveryPostIncome(postId, countDownLatch);
+								caculateEveryPostIncome(postId);
 							} catch (Exception e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
@@ -226,28 +221,25 @@ public class PostService {
 					});
 
 				}
-				try {
-					countDownLatch.await();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} finally {
-				newFixedThreadPool.shutdown();
+				newFixedThreadPoolCaluaPostIncome.shutdown();
 			}
 		}
 	}
 
 	/**
-	 * 进行post统计 分为 点赞token统计 捐赠token
 	 * 
-	 * 
+	 * TODO 计算每篇文章的收益
 	 * @param postId
-	 * @param countDownLatch
+	 * @author zhangdd
+	 * @data 2018年8月8日
+	 *
 	 */
-	private void caculateEveryPostIncome(Integer postId, CountDownLatch countDownLatch) {
+	private void caculateEveryPostIncome(Integer postId) {
 		try {
 			Double praiseIncome = 0.0d;
 			Double donateIncome = 0.0d;
@@ -255,11 +247,11 @@ public class PostService {
 
 			// TODO Auto-generated method stub
 			if (postId == null) {
-				countDownLatch.countDown();// 直接线程关闭
+				return;
 			}
 			Post post = postMapper.findById(postId);
 			if (null != post) {
-				countDownLatch.countDown();// 直接线程关闭
+				return;
 			}
 			// 查询打赏奖励表,查询对这个帖子进行的打赏
 			List<Commendation> commendations = commendationMapper.selectAllCommendationByPostId(postId);
@@ -304,9 +296,44 @@ public class PostService {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} finally {
-			// System.err.println("定时任务结束!");
-			countDownLatch.countDown();
 		}
+	}
+
+	/**
+	 * 
+	 * TODO 获得置顶页面
+	 * @param query
+	 * @param postId
+	 * @return
+	 * @author zhangdd
+	 * @data 2018年8月9日
+	 *
+	 */
+	@Transactional(readOnly = true)
+	public PageResult<Post> findPageIncludeSkick(PaginationQuery query, Integer postId) {
+		// TODO 获得置顶的页面
+		PageResult<Post> result = null;
+		try {
+			Post skickPost = postMapper.findById(postId);
+			if (null == skickPost) {
+				throw new RestServiceException("置顶内容为空!");
+			}
+			query.addQueryData("delPost", postId);
+			Integer count = postMapper.findPageCountRecommendList(query.getQueryData());
+			if (null != count && count.intValue() > 0) {
+				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
+				query.addQueryData("startRecord", Integer.toString(startRecord));
+				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
+				List<Post> list = postMapper.findPageRecommendList(query.getQueryData());
+
+				list.add(0, skickPost);
+
+				result = new PageResult<Post>(list, count, query);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+
 	}
 }

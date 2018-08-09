@@ -1,35 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.tzg.entitys.kff.discuss.DiscussMapper">	
+<mapper namespace="com.tzg.entitys.kff.discuss.DiscussMapper">
 	<resultMap id="BaseResultMap" type="com.tzg.entitys.kff.discuss.Discuss">
-		<result property="discussId" jdbcType="INTEGER" column="discuss_id"/>
-		<result property="postId" jdbcType="INTEGER" column="post_id"/>
-		<result property="disscussContents" jdbcType="VARCHAR" column="disscuss_contents"/>
-		<result property="postUuid" jdbcType="VARCHAR" column="post_uuid"/>
-		<result property="tagInfos" jdbcType="VARCHAR" column="tag_infos"/>
-    </resultMap>
-	
+		<result property="discussId" jdbcType="INTEGER" column="discuss_id" />
+		<result property="postId" jdbcType="INTEGER" column="post_id" />
+		<result property="disscussContents" jdbcType="VARCHAR" column="disscuss_contents" />
+		<result property="postUuid" jdbcType="VARCHAR" column="post_uuid" />
+		<result property="tagInfos" jdbcType="VARCHAR" column="tag_infos" />
+		<result property="disStickTop" jdbcType="INTEGER" column="dis_stick_top" />
+		<result property="disStickUpdateTime" jdbcType="TIMESTAMP" column="dis_stick_updateTime" />
+	</resultMap>
+
 	<sql id="columns">
 	    <![CDATA[
-        discuss_id ,post_id ,disscuss_contents ,post_uuid ,tag_infos 
+        discuss_id ,post_id ,disscuss_contents ,post_uuid ,tag_infos , dis_stick_top, dis_stick_updateTime 
 	    ]]>
 	</sql>
-	
+
 	<insert id="save" parameterType="com.tzg.entitys.kff.discuss.Discuss" useGeneratedKeys="true" keyProperty="discussId">
-		<selectKey resultType="java.lang.Integer" keyProperty="discussId" order="AFTER" >
-	      SELECT LAST_INSERT_ID() AS id
-	    </selectKey>
+		<selectKey resultType="java.lang.Integer" keyProperty="discussId" order="AFTER">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
 	<![CDATA[
 		INSERT INTO tbdiscuss (
         	post_id ,
         	disscuss_contents ,
         	post_uuid ,
-        	tag_infos 
+        	tag_infos ,dis_stick_top, dis_stick_updateTime
 		) VALUES (
         	#{postId,jdbcType=INTEGER} ,
         	#{disscussContents,jdbcType=VARCHAR} ,
         	#{postUuid,jdbcType=VARCHAR} ,
-        	#{tagInfos,jdbcType=VARCHAR} 
+        	#{tagInfos,jdbcType=VARCHAR} ,
+        	#{disStickTop,jdbcType=INTEGER} ,
+        	#{disStickUpdateTime,jdbcType=TIMESTAMP}
 		)
 	]]>
 	</insert>
@@ -38,20 +42,26 @@
 		UPDATE tbdiscuss
 		<set>
 			<if test="postId != null">
-	        post_id = #{postId,jdbcType=INTEGER} ,
-	        </if>
+				post_id = #{postId,jdbcType=INTEGER} ,
+			</if>
 			<if test="disscussContents != null">
-	        disscuss_contents = #{disscussContents,jdbcType=VARCHAR} ,
-	        </if>
+				disscuss_contents = #{disscussContents,jdbcType=VARCHAR} ,
+			</if>
 			<if test="postUuid != null">
-	        post_uuid = #{postUuid,jdbcType=VARCHAR} ,
-	        </if>
+				post_uuid = #{postUuid,jdbcType=VARCHAR} ,
+			</if>
 			<if test="tagInfos != null">
-	        tag_infos = #{tagInfos,jdbcType=VARCHAR} 
-	        </if>
-	    </set>
-		WHERE 
-	        discuss_id = #{discussId,jdbcType=INTEGER} 
+				tag_infos = #{tagInfos,jdbcType=VARCHAR}
+			</if>
+			<if test="disStickTop != null">
+				dis_stick_top = #{disStickTop,jdbcType=INTEGER} ,
+			</if>
+			<if test="disStickUpdateTime != null">
+				dis_stick_updateTime = #{disStickUpdateTime,jdbcType=TIMESTAMP}
+			</if>
+		</set>
+		WHERE
+		discuss_id = #{discussId,jdbcType=INTEGER}
 	</update>
 
 	<delete id="deleteById" parameterType="java.lang.Integer">
@@ -60,18 +70,20 @@
         discuss_id = #{discussId} 
 	]]>
 	</delete>
-    
+
 	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
-	    SELECT <include refid="columns"/> 
+		SELECT
+		<include refid="columns" /> 
 	<![CDATA[
 		FROM tbdiscuss 
 		WHERE 
         discuss_id = #{discussId} 
 	]]>
 	</select>
-	 
+
 	<select id="findByPostId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
-	    SELECT <include refid="columns"/> 
+		SELECT
+		<include refid="columns" /> 
 	<![CDATA[
 		FROM tbdiscuss 
 		WHERE 
@@ -80,7 +92,8 @@
 	]]>
 	</select>
 	<select id="selectByPostId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
-	    SELECT <include refid="columns"/> 
+		SELECT
+		<include refid="columns" /> 
 	<![CDATA[
 		FROM tbdiscuss 
 		WHERE 
@@ -88,42 +101,62 @@
       
 	]]>
 	</select>
-		 
+
 	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
-    	select count(*) from tbdiscuss where 1=1
-		<include refid="queryWhere"/>
+		select count(*) from tbdiscuss where 1=1
+		<include refid="queryWhere" />
 	</select>
-    
+
 	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
-		select <include refid="columns"/>  from tbdiscuss where 1=1
-		<include refid="queryWhere"/> 
+		select
+		<include refid="columns" />
+		from tbdiscuss where 1=1
+		<include refid="queryWhere" /> 
 	    <![CDATA[ ORDER BY discuss_id DESC ]]>
         <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
 	</select>
-	
+
 	<sql id="queryWhere">
 		<if test="discussId != null and discussId.trim() != ''">
-		and discuss_id = #{discussId}
+			and discuss_id = #{discussId}
 		</if>
 		<if test="postId != null and postId.trim() != ''">
-		and post_id = #{postId}
+			and post_id = #{postId}
 		</if>
 		<if test="disscussContents != null and disscussContents.trim() != ''">
-		and disscuss_contents = #{disscussContents}
+			and disscuss_contents = #{disscussContents}
 		</if>
 		<if test="postUuid != null and postUuid.trim() != ''">
-		and post_uuid = #{postUuid}
+			and post_uuid = #{postUuid}
 		</if>
 		<if test="tagInfos != null and tagInfos.trim() != ''">
-		and tag_infos = #{tagInfos}
+			and tag_infos = #{tagInfos}
+		</if>
+		<if test="disStickTop != null">
+			and dis_stick_top = #{disStickTop}
+		</if>
+		<if test="disStickUpdateTime != null">
+			and dis_stick_updateTime = #{disStickUpdateTime}
 		</if>
 	</sql>
 	<select id="findDisscussBypostId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
-		select <include refid="columns"/>  from tbdiscuss where 1=1
+		select
+		<include refid="columns" />
+		from tbdiscuss where 1=1
 		and post_id = #{postId}
-	   
+
 	</select>
-	
+
+	<select id="findByMap" parameterType="java.util.Map" resultMap="BaseResultMap">
+
+		select
+		<include refid="columns" />
+		from tbdiscuss
+		where 1=1
+		<include refid="queryWhere" />
+
+	</select>
+
 </mapper>
 
 

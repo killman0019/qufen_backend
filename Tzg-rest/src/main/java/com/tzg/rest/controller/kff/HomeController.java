@@ -93,14 +93,15 @@ public class HomeController extends BaseController {
 			query.addQueryData("status", "1");
 			query.addQueryData("stickTop", "1");
 			query.addQueryData("sortField", "stick_updateTime");
+			query.addQueryData("notDiscuss", "true");
 			// query.addQueryData("praiseNum", "10");
 			// 帖子类型：1-评测；2-讨论；3-文章
 			// query.addQueryData("postType", "1");
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
 			Integer type = 1;// 取关注项目
-			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query, type);
-			System.err.println("recommends++++++++++++" + JSONObject.toJSONString(recommends));
+			Integer methodType = 1;// 推荐列表过来的方法
+			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query, type, methodType);
 			map.put("recommends", recommends);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -148,7 +149,8 @@ public class HomeController extends BaseController {
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
 			Integer type = 2;// 取关注人
-			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query, type);
+			Integer methodType = 2;// 爆料列表过来的方法
+			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query, type, methodType);
 			map.put("recommends", recommends);
 			bre.setData(map);
 		} catch (RestServiceException e) {
