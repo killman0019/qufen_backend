@@ -44,6 +44,7 @@ import com.tzg.entitys.leopard.system.SystemParam;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
+import com.tzg.rmi.service.KFFProjectPostRmiService;
 import com.tzg.rmi.service.KFFRmiService;
 import com.tzg.rmi.service.SystemParamRmiService;
 import com.tzg.wap.utils.DateUtil;
@@ -58,7 +59,9 @@ public class HomeController extends BaseController {
 	private KFFRmiService kffRmiService;
 	@Autowired
 	private SystemParamRmiService systemParamRmiService;
-
+	@Autowired
+	private KFFProjectPostRmiService kffProjectPostRmiService;
+	
 	/**
 	 * 首页推荐列表
 	 * 
@@ -73,19 +76,15 @@ public class HomeController extends BaseController {
 	@ResponseBody
 	public BaseResponseEntity evaluationList(HttpServletRequest request, HttpServletResponse response,
 			Integer pageIndex,Integer pageSize) {
-		JSONObject requestContent = HtmlUtils.getRequestContent(request);
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		if(pageIndex==null&&pageSize==null) {
+			JSONObject requestContent = HtmlUtils.getRequestContent(request);
 			pageIndex = (Integer) requestContent.get("pageIndex");
 			pageSize = (Integer) requestContent.get("pageSize");
 		}
-		if (null == pageIndex) {
-			pageIndex = 1;
-		}
-		if (null == pageSize) {
-			pageSize = 10;
-		}
+		pageIndex=pageIndex==null||pageIndex<1?1:pageIndex;
+		pageSize=pageSize==null||pageSize<1?10:pageSize;
 		try {
 			// String token = (String) request.getSession().getAttribute("token");
 			Integer userId = null;
@@ -128,29 +127,35 @@ public class HomeController extends BaseController {
 	 */
 	@RequestMapping(value = "/followList", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public BaseResponseEntity followList(HttpServletRequest request, HttpServletResponse response, Integer pageIndex, Integer pageSize) {
+	public BaseResponseEntity followList(HttpServletRequest request, HttpServletResponse response, Integer pageIndex,
+			Integer pageSize,String token) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
-		if (null == pageIndex) {
-			pageIndex = 1;
+		if(pageIndex==null&&pageSize==null) {
+			JSONObject requestContent = HtmlUtils.getRequestContent(request);
+			pageIndex = (Integer) requestContent.get("pageIndex");
+			pageSize = (Integer) requestContent.get("pageSize");
+			token = (String) requestContent.get("token");
 		}
-		if (null == pageSize) {
-			pageSize = 10;
-		}
+		pageIndex=pageIndex==null||pageIndex<1?1:pageIndex;
+		pageSize=pageSize==null||pageSize<1?10:pageSize;
 		try {
-			String token = (String) request.getSession().getAttribute("token");
 			Integer userId = null;
 			if (StringUtils.isNotBlank(token)) {
 				userId = getUserIdByToken(token);
+			}else {
+				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
 			}
 			PaginationQuery query = new PaginationQuery();
+			query.addQueryData("userId", userId + "");
 			query.addQueryData("status", "1");
-			query.addQueryData("sortField", "collectNum");
+//			query.addQueryData("sortField", "collectNum");
 			// 帖子类型：1-评测；2-讨论；3-文章
 			// query.addQueryData("postType", "2");
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
-			PageResult<PostResponse> follows = kffRmiService.findPageFollowList(userId, query);
+//			PageResult<PostResponse> follows = kffRmiService.findPageFollowList(userId, query);
+			PageResult<PostResponse> follows = kffProjectPostRmiService.findMyPageFollowList(userId, query);
 			map.put("follows", follows);
 			bre.setData(map);
 		} catch (RestServiceException e) {

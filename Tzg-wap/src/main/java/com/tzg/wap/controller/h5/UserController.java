@@ -1,15 +1,12 @@
 package com.tzg.wap.controller.h5;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -27,17 +24,13 @@ import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.redis.RedisService;
 import com.tzg.common.utils.AccountTokenUtil;
-import com.tzg.common.utils.Aes;
 import com.tzg.common.utils.AesWapUtils;
-import com.tzg.common.utils.Create2Code;
 import com.tzg.common.utils.EnumConstant.SmsBuss;
-import com.tzg.common.utils.CookieUtil;
 import com.tzg.common.utils.RegexUtil;
 import com.tzg.common.utils.SHAUtil;
 import com.tzg.common.utils.TzgConstant;
 import com.tzg.common.utils.rest.Base64Util;
 import com.tzg.common.utils.rest.RestConstants;
-import com.tzg.entitys.kff.authentication.Authentication;
 import com.tzg.entitys.kff.collect.CollectPostResponse;
 import com.tzg.entitys.kff.dareas.Dareas;
 import com.tzg.entitys.kff.follow.FollowResponse;
@@ -48,7 +41,6 @@ import com.tzg.entitys.kff.user.KFFUserLogin;
 import com.tzg.entitys.kff.userInvation.UserInvation;
 import com.tzg.entitys.leopard.system.SystemParam;
 import com.tzg.entitys.loginaccount.RegisterRequest;
-import com.tzg.entitys.photo.PhotoIview;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
@@ -342,14 +334,15 @@ public class UserController extends BaseController {
 	 * 
 	 * @param request
 	 * @param response
-	 * @param phoneNumber
-	 * @param password
-	 * @param dynamicVerifyCode
+	 * @param phoneNumber 手机号码
+	 * @param password 密码
+	 * @param dynamicVerifyCode 手机验证码
 	 * @return
 	 */
 	@RequestMapping(value = "/register", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public BaseResponseEntity register(HttpServletRequest request, HttpServletResponse response, String phoneNumber, String password, String dynamicVerifyCode) {
+	public BaseResponseEntity register(HttpServletRequest request, HttpServletResponse response, 
+			String phoneNumber, String password, String dynamicVerifyCode) {
 		// 创建返回体
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
@@ -368,16 +361,14 @@ public class UserController extends BaseController {
 			// 全局公用的用户登录信息
 			String key = SHAUtil.encode(user.getUserId() + TzgConstant.LOGIN_SIGN_KEY);
 			redisService.put(key, key, 60 * 60 * 1); // 存放一个小时
-
 			// 生成account token 根据用户的ID 生成唯一的token值
-			String token = AccountTokenUtil.getAccountToken(user.getUserId());
+//			String token = AccountTokenUtil.getAccountToken(user.getUserId());
 			// 将用户是否进行身份审核等信息存放在authentication表中
-			kffRmiService.setUserCardAuthentication(user.getUserId(), phoneNumber);
+//			kffRmiService.setUserCardAuthentication(user.getUserId(), phoneNumber);
 			// 将用户信息插入认证表中
-			kffRmiService.saveAuthenticationByUseId(user.getUserId());
+//			kffRmiService.saveAuthenticationByUseId(user.getUserId());
 			// 根据ID 生成token生成account token
-			map.put("token", token);
-			bre.setData(map);
+//			map.put("token", token);
 		} catch (RestServiceException e) {
 			logger.error("RegisterController register：", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
