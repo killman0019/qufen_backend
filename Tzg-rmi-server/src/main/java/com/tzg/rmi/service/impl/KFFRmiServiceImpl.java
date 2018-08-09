@@ -2190,7 +2190,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			Post posts = kffPostService.findById(postId);
 			if (null != posts) {
 				// 判断post的点赞数10 ,将推荐状态重置成1 进行推荐
-				if (posts.getPraiseNum() == 10) {
+				if (posts.getPraiseNum() == 50) {
 					Post postDB = new Post();
 					postDB.setPostId(posts.getPostId());
 					postDB.setStickUpdateTime(now);
