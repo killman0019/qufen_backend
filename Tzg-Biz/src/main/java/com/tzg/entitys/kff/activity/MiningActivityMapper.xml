@@ -204,6 +204,9 @@
     		<if test="startTime!=null and endTime!=null">
     		  and created_at &gt;= #{startTime} and created_at &lt;= #{endTime}
     		</if>
+    		<if test="tokenSurplusNum!=null">
+    		  and token_surplus_num = #{tokenSurplusNum}
+    		</if>
     	</where>
     </sql>
     

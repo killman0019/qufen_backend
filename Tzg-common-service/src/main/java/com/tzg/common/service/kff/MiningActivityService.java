@@ -80,6 +80,12 @@ public class MiningActivityService extends BaseService {
 		seMap.put("nowEndDt", new Date());
 		seMap.put("status", MiningActivityStatus.END.getValue());
 		miningActivityMapper.updateByMap(seMap);
+		//更新挖矿活动数量为0的状态变为已挖完
+		seMap.clear();
+		seMap.put("state", MiningActivityStatus.STARTING.getValue());
+		seMap.put("status", MiningActivityStatus.DIGOUT.getValue());
+		seMap.put("tokenSurplusNum", 0);
+		miningActivityMapper.updateByMap(seMap);
 	}
 
 	//使用乐观锁去更新数据
