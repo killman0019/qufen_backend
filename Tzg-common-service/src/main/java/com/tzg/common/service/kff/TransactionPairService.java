@@ -122,7 +122,7 @@ public class TransactionPairService {
 		List<TransactionPair> transactionPairList = new ArrayList<TransactionPair>();
 		Date now = new Date();
 		String dataFromUrl = HttpUtil.doGet(strUrl);
-		System.err.println(dataFromUrl);
+//		System.err.println(dataFromUrl);
 		if (StringUtils.isNotEmpty(dataFromUrl)) {
 			JSONObject jsonObject = new JSONObject(dataFromUrl);
 			int code = (int) jsonObject.get("code");
@@ -132,11 +132,11 @@ public class TransactionPairService {
 			}
 			if (code == 0) {
 				Object data = jsonObject.get("data");
-				System.err.println("data" + data);
+//				System.err.println("data" + data);
 				JSONObject jsonData = new JSONObject(data.toString());
-				System.err.println(jsonData);
+//				System.err.println(jsonData);
 				JSONArray jsonArray = jsonData.getJSONArray("list");
-				System.err.println(jsonArray);
+//				System.err.println(jsonArray);
 				for (Object object : jsonArray) {
 					JSONObject jsonBase = new JSONObject(object.toString());
 					Double usdRate = jsonBase.getDouble("usd_rate");
