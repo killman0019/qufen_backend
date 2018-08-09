@@ -9,7 +9,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,7 +106,7 @@ public class UserController extends BaseController {
 			// 生成account token
 			String token = AccountTokenUtil.getAccountToken(user.getUserId());
 			// 根据用户id 获取用户类型跟推荐人
-			Integer userid = AccountTokenUtil.decodeAccountToken(token);
+//			Integer userid = AccountTokenUtil.decodeAccountToken(token);
 			// kffRmiService.registerAward(userid);
 			map.put("token", token);
 
