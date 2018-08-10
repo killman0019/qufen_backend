@@ -1,7 +1,5 @@
 package com.tzg.wap.controller.h5;
 
-import java.util.HashMap;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
