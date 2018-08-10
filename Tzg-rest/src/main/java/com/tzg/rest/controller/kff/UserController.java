@@ -73,6 +73,8 @@ public class UserController extends BaseController {
 	@Autowired
 	private RedisService redisService;
 
+	BigDecimal bdSum = BigDecimal.ZERO;
+
 	/**
 	 * 
 	 * @Title: register
@@ -106,7 +108,7 @@ public class UserController extends BaseController {
 			// 生成account token
 			String token = AccountTokenUtil.getAccountToken(user.getUserId());
 			// 根据用户id 获取用户类型跟推荐人
-//			Integer userid = AccountTokenUtil.decodeAccountToken(token);
+			// Integer userid = AccountTokenUtil.decodeAccountToken(token);
 			// kffRmiService.registerAward(userid);
 			map.put("token", token);
 
@@ -226,7 +228,7 @@ public class UserController extends BaseController {
 
 			KFFUser loginaccount = null;
 			try {
-				loginaccount = kffRmiService.login(loginName, password, clientId,appType);
+				loginaccount = kffRmiService.login(loginName, password, clientId, appType);
 				if (null == loginaccount) {
 					throw new RestServiceException(RestErrorCode.LOGIN_NAME_OR_PASSWORD_INCORRECT);
 				}
@@ -1295,7 +1297,7 @@ public class UserController extends BaseController {
 	}
 
 	/**
-	 * 我的账单明细列表，按照时间排序
+	 * 我的账单明细列表，按照时间排序(使用中)
 	 * 
 	 * @param request
 	 *            (传入一个userId)
@@ -1338,37 +1340,39 @@ public class UserController extends BaseController {
 			query.setRowsPerPage(pageSize);
 			PageResult<TokenawardReturn> result = kffRmiService.findPageMyTokenawardReturn(query);
 			// KFFUser findUserById = kffRmiService.findToken
-			List<Tokenaward> findAllTokenawardUser = kffRmiService.findAllTokenawardUserId(userId);
-			BigDecimal bdSum = BigDecimal.ZERO;
-			for (Tokenaward tokenaward : findAllTokenawardUser) {
-				if (tokenaward.getDistributionType() == 1 && tokenaward != null) {
-					Double inviteNumber = tokenaward.getInviteRewards();
-					bdSum = bdSum.add(new BigDecimal(inviteNumber));
+
+			if (pageIndex == 1) {
+				bdSum = BigDecimal.ZERO;
+				List<Tokenaward> findAllTokenawardUser = kffRmiService.findAllTokenawardUserId(userId);
+				for (Tokenaward tokenaward : findAllTokenawardUser) {
+					if (tokenaward.getDistributionType() == 1 && tokenaward != null) {// 线性
+						Double inviteNumber = tokenaward.getInviteRewards();
+						bdSum = bdSum.add(new BigDecimal(inviteNumber));
+					}
 				}
-			}
-			/*	List<Tokenrecords> findAllTokenrecordsUserId = kffRmiService.findAllTokenrecordsUserId(userId);
+				/*	List<Tokenrecords> findAllTokenrecordsUserId = kffRmiService.findAllTokenrecordsUserId(userId);
+					for (Tokenrecords tokenrecords : findAllTokenrecordsUserId) {
+						if (tokenrecords != null) {
+							if (tokenrecords.getRewardGrantType() == 1) {
+								BigDecimal amount = tokenrecords.getAmount();
+								bdSum = bdSum.add(amount);
+							}
+						}
+					}
+					*/
+				List<Tokenrecords> findAllTokenrecordsUserId = kffRmiService.findAllTokenrecordsUserId(userId);
 				for (Tokenrecords tokenrecords : findAllTokenrecordsUserId) {
 					if (tokenrecords != null) {
-						if (tokenrecords.getRewardGrantType() == 1) {
+						if (tokenrecords.getTradeType() != null && tokenrecords.getTradeType() == 1 && tokenrecords.getRewardGrantType() != 2) {// 一次性
 							BigDecimal amount = tokenrecords.getAmount();
 							bdSum = bdSum.add(amount);
+						} else if (tokenrecords.getTradeType() != null && tokenrecords.getTradeType() == 2) {
+							BigDecimal amount = tokenrecords.getAmount();
+							bdSum = bdSum.subtract(amount);
 						}
 					}
 				}
-				*/
-			List<Tokenrecords> findAllTokenrecordsUserId = kffRmiService.findAllTokenrecordsUserId(userId);
-			for (Tokenrecords tokenrecords : findAllTokenrecordsUserId) {
-				if (tokenrecords != null) {
-					if (tokenrecords.getTradeType() != null && tokenrecords.getTradeType() == 1 && tokenrecords.getRewardGrantType() != 2) {
-						BigDecimal amount = tokenrecords.getAmount();
-						bdSum = bdSum.add(amount);
-					} else if (tokenrecords.getTradeType() != null && tokenrecords.getTradeType() == 2) {
-						BigDecimal amount = tokenrecords.getAmount();
-						bdSum = bdSum.subtract(amount);
-					}
-				}
 			}
-
 			map.put("sum", bdSum);
 
 			map.put("myTokenBill", result);

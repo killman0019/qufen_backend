@@ -79,7 +79,7 @@ public class ProjectController extends BaseController {
 			}
 			ProjectResponse project = kffRmiService.findProjectById(userId, projectId);
 			map.put("project", project);
-
+			System.err.println(JSON.toJSONString(project));
 			// 20180613 去掉，改为 精选评测，精选打假（讨论）
 			// https://www.tapd.cn/21950911/bugtrace/bugs/view?bug_id=1121950911001000461
 			// 2条7天内回复数最高的讨论帖子
@@ -578,7 +578,8 @@ public class ProjectController extends BaseController {
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
 			PageResult<ProjectResponse> projectResponsePage = kFFProjectRmiService.showProjectListNew(tabId, userId, query);
-			//System.err.println("projectResponsePage+++++++++++++++++++++++" + JSON.toJSONString(projectResponsePage));
+			// System.err.println("projectResponsePage+++++++++++++++++++++++" +
+			// JSON.toJSONString(projectResponsePage));
 			map.put("projectResponsePage", projectResponsePage);
 			bre.setData(map);
 		} catch (RestServiceException e) {
