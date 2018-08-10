@@ -258,6 +258,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	private ThreadPoolTaskExecutor taskExecutor;
 	@Autowired
 	private ProjectTradeService projectTradeService;
+	@Autowired
+	private TokenrecordsService tokenrecordsService;
 
 	@Value("#{paramConfig['registerUrl']}")
 	private String contentself;
@@ -1449,7 +1451,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		/***
 		 * 进行评论奖励
 		 */
-		awardUserTokenComment(post, comment.getCommentUserId());
+		awardUserTokenComment(post, commentUser, saveComment.getCommentsId());
 		/*************************评论奖励发放送币end***********************************/
 		if (comment.getParentCommentsId() == null) {
 			// 更新post表格中的评论数量
@@ -1526,29 +1528,31 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	 * @data 2018年8月10日
 	 *
 	 */
-	private void awardUserTokenComment(Post post, Integer commentUserId) {
+	private void awardUserTokenComment(Post post, KFFUser commentUser, Integer commentsId) {
 		// TODO 对内容进行首次评论奖励,自己给自己评论不奖励
 		// 判断评论否是给自己评论 不是对自己的创建的帖子进行评论
 
-		if (post.getCreateUserId() != commentUserId) {
+		if (post.getCreateUserId() != commentUser.getUserId()) {
 			// 判断此用户是否已经在此post下发表了评论
 			Map<String, Object> commentsMap = new HashMap<String, Object>();
-			commentsMap.put("commentUserId", commentUserId);
+			commentsMap.put("commentUserId", commentUser.getUserId());
 			commentsMap.put("postId", post.getPostId());
 			List<Comments> commentsList = kffCommentsService.findAllCommentsByWhere(commentsMap);
-			if (CollectionUtils.isEmpty(commentsList)) {// 说明此用户没有在此post下发表过评论
+			if (!CollectionUtils.isEmpty(commentsList)) {// 说明此用户没有在此post下发表过评论
 				// 判断是否是实名用户 不是实名用户就不发放奖励
-				QfIndex postCreateUserQfIndex = qfIndexService.findByUserId(post.getCreateUserId());
-				if (null != postCreateUserQfIndex) {
-					if (postCreateUserQfIndex.getStatusHierarchyType() > 0) {// 发布人是实名认证并且区分指数为>0
-																				// 的用户
-						QfIndex commentUserQfIndex = qfIndexService.findByUserId(commentUserId);
-						if (null != commentUserQfIndex) {
-							if (commentUserQfIndex.getStatusHierarchyType() > 0 && commentUserQfIndex.getYxComments() > 0) {
-								// 发布人进行实名认证并且区分指数>0并且评论的用户的有效评论数大于0
-								// 进行token发放奖励
-								grantCommnetsAward(post, postCreateUserQfIndex, commentUserQfIndex, commentUserId);
+				if (commentsList.size() == 1) {// 有人在评论,这个评论首次评论
+					QfIndex postCreateUserQfIndex = qfIndexService.findByUserId(post.getCreateUserId());
+					if (null != postCreateUserQfIndex) {
+						if (postCreateUserQfIndex.getStatusHierarchyType() > 0) {// 发布人是实名认证并且区分指数为>0
+																					// 的用户
+							QfIndex commentUserQfIndex = qfIndexService.findByUserId(commentUser.getUserId());
+							if (null != commentUserQfIndex) {
+								if (commentUserQfIndex.getStatusHierarchyType() > 0 && commentUserQfIndex.getYxComments() > 0) {
+									// 发布人进行实名认证并且区分指数>0并且评论的用户的有效评论数大于0
+									// 进行token发放奖励
+									grantCommnetsAward(post, postCreateUserQfIndex, commentUserQfIndex, commentUser, commentsId);
 
+								}
 							}
 						}
 					}
@@ -1568,7 +1572,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	 * @data 2018年8月10日
 	 *
 	 */
-	private void grantCommnetsAward(Post post, QfIndex postCreateUserQfIndex, QfIndex commentUserQfIndex, Integer commentUserId) {
+	private void grantCommnetsAward(Post post, QfIndex postCreateUserQfIndex, QfIndex commentUserQfIndex, KFFUser commentUser, Integer commentsId) {
 		// TODO 进行token发放
 		Date now = new Date();
 		Double commentFirstAwardToken = 5.0;// 当前内容下首次评论的奖励token数
@@ -1578,23 +1582,45 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		Tokenaward tokenaward = new Tokenaward();
 
 		Tokenrecords tokenrecords = new Tokenrecords();
-		tokenrecords.setUserId(commentUserId);
+		tokenrecords.setUserId(commentUser.getUserId());
 		tokenrecords.setTradeType(1);// 收入
 		tokenrecords.setTradeCode("");// 交易流水
 		tokenrecords.setFunctionDesc("评论奖励");
 		tokenrecords.setFunctionType(23);
 		tokenrecords.setTradeDate(now);
-		// tokenrecords.setBalance(balance);
+		// tokenrecords.setBalance(balance);?
 		tokenrecords.setCreateTime(now);
 		tokenrecords.setUpdateTime(now);
 		tokenrecords.setStatus(1);
+		tokenrecords.setMemo("评论奖励");
+		tokenrecords.setRewardGrantType(1);
+		tokenrecords.setAwardType(1);
+		tokenrecords.setAwardTypeId(commentsId);
+
+		tokenaward.setUserId(commentUser.getUserId());
+		tokenaward.setTokenAwardFunctionDesc("评论奖励");
+		tokenaward.setTokenAwardFunctionType(23);
+		tokenaward.setCreateTime(now);
+		tokenaward.setUpdateTime(now);
+		tokenaward.setDistributionType(2);
+		tokenaward.setUserName(commentUser.getUserName());
+		tokenaward.setMobile(commentUser.getMobile());
+		tokenaward.setAwardType(1);
+		tokenaward.setAwardTypeId(commentsId);
+		tokenaward.setInviteRewards(0.0);
+		tokenaward.setAwardBalance(0.0);
 		if (commentsNum == 0) {
 			// 首次评论
+			tokenaward.setRewardToken(commentFirstAwardToken);
 			tokenrecords.setAmount(new BigDecimal(commentFirstAwardToken));
 		} else {
 			// 非首次评论
+			tokenaward.setRewardToken(commentAwardToken);
 			tokenrecords.setAmount(new BigDecimal(commentAwardToken));
 		}
+		tokenrecordsService.save(tokenrecords);
+		tokenaward.setTokenRecordsId(tokenrecords.getTokenRecordsId());
+		tokenawardService.save(tokenaward);
 	}
 
 	@Override
@@ -3251,6 +3277,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			query.setRowsPerPage(rowsPerPage);
 			Map<String, Object> disMap = new HashMap<String, Object>();
 			disMap.put("disStickTop", 1 + "");
+			disMap.put("status", "1");
 			List<Discuss> discussList = kffDiscussService.findByMap(disMap);
 			if (CollectionUtils.isNotEmpty(discussList)) {
 				Discuss discuss = discussList.get(0);

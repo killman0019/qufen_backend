@@ -341,8 +341,7 @@ public class UserController extends BaseController {
 	 */
 	@RequestMapping(value = "/register", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public BaseResponseEntity register(HttpServletRequest request, HttpServletResponse response, 
-			String phoneNumber, String password, String dynamicVerifyCode) {
+	public BaseResponseEntity register(HttpServletRequest request, HttpServletResponse response, String phoneNumber, String password, String dynamicVerifyCode) {
 		// 创建返回体
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
@@ -362,13 +361,13 @@ public class UserController extends BaseController {
 			String key = SHAUtil.encode(user.getUserId() + TzgConstant.LOGIN_SIGN_KEY);
 			redisService.put(key, key, 60 * 60 * 1); // 存放一个小时
 			// 生成account token 根据用户的ID 生成唯一的token值
-//			String token = AccountTokenUtil.getAccountToken(user.getUserId());
+			// String token = AccountTokenUtil.getAccountToken(user.getUserId());
 			// 将用户是否进行身份审核等信息存放在authentication表中
-//			kffRmiService.setUserCardAuthentication(user.getUserId(), phoneNumber);
+			// kffRmiService.setUserCardAuthentication(user.getUserId(), phoneNumber);
 			// 将用户信息插入认证表中
-//			kffRmiService.saveAuthenticationByUseId(user.getUserId());
+			// kffRmiService.saveAuthenticationByUseId(user.getUserId());
 			// 根据ID 生成token生成account token
-//			map.put("token", token);
+			// map.put("token", token);
 		} catch (RestServiceException e) {
 			logger.error("RegisterController register：", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
@@ -459,7 +458,7 @@ public class UserController extends BaseController {
 			KFFUser loginaccount = null;
 			try {
 				// 用户登陆
-				loginaccount = kffRmiService.login(loginName, password,null,null);
+				loginaccount = kffRmiService.login(loginName, password, null, null);
 				if (null == loginaccount) {
 					throw new RestServiceException(RestErrorCode.LOGIN_NAME_OR_PASSWORD_INCORRECT);
 				}

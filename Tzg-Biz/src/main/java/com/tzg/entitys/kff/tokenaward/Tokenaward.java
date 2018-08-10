@@ -125,6 +125,26 @@ public class Tokenaward implements Serializable {
 
 	private Integer postId;
 
+	private Integer awardType;
+
+	public Integer getAwardType() {
+		return awardType;
+	}
+
+	public void setAwardType(Integer awardType) {
+		this.awardType = awardType;
+	}
+
+	public Integer getAwardTypeId() {
+		return awardTypeId;
+	}
+
+	public void setAwardTypeId(Integer awardTypeId) {
+		this.awardTypeId = awardTypeId;
+	}
+
+	private Integer awardTypeId;
+
 	public Integer getPostId() {
 		return postId;
 	}
