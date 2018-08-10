@@ -25,6 +25,7 @@ import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.redis.RedisService;
 import com.tzg.common.utils.AccountTokenUtil;
 import com.tzg.common.utils.AesWapUtils;
+import com.tzg.common.utils.HtmlUtils;
 import com.tzg.common.utils.EnumConstant.SmsBuss;
 import com.tzg.common.utils.RegexUtil;
 import com.tzg.common.utils.SHAUtil;
@@ -348,6 +349,12 @@ public class UserController extends BaseController {
 		HashMap<String, Object> map = new HashMap<String, Object>();
 
 		try {
+			if(phoneNumber==null&&password==null&&dynamicVerifyCode==null) {
+				JSONObject requestContent = HtmlUtils.getRequestContent(request);
+				phoneNumber = (String) requestContent.get("phoneNumber");
+				password = (String) requestContent.get("password");
+				dynamicVerifyCode = (String) requestContent.get("dynamicVerifyCode");
+			}
 			RegisterRequest registerRequest = new RegisterRequest();
 			registerRequest.setPassword(password);
 			registerRequest.setPhoneNumber(phoneNumber);

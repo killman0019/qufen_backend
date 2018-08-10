@@ -124,6 +124,14 @@
 	<bean id="rewardDetailRmiService" class="com.tzg.rmi.service.impl.RewardDetailRmiServiceImpl" />
 	<dubbo:service interface="com.tzg.rmi.service.RewardDetailRmiService" ref="rewardDetailRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0" />
 	
+	<!-- 导航分类服务 -->
+	<bean id="navigationRmiService" class="com.tzg.rmi.service.impl.NavigationRmiServiceImpl" />
+	<dubbo:service interface="com.tzg.rmi.service.NavigationRmiService" ref="navigationRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0" />
+	
+	<!-- 导航项目服务 -->
+	<bean id="navigationProjectRmiService" class="com.tzg.rmi.service.impl.NavigationProjectRmiServiceImpl" />
+	<dubbo:service interface="com.tzg.rmi.service.NavigationProjectRmiService" ref="navigationProjectRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0" />
+	
 	<bean id="kffProjectPostRmiService" class="com.tzg.rmi.service.impl.KFFProjectPostRmiServiceImpl" />
 	<dubbo:service interface="com.tzg.rmi.service.KFFProjectPostRmiService" ref="kffProjectPostRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0"/>
 	

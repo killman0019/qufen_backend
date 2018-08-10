@@ -7,9 +7,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.tzg.common.service.kff.ExplainActivityService;
 import com.tzg.common.service.kff.FollowService;
-import com.tzg.entitys.kff.activity.ExplainActivity;
 import com.tzg.entitys.kff.follow.Follow;
 import com.tzg.rmi.service.FollowRmiService;
 
