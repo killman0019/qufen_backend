@@ -1672,9 +1672,7 @@ public class AwardPortService {
 							coinPropertyRefer.setCoinDistributed(m1 + coinDistributed);
 						}
 						coinPropertyRefer.setCoinDistributed(m1 + coinDistributed);
-
 						kffCoinPropertyService.update(coinPropertyRefer);
-
 					}
 
 					if (sum < 100000 && user2.getUserId() <= 50000 && user2.getUserId() > 0) {
