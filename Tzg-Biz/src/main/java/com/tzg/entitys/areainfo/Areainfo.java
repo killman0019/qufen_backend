@@ -4,9 +4,7 @@ import java.io.Serializable;
 
 public class Areainfo implements Serializable {
 	private static final long serialVersionUID = 1L;
-    /**
-     * id
-     */ 	
+	
 	private java.lang.Integer id;
     /**
      * vcCode
