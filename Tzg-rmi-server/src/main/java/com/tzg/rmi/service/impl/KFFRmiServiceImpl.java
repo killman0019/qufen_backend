@@ -3166,8 +3166,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				Discuss discuss = discussList.get(0);
 				if (null != discuss) {
 					posts = kffPostService.findPageIncludeSkick(query, discuss.getPostId());
-					System.err.println(JSON.toJSONString(posts));
+					// System.err.println(JSON.toJSONString(posts));
 				}
+			} else {
+				posts = kffPostService.findPageRecommendList(query);
+
 			}
 		} else {
 			posts = kffPostService.findPageRecommendList(query);
