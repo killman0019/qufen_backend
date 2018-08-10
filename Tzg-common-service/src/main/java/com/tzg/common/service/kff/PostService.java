@@ -3,6 +3,7 @@ package com.tzg.common.service.kff;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -42,7 +43,7 @@ public class PostService {
 	@Autowired
 	private TokenrecordsMapper tokenrecordsMapper;
 
-	private static final ExecutorService newFixedThreadPoolCaluaPostIncome = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 4);
+	private static final ExecutorService newFixedThreadPoolCaluaPostIncome = Executors.newFixedThreadPool(10);
 
 	@Transactional(readOnly = true)
 	public Post findById(java.lang.Integer id) throws RestServiceException {
@@ -207,6 +208,7 @@ public class PostService {
 
 			try {
 				for (Post p : posts) {
+
 					final Integer postId = p.getPostId();
 					newFixedThreadPoolCaluaPostIncome.execute(new Runnable() {
 						@Override
@@ -229,6 +231,7 @@ public class PostService {
 				newFixedThreadPoolCaluaPostIncome.shutdown();
 			}
 		}
+
 	}
 
 	/**
@@ -246,13 +249,7 @@ public class PostService {
 			Double postTotalIncome = 0.0d;
 
 			// TODO Auto-generated method stub
-			if (postId == null) {
-				return;
-			}
-			Post post = postMapper.findById(postId);
-			if (null != post) {
-				return;
-			}
+
 			// 查询打赏奖励表,查询对这个帖子进行的打赏
 			List<Commendation> commendations = commendationMapper.selectAllCommendationByPostId(postId);
 			if (!CollectionUtils.isEmpty(commendations)) {
