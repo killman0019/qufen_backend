@@ -86,7 +86,7 @@ public class taskJobService {
 	 *
 	 */
 	public void getdatafromUrlByexchangeTask() {
-		logger.info("--------------start getProjectDateFromUrlTask job---");
+		logger.info("--------------start getdatafromUrlByexchangeTask job---");
 		transactionPairService.getdatafromUrlByexchangeTask();
 		logger.info("-------------- end getdatafromUrlByexchangeTask job---");
 	}
