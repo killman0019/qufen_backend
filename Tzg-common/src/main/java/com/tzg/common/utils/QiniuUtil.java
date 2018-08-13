@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import sun.misc.BASE64Decoder;
 
+import com.alibaba.fastjson.JSON;
 import com.google.gson.Gson;
 import com.qiniu.common.QiniuException;
 import com.qiniu.common.Zone;
@@ -263,7 +264,11 @@ public class QiniuUtil {
 	}
 
 	public static void main(String[] args) throws Exception {
-		uploadBase64Str(null, "testbase6dddd33");
+		// uploadBase64Str(null, "testbase6dddd33");
+		String str = "data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==";
+		MultipartFile base64ToMultipart = base64ToMultipart(str);
+		System.err.println(JSON.toJSON(base64ToMultipart));
+		System.err.println("");
 	}
 
 	public static MultipartFile base64ToMultipart(String base64) {
@@ -300,4 +305,5 @@ public class QiniuUtil {
 		}
 
 	}
+
 }
