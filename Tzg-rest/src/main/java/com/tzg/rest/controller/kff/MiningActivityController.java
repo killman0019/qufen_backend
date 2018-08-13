@@ -327,7 +327,22 @@ public class MiningActivityController extends BaseController {
 				queryc.addQueryData("status3", 4);
 				queryc.setPageIndex(curPage);
 				queryc.setRowsPerPage(pageSize);
-				data = miningActivityRmiService.findMiningActivityPage(query);
+				data = miningActivityRmiService.findMiningActivityPage(queryc);
+			}else {
+				List<MiningActivity> rows = data.getRows();
+				if(!rows.isEmpty()&&rows.size()<pageSize) {
+					PaginationQuery queryc = new PaginationQuery();
+					queryc.addQueryData("status3", 4);
+					queryc.setPageIndex(curPage);
+					queryc.setRowsPerPage(pageSize);
+					PageResult<MiningActivity> datac = miningActivityRmiService.findMiningActivityPage(queryc);
+					if(null!=datac && datac.getRows().size()>0) {
+						List<MiningActivity> rowsc = datac.getRows();
+						for (MiningActivity miningActivity : rowsc) {
+							rows.add(miningActivity);
+						}
+					}
+				}
 			}
             map.put("data", data);
 			bre.setData(map);
