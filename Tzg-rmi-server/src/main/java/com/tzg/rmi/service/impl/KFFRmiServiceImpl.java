@@ -6814,4 +6814,15 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		qfIndexService.update(qfIndexUser);
 
 	}
+
+	@Override
+	public Integer selectUserStatusOnly(Integer userId) throws RestServiceException {
+		// TODO Auto-generated method stub
+
+		UserCard userCard = userCardService.selectUserStatusOnly(userId);
+		if (null == userCard) {
+			throw new RestServiceException("用户异常");
+		}
+		return userCard.getStatus();
+	}
 }
