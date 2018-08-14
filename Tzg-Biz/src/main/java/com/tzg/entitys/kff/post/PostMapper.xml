@@ -674,13 +674,96 @@
 		</if>
 	</sql>
 
-
 	<select id="selectAllPost" resultMap="BaseResultMap" parameterType="java.util.Map">
 		select
 		<include refid="columns" />
 		from tbpost where 1=1
 		<include refid="queryWhere" />
 	</select>
+	
+	
+	<select id="findSetTopDiscussCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		SELECT COUNT(1) from (
+			SELECT DATE_FORMAT(tds.nice_choice_at,'%Y-%m-%d') from tbpost as tpt
+			LEFT JOIN tbdiscuss as tds on tpt.post_id=tds.post_id
+			<include refid="condition"/>
+			GROUP BY  DATE_FORMAT(tds.nice_choice_at,'%Y-%m-%d')
+		) a;
+	</select>
+	
+	<select id="findSetTopDiscuss" resultType="com.tzg.entitys.kff.post.PostDiscussVo" parameterType="java.util.Map">
+		select
+		tpt.post_id as postId,
+		tpt.stick_top as stickTop,
+		tpt.stick_updateTime as stickUpdateTime,
+		tpt.project_id as projectId,
+		tpt.project_icon as projectIcon,
+		tpt.project_code as projectCode,
+		tpt.project_english_name as projectEnglishName,
+		tpt.project_chinese_name as projectChineseName,
+		tpt.post_title as postTitle,
+		tpt.post_type as postType,
+		tpt.post_short_desc as postShortDesc,
+		tpt.post_small_images as postSmallImages,
+		tpt.comments_num as commentsNum,
+		tpt.praise_num as praiseNum,
+		tpt.pageview_num as pageviewNum,
+		tpt.donate_num as donateNum,
+		tpt.collect_num as collectNum,
+		tpt.create_user_id as createUserId,
+		tpt.create_user_icon as createUserIcon,
+		tpt.create_user_signature as createUserSignature,
+		tpt.create_user_name as createUserName,
+		tpt.createTime as createTime,
+		tpt.updateTime as updateTime,
+		tpt.uuid as uuid,
+		tpt.status as status,
+		tpt.praise_income as praiseIncome,
+		tpt.donate_income as donateIncome,
+		tpt.post_total_income as postTotalIncome,
+		tds.discuss_id as discussId,
+		tds.disscuss_contents as disscussContents,
+		tds.post_uuid as postUuid,
+		tds.tag_infos as tagInfos,
+		tds.is_nice_choice as isNiceChoice,
+		tds.nice_choice_at as niceChoiceAt,
+		tds.type as type,
+		tds.dis_stick_top as disStickTop,
+		tds.dis_stick_updateTime as disStickUpdateTime
+		from tbpost as tpt
+		LEFT JOIN tbdiscuss as tds on tpt.post_id=tds.post_id
+		<include refid="condition"/>
+	    ORDER BY ${sort} desc
+	    <if test="startLimt != null and endLimt!=null">
+        LIMIT ${startLimt},${endLimt} 
+        </if>
+	</select>
+	
+	<sql id="condition">
+    	<where>
+	    	<if test="id != null">
+			 id = #{id,jdbcType=INTEGER}
+			</if>
+			<if test="status!=null">
+    		  and tpt.status = #{status}
+    		</if>
+    		<if test="postType!=null">
+    		  and tpt.post_type = #{postType}
+    		</if>
+    		<if test="disStickTop!=null">
+    		  and tds.dis_stick_top = #{disStickTop}
+    		</if>
+    		<if test="beginDt!=null">
+    		  and tds.nice_choice_at &gt;= #{beginDt}
+    		</if>
+    		<if test="endDt!=null">
+    		  and tds.nice_choice_at &lt;= #{endDt}
+    		</if>
+    		<if test="isNiceChoice!=null">
+    		  and tds.is_nice_choice = #{isNiceChoice}
+    		</if>
+    	</where>
+    </sql>
 
 </mapper>
 

@@ -1,6 +1,6 @@
 package com.tzg.rest.controller.kff;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -24,14 +23,12 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tzg.common.base.BaseRequest;
 import com.tzg.common.constants.KFFConstants;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.utils.AccountTokenUtil;
-import com.tzg.common.utils.DozerMapperUtils;
 import com.tzg.common.utils.FileUtils;
 import com.tzg.common.utils.QiniuUtil;
 import com.tzg.common.utils.RandomUtil;
@@ -162,6 +159,54 @@ public class HomeController extends BaseController {
 		}
 		return bre;
 	}
+	
+	/** 
+	* @Title: findBurstListBy1_5 
+	* @Description: TODO <1.5版本的新版爆料>
+	* @author linj <方法创建作者>
+	* @create 下午3:26:08
+	* @param @param request
+	* @param @return <参数说明>
+	* @return BaseResponseEntity 
+	 * @throws IOException 
+	* @throws 
+	* @update 下午3:26:08
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	*/
+	@ResponseBody
+	@RequestMapping(value = "/findBurstListBy1_5", method = { RequestMethod.POST, RequestMethod.GET })
+	public BaseResponseEntity findBurstListBy1_5(HttpServletRequest request) throws IOException {
+		BaseResponseEntity bre = new BaseResponseEntity();
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		try {
+			BaseRequest baseRequest = getParamMapFromRequestPolicy(request, BaseRequest.class);
+			String token = baseRequest.getToken();
+			Integer userId = null;
+			if (StringUtils.isNotBlank(token)) {
+				userId = getUserIdByToken(token);
+			}
+			PaginationQuery query = new PaginationQuery();
+			query.addQueryData("status", "1");
+			query.addQueryData("sortField", "createTime");
+			// 帖子类型：2-爆料
+			query.addQueryData("postType", "2");
+			query.setPageIndex(baseRequest.getPageIndex());
+			query.setRowsPerPage(baseRequest.getPageSize());
+			Integer type = 2;// 取关注人
+			PageResult<PostResponse> recommends = kffRmiService.findBurstList(userId, query, type);
+			map.put("recommends", recommends);
+			bre.setData(map);
+		} catch (RestServiceException e) {
+			logger.error("HomeController recommendList:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("HomeController recommendList:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+		}
+		return bre;
+	}
+	
 
 	/**
 	 * 

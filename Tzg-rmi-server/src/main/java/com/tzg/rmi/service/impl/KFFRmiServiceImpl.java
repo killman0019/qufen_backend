@@ -1,9 +1,7 @@
 package com.tzg.rmi.service.impl;
 
 import java.io.File;
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -12,21 +10,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.ObjectUtils.Null;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.poi.xwpf.usermodel.TOC;
-import org.apache.velocity.app.event.ReferenceInsertionEventHandler.referenceInsertExecutor;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,6 +38,7 @@ import com.aliyuncs.profile.DefaultProfile;
 import com.aliyuncs.profile.IClientProfile;
 import com.google.common.base.Objects;
 import com.tzg.common.constants.KFFConstants;
+import com.tzg.common.enums.DiscussType;
 import com.tzg.common.enums.LinkedType;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
@@ -82,28 +75,20 @@ import com.tzg.common.service.kff.UserInvationService;
 import com.tzg.common.service.kff.UserService;
 import com.tzg.common.service.kff.UserWalletService;
 import com.tzg.common.service.systemParam.SystemParamService;
-import com.tzg.common.utils.AccountTokenUtil;
 import com.tzg.common.utils.Create2Code;
 import com.tzg.common.utils.DateUtil;
-import com.tzg.common.utils.DelHtmlAll;
-import com.tzg.common.utils.DownImagesUtile;
 import com.tzg.common.utils.DownImgGoodUtil;
 import com.tzg.common.utils.FileUtils;
 import com.tzg.common.utils.GetImgUrl;
 import com.tzg.common.utils.GetPicSuffixUtil;
 import com.tzg.common.utils.H5AgainDeltagsUtil;
 import com.tzg.common.utils.HexUtil;
-import com.tzg.common.utils.DownImgGoodUtil;
-import com.tzg.common.utils.QiniuUtil;
-import com.tzg.common.utils.sendTelephone;
-import com.tzg.common.utils.sysGlobals;
-import com.tzg.common.utils.rest.AliyunConstant;
 import com.tzg.common.utils.Numbers;
+import com.tzg.common.utils.QiniuUtil;
 import com.tzg.common.utils.RandomUtil;
 import com.tzg.common.utils.RegexUtil;
-import com.tzg.common.utils.ToRemoveHtml;
 import com.tzg.common.utils.WorkHtmlRegexpUtil;
-import com.tzg.common.utils.rest.AliyunConstant;
+import com.tzg.common.utils.sysGlobals;
 import com.tzg.common.utils.web.HttpUtil;
 import com.tzg.common.zookeeper.ZKClient;
 import com.tzg.entitys.kff.app.NewsPush;
@@ -142,6 +127,7 @@ import com.tzg.entitys.kff.message.KFFMessage;
 import com.tzg.entitys.kff.mobileversionupdate.Mobileversionupdate;
 import com.tzg.entitys.kff.notice.KFFNotice;
 import com.tzg.entitys.kff.post.Post;
+import com.tzg.entitys.kff.post.PostDiscussVo;
 import com.tzg.entitys.kff.post.PostFile;
 import com.tzg.entitys.kff.post.PostResponse;
 import com.tzg.entitys.kff.praise.Praise;
@@ -155,7 +141,6 @@ import com.tzg.entitys.kff.suggest.Suggest;
 import com.tzg.entitys.kff.suggest.SuggestRequest;
 import com.tzg.entitys.kff.tokenaward.Tokenaward;
 import com.tzg.entitys.kff.tokenaward.TokenawardReturn;
-import com.tzg.entitys.kff.tokenaward.TokenawardReturn;
 import com.tzg.entitys.kff.tokenrecords.Tokenrecords;
 import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.entitys.kff.user.KFFUserHomeResponse;
@@ -163,18 +148,15 @@ import com.tzg.entitys.kff.userInvation.UserInvation;
 import com.tzg.entitys.kff.usercard.UserCard;
 import com.tzg.entitys.kff.userwallet.KFFUserWallet;
 import com.tzg.entitys.kff.userwallet.KFFUserWalletMapper;
+import com.tzg.entitys.leopard.system.SystemParam;
 import com.tzg.entitys.loginaccount.RegisterRequest;
 import com.tzg.entitys.photo.PhotoParams;
-import com.tzg.rest.constant.KFFRestConstants;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
 import com.tzg.rmi.service.KFFRmiService;
 import com.tzg.rmi.service.SmsSendRmiService;
-import com.vdurmont.emoji.Emoji;
 import com.vdurmont.emoji.EmojiParser;
-import com.tzg.common.utils.Numbers;
-import com.tzg.common.utils.sysGlobals;
 
 public class KFFRmiServiceImpl implements KFFRmiService {
 
@@ -1776,7 +1758,20 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (newPost == null) {
 			throw new RestServiceException("帖子不存在" + uuid);
 		}
+		/**
+		 * 用户类型:1-普通用户；2-项目方；3-评测机构；4-机构用户
+		 * 用户认证账号及用户的类型不等于1，发布的爆料就为精选爆料
+		 */
 		Discuss discuss = new Discuss();
+		if(createUser.getUserType()!=null&&createUser.getUserType()==1) {
+			discuss.setIsNiceChoice(sysGlobals.DISABLE);
+			discuss.setType(DiscussType.ORDINARYBURST.getValue());
+		}
+		if(createUser.getUserType()!=null&&createUser.getUserType()!=1) {
+			discuss.setIsNiceChoice(sysGlobals.ENABLE);
+			discuss.setNiceChoiceAt(new Date());
+			discuss.setType(DiscussType.AUTHACCOUNTPUBLISH.getValue());
+		}
 		discuss.setDisscussContents(discussRequest.getDisscussContents());
 		discuss.setPostId(newPost.getPostId());
 		discuss.setPostUuid(uuid);
@@ -2716,6 +2711,23 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// }
 		// appNewsPush(linkedType, postId, kffUserc.getMobile(), praiseContent);
 		// }
+		
+		//判断爆料的点赞量是否达到表中设定的值，要是相等那么直接将这篇爆料更新为精选爆料
+		SystemParam sysCode = systemParamService.findByCode(sysGlobals.DISSCS_POINT_OF_PRAISE);
+		Map<String,Object> seMap = new HashMap<String,Object>();
+		seMap.put("postId", postId);
+		seMap.put("status", KFFConstants.STATUS_ACTIVE);//有效的点赞
+		seMap.put("postType", 2);//帖子类型：1-评测；2-讨论；3-文章
+		Integer praiseCount = kffPraiseService.findListByAttrByCount(seMap);
+		Integer vcPamVal = Integer.valueOf(sysCode.getVcParamValue());
+		if(vcPamVal==praiseCount) {
+			seMap.clear();
+			seMap.put("postId", postId);
+			seMap.put("isNiceChoice", sysGlobals.ENABLE);
+			seMap.put("niceChoiceAt", new Date());
+			seMap.put("type", DiscussType.DOTPRAISE.getValue());
+			kffDiscussService.updateByMap(seMap);
+		}
 		Post latestPost = kffPostService.findById(postId);
 		if (latestPost != null) {
 			result = latestPost.getPraiseNum() == null ? 0 : (latestPost.getPraiseNum());
@@ -2813,7 +2825,22 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			kffPostService.decreasePraiseNum(postId);
 			kffUserService.decreasePraiseNum(post.getCreateUserId());
 		}
-
+		//判断爆料的点赞量是否小于表中设定的值，要是小于那么直接将这篇爆料更新为普通爆料
+		SystemParam sysCode = systemParamService.findByCode(sysGlobals.DISSCS_POINT_OF_PRAISE);
+		Map<String,Object> seMap = new HashMap<String,Object>();
+		seMap.put("postId", postId);
+		seMap.put("status", KFFConstants.STATUS_ACTIVE);//有效的点赞
+		seMap.put("postType", 2);//帖子类型：1-评测；2-讨论；3-文章
+		Integer praiseCount = kffPraiseService.findListByAttrByCount(seMap);
+		Integer vcPamVal = Integer.valueOf(sysCode.getVcParamValue());
+		if(vcPamVal>praiseCount) {
+			seMap.clear();
+			seMap.put("postId", postId);
+			seMap.put("isNiceChoice", sysGlobals.DISABLE);
+			seMap.put("niceChoiceAt", new Date());
+			seMap.put("type", DiscussType.ORDINARYBURST.getValue());
+			kffDiscussService.updateByMap(seMap);
+		}
 		result = post.getPraiseNum() == null ? 0 : ((post.getPraiseNum() - 1) < 0 ? 0 : (post.getPraiseNum() - 1));
 		return result;
 	}
@@ -3146,6 +3173,235 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 
 	}
+	
+	private static  Integer getListArr(List<PostDiscussVo> list){
+		if(list.isEmpty()){
+			return null;
+		}
+		Random ran = new Random();
+		int con=ran.nextInt(list.size());
+		return con;
+	}
+	
+	@Override
+	public PageResult<PostResponse> findBurstList(Integer loginUserId, PaginationQuery query, Integer type) throws RestServiceException {
+		PageResult<PostResponse> result = new PageResult<PostResponse>();
+		List<PostResponse> postResponse = new ArrayList<>();
+//		PageResult<Post> posts = null;
+		PageResult<PostDiscussVo> posts = null;
+		int pageIndex = query.getPageIndex();
+		int rowsPerPage = query.getRowsPerPage();
+		//第一页先取10条后台人工置顶的爆料，然后再从当天所有精选的爆料中随机出去10条
+		//从第二页开始从相应递减的天数中所有精选的爆料中随机出去20条
+		List<PostDiscussVo> postDisscussList = new ArrayList<PostDiscussVo>();
+		Map<String,Object> seMap = new HashMap<String,Object>();
+		if (pageIndex == 1) {
+			seMap.clear();
+			seMap.put("status", "1");
+			seMap.put("postType", "2");
+			seMap.put("disStickTop", 1);//置顶的
+			seMap.put("sort", "tds.dis_stick_updateTime");
+			seMap.put("startLimt", 0);
+			seMap.put("endLimt", 10);
+			List<PostDiscussVo> postDiscuss = kffPostService.findSetTopDiscuss(seMap);
+			if(!postDiscuss.isEmpty()) {
+				for (PostDiscussVo postDiscussVo : postDiscuss) {
+					postDisscussList.add(postDiscussVo);
+				}
+			}
+		}
+		String nowDt = DateUtil.getSpecifiedDayBeforeOrAfter(pageIndex-1);
+		String beginDt = nowDt+" 00:00:00";
+		String endDt = nowDt+" 23:59:59";
+		seMap.clear();
+		seMap.put("status", "1");
+		seMap.put("postType", "2");
+		seMap.put("disStickTop", 0);//置顶的
+		seMap.put("beginDt", beginDt);
+		seMap.put("endDt", endDt);
+		seMap.put("isNiceChoice", sysGlobals.ENABLE);//获取精选的爆料
+		seMap.put("sort", "tds.nice_choice_at");
+		Integer count = kffPostService.findSetTopDiscussCount(seMap);
+		List<PostDiscussVo> postDiscusWithDt = new ArrayList<PostDiscussVo>();
+		if(count>0) {
+			postDiscusWithDt = kffPostService.findSetTopDiscuss(seMap);
+		}
+		if(!postDiscusWithDt.isEmpty()) {
+			//从中随机取出rowsPerPage条，等于小于rowsPerPage条就全部取出
+			if(postDiscusWithDt.size()<=rowsPerPage) {
+				for (PostDiscussVo postDiscussVo : postDiscusWithDt) {
+					postDisscussList.add(postDiscussVo);
+				}
+			}else {
+				List<Integer> usList = new ArrayList<Integer>();
+				for (int i = 0; i < rowsPerPage; i++) {
+					boolean flag = false;
+					while (!flag) {
+						Integer usArr = getListArr(postDiscusWithDt);
+						if(!usList.contains(usArr)) {
+							usList.add(usArr);
+							flag = true;
+						}
+					}
+				}
+				for (int i = 0; i < usList.size(); i++) {
+					PostDiscussVo postDiscussVo = postDiscusWithDt.get(usList.get(i));
+					postDisscussList.add(postDiscussVo);
+				}
+			}
+		}
+		posts = new PageResult<PostDiscussVo>(postDisscussList, count, query);
+		KFFUser loginUser = null;
+		/**
+		 * 
+		 * 解决登录送奖励问题
+		 */
+		if (loginUserId != null) {
+			loginUser = kffUserService.findById(loginUserId);
+			registerAward(loginUserId);
+		}
+		if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
+			result.setCurPageNum(posts.getCurPageNum());
+			result.setPageSize(posts.getPageSize());
+			result.setQueryParameters(posts.getQueryParameters());
+			result.setRowCount(posts.getRowCount());
+			result.setRowsPerPage(posts.getRowsPerPage());
+			for (PostDiscussVo post : posts.getRows()) {
+				if(StringUtils.isNotBlank(post.getPostShortDesc())) {
+					post.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(post.getPostShortDesc()));
+				}
+				PostResponse response = new PostResponse();
+				response.setcreateTime(post.getCreateTime());
+				response.setCreateUserId(post.getCreateUserId());
+				response.setPostId(post.getPostId());
+				response.setPostType(post.getPostType());
+				response.setProjectId(post.getProjectId());
+				response.setStatus(post.getStatus());
+				response.setPraiseIncome(post.getPraiseIncome());
+				response.setDonateIncome(post.getDonateIncome());
+				response.setPostTotalIncome(post.getPostTotalIncome());
+				// 设置post和project信息
+				response.setPostShortDesc(post.getPostShortDesc());
+				response.setPostSmallImages(post.getPostSmallImages());
+				response.setPraiseIncome(post.getPraiseIncome());
+				response.setDonateIncome(post.getDonateIncome());
+				response.setPostTotalIncome(post.getPostTotalIncome());
+				if (StringUtils.isNotBlank(post.getPostSmallImages())) {
+					try {
+						List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
+						response.setPostSmallImagesList(pfl);
+					} catch (Exception e) {
+						logger.error("首页推荐列表解析帖子缩略图json出错:{}", e);
+					}
+				}
+				response.setPostTitle(post.getPostTitle());
+				response.setCommentsNum(post.getCommentsNum());
+				response.setCollectNum(post.getCollectNum());
+				response.setPraiseNum(post.getPraiseNum());
+				response.setPageviewNum(post.getPageviewNum());
+				response.setDonateNum(post.getDonateNum());
+				response.setCreateUserIcon(post.getCreateUserIcon());
+				response.setCreateUserName(post.getCreateUserName());
+				response.setCreateUserSignature(post.getCreateUserSignature());
+				response.setCommentsNum(post.getCommentsNum());
+				if (post != null) {
+					KFFUser createUser = kffUserService.findByUserId(post.getCreateUserId());
+					response.setUserType(createUser.getUserType());
+				}
+				KFFProject project = kffProjectService.findById(post.getProjectId());
+				if (project != null) {
+					Evaluation eva = kffEvaluationService.findByPostId(post.getPostId());
+					response.setProjectChineseName(project.getProjectChineseName());
+					response.setProjectCode(project.getProjectCode());
+					response.setProjectEnglishName(project.getProjectEnglishName());
+					response.setProjectIcon(project.getProjectIcon());
+					response.setProjectSignature(project.getProjectSignature());
+					if (null != eva) {
+						response.setTotalScore(eva.getTotalScore());
+					} else {
+						response.setTotalScore(project.getTotalScore());
+					}
+				}
+				Integer postType = post.getPostType();
+				if (null == postType) {
+					throw new RuntimeException("post没有类型");
+				}
+				if (1 == postType) {
+					// 查询评测和文章的标签
+					Evaluation evation = kffEvaluationService.findByPostId(post.getPostId());
+					if (null != evation) {
+						response.setEvaluationTags(evation.getEvaluationTags());
+					} else {
+						response.setEvaluationTags(null);
+					}
+				}
+				if (2 == postType) {
+					// 查询爆料的标签
+					Discuss discuss = kffDiscussService.findByPostId(post.getPostId());
+					if (null != discuss) {
+						response.setTagInfos(discuss.getTagInfos());
+					} else {
+						response.setTagInfos(null);
+					}
+				}
+				if (3 == postType) {
+					// 查询文章的标签
+					Article ac = kffArticleService.findByPostId(post.getPostId());
+					if (null != ac) {
+						response.setTagInfos(ac.getTagInfos());
+					} else {
+						response.setTagInfos(null);
+					}
+				}
+				// 设置人的关注状态
+				if (loginUser == null) {
+					response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+				} else {
+					if (type == 2) {
+						Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER,
+								post.getCreateUserId());
+						if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+						} else {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+						}
+					} else if (type == 1) {
+						Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT,
+								post.getProjectId());
+						if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+						} else {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+						}
+					}
+				}
+				//爆料字段
+				response.setDiscussId(post.getDiscussId());
+				response.setDisscussContents(post.getDisscussContents());
+				response.setPostUuid(post.getPostUuid());
+				if(null==post.getIsNiceChoice()) {
+					response.setIsNiceChoice(sysGlobals.DISABLE);
+				}else {
+					response.setIsNiceChoice(post.getIsNiceChoice());
+				}
+				response.setNiceChoiceAt(post.getNiceChoiceAt());
+				if(null==post.getType()) {
+					response.setType(DiscussType.ORDINARYBURST.getValue());
+				}else {
+					response.setType(post.getType());
+				}
+				response.setType(post.getType());
+				response.setDisStickTop(post.getDisStickTop());
+				response.setDisStickUpdateTime(post.getDisStickUpdateTime());
+				postResponse.add(response);
+			}
+		}
+		result.setRows(postResponse);
+
+		return result;
+	}
+	
+	
 
 	@Override
 	public PageResult<PostResponse> findPageRecommendList(Integer loginUserId, PaginationQuery query, Integer type, Integer method) throws RestServiceException {

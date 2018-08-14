@@ -55,4 +55,7 @@ public final class sysGlobals{
 	public static String HOT_USER="HOT_USER";
 	/**发现-热门项目(关注超过500人)*/
 	public static String HOT_PROJECT="HOT_PROJECT";
+	/**爆料的点赞量超过10的内容自动加入当日的精选池*/
+	public static String DISSCS_POINT_OF_PRAISE="DISSCS_POINT_OF_PRAISE";
+	
 }

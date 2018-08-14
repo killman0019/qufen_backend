@@ -21,6 +21,16 @@ public class PraiseService {
 
 	@Autowired
 	private PraiseMapper praiseMapper;
+	
+	public List<Praise> findListByAttr(Map<String,Object> map) {
+		return praiseMapper.findListByAttr(map);
+	}
+	
+	public Integer findListByAttrByCount(Map<String,Object> map) {
+		return praiseMapper.findListByAttrByCount(map);
+	}
+	
+	
 
 	@Transactional(readOnly = true)
 	public Praise findById(java.lang.Integer id) throws RestServiceException {

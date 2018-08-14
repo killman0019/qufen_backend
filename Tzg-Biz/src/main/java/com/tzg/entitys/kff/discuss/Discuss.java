@@ -33,6 +33,37 @@ public class Discuss implements Serializable {
 	private Integer disStickTop;
 	
 	private Date disStickUpdateTime;
+	
+	//是否精选：0-是，1-否
+	private Integer isNiceChoice;
+	//被评为精选的时间
+	private Date niceChoiceAt;
+	//精评类型：0-点赞，1-认证账号发布，2-人工精选,3-普通爆料
+	private Integer type;
+
+	public Integer getIsNiceChoice() {
+		return isNiceChoice;
+	}
+
+	public void setIsNiceChoice(Integer isNiceChoice) {
+		this.isNiceChoice = isNiceChoice;
+	}
+
+	public Date getNiceChoiceAt() {
+		return niceChoiceAt;
+	}
+
+	public void setNiceChoiceAt(Date niceChoiceAt) {
+		this.niceChoiceAt = niceChoiceAt;
+	}
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
+	}
 
 	public Integer getDisStickTop() {
 		return disStickTop;

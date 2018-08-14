@@ -17,4 +17,6 @@ public interface DiscussMapper extends BaseMapper<Discuss, java.lang.Integer> {
 	Discuss findDisscussBypostId(Integer postId);
 
 	List<Discuss> findByMap(Map<String, Object> disMap);
+	
+	Integer updateByMap(Map<String,Object> map);
 }
