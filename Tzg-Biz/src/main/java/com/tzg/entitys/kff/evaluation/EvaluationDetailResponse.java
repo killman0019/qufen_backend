@@ -38,7 +38,9 @@ public class EvaluationDetailResponse implements Serializable {
 	 * projectId
 	 */
 	private java.lang.Integer projectId;
+
 	private java.lang.Integer postId;
+
 	private java.lang.String postUuid;
 	/**
 	 * 1-简单测评；2-全面系统专业测评;3-部分系统专业评测；4-用户自定义专业测评
@@ -146,15 +148,16 @@ public class EvaluationDetailResponse implements Serializable {
 	 * 用户昵称
 	 */
 	private Integer stickTop;
-	
+
 	private java.lang.String createUserName;
+
 	private Integer userType;
 
 	/**
-     * 标签ID，名称的json串
-     */ 	
+	 * 标签ID，名称的json串
+	 */
 	private String tagInfos;
-	
+
 	public String getTagInfos() {
 		return tagInfos;
 	}
@@ -162,6 +165,7 @@ public class EvaluationDetailResponse implements Serializable {
 	public void setTagInfos(String tagInfos) {
 		this.tagInfos = tagInfos;
 	}
+
 	public Integer getStickTop() {
 		return stickTop;
 	}

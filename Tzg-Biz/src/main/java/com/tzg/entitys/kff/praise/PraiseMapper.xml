@@ -1,29 +1,29 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.tzg.entitys.kff.praise.PraiseMapper">	
+<mapper namespace="com.tzg.entitys.kff.praise.PraiseMapper">
 	<resultMap id="BaseResultMap" type="com.tzg.entitys.kff.praise.Praise">
-		<result property="praiseId" jdbcType="INTEGER" column="praise_id"/>
-		<result property="praiseUserId" jdbcType="INTEGER" column="praise_user_id"/>
-		<result property="projectId" jdbcType="INTEGER" column="project_id"/>		
-		<result property="praiseType" jdbcType="INTEGER" column="praise_type"/>
-		<result property="postId" jdbcType="INTEGER" column="post_id"/>
-		<result property="postType" jdbcType="INTEGER" column="post_type"/>
-		<result property="bepraiseUserId" jdbcType="INTEGER" column="bepraise_user_id"/>
-		<result property="status" jdbcType="INTEGER" column="status"/>
-		<result property="createTime" jdbcType="TIMESTAMP" column="createTime"/>
-		<result property="updateTime" jdbcType="TIMESTAMP" column="updateTime"/>
-    </resultMap>
-	
+		<result property="praiseId" jdbcType="INTEGER" column="praise_id" />
+		<result property="praiseUserId" jdbcType="INTEGER" column="praise_user_id" />
+		<result property="projectId" jdbcType="INTEGER" column="project_id" />
+		<result property="praiseType" jdbcType="INTEGER" column="praise_type" />
+		<result property="postId" jdbcType="INTEGER" column="post_id" />
+		<result property="postType" jdbcType="INTEGER" column="post_type" />
+		<result property="bepraiseUserId" jdbcType="INTEGER" column="bepraise_user_id" />
+		<result property="status" jdbcType="INTEGER" column="status" />
+		<result property="createTime" jdbcType="TIMESTAMP" column="createTime" />
+		<result property="updateTime" jdbcType="TIMESTAMP" column="updateTime" />
+	</resultMap>
+
 	<sql id="columns">
 	    <![CDATA[
         praise_id ,praise_user_id ,project_id ,praise_type,post_id ,post_type ,bepraise_user_id ,status ,createTime ,updateTime 
 	    ]]>
 	</sql>
-	
+
 	<insert id="save" parameterType="com.tzg.entitys.kff.praise.Praise" useGeneratedKeys="true" keyProperty="praiseId" keyColumn="praiseId">
-		<selectKey resultType="java.lang.Integer" keyProperty="praiseId" order="AFTER" >
-	      SELECT LAST_INSERT_ID() AS id
-	    </selectKey>
+		<selectKey resultType="java.lang.Integer" keyProperty="praiseId" order="AFTER">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
 	<![CDATA[
 		INSERT INTO tbpraise (
         	praise_user_id ,
@@ -54,35 +54,35 @@
 		UPDATE tbpraise
 		<set>
 			<if test="praiseUserId != null">
-	        praise_user_id = #{praiseUserId,jdbcType=INTEGER} ,
-	        </if>
+				praise_user_id = #{praiseUserId,jdbcType=INTEGER} ,
+			</if>
 			<if test="projectId != null">
-	        project_id = #{projectId,jdbcType=INTEGER} ,
-	        </if>
+				project_id = #{projectId,jdbcType=INTEGER} ,
+			</if>
 			<if test="praiseType != null">
-	        praise_type = #{praiseType,jdbcType=INTEGER} ,
-	        </if>	        
+				praise_type = #{praiseType,jdbcType=INTEGER} ,
+			</if>
 			<if test="postId != null">
-	        post_id = #{postId,jdbcType=INTEGER} ,
-	        </if>
+				post_id = #{postId,jdbcType=INTEGER} ,
+			</if>
 			<if test="postType != null">
-	        post_type = #{postType,jdbcType=INTEGER} ,
-	        </if>
+				post_type = #{postType,jdbcType=INTEGER} ,
+			</if>
 			<if test="bepraiseUserId != null">
-	        bepraise_user_id = #{bepraiseUserId,jdbcType=INTEGER} ,
-	        </if>
+				bepraise_user_id = #{bepraiseUserId,jdbcType=INTEGER} ,
+			</if>
 			<if test="status != null">
-	        status = #{status,jdbcType=INTEGER} ,
-	        </if>
+				status = #{status,jdbcType=INTEGER} ,
+			</if>
 			<if test="createTime != null">
-	        createTime = #{createTime,jdbcType=TIMESTAMP} ,
-	        </if>
+				createTime = #{createTime,jdbcType=TIMESTAMP} ,
+			</if>
 			<if test="updateTime != null">
-	        updateTime = #{updateTime,jdbcType=TIMESTAMP} 
-	        </if>
-	    </set>
-		WHERE 
-	        praise_id = #{praiseId,jdbcType=INTEGER} 
+				updateTime = #{updateTime,jdbcType=TIMESTAMP}
+			</if>
+		</set>
+		WHERE
+		praise_id = #{praiseId,jdbcType=INTEGER}
 	</update>
 
 	<delete id="deleteById" parameterType="java.lang.Integer">
@@ -91,18 +91,20 @@
         praise_id = #{praiseId} 
 	]]>
 	</delete>
-    
+
 	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
-	    SELECT <include refid="columns"/> 
+		SELECT
+		<include refid="columns" /> 
 	<![CDATA[
 		FROM tbpraise 
 		WHERE 
         praise_id = #{praiseId} 
 	]]>
 	</select>
-	
+
 	<select id="findByPostId" resultMap="BaseResultMap" parameterType="java.util.Map">
-	    SELECT <include refid="columns"/> 
+		SELECT
+		<include refid="columns" /> 
 	<![CDATA[
 		FROM tbpraise 
 		WHERE 
@@ -114,9 +116,10 @@
           limit 1
 	]]>
 	</select>
-	
+
 	<select id="findevaByPostId" resultMap="BaseResultMap" parameterType="java.util.Map">
-	    SELECT <include refid="columns"/> 
+		SELECT
+		<include refid="columns" /> 
 	<![CDATA[
 		FROM tbpraise 
 		WHERE 
@@ -130,16 +133,19 @@
           limit 1
 	]]>
 	</select>
-	
-	
+
+
 	<select id="findAllActivePraisesByPostId" resultMap="BaseResultMap" parameterType="java.util.Map">
-	    SELECT <include refid="columns"/>	FROM tbpraise WHERE 1=1
-		 <include refid="queryWhere"/> 					
-	</select>	
-	
-	
+		SELECT
+		<include refid="columns" />
+		FROM tbpraise WHERE 1=1
+		<include refid="queryWhere" />
+	</select>
+
+
 	<select id="findByPraiseId" resultMap="BaseResultMap" parameterType="java.util.Map">
-	    SELECT <include refid="columns"/> 
+		SELECT
+		<include refid="columns" /> 
 	<![CDATA[
 		FROM tbpraise 
 		WHERE 
@@ -150,64 +156,77 @@
           praise_user_id = #{praiseUserId}
           limit 1
 	]]>
-	</select>	
-	
-	 
-	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
-    	select count(*) from tbpraise where 1=1
-		<include refid="queryWhere"/>
 	</select>
-    
+
+
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(*) from tbpraise where 1=1
+		<include refid="queryWhere" />
+	</select>
+
 	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
-		select <include refid="columns"/>  from tbpraise where 1=1
-		<include refid="queryWhere"/> 
+		select
+		<include refid="columns" />
+		from tbpraise where 1=1
+		<include refid="queryWhere" /> 
 	    <![CDATA[ ORDER BY praise_id DESC ]]>
         <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
 	</select>
 	<!-- 根据传入的参数查询Parise的数量 -->
 	<select id="countPraiseByParam" resultType="java.lang.Integer" parameterType="java.util.Map">
-	select count(*) from tbpraise where 1=1
-	<include refid="queryWhere"></include>
+		select count(*) from tbpraise where 1=1
+		<include refid="queryWhere"></include>
 	</select>
-	
+
 	<sql id="queryWhere">
 		<if test="praiseId != null and praiseId.trim() != ''">
-		and praise_id = #{praiseId}
+			and praise_id = #{praiseId}
 		</if>
-		<if test="praiseUserId != null and praiseUserId.trim() != ''">
-		and praise_user_id = #{praiseUserId}
+		<if test="praiseUserId != null ">
+			and praise_user_id = #{praiseUserId}
 		</if>
 		<if test="projectId != null and projectId.trim() != ''">
-		and project_id = #{projectId}
+			and project_id = #{projectId}
 		</if>
 		<if test="praiseType != null and praiseType.trim() != ''">
-		and praise_type = #{praiseType}
-		</if>		
+			and praise_type = #{praiseType}
+		</if>
 		<if test="postId != null  ">
-		and post_id = #{postId}
+			and post_id = #{postId}
 		</if>
 		<if test="postType != null and postType.trim() != ''">
-		and post_type = #{postType}
+			and post_type = #{postType}
 		</if>
 		<if test="bepraiseUserId != null and bepraiseUserId.trim() != ''">
-		and bepraise_user_id = #{bepraiseUserId}
+			and bepraise_user_id = #{bepraiseUserId}
 		</if>
 		<if test="status != null and status.trim() != ''">
-		and status = #{status}
+			and status = #{status}
 		</if>
 		<if test="createTimeBegin != null and createTimeBegin.trim() != ''">
-		and createTime >= #{createTimeBegin}
+			and createTime >= #{createTimeBegin}
 		</if>
 		<if test="createTimeEnd != null and createTimeEnd.trim() != ''">
-		and createTime &lt;= #{createTimeEnd}
+			and createTime &lt;= #{createTimeEnd}
 		</if>
 		<if test="updateTimeBegin != null and updateTimeBegin.trim() != ''">
-		and updateTime >= #{updateTimeBegin}
+			and updateTime >= #{updateTimeBegin}
 		</if>
 		<if test="updateTimeEnd != null and updateTimeEnd.trim() != ''">
-		and updateTime &lt;= #{updateTimeEnd}
+			and updateTime &lt;= #{updateTimeEnd}
 		</if>
 	</sql>
+
+	<select id="findByMap" parameterType="java.util.Map" resultMap="BaseResultMap">
+
+		select
+		<include refid="columns" />
+		from
+		tbpraise
+		where 1=1
+		<include refid="queryWhere" />
+
+	</select>
 </mapper>
 
 

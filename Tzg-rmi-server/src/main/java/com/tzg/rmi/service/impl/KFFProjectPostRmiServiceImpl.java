@@ -322,10 +322,21 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 			result.setRowCount(posts.getRowCount());
 			result.setRowsPerPage(posts.getRowsPerPage());
 			KFFUser user = null;
+			List<Integer> praisedPostId = null;
+			// 获得点赞postidlist集合
+			if (null != userId) {
+				praisedPostId = kffPraiseService.findPraisedPostIdByUserId(userId);
+			}
 
 			for (Post post : posts.getRows()) {
 				PostResponse pr = new PostResponse();
 				Post realPost = null;
+				if (null != praisedPostId && !CollectionUtils.isEmpty(praisedPostId)) {
+					if (praisedPostId.contains(post.getPostId())) {
+						pr.setPraiseStatus(1);
+					}
+				}
+
 				// 评测去除简单评测
 
 				if (null != post) {

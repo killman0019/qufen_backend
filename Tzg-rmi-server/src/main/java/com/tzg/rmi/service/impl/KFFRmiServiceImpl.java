@@ -165,6 +165,7 @@ import com.tzg.entitys.kff.userInvation.UserInvation;
 import com.tzg.entitys.kff.usercard.UserCard;
 import com.tzg.entitys.kff.userwallet.KFFUserWallet;
 import com.tzg.entitys.kff.userwallet.KFFUserWalletMapper;
+import com.tzg.entitys.leopard.system.SystemParam;
 import com.tzg.entitys.loginaccount.RegisterRequest;
 import com.tzg.entitys.photo.PhotoParams;
 import com.tzg.rest.constant.KFFRestConstants;
@@ -1111,6 +1112,14 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		PageResult<EvaluationDetailResponse> result = new PageResult<EvaluationDetailResponse>();
 		List<EvaluationDetailResponse> respones = new ArrayList<>();
 		PageResult<Post> posts = kffPostService.findPage(query);
+
+		List<Integer> praisedPostId = null;
+
+		// 获得点赞postidlist集合
+		Integer userId = Integer.valueOf((String) query.getQueryData().get("createUserId"));
+		if (null != userId) {
+			praisedPostId = kffPraiseService.findPraisedPostIdByUserId(userId);
+		}
 		if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
 			result.setCurPageNum(posts.getCurPageNum());
 			result.setPageSize(posts.getPageSize());
@@ -1122,8 +1131,14 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				if (null != post) {
 					post.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(post.getPostShortDesc()));
 				}
-
 				BeanUtils.copyProperties(post, response);
+
+				if (null != praisedPostId && !CollectionUtils.isEmpty(praisedPostId)) {
+					if (praisedPostId.contains(post.getPostId())) {
+						response.setPraiseStatus(1);
+					}
+				}
+
 				if (StringUtils.isNotBlank(post.getPostSmallImages())) {
 					try {
 						List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
@@ -1167,6 +1182,19 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		List<PostResponse> respones = new ArrayList<>();
 		PageResult<Post> posts = kffPostService.findPage(query);
 		if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
+
+			List<Integer> praisedPostId = null;
+
+			// 获得点赞postidlist集合
+
+			String createUserId = (String) query.getQueryData().get("createUserId");
+			if (StringUtils.isNotEmpty(createUserId)) {
+				Integer userId = Integer.valueOf(createUserId);
+				if (null != userId) {
+					praisedPostId = kffPraiseService.findPraisedPostIdByUserId(userId);
+				}
+			}
+
 			result.setCurPageNum(posts.getCurPageNum());
 			result.setPageSize(posts.getPageSize());
 			result.setQueryParameters(posts.getQueryParameters());
@@ -1175,6 +1203,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			for (Post post : posts.getRows()) {
 				PostResponse response = new PostResponse();
 				BeanUtils.copyProperties(post, response);
+
+				if (null != praisedPostId && !CollectionUtils.isEmpty(praisedPostId)) {
+					if (praisedPostId.contains(post.getPostId())) {
+						response.setPraiseStatus(1);
+					}
+				}
 				if (StringUtils.isNotBlank(post.getPostSmallImages())) {
 					try {
 						List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
@@ -1220,10 +1254,25 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			result.setRowCount(posts.getRowCount());
 			result.setRowsPerPage(posts.getRowsPerPage());
 
+			List<Integer> praisedPostId = null;
+
+			String createUserId = (String) query.getQueryData().get("createUserId");
+			if (StringUtils.isNotEmpty(createUserId)) {
+				Integer userId = Integer.valueOf(createUserId);
+				if (null != userId) {
+					praisedPostId = kffPraiseService.findPraisedPostIdByUserId(userId);
+				}
+			}
 			for (Post post : posts.getRows()) {
 				post.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(post.getPostShortDesc()));
 				PostResponse response = new PostResponse();
 				BeanUtils.copyProperties(post, response);
+
+				if (null != praisedPostId && !CollectionUtils.isEmpty(praisedPostId)) {
+					if (praisedPostId.contains(post.getPostId())) {
+						response.setPraiseStatus(1);
+					}
+				}
 				if (StringUtils.isNotBlank(post.getPostSmallImages())) {
 					try {
 						List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
@@ -2371,13 +2420,32 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						 */
 						System.err.println("我终于执行了");
 						Integer validPraise = (int) Math.floor(yxPraise);// 取数值最近数四舍五入 有效赞的个数
+						List<String> listStr = new ArrayList<String>();
+
+						// List<SystemParam> systemParamList =
+						// systemParamService.findByCodeList(listStr);
+						SystemParam genealEvaPraiseAwardToken = systemParamService.findByCode("GENERAL_EVA_PRAISE_AWARD_TOKEN");
+						SystemParam profeEvaPraiseAwaedToken = systemParamService.findByCode("PROFE_EVA_PRAISE_AWARD_TOKEN");
+						SystemParam singleEvaPraiseAwardToken = systemParamService.findByCode("SINGLE_EVA_PRAISE_AWARD_TOKEN");
+						SystemParam discussPraiseAwardToken = systemParamService.findByCode("DISCUSS_PRAISE_AWARD_TOKEN");
+						SystemParam articlePraiseAwardToken = systemParamService.findByCode("ARTICLE_PRAISE_AWARD_TOKEN");
+						SystemParam yxPraiseTokenToPraiser = systemParamService.findByCode("YX_PRAISE_TOKEN_TO_PRAYSER");
 						// 判断 帖子类型是1-评测 , 2-讨论 , 3-文章
-						Double pc = 5.00d; // 普通评测点赞奖励
-						Double pc2 = 50.00d; // 专业评测点赞奖励
-						Double pc3 = 20.00d; // 单项评测点赞奖励
-						Double tl = 5.00d; // 讨论点赞奖励
-						Double wz = 20.00d; // 文章点赞奖励
-						Double zanToken = 10.00d;// 有效赞点赞给点赞人的奖励
+
+						/*	Double pc = 5.00d; // 普通评测点赞奖励
+							Double pc2 = 50.00d; // 专业评测点赞奖励
+							Double pc3 = 20.00d; // 单项评测点赞奖励
+							Double tl = 5.00d; // 讨论点赞奖励
+							Double wz = 20.00d; // 文章点赞奖励
+							Double zanToken = 10.00d;// 有效赞点赞给点赞人的奖励
+						*/
+						Double pc = Double.valueOf(genealEvaPraiseAwardToken.getVcParamValue());
+						Double pc2 = Double.valueOf(profeEvaPraiseAwaedToken.getVcParamValue());
+						Double pc3 = Double.valueOf(singleEvaPraiseAwardToken.getVcParamValue());
+						Double tl = Double.valueOf(discussPraiseAwardToken.getVcParamValue());
+						Double wz = Double.valueOf(articlePraiseAwardToken.getVcParamValue());
+						Double zanToken = Double.valueOf(yxPraiseTokenToPraiser.getVcParamValue());
+
 						// KFFUser findByUserId = kffUserService.findById(createUserId);
 						CoinProperty findByCreateUser = coinPropertyService.findByUserId(createUserId);// 获取可以使用的币值
 						isSendPraiseToken = sendPraiseAwardToPraiser(userId, validPraise, praiseId, format, replaceAllDate, postType, zanToken);
@@ -3304,6 +3372,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			registerAward(loginUserId);
 		}
 		if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
+			List<Integer> praisedPostId = null;
+			// 获得点赞postidlist集合
+			if (null != loginUserId) {
+				praisedPostId = kffPraiseService.findPraisedPostIdByUserId(loginUserId);
+			}
+
 			result.setCurPageNum(posts.getCurPageNum());
 			result.setPageSize(posts.getPageSize());
 			result.setQueryParameters(posts.getQueryParameters());
@@ -3327,6 +3401,13 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				response.setPraiseIncome(post.getPraiseIncome());
 				response.setDonateIncome(post.getDonateIncome());
 				response.setPostTotalIncome(post.getPostTotalIncome());
+
+				if (null != praisedPostId && !CollectionUtils.isEmpty(praisedPostId)) {
+					if (praisedPostId.contains(post.getPostId())) {
+						response.setPraiseStatus(1);
+					}
+				}
+
 				if (StringUtils.isNotBlank(post.getPostSmallImages())) {
 					try {
 						List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);

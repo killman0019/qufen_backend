@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tzg.common.base.BaseRequest;
 import com.tzg.common.page.PageResult;
@@ -176,7 +177,7 @@ public class UserHomeController extends BaseController {
 			PageResult<PostResponse> discusses = kffRmiService.findPageDisscussList(query);
 			// 20180507志远去除 我的最新讨论记录 微信群
 			// PostResponse myLatestDiscuss = kffRmiService.findMyLatestDiscuss(loginUserId);
-			//System.err.println("discusses++++++++++++++" + JSONObject.toJSONString(discusses));
+			// System.err.println("discusses++++++++++++++" + JSONObject.toJSONString(discusses));
 			map.put("discusses", discusses);
 			// map.put("myLatestDiscuss", myLatestDiscuss);
 			bre.setData(map);
@@ -229,6 +230,7 @@ public class UserHomeController extends BaseController {
 			query.addQueryData("sql_keyword_orderBy", "createTime");
 			query.addQueryData("sql_keyword_sort", "desc");
 			PageResult<PostResponse> articles = kffRmiService.findPageArticleList(query);
+			System.err.println(JSON.toJSONString(articles));
 			map.put("articles", articles);
 			bre.setData(map);
 		} catch (RestServiceException e) {

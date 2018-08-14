@@ -102,6 +102,7 @@ public class HomeController extends BaseController {
 			Integer type = 1;// 取关注项目
 			Integer methodType = 1;// 推荐列表过来的方法
 			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query, type, methodType);
+			System.err.println(JSON.toJSONString(recommends));
 			map.put("recommends", recommends);
 			bre.setData(map);
 		} catch (RestServiceException e) {

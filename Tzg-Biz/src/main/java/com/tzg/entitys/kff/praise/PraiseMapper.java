@@ -16,7 +16,9 @@ public interface PraiseMapper extends BaseMapper<Praise, java.lang.Integer> {
 
 	List<Praise> findAllActivePraisesByPostId(Map<String, Object> map);
 
-	Praise findevaByPostId(Map<String, Object> map);	
+	Praise findevaByPostId(Map<String, Object> map);
+
+	List<Praise> findByMap(Map<String, Object> praiseMap);	
 	
 
 }

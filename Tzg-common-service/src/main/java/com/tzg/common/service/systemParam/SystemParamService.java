@@ -123,4 +123,9 @@ public class SystemParamService {
 		return null;
 	}
 
+	public List<SystemParam> findByCodeList(List<String> listStr) {
+		// TODO 根据codelist 查询对象
+		return null;
+	}
+
 }
