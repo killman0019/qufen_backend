@@ -1,9 +1,9 @@
-package com.tzg.entitys.kff.report;
+package com.tzg.entitys.kff.reportmodel;
 
 import java.io.Serializable;
 import java.util.Date;
 
-public class Report implements Serializable {
+public class ReportModel implements Serializable {
 	/**
 	 * 投诉列表
 	 */

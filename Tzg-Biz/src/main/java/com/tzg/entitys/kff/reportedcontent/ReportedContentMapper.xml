@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzg.entitys.kff.reportedcontent.ReportedContentMapper">
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.kff.reportedcontent.ReportedContent">
+		<id column="reported_content_key_id" property="reportedContentKeyId" jdbcType="INTEGER" />
+		<result column="reported_content_id" property="reportedContentId" jdbcType="INTEGER" />
+		<result column="content_type" property="contentType" jdbcType="INTEGER" />
+		<result column="content_reported_time" property="contentReportedTime" jdbcType="TIMESTAMP" />
+		<result column="status" property="status" jdbcType="INTEGER" />
+		<result column="vaild" property="vaild" jdbcType="VARCHAR" />
+		<result column="reported_content_create_id" property="reportedContentCreateId" jdbcType="INTEGER" />
+		<result column="reported_creater_mobile" property="reportedCreaterMobile" jdbcType="VARCHAR" />
+		<result column="reported_content_create_time" property="reportedContentCreateTime" jdbcType="TIMESTAMP" />
+		<result column="content_title" property="contentTitle" jdbcType="VARCHAR" />
+		<result column="reported_content_url" property="reportedContentUrl" jdbcType="VARCHAR" />
+		<result column="console_report_model_id" property="consoleReportModelId" jdbcType="INTEGER" />
+		<result column="orther_reason" property="ortherReason" jdbcType="VARCHAR" />
+		<result column="reported_degree" property="reportedDegree" jdbcType="INTEGER" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="columns">
+		reported_content_key_id, reported_content_id, content_type, content_reported_time,
+		status, vaild, reported_content_create_id, reported_creater_mobile, reported_content_create_time,
+		content_title, reported_content_url, console_report_model_id, orther_reason, reported_degree,
+		update_time
+	</sql>
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="columns" />
+		from tbreportedcontent
+		where reported_content_key_id = #{reportedContentKeyId,jdbcType=INTEGER}
+	</select>
+
+	<insert id="save" parameterType="com.tzg.entitys.kff.reportedcontent.ReportedContent">
+		insert into tbreportedcontent (reported_content_key_id, reported_content_id,
+		content_type, content_reported_time, status,
+		vaild, reported_content_create_id,
+		reported_creater_mobile,
+		reported_content_create_time, content_title,
+		reported_content_url, console_report_model_id,
+		orther_reason, reported_degree, update_time
+		)
+		values
+		(#{reportedContentKeyId,jdbcType=INTEGER}, #{reportedContentId,jdbcType=INTEGER},
+		#{contentType,jdbcType=INTEGER}, #{contentReportedTime,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER},
+		#{vaild,jdbcType=VARCHAR}, #{reportedContentCreateId,jdbcType=INTEGER}, #{reportedCreaterMobile,jdbcType=VARCHAR},
+		#{reportedContentCreateTime,jdbcType=TIMESTAMP}, #{contentTitle,jdbcType=VARCHAR},
+		#{reportedContentUrl,jdbcType=VARCHAR}, #{consoleReportModelId,jdbcType=INTEGER},
+		#{ortherReason,jdbcType=VARCHAR}, #{reportedDegree,jdbcType=INTEGER}, #{updateTime,jdbcType=TIMESTAMP}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="com.tzg.entitys.kff.reportedcontent.ReportedContent">
+		insert into tbreportedcontent
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="reportedContentKeyId != null">
+				reported_content_key_id,
+			</if>
+			<if test="reportedContentId != null">
+				reported_content_id,
+			</if>
+			<if test="contentType != null">
+				content_type,
+			</if>
+			<if test="contentReportedTime != null">
+				content_reported_time,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="vaild != null">
+				vaild,
+			</if>
+			<if test="reportedContentCreateId != null">
+				reported_content_create_id,
+			</if>
+			<if test="reportedCreaterMobile != null">
+				reported_creater_mobile,
+			</if>
+			<if test="reportedContentCreateTime != null">
+				reported_content_create_time,
+			</if>
+			<if test="contentTitle != null">
+				content_title,
+			</if>
+			<if test="reportedContentUrl != null">
+				reported_content_url,
+			</if>
+			<if test="consoleReportModelId != null">
+				console_report_model_id,
+			</if>
+			<if test="ortherReason != null">
+				orther_reason,
+			</if>
+			<if test="reportedDegree != null">
+				reported_degree,
+			</if>
+			<if test="updateTime != null">
+				update_time,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="reportedContentKeyId != null">
+				#{reportedContentKeyId,jdbcType=INTEGER},
+			</if>
+			<if test="reportedContentId != null">
+				#{reportedContentId,jdbcType=INTEGER},
+			</if>
+			<if test="contentType != null">
+				#{contentType,jdbcType=INTEGER},
+			</if>
+			<if test="contentReportedTime != null">
+				#{contentReportedTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=INTEGER},
+			</if>
+			<if test="vaild != null">
+				#{vaild,jdbcType=VARCHAR},
+			</if>
+			<if test="reportedContentCreateId != null">
+				#{reportedContentCreateId,jdbcType=INTEGER},
+			</if>
+			<if test="reportedCreaterMobile != null">
+				#{reportedCreaterMobile,jdbcType=VARCHAR},
+			</if>
+			<if test="reportedContentCreateTime != null">
+				#{reportedContentCreateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="contentTitle != null">
+				#{contentTitle,jdbcType=VARCHAR},
+			</if>
+			<if test="reportedContentUrl != null">
+				#{reportedContentUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="consoleReportModelId != null">
+				#{consoleReportModelId,jdbcType=INTEGER},
+			</if>
+			<if test="ortherReason != null">
+				#{ortherReason,jdbcType=VARCHAR},
+			</if>
+			<if test="reportedDegree != null">
+				#{reportedDegree,jdbcType=INTEGER},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	<update id="update" parameterType="com.tzg.entitys.kff.reportedcontent.ReportedContent">
+		update tbreportedcontent
+		<set>
+			<if test="reportedContentId != null">
+				reported_content_id = #{reportedContentId,jdbcType=INTEGER},
+			</if>
+			<if test="contentType != null">
+				content_type = #{contentType,jdbcType=INTEGER},
+			</if>
+			<if test="contentReportedTime != null">
+				content_reported_time = #{contentReportedTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=INTEGER},
+			</if>
+			<if test="vaild != null">
+				vaild = #{vaild,jdbcType=VARCHAR},
+			</if>
+			<if test="reportedContentCreateId != null">
+				reported_content_create_id = #{reportedContentCreateId,jdbcType=INTEGER},
+			</if>
+			<if test="reportedCreaterMobile != null">
+				reported_creater_mobile = #{reportedCreaterMobile,jdbcType=VARCHAR},
+			</if>
+			<if test="reportedContentCreateTime != null">
+				reported_content_create_time = #{reportedContentCreateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="contentTitle != null">
+				content_title = #{contentTitle,jdbcType=VARCHAR},
+			</if>
+			<if test="reportedContentUrl != null">
+				reported_content_url = #{reportedContentUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="consoleReportModelId != null">
+				console_report_model_id = #{consoleReportModelId,jdbcType=INTEGER},
+			</if>
+			<if test="ortherReason != null">
+				orther_reason = #{ortherReason,jdbcType=VARCHAR},
+			</if>
+			<if test="reportedDegree != null">
+				reported_degree = #{reportedDegree,jdbcType=INTEGER},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where reported_content_key_id = #{reportedContentKeyId,jdbcType=INTEGER}
+	</update>
+
+
+	<sql id="queryWhere">
+
+		<if test="reportedContentId != null">
+			and reported_content_id = #{reportedContentId,jdbcType=INTEGER}
+		</if>
+		<if test="contentType != null">
+			and content_type = #{contentType,jdbcType=INTEGER}
+		</if>
+		<if test="contentReportedTime != null">
+			and content_reported_time = #{contentReportedTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="status != null">
+			and status = #{status,jdbcType=INTEGER}
+		</if>
+		<if test="vaild != null">
+			and vaild = #{vaild,jdbcType=VARCHAR}
+		</if>
+		<if test="reportedContentCreateId != null">
+			and reported_content_create_id = #{reportedContentCreateId,jdbcType=INTEGER}
+		</if>
+		<if test="reportedCreaterMobile != null">
+			and reported_creater_mobile = #{reportedCreaterMobile,jdbcType=VARCHAR}
+		</if>
+		<if test="reportedContentCreateTime != null">
+			and reported_content_create_time = #{reportedContentCreateTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="contentTitle != null">
+			and content_title = #{contentTitle,jdbcType=VARCHAR}
+		</if>
+		<if test="reportedContentUrl != null">
+			and reported_content_url = #{reportedContentUrl,jdbcType=VARCHAR}
+		</if>
+		<if test="consoleReportModelId != null">
+			and console_report_model_id = #{consoleReportModelId,jdbcType=INTEGER}
+		</if>
+		<if test="ortherReason != null">
+			and orther_reason = #{ortherReason,jdbcType=VARCHAR}
+		</if>
+		<if test="reportedDegree != null">
+			and reported_degree = #{reportedDegree,jdbcType=INTEGER}
+		</if>
+		<if test="updateTime != null">
+			and update_time = #{updateTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="reportedContentKeyId !=null">
+			and reported_content_key_id = #{reportedContentKeyId,jdbcType=INTEGER}
+		</if>
+
+		<if test="contentTypeNotComments !=null">
+			and content_type &lt; 4
+		</if>
+
+	</sql>
+
+	<select id="findByMap" parameterType="java.util.Map" resultMap="BaseResultMap">
+
+		select
+		<include refid="columns" />
+		from
+		tbreportedcontent
+		where 1=1
+		<include refid="queryWhere" />
+
+	</select>
+
+	<update id="increaseReportDegree" parameterType="java.lang.Integer">
+
+	UPDATE
+	tbreportedcontent
+	set
+	reported_degree = reported_degree + 1
+	WHERE
+	reported_content_key_id = #{reportedContentKeyId,jdbcType=INTEGER}
+
+	</update>
+
+</mapper>

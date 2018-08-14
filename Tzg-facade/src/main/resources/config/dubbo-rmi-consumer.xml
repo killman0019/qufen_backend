@@ -19,40 +19,43 @@
 
 	<dubbo:reference id="kffRmiService" interface="com.tzg.rmi.service.KFFRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0"
 		check="false" />
-		
+
 	<dubbo:reference id="kffPostRmiService" interface="com.tzg.rmi.service.KFFPostRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0"
 		check="false" />
-		
-	<dubbo:reference id="kffProjectRmiService" interface="com.tzg.rmi.service.KFFProjectRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0"
+
+	<dubbo:reference id="kffProjectRmiService" interface="com.tzg.rmi.service.KFFProjectRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}"
+		retries="0" check="false" />
+
+	<dubbo:reference id="kffReportRmiService" interface="com.tzg.rmi.service.KFFReportRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}"
+		retries="0" check="false" />
+
+	<dubbo:reference id="newsFlashRmiService" interface="com.tzg.rmi.service.NewsFlashRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}"
+		retries="0" check="false" />
+
+	<dubbo:reference id="newsFlashImgRmiService" interface="com.tzg.rmi.service.NewsFlashImgRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}"
+		retries="0" check="false" />
+
+	<dubbo:reference id="miningActivityRmiService" interface="com.tzg.rmi.service.MiningActivityRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}"
+		retries="0" check="false" />
+
+	<dubbo:reference id="explainActivityRmiService" interface="com.tzg.rmi.service.ExplainActivityRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}"
+		retries="0" check="false" />
+
+	<dubbo:reference id="evaluationRmiService" interface="com.tzg.rmi.service.EvaluationRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}"
+		retries="0" check="false" />
+
+	<dubbo:reference id="followRmiService" interface="com.tzg.rmi.service.FollowRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0"
 		check="false" />
-		
-	<dubbo:reference id="newsFlashRmiService" interface="com.tzg.rmi.service.NewsFlashRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0"
-		check="false" />
-		
-    <dubbo:reference id="newsFlashImgRmiService" interface="com.tzg.rmi.service.NewsFlashImgRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0"
-		check="false" />
-		
-	<dubbo:reference id="miningActivityRmiService" interface="com.tzg.rmi.service.MiningActivityRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0"
-		check="false" />
-		
-    <dubbo:reference id="explainActivityRmiService" interface="com.tzg.rmi.service.ExplainActivityRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0"
-		check="false" />
-		
-	<dubbo:reference id="evaluationRmiService" interface="com.tzg.rmi.service.EvaluationRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0"
-		check="false" />
-		
-    <dubbo:reference id="followRmiService" interface="com.tzg.rmi.service.FollowRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0"
-		check="false" />
-		
+
 	<dubbo:reference id="userRmiService" interface="com.tzg.rmi.service.KFFUserRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0"
 		check="false" />
 
-		
-	<dubbo:reference id="postShareRmiService" interface="com.tzg.rmi.service.PostShareRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0"
-		check="false" />
-		
-	<dubbo:reference id="rewardDetailRmiService" interface="com.tzg.rmi.service.RewardDetailRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0"
-		check="false" />		
+
+	<dubbo:reference id="postShareRmiService" interface="com.tzg.rmi.service.PostShareRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}"
+		retries="0" check="false" />
+
+	<dubbo:reference id="rewardDetailRmiService" interface="com.tzg.rmi.service.RewardDetailRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}"
+		retries="0" check="false" />
 
 	<dubbo:reference id="kffProjectPostRmiService" interface="com.tzg.rmi.service.KFFProjectPostRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}"
 		retries="0" check="false" />

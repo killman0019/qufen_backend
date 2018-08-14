@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.tzg.entitys.kff.report.ReportMapper">
-	<resultMap id="BaseResultMap" type=" com.tzg.entitys.kff.report.Report">
+<mapper namespace="com.tzg.entitys.kff.reportmodel.ReportModelMapper">
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.kff.reportmodel.ReportModel">
 		<id column="report_id" property="reportId" jdbcType="INTEGER" />
 		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
 		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
@@ -16,12 +16,12 @@
 	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
 		select
 		<include refid="columns" />
-		from tbreport
+		from tbreportmodel
 		where report_id = #{reportId,jdbcType=INTEGER}
 	</select>
 
-	<insert id="save" parameterType="com.tzg.entitys.kff.report.Report">
-		insert into tbreport (report_id, create_time, update_time,
+	<insert id="save" parameterType="com.tzg.entitys.kff.reportmodel.ReportModel">
+		insert into tbreportmodel (report_id, create_time, update_time,
 		status, is_show, mome,
 		report_name)
 		values (#{reportId,jdbcType=INTEGER},
@@ -30,8 +30,8 @@
 		#{reportName,jdbcType=VARCHAR})
 	</insert>
 
-	<update id="update" parameterType="com.tzg.entitys.kff.report.Report">
-		update tbreport
+	<update id="update" parameterType="com.tzg.entitys.kff.reportmodel.ReportModel">
+		update tbreportmodel
 		<set>
 			<if test="createTime != null">
 				create_time = #{createTime,jdbcType=TIMESTAMP},
@@ -87,7 +87,7 @@
 		select
 		<include refid="columns" />
 		from
-		tbreport
+		tbreportmodel
 		where 1=1
 		<include refid="queryWhere" />
 

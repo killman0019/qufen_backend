@@ -149,6 +149,14 @@
 		yx_comments=floor(status_hierarchy_type * 0.1)
 	</update>
 
+	<update id="updateYxPraiseValid" parameterType="java.lang.Integer">
+		UPDATE
+		tbqfindex
+		set
+		yxpraise = floor(status_hierarchy_type * 0.1)
+
+	</update>
+
 
 
 
