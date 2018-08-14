@@ -744,13 +744,4 @@ public class DateUtil {
          return false;  
     }  
 	
-	public static void main(String arsg[]) {
-		Date d1 = new Date(System.currentTimeMillis() - 60 * 60 * 24 * 1000);
-		Date d2 = new Date();
-
-		System.out.println(compareDate(d1, d2));
-
-		System.out.println(null == null ? BigDecimal.ZERO : 1);
-
-	}
 }

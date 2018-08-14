@@ -1,30 +1,29 @@
 package com.tzg.entitys.kff.post;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 import com.tzg.common.utils.DateUtil;
 
-public class PostResponse implements Serializable {
+public class PostDiscussVo implements Serializable {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -2265875960205049361L;
-
-	// 0 未关注；1-已关注；2-不显示关注按钮
-	private java.lang.Integer followStatus = 2;
-
-	private java.lang.String actionDesc;
-
-	private java.lang.Integer actionType;
-
+	private static final long serialVersionUID = 5214212436521123046L;
 	/**
 	 * postId
 	 */
 	private java.lang.Integer postId;
+	/**
+	 * 项目ID
+	 */
+	private java.lang.Integer stickTop;
+
+	/**
+	 * 推荐操作时间
+	 */
+	private java.util.Date stickUpdateTime;
 	/**
 	 * 项目ID
 	 */
@@ -41,22 +40,10 @@ public class PostResponse implements Serializable {
 	 * projectEnglishName
 	 */
 	private java.lang.String projectEnglishName;
-
 	/**
 	 * projectChineseName
 	 */
 	private java.lang.String projectChineseName;
-
-	/**
-	 * 项目标题
-	 */
-	private java.lang.String projectSignature;
-
-	/**
-	 * 项目总评分：1-10精确到1位
-	 */
-	private BigDecimal totalScore = BigDecimal.ZERO;
-
 	/**
 	 * 帖子标题
 	 */
@@ -69,12 +56,6 @@ public class PostResponse implements Serializable {
 	 * 剪短描述
 	 */
 	private java.lang.String postShortDesc;
-
-	/**
-	 * 缩略图json，目前最多三张图的url等信息
-	 */
-	private List<PostFile> postSmallImagesList;
-
 	/**
 	 * 缩略图json，目前最多三张图的url等信息
 	 */
@@ -116,10 +97,6 @@ public class PostResponse implements Serializable {
 	 */
 	private java.lang.String createUserName;
 	/**
-	 * 用户类型
-	 */
-	private Integer userType;
-	/**
 	 * createTime
 	 */
 	private java.util.Date createTime;
@@ -134,55 +111,61 @@ public class PostResponse implements Serializable {
 	 */
 	private java.lang.Integer status;
 
-	// discuss内容
-	/**
-	 * discussId
-	 */
-	private java.lang.Integer discussId;
-	/**
-	 * 讨论内容
-	 */
-	private java.lang.String disscussContents;
-	/**
-	 * 标签ID，名称的json串
-	 */
-	private java.lang.String tagInfos;
-
-	// eva内容
-	/**
-	 * 1-10，小数点1位
-	 */
-	private BigDecimal evaTotalScore = BigDecimal.ZERO;
-	/**
-	 * 专业评测各子项评测内容详情json字符串
-	 */
-	private java.lang.String professionalEvaDetail;
-	/**
-	 * 评测描述信息
-	 */
-	private java.lang.String evauationContent;
-	/**
-	 * 评测表标签
-	 */
-	private java.lang.String evaluationTags;
+	private java.lang.String uuid;
 
 	private Double praiseIncome;
 	private Double donateIncome;
 	private Double postTotalIncome;
 	
+	//爆料的id
+	private Integer discussId;
+	//爆料的内容
+	private String disscussContents;
+	//图片url等json信息；目前保存9张
 	private String postUuid;
+	//标签ID，名称的json串
+	private String tagInfos;
+	//是否精选：0-是，1-否
 	private Integer isNiceChoice;
+	//被评为精选的时间
 	private Date niceChoiceAt;
+	//精评类型：0-点赞，1-认证账号发布，2-人工精选,3-普通爆料
 	private Integer type;
+	//1置顶 0 不置顶
 	private Integer disStickTop;
+	//置顶时间
 	private Date disStickUpdateTime;
-	
+
+	public Integer getDiscussId() {
+		return discussId;
+	}
+
+	public void setDiscussId(Integer discussId) {
+		this.discussId = discussId;
+	}
+
+	public String getDisscussContents() {
+		return disscussContents;
+	}
+
+	public void setDisscussContents(String disscussContents) {
+		this.disscussContents = disscussContents;
+	}
+
 	public String getPostUuid() {
 		return postUuid;
 	}
 
 	public void setPostUuid(String postUuid) {
 		this.postUuid = postUuid;
+	}
+
+	public String getTagInfos() {
+		return tagInfos;
+	}
+
+	public void setTagInfos(String tagInfos) {
+		this.tagInfos = tagInfos;
 	}
 
 	public Integer getIsNiceChoice() {
@@ -225,68 +208,12 @@ public class PostResponse implements Serializable {
 		this.disStickUpdateTime = disStickUpdateTime;
 	}
 
-	public BigDecimal getEvaTotalScore() {
-		return evaTotalScore;
+	public java.lang.String getUuid() {
+		return uuid;
 	}
 
-	public void setEvaTotalScore(BigDecimal evaTotalScore) {
-		this.evaTotalScore = evaTotalScore;
-	}
-
-	public java.lang.String getProfessionalEvaDetail() {
-		return professionalEvaDetail;
-	}
-
-	public void setProfessionalEvaDetail(java.lang.String professionalEvaDetail) {
-		this.professionalEvaDetail = professionalEvaDetail;
-	}
-
-	public java.lang.String getEvauationContent() {
-		return evauationContent;
-	}
-
-	public void setEvauationContent(java.lang.String evauationContent) {
-		this.evauationContent = evauationContent;
-	}
-
-	public java.lang.String getEvaluationTags() {
-		return evaluationTags;
-	}
-
-	public void setEvaluationTags(java.lang.String evaluationTags) {
-		this.evaluationTags = evaluationTags;
-	}
-
-	public java.lang.Integer getDiscussId() {
-		return discussId;
-	}
-
-	public void setDiscussId(java.lang.Integer discussId) {
-		this.discussId = discussId;
-	}
-
-	public java.lang.String getDisscussContents() {
-		return disscussContents;
-	}
-
-	public void setDisscussContents(java.lang.String disscussContents) {
-		this.disscussContents = disscussContents;
-	}
-
-	public java.lang.String getTagInfos() {
-		return tagInfos;
-	}
-
-	public void setTagInfos(java.lang.String tagInfos) {
-		this.tagInfos = tagInfos;
-	}
-
-	public java.lang.Integer getFollowStatus() {
-		return followStatus;
-	}
-
-	public void setFollowStatus(java.lang.Integer followStatus) {
-		this.followStatus = followStatus;
+	public void setUuid(java.lang.String uuid) {
+		this.uuid = uuid;
 	}
 
 	public void setPostId(java.lang.Integer value) {
@@ -353,20 +280,12 @@ public class PostResponse implements Serializable {
 		return this.postShortDesc;
 	}
 
-	public List<PostFile> getPostSmallImagesList() {
-		return postSmallImagesList;
-	}
-
-	public void setPostSmallImagesList(List<PostFile> postSmallImagesList) {
-		this.postSmallImagesList = postSmallImagesList;
+	public void setPostSmallImages(java.lang.String value) {
+		this.postSmallImages = value;
 	}
 
 	public java.lang.String getPostSmallImages() {
-		return postSmallImages;
-	}
-
-	public void setPostSmallImages(java.lang.String postSmallImages) {
-		this.postSmallImages = postSmallImages;
+		return this.postSmallImages;
 	}
 
 	public void setCommentsNum(java.lang.Integer value) {
@@ -441,16 +360,16 @@ public class PostResponse implements Serializable {
 		return this.createUserName;
 	}
 
-	public void setcreateTime(java.util.Date value) {
+	public void setCreateTime(java.util.Date value) {
 		this.createTimeStr = DateUtil.getDate(value, "yyyy-MM-dd HH:mm:ss");
 		this.createTime = value;
 	}
 
-	public java.util.Date getcreateTime() {
+	public java.util.Date getCreateTime() {
 		return this.createTime;
 	}
 
-	public java.lang.String getcreateTimeStr() {
+	public java.lang.String getCreateTimeStr() {
 		return this.createTimeStr;
 	}
 
@@ -483,44 +402,20 @@ public class PostResponse implements Serializable {
 		this.projectChineseName = projectChineseName;
 	}
 
-	public java.lang.String getProjectSignature() {
-		return projectSignature;
+	public java.lang.Integer getStickTop() {
+		return stickTop;
 	}
 
-	public void setProjectSignature(java.lang.String projectSignature) {
-		this.projectSignature = projectSignature;
+	public void setStickTop(java.lang.Integer stickTop) {
+		this.stickTop = stickTop;
 	}
 
-	public BigDecimal getTotalScore() {
-		return totalScore;
+	public java.util.Date getStickUpdateTime() {
+		return stickUpdateTime;
 	}
 
-	public void setTotalScore(BigDecimal totalScore) {
-		this.totalScore = totalScore;
-	}
-
-	public java.lang.String getActionDesc() {
-		return actionDesc;
-	}
-
-	public void setActionDesc(java.lang.String actionDesc) {
-		this.actionDesc = actionDesc;
-	}
-
-	public java.lang.Integer getActionType() {
-		return actionType;
-	}
-
-	public void setActionType(java.lang.Integer actionType) {
-		this.actionType = actionType;
-	}
-
-	public Integer getUserType() {
-		return userType;
-	}
-
-	public void setUserType(Integer userType) {
-		this.userType = userType;
+	public void setStickUpdateTime(java.util.Date stickUpdateTime) {
+		this.stickUpdateTime = stickUpdateTime;
 	}
 
 	public Double getPraiseIncome() {

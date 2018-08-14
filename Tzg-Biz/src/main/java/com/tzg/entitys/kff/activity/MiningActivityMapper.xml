@@ -168,7 +168,7 @@
     	activity_mining_activity as mnact 
 		LEFT JOIN tbproject as tpj on tpj.project_id=mnact.project_id
 		<include refid="condition"/>
-	    <![CDATA[ ORDER BY begin_dt ASC ]]>
+	    <![CDATA[ ORDER BY status desc ]]>
         <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
 	</select>
 	
@@ -184,7 +184,10 @@
     		  and status = #{state}
     		</if>
     		<if test="status1!=null">
-    		  and (mnact.status = #{status1} or mnact.status = #{status2} or mnact.status = #{status3})
+    		  and (mnact.status = #{status1} or mnact.status = #{status2})
+    		</if>
+    		<if test="status3!=null">
+    		  and mnact.status = #{status3}
     		</if>
     		<if test="status4!=null">
     		  and mnact.status = #{status4}

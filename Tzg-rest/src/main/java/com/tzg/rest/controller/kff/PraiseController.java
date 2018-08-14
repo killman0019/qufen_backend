@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -31,7 +32,7 @@ public class PraiseController extends BaseController {
 	/**
 	 * 
 	 * @Title: savePostPraise
-	 * @Description: 对帖子进行点赞
+	 * @Description: 对帖子，爆料，文章等等进行点赞
 	 * @param @param request
 	 * @param @param response
 	 * @param @return
@@ -48,6 +49,9 @@ public class PraiseController extends BaseController {
 		try {
 			JSONObject params = getParamMapFromRequestPolicy(request);
 			String token = (String) params.get("token");
+			if(StringUtils.isBlank(token)) {
+				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
+			}
 			Integer postId = (Integer) params.get("postId");
 			Integer userId = getUserIdByToken(token);
 			if (postId == null || postId <= 0) {

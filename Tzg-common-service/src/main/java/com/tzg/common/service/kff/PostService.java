@@ -22,6 +22,7 @@ import com.tzg.common.page.PaginationQuery;
 import com.tzg.entitys.kff.commendation.Commendation;
 import com.tzg.entitys.kff.commendation.CommendationMapper;
 import com.tzg.entitys.kff.post.Post;
+import com.tzg.entitys.kff.post.PostDiscussVo;
 import com.tzg.entitys.kff.post.PostMapper;
 import com.tzg.entitys.kff.tokenrecords.Tokenrecords;
 import com.tzg.entitys.kff.tokenrecords.TokenrecordsMapper;
@@ -44,6 +45,17 @@ public class PostService {
 
 	private static final ExecutorService newFixedThreadPoolCaluaPostIncome = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 4);
 
+	@Transactional(readOnly = true)
+	public List<PostDiscussVo> findSetTopDiscuss(Map<String,Object> map) throws RestServiceException {
+		return postMapper.findSetTopDiscuss(map);
+	}
+	
+	@Transactional(readOnly = true)
+	public Integer findSetTopDiscussCount(Map<String,Object> map) throws RestServiceException {
+		return postMapper.findSetTopDiscussCount(map);
+	}
+	
+	
 	@Transactional(readOnly = true)
 	public Post findById(java.lang.Integer id) throws RestServiceException {
 		if (id == null) {

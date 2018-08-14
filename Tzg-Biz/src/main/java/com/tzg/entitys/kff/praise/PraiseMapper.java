@@ -18,5 +18,8 @@ public interface PraiseMapper extends BaseMapper<Praise, java.lang.Integer> {
 
 	Praise findevaByPostId(Map<String, Object> map);	
 	
-
+	List<Praise> findListByAttr(Map<String,Object> map);
+	
+	Integer findListByAttrByCount(Map<String,Object> map);
+	
 }

@@ -45,6 +45,12 @@ public class DiscussService {
 		}
 		discussMapper.update(discuss);
 	}
+	
+	public Integer updateByMap(Map<String,Object> map) throws RestServiceException {
+		return discussMapper.updateByMap(map);
+	}
+	
+	
 
 	@Transactional(readOnly = true)
 	public PageResult<Discuss> findPage(PaginationQuery query) throws RestServiceException {

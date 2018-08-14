@@ -9,11 +9,15 @@
 		<result property="tagInfos" jdbcType="VARCHAR" column="tag_infos" />
 		<result property="disStickTop" jdbcType="INTEGER" column="dis_stick_top" />
 		<result property="disStickUpdateTime" jdbcType="TIMESTAMP" column="dis_stick_updateTime" />
+		<result property="isNiceChoice" jdbcType="INTEGER" column="is_nice_choice"/>
+		<result property="niceChoiceAt" jdbcType="TIMESTAMP" column="nice_choice_at"/>
+		<result property="type" jdbcType="INTEGER" column="type"/>
 	</resultMap>
 
 	<sql id="columns">
 	    <![CDATA[
-        discuss_id ,post_id ,disscuss_contents ,post_uuid ,tag_infos , dis_stick_top, dis_stick_updateTime 
+        discuss_id ,post_id ,disscuss_contents ,post_uuid ,tag_infos , dis_stick_top, dis_stick_updateTime ,is_nice_choice
+        ,nice_choice_at,type
 	    ]]>
 	</sql>
 
@@ -26,14 +30,22 @@
         	post_id ,
         	disscuss_contents ,
         	post_uuid ,
-        	tag_infos ,dis_stick_top, dis_stick_updateTime
+        	tag_infos ,
+        	dis_stick_top, 
+        	dis_stick_updateTime,
+        	is_nice_choice,
+        	nice_choice_at,
+        	type
 		) VALUES (
         	#{postId,jdbcType=INTEGER} ,
         	#{disscussContents,jdbcType=VARCHAR} ,
         	#{postUuid,jdbcType=VARCHAR} ,
         	#{tagInfos,jdbcType=VARCHAR} ,
         	#{disStickTop,jdbcType=INTEGER} ,
-        	#{disStickUpdateTime,jdbcType=TIMESTAMP}
+        	#{disStickUpdateTime,jdbcType=TIMESTAMP},
+        	#{isNiceChoice,jdbcType=INTEGER},
+        	#{niceChoiceAt,jdbcType=TIMESTAMP},
+        	#{type,jdbcType=INTEGER}
 		)
 	]]>
 	</insert>
@@ -62,6 +74,23 @@
 		</set>
 		WHERE
 		discuss_id = #{discussId,jdbcType=INTEGER}
+	</update>
+	
+	<update id="updateByMap" parameterType="com.tzg.entitys.kff.discuss.Discuss">
+		UPDATE tbdiscuss
+		<set>
+			<if test="isNiceChoice != null">
+				is_nice_choice = #{isNiceChoice,jdbcType=INTEGER} ,
+			</if>
+			<if test="type != null">
+				type = #{type,jdbcType=INTEGER} ,
+			</if>
+			<if test="niceChoiceAt != null">
+				nice_choice_at = #{niceChoiceAt,jdbcType=TIMESTAMP}
+			</if>
+		</set>
+		WHERE
+		post_id = #{postId,jdbcType=INTEGER}
 	</update>
 
 	<delete id="deleteById" parameterType="java.lang.Integer">
@@ -137,6 +166,15 @@
 		</if>
 		<if test="disStickUpdateTime != null">
 			and dis_stick_updateTime = #{disStickUpdateTime}
+		</if>
+		<if test="isNiceChoice != null">
+			and is_nice_choice = #{isNiceChoice}
+		</if>
+		<if test="niceChoiceAt != null">
+			and nice_choice_at = #{niceChoiceAt}
+		</if>
+		<if test="type != null">
+			and type = #{type}
 		</if>
 	</sql>
 	<select id="findDisscussBypostId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
