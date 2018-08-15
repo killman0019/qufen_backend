@@ -106,7 +106,7 @@ public class UserController extends BaseController {
 			// 生成account token
 			String token = AccountTokenUtil.getAccountToken(user.getUserId());
 			// 根据用户id 获取用户类型跟推荐人
-//			Integer userid = AccountTokenUtil.decodeAccountToken(token);
+			// Integer userid = AccountTokenUtil.decodeAccountToken(token);
 			// kffRmiService.registerAward(userid);
 			map.put("token", token);
 
@@ -226,7 +226,7 @@ public class UserController extends BaseController {
 
 			KFFUser loginaccount = null;
 			try {
-				loginaccount = kffRmiService.login(loginName, password, clientId,appType);
+				loginaccount = kffRmiService.login(loginName, password, clientId, appType);
 				if (null == loginaccount) {
 					throw new RestServiceException(RestErrorCode.LOGIN_NAME_OR_PASSWORD_INCORRECT);
 				}
@@ -1417,7 +1417,25 @@ public class UserController extends BaseController {
 			if (null == loginaccount) {
 				throw new RestServiceException(RestErrorCode.LOGIN_NAME_OR_PASSWORD_INCORRECT);
 			}
-			Integer userCardStatus = kffRmiService.selectUserCardStatusByUserId(loginaccount.getUserId());
+			KFFUser user = kffRmiService.findUserById(loginUserId);
+
+			Integer userCardStatus = 0;
+			if (null == user.getUsercardStatus()) {
+				userCardStatus = 4;
+			} else {
+
+				userCardStatus = user.getUsercardStatus();
+			}
+			// Integer userCardStatusDB
+			// =kffRmiService.selectUserCardStatusByUserId(loginaccount.getUserId());
+			Integer userCardStatusDB = kffRmiService.selectUserStatusOnly(loginaccount.getUserId());
+			if (userCardStatusDB != userCardStatus) {
+				userCardStatus = userCardStatusDB;
+				KFFUser kffUser = new KFFUser();
+				kffUser.setUserId(loginaccount.getUserId());
+				kffUser.setUsercardStatus(userCardStatus);
+				kffRmiService.updateUser(kffUser);
+			}
 			map.put("userCardStatus", userCardStatus);
 			QfIndex qfIndex = kffRmiService.findQfIndexUser(loginUserId);
 			if (null != qfIndex) {

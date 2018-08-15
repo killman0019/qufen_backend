@@ -34,7 +34,6 @@ import com.tzg.entitys.kff.message.KFFMessage;
 import com.tzg.entitys.kff.mobileversionupdate.Mobileversionupdate;
 import com.tzg.entitys.kff.notice.KFFNotice;
 import com.tzg.entitys.kff.post.PostResponse;
-import com.tzg.entitys.kff.praise.Praise;
 import com.tzg.entitys.kff.project.KFFProject;
 import com.tzg.entitys.kff.project.ProjectResponse;
 import com.tzg.entitys.kff.project.SubmitKFFProjectRequest;
@@ -86,7 +85,7 @@ public interface KFFRmiService {
 	 * @return
 	 * @throws RestServiceException
 	 */
-	public KFFUser login(String loginName, String password,String clientId,Integer appType) throws RestServiceException;
+	public KFFUser login(String loginName, String password, String clientId, Integer appType) throws RestServiceException;
 
 	/**
 	 * 按类型获取最新升级信息
@@ -295,8 +294,9 @@ public interface KFFRmiService {
 	 * @return
 	 * @throws RestServiceException
 	 */
-	public PageResult<ProjectResponse> findProjectByCodePage(int sortType, Integer userId, String projectCode,Integer pageIndex,Integer pageSize) throws RestServiceException;
-	
+	public PageResult<ProjectResponse> findProjectByCodePage(int sortType, Integer userId, String projectCode, Integer pageIndex, Integer pageSize)
+			throws RestServiceException;
+
 	public List<ProjectResponse> findProjectByCode(int sortType, Integer userId, String projectCode) throws RestServiceException;
 
 	/**
@@ -883,28 +883,31 @@ public interface KFFRmiService {
 	 * @param modeltype
 	 * @return true 允许发布,false 禁止发布
 	 * @throws RestServiceException
-	 *//*
+	 */
+	/*
 	public boolean isAllowedPulish(Integer userId, KFFProject project, Integer postType, Integer modeltype) throws RestServiceException;
-*/
+	*/
 	/*
 		*//**
-	 * 想点赞人发送token奖励只要是有效赞，给点赞人奖励
-	 * 
-	 * 评测、爆料、文章都给予点赞人10个FIND奖励
-	 * 
-	 * @param userId
-	 *            用户的id
-	 * @param validPraise
-	 *            用户有效赞个数
-	 * @param praiseId
-	 *            当前赞对象
-	 * @param format
-	 * @param replaceAllDate
-	 * @throws RestServiceException
-	 */
+		* 想点赞人发送token奖励只要是有效赞，给点赞人奖励
+		* 
+		* 评测、爆料、文章都给予点赞人10个FIND奖励
+		* 
+		* @param userId
+		*            用户的id
+		* @param validPraise
+		*            用户有效赞个数
+		* @param praiseId
+		*            当前赞对象
+		* @param format
+		* @param replaceAllDate
+		* @throws RestServiceException
+		*/
 	/*
 	public Boolean sendPraiseAwardToPraiser(Integer userId, Integer postId)
 		throws RestServiceException;*/
 
 	public void updataQfIndexUser(QfIndex qfIndexUser) throws RestServiceException;
+
+	public Integer selectUserStatusOnly(Integer userId) throws RestServiceException;
 }

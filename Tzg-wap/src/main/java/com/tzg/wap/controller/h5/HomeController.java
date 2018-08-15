@@ -542,7 +542,80 @@ public class HomeController extends BaseController {
 		}
 		return bre;
 	}
-
+	
+	/** 
+	* @Title: postCommentList 
+	* @Description: TODO <评测,文章评论列表接口>
+	* @author linj <方法创建作者>
+	* @create 下午2:10:14
+	* @param @param request
+	* @param @param token 用户登录唯一标识
+	* @param @param postId 评测，文章的id
+	* @param @param pageIndex 第几页
+	* @param @param pageSize 每页多少条
+	* @param @param postType 帖子类型：1-评测；3-文章
+	* @param @return <参数说明>
+	* @return BaseResponseEntity 
+	* @throws 
+	* @update 下午2:10:14
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	*/
+	@ResponseBody
+	@RequestMapping(value = "/postCommentList", method = { RequestMethod.POST, RequestMethod.GET })
+	public BaseResponseEntity postCommentList(HttpServletRequest request,String token,Integer postId,
+			Integer pageIndex,Integer pageSize,Integer postType) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		try {
+			if(StringUtils.isBlank(token)&&null==postId&&null==pageIndex
+					&&null==pageSize&&null==postType) {
+				JSONObject requestContent = HtmlUtils.getRequestContent(request);
+				token = (String) requestContent.get("token");
+				postId = (Integer) requestContent.get("postId");
+				pageIndex = (Integer) requestContent.get("pageIndex");
+				pageSize = (Integer) requestContent.get("pageSize");
+				postType = (Integer) requestContent.get("postType");
+			}
+			if(StringUtils.isBlank(token)||null==postId||null==pageIndex
+					||null==pageSize||null==postType) {
+				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
+			}
+			Integer userId = getUserIdByToken(token);
+			PaginationQuery newQuery = new PaginationQuery();
+			newQuery.addQueryData("status", "1");
+			newQuery.addQueryData("postId", postId);
+			newQuery.addQueryData("postType", postType);
+			newQuery.addQueryData("parentCommentsIdNull", "YES");
+			newQuery.setPageIndex(pageIndex);
+			newQuery.setRowsPerPage(pageSize);
+			PageResult<Comments> newestComments = kffRmiService.findPageNewestCommentsSelf(userId, postId, newQuery);
+			map.put("newestComments", newestComments);
+			if (pageIndex == 1) {
+				PaginationQuery hotQuery = new PaginationQuery();
+				hotQuery.addQueryData("status", "1");
+				hotQuery.addQueryData("postId", postId);
+				hotQuery.addQueryData("postType", postType);
+				newQuery.addQueryData("parentCommentsIdNull", "YES");
+				// 点赞数最多的2个评论
+				hotQuery.addQueryData("sortField", "praise_num");
+				hotQuery.addQueryData("praiseNum", "10");
+				hotQuery.setPageIndex(1);
+				hotQuery.setRowsPerPage(2);
+				List<Comments> hotComments = kffRmiService.findPageHotCommentsListSelf(userId, postId, hotQuery);
+				map.put("hotComments", hotComments);
+			}
+			bre.setData(map);
+		} catch (RestServiceException e) {
+			logger.error("HomeController postCommentList:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("HomeController postCommentList:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+		}
+		return bre;
+	}
+	
 	/**
 	 * 分享评测详情
 	 * 
