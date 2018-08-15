@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import com.tzg.common.base.BaseMapper;
 
-
 @Repository
 public interface UserCardMapper extends BaseMapper<UserCard, java.lang.Integer> {
 
@@ -25,5 +24,7 @@ public interface UserCardMapper extends BaseMapper<UserCard, java.lang.Integer> 
 	void updateUserCard(UserCard userCard);
 
 	List<UserCard> findByUserid(Integer userId);
+
+	UserCard selectStatusByUserIDOne(Integer userId);
 
 }

@@ -3,6 +3,7 @@ package com.tzg.wap.controller.h5;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,6 +20,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.tzg.common.base.BaseRequest;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
+import com.tzg.common.utils.HtmlUtils;
 import com.tzg.entitys.kff.dprojectType.DprojectType;
 import com.tzg.entitys.kff.evaluation.EvaluationDetailResponse;
 import com.tzg.entitys.kff.post.PostResponse;
@@ -28,6 +30,8 @@ import com.tzg.entitys.kff.project.SubmitKFFProjectRequest;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
+import com.tzg.rmi.service.KFFProjectPostRmiService;
+import com.tzg.rmi.service.KFFProjectRmiService;
 import com.tzg.rmi.service.KFFRmiService;
 
 @Controller(value = "KFFProjectController")
@@ -37,6 +41,62 @@ public class ProjectController extends BaseController {
 
 	@Autowired
 	private KFFRmiService kffRmiService;
+	@Autowired
+	private KFFProjectRmiService kFFProjectRmiService;
+	@Autowired
+	private KFFProjectPostRmiService kffProjectPostRmiService;
+	
+	/** 
+	* @Title: getProjectByTabId 
+	* @Description: TODO <项目列表接口>
+	* @author linj <方法创建作者>
+	* @create 上午10:57:16
+	* @param @param request 
+	* @param @param token 用户登录的token
+	* @param @param pageIndex 第几页
+	* @param @param pageSize 每页的条数
+	* @param @param tabId tab栏Id:1-查询全部项目，2-查询用户关注的project列表，
+	* @param @return <参数说明>
+	* @return BaseResponseEntity 
+	* @throws 
+	* @update 上午10:57:16
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	*/
+	@ResponseBody
+	@RequestMapping(value = "getProjectByTabId", method = { RequestMethod.POST, RequestMethod.GET })
+	public BaseResponseEntity getProjectByTabId(HttpServletRequest request,String token,Integer pageIndex,Integer pageSize,
+			Integer tabId) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		try {
+			if(StringUtils.isBlank(token)&&pageIndex==null&&pageSize==null&&tabId==null) {
+				JSONObject requestContent = HtmlUtils.getRequestContent(request);
+				token = (String) requestContent.get("token");
+				pageIndex = (Integer) requestContent.get("pageIndex");
+				pageSize = (Integer) requestContent.get("pageSize");
+				tabId = (Integer) requestContent.get("tabId");
+			}
+			if (StringUtils.isBlank(token)||pageIndex==null||pageSize==null||tabId==null) {
+				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
+			}
+			
+			Integer userId = getUserIdByToken(token);
+			PaginationQuery query = new PaginationQuery();
+			query.setPageIndex(pageIndex);
+			query.setRowsPerPage(pageSize);
+			PageResult<ProjectResponse> projectResponsePage = kFFProjectRmiService.showProjectListNew(tabId, userId, query);
+			map.put("projectResponsePage", projectResponsePage);
+			bre.setData(map);
+		} catch (RestServiceException e) {
+			logger.error("ProjectController getProjectTab:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("ProjectController getProjectTab:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+		}
+		return bre;
+	}
 
 	/**
 	 * 
@@ -49,20 +109,38 @@ public class ProjectController extends BaseController {
 	 * @see
 	 * @throws
 	 */
-	@RequestMapping(value = "/index", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public BaseResponseEntity index(HttpServletRequest request, HttpServletResponse response, Integer projectId) {
+	@RequestMapping(value = "/index", method = { RequestMethod.POST, RequestMethod.GET })
+	public BaseResponseEntity index(HttpServletRequest request,String token,Integer projectId) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
-
 		try {
-			String token = (String) request.getSession().getAttribute("token");
-			Integer userId = getUserIdByToken(token);
-			if (projectId == null) {
-				throw new RestServiceException(RestErrorCode.MISSING_ARG_PROJID);
+			if(StringUtils.isBlank(token)&&projectId==null) {
+				JSONObject requestContent = HtmlUtils.getRequestContent(request);
+				token = (String) requestContent.get("token");
+				projectId = (Integer) requestContent.get("projectId");
 			}
+			
+			if(StringUtils.isBlank(token)||projectId==null) {
+				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
+			}
+			Integer userId = getUserIdByToken(token);
 			ProjectResponse project = kffRmiService.findProjectById(userId, projectId);
 			map.put("project", project);
+
+			// 20180613 去掉，改为 精选评测，精选打假（讨论）
+			// https://www.tapd.cn/21950911/bugtrace/bugs/view?bug_id=1121950911001000461
+			// 2条7天内回复数最高的讨论帖子
+			List<PostResponse> hotDiscuss = kffRmiService.findHotDiscussList(projectId);
+			map.put("hotDiscuss", hotDiscuss);
+			// 点赞量超过10 & 排名前2的内容
+			List<PostResponse> hotEva = kffProjectPostRmiService.findHotEvaList(projectId);
+			map.put("hotEva", hotEva);
+
+			// 项目专业评测统计信息
+			Map<String, Object> statMap = kffProjectPostRmiService.selectProjectEvaStatSelf(projectId);
+			map.put("projectEvaStat", statMap.get("projectEvaStat"));
+			map.put("totalProEvaRaterNum", statMap.get("totalProEvaRaterNum"));
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("ProjectController index:{}", e);
@@ -73,30 +151,42 @@ public class ProjectController extends BaseController {
 		}
 		return bre;
 	}
-
-	/**
-	 * 
-	 * @Title: evaluationList
-	 * @Description: 项目 获取评测列表
-	 * @param @param request
-	 * @param @param response
-	 * @param @return
-	 * @return BaseResponseEntity
-	 * @see
-	 * @throws
-	 */
+	
+	
+	/** 
+	* @Title: evaluationList 
+	* @Description: TODO <项目主页中的评测列表接口>
+	* @author linj <方法创建作者>
+	* @create 下午4:58:51
+	* @param @param request
+	* @param @param projectId 项目id
+	* @param @param pageIndex 第几页
+	* @param @param pageSize 每页几条
+	* @param @param sortField ：praise_num：按点赞量排序，为空时：按时间降序排序
+	* @param @return <参数说明>
+	* @return BaseResponseEntity 
+	* @throws 
+	* @update 下午4:58:51
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	*/
 	@RequestMapping(value = "/evaluationList", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public BaseResponseEntity evaluationList(HttpServletRequest request, HttpServletResponse response, BaseRequest baseRequest) {
+	public BaseResponseEntity evaluationList(HttpServletRequest request,Integer projectId,Integer pageIndex,
+			Integer pageSize,String sortField) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 
 		try {
-			String token = (String) request.getSession().getAttribute("token");
-			Integer loginUserId = getUserIdByToken(token);
-			Integer projectId = baseRequest.getProjectId();
-			if (projectId == null) {
-				throw new RestServiceException(RestErrorCode.MISSING_ARG_PROJID);
+			if(projectId==null&&pageIndex==null&&pageSize==null&&StringUtils.isBlank(sortField)) {
+				JSONObject requestContent = HtmlUtils.getRequestContent(request);
+				sortField = (String) requestContent.get("sortField");
+				projectId = (Integer) requestContent.get("projectId");
+				pageIndex = (Integer) requestContent.get("pageIndex");
+				pageSize = (Integer) requestContent.get("pageSize");
+			}
+			if(projectId==null||pageIndex==null||pageSize==null) {
+				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
 			}
 			PaginationQuery query = new PaginationQuery();
 			query.addQueryData("projectId", projectId + "");
@@ -104,8 +194,15 @@ public class ProjectController extends BaseController {
 			query.addQueryData("status", "1");
 			// 帖子类型：1-评测；2-讨论；3-文章
 			query.addQueryData("postType", "1");
-			query.setPageIndex(baseRequest.getPageIndex());
-			query.setRowsPerPage(baseRequest.getPageSize());
+			query.setPageIndex(pageIndex);
+			query.setRowsPerPage(pageSize);
+			if (StringUtils.isNotBlank(sortField)) {
+				query.addQueryData("sql_keyword_orderByc", sortField);
+				query.addQueryData("sql_keyword_sortc", "desc");
+			} else {
+				query.addQueryData("sql_keyword_orderBy", "post_id");
+				query.addQueryData("sql_keyword_sort", "desc");
+			}
 			PageResult<EvaluationDetailResponse> evaluations = kffRmiService.findPageEvaluationList(query);
 			map.put("evaluations", evaluations);
 			bre.setData(map);
@@ -118,85 +215,56 @@ public class ProjectController extends BaseController {
 		}
 		return bre;
 	}
-
-	/**
-	 * 
-	 * @Title: discussList
-	 * @Description: 项目主页获取讨论列表
-	 * @param @param request
-	 * @param @param response
-	 * @param @return
-	 * @return BaseResponseEntity
-	 * @see
-	 * @throws
-	 */
-	@RequestMapping(value = "/discussList", method = { RequestMethod.POST, RequestMethod.GET })
+	
+	/** 
+	* @Title: articleList 
+	* @Description: TODO <项目主页获取文章列表接口>
+	* @author linj <方法创建作者>
+	* @create 下午5:46:45
+	* @param @param request
+	* @param @param projectId 项目id
+	* @param @param pageIndex 第几页
+	* @param @param pageSize 每页几条
+	* @param @param sortField ：praise_num：按点赞量排序，为空时：按时间降序排序
+	* @param @return <参数说明>
+	* @return BaseResponseEntity 
+	* @throws 
+	* @update 下午5:46:45
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	*/
 	@ResponseBody
-	public BaseResponseEntity discussList(HttpServletRequest request, HttpServletResponse response, BaseRequest baseRequest) {
-		BaseResponseEntity bre = new BaseResponseEntity();
-		HashMap<String, Object> map = new HashMap<String, Object>();
-
-		try {
-
-			String token = (String) request.getSession().getAttribute("token");
-			Integer loginUserId = getUserIdByToken(token);
-			Integer projectId = baseRequest.getProjectId();
-			if (projectId == null) {
-				throw new RestServiceException(RestErrorCode.MISSING_ARG_PROJID);
-			}
-			PaginationQuery query = new PaginationQuery();
-			query.addQueryData("projectId", projectId + "");
-			query.addQueryData("status", "1");
-			// 帖子类型：1-评测；2-讨论；3-文章
-			query.addQueryData("postType", "2");
-			query.setPageIndex(baseRequest.getPageIndex());
-			query.setRowsPerPage(baseRequest.getPageSize());
-			PageResult<PostResponse> discusses = kffRmiService.findPageDisscussList(query);
-			map.put("discusses", discusses);
-			bre.setData(map);
-		} catch (RestServiceException e) {
-			logger.error("ProjectController discussList:{}", e);
-			return this.resResult(e.getErrorCode(), e.getMessage());
-		} catch (Exception e) {
-			logger.error("ProjectController discussList:{}", e);
-			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
-		}
-		return bre;
-	}
-
-	/**
-	 * 
-	 * @Title: messageList
-	 * @Description: 项目主页获取文章列表
-	 * @param @param request
-	 * @param @param response
-	 * @param @return
-	 * @return BaseResponseEntity
-	 * @see
-	 * @throws
-	 */
 	@RequestMapping(value = "/articleList", method = { RequestMethod.POST, RequestMethod.GET })
-	@ResponseBody
-	public BaseResponseEntity articleList(HttpServletRequest request, HttpServletResponse response, BaseRequest baseRequest) {
+	public BaseResponseEntity articleList(HttpServletRequest request,Integer projectId,Integer pageIndex,
+			Integer pageSize,String sortField) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 
 		try {
-
-			String token = (String) request.getSession().getAttribute("token");
-			Integer loginUserId = getUserIdByToken(token);
-			Integer projectId = baseRequest.getProjectId();
-			if (projectId == null) {
-				throw new RestServiceException(RestErrorCode.MISSING_ARG_PROJID);
+			if(projectId==null&&pageIndex==null&&pageSize==null&&StringUtils.isBlank(sortField)) {
+				JSONObject requestContent = HtmlUtils.getRequestContent(request);
+				sortField = (String) requestContent.get("sortField");
+				projectId = (Integer) requestContent.get("projectId");
+				pageIndex = (Integer) requestContent.get("pageIndex");
+				pageSize = (Integer) requestContent.get("pageSize");
+			}
+			if(projectId==null||pageIndex==null||pageSize==null) {
+				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
 			}
 			PaginationQuery query = new PaginationQuery();
 			query.addQueryData("projectId", projectId + "");
 			query.addQueryData("status", "1");
 			// 帖子类型：1-评测；2-讨论；3-文章
 			query.addQueryData("postType", "3");
-			query.addQueryData("sortField", "praiseNum");
-			query.setPageIndex(baseRequest.getPageIndex());
-			query.setRowsPerPage(baseRequest.getPageSize());
+			if (StringUtils.isNotBlank(sortField)) {
+				query.addQueryData("sql_keyword_orderByc", sortField);
+				query.addQueryData("sql_keyword_sortc", "desc");
+			} else {
+				query.addQueryData("sql_keyword_orderBy", "post_id");
+				query.addQueryData("sql_keyword_sort", "desc");
+			}
+			query.setPageIndex(pageIndex);
+			query.setRowsPerPage(pageSize);
 			PageResult<PostResponse> articles = kffRmiService.findPageArticleList(query);
 			map.put("articles", articles);
 			bre.setData(map);
@@ -205,6 +273,68 @@ public class ProjectController extends BaseController {
 			return this.resResult(e.getErrorCode(), e.getMessage());
 		} catch (Exception e) {
 			logger.error("ProjectController articleList:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+		}
+		return bre;
+	}
+
+	/** 
+	* @Title: discussList 
+	* @Description: TODO <项目主页获取讨论列表>
+	* @author linj <方法创建作者>
+	* @create 下午6:10:36
+	* @param @param request
+	* @param @param projectId 项目id
+	* @param @param pageIndex 第几页
+	* @param @param pageSize 每页几条
+	* @param @param sortField ：praise_num：按点赞量排序，为空时：按时间降序排序
+	* @param @return <参数说明>
+	* @return BaseResponseEntity 
+	* @throws 
+	* @update 下午6:10:36
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	*/
+	@ResponseBody
+	@RequestMapping(value = "/discussList", method = { RequestMethod.POST, RequestMethod.GET })
+	public BaseResponseEntity discussList(HttpServletRequest request,Integer projectId,Integer pageIndex,
+			Integer pageSize,String sortField) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+		HashMap<String, Object> map = new HashMap<String, Object>();
+
+		try {
+			if(projectId==null&&pageIndex==null&&pageSize==null&&StringUtils.isBlank(sortField)) {
+				JSONObject requestContent = HtmlUtils.getRequestContent(request);
+				sortField = (String) requestContent.get("sortField");
+				projectId = (Integer) requestContent.get("projectId");
+				pageIndex = (Integer) requestContent.get("pageIndex");
+				pageSize = (Integer) requestContent.get("pageSize");
+			}
+			if(projectId==null||pageIndex==null||pageSize==null) {
+				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
+			}
+			PaginationQuery query = new PaginationQuery();
+			query.addQueryData("projectId", projectId + "");
+			query.addQueryData("status", "1");
+			// 帖子类型：1-评测；2-爆料；3-文章
+			query.addQueryData("postType", "2");
+			if (StringUtils.isNotBlank(sortField)) {
+				query.addQueryData("sql_keyword_orderByc", sortField);
+				query.addQueryData("sql_keyword_sortc", "desc");
+			} else {
+				query.addQueryData("sql_keyword_orderBy", "createTime");
+				query.addQueryData("sql_keyword_sort", "desc");
+			}
+			query.setPageIndex(pageIndex);
+			query.setRowsPerPage(pageSize);
+			PageResult<PostResponse> discusses = kffRmiService.findPageDisscussList(query);
+			map.put("discusses", discusses);
+			bre.setData(map);
+		} catch (RestServiceException e) {
+			logger.error("ProjectController discussList:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("ProjectController discussList:{}", e);
 			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
 		}
 		return bre;
