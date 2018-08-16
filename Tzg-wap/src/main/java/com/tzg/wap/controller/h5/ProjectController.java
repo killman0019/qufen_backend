@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
-import com.tzg.common.base.BaseRequest;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.utils.HtmlUtils;
@@ -37,7 +36,7 @@ import com.tzg.rmi.service.KFFRmiService;
 @Controller(value = "KFFProjectController")
 @RequestMapping("/kff/project")
 public class ProjectController extends BaseController {
-	private static Logger log = Logger.getLogger(ProjectController.class);
+	private static Logger logger = Logger.getLogger(ProjectController.class);
 
 	@Autowired
 	private KFFRmiService kffRmiService;
@@ -385,7 +384,7 @@ public class ProjectController extends BaseController {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		try {
-			String token = (String) request.getSession().getAttribute("token");
+//			String token = (String) request.getSession().getAttribute("token");
 			List<DprojectType> projectTypes = kffRmiService.findAllProjectTypes();
 			map.put("projectTypes", projectTypes);
 			bre.setData(map);

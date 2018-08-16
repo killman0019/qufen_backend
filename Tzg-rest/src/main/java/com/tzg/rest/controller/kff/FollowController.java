@@ -21,7 +21,7 @@ import com.tzg.rmi.service.KFFRmiService;
 @Controller(value="KFFFollowController")
 @RequestMapping("/kff/follow")
 public class FollowController extends BaseController {
-	private static Logger log = Logger.getLogger(FollowController.class);
+	private static Logger logger = Logger.getLogger(FollowController.class);
 	
 	@Autowired
 	private KFFRmiService kffRmiService;
