@@ -40,6 +40,7 @@ import com.google.common.base.Objects;
 import com.tzg.common.constants.KFFConstants;
 import com.tzg.common.enums.DiscussType;
 import com.tzg.common.enums.LinkedType;
+import com.tzg.common.enums.PostType;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.redis.RedisService;
@@ -1588,7 +1589,19 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		post.setProjectId(project.getProjectId());
 		post.setStatus(KFFConstants.STATUS_ACTIVE);
 		post.setUuid(uuid);
-		post.setStickTop(0);// '是否推荐：0-否，1-是'
+		/**
+		 * 用户类型:1-普通用户；2-项目方；3-评测机构；4-机构用户
+		 * 用户认证账号及用户的类型不等于1，发布的文章就为推荐文章
+		 */
+		if(createUser.getUserType()!=null&&createUser.getUserType()==1) {
+			post.setStickTop(0);// '是否推荐：0-否，1-是'
+			post.setType(DiscussType.ORDINARYBURST.getValue());
+		}
+		if(createUser.getUserType()!=null&&createUser.getUserType()!=1) {
+			post.setStickTop(1);// '是否推荐：0-否，1-是'
+			post.setStickUpdateTime(new Date());
+			post.setType(DiscussType.AUTHACCOUNTPUBLISH.getValue());
+		}
 		kffPostService.save(post);
 		Post newPost = kffPostService.findByUUID(uuid);
 		if (newPost == null) {
@@ -1613,6 +1626,21 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		result.put("postType", newPost.getPostType());
 		// 更新用户发帖数
 		kffUserService.increasePostNum(createUser.getUserId(), KFFConstants.POST_TYPE_ARTICLE);
+		// 个推APP推送消息
+		if (null != createUser) {
+			Integer linkedType = null;
+			if (post.getPostType() == 1) {
+				linkedType = LinkedType.CUSTOMEVALUATING.getValue();
+			}
+			if (post.getPostType() == 2) {
+				linkedType = LinkedType.COUNTERFEIT.getValue();
+			}
+			if (post.getPostType() == 3) {
+				linkedType = LinkedType.ARTICLE.getValue();
+			}
+			appNewsPush(linkedType, post.getPostId(), createUser.getMobile(), 
+					sysGlobals.CONTENT_GETUI_MSG_BEGIN+post.getPostTitle()+sysGlobals.CONTENT_GETUI_MSG_END);
+		}
 		return result;
 	}
 
@@ -1999,7 +2027,22 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		post.setProjectId(project.getProjectId());
 		post.setStatus(KFFConstants.STATUS_ACTIVE);
 		post.setUuid(uuid);
-		post.setStickTop(0);
+		/**
+		 * 用户类型:1-普通用户；2-项目方；3-评测机构；4-机构用户
+		 * 用户认证账号及用户的类型不等于1，发布的精评就为推荐评测
+		 */
+		if(evaluationRequest.getModelType()!=null&&
+				evaluationRequest.getModelType()!=1) {
+			if(createUser.getUserType()!=null&&createUser.getUserType()==1) {
+				post.setStickTop(0);// '是否推荐：0-否，1-是'
+				post.setType(DiscussType.ORDINARYBURST.getValue());
+			}
+			if(createUser.getUserType()!=null&&createUser.getUserType()!=1) {
+				post.setStickTop(1);// '是否推荐：0-否，1-是'
+				post.setStickUpdateTime(new Date());
+				post.setType(DiscussType.AUTHACCOUNTPUBLISH.getValue());
+			}
+		}
 		Integer postId = kffPostService.save(post);
 		logger.warn("保存评测inserted postId is:" + postId + ",and UUID is:" + uuid);
 		logger.warn("保存评测inserted post对象中的postId is:" + post.getPostId() + ",and UUID is:" + uuid);
@@ -2040,9 +2083,25 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// kffProjectService.updateTotalScore(project.getProjectId(), totalScore);
 		// 更新评测人数
 		kffProjectService.increaseRaterNum(project.getProjectId());
-
+		// 个推APP推送消息
+		if(evaluationRequest.getModelType()!=null&&
+				evaluationRequest.getModelType()!=1) {
+			if (null != createUser) {
+				Integer linkedType = null;
+				if (post.getPostType() == 1) {
+					linkedType = LinkedType.CUSTOMEVALUATING.getValue();
+				}
+				if (post.getPostType() == 2) {
+					linkedType = LinkedType.COUNTERFEIT.getValue();
+				}
+				if (post.getPostType() == 3) {
+					linkedType = LinkedType.ARTICLE.getValue();
+				}
+				appNewsPush(linkedType, post.getPostId(), createUser.getMobile(), 
+						sysGlobals.CONTENT_GETUI_MSG_BEGIN+post.getPostTitle()+sysGlobals.CONTENT_GETUI_MSG_END);
+			}
+		}
 		return result;
-
 	}
 
 	@Override
@@ -2712,25 +2771,57 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// appNewsPush(linkedType, postId, kffUserc.getMobile(), praiseContent);
 		// }
 		
-		//判断爆料的点赞量是否达到表中设定的值，要是相等那么直接将这篇爆料更新为精选爆料
-		SystemParam sysCode = systemParamService.findByCode(sysGlobals.DISSCS_POINT_OF_PRAISE);
-		Map<String,Object> seMap = new HashMap<String,Object>();
-		seMap.put("postId", postId);
-		seMap.put("status", KFFConstants.STATUS_ACTIVE);//有效的点赞
-		seMap.put("postType", 2);//帖子类型：1-评测；2-讨论；3-文章
-		Integer praiseCount = kffPraiseService.findListByAttrByCount(seMap);
-		Integer vcPamVal = Integer.valueOf(sysCode.getVcParamValue());
-		if(vcPamVal==praiseCount) {
-			seMap.clear();
-			seMap.put("postId", postId);
-			seMap.put("isNiceChoice", sysGlobals.ENABLE);
-			seMap.put("niceChoiceAt", new Date());
-			seMap.put("type", DiscussType.DOTPRAISE.getValue());
-			kffDiscussService.updateByMap(seMap);
-		}
 		Post latestPost = kffPostService.findById(postId);
 		if (latestPost != null) {
 			result = latestPost.getPraiseNum() == null ? 0 : (latestPost.getPraiseNum());
+		}
+		Map<String,Object> seMap = new HashMap<String,Object>();
+		seMap.put("postId", postId);
+		seMap.put("status", KFFConstants.STATUS_ACTIVE);//有效的点赞
+		seMap.put("postType", latestPost.getPostType());//帖子类型：1-评测；2-讨论；3-文章
+		Integer praiseCount = kffPraiseService.findListByAttrByCount(seMap);
+		//判断爆料的点赞量是否达到表中设定的值，要是相等那么直接将这篇爆料更新为精选爆料
+		if(latestPost.getPostType().equals(PostType.DICCUSS.getValue())) {
+			SystemParam sysCode = systemParamService.findByCode(sysGlobals.DISSCS_POINT_OF_PRAISE);
+			Integer vcPamVal = Integer.valueOf(sysCode.getVcParamValue());
+			if(vcPamVal==praiseCount) {
+				seMap.clear();
+				seMap.put("postId", postId);
+				seMap.put("isNiceChoice", sysGlobals.ENABLE);
+				seMap.put("niceChoiceAt", new Date());
+				seMap.put("type", DiscussType.DOTPRAISE.getValue());
+				kffDiscussService.updateByMap(seMap);
+			}
+		}
+		//判断评测或文章的点赞量是否达到表中设定的值，要是相等那么直接将这篇评测或文章更新为推荐评测或文章
+		if(latestPost.getPostType().equals(PostType.ARTICLE.getValue())||
+				latestPost.getPostType().equals(PostType.EVALUATION.getValue())) {
+			SystemParam sysCode = systemParamService.findByCode(sysGlobals.POST_POINT_OF_PRAISE);
+			Integer vcPamVal = Integer.valueOf(sysCode.getVcParamValue());
+			if(vcPamVal==praiseCount) {
+				seMap.clear();
+				seMap.put("postId", postId);
+				seMap.put("stickTop", 1);//是否推荐：0-否，1-是
+				seMap.put("stickUpdateTime", new Date()); //操作推荐时间
+				seMap.put("type", DiscussType.DOTPRAISE.getValue());
+				kffPostService.updateByMap(seMap);
+				// 个推APP推送消息
+				KFFUser createUser = kffUserService.findById(praise.getBepraiseUserId());
+				if (null != createUser) {
+					Integer linkedType = null;
+					if (post.getPostType() == 1) {
+						linkedType = LinkedType.CUSTOMEVALUATING.getValue();
+					}
+					if (post.getPostType() == 2) {
+						linkedType = LinkedType.COUNTERFEIT.getValue();
+					}
+					if (post.getPostType() == 3) {
+						linkedType = LinkedType.ARTICLE.getValue();
+					}
+					appNewsPush(linkedType, post.getPostId(), createUser.getMobile(), 
+							sysGlobals.CONTENT_GETUI_MSG_BEGIN+post.getPostTitle()+sysGlobals.CONTENT_GETUI_MSG_END);
+				}
+			}
 		}
 		map.put("isSendPraiseToken", isSendPraiseToken);
 		map.put("retrueDzan", retrueDzan);
@@ -2825,21 +2916,37 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			kffPostService.decreasePraiseNum(postId);
 			kffUserService.decreasePraiseNum(post.getCreateUserId());
 		}
-		//判断爆料的点赞量是否小于表中设定的值，要是小于那么直接将这篇爆料更新为普通爆料
-		SystemParam sysCode = systemParamService.findByCode(sysGlobals.DISSCS_POINT_OF_PRAISE);
 		Map<String,Object> seMap = new HashMap<String,Object>();
 		seMap.put("postId", postId);
 		seMap.put("status", KFFConstants.STATUS_ACTIVE);//有效的点赞
-		seMap.put("postType", 2);//帖子类型：1-评测；2-讨论；3-文章
+		seMap.put("postType", post.getPostType());//帖子类型：1-评测；2-讨论；3-文章
 		Integer praiseCount = kffPraiseService.findListByAttrByCount(seMap);
-		Integer vcPamVal = Integer.valueOf(sysCode.getVcParamValue());
-		if(vcPamVal>praiseCount) {
-			seMap.clear();
-			seMap.put("postId", postId);
-			seMap.put("isNiceChoice", sysGlobals.DISABLE);
-			seMap.put("niceChoiceAt", new Date());
-			seMap.put("type", DiscussType.ORDINARYBURST.getValue());
-			kffDiscussService.updateByMap(seMap);
+		//判断爆料的点赞量是否小于表中设定的值，要是小于那么直接将这篇爆料更新为普通爆料
+		if(post.getPostType().equals(PostType.DICCUSS.getValue())) {
+			SystemParam sysCode = systemParamService.findByCode(sysGlobals.DISSCS_POINT_OF_PRAISE);
+			Integer vcPamVal = Integer.valueOf(sysCode.getVcParamValue());
+			if(vcPamVal>praiseCount) {
+				seMap.clear();
+				seMap.put("postId", postId);
+				seMap.put("isNiceChoice", sysGlobals.DISABLE);
+				seMap.put("niceChoiceAt", new Date());
+				seMap.put("type", DiscussType.ORDINARYBURST.getValue());
+				kffDiscussService.updateByMap(seMap);
+			}
+		}
+		//判断评测或文章的点赞量是否小于表中设定的值，要是小于那么直接将这篇评测或文章更新为普通帖子
+		if(post.getPostType().equals(PostType.ARTICLE.getValue())||
+				post.getPostType().equals(PostType.EVALUATION.getValue())) {
+			SystemParam sysCode = systemParamService.findByCode(sysGlobals.POST_POINT_OF_PRAISE);
+			Integer vcPamVal = Integer.valueOf(sysCode.getVcParamValue());
+			if(vcPamVal>praiseCount) {
+				seMap.clear();
+				seMap.put("postId", postId);
+				seMap.put("stickTop", 0);//是否推荐：0-否，1-是
+				seMap.put("stickUpdateTime", new Date()); //操作推荐时间
+				seMap.put("type", DiscussType.ORDINARYBURST.getValue());//推荐类型：0-点赞，1-认证账号发布，2-人工推荐,3-普通帖子
+				kffPostService.updateByMap(seMap);
+			}
 		}
 		result = post.getPraiseNum() == null ? 0 : ((post.getPraiseNum() - 1) < 0 ? 0 : (post.getPraiseNum() - 1));
 		return result;
@@ -3182,17 +3289,14 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		int con=ran.nextInt(list.size());
 		return con;
 	}
-	
 	@Override
-	public PageResult<PostResponse> findBurstList(Integer loginUserId, PaginationQuery query, Integer type) throws RestServiceException {
+	public PageResult<PostResponse> findBurstList(Integer loginUserId, PaginationQuery query, Integer type, Integer nowCount) throws RestServiceException {
 		PageResult<PostResponse> result = new PageResult<PostResponse>();
 		List<PostResponse> postResponse = new ArrayList<>();
-//		PageResult<Post> posts = null;
 		PageResult<PostDiscussVo> posts = null;
 		int pageIndex = query.getPageIndex();
-		int rowsPerPage = query.getRowsPerPage();
-		//第一页先取10条后台人工置顶的爆料，然后再从当天所有精选的爆料中随机出去10条
-		//从第二页开始从相应递减的天数中所有精选的爆料中随机出去20条
+		//第一页先取10条后台人工置顶的文章和评测，然后再从当天所有推荐的文章和评测中随机出去10条
+		//从第二页开始从相应递减的天数中所有推荐的文章和评测中随机出去20条
 		List<PostDiscussVo> postDisscussList = new ArrayList<PostDiscussVo>();
 		Map<String,Object> seMap = new HashMap<String,Object>();
 		if (pageIndex == 1) {
@@ -3210,46 +3314,43 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				}
 			}
 		}
-		String nowDt = DateUtil.getSpecifiedDayBeforeOrAfter(pageIndex-1);
-		String beginDt = nowDt+" 00:00:00";
-		String endDt = nowDt+" 23:59:59";
-		seMap.clear();
-		seMap.put("status", "1");
-		seMap.put("postType", "2");
-		seMap.put("disStickTop", 0);//置顶的
-		seMap.put("beginDt", beginDt);
-		seMap.put("endDt", endDt);
-		seMap.put("isNiceChoice", sysGlobals.ENABLE);//获取精选的爆料
-		seMap.put("sort", "tds.nice_choice_at");
-		Integer count = kffPostService.findSetTopDiscussCount(seMap);
-		List<PostDiscussVo> postDiscusWithDt = new ArrayList<PostDiscussVo>();
-		if(count>0) {
-			postDiscusWithDt = kffPostService.findSetTopDiscuss(seMap);
-		}
-		if(!postDiscusWithDt.isEmpty()) {
-			//从中随机取出rowsPerPage条，等于小于rowsPerPage条就全部取出
-			if(postDiscusWithDt.size()<=rowsPerPage) {
-				for (PostDiscussVo postDiscussVo : postDiscusWithDt) {
-					postDisscussList.add(postDiscussVo);
-				}
-			}else {
-				List<Integer> usList = new ArrayList<Integer>();
-				for (int i = 0; i < rowsPerPage; i++) {
-					boolean flag = false;
-					while (!flag) {
-						Integer usArr = getListArr(postDiscusWithDt);
-						if(!usList.contains(usArr)) {
-							usList.add(usArr);
-							flag = true;
+		SystemParam sysPar = systemParamService.findByCode(sysGlobals.POST_EVERY_PAGE);
+		query.setRowsPerPage(Integer.valueOf(sysPar.getVcParamValue()));
+		query.addQueryData("status", "1");
+		query.addQueryData("postType", PostType.DICCUSS.getValue());
+		query.addQueryData("disStickTop", 0);//不置顶的
+		query.addQueryData("disStickTop1", -1);//不置顶的
+		query.addQueryData("isNiceChoice", sysGlobals.ENABLE);//获取精选的爆料
+		query.addQueryData("sort", "tds.nice_choice_at");
+		PageResult<PostDiscussVo> findPostDiscussVoPage = kffPostService.findPostDiscussVoPage(query);
+		if(null!=findPostDiscussVoPage) {
+			List<PostDiscussVo> postDiscusWithDt = findPostDiscussVoPage.getRows();
+			if(!postDiscusWithDt.isEmpty()) {
+				//从中随机取出rowsPerPage条，等于小于rowsPerPage条就全部取出
+				if(postDiscusWithDt.size()<=nowCount) {
+					for (PostDiscussVo postDiscussVo : postDiscusWithDt) {
+						postDisscussList.add(postDiscussVo);
+					}
+				}else {
+					List<Integer> usList = new ArrayList<Integer>();
+					for (int i = 0; i < nowCount; i++) {
+						boolean flag = false;
+						while (!flag) {
+							Integer usArr = getListArr(postDiscusWithDt);
+							if(!usList.contains(usArr)) {
+								usList.add(usArr);
+								flag = true;
+							}
 						}
 					}
-				}
-				for (int i = 0; i < usList.size(); i++) {
-					PostDiscussVo postDiscussVo = postDiscusWithDt.get(usList.get(i));
-					postDisscussList.add(postDiscussVo);
+					for (int i = 0; i < usList.size(); i++) {
+						PostDiscussVo postDiscussVo = postDiscusWithDt.get(usList.get(i));
+						postDisscussList.add(postDiscussVo);
+					}
 				}
 			}
 		}
+		Integer count = kffPostService.findSetTopDiscussCount(query.getQueryData());
 		posts = new PageResult<PostDiscussVo>(postDisscussList, count, query);
 		KFFUser loginUser = null;
 		/**
@@ -3401,38 +3502,69 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		return result;
 	}
 	
-	
-
 	@Override
-	public PageResult<PostResponse> findPageRecommendList(Integer loginUserId, PaginationQuery query, Integer type, Integer method) throws RestServiceException {
+	public PageResult<PostResponse> findPageRecommendList(Integer loginUserId, PaginationQuery query, Integer type, Integer nowCount) throws RestServiceException {
 		PageResult<PostResponse> result = new PageResult<PostResponse>();
 		List<PostResponse> postResponse = new ArrayList<>();
-		PageResult<Post> posts = null;
-		// 从数据库中一个数据放在首页的第一页第一个list中
+		PageResult<PostDiscussVo> posts = null;
 		int pageIndex = query.getPageIndex();
-		int rowsPerPage = query.getRowsPerPage();
-
-		if (pageIndex == 1 && method == 2) {// 首页取带有置顶的页面
-			rowsPerPage = 9;
-			query.setRowsPerPage(rowsPerPage);
-			Map<String, Object> disMap = new HashMap<String, Object>();
-			disMap.put("disStickTop", 1 + "");
-			List<Discuss> discussList = kffDiscussService.findByMap(disMap);
-			if (CollectionUtils.isNotEmpty(discussList)) {
-				Discuss discuss = discussList.get(0);
-				if (null != discuss) {
-					posts = kffPostService.findPageIncludeSkick(query, discuss.getPostId());
-					// System.err.println(JSON.toJSONString(posts));
+		//第一页先取10条后台人工置顶的文章和评测，然后再从当天所有推荐的文章和评测中随机出去10条
+		//从第二页开始从相应递减的天数中所有推荐的文章和评测中随机出去20条
+		List<PostDiscussVo> postDisscussList = new ArrayList<PostDiscussVo>();
+		Map<String,Object> seMap = new HashMap<String,Object>();
+		if (pageIndex == 1) {
+			seMap.clear();
+			seMap.put("status", "1");
+			seMap.put("postTypec", PostType.DICCUSS.getValue());
+			seMap.put("disStickTopc", 1);//置顶的
+			seMap.put("sort", "dis_stick_updateTime");
+			seMap.put("startLimt", 0);
+			seMap.put("endLimt", 10);
+			List<PostDiscussVo> postDiscuss = kffPostService.findSetTopPost(seMap);
+			if(!postDiscuss.isEmpty()) {
+				for (PostDiscussVo postDiscussVo : postDiscuss) {
+					postDisscussList.add(postDiscussVo);
 				}
-			} else {
-				posts = kffPostService.findPageRecommendList(query);
-
 			}
-		} else {
-			posts = kffPostService.findPageRecommendList(query);
-
 		}
-
+		SystemParam sysPar = systemParamService.findByCode(sysGlobals.POST_EVERY_PAGE);
+		query.setRowsPerPage(Integer.valueOf(sysPar.getVcParamValue()));
+		query.addQueryData("status", "1");
+		query.addQueryData("postTypec", PostType.DICCUSS.getValue());
+		query.addQueryData("disStickTopc", 0);//不置顶的
+		query.addQueryData("disStickTopc1", -1);//不置顶的
+		query.addQueryData("stickTopc", 1);//是否推荐：0-否，1-是
+		query.addQueryData("sort", "stick_updateTime");
+		PageResult<PostDiscussVo> findPostVoPage = kffPostService.findPostVoPage(query);
+		if(null!=findPostVoPage) {
+			List<PostDiscussVo> postDiscusWithDt = findPostVoPage.getRows();
+			if(!postDiscusWithDt.isEmpty()) {
+				//从中随机取出rowsPerPage条，等于小于rowsPerPage条就全部取出
+				if(postDiscusWithDt.size()<=nowCount) {
+					for (PostDiscussVo postDiscussVo : postDiscusWithDt) {
+						postDisscussList.add(postDiscussVo);
+					}
+				}else {
+					List<Integer> usList = new ArrayList<Integer>();
+					for (int i = 0; i < nowCount; i++) {
+						boolean flag = false;
+						while (!flag) {
+							Integer usArr = getListArr(postDiscusWithDt);
+							if(!usList.contains(usArr)) {
+								usList.add(usArr);
+								flag = true;
+							}
+						}
+					}
+					for (int i = 0; i < usList.size(); i++) {
+						PostDiscussVo postDiscussVo = postDiscusWithDt.get(usList.get(i));
+						postDisscussList.add(postDiscussVo);
+					}
+				}
+			}
+		}
+		Integer count = kffPostService.findSetTopPostCount(query.getQueryData());
+		posts = new PageResult<PostDiscussVo>(postDisscussList, count, query);
 		KFFUser loginUser = null;
 		/**
 		 * 
@@ -3448,7 +3580,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			result.setQueryParameters(posts.getQueryParameters());
 			result.setRowCount(posts.getRowCount());
 			result.setRowsPerPage(posts.getRowsPerPage());
-			for (Post post : posts.getRows()) {
+			for (PostDiscussVo post : posts.getRows()) {
 				post.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(post.getPostShortDesc()));
 				PostResponse response = new PostResponse();
 				response.setcreateTime(post.getCreateTime());

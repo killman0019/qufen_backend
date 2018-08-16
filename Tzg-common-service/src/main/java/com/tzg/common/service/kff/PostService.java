@@ -55,6 +55,15 @@ public class PostService {
 		return postMapper.findSetTopDiscussCount(map);
 	}
 	
+	@Transactional(readOnly = true)
+	public List<PostDiscussVo> findSetTopPost(Map<String,Object> map) throws RestServiceException {
+		return postMapper.findSetTopPost(map);
+	}
+	
+	@Transactional(readOnly = true)
+	public Integer findSetTopPostCount(Map<String,Object> map) throws RestServiceException {
+		return postMapper.findSetTopPostCount(map);
+	}
 	
 	@Transactional(readOnly = true)
 	public Post findById(java.lang.Integer id) throws RestServiceException {
@@ -81,6 +90,10 @@ public class PostService {
 	public Integer save(Post post) throws RestServiceException {
 		return postMapper.save(post);
 	}
+	
+	public Integer updateByMap(Map<String,Object> map) throws RestServiceException {
+		return postMapper.updateByMap(map);
+	}
 
 	public void update(Post post) throws RestServiceException {
 		if (post.getPostId() == null) {
@@ -106,6 +119,44 @@ public class PostService {
 		}
 		return result;
 	}
+	
+	
+	@Transactional(readOnly = true)
+	public PageResult<PostDiscussVo> findPostVoPage(PaginationQuery query) throws RestServiceException {
+		PageResult<PostDiscussVo> result = null;
+		try {
+			Integer count = postMapper.findSetTopPostCount(query.getQueryData());
+			if (null != count && count.intValue() > 0) {
+				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
+				query.addQueryData("startRecord", Integer.toString(startRecord));
+				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
+				List<PostDiscussVo> list = postMapper.findSetTopPost(query.getQueryData());
+				result = new PageResult<PostDiscussVo>(list, count, query);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	@Transactional(readOnly = true)
+	public PageResult<PostDiscussVo> findPostDiscussVoPage(PaginationQuery query) throws RestServiceException {
+		PageResult<PostDiscussVo> result = null;
+		try {
+			Integer count = postMapper.findSetTopDiscussCount(query.getQueryData());
+			if (null != count && count.intValue() > 0) {
+				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
+				query.addQueryData("startRecord", Integer.toString(startRecord));
+				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
+				List<PostDiscussVo> list = postMapper.findSetTopDiscuss(query.getQueryData());
+				result = new PageResult<PostDiscussVo>(list, count, query);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
 
 	public List<Post> findProjectActiveUsers(Map<String, Object> map) {
 

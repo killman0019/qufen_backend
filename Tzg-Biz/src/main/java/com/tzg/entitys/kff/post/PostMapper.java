@@ -30,4 +30,10 @@ public interface PostMapper extends BaseMapper<Post, java.lang.Integer> {
 	
 	List<PostDiscussVo> findSetTopDiscuss(Map<String, Object> map);
 	Integer findSetTopDiscussCount(Map<String, Object> map);
+	
+	List<PostDiscussVo> findSetTopPost(Map<String, Object> map);
+	Integer findSetTopPostCount(Map<String, Object> map);
+	
+	Integer updateByMap(Map<String,Object> map);
+	
 }

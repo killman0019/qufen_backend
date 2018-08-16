@@ -1,6 +1,8 @@
 package com.tzg.entitys.kff.post;
 
 import java.io.Serializable;
+import java.util.Date;
+
 import com.tzg.common.utils.DateUtil;
 
 public class Post implements Serializable {
@@ -14,7 +16,7 @@ public class Post implements Serializable {
 	 */
 	private java.lang.Integer postId;
 	/**
-	 * 项目ID
+	 * 是否推荐0否1是
 	 */
 	private java.lang.Integer stickTop;
 
@@ -114,6 +116,37 @@ public class Post implements Serializable {
 	private Double praiseIncome;
 	private Double donateIncome;
 	private Double postTotalIncome;
+	
+	//推荐类型：0-点赞，1-认证账号发布，2-人工推荐,3-普通帖子
+	private Integer type;
+	//置顶状态：1置顶 0 不置顶
+	private Integer disStickTop;
+	//置顶时间
+	private Date disStickUpdateTime;
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
+	}
+
+	public Integer getDisStickTop() {
+		return disStickTop;
+	}
+
+	public void setDisStickTop(Integer disStickTop) {
+		this.disStickTop = disStickTop;
+	}
+
+	public Date getDisStickUpdateTime() {
+		return disStickUpdateTime;
+	}
+
+	public void setDisStickUpdateTime(Date disStickUpdateTime) {
+		this.disStickUpdateTime = disStickUpdateTime;
+	}
 
 	public java.lang.String getUuid() {
 		return uuid;

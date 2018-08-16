@@ -87,18 +87,18 @@ public class HomeController extends BaseController {
 				userId = getUserIdByToken(token);
 			}
 			PaginationQuery query = new PaginationQuery();
-			query.addQueryData("status", "1");
-			query.addQueryData("stickTop", "1");
-			query.addQueryData("sortField", "stick_updateTime");
-			query.addQueryData("notDiscuss", "true");
+//			query.addQueryData("status", "1");
+//			query.addQueryData("stickTop", "1");
+//			query.addQueryData("sortField", "stick_updateTime");
+//			query.addQueryData("notDiscuss", "true");
 			// query.addQueryData("praiseNum", "10");
 			// 帖子类型：1-评测；2-讨论；3-文章
 			// query.addQueryData("postType", "1");
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
+			Integer nowCount = baseRequest.getPageSize();
 			Integer type = 1;// 取关注项目
-			Integer methodType = 1;// 推荐列表过来的方法
-			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query, type, methodType);
+			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query, type,nowCount);
 			map.put("recommends", recommends);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -110,7 +110,7 @@ public class HomeController extends BaseController {
 		}
 		return bre;
 	}
-
+	
 	/**
 	 * @Title: getBurstList
 	 * @Description: TODO <获取爆料列表>
@@ -137,17 +137,17 @@ public class HomeController extends BaseController {
 				userId = getUserIdByToken(token);
 			}
 			PaginationQuery query = new PaginationQuery();
-			query.addQueryData("status", "1");
+//			query.addQueryData("status", "1");
 			// query.addQueryData("stickTop", "1");
-			query.addQueryData("sortField", "createTime");
+//			query.addQueryData("sortField", "createTime");
 			// query.addQueryData("praiseNum", "10");
 			// 帖子类型：2-爆料
-			query.addQueryData("postType", "2");
+//			query.addQueryData("postType", "2");
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
+			Integer nowCount = baseRequest.getPageSize();
 			Integer type = 2;// 取关注人
-			Integer methodType = 2;// 爆料列表过来的方法
-			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query, type, methodType);
+			PageResult<PostResponse> recommends = kffRmiService.findBurstList(userId, query, type, nowCount);
 			map.put("recommends", recommends);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -160,54 +160,6 @@ public class HomeController extends BaseController {
 		return bre;
 	}
 	
-	/** 
-	* @Title: findBurstListBy1_5 
-	* @Description: TODO <1.5版本的新版爆料>
-	* @author linj <方法创建作者>
-	* @create 下午3:26:08
-	* @param @param request
-	* @param @return <参数说明>
-	* @return BaseResponseEntity 
-	 * @throws IOException 
-	* @throws 
-	* @update 下午3:26:08
-	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
-	* @updateContext <修改内容>
-	*/
-	@ResponseBody
-	@RequestMapping(value = "/findBurstListBy1_5", method = { RequestMethod.POST, RequestMethod.GET })
-	public BaseResponseEntity findBurstListBy1_5(HttpServletRequest request) throws IOException {
-		BaseResponseEntity bre = new BaseResponseEntity();
-		HashMap<String, Object> map = new HashMap<String, Object>();
-		try {
-			BaseRequest baseRequest = getParamMapFromRequestPolicy(request, BaseRequest.class);
-			String token = baseRequest.getToken();
-			Integer userId = null;
-			if (StringUtils.isNotBlank(token)) {
-				userId = getUserIdByToken(token);
-			}
-			PaginationQuery query = new PaginationQuery();
-			query.addQueryData("status", "1");
-			query.addQueryData("sortField", "createTime");
-			// 帖子类型：2-爆料
-			query.addQueryData("postType", "2");
-			query.setPageIndex(baseRequest.getPageIndex());
-			query.setRowsPerPage(baseRequest.getPageSize());
-			Integer type = 2;// 取关注人
-			PageResult<PostResponse> recommends = kffRmiService.findBurstList(userId, query, type);
-			map.put("recommends", recommends);
-			bre.setData(map);
-		} catch (RestServiceException e) {
-			logger.error("HomeController recommendList:{}", e);
-			return this.resResult(e.getErrorCode(), e.getMessage());
-		} catch (Exception e) {
-			logger.error("HomeController recommendList:{}", e);
-			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
-		}
-		return bre;
-	}
-	
-
 	/**
 	 * 
 	 * @Title: followList

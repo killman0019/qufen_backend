@@ -129,7 +129,7 @@ public class PostDiscussVo implements Serializable {
 	private Integer isNiceChoice;
 	//被评为精选的时间
 	private Date niceChoiceAt;
-	//精评类型：0-点赞，1-认证账号发布，2-人工精选,3-普通爆料
+	//精评类型：0-点赞，1-认证账号发布，2-人工精选,3-普通爆料(或普通帖子)
 	private Integer type;
 	//1置顶 0 不置顶
 	private Integer disStickTop;

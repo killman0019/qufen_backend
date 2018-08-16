@@ -76,7 +76,7 @@
 		discuss_id = #{discussId,jdbcType=INTEGER}
 	</update>
 	
-	<update id="updateByMap" parameterType="com.tzg.entitys.kff.discuss.Discuss">
+	<update id="updateByMap" parameterType="java.util.Map">
 		UPDATE tbdiscuss
 		<set>
 			<if test="isNiceChoice != null">

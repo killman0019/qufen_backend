@@ -57,5 +57,13 @@ public final class sysGlobals{
 	public static String HOT_PROJECT="HOT_PROJECT";
 	/**爆料的点赞量超过10的内容自动加入当日的精选池*/
 	public static String DISSCS_POINT_OF_PRAISE="DISSCS_POINT_OF_PRAISE";
+	/**文章，评测的点赞量超过10的内容自动加入当日的内容池*/
+	public static String POST_POINT_OF_PRAISE="POST_POINT_OF_PRAISE";
+	/**用户的文章或评测被推至首页的时候，发送个推消息*/
+	public static String CONTENT_GETUI_MSG_BEGIN="恭喜您发布的内容《";
+	/**用户的文章或评测被推至首页的时候，发送个推消息*/
+	public static String CONTENT_GETUI_MSG_END="》被推荐至首页。";
+	/**推荐，爆料每页取出多少条让程序随机取出条数*/
+	public static String POST_EVERY_PAGE="POST_EVERY_PAGE";
 	
 }
