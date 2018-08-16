@@ -35,6 +35,7 @@ import com.tzg.common.utils.DozerMapperUtils;
 import com.tzg.common.utils.FileUtils;
 import com.tzg.common.utils.QiniuUtil;
 import com.tzg.common.utils.RandomUtil;
+import com.tzg.common.utils.SyseUtil;
 import com.tzg.common.utils.rest.Base64Util;
 import com.tzg.entitys.kff.article.ArticleDetailResponse;
 import com.tzg.entitys.kff.comments.Comments;
@@ -99,7 +100,7 @@ public class HomeController extends BaseController {
 			// query.addQueryData("postType", "1");
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
-			Integer type = 1;// 取关注项目
+			Integer type = 2;// 取1关注项目 2 关注人
 			Integer methodType = 1;// 推荐列表过来的方法
 			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query, type, methodType);
 			System.err.println(JSON.toJSONString(recommends));
@@ -195,9 +196,10 @@ public class HomeController extends BaseController {
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
 			PageResult<PostResponse> follows = kffProjectPostRmiService.findMyPageFollowList(userId, query);
-			System.err.println("follows" + follows);
+
 			map.put("follows", follows);
 			bre.setData(map);
+			SyseUtil.systemErrOutJson(map);
 		} catch (RestServiceException e) {
 			logger.error("HomeController followList:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
@@ -284,6 +286,7 @@ public class HomeController extends BaseController {
 			map.put("articleDetail", article);
 
 			bre.setData(map);
+			SyseUtil.systemErrOutJson(bre);
 		} catch (RestServiceException e) {
 			logger.error("HomeController articleDetail:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
@@ -440,6 +443,7 @@ public class HomeController extends BaseController {
 			DiscussDetailResponse discuss = kffRmiService.findDiscussDetail(userId, postId);
 			map.put("discussDetail", discuss);
 			bre.setData(map);
+			SyseUtil.systemErrOutJson(bre);
 		} catch (RestServiceException e) {
 			logger.error("HomeController discussDetail:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());

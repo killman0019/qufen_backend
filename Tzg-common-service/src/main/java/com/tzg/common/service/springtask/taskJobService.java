@@ -11,6 +11,7 @@ import com.tzg.common.service.kff.ProjectService;
 import com.tzg.common.service.kff.ProjectTradeService;
 import com.tzg.common.service.kff.QfIndexService;
 import com.tzg.common.service.kff.TokenawardService;
+import com.tzg.common.service.kff.TokenrecordsService;
 import com.tzg.common.service.kff.TransactionPairService;
 
 @Service
@@ -34,6 +35,8 @@ public class taskJobService {
 
 	@Autowired
 	private TransactionPairService transactionPairService;
+	@Autowired
+	private TokenrecordsService tokenrecordsService;
 
 	public void updateByGrantType() {
 		Integer a = 2;
@@ -89,5 +92,12 @@ public class taskJobService {
 		logger.info("--------------start getdatafromUrlByexchangeTask job---");
 		transactionPairService.getdatafromUrlByexchangeTask();
 		logger.info("-------------- end getdatafromUrlByexchangeTask job---");
+	}
+
+	public void caluCoinUserTask() {
+		logger.info("--------------start getdatafromUrlByexchangeTask job---");
+		tokenrecordsService.caluCoinUserTask();
+		logger.info("-------------- end getdatafromUrlByexchangeTask job---");
+
 	}
 }

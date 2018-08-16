@@ -650,7 +650,7 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 			PaginationQuery queryOther = query;
 			projectResponsePage = selectProjectsListByProjectCodePageNew(tabId, queryOther, userId, projectFollow);
 		}
-		System.err.println("projectResponsePage" + JSON.toJSONString(projectResponsePage));
+		//System.err.println("projectResponsePage" + JSON.toJSONString(projectResponsePage));
 		return projectResponsePage;
 	}
 

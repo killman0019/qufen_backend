@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.tzg.common.utils.SyseUtil;
 import com.tzg.entitys.kff.comments.Comments;
 import com.tzg.entitys.kff.comments.CommentsRequest;
 import com.tzg.entitys.kff.project.SubmitKFFProjectRequest;
@@ -48,13 +49,13 @@ public class CommentsController extends BaseController {
 
 		try {
 			CommentsRequest comment = getParamMapFromRequestPolicy(request, CommentsRequest.class);
-			//System.err.println("comment" + JSON.toJSONString(comment));
+			// System.err.println("comment" + JSON.toJSONString(comment));
 			String token = comment.getToken();
 			Integer userId = getUserIdByToken(token);
 			comment.setCommentUserId(userId);
 			Map<String, Object> saveComment = kffRmiService.saveComment(comment);
-			//System.err.println(JSON.toJSON(saveComment));
 			bre.setData(saveComment);
+			SyseUtil.systemErrOutJson(bre);
 		} catch (RestServiceException e) {
 			logger.error("CommentsController saveComment:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());

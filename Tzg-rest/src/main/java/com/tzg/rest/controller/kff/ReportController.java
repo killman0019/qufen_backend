@@ -60,7 +60,7 @@ public class ReportController extends BaseController {
 			List<ReportModel> getReportModelList = kffReportRmiService.getReportModelList();
 			map.put("getReportModelList", getReportModelList);
 			bre.setData(map);
-			System.err.println(JSON.toJSONString(getReportModelList));
+			//System.err.println(JSON.toJSONString(getReportModelList));
 		} catch (RestServiceException e) {
 			logger.error("ReportModelController getReportModelList:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());

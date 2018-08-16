@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.tzg.entitys.kff.activity.PostShare;
+import com.tzg.entitys.kff.post.Post;
+import com.tzg.rest.exception.rest.RestServiceException;
 
 /** 
 * @ClassName: NewsFlashRmiService 
@@ -15,9 +17,9 @@ import com.tzg.entitys.kff.activity.PostShare;
 public interface PostShareRmiService {
 
 	public PostShare findById(Integer id);
-	
+
 	public List<PostShare> findListByAttr(Map<String, Object> map);
-	
-	public void save(PostShare postShare);
+
+	public Map<String, Object> save(PostShare postShare, Post post) throws RestServiceException;
 
 }

@@ -23,7 +23,6 @@ public class PostShareService {
 		return postShareMapper.findById(id);
 	}
 
-
 	public void save(PostShare postShare) throws RestServiceException {
 		postShareMapper.save(postShare);
 	}
@@ -34,6 +33,11 @@ public class PostShareService {
 
 	public List<PostShare> findListByAttr(Map<String, Object> map) {
 		return postShareMapper.findListByAttr(map);
+	}
+
+	public List<PostShare> findByMap(Map<String, Object> sharePostMap) {
+		// TODO Auto-generated method stub
+		return postShareMapper.findByMap(sharePostMap);
 	}
 
 }

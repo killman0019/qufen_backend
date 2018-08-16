@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import sun.org.mozilla.javascript.internal.Token;
+import cn.jpush.api.report.UsersResult.User;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -1497,11 +1498,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		String uuid = UUID.randomUUID().toString().replace("-", "");
 		saveComment.setCommentUUID(uuid);
 		kffCommentsService.save(saveComment);
-		/***
-		 * 进行评论奖励
-		 */
-		awardUserTokenComment(post, commentUser, saveComment.getCommentsId());
-		/*************************评论奖励发放送币end***********************************/
+
 		if (comment.getParentCommentsId() == null) {
 			// 更新post表格中的评论数量
 			// 说明是一级评论
@@ -1517,6 +1514,18 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (null != commentSqls) {
 			map.put("commentId", commentSqls.getCommentsId());
 		}
+		/***
+		 * 进行评论奖励
+		 */
+		Double awardTokenAmount = awardUserTokenComment(post, commentUser, saveComment.getCommentsId());
+		if (awardTokenAmount != 0d) {
+			map.put("isCommentAward", true);
+			map.put("amount", awardTokenAmount);
+		} else {
+			map.put("isCommentAward", false);
+			// map.put("amount", awardTokenAmount);
+		}
+		/*************************评论奖励发放送币end***********************************/
 		// 帖子用户消息
 		// set 到message中的content modfiy by linj 2018-7-17
 		String praiseContent = "";
@@ -1577,10 +1586,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	 * @data 2018年8月10日
 	 *
 	 */
-	private void awardUserTokenComment(Post post, KFFUser commentUser, Integer commentsId) {
+	private Double awardUserTokenComment(Post post, KFFUser commentUser, Integer commentsId) {
 		// TODO 对内容进行首次评论奖励,自己给自己评论不奖励
 		// 判断评论否是给自己评论 不是对自己的创建的帖子进行评论
-
+		Double amount = 0d;
 		if (post.getCreateUserId() != commentUser.getUserId()) {
 			// 判断此用户是否已经在此post下发表了评论
 			Map<String, Object> commentsMap = new HashMap<String, Object>();
@@ -1599,7 +1608,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 								if (commentUserQfIndex.getStatusHierarchyType() > 0 && commentUserQfIndex.getYxComments() > 0) {
 									// 发布人进行实名认证并且区分指数>0并且评论的用户的有效评论数大于0
 									// 进行token发放奖励
-									grantCommnetsAward(post, postCreateUserQfIndex, commentUserQfIndex, commentUser, commentsId);
+									amount = grantCommnetsAward(post, postCreateUserQfIndex, commentUserQfIndex, commentUser, commentsId);
 
 								}
 							}
@@ -1608,6 +1617,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				}
 			}
 		}
+		return amount;
 
 	}
 
@@ -1621,21 +1631,26 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	 * @data 2018年8月10日
 	 *
 	 */
-	private void grantCommnetsAward(Post post, QfIndex postCreateUserQfIndex, QfIndex commentUserQfIndex, KFFUser commentUser, Integer commentsId) {
+	private Double grantCommnetsAward(Post post, QfIndex postCreateUserQfIndex, QfIndex commentUserQfIndex, KFFUser commentUser, Integer commentsId) {
 		// TODO 进行token发放
 		Date now = new Date();
-		Double commentFirstAwardToken = 5.0;// 当前内容下首次评论的奖励token数
-		Double commentAwardToken = 2.0;// 当前内容下除首次评论的奖励token数
+		SystemParam commentFirstAwardTokenParam = systemParamService.findByCode("COMMENT_FIRST_AWARD_TOKEN");
+		SystemParam commentAwardTokenParam = systemParamService.findByCode("COMMENT_AWARD_TOKEN");
+		// Double commentFirstAwardToken = 5.0;// 当前内容下首次评论的奖励token数
+		// Double commentAwardToken = 2.0;// 当前内容下除首次评论的奖励token数
+		Double commentFirstAwardToken = Double.valueOf(commentFirstAwardTokenParam.getVcParamValue());
+		Double commentAwardToken = Double.valueOf(commentAwardTokenParam.getVcParamValue());
 		Integer commentsNum = post.getCommentsNum();
 		//
-		Tokenaward tokenaward = new Tokenaward();
+		String format = String.format("%010d", commentsId);
+		// Tokenaward tokenaward = new Tokenaward();
 
 		Tokenrecords tokenrecords = new Tokenrecords();
 		tokenrecords.setUserId(commentUser.getUserId());
 		tokenrecords.setTradeType(1);// 收入
-		tokenrecords.setTradeCode("");// 交易流水
+		tokenrecords.setTradeCode(format);// 交易流水
 		tokenrecords.setFunctionDesc("评论奖励");
-		tokenrecords.setFunctionType(23);
+		tokenrecords.setFunctionType(24);
 		tokenrecords.setTradeDate(now);
 		// tokenrecords.setBalance(balance);?
 		tokenrecords.setCreateTime(now);
@@ -1646,9 +1661,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		tokenrecords.setAwardType(1);
 		tokenrecords.setAwardTypeId(commentsId);
 
-		tokenaward.setUserId(commentUser.getUserId());
+		/*tokenaward.setUserId(commentUser.getUserId());
 		tokenaward.setTokenAwardFunctionDesc("评论奖励");
-		tokenaward.setTokenAwardFunctionType(23);
+		tokenaward.setTokenAwardFunctionType(24);
 		tokenaward.setCreateTime(now);
 		tokenaward.setUpdateTime(now);
 		tokenaward.setDistributionType(2);
@@ -1656,20 +1671,22 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		tokenaward.setMobile(commentUser.getMobile());
 		tokenaward.setAwardType(1);
 		tokenaward.setAwardTypeId(commentsId);
-		tokenaward.setInviteRewards(0.0);
-		tokenaward.setAwardBalance(0.0);
+		*/
 		if (commentsNum == 0) {
 			// 首次评论
-			tokenaward.setRewardToken(commentFirstAwardToken);
+			// tokenaward.setRewardToken(commentFirstAwardToken);
 			tokenrecords.setAmount(new BigDecimal(commentFirstAwardToken));
 		} else {
 			// 非首次评论
-			tokenaward.setRewardToken(commentAwardToken);
+			// tokenaward.setRewardToken(commentAwardToken);
 			tokenrecords.setAmount(new BigDecimal(commentAwardToken));
 		}
 		tokenrecordsService.save(tokenrecords);
-		tokenaward.setTokenRecordsId(tokenrecords.getTokenRecordsId());
-		tokenawardService.save(tokenaward);
+		// tokenaward.setTokenRecordsId(tokenrecords.getTokenRecordsId());
+		// tokenawardService.save(tokenaward);
+		// CoinProperty coinProperty = coinPropertyService.findByUserId(commentUser.getUserId());
+		coinPropertyService.updateCoin(tokenrecords, 1);
+		return tokenrecords.getAmount().doubleValue();
 	}
 
 	@Override
@@ -4060,21 +4077,23 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 		response.setHotComments(hotCommentsresult);
 
-		/*
-		 * //赞赏用户列表最多8个 List<Commendation> donateUsers = new ArrayList<>();
-		 * PaginationQuery query = new PaginationQuery();
-		 * query.addQueryData("postId", postId+""); query.addQueryData("status",
-		 * KFFConstants.STATUS_ACTIVE + ""); query.setPageIndex(1);
-		 * query.setRowsPerPage(8); PageResult<Commendation> pages =
-		 * kffCommendationService.findPage(query); if(pages != null &&
-		 * CollectionUtils.isNotEmpty(pages.getRows())){ donateUsers =
-		 * pages.getRows(); } response.setCommendationList(donateUsers); //总捐赠金额
-		 * Map<String,Object> totalMap = new HashMap<String,Object>();
-		 * totalMap.put("postId", postId+""); totalMap.put("status", "1");
-		 * BigDecimal commendationNum =
-		 * kffCommendationService.findCommendationNum(totalMap);
-		 * response.setCommendationNum(commendationNum);
-		 */
+		// 赞赏用户列表最多8个
+		List<Commendation> donateUsers = new ArrayList<>();
+		PaginationQuery query = new PaginationQuery();
+		query.addQueryData("postId", postId + "");
+		query.addQueryData("status", KFFConstants.STATUS_ACTIVE + "");
+		query.setPageIndex(1);
+		query.setRowsPerPage(8);
+		PageResult<Commendation> pages = kffCommendationService.findPage(query);
+		if (pages != null && CollectionUtils.isNotEmpty(pages.getRows())) {
+			donateUsers = pages.getRows();
+		}
+		response.setCommendationList(donateUsers); // 总捐赠金额
+		Map<String, Object> totalMap = new HashMap<String, Object>();
+		totalMap.put("postId", postId + "");
+		totalMap.put("status", "1");
+		BigDecimal commendationNum = kffCommendationService.findCommendationNum(totalMap);
+		response.setCommendationNum(commendationNum);
 
 		response.setCommentsNum(post.getPostId());
 		return response;
@@ -4396,10 +4415,19 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			// 判断点赞人是否实名认证
 			// UserCard findBycreateUserId = userCardService.findByUserid(commentUserId);
 			// UserCard findByUserid = userCardService.findByUserid(userId);
-			Double profesEvaluat = 2.00d; // 评测的专业完整版评论赞奖励
+
+			SystemParam articlrCommentAwardPara = systemParamService.findByCode("ARTICLE_COMMENT_AWARD");
+			SystemParam discussCommentAwardPara = systemParamService.findByCode("DISCUSS_COMMENT_AWARD");
+			SystemParam evaCommentAward = systemParamService.findByCode("EVA_COMMENT_AWARD");
+			SystemParam singleEvaCommentAwardPara = systemParamService.findByCode("SINFLE_EVA_COMMENT_AWARD");
+			/*Double profesEvaluat = 2.00d; // 评测的专业完整版评论赞奖励
 			Double aloneEvaluat = 2.00d; // 单项评测评论赞奖励
 			Double discuss = 2.00d; // 讨论的评论赞奖励
-			Double article = 2.00d; // 文章的评论赞奖励
+			Double article = 2.00d; // 文章的评论赞奖励*/
+			Double profesEvaluat = Double.valueOf(evaCommentAward.getVcParamValue());
+			Double aloneEvaluat = Double.valueOf(singleEvaCommentAwardPara.getVcParamValue());
+			Double discuss = Double.valueOf(discussCommentAwardPara.getVcParamValue());
+			Double article = Double.valueOf(articlrCommentAwardPara.getVcParamValue());
 			// 判断所点赞的文章是不是有效(1有效,0删除,无效)
 			CoinProperty coinCommenId = coinPropertyService.findByUserId(comments.getCommentUserId());
 			if (post.getStatus() == 1) {
@@ -6033,7 +6061,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// map.put("userId", userId + "");
 
 		Double unlockSum = 0d; // 所有解锁中的 币值
-		Double coinLockSum = 0d; // 所有锁定中的 币值
+		Double coinLockSum = 0d; // 所有锁定中的 币值 (2018-8-16 14:55 一次性发放 也是锁定的币值)
 		Double coinDistributedSum = 0d; // 发放中的b值
 		Double coinUsableSum = 0d; // 可用的币值 也就是说可以提现的
 		Double totalAssets = 0d; // 账户总资产
@@ -6662,7 +6690,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			if (img.contains("https://pic.qufen.top") || img.contains("http://pic.qufen.top")) {
 				// 说明是h5富文本传来的,服务器中存有图片,直接截取存放数据库
 				logger.info("h5富文本传来的图片绝对路径:" + img);
-				if (imgDB.size() <= 3) {
+				if (imgDB.size() <= 9) {// 文章图片改成9张时间:2018-8-14 16:23
 					imgDB.add(img);
 				}
 			} else {
@@ -6688,7 +6716,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						logger.info(img + "上传七牛失败!");
 						logger.info("坑逼百度!!!!");
 					} else {
-						if (imgDB.size() <= 3) {
+						if (imgDB.size() <= 9) {// 文章图片改成9张时间:2018-8-14 16:23
 							imgDB.add(UrlQiniu);
 						}
 						// logger.info("picurlIpName : 替换后的图片路径: " + UrlQiniu);
@@ -7011,5 +7039,35 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	public void updataQfIndexUser(QfIndex qfIndexUser) throws RestServiceException {
 		qfIndexService.update(qfIndexUser);
 
+	}
+
+	@Override
+	public void isStatusUser(Integer userId) throws RestServiceException {
+		// TODO 根据用户 的id查看用户是否被禁用
+		KFFUser user = kffUserService.findById(userId);
+		if (user == null) {
+			throw new RestServiceException("用户不存在");
+		}
+		if (user.getStatus() == 0) {
+			throw new RestServiceException(RestErrorCode.ACCOUNT_LOCKED);
+		}
+	}
+
+	@Override
+	public void isStatusUserByUser(KFFUser user) throws RestServiceException {
+		// TODO 根据用户判断用户是否被禁用
+		if (user == null) {
+			throw new RestServiceException("用户不存在");
+		}
+		if (user.getStatus() == 0) {
+			throw new RestServiceException(RestErrorCode.ACCOUNT_LOCKED);
+		}
+	}
+
+	@Override
+	public Post findPostByPostId(Integer postId) throws RestServiceException {
+		// TODO 根据id 查询post
+		Post post = kffPostService.findById(postId);
+		return post;
 	}
 }

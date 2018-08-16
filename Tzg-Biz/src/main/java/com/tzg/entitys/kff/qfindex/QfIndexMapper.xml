@@ -16,6 +16,7 @@
 		<result property="createTime" jdbcType="TIMESTAMP" column="createTime" />
 		<result property="updateTime" jdbcType="TIMESTAMP" column="updateTime" />
 		<result property="yxComments" jdbcType="INTEGER" column="yx_comments" />
+		<result property="yxSharePost" jdbcType="INTEGER" column="yx_share_post" />
 
 	</resultMap>
 
@@ -33,6 +34,7 @@
         status_hierarchy_type ,
         yxpraise ,
         yx_comments ,
+        yx_share_post ,
         createTime ,
         updateTime
         
@@ -56,6 +58,7 @@
 	        status_hierarchy_type ,
 	        yxpraise ,
 	        yx_commnets ,
+	        yx_share_post ,
         	createTime ,
         	updateTime
 		) VALUES (
@@ -71,6 +74,7 @@
         	#{statusHierarchyType,jdbcType=INTEGER} ,
         	#{yxpraise,jdbcType=INTEGER} ,
         	#{yxComments,jdbcType=INTEGER} ,
+        	#{yxSharePost,jdbcType=INTEGER} ,
         	#{createTime,jdbcType=TIMESTAMP} ,
         	#{updateTime,jdbcType=TIMESTAMP} 
         	
@@ -111,6 +115,9 @@
 			<if test="yxComments != null">
 				yx_commnets = #{yxComments,jdbcType=INTEGER} ,
 			</if>
+			<if test="yxSharePost != null">
+				yx_share_post = #{yxSharePost,jdbcType=INTEGER} ,
+			</if>
 			<if test="createTime != null">
 				createTime = #{createTime,jdbcType=TIMESTAMP} ,
 			</if>
@@ -141,12 +148,22 @@
 		user_id = #{userId,jdbcType=INTEGER}
 	</update>
 
-	<update id="updateYxPraiseValidAndYxComments" parameterType="java.lang.Integer">
+	<update id="updateyxSharePost" parameterType="java.lang.Integer">
+		UPDATE
+		tbqfindex
+		set
+		yx_share_post = yx_share_post - 1
+		WHERE
+		user_id = #{userId,jdbcType=INTEGER}
+	</update>
+
+	<update id="updateYxPraiseValidAndYxCommentsAndYxSharePost" parameterType="java.lang.Integer">
 		UPDATE
 		tbqfindex
 		set
 		yxpraise = floor(status_hierarchy_type * 0.1),
-		yx_comments=floor(status_hierarchy_type * 0.1)
+		yx_comments=floor(status_hierarchy_type * 0.1),
+		yx_share_post=floor(status_hierarchy_type * 0.1)
 	</update>
 
 	<update id="updateYxPraiseValid" parameterType="java.lang.Integer">
@@ -251,6 +268,9 @@
 		</if>
 		<if test="yxComments != null and yxComments.trim() != ''">
 			and yx_comments >= #{yxComments}
+		</if>
+		<if test="yxSharePost != null and yxSharePost.trim() != ''">
+			and yx_share_post >= #{yxSharePost}
 		</if>
 		<if test="createTime != null and createTime.trim() != ''">
 			and createTime &lt;= #{createTime}

@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import cn.jpush.api.report.UsersResult.User;
+
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.entitys.kff.article.ArticleDetailResponse;
@@ -33,6 +35,7 @@ import com.tzg.entitys.kff.follow.FollowResponse;
 import com.tzg.entitys.kff.message.KFFMessage;
 import com.tzg.entitys.kff.mobileversionupdate.Mobileversionupdate;
 import com.tzg.entitys.kff.notice.KFFNotice;
+import com.tzg.entitys.kff.post.Post;
 import com.tzg.entitys.kff.post.PostResponse;
 import com.tzg.entitys.kff.praise.Praise;
 import com.tzg.entitys.kff.project.KFFProject;
@@ -86,7 +89,7 @@ public interface KFFRmiService {
 	 * @return
 	 * @throws RestServiceException
 	 */
-	public KFFUser login(String loginName, String password,String clientId,Integer appType) throws RestServiceException;
+	public KFFUser login(String loginName, String password, String clientId, Integer appType) throws RestServiceException;
 
 	/**
 	 * 按类型获取最新升级信息
@@ -295,8 +298,9 @@ public interface KFFRmiService {
 	 * @return
 	 * @throws RestServiceException
 	 */
-	public PageResult<ProjectResponse> findProjectByCodePage(int sortType, Integer userId, String projectCode,Integer pageIndex,Integer pageSize) throws RestServiceException;
-	
+	public PageResult<ProjectResponse> findProjectByCodePage(int sortType, Integer userId, String projectCode, Integer pageIndex, Integer pageSize)
+			throws RestServiceException;
+
 	public List<ProjectResponse> findProjectByCode(int sortType, Integer userId, String projectCode) throws RestServiceException;
 
 	/**
@@ -394,7 +398,8 @@ public interface KFFRmiService {
 
 	public void cancelCollect(Integer userId, Integer postId) throws RestServiceException;
 
-	public PageResult<PostResponse> findPageRecommendList(Integer loginUserId, PaginationQuery query, Integer type, Integer methodType) throws RestServiceException;
+	public PageResult<PostResponse> findPageRecommendList(Integer loginUserId, PaginationQuery query, Integer type, Integer methodType)
+			throws RestServiceException;
 
 	public PageResult<PostResponse> findPageFollowList(Integer loginUserId, PaginationQuery query) throws RestServiceException;
 
@@ -881,28 +886,64 @@ public interface KFFRmiService {
 	 * @param modeltype
 	 * @return true 允许发布,false 禁止发布
 	 * @throws RestServiceException
-	 *//*
+	 */
+	/*
 	public boolean isAllowedPulish(Integer userId, KFFProject project, Integer postType, Integer modeltype) throws RestServiceException;
-*/
+	*/
 	/*
 		*//**
-	 * 想点赞人发送token奖励只要是有效赞，给点赞人奖励
-	 * 
-	 * 评测、爆料、文章都给予点赞人10个FIND奖励
-	 * 
-	 * @param userId
-	 *            用户的id
-	 * @param validPraise
-	 *            用户有效赞个数
-	 * @param praiseId
-	 *            当前赞对象
-	 * @param format
-	 * @param replaceAllDate
-	 * @throws RestServiceException
-	 */
+		* 想点赞人发送token奖励只要是有效赞，给点赞人奖励
+		* 
+		* 评测、爆料、文章都给予点赞人10个FIND奖励
+		* 
+		* @param userId
+		*            用户的id
+		* @param validPraise
+		*            用户有效赞个数
+		* @param praiseId
+		*            当前赞对象
+		* @param format
+		* @param replaceAllDate
+		* @throws RestServiceException
+		*/
 	/*
 	public Boolean sendPraiseAwardToPraiser(Integer userId, Integer postId)
 		throws RestServiceException;*/
 
 	public void updataQfIndexUser(QfIndex qfIndexUser) throws RestServiceException;
+
+	/**
+	 * 
+	 * TODO  根据用户id判断用户是否是否被禁用
+	 * @param userId
+	 * @return
+	 * @throws RestServiceException
+	 * @author zhangdd
+	 * @data 2018年8月15日
+	 *
+	 */
+	public void isStatusUser(Integer userId) throws RestServiceException;
+
+	/**
+	 * 
+	 * TODO 根据user判断用户是否被禁用
+	 * @param user
+	 * @throws RestServiceException
+	 * @author zhangdd
+	 * @data 2018年8月16日
+	 *
+	 */
+	public void isStatusUserByUser(KFFUser user) throws RestServiceException;
+
+	/**
+	 * 
+	 * TODO
+	 * @param postId
+	 * @return
+	 * @throws RestServiceException
+	 * @author zhangdd
+	 * @data 2018年8月16日
+	 *
+	 */
+	public Post findPostByPostId(Integer postId) throws RestServiceException;
 }

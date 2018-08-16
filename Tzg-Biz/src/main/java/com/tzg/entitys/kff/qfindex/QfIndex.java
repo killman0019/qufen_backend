@@ -59,6 +59,18 @@ public class QfIndex implements Serializable {
 	 * 个人有效评论次数
 	 */
 	private Integer yxComments;
+	/**
+	 * 个人有效分享次数
+	 */
+	private Integer yxSharePost;
+
+	public Integer getYxSharePost() {
+		return yxSharePost;
+	}
+
+	public void setYxSharePost(Integer yxSharePost) {
+		this.yxSharePost = yxSharePost;
+	}
 
 	public Integer getYxComments() {
 		return yxComments;

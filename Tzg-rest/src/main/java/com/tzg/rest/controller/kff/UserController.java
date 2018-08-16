@@ -32,6 +32,7 @@ import com.tzg.common.utils.FileUtils;
 import com.tzg.common.utils.HexUtil;
 import com.tzg.common.utils.RegexUtil;
 import com.tzg.common.utils.SHAUtil;
+import com.tzg.common.utils.SyseUtil;
 import com.tzg.common.utils.TzgConstant;
 import com.tzg.common.utils.rest.Base64Util;
 import com.tzg.common.utils.rest.RestConstants;
@@ -900,8 +901,8 @@ public class UserController extends BaseController {
 			List<KFFUserWallet> result1 = kffRmiService.findBywalletAndType(userId);
 			map.put("myTokenRecords", result);
 			map.put("wallet", result1);
-
 			bre.setData(map);
+			SyseUtil.systemErrOutJson(bre);
 		} catch (RestServiceException e) {
 			logger.warn("myTokenRecordsList warn:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
@@ -1373,6 +1374,7 @@ public class UserController extends BaseController {
 					}
 				}
 			}
+
 			map.put("sum", bdSum);
 
 			map.put("myTokenBill", result);
@@ -1509,10 +1511,13 @@ public class UserController extends BaseController {
 	}
 
 	/**
-	 * 获取我的粉丝列表
 	 * 
+	 * TODO 获得关注列表  比如 
 	 * @param request
 	 * @return
+	 * @author zhangdd
+	 * @data 2018年8月16日
+	 *
 	 */
 	@RequestMapping(value = "/getMyFanList", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
@@ -1525,7 +1530,7 @@ public class UserController extends BaseController {
 			Integer pageIndex = (Integer) params.get("pageIndex") == null ? 1 : (Integer) params.get("pageIndex");
 			Integer pageSize = (Integer) params.get("pageSize") == null ? 10 : (Integer) params.get("pageSize");
 			// 关注类型：2-关注话题；3-关注用户
-			Integer followType = (Integer) params.get("followType") == null ? 2 : (Integer) params.get("followType");
+			Integer followType = (Integer) params.get("followType");
 
 			if (StringUtils.isBlank(token)) {
 				throw new RestServiceException(RestErrorCode.USER_NOT_LOGIN);

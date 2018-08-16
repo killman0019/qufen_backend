@@ -40,12 +40,13 @@ public class RewardDetailService {
 	private TokenrecordsService kffTokenrecordsService;
 	@Autowired
 	private TokenawardService tokenawardService;
-	
+	@Autowired
+	private CoinPropertyService coinPropertyService;
+
 	@Transactional(readOnly = true)
 	public RewardDetail findById(Integer id) throws RestServiceException {
 		return rewardDetailMapper.findById(id);
 	}
-
 
 	public void save(RewardDetail rewardDetail) throws RestServiceException {
 		rewardDetailMapper.save(rewardDetail);
@@ -58,18 +59,18 @@ public class RewardDetailService {
 	public List<RewardDetail> findListByAttr(Map<String, Object> map) {
 		return rewardDetailMapper.findListByAttr(map);
 	}
-	
+
 	@Transactional
-	public MiningActivity add(MiningActivity mnAct,Integer userId) {
+	public MiningActivity add(MiningActivity mnAct, Integer userId) {
 		KFFUser user = userService.findById(userId);
-		if(null==user) {
+		if (null == user) {
 			throw new RuntimeException("未找到该用户");
 		}
 		KFFProject project = projectService.findById(mnAct.getProjectId());
-		if(null==project) {
+		if (null == project) {
 			throw new RuntimeException("未找到该项目");
 		}
-		
+
 		Date date = new Date();
 		RewardDetail rewardDetail = new RewardDetail();
 		rewardDetail.setCreatedAt(date);
@@ -86,15 +87,15 @@ public class RewardDetailService {
 		rewardDetail.setProjectId(mnAct.getProjectId());
 		rewardDetail.setProjectCode(mnAct.getProjectCode());
 		rewardDetail.setProjectIcon(project.getProjectIcon());
-		//假如奖励不是为FIND币，则直接往activity_reward_detail奖励表插入一条待发放的记录，
-		//如果为FIND币，直接往activity_reward_detail奖励表插入一条已发放的记录，需要立即给用户增加相应的FIND
-		
-		if(!mnAct.getTokenName().equals(sysGlobals.QDKL_CION)) {
+		// 假如奖励不是为FIND币，则直接往activity_reward_detail奖励表插入一条待发放的记录，
+		// 如果为FIND币，直接往activity_reward_detail奖励表插入一条已发放的记录，需要立即给用户增加相应的FIND
+
+		if (!mnAct.getTokenName().equals(sysGlobals.QDKL_CION)) {
 			rewardDetail.setStatus(RewardDetailStatus.UNSEND.getValue());
-		}else {
-			//奖励是公司的FIND币那么直接给用户发放就可以了
+		} else {
+			// 奖励是公司的FIND币那么直接给用户发放就可以了
 			rewardDetail.setStatus(RewardDetailStatus.SENDSUCCESS.getValue());
-			//插入币的交易流水表？
+			// 插入币的交易流水表？
 			Tokenrecords tokenrecords = new Tokenrecords();
 			tokenrecords.setUserId(userId);
 			String stringDate = DateUtil.getDate(date, "yyyy-MM-dd");
@@ -113,7 +114,9 @@ public class RewardDetailService {
 			tokenrecords.setMemo(sysGlobals.SET_MENO);
 			tokenrecords.setRewardGrantType(1); // 发放类型 1-一次性发放 2-线性发放
 			kffTokenrecordsService.save(tokenrecords);
-			if(tokenrecords.getTokenRecordsId()==null) {
+			// 同步账单
+			coinPropertyService.updateCoin(tokenrecords, 1);
+			if (tokenrecords.getTokenRecordsId() == null) {
 				throw new RuntimeException("发放异常，请重新领取！");
 			}
 			Tokenaward tokenaward = new Tokenaward();
@@ -135,34 +138,33 @@ public class RewardDetailService {
 			tokenaward.setIssuer(sysGlobals.SET_ISSUER);
 			tokenaward.setRemark(sysGlobals.SET_REMARK);
 			tokenawardService.save(tokenaward);
-			//奖励是公司的FIND币那么直接给用户发放就可以了
+			// 奖励是公司的FIND币那么直接给用户发放就可以了
 			user.setKffCoinNum(StringUtil.addBigDecimal(user.getKffCoinNum(), mnAct.getTokenEveryCount()));
 		}
 		rewardDetailMapper.save(rewardDetail);
-		//对活动表进行操作
+		// 对活动表进行操作
 		mnAct.setTokenUnclaimed(StringUtil.subBigDecimal(mnAct.getTokenUnclaimed(), mnAct.getTokenEveryCount()));
-		mnAct.setTokenSurplusNum(mnAct.getTokenSurplusNum()-1);
-		mnAct.setVersion(mnAct.getVersion()+1);
+		mnAct.setTokenSurplusNum(mnAct.getTokenSurplusNum() - 1);
+		mnAct.setVersion(mnAct.getVersion() + 1);
 		Integer num = miningActivityService.updateByOptimisticLock(mnAct);
-		if(num<1) {
+		if (num < 1) {
 			throw new RuntimeException("数据异常，请重新领取！");
 		}
 		return mnAct;
 	}
-	
-	
-	@Transactional(readOnly=true)
+
+	@Transactional(readOnly = true)
 	public PageResult<RewardDetail> findPage(PaginationQuery query) throws RestServiceException {
 		PageResult<RewardDetail> result = null;
 		try {
 			Integer count = rewardDetailMapper.findPageCount(query.getQueryData());
 			if (null != count && count.intValue() > 0) {
-				int startRecord = (query.getPageIndex() - 1)* query.getRowsPerPage();
+				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
 				query.addQueryData("startRecord", Integer.toString(startRecord));
 				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
 				List<RewardDetail> list = rewardDetailMapper.findPage(query.getQueryData());
-				result = new PageResult<RewardDetail>(list,count,query);
-			} 
+				result = new PageResult<RewardDetail>(list, count, query);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
