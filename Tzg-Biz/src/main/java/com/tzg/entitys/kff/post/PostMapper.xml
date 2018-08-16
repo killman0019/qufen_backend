@@ -837,11 +837,11 @@
     		<if test="type != null">
 	        	and tds.type = #{type}
 	        </if>
-	        <if test="disStickTop != null and disStickTop1==null">
-	        	and tds.dis_stick_top = #{disStickTop}
+	        <if test="disStickTop1!=null">
+	        	and tds.dis_stick_top != #{disStickTop1}
 	        </if>
-	        <if test="disStickTop != null and disStickTop1!=null">
-	        	and (tds.dis_stick_top = #{disStickTop} or tds.dis_stick_top is null)
+	        <if test="disStickTop!=null">
+	        	and tds.dis_stick_top = #{disStickTop}
 	        </if>
 	        <if test="disStickUpdateTime != null">
 	       	 	and tds.dis_stick_updateTime = #{disStickUpdateTime} 
@@ -849,11 +849,11 @@
 	        <if test="typec != null">
 	        	and tpt.type = #{typec}
 	        </if>
-	        <if test="disStickTopc != null and disStickTopc1==null">
-	        	and tpt.dis_stick_top = #{disStickTopc}
+	        <if test="disStickTopc1!=null">
+	        	and tpt.dis_stick_top != #{disStickTopc1} 
 	        </if>
-	        <if test="disStickTopc != null and disStickTopc1!=null">
-	        	and (tpt.dis_stick_top = #{disStickTopc} or tpt.dis_stick_top is null)
+	        <if test="disStickTopc!=null">
+	        	and tpt.dis_stick_top = #{disStickTopc} 
 	        </if>
 	        <if test="disStickUpdateTimec != null">
 	       	 	and tpt.dis_stick_updateTime = #{disStickUpdateTimec} 

@@ -3305,8 +3305,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			seMap.put("postType", "2");
 			seMap.put("disStickTop", 1);//置顶的
 			seMap.put("sort", "tds.dis_stick_updateTime");
-			seMap.put("startLimt", 0);
-			seMap.put("endLimt", 10);
+			seMap.put("startRecord", 0);
+			seMap.put("endRecord", 10);
 			List<PostDiscussVo> postDiscuss = kffPostService.findSetTopDiscuss(seMap);
 			if(!postDiscuss.isEmpty()) {
 				for (PostDiscussVo postDiscussVo : postDiscuss) {
@@ -3318,8 +3318,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		query.setRowsPerPage(Integer.valueOf(sysPar.getVcParamValue()));
 		query.addQueryData("status", "1");
 		query.addQueryData("postType", PostType.DICCUSS.getValue());
-		query.addQueryData("disStickTop", 0);//不置顶的
-		query.addQueryData("disStickTop1", -1);//不置顶的
+		query.addQueryData("disStickTop1", 1);//不置顶的
 		query.addQueryData("isNiceChoice", sysGlobals.ENABLE);//获取精选的爆料
 		query.addQueryData("sort", "tds.nice_choice_at");
 		PageResult<PostDiscussVo> findPostDiscussVoPage = kffPostService.findPostDiscussVoPage(query);
@@ -3518,8 +3517,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			seMap.put("postTypec", PostType.DICCUSS.getValue());
 			seMap.put("disStickTopc", 1);//置顶的
 			seMap.put("sort", "dis_stick_updateTime");
-			seMap.put("startLimt", 0);
-			seMap.put("endLimt", 10);
+			seMap.put("startRecord", 0);
+			seMap.put("endRecord", 10);
 			List<PostDiscussVo> postDiscuss = kffPostService.findSetTopPost(seMap);
 			if(!postDiscuss.isEmpty()) {
 				for (PostDiscussVo postDiscussVo : postDiscuss) {
@@ -3531,8 +3530,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		query.setRowsPerPage(Integer.valueOf(sysPar.getVcParamValue()));
 		query.addQueryData("status", "1");
 		query.addQueryData("postTypec", PostType.DICCUSS.getValue());
-		query.addQueryData("disStickTopc", 0);//不置顶的
-		query.addQueryData("disStickTopc1", -1);//不置顶的
+		query.addQueryData("disStickTopc1", 1);//不置顶的
 		query.addQueryData("stickTopc", 1);//是否推荐：0-否，1-是
 		query.addQueryData("sort", "stick_updateTime");
 		PageResult<PostDiscussVo> findPostVoPage = kffPostService.findPostVoPage(query);
