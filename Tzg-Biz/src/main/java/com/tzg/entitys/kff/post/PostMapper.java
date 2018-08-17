@@ -36,4 +36,6 @@ public interface PostMapper extends BaseMapper<Post, java.lang.Integer> {
 	
 	Integer updateByMap(Map<String,Object> map);
 	
+	List<PostResponse> findPageForFollowList(Map<String, Object> map);
+	Integer findPageForFollowCount(Map<String, Object> map);
 }

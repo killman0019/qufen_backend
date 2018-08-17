@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.tzg.common.base.BaseMapper;
+import com.tzg.entitys.kff.post.PostResponse;
 import com.tzg.entitys.kff.user.KFFUser;
 
 import org.springframework.stereotype.Repository;
@@ -37,4 +38,5 @@ public interface KFFProjectMapper extends BaseMapper<KFFProject, java.lang.Integ
 
 	Integer findAllProjectAndTradeCount(Map<String, Object> queryData);
 
+	List<PostResponse> findLinkedTabsByAttr(Map<String, Object> map);
 }

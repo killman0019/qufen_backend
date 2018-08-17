@@ -45,6 +45,8 @@ public interface KFFProjectPostRmiService {
 	 * @return
 	 */
 	public PageResult<PostResponse> findMyPageFollowList(Integer userId, PaginationQuery query) throws RestServiceException;
+	
+	public PageResult<PostResponse> findPageForFollowList(Integer userId, PaginationQuery query);
 
 	/**
 	 * 项目维度 专业评测 分项统计

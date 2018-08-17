@@ -886,7 +886,6 @@
 		WHERE
 		post_id = #{postId,jdbcType=INTEGER}
 	</update>
-
 </mapper>
 
 

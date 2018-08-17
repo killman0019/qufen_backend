@@ -155,14 +155,12 @@
 
 
 	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
-		select count(*) from tbfollow where 1=1
+		select count(1) from tbfollow where 1=1
 		<include refid="queryWhere" />
 	</select>
 
 	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
-		select
-		<include refid="columns" />
-		from tbfollow where 1=1
+		select * from tbfollow where 1=1
 		<include refid="queryWhere" /> 
 	    <![CDATA[ ORDER BY follow_id DESC ]]>
         <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
@@ -184,8 +182,14 @@
 		<if test="followUserId != null">
 			and follow_user_id = #{followUserId}
 		</if>
+		<if test="userId != null">
+			and follow_user_id = #{userId}
+		</if>
 		<if test="followType != null">
 			and follow_type = #{followType}
+		</if>
+		<if test="followTypec != null">
+			and follow_type != #{followTypec}
 		</if>
 		<if test="followerUserName != null">
 			and follower_user_name = #{followerUserName}

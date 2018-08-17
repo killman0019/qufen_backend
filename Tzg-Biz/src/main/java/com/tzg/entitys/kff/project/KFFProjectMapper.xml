@@ -580,6 +580,65 @@
 		</choose>
         <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
 	</select>
+	
+	<select id="findLinkedTabsByAttr" resultType="com.tzg.entitys.kff.post.PostResponse" parameterType="java.util.Map">
+		SELECT
+			tbt.post_type as actionType,
+			tbt.post_id as postId,
+			tbt.project_id as projectId,
+			tbt.post_title as postTitle,
+			tbt.post_type as postType,
+			tbt.post_short_desc as postShortDesc,
+			tbt.post_small_images as postSmallImages,
+			tbt.comments_num as commentsNum,
+			tbt.praise_num as praiseNum,
+			tbt.pageview_num as pageviewNum,
+			tbt.donate_num as donateNum,
+			tbt.collect_num as collectNum,
+			tbt.create_user_id as createUserId,
+			tbt.create_user_icon as createUserIcon,
+			tbt.create_user_signature as createUserSignature,
+			tbt.create_user_name as createUserName,
+			tbt.createTime as createTime,
+			tbt.updateTime as updateTime,
+			tbt.status as status,
+			tbt.praise_income as praiseIncome,
+			tbt.donate_income as donateIncome,
+			tbt.post_total_income as postTotalIncome,
+			tbp.project_icon as projectIcon,
+			tbp.project_code as projectCode,
+			tbp.project_english_name as projectEnglishName,
+			tbp.project_chinese_name as projectChineseName,
+			tbp.project_signature as projectSignature,
+			tbp.total_score as totalScore,
+			tbu.user_type as userType
+		FROM
+			tbproject  as tbp
+		LEFT JOIN tbpost tbt ON tbp.project_id = tbt.project_id
+		LEFT JOIN tbuser tbu ON tbu.user_id = tbt.create_user_id
+		<include refid="condition"/>
+	    ORDER BY tbt.createTime desc
+	</select>
+	
+	
+	<sql id="condition">
+    	<where>
+			<if test="projectId!=null">
+    		  and tbp.project_id = #{projectId}
+    		</if>
+    		<if test="state!=null">
+    		  and tbt.state = #{state}
+    		</if>
+    		<if test="status!=null">
+    		  and tbt.status != #{status}
+    		</if>
+    		<if test="praiseNum!=null">
+    		  and tbt.praise_num &gt; #{praiseNum}
+    		</if>
+    	</where>
+    </sql>
+	
+	
 
 	<select id="findAllProjectAndTradeCount" resultType="java.lang.Integer" parameterType="java.util.Map">
 

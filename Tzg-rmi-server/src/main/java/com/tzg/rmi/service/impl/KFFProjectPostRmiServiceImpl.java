@@ -19,6 +19,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.google.common.base.Objects;
 import com.tzg.common.constants.KFFConstants;
+import com.tzg.common.enums.FollowType;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.redis.RedisService;
@@ -55,6 +56,7 @@ import com.tzg.common.service.kff.UserWalletService;
 import com.tzg.common.service.systemParam.SystemParamService;
 import com.tzg.common.utils.H5AgainDeltagsUtil;
 import com.tzg.common.utils.RandomUtil;
+import com.tzg.common.utils.sysGlobals;
 import com.tzg.common.zookeeper.ZKClient;
 import com.tzg.entitys.kff.article.ArticleRequest;
 import com.tzg.entitys.kff.comments.Comments;
@@ -74,6 +76,7 @@ import com.tzg.entitys.kff.projectevastat.Projectevastat;
 import com.tzg.entitys.kff.projectevastat.ProjectevastatByGrade;
 import com.tzg.entitys.kff.qfindex.QfIndex;
 import com.tzg.entitys.kff.user.KFFUser;
+import com.tzg.entitys.leopard.system.SystemParam;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rmi.service.KFFProjectPostRmiService;
 
@@ -305,6 +308,55 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 		return comments;
 
 	}
+	/**
+	 * 关注项目：
+		点赞量超过5的内容（评测、爆料、文章）
+		关注用户
+		关注用户发布的内容（评测、爆料、文章）
+		关注用户关注了项目；
+		关注用户评论了内容（评测、爆料、文章）；
+		
+		按照发布时间顺序排序，注意去重（不要在1页里展示）。
+	 */
+	
+	public PageResult<PostResponse> findPageForFollowList(Integer userId, PaginationQuery query) {
+		PageResult<PostResponse> result = new PageResult<>();
+		
+		PageResult<Follow> follows = kffFollowService.findPage(query);
+		if(null!=follows) {
+			List<Follow> followList = follows.getRows();
+			if(!followList.isEmpty()) {
+				SystemParam sysPar = systemParamService.findByCode(sysGlobals.PRISE_TO_FOLLOW_POST);
+				Integer count = Integer.valueOf(sysPar.getVcParamValue());
+				Map<String,Object> seMap = new HashMap<String,Object>();
+				for (int i = 0; i < followList.size(); i++) {
+					Follow follow = followList.get(i);
+					//查询关注项目
+					if(follow.getFollowType()==FollowType.PROJECTFOLLOW.getValue()) {
+						//查询项目下的所有帖子（post）
+						seMap.clear();
+						seMap.put("projectId", follow.getFollowedId());
+						seMap.put("state", 2);//审核状态：1；待审核；2-审核通过；3-拒绝
+						seMap.put("status", 1);//状态：0-删除；1-有效
+						seMap.put("praiseNum", count);//点赞人数必须大于数据库配置的值
+						List<PostResponse> projectAndPosts = kffProjectService.findLinkedTabsByAttr(seMap);
+						
+						
+					}
+					//查询关注用户
+					if(follow.getFollowType()==FollowType.USERFOLLOW.getValue()) {
+						
+					}
+				}
+			}
+		}
+		
+		
+//		PageResult<PostResponse> posts = kffPostService.findPageForFollowList(query)
+		
+		return null;
+	}
+	
 
 	@Override
 	public PageResult<PostResponse> findMyPageFollowList(Integer userId, PaginationQuery query) {

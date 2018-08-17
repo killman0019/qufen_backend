@@ -48,7 +48,7 @@ public class PostResponse implements Serializable {
 	private java.lang.String projectChineseName;
 
 	/**
-	 * 项目标题
+	 * 一句话简介
 	 */
 	private java.lang.String projectSignature;
 

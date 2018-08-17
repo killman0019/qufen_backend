@@ -24,6 +24,7 @@ import com.tzg.entitys.kff.commendation.CommendationMapper;
 import com.tzg.entitys.kff.post.Post;
 import com.tzg.entitys.kff.post.PostDiscussVo;
 import com.tzg.entitys.kff.post.PostMapper;
+import com.tzg.entitys.kff.post.PostResponse;
 import com.tzg.entitys.kff.tokenrecords.Tokenrecords;
 import com.tzg.entitys.kff.tokenrecords.TokenrecordsMapper;
 import com.tzg.rest.exception.rest.RestServiceException;
@@ -214,7 +215,26 @@ public class PostService {
 		}
 		return result;
 	}
-
+	
+	@Transactional(readOnly = true)
+	public PageResult<PostResponse> findPageForFollowList(PaginationQuery query) {
+		PageResult<PostResponse> result = null;
+		try {
+			Integer count = postMapper.findPageForFollowCount(query.getQueryData());
+			System.out.println("count------------------------------->"+count);
+//			if (null != count && count.intValue() > 0) {
+//				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
+//				query.addQueryData("startRecord", Integer.toString(startRecord));
+//				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
+//				List<PostResponse> list = postMapper.findPageForFollowList(query.getQueryData());
+//				result = new PageResult<PostResponse>(list, count, query);
+//			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
 	@Transactional(readOnly = true)
 	public PageResult<Post> findPageRecommendList(PaginationQuery query) {
 		PageResult<Post> result = null;

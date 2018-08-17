@@ -185,11 +185,14 @@ public class HomeController extends BaseController {
 			query.addQueryData("userId", userId + "");
 			query.addQueryData("status", "1");
 			// query.addQueryData("sortField", "collect_num");
-			// 帖子类型：1-评测；2-讨论；3-文章
-			// query.addQueryData("postType", "2");
+			// 关注类型：1-关注项目;2-关注帖子；3-关注用户
+			query.addQueryData("followTypec", "2");
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
-			PageResult<PostResponse> follows = kffProjectPostRmiService.findMyPageFollowList(userId, query);
+//			PageResult<PostResponse> follows = kffProjectPostRmiService.findMyPageFollowList(userId, query);
+			PageResult<PostResponse> follows = kffProjectPostRmiService.findPageForFollowList(userId, query);
+			
+			
 			System.err.println("follows" + follows);
 			map.put("follows", follows);
 			bre.setData(map);

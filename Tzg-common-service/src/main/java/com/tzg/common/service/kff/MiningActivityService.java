@@ -74,17 +74,18 @@ public class MiningActivityService extends BaseService {
 		seMap.put("nowBeginDt", new Date());
 		seMap.put("status", MiningActivityStatus.STARTING.getValue());
 		miningActivityMapper.updateByMap(seMap);
-		//判断进行中的活动结束时间到了，将状态置为结束
-		seMap.clear();
-		seMap.put("state", MiningActivityStatus.STARTING.getValue());
-		seMap.put("nowEndDt", new Date());
-		seMap.put("status", MiningActivityStatus.END.getValue());
-		miningActivityMapper.updateByMap(seMap);
 		//更新挖矿活动数量为0的状态变为已挖完
 		seMap.clear();
 		seMap.put("state", MiningActivityStatus.STARTING.getValue());
 		seMap.put("status", MiningActivityStatus.DIGOUT.getValue());
 		seMap.put("tokenSurplusNum", 0);
+		miningActivityMapper.updateByMap(seMap);
+		//判断进行中的活动结束时间到了，将状态置为结束
+		seMap.clear();
+		seMap.put("statec1", MiningActivityStatus.STARTING.getValue());
+		seMap.put("statec2", MiningActivityStatus.DIGOUT.getValue());
+		seMap.put("nowEndDt", new Date());
+		seMap.put("status", MiningActivityStatus.END.getValue());
 		miningActivityMapper.updateByMap(seMap);
 	}
 

@@ -322,24 +322,26 @@ public class MiningActivityController extends BaseController {
 	        query.setPageIndex(curPage);
 	        query.setRowsPerPage(pageSize);
 			PageResult<MiningActivity> data = miningActivityRmiService.findMiningActivityPage(query);
-			if(data==null) {
-				PaginationQuery queryc = new PaginationQuery();
-				queryc.addQueryData("status3", 4);
-				queryc.setPageIndex(curPage);
-				queryc.setRowsPerPage(pageSize);
-				data = miningActivityRmiService.findMiningActivityPage(queryc);
-			}else {
-				List<MiningActivity> rows = data.getRows();
-				if(!rows.isEmpty()&&rows.size()<pageSize) {
+			if(state!=1) {
+				if(data==null) {
 					PaginationQuery queryc = new PaginationQuery();
 					queryc.addQueryData("status3", 4);
 					queryc.setPageIndex(curPage);
 					queryc.setRowsPerPage(pageSize);
-					PageResult<MiningActivity> datac = miningActivityRmiService.findMiningActivityPage(queryc);
-					if(null!=datac && datac.getRows().size()>0) {
-						List<MiningActivity> rowsc = datac.getRows();
-						for (MiningActivity miningActivity : rowsc) {
-							rows.add(miningActivity);
+					data = miningActivityRmiService.findMiningActivityPage(queryc);
+				}else {
+					List<MiningActivity> rows = data.getRows();
+					if(!rows.isEmpty()&&rows.size()<pageSize) {
+						PaginationQuery queryc = new PaginationQuery();
+						queryc.addQueryData("status3", 4);
+						queryc.setPageIndex(curPage);
+						queryc.setRowsPerPage(pageSize);
+						PageResult<MiningActivity> datac = miningActivityRmiService.findMiningActivityPage(queryc);
+						if(null!=datac && datac.getRows().size()>0) {
+							List<MiningActivity> rowsc = datac.getRows();
+							for (MiningActivity miningActivity : rowsc) {
+								rows.add(miningActivity);
+							}
 						}
 					}
 				}
