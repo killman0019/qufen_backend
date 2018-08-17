@@ -26,12 +26,14 @@ import com.tzg.entitys.kff.post.PostResponse;
 import com.tzg.entitys.kff.project.KFFProject;
 import com.tzg.entitys.kff.project.ProjectResponse;
 import com.tzg.entitys.kff.project.SubmitKFFProjectRequest;
+import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
 import com.tzg.rmi.service.KFFProjectPostRmiService;
 import com.tzg.rmi.service.KFFProjectRmiService;
 import com.tzg.rmi.service.KFFRmiService;
+import com.tzg.rmi.service.KFFUserRmiService;
 
 @Controller(value = "KFFProjectController")
 @RequestMapping("/kff/project")
@@ -44,6 +46,9 @@ public class ProjectController extends BaseController {
 	private KFFProjectRmiService kFFProjectRmiService;
 	@Autowired
 	private KFFProjectPostRmiService kffProjectPostRmiService;
+	@Autowired
+	private KFFUserRmiService kffUserService;
+	
 	
 	/** 
 	* @Title: getProjectByTabId 
@@ -172,24 +177,30 @@ public class ProjectController extends BaseController {
 	@RequestMapping(value = "/evaluationList", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public BaseResponseEntity evaluationList(HttpServletRequest request,Integer projectId,Integer pageIndex,
-			Integer pageSize,String sortField) {
+			Integer pageSize,String sortField,String token) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 
 		try {
-			if(projectId==null&&pageIndex==null&&pageSize==null&&StringUtils.isBlank(sortField)) {
+			if(projectId==null&&pageIndex==null&&pageSize==null&&StringUtils.isBlank(sortField)&&
+					StringUtils.isBlank(token)) {
 				JSONObject requestContent = HtmlUtils.getRequestContent(request);
 				sortField = (String) requestContent.get("sortField");
 				projectId = (Integer) requestContent.get("projectId");
 				pageIndex = (Integer) requestContent.get("pageIndex");
 				pageSize = (Integer) requestContent.get("pageSize");
+				token = (String) requestContent.get("token");
 			}
 			if(projectId==null||pageIndex==null||pageSize==null) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
 			}
+			KFFUser loginUser = null;
+			if(StringUtils.isNotBlank(token)) {
+				Integer userId = getUserIdByToken(token);
+				loginUser = kffUserService.findById(userId);
+			}
 			PaginationQuery query = new PaginationQuery();
 			query.addQueryData("projectId", projectId + "");
-
 			query.addQueryData("status", "1");
 			// 帖子类型：1-评测；2-讨论；3-文章
 			query.addQueryData("postType", "1");
@@ -202,7 +213,8 @@ public class ProjectController extends BaseController {
 				query.addQueryData("sql_keyword_orderBy", "post_id");
 				query.addQueryData("sql_keyword_sort", "desc");
 			}
-			PageResult<EvaluationDetailResponse> evaluations = kffRmiService.findPageEvaluationList(query);
+			Integer type = 2;// 取关注人
+			PageResult<EvaluationDetailResponse> evaluations = kffRmiService.findPageEvaluationList(query,type,loginUser);
 			map.put("evaluations", evaluations);
 			bre.setData(map);
 		} catch (RestServiceException e) {

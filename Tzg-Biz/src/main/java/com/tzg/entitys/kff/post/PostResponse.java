@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.tzg.common.utils.DateUtil;
 
-public class PostResponse implements Serializable {
+public class PostResponse implements Serializable, Comparable {
 
 	/**
 	 * 
@@ -546,5 +546,10 @@ public class PostResponse implements Serializable {
 	public void setPostTotalIncome(Double postTotalIncome) {
 		this.postTotalIncome = postTotalIncome;
 	}
+	public int compareTo(Object obj){
+		PostResponse stu = (PostResponse)obj;
+        int num = new Integer(this.postId).compareTo(new Integer(stu.postId));
+        return num;
+    }
 
 }

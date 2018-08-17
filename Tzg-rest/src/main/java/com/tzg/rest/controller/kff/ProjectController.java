@@ -29,6 +29,7 @@ import com.tzg.entitys.kff.project.ProjectResponse;
 import com.tzg.entitys.kff.project.SubmitKFFProjectRequest;
 import com.tzg.entitys.kff.projectManage.ProjectManageTabResponse;
 import com.tzg.entitys.kff.transactionpair.TransactionPairResponse;
+import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.rest.controller.BaseController;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
@@ -36,6 +37,7 @@ import com.tzg.rest.vo.BaseResponseEntity;
 import com.tzg.rmi.service.KFFProjectPostRmiService;
 import com.tzg.rmi.service.KFFProjectRmiService;
 import com.tzg.rmi.service.KFFRmiService;
+import com.tzg.rmi.service.KFFUserRmiService;
 
 @Controller(value = "KFFProjectController")
 @RequestMapping("/kff/project")
@@ -46,9 +48,11 @@ public class ProjectController extends BaseController {
 	private KFFRmiService kffRmiService;
 	@Autowired
 	private KFFProjectPostRmiService kffProjectPostRmiService;
-
 	@Autowired
 	private KFFProjectRmiService kFFProjectRmiService;
+	@Autowired
+	private KFFUserRmiService kffUserService;
+	
 
 	/**
 	 * 
@@ -234,8 +238,7 @@ public class ProjectController extends BaseController {
 
 		try {
 			BaseRequest baseRequest = getParamMapFromRequestPolicy(request, BaseRequest.class);
-			// String token = baseRequest.getToken();
-			// Integer loginUserId = getUserIdByToken(token);
+			 String token = baseRequest.getToken();
 			Integer projectId = baseRequest.getProjectId();
 			if (projectId == null) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARG_PROJID);
@@ -255,7 +258,13 @@ public class ProjectController extends BaseController {
 				query.addQueryData("sql_keyword_orderBy", "post_id");
 				query.addQueryData("sql_keyword_sort", "desc");
 			}
-			PageResult<EvaluationDetailResponse> evaluations = kffRmiService.findPageEvaluationList(query);
+			Integer type = 2;// 取关注人
+			KFFUser loginUser = null;
+			if(StringUtils.isNotBlank(token)) {
+				Integer userId = getUserIdByToken(token);
+				loginUser = kffUserService.findById(userId);
+			}
+			PageResult<EvaluationDetailResponse> evaluations = kffRmiService.findPageEvaluationList(query,type,loginUser);
 			map.put("evaluations", evaluations);
 			bre.setData(map);
 		} catch (RestServiceException e) {

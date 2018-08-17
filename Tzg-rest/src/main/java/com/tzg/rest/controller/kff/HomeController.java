@@ -47,6 +47,7 @@ import com.tzg.rest.utils.DateUtil;
 import com.tzg.rest.vo.BaseResponseEntity;
 import com.tzg.rmi.service.KFFProjectPostRmiService;
 import com.tzg.rmi.service.KFFRmiService;
+import com.tzg.rmi.service.KFFUserRmiService;
 import com.tzg.rmi.service.SystemParamRmiService;
 
 @Controller(value = "KFFHomeController")
@@ -60,6 +61,8 @@ public class HomeController extends BaseController {
 	private KFFProjectPostRmiService kffProjectPostRmiService;
 	@Autowired
 	private SystemParamRmiService systemParamRmiService;
+	@Autowired
+	private KFFUserRmiService kffUserService;
 
 	/**
 	 * 
@@ -96,7 +99,7 @@ public class HomeController extends BaseController {
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
 			Integer nowCount = baseRequest.getPageSize();
-			Integer type = 1;// 取关注项目
+			Integer type = 2;// 取关注人
 			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query, type,nowCount);
 			map.put("recommends", recommends);
 			bre.setData(map);
@@ -159,28 +162,28 @@ public class HomeController extends BaseController {
 		return bre;
 	}
 	
-	/**
-	 * 
-	 * @Title: followList
-	 * @Description: 关注列表
-	 * @param @param request
-	 * @param @param response
-	 * @param @return
-	 * @return BaseResponseEntity
-	 * @see
-	 * @throws
-	 */
-	@RequestMapping(value = "/followList", method = { RequestMethod.POST, RequestMethod.GET })
+	/** 
+	* @Title: followList 
+	* @Description: TODO <主页-关注列表>
+	* @author linj <方法创建作者>
+	* @create 下午5:51:25
+	* @param @param request
+	* @param @return <参数说明>
+	* @return BaseResponseEntity 
+	* @throws 
+	* @update 下午5:51:25
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	*/
 	@ResponseBody
+	@RequestMapping(value = "/followList", method = { RequestMethod.POST, RequestMethod.GET })
 	public BaseResponseEntity followList(HttpServletRequest request) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
-
 		try {
 			BaseRequest baseRequest = getParamMapFromRequestPolicy(request, BaseRequest.class);
 			String token = baseRequest.getToken();
 			Integer userId = null;
-			userId = getUserIdByToken(token);
 			PaginationQuery query = new PaginationQuery();
 			query.addQueryData("userId", userId + "");
 			query.addQueryData("status", "1");
@@ -189,10 +192,15 @@ public class HomeController extends BaseController {
 			query.addQueryData("followTypec", "2");
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
+
+			Integer type = 2;// 取关注人
+			KFFUser loginUser = null;
+			if(StringUtils.isNotBlank(token)) {
+				userId = getUserIdByToken(token);
+				loginUser = kffUserService.findById(userId);
+			}
+			PageResult<PostResponse> follows = kffProjectPostRmiService.findPageForFollowList(userId, query,type,loginUser);
 //			PageResult<PostResponse> follows = kffProjectPostRmiService.findMyPageFollowList(userId, query);
-			PageResult<PostResponse> follows = kffProjectPostRmiService.findPageForFollowList(userId, query);
-			
-			
 			System.err.println("follows" + follows);
 			map.put("follows", follows);
 			bre.setData(map);
@@ -278,7 +286,8 @@ public class HomeController extends BaseController {
 			if (StringUtils.isNotBlank(token)) {
 				userId = getUserIdByToken(token);
 			}
-			ArticleDetailResponse article = kffRmiService.findArticleDetail(userId, postId);
+			Integer type = 2;// 取关注人
+			ArticleDetailResponse article = kffRmiService.findArticleDetail(userId,type, postId);
 			map.put("articleDetail", article);
 
 			bre.setData(map);
@@ -435,7 +444,8 @@ public class HomeController extends BaseController {
 			if (StringUtils.isNotBlank(token)) {
 				userId = getUserIdByToken(token);
 			}
-			DiscussDetailResponse discuss = kffRmiService.findDiscussDetail(userId, postId);
+			Integer type = 2;// 取关注人
+			DiscussDetailResponse discuss = kffRmiService.findDiscussDetail(userId, type,postId);
 			map.put("discussDetail", discuss);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -526,9 +536,9 @@ public class HomeController extends BaseController {
 			if (StringUtils.isNotBlank(token)) {
 				userId = getUserIdByToken(token);
 			}
-			EvaluationDetailResponse evaluationDetail = kffRmiService.findEvaluationDetail(userId, postId);
+			Integer type = 2;// 取关注人
+			EvaluationDetailResponse evaluationDetail = kffRmiService.findEvaluationDetail(userId, type,postId);
 			map.put("evaluationDetail", evaluationDetail);
-
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("HomeController evaluationDetail:{}", e);

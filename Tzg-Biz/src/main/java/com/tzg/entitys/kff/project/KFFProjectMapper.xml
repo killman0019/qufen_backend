@@ -616,11 +616,12 @@
 			tbproject  as tbp
 		LEFT JOIN tbpost tbt ON tbp.project_id = tbt.project_id
 		LEFT JOIN tbuser tbu ON tbu.user_id = tbt.create_user_id
-		
-<!-- 		commitTp -->
-		
+		<if test="commitTp!=null">
+   		  LEFT JOIN tbcomments as tbc ON tbt.create_user_id = tbc.comment_user_id
+   		</if>
 		<include refid="condition"/>
-	    ORDER BY tbt.createTime desc
+	    GROUP BY tbt.post_id
+	    ORDER BY tbt.createTime DESC
 	</select>
 	
 	<sql id="condition">
@@ -639,6 +640,9 @@
     		</if>
     		<if test="createUserId!=null">
     		  and tbt.create_user_id = #{createUserId}
+    		</if>
+    		<if test="commentUserId!=null">
+    		  and tbc.comment_user_id = #{commentUserId}
     		</if>
     	</where>
     </sql>

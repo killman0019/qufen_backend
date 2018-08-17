@@ -9,6 +9,7 @@ import com.tzg.entitys.kff.comments.Comments;
 import com.tzg.entitys.kff.evaluation.EvaluationDetailResponse;
 import com.tzg.entitys.kff.post.PostResponse;
 import com.tzg.entitys.kff.project.KFFProject;
+import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.rest.exception.rest.RestServiceException;
 
 /**
@@ -46,7 +47,7 @@ public interface KFFProjectPostRmiService {
 	 */
 	public PageResult<PostResponse> findMyPageFollowList(Integer userId, PaginationQuery query) throws RestServiceException;
 	
-	public PageResult<PostResponse> findPageForFollowList(Integer userId, PaginationQuery query);
+	public PageResult<PostResponse> findPageForFollowList(Integer userId, PaginationQuery query,Integer type,KFFUser loginUser);
 
 	/**
 	 * 项目维度 专业评测 分项统计

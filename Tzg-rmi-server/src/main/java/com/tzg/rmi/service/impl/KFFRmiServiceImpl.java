@@ -1032,7 +1032,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public PageResult<EvaluationDetailResponse> findPageEvaluationList(PaginationQuery query) throws RestServiceException {
+	public PageResult<EvaluationDetailResponse> findPageEvaluationList(PaginationQuery query,Integer type,KFFUser loginUser) throws RestServiceException {
 		PageResult<EvaluationDetailResponse> result = new PageResult<EvaluationDetailResponse>();
 		List<EvaluationDetailResponse> respones = new ArrayList<>();
 		PageResult<Post> posts = kffPostService.findPage(query);
@@ -1076,6 +1076,28 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					KFFUser createUser = kffUserService.findByUserId(post.getCreateUserId());
 					if (null != createUser) {
 						response.setUserType(createUser.getUserType());
+					}
+				}
+				// 设置人的关注状态
+				if (loginUser == null) {
+					response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+				} else {
+					if (type == 2) {
+						Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER,
+								post.getCreateUserId());
+						if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+						} else {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+						}
+					} else if (type == 1) {
+						Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT,
+								post.getProjectId());
+						if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+						} else {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+						}
 					}
 				}
 				respones.add(response);
@@ -3802,7 +3824,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public ArticleDetailResponse findArticleDetail(Integer userId, Integer postId) throws RestServiceException {
+	public ArticleDetailResponse findArticleDetail(Integer userId, Integer type,Integer postId) throws RestServiceException {
 		ArticleDetailResponse response = new ArticleDetailResponse();
 		// 登录和非登录用户区别只有关注状态按钮显示
 		KFFUser loginUser = null;
@@ -3830,18 +3852,39 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 
 		// 关注状态
+//		if (loginUser == null) {
+//			response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+//		} else {
+//			// 返回对帖子用户的关注状态
+//			Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER, post.getCreateUserId());
+//			if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+//				response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+//			} else {
+//				response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+//			}
+//		}
+		// 设置人的关注状态
 		if (loginUser == null) {
 			response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
 		} else {
-			// 返回对帖子用户的关注状态
-			Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER, post.getCreateUserId());
-			if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
-				response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
-			} else {
-				response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+			if (type == 2) {
+				Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER,
+						post.getCreateUserId());
+				if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+					response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+				} else {
+					response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+				}
+			} else if (type == 1) {
+				Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT,
+						post.getProjectId());
+				if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+					response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+				} else {
+					response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+				}
 			}
 		}
-
 		// 点赞状态
 		if (loginUser == null) {
 			response.setPraiseStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
@@ -4147,7 +4190,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public DiscussDetailResponse findDiscussDetail(Integer userId, Integer postId) throws RestServiceException {
+	public DiscussDetailResponse findDiscussDetail(Integer userId, Integer type, Integer postId) throws RestServiceException {
 		DiscussDetailResponse response = new DiscussDetailResponse();
 		// 登录和非登录用户区别只有关注状态按钮显示
 		KFFUser loginUser = null;
@@ -4169,18 +4212,39 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			response.setDiscussId(discuss.getDiscussId());
 			response.setTagInfos(discuss.getTagInfos());
 		}
+//		if (loginUser == null) {
+//			response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+//		} else {
+//			// 返回对帖子用户的关注状态
+//			Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER, post.getCreateUserId());
+//			if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+//				response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+//			} else {
+//				response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+//			}
+//		}
+		// 设置人的关注状态
 		if (loginUser == null) {
 			response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
 		} else {
-			// 返回对帖子用户的关注状态
-			Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER, post.getCreateUserId());
-			if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
-				response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
-			} else {
-				response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+			if (type == 2) {
+				Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER,
+						post.getCreateUserId());
+				if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+					response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+				} else {
+					response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+				}
+			} else if (type == 1) {
+				Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT,
+						post.getProjectId());
+				if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+					response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+				} else {
+					response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+				}
 			}
 		}
-
 		// 点赞状态
 		if (loginUser == null) {
 			response.setPraiseStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
@@ -4348,7 +4412,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public EvaluationDetailResponse findEvaluationDetail(Integer userId, Integer postId) throws RestServiceException {
+	public EvaluationDetailResponse findEvaluationDetail(Integer userId, Integer type,Integer postId) throws RestServiceException {
 		EvaluationDetailResponse response = new EvaluationDetailResponse();
 		// 登录和非登录用户区别只有关注状态按钮显示
 		KFFUser loginUser = null;
@@ -4374,18 +4438,39 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		response.setEvaluationId(eva.getEvaluationId());
 		response.setTotalScore(eva.getTotalScore());
 		response.setEvaluationTags(eva.getEvaluationTags());
+//		if (loginUser == null) {
+//			response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+//		} else {
+//			// 返回对帖子用户的关注状态
+//			Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER, post.getCreateUserId());
+//			if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+//				response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+//			} else {
+//				response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+//			}
+//		}
+		// 设置人的关注状态
 		if (loginUser == null) {
 			response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
 		} else {
-			// 返回对帖子用户的关注状态
-			Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER, post.getCreateUserId());
-			if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
-				response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
-			} else {
-				response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+			if (type == 2) {
+				Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER,
+						post.getCreateUserId());
+				if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+					response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+				} else {
+					response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+				}
+			} else if (type == 1) {
+				Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT,
+						post.getProjectId());
+				if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+					response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+				} else {
+					response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+				}
 			}
 		}
-
 		// 点赞状态
 		if (loginUser == null) {
 			response.setPraiseStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);

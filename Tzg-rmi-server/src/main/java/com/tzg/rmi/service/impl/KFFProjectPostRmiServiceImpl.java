@@ -4,8 +4,12 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -55,24 +59,21 @@ import com.tzg.common.service.kff.UserService;
 import com.tzg.common.service.kff.UserWalletService;
 import com.tzg.common.service.systemParam.SystemParamService;
 import com.tzg.common.utils.H5AgainDeltagsUtil;
-import com.tzg.common.utils.RandomUtil;
 import com.tzg.common.utils.sysGlobals;
 import com.tzg.common.zookeeper.ZKClient;
-import com.tzg.entitys.kff.article.ArticleRequest;
+import com.tzg.entitys.kff.app.NewsFlash;
 import com.tzg.entitys.kff.comments.Comments;
 import com.tzg.entitys.kff.devaluationModel.DevaluationModel;
 import com.tzg.entitys.kff.devaluationModelDetail.DevaluationModelDetail;
 import com.tzg.entitys.kff.discuss.Discuss;
 import com.tzg.entitys.kff.evaluation.Evaluation;
 import com.tzg.entitys.kff.evaluation.EvaluationDetailResponse;
-import com.tzg.entitys.kff.evaluation.EvaluationRequest;
 import com.tzg.entitys.kff.follow.Follow;
 import com.tzg.entitys.kff.post.Post;
 import com.tzg.entitys.kff.post.PostFile;
 import com.tzg.entitys.kff.post.PostResponse;
 import com.tzg.entitys.kff.praise.Praise;
 import com.tzg.entitys.kff.project.KFFProject;
-import com.tzg.entitys.kff.projectevastat.Projectevastat;
 import com.tzg.entitys.kff.projectevastat.ProjectevastatByGrade;
 import com.tzg.entitys.kff.qfindex.QfIndex;
 import com.tzg.entitys.kff.user.KFFUser;
@@ -308,20 +309,45 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 		return comments;
 
 	}
+	
+	public static void main(String[] args) {
+		Set<NewsFlash> set = new HashSet<NewsFlash>();
+		
+		NewsFlash nw1 = new NewsFlash();
+		nw1.setId(1);
+		set.add(nw1);
+		NewsFlash nw2 = new NewsFlash();
+		nw2.setId(2);
+		set.add(nw2);
+		NewsFlash nw3 = new NewsFlash();
+		nw3.setId(2);
+		set.add(nw3);
+		
+		
+		Iterator<NewsFlash> it = set.iterator();  
+		while (it.hasNext()) {  
+		NewsFlash str = it.next();  
+		  System.out.println(str.getId());  
+		}  
+		
+		
+	}
+	
+	
 	/**
 	 * 关注项目：
 		点赞量超过5的内容（评测、爆料、文章）
 		关注用户
 		关注用户发布的内容（评测、爆料、文章）
-		关注用户关注了项目；
 		关注用户评论了内容（评测、爆料、文章）；
 		
 		按照发布时间顺序排序，注意去重（不要在1页里展示）。
 	 */
 	
-	public PageResult<PostResponse> findPageForFollowList(Integer userId, PaginationQuery query) {
+	public PageResult<PostResponse> findPageForFollowList(Integer userId, PaginationQuery query,Integer type,
+			KFFUser loginUser) {
 		PageResult<PostResponse> result = new PageResult<>();
-		
+		TreeSet<PostResponse> ts = new TreeSet<PostResponse>();
 		PageResult<Follow> follows = kffFollowService.findPage(query);
 		if(null!=follows) {
 			List<Follow> followList = follows.getRows();
@@ -340,21 +366,75 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 						seMap.put("status", 1);//状态：0-删除；1-有效
 						seMap.put("praiseNum", count);//点赞人数必须大于数据库配置的值
 						List<PostResponse> projectAndPosts = kffProjectService.findLinkedTabsByAttr(seMap);
-						
-						
+						System.out.println("projectAndPosts1.size------------------------>"+projectAndPosts.size());
+						if(!projectAndPosts.isEmpty()) {
+							for (PostResponse postResponse : projectAndPosts) {
+								ts.add(postResponse);
+							}
+						}
 					}
 					//查询关注用户
 					if(follow.getFollowType()==FollowType.USERFOLLOW.getValue()) {
-						
+						//关注用户发布的内容（评测、爆料、文章）
+						seMap.clear();
+						seMap.put("createUserId", follow.getFollowedId());
+						seMap.put("status", 1);//状态：0-删除；1-有效
+						List<PostResponse> projectAndPosts = kffProjectService.findLinkedTabsByAttr(seMap);
+						System.out.println("projectAndPosts2.size------------------------>"+projectAndPosts.size());
+						if(!projectAndPosts.isEmpty()) {
+							for (PostResponse postResponse : projectAndPosts) {
+								ts.add(postResponse);
+							}
+						}
+						//关注用户评论了内容（评测、爆料、文章）；
+						seMap.clear();
+						seMap.put("commentUserId", follow.getFollowedId());//状态：0-删除；1-有效
+						seMap.put("status", 1);//状态：0-删除；1-有效
+						seMap.put("commitTp", 1);//是否要连接tbcomments
+						List<PostResponse> commitAndPosts = kffProjectService.findLinkedTabsByAttr(seMap);
+						System.out.println("commitAndPosts.size------------------------>"+commitAndPosts.size());
+						if(!commitAndPosts.isEmpty()) {
+							for (PostResponse postResponse : commitAndPosts) {
+								ts.add(postResponse);
+							}
+						}
 					}
 				}
 			}
 		}
-		
-		
-//		PageResult<PostResponse> posts = kffPostService.findPageForFollowList(query)
-		
-		return null;
+		if(!ts.isEmpty()) {
+			List<PostResponse> postResp = new ArrayList<PostResponse>();
+			Iterator<PostResponse> iterator = ts.iterator();
+	        while (iterator.hasNext()) {
+	        	PostResponse postRe = iterator.next();
+	        	// 设置人的关注状态
+	        	if (loginUser == null) {
+	        		postRe.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+	        	} else {
+	        		if (type == 2) {
+	        			Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER,
+	        					postRe.getCreateUserId());
+	        			if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+	        				postRe.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+	        			} else {
+	        				postRe.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+	        			}
+	        		} else if (type == 1) {
+	        			Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT,
+	        					postRe.getProjectId());
+	        			if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+	        				postRe.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+	        			} else {
+	        				postRe.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+	        			}
+	        		}
+	        	}
+	        	postResp.add(postRe);
+			}
+			Integer count = kffFollowService.findPageCount(query.getQueryData());
+			result = new PageResult<PostResponse>(postResp, count, query);
+		}
+		return result;
 	}
 	
 
