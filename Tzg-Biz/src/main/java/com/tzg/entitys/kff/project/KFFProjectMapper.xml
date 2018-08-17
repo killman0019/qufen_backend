@@ -616,10 +616,12 @@
 			tbproject  as tbp
 		LEFT JOIN tbpost tbt ON tbp.project_id = tbt.project_id
 		LEFT JOIN tbuser tbu ON tbu.user_id = tbt.create_user_id
+		
+<!-- 		commitTp -->
+		
 		<include refid="condition"/>
 	    ORDER BY tbt.createTime desc
 	</select>
-	
 	
 	<sql id="condition">
     	<where>
@@ -627,13 +629,16 @@
     		  and tbp.project_id = #{projectId}
     		</if>
     		<if test="state!=null">
-    		  and tbt.state = #{state}
+    		  and tbp.state = #{state}
     		</if>
     		<if test="status!=null">
     		  and tbt.status != #{status}
     		</if>
     		<if test="praiseNum!=null">
     		  and tbt.praise_num &gt; #{praiseNum}
+    		</if>
+    		<if test="createUserId!=null">
+    		  and tbt.create_user_id = #{createUserId}
     		</if>
     	</where>
     </sql>
