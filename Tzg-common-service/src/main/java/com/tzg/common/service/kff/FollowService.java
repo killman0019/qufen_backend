@@ -16,6 +16,7 @@ import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.entitys.kff.follow.Follow;
 import com.tzg.entitys.kff.follow.FollowMapper;
+import com.tzg.entitys.kff.follow.FollowResponse;
 import com.tzg.rest.exception.rest.RestServiceException;
 
 @Service(value = "KFFFollowService")
@@ -142,6 +143,24 @@ public class FollowService {
 
 	public List<Follow> findByMap(Map<String, String> map) {
 		return followMapper.findByMap(map);
+	}
+
+	public PageResult<FollowResponse> findFansPage(PaginationQuery query) {
+		// TODO 分页获得我的fans
+		PageResult<FollowResponse> result = null;
+		try {
+			Integer count = followMapper.findPageCountFans(query.getQueryData());
+			if (null != count && count.intValue() > 0) {
+				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
+				query.addQueryData("startRecord", Integer.toString(startRecord));
+				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
+				List<FollowResponse> list = followMapper.findPageFans(query.getQueryData());
+				result = new PageResult<FollowResponse>(list, count, query);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 
 }

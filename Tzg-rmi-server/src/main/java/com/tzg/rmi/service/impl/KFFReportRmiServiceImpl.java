@@ -148,6 +148,8 @@ public class KFFReportRmiServiceImpl implements KFFReportRmiService {
 				reportedContent.setStatus(1);
 				reportedContent.setUpdateTime(now);
 				reportedContent.setVaild(1);// 1投诉待审核
+				reportedContent.setReportedContentCreateName(post.getCreateUserName());
+				reportedContent.setReportedContentStatus(post.getStatus());
 				reportedContentService.save(reportedContent);
 				reportInfor.setReportedContentKeyId(reportedContent.getReportedContentKeyId());
 			} else {

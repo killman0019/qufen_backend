@@ -143,6 +143,45 @@ public class FollowResponse implements Serializable {
 
 	private Integer followerNum;
 
+	private String userName;
+	private Integer userId;
+
+	private String userSignature;
+
+	private String userIcon;
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+
+	public String getUserSignature() {
+		return userSignature;
+	}
+
+	public void setUserSignature(String userSignature) {
+		this.userSignature = userSignature;
+	}
+
+	public String getUserIcon() {
+		return userIcon;
+	}
+
+	public void setUserIcon(String userIcon) {
+		this.userIcon = userIcon;
+	}
+
 	public Integer getFollowerNum() {
 		return followerNum;
 	}

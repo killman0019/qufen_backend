@@ -22,6 +22,7 @@ public class ReportedContent implements Serializable {
 	private Integer vaild;
 
 	private Integer reportedContentCreateId;
+	private String reportedContentCreateName;
 
 	private String reportedCreaterMobile;
 
@@ -42,6 +43,23 @@ public class ReportedContent implements Serializable {
 	private Date updateTime;
 
 	private String updateTimeStr;
+	private Integer reportedContentStatus;
+
+	public String getReportedContentCreateName() {
+		return reportedContentCreateName;
+	}
+
+	public void setReportedContentCreateName(String reportedContentCreateName) {
+		this.reportedContentCreateName = reportedContentCreateName;
+	}
+
+	public Integer getReportedContentStatus() {
+		return reportedContentStatus;
+	}
+
+	public void setReportedContentStatus(Integer reportedContentStatus) {
+		this.reportedContentStatus = reportedContentStatus;
+	}
 
 	public String getReportedContentCreateTimeStr() {
 		return reportedContentCreateTimeStr;

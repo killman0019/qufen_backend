@@ -7070,4 +7070,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		Post post = kffPostService.findById(postId);
 		return post;
 	}
+
+	@Override
+	public PageResult<FollowResponse> findFansPage(PaginationQuery query) throws RestServiceException {
+		// TODO 获得我的fans
+		PageResult<FollowResponse> result = kffFollowService.findFansPage(query);
+		return result;
+	}
 }

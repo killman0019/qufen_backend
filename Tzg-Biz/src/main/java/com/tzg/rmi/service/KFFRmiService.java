@@ -946,4 +946,16 @@ public interface KFFRmiService {
 	 *
 	 */
 	public Post findPostByPostId(Integer postId) throws RestServiceException;
+
+	/**
+	 * 
+	 * TODO 获得我的粉丝
+	 * @param query
+	 * @return
+	 * @throws RestServiceException
+	 * @author zhangdd
+	 * @data 2018年8月17日
+	 *
+	 */
+	public PageResult<FollowResponse> findFansPage(PaginationQuery query) throws RestServiceException;
 }

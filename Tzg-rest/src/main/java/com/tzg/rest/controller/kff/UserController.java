@@ -1527,6 +1527,8 @@ public class UserController extends BaseController {
 		try {
 			JSONObject params = getParamMapFromRequestPolicy(request);
 			String token = (String) params.get("token");
+			int userId = params.getInteger("userId");
+
 			Integer pageIndex = (Integer) params.get("pageIndex") == null ? 1 : (Integer) params.get("pageIndex");
 			Integer pageSize = (Integer) params.get("pageSize") == null ? 10 : (Integer) params.get("pageSize");
 			// 关注类型：关注类型：1-关注项目;2-关注帖子；3-关注用户'
@@ -1535,34 +1537,34 @@ public class UserController extends BaseController {
 			if (StringUtils.isBlank(token)) {
 				throw new RestServiceException(RestErrorCode.USER_NOT_LOGIN);
 			}
-			Integer userId = null;
-			try {
-				userId = AccountTokenUtil.decodeAccountToken(token);
-			} catch (Exception e) {
-				logger.error("myFollowList decodeAccountToken error:{}", e);
-				return this.resResult(RestErrorCode.PARSE_TOKEN_ERROR, e.getMessage());
-			}
-			if (userId == null) {
-				throw new RestServiceException(RestErrorCode.USER_NOT_EXIST);
-			}
+			Integer loginUserId = null;
+			if (userId == 0) {
+				loginUserId = AccountTokenUtil.decodeAccountToken(token);
 
-			KFFUser loginaccount = kffRmiService.findUserById(userId);
-
-			if (loginaccount == null) {
-				return this.resResult(RestErrorCode.USER_NOT_EXIST);
+				if (loginUserId == null) {
+					throw new RestServiceException(RestErrorCode.USER_NOT_EXIST);
+				}
+				KFFUser loginaccount = kffRmiService.findUserById(loginUserId);
+				if (loginaccount == null) {
+					return this.resResult(RestErrorCode.USER_NOT_EXIST);
+				}
+				userId = loginUserId;
 			}
 
 			PaginationQuery query = new PaginationQuery();
+
 			query.addQueryData("followedUserId", userId + "");
+
 			query.addQueryData("followType", followType + "");
 			query.addQueryData("status", "1");
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
-			PageResult<FollowResponse> result = kffRmiService.findPageMyFollow(query);
-
+			// PageResult<FollowResponse> result = kffRmiService.findPageMyFollow(query);
+			PageResult<FollowResponse> result = kffRmiService.findFansPage(query);
 			map.put("myFans", result);
 
 			bre.setData(map);
+
 			SyseUtil.systemErrOutJson(bre);
 		} catch (RestServiceException e) {
 			logger.warn("myFollowList warn:{}", e);
@@ -1573,5 +1575,4 @@ public class UserController extends BaseController {
 		}
 		return bre;
 	}
-
 }
