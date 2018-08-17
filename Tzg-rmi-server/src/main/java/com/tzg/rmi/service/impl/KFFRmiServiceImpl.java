@@ -1058,7 +1058,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	public PageResult<EvaluationDetailResponse> findPageEvaluationList(PaginationQuery query) throws RestServiceException {
 		PageResult<EvaluationDetailResponse> result = new PageResult<EvaluationDetailResponse>();
 		List<EvaluationDetailResponse> respones = new ArrayList<>();
-		PageResult<Post> posts = kffPostService.findPage(query);
+		PageResult<Post> posts = kffPostService.findPageRemoveSingleEva(query);
 		if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
 			result.setCurPageNum(posts.getCurPageNum());
 			result.setPageSize(posts.getPageSize());
@@ -1086,9 +1086,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				} else {
 					// 过滤掉简单评测
 					// https://www.tapd.cn/21950911/bugtrace/bugs/view?bug_id=1121950911001000461
-					if (Objects.equal(1, eva.getModelType())) {
+					/*if (Objects.equal(1, eva.getModelType())) {
 						continue;
-					}
+					}*/
 					response.setProfessionalEvaDetail(eva.getProfessionalEvaDetail());
 					response.setEvaluationTags(eva.getEvaluationTags());
 					response.setEvaluationId(eva.getEvaluationId());
@@ -4095,7 +4095,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		BigDecimal commendationNum = kffCommendationService.findCommendationNum(totalMap);
 		response.setCommendationNum(commendationNum);
 
-		response.setCommentsNum(post.getPostId());
+		response.setCommentsNum(post.getCommentsNum());
 		return response;
 	}
 

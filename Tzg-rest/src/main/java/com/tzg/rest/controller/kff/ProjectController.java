@@ -22,6 +22,7 @@ import com.tzg.common.base.BaseRequest;
 import com.tzg.common.constants.KFFConstants;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
+import com.tzg.common.utils.SyseUtil;
 import com.tzg.entitys.kff.comments.Comments;
 import com.tzg.entitys.kff.dprojectType.DprojectType;
 import com.tzg.entitys.kff.evaluation.EvaluationDetailResponse;
@@ -79,7 +80,7 @@ public class ProjectController extends BaseController {
 			}
 			ProjectResponse project = kffRmiService.findProjectById(userId, projectId);
 			map.put("project", project);
-			System.err.println(JSON.toJSONString(project));
+			// System.err.println(JSON.toJSONString(project));
 			// 20180613 去掉，改为 精选评测，精选打假（讨论）
 			// https://www.tapd.cn/21950911/bugtrace/bugs/view?bug_id=1121950911001000461
 			// 2条7天内回复数最高的讨论帖子
@@ -207,6 +208,7 @@ public class ProjectController extends BaseController {
 			PageResult<EvaluationDetailResponse> evaluations = kffProjectPostRmiService.findPageSimpleEvaluationList(query, loginUserId);
 			map.put("evaluations", evaluations);
 			bre.setData(map);
+			SyseUtil.systemErrOutJson(bre);
 		} catch (RestServiceException e) {
 			logger.error("ProjectController evaluationList:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
@@ -250,6 +252,7 @@ public class ProjectController extends BaseController {
 			query.addQueryData("postType", "1");
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
+
 			if (StringUtils.isNotBlank(baseRequest.getSortField())) {
 				query.addQueryData("sql_keyword_orderByc", baseRequest.getSortField());
 				query.addQueryData("sql_keyword_sortc", "desc");
@@ -260,6 +263,7 @@ public class ProjectController extends BaseController {
 			PageResult<EvaluationDetailResponse> evaluations = kffRmiService.findPageEvaluationList(query);
 			map.put("evaluations", evaluations);
 			bre.setData(map);
+			SyseUtil.systemErrOutJson(bre);
 		} catch (RestServiceException e) {
 			logger.error("ProjectController evaluationList:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());

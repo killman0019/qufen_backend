@@ -682,6 +682,75 @@
 		<include refid="queryWhere" />
 	</select>
 
+	<sql id="queryRemoveSingleEva">
+
+
+		tp.post_id post_id,
+		tp.project_id project_id,
+		tp.project_icon project_icon,
+		tp.project_code project_code,
+		tp.project_english_name project_english_name,
+		tp.project_chinese_name
+		project_chinese_name,
+		tp.post_title post_title,
+		tp.post_type post_type,
+		tp.post_short_desc post_short_desc,
+		tp.post_small_images post_small_images,
+		tp.comments_num comments_num,
+		tp.praise_num praise_num,
+		tp.pageview_num pageview_num,
+		tp.donate_num donate_num,
+		tp.collect_num collect_num,
+		tp.create_user_id create_user_id,
+		tp.create_user_icon create_user_icon,
+		tp.create_user_signature create_user_signature,
+		tp.create_user_name create_user_name,
+		tp.createTime createTime,
+		tp.updateTime updateTime,
+		tp.uuid uuid,
+		tp.`status` status,
+		tp.stick_top stick_top,
+		tp.stick_updateTime stick_updateTime,
+		tp.praise_income
+		praise_income,
+		tp.donate_income donate_income,
+		tp.post_total_income post_total_income
+
+
+	</sql>
+
+
+	<select id="findPageCountRemoveSingleEva" resultType="java.lang.Integer" parameterType="java.util.Map">
+
+		select
+		count(1)
+		from
+		tbpost tp
+		INNER JOIN tbevaluation te ON tp.post_id = te.post_id
+		WHERE
+		te.model_type != 1
+		AND
+		tp.project_id = #{projectId}
+
+	</select>
+
+	<select id="findPageRemoveSingleEva" parameterType="java.util.Map" resultMap="BaseResultMap">
+
+		select
+		<include refid="queryRemoveSingleEva" />
+		from
+		tbpost tp
+		INNER JOIN tbevaluation te ON tp.post_id = te.post_id
+		WHERE
+		te.model_type != 1
+		AND tp.project_id = #{projectId}
+
+		<include refid="orderBy" />
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+
+	</select>
+
+
 </mapper>
 
 

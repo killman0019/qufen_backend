@@ -25,6 +25,7 @@ import com.qiniu.util.StringMap;
 import com.qiniu.util.UrlSafeBase64;
 import com.tzg.common.base64MultipartFile.BASE64MultipartFile;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -225,6 +226,7 @@ public class QiniuUtil {
 
 			String fileNamefile = multfile.getOriginalFilename();
 			// 获取文件后缀
+			// SyseUtil.systemErrOutJson(fileNamefile);
 			String prefix = fileNamefile.substring(fileNamefile.lastIndexOf("."));
 
 			final File excelFile = File.createTempFile("12234", "." + prefix);
@@ -284,7 +286,7 @@ public class QiniuUtil {
 					b[i] += 256;
 				}
 			}
-
+			SyseUtil.systemErrOutJson(baseStrs[0]);
 			return new BASE64MultipartFile(b, baseStrs[0]);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -304,6 +306,44 @@ public class QiniuUtil {
 			}
 		}
 
+	}
+
+	public static String base64ToFile(String base64, String fileName) {
+		File file = null;
+		// 创建文件目录
+		// String filePath = "D:\\image";
+		File dir = new File(fileName);
+		if (!dir.exists() && !dir.isDirectory()) {
+			dir.mkdirs();
+		}
+		BufferedOutputStream bos = null;
+		java.io.FileOutputStream fos = null;
+		try {
+			byte[] bytes = org.apache.commons.codec.binary.Base64.decodeBase64(base64);
+			file = new File(fileName);
+			fos = new java.io.FileOutputStream(file);
+			bos = new BufferedOutputStream(fos);
+			bos.write(bytes);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (bos != null) {
+				try {
+					bos.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			if (fos != null) {
+				try {
+					fos.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		return fileName;
 	}
 
 }

@@ -168,6 +168,28 @@ public class PostService {
 		}
 		return result;
 	}
+	
+	
+	
+	
+	@Transactional(readOnly = true)
+	public PageResult<Post> findPageRemoveSingleEva(PaginationQuery query) {
+		PageResult<Post> result = null;
+		try {
+			Integer count = postMapper.findPageCountRemoveSingleEva(query.getQueryData());
+			if (null != count && count.intValue() > 0) {
+				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
+				query.addQueryData("startRecord", Integer.toString(startRecord));
+				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
+				List<Post> list = postMapper.findPageRemoveSingleEva(query.getQueryData());
+				result = new PageResult<Post>(list, count, query);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
 
 	/**
 	 * 根据用户的id查询当前用户下的所有帖子

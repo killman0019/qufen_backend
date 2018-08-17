@@ -1529,7 +1529,7 @@ public class UserController extends BaseController {
 			String token = (String) params.get("token");
 			Integer pageIndex = (Integer) params.get("pageIndex") == null ? 1 : (Integer) params.get("pageIndex");
 			Integer pageSize = (Integer) params.get("pageSize") == null ? 10 : (Integer) params.get("pageSize");
-			// 关注类型：2-关注话题；3-关注用户
+			// 关注类型：关注类型：1-关注项目;2-关注帖子；3-关注用户'
 			Integer followType = (Integer) params.get("followType");
 
 			if (StringUtils.isBlank(token)) {
@@ -1553,7 +1553,7 @@ public class UserController extends BaseController {
 			}
 
 			PaginationQuery query = new PaginationQuery();
-			query.addQueryData("followUserId", userId + "");
+			query.addQueryData("followedUserId", userId + "");
 			query.addQueryData("followType", followType + "");
 			query.addQueryData("status", "1");
 			query.setPageIndex(pageIndex);
@@ -1563,6 +1563,7 @@ public class UserController extends BaseController {
 			map.put("myFans", result);
 
 			bre.setData(map);
+			SyseUtil.systemErrOutJson(bre);
 		} catch (RestServiceException e) {
 			logger.warn("myFollowList warn:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());

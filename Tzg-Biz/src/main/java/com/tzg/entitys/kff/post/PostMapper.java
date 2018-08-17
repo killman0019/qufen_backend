@@ -27,4 +27,8 @@ public interface PostMapper extends BaseMapper<Post, java.lang.Integer> {
 	Integer findPageCountRecommendList(Map<String, Object> queryData);
 
 	List<Post> selectAllPost(Map<String, Object> map);
+
+	Integer findPageCountRemoveSingleEva(Map<String, Object> queryData);
+
+	List<Post> findPageRemoveSingleEva(Map<String, Object> queryData);
 }

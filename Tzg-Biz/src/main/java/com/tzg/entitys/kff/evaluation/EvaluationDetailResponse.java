@@ -158,6 +158,16 @@ public class EvaluationDetailResponse implements Serializable {
 	 */
 	private String tagInfos;
 
+	private java.util.Date stickUpdateTime;
+
+	public java.util.Date getStickUpdateTime() {
+		return stickUpdateTime;
+	}
+
+	public void setStickUpdateTime(java.util.Date stickUpdateTime) {
+		this.stickUpdateTime = stickUpdateTime;
+	}
+
 	public String getTagInfos() {
 		return tagInfos;
 	}
