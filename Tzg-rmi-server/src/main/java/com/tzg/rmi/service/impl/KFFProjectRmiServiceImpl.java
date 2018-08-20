@@ -71,6 +71,7 @@ import com.tzg.entitys.kff.projectManage.ProjectManageTabResponse;
 import com.tzg.entitys.kff.projecttrade.ProjectTrade;
 import com.tzg.entitys.kff.transactionpair.TransactionPair;
 import com.tzg.entitys.kff.transactionpair.TransactionPairResponse;
+import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.entitys.kff.userwallet.KFFUserWalletMapper;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rmi.service.KFFProjectRmiService;
@@ -535,7 +536,9 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 				queryFollow.setRowsPerPage(pageSize);
 
 				List<ProjectResponse> projectResponseList = new ArrayList<ProjectResponse>();
-				PageResult<FollowResponse> followPage = kffRmiService.findPageMyFollow(queryFollow);
+				KFFUser loginUser = kffUserService.findById(userId);
+				Integer type = 2;// 取关注人
+				PageResult<FollowResponse> followPage = kffRmiService.findPageMyFollow(queryFollow,type,loginUser);
 
 				if (null != followPage && null != followPage.getRows() && !CollectionUtils.isEmpty(followPage.getRows())) {
 					List<FollowResponse> followResponseList = followPage.getRows();

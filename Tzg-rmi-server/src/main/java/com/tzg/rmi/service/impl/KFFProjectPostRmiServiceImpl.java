@@ -429,6 +429,21 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 	        			}
 	        		}
 	        	}
+	        	String postSmallImages = postRe.getPostSmallImages();
+				if (StringUtils.isNotBlank(postSmallImages)) {
+					try {
+						List<PostFile> pfl = JSONArray.parseArray(postSmallImages, PostFile.class);
+						if(!pfl.isEmpty()) {
+							for (PostFile postFile : pfl) {
+								if(StringUtils.isNotBlank(postFile.getFileUrl())) {
+									postRe.setPostSmallImagesList(pfl);
+								}
+							}
+						}
+					} catch (Exception e) {
+						logger.error("讨论列表解析帖子缩略图json出错:{}", e);
+					}
+				}
 	        	postResp.add(postRe);
 			}
 			Integer count = kffFollowService.findPageCount(query.getQueryData());
@@ -755,7 +770,8 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 	}
 
 	@Override
-	public List<PostResponse> findHotEvaList(Integer projectId) throws RestServiceException {
+	public List<PostResponse> findHotEvaList(Integer projectId,Integer type,KFFUser loginUser) 
+			throws RestServiceException {
 		// https://www.tapd.cn/21950911/bugtrace/bugs/view?bug_id=1121950911001000461
 		// 规则：点赞量超过10 & 排名前2的内容
 		if (projectId == null) {
@@ -802,6 +818,28 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 					KFFUser createUser = kffUserService.findByUserId(post.getCreateUserId());
 					if (null != createUser) {
 						response.setUserType(createUser.getUserType());
+					}
+				}
+				// 设置人的关注状态
+				if (loginUser == null) {
+					response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+				} else {
+					if (type == 2) {
+						Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER,
+								post.getCreateUserId());
+						if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+						} else {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+						}
+					} else if (type == 1) {
+						Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT,
+								post.getProjectId());
+						if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+						} else {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+						}
 					}
 				}
 				respones.add(response);

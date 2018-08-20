@@ -65,7 +65,7 @@ public interface KFFProjectPostRmiService {
 	 * @return
 	 * @throws RestServiceException
 	 */
-	public List<PostResponse> findHotEvaList(Integer projectId) throws RestServiceException;
+	public List<PostResponse> findHotEvaList(Integer projectId,Integer type,KFFUser loginUser) throws RestServiceException;
 
 	/**
 	 * 分页获取简单评测列表

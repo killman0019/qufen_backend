@@ -83,8 +83,7 @@ public class UserHomeController extends BaseController {
 	 * @see
 	 * @throws
 	 */
-	@RequestMapping(value = "/evaluationList", method = { RequestMethod.POST,
-			RequestMethod.GET })
+	@RequestMapping(value = "/evaluationList", method = { RequestMethod.POST,RequestMethod.GET })
 	@ResponseBody
 	public BaseResponseEntity evaluationList(HttpServletRequest request,
 			HttpServletResponse response, BaseRequest baseRequest) {
@@ -110,9 +109,9 @@ public class UserHomeController extends BaseController {
 			KFFUser loginUser = null;
 			if(StringUtils.isNotBlank(token)) {
 				loginUser = kffUserService.findById(loginUserId);
+				query.addQueryData("createUserId", userId);
 			}
-			PageResult<EvaluationDetailResponse> evaluations = kffRmiService
-					.findPageEvaluationList(query,type,loginUser);
+			PageResult<EvaluationDetailResponse> evaluations = kffRmiService.findPageEvaluationList(query,type,loginUser);
 			map.put("evaluations", evaluations);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -151,13 +150,18 @@ public class UserHomeController extends BaseController {
 			} else {
 				query.addQueryData("userId", loginUserId + "");
 			}
+			KFFUser loginUser = null;
+			if(StringUtils.isNotBlank(token)) {
+				loginUser = kffUserService.findById(userId);
+				query.addQueryData("createUserId", userId);
+			}
 			query.addQueryData("status", "1");
 			// 帖子类型：1-评测；2-讨论；3-文章
 			query.addQueryData("postType", "2");
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
-			PageResult<PostResponse> discusses = kffRmiService
-					.findPageDisscussList(query);
+			Integer type = 2;// 取关注人
+			PageResult<PostResponse> discusses = kffRmiService.findPageDisscussList(query,type,loginUser);
 			map.put("discusses", discusses);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -178,8 +182,7 @@ public class UserHomeController extends BaseController {
 	 * @param baseRequest
 	 * @return
 	 */
-	@RequestMapping(value = "/articleList", method = { RequestMethod.POST,
-			RequestMethod.GET })
+	@RequestMapping(value = "/articleList", method = { RequestMethod.POST,RequestMethod.GET })
 	@ResponseBody
 	public BaseResponseEntity articleList(HttpServletRequest request,
 			HttpServletResponse response, BaseRequest baseRequest) {
@@ -196,13 +199,18 @@ public class UserHomeController extends BaseController {
 			} else {
 				query.addQueryData("userId", loginUserId + "");
 			}
+			KFFUser loginUser = null;
+			if(StringUtils.isNotBlank(token)) {
+				loginUser = kffUserService.findById(userId);
+				query.addQueryData("createUserId", userId);
+			}
 			query.addQueryData("status", "1");
 			// 帖子类型：1-评测；2-讨论；3-文章
 			query.addQueryData("postType", "3");
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
-			PageResult<PostResponse> articles = kffRmiService
-					.findPageArticleList(query);
+			Integer type = 2;// 取关注人
+			PageResult<PostResponse> articles = kffRmiService.findPageArticleList(query,type,loginUser);
 			map.put("articles", articles);
 			bre.setData(map);
 		} catch (RestServiceException e) {

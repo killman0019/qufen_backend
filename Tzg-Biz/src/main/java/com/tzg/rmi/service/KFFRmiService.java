@@ -166,7 +166,7 @@ public interface KFFRmiService {
 	 * @return
 	 * @throws RestServiceException
 	 */
-	public PageResult<CollectPostResponse> findPageMyCollectRecords(PaginationQuery query) throws RestServiceException;
+	public PageResult<CollectPostResponse> findPageMyCollectRecords(PaginationQuery query,Integer type,KFFUser loginUser) throws RestServiceException;
 
 	/**
 	 * 
@@ -176,7 +176,7 @@ public interface KFFRmiService {
 	 * @return
 	 * @throws RestServiceException
 	 */
-	public PageResult<FollowResponse> findPageMyFollow(PaginationQuery query) throws RestServiceException;
+	public PageResult<FollowResponse> findPageMyFollow(PaginationQuery query,Integer type,KFFUser loginUser) throws RestServiceException;
 
 	/**
 	 * 捐赠
@@ -324,7 +324,7 @@ public interface KFFRmiService {
 	 * @return
 	 * @throws RestServiceException
 	 */
-	public PageResult<PostResponse> findPageDisscussList(PaginationQuery query) throws RestServiceException;
+	public PageResult<PostResponse> findPageDisscussList(PaginationQuery query,Integer type,KFFUser loginUser) throws RestServiceException;
 
 	/**
 	 * 分页获取文章列表
@@ -333,7 +333,7 @@ public interface KFFRmiService {
 	 * @return
 	 * @throws RestServiceException
 	 */
-	public PageResult<PostResponse> findPageArticleList(PaginationQuery query) throws RestServiceException;
+	public PageResult<PostResponse> findPageArticleList(PaginationQuery query,Integer type,KFFUser loginUser) throws RestServiceException;
 
 	/**
 	 * 获取项目信息
@@ -473,7 +473,7 @@ public interface KFFRmiService {
 	 * @return
 	 * @throws RestServiceException
 	 */
-	public List<PostResponse> findHotDiscussList(Integer projectId) throws RestServiceException;
+	public List<PostResponse> findHotDiscussList(Integer projectId,Integer type,KFFUser loginUser) throws RestServiceException;
 
 	public List<CoinProperty> findCoinPropertyByUserId(Integer userId);
 

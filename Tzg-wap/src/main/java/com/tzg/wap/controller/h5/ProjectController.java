@@ -131,14 +131,19 @@ public class ProjectController extends BaseController {
 			Integer userId = getUserIdByToken(token);
 			ProjectResponse project = kffRmiService.findProjectById(userId, projectId);
 			map.put("project", project);
-
+			
+			KFFUser loginUser = null;
+			if(StringUtils.isNotBlank(token)) {
+				loginUser = kffUserService.findById(userId);
+			}
+			Integer type = 2;// 取关注人
 			// 20180613 去掉，改为 精选评测，精选打假（讨论）
 			// https://www.tapd.cn/21950911/bugtrace/bugs/view?bug_id=1121950911001000461
 			// 2条7天内回复数最高的讨论帖子
-			List<PostResponse> hotDiscuss = kffRmiService.findHotDiscussList(projectId);
+			List<PostResponse> hotDiscuss = kffRmiService.findHotDiscussList(projectId,type,loginUser);
 			map.put("hotDiscuss", hotDiscuss);
 			// 点赞量超过10 & 排名前2的内容
-			List<PostResponse> hotEva = kffProjectPostRmiService.findHotEvaList(projectId);
+			List<PostResponse> hotEva = kffProjectPostRmiService.findHotEvaList(projectId,type,loginUser);
 			map.put("hotEva", hotEva);
 
 			// 项目专业评测统计信息
@@ -174,8 +179,8 @@ public class ProjectController extends BaseController {
 	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
 	* @updateContext <修改内容>
 	*/
-	@RequestMapping(value = "/evaluationList", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
+	@RequestMapping(value = "/evaluationList", method = { RequestMethod.POST, RequestMethod.GET })
 	public BaseResponseEntity evaluationList(HttpServletRequest request,Integer projectId,Integer pageIndex,
 			Integer pageSize,String sortField,String token) {
 		BaseResponseEntity bre = new BaseResponseEntity();
@@ -194,12 +199,13 @@ public class ProjectController extends BaseController {
 			if(projectId==null||pageIndex==null||pageSize==null) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
 			}
+			PaginationQuery query = new PaginationQuery();
 			KFFUser loginUser = null;
 			if(StringUtils.isNotBlank(token)) {
 				Integer userId = getUserIdByToken(token);
 				loginUser = kffUserService.findById(userId);
+				query.addQueryData("createUserId", userId);
 			}
-			PaginationQuery query = new PaginationQuery();
 			query.addQueryData("projectId", projectId + "");
 			query.addQueryData("status", "1");
 			// 帖子类型：1-评测；2-讨论；3-文章
@@ -247,22 +253,31 @@ public class ProjectController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "/articleList", method = { RequestMethod.POST, RequestMethod.GET })
 	public BaseResponseEntity articleList(HttpServletRequest request,Integer projectId,Integer pageIndex,
-			Integer pageSize,String sortField) {
+			Integer pageSize,String sortField,String token) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 
 		try {
-			if(projectId==null&&pageIndex==null&&pageSize==null&&StringUtils.isBlank(sortField)) {
+			if(projectId==null&&pageIndex==null&&pageSize==null&&StringUtils.isBlank(sortField)&&
+					StringUtils.isBlank(token)) {
 				JSONObject requestContent = HtmlUtils.getRequestContent(request);
 				sortField = (String) requestContent.get("sortField");
 				projectId = (Integer) requestContent.get("projectId");
 				pageIndex = (Integer) requestContent.get("pageIndex");
 				pageSize = (Integer) requestContent.get("pageSize");
+				token = (String) requestContent.get("token");
 			}
 			if(projectId==null||pageIndex==null||pageSize==null) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
 			}
 			PaginationQuery query = new PaginationQuery();
+			KFFUser loginUser = null;
+			if(StringUtils.isNotBlank(token)) {
+				Integer userId = getUserIdByToken(token);
+				loginUser = kffUserService.findById(userId);
+				query.addQueryData("createUserId", userId);
+			}
+			Integer type = 2;// 取关注人
 			query.addQueryData("projectId", projectId + "");
 			query.addQueryData("status", "1");
 			// 帖子类型：1-评测；2-讨论；3-文章
@@ -276,7 +291,7 @@ public class ProjectController extends BaseController {
 			}
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
-			PageResult<PostResponse> articles = kffRmiService.findPageArticleList(query);
+			PageResult<PostResponse> articles = kffRmiService.findPageArticleList(query,type,loginUser);
 			map.put("articles", articles);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -309,22 +324,30 @@ public class ProjectController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "/discussList", method = { RequestMethod.POST, RequestMethod.GET })
 	public BaseResponseEntity discussList(HttpServletRequest request,Integer projectId,Integer pageIndex,
-			Integer pageSize,String sortField) {
+			Integer pageSize,String sortField,String token) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 
 		try {
-			if(projectId==null&&pageIndex==null&&pageSize==null&&StringUtils.isBlank(sortField)) {
+			if(projectId==null&&pageIndex==null&&pageSize==null&&StringUtils.isBlank(sortField)&&
+					StringUtils.isBlank(token)) {
 				JSONObject requestContent = HtmlUtils.getRequestContent(request);
 				sortField = (String) requestContent.get("sortField");
 				projectId = (Integer) requestContent.get("projectId");
 				pageIndex = (Integer) requestContent.get("pageIndex");
 				pageSize = (Integer) requestContent.get("pageSize");
+				token = (String) requestContent.get("token");
 			}
 			if(projectId==null||pageIndex==null||pageSize==null) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
 			}
 			PaginationQuery query = new PaginationQuery();
+			KFFUser loginUser = null;
+			if(StringUtils.isNotBlank(token)) {
+				Integer userId = getUserIdByToken(token);
+				loginUser = kffUserService.findById(userId);
+				query.addQueryData("createUserId", userId);
+			}
 			query.addQueryData("projectId", projectId + "");
 			query.addQueryData("status", "1");
 			// 帖子类型：1-评测；2-爆料；3-文章
@@ -338,7 +361,8 @@ public class ProjectController extends BaseController {
 			}
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
-			PageResult<PostResponse> discusses = kffRmiService.findPageDisscussList(query);
+			Integer type = 2;// 取关注人
+			PageResult<PostResponse> discusses = kffRmiService.findPageDisscussList(query,type,loginUser);
 			map.put("discusses", discusses);
 			bre.setData(map);
 		} catch (RestServiceException e) {

@@ -21,6 +21,12 @@ public class KFFUserHomeResponse implements Serializable {
 	 * 是否显示 关注按钮 0- 不显示；1-显示关注  2-显示取消关注
 	 */
 	private java.lang.Integer showFollow = 0 ;
+	
+	/**
+	 * 是否显示 关注按钮 0- 未关注；1-已关注  2-不显示 
+	 */
+	private Integer followStatus;
+	
 	/**
 	 * 总回答数量
 	 */
@@ -91,9 +97,15 @@ public class KFFUserHomeResponse implements Serializable {
      * 状态：0-删除；1-有效
      */ 	
 	private java.lang.Integer status = 1;
-   
-  
 	
+	public Integer getFollowStatus() {
+		return followStatus;
+	}
+
+	public void setFollowStatus(Integer followStatus) {
+		this.followStatus = followStatus;
+	}
+
 	public void setUserId(java.lang.Integer value) {
 		this.userId = value;
 	}
