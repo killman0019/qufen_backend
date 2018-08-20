@@ -48,14 +48,14 @@
 	<task:scheduled-tasks>
 		<!-- ref指定的是任务类 method是指定需要运行的方法 cron是定时任务的表达式 -->
 <!-- 		<task:scheduled ref="taskJobService" method="updateByGrantType" cron="0/10 * * * * ? " /> -->
-		<task:scheduled ref="taskJobService" method="updateByGrantType2" cron="0 0/1 * * * ? " />
+<!-- 		<task:scheduled ref="taskJobService" method="updateByGrantType2" cron="0 0/1 * * * ? " /> -->
 		<!-- <task:scheduled ref="taskJobService" method="caculateProjectTotalScore" cron="0 0 1 * * ? "/> -->
 		<!-- <task:scheduled ref="taskJobService" method="caculateProjectTotalScore" cron="0 0 1 * * ? "/> -->
 <!-- 	 	<task:scheduled ref="taskoJobService" method="caculateProjectTotalScore" cron="0 0 0/2 * * ? "/>  -->
 <!--  		<task:scheduled ref="taskJobService" method="updateUserPop" cron="10 * * * * ? "/>  -->
 <!-- 		<task:scheduled ref="taskJobService" method="getProjectDateFromUrlTask" cron="0 0/5 * * * ? " /> -->
-<!-- 		<task:scheduled ref="taskJobService" method="getdatafromUrlByexchangeTask" cron="0 0/30 * * * ? " /> -->
- 		<task:scheduled ref="taskJobService" method="caculatePostTatolIncome" cron="0 0/30 * * * ? "/> 
+		<task:scheduled ref="taskJobService" method="getdatafromUrlByexchangeTask" cron="0 0/30 * * * ? " />
+<!--  		<task:scheduled ref="taskJobService" method="caculatePostTatolIncome" cron="0 0/1 * * * ? "/>  -->
 <!--  		<task:scheduled ref="taskJobService" method="caluCoinUserTask" cron="0 0/5 * * * ? "/>  -->
 	</task:scheduled-tasks>
 
