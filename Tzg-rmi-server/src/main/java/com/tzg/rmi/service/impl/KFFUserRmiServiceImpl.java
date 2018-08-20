@@ -37,6 +37,21 @@ public class KFFUserRmiServiceImpl implements KFFUserRmiService {
 	public List<KFFUser> findListByMap(Map<String, Object> map) {
 		return userService.findListByMap(map);
 	}
+	
+	public boolean findUserByStatus(Integer userId) {
+		KFFUser user = userService.findById(userId);
+		if(null==user) {
+			return false;
+		}
+		//状态：0-删除；1-有效
+		if(user.getStatus()==0) {
+			return false;
+		}else if(user.getStatus()==1) {
+			return true;
+		}
+		return false;
+	}
+	
 
 	@Override
 	public PageResult<KFFUser> selectKOLProjectPage(Integer userId, PaginationQuery query) {

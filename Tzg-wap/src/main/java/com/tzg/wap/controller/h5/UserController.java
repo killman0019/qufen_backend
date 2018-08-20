@@ -79,7 +79,7 @@ public class UserController extends BaseController {
 	* @create 上午10:17:38
 	* @param @param request
 	* @param @param response
-	* @param @param token 用户登录唯一标识
+	* @param @param userId 需要获取哪个用户的信息
 	* @param @return <参数说明>
 	* @return BaseResponseEntity 
 	* @throws 
@@ -89,21 +89,21 @@ public class UserController extends BaseController {
 	*/
 	@ResponseBody
 	@RequestMapping(value = "/getUserInfo", method = { RequestMethod.POST, RequestMethod.GET })
-	public BaseResponseEntity getUserInfo(HttpServletRequest request, HttpServletResponse response, String token) {
+	public BaseResponseEntity getUserInfo(HttpServletRequest request, HttpServletResponse response,Integer userId) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
-		if(StringUtils.isBlank(token)) {
+		if(userId==null) {
 			JSONObject requestContent = HtmlUtils.getRequestContent(request);
-			token = (String) requestContent.get("token");
+			userId = (Integer) requestContent.get("userId");
 		}
-		if (StringUtils.isBlank(token)) {
-			throw new RestServiceException(RestErrorCode.MISSING_ARGS);
+		if (null==userId) {
+			bre.setNoRequstData();
+			return bre;
 		}
-		// 根据token获得userId
-		Integer userId = AccountTokenUtil.decodeAccountToken(token);
 		KFFUser user = kffUserRmiService.findById(userId);
 		if(null==user) {
-			throw new RestServiceException(RestErrorCode.NO_DATA_MSG);
+			bre.setNoDataMsg();
+			return bre;
 		}
 		user.setPassword(null);
 		user.setPassword(null);

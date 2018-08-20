@@ -177,7 +177,7 @@
 		<if test="praiseUserId != null and praiseUserId.trim() != ''">
 		and praise_user_id = #{praiseUserId}
 		</if>
-		<if test="projectId != null and projectId.trim() != ''">
+		<if test="projectId != null">
 		and project_id = #{projectId}
 		</if>
 		<if test="praiseType != null and praiseType.trim() != ''">

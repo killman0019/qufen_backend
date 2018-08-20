@@ -111,7 +111,7 @@
 		<if test="collectUserId != null and collectUserId.trim() != ''">
 		and collect_user_id = #{collectUserId}
 		</if>
-		<if test="projectId != null and projectId.trim() != ''">
+		<if test="projectId != null">
 		and project_id = #{projectId}
 		</if>
 		<if test="postId != null and postId.trim() != ''">

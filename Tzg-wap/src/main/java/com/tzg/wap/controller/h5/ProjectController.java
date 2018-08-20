@@ -182,7 +182,7 @@ public class ProjectController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "/evaluationList", method = { RequestMethod.POST, RequestMethod.GET })
 	public BaseResponseEntity evaluationList(HttpServletRequest request,Integer projectId,Integer pageIndex,
-			Integer pageSize,String sortField,String token) {
+			Integer pageSize,String sortField,String token,Integer kffUserId) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 
@@ -195,6 +195,7 @@ public class ProjectController extends BaseController {
 				pageIndex = (Integer) requestContent.get("pageIndex");
 				pageSize = (Integer) requestContent.get("pageSize");
 				token = (String) requestContent.get("token");
+				kffUserId = (Integer) requestContent.get("kffUserId");
 			}
 			if(projectId==null||pageIndex==null||pageSize==null) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
@@ -204,9 +205,13 @@ public class ProjectController extends BaseController {
 			if(StringUtils.isNotBlank(token)) {
 				Integer userId = getUserIdByToken(token);
 				loginUser = kffUserService.findById(userId);
-				query.addQueryData("createUserId", userId);
+				if(null!=kffUserId) {
+					query.addQueryData("createUserId", kffUserId);
+				}
 			}
-			query.addQueryData("projectId", projectId + "");
+			if(null!=projectId) {
+				query.addQueryData("projectId", projectId);
+			}
 			query.addQueryData("status", "1");
 			// 帖子类型：1-评测；2-讨论；3-文章
 			query.addQueryData("postType", "1");
@@ -253,32 +258,38 @@ public class ProjectController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "/articleList", method = { RequestMethod.POST, RequestMethod.GET })
 	public BaseResponseEntity articleList(HttpServletRequest request,Integer projectId,Integer pageIndex,
-			Integer pageSize,String sortField,String token) {
+			Integer pageSize,String sortField,String token,Integer kffUserId) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 
 		try {
 			if(projectId==null&&pageIndex==null&&pageSize==null&&StringUtils.isBlank(sortField)&&
-					StringUtils.isBlank(token)) {
+					StringUtils.isBlank(token)&&kffUserId==null) {
 				JSONObject requestContent = HtmlUtils.getRequestContent(request);
 				sortField = (String) requestContent.get("sortField");
 				projectId = (Integer) requestContent.get("projectId");
 				pageIndex = (Integer) requestContent.get("pageIndex");
 				pageSize = (Integer) requestContent.get("pageSize");
 				token = (String) requestContent.get("token");
+				kffUserId = (Integer) requestContent.get("kffUserId");
 			}
 			if(projectId==null||pageIndex==null||pageSize==null) {
-				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
+				bre.setNoRequstData();
+				return bre;
 			}
 			PaginationQuery query = new PaginationQuery();
 			KFFUser loginUser = null;
 			if(StringUtils.isNotBlank(token)) {
 				Integer userId = getUserIdByToken(token);
 				loginUser = kffUserService.findById(userId);
-				query.addQueryData("createUserId", userId);
+				if(null!=kffUserId) {
+					query.addQueryData("createUserId", kffUserId);
+				}
 			}
 			Integer type = 2;// 取关注人
-			query.addQueryData("projectId", projectId + "");
+			if(null!=projectId) {
+				query.addQueryData("projectId", projectId);
+			}
 			query.addQueryData("status", "1");
 			// 帖子类型：1-评测；2-讨论；3-文章
 			query.addQueryData("postType", "3");
@@ -324,31 +335,36 @@ public class ProjectController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "/discussList", method = { RequestMethod.POST, RequestMethod.GET })
 	public BaseResponseEntity discussList(HttpServletRequest request,Integer projectId,Integer pageIndex,
-			Integer pageSize,String sortField,String token) {
+			Integer pageSize,String sortField,String token,Integer kffUserId) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
-
 		try {
 			if(projectId==null&&pageIndex==null&&pageSize==null&&StringUtils.isBlank(sortField)&&
-					StringUtils.isBlank(token)) {
+					StringUtils.isBlank(token)&&kffUserId==null) {
 				JSONObject requestContent = HtmlUtils.getRequestContent(request);
 				sortField = (String) requestContent.get("sortField");
 				projectId = (Integer) requestContent.get("projectId");
 				pageIndex = (Integer) requestContent.get("pageIndex");
 				pageSize = (Integer) requestContent.get("pageSize");
 				token = (String) requestContent.get("token");
+				kffUserId = (Integer) requestContent.get("kffUserId");
 			}
-			if(projectId==null||pageIndex==null||pageSize==null) {
-				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
+			if(pageIndex==null||pageSize==null) {
+				bre.setNoRequstData();
+				return bre;
 			}
 			PaginationQuery query = new PaginationQuery();
 			KFFUser loginUser = null;
 			if(StringUtils.isNotBlank(token)) {
 				Integer userId = getUserIdByToken(token);
 				loginUser = kffUserService.findById(userId);
-				query.addQueryData("createUserId", userId);
+				if(null!=kffUserId) {
+					query.addQueryData("createUserId", kffUserId);
+				}
 			}
-			query.addQueryData("projectId", projectId + "");
+			if(null!=projectId) {
+				query.addQueryData("projectId", projectId);
+			}
 			query.addQueryData("status", "1");
 			// 帖子类型：1-评测；2-爆料；3-文章
 			query.addQueryData("postType", "2");
