@@ -57,6 +57,12 @@ public class FollowResponse implements Serializable {
 	 * 状态:0-取消收藏；1-收藏
 	 */
 	private java.lang.Integer status;
+	
+	/**
+	 * 关注状态:0-未关注；1-已关注，2-不显示
+	 */
+	private Integer followStatus;
+	
 	/**
 	 * 用来标记帖子发表时间
 	 */
@@ -140,6 +146,14 @@ public class FollowResponse implements Serializable {
 	 * 项目标题
 	 */
 	private java.lang.String projectSignature;
+
+	public Integer getFollowStatus() {
+		return followStatus;
+	}
+
+	public void setFollowStatus(Integer followStatus) {
+		this.followStatus = followStatus;
+	}
 
 	private Integer followerNum;
 

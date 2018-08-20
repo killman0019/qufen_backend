@@ -54,6 +54,7 @@ import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.utils.DateUtil;
 import com.tzg.rest.vo.BaseResponseEntity;
 import com.tzg.rmi.service.KFFRmiService;
+import com.tzg.rmi.service.KFFUserRmiService;
 import com.tzg.rmi.service.SystemParamRmiService;
 import com.vdurmont.emoji.EmojiParser;
 
@@ -72,7 +73,9 @@ public class UserController extends BaseController {
 	private SystemParamRmiService systemParamRmiService;
 	@Autowired
 	private RedisService redisService;
-
+	@Autowired
+	private KFFUserRmiService kffUserService;
+	
 	/**
 	 * 
 	 * @Title: register
@@ -594,10 +597,13 @@ public class UserController extends BaseController {
 			query.addQueryData("status", "1");
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
-			PageResult<FollowResponse> result = kffRmiService.findPageMyFollow(query);
-
+			KFFUser loginUser = null;
+			if(StringUtils.isNotBlank(token)) {
+				loginUser = kffUserService.findById(userId);
+			}
+			Integer type = 2;// 取关注人
+			PageResult<FollowResponse> result = kffRmiService.findPageMyFollow(query,type,loginUser);
 			map.put("myFollows", result);
-
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.warn("myFollowList warn:{}", e);
@@ -628,20 +634,17 @@ public class UserController extends BaseController {
 
 			Integer userId = getUserIdByToken(token);
 			KFFUser loginaccount = kffRmiService.findUserById(userId);
-
 			if (loginaccount == null) {
 				return this.resResult(RestErrorCode.USER_NOT_EXIST);
 			}
-
 			PaginationQuery query = new PaginationQuery();
 			query.addQueryData("collectUserId", userId + "");
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
 			query.addQueryData("status", "1");
-			PageResult<CollectPostResponse> result = kffRmiService.findPageMyCollectRecords(query);
-
+			Integer type = 2;// 取关注人
+			PageResult<CollectPostResponse> result = kffRmiService.findPageMyCollectRecords(query,type,loginaccount);
 			map.put("myTokenRecords", result);
-
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.warn("myCollectList warn:{}", e);
@@ -1554,23 +1557,19 @@ public class UserController extends BaseController {
 			if (userId == null) {
 				throw new RestServiceException(RestErrorCode.USER_NOT_EXIST);
 			}
-
 			KFFUser loginaccount = kffRmiService.findUserById(userId);
-
 			if (loginaccount == null) {
 				return this.resResult(RestErrorCode.USER_NOT_EXIST);
 			}
-
 			PaginationQuery query = new PaginationQuery();
 			query.addQueryData("followUserId", userId + "");
 			query.addQueryData("followType", followType + "");
 			query.addQueryData("status", "1");
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
-			PageResult<FollowResponse> result = kffRmiService.findPageMyFollow(query);
-
+			Integer type = 2;// 取关注人
+			PageResult<FollowResponse> result = kffRmiService.findPageMyFollow(query,type,loginaccount);
 			map.put("myFans", result);
-
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.warn("myFollowList warn:{}", e);

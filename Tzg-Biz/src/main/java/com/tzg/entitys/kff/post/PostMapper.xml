@@ -300,10 +300,6 @@
         uuid = #{uuid} 
 	]]>
 	</select>
-	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
-		select count(*) from tbpost where 1=1
-		<include refid="queryWhere" />
-	</select>
 
 	<select id="findMyPageFollowListCount" resultType="java.lang.Integer" parameterType="java.util.Map">
 		select count(*) from (
@@ -468,6 +464,11 @@
 			order by ${sql_keyword_orderByc} ${sql_keyword_sortc}
 		</if>
 	</sql>
+	
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(1) from tbpost where 1=1
+		<include refid="queryWhere" />
+	</select>
 
 	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
 		select
@@ -537,7 +538,7 @@
 		<if test="collectNum != null and collectNum.trim() != ''">
 			and collect_num = #{collectNum}
 		</if>
-		<if test="createUserId != null and createUserId.trim() != ''">
+		<if test="createUserId != null">
 			and create_user_id = #{createUserId}
 		</if>
 		<if test="createUserIcon != null and createUserIcon.trim() != ''">

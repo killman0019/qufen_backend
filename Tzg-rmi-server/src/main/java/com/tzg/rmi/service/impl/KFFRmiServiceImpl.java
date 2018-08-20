@@ -372,7 +372,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public PageResult<CollectPostResponse> findPageMyCollectRecords(PaginationQuery query) throws RestServiceException {
+	public PageResult<CollectPostResponse> findPageMyCollectRecords(PaginationQuery query,Integer type,
+			KFFUser loginUser) throws RestServiceException {
 		PageResult<CollectPostResponse> result = new PageResult<CollectPostResponse>();
 		List<CollectPostResponse> postResponse = new ArrayList<>();
 		PageResult<Collect> collects = kffCollectService.findPage(query);
@@ -444,6 +445,28 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						Evaluation evaluation = kffEvaluationService.findByPostId(post.getPostId());
 						response.setEvaTotalScore(evaluation.getTotalScore());
 					}
+					// 设置人的关注状态
+					if (loginUser == null) {
+						response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+					} else {
+						if (type == 2) {
+							Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER,
+									post.getCreateUserId());
+							if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+								response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+							} else {
+								response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+							}
+						} else if (type == 1) {
+							Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT,
+									post.getProjectId());
+							if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+								response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+							} else {
+								response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+							}
+						}
+					}
 					postResponse.add(response);
 				}
 			}
@@ -454,7 +477,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public PageResult<FollowResponse> findPageMyFollow(PaginationQuery query) throws RestServiceException {
+	public PageResult<FollowResponse> findPageMyFollow(PaginationQuery query,Integer type,
+			KFFUser loginUser) throws RestServiceException {
 
 		PageResult<FollowResponse> result = new PageResult<FollowResponse>();
 		List<FollowResponse> followResponses = new ArrayList<>();
@@ -529,6 +553,28 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					KFFUser followedUser = kffUserService.findByUserId(follow.getFollowedUserId());
 					if (null != followedUser) {
 						response.setUserType(followedUser.getUserType());
+					}
+				}
+				// 设置人的关注状态
+				if (loginUser == null) {
+					response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+				} else {
+					if (type == 2) {
+						Follow followc = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER,
+								follow.getFollowedId());
+						if (followc != null && followc.getStatus() != null && followc.getStatus() == KFFConstants.STATUS_ACTIVE) {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+						} else {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+						}
+					} else if (type == 1) {
+						Follow followc = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT,
+								follow.getFollowedId());
+						if (followc != null && followc.getStatus() != null && followc.getStatus() == KFFConstants.STATUS_ACTIVE) {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+						} else {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+						}
 					}
 				}
 				followResponses.add(response);
@@ -1001,6 +1047,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			}
 			result.setHomePageTitle("我的主页");
 			result.setShowFollow(0);
+			result.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
 
 		} else {
 			// 查看他人
@@ -1022,8 +1069,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			if (follows != null && CollectionUtils.isNotEmpty(follows.getRows())) {
 				// 默认设置显示 取消关注
 				result.setShowFollow(2);
+				result.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+			}else {
+				result.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
 			}
-
 		}
 		BeanUtils.copyProperties(user, result);
 		result.setTotalPostNum(result.getArticleNum() + result.getDiscussNum() + result.getEvaluationNum());
@@ -1163,7 +1212,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public PageResult<PostResponse> findPageDisscussList(PaginationQuery query) throws RestServiceException {
+	public PageResult<PostResponse> findPageDisscussList(PaginationQuery query,Integer type,KFFUser loginUser) throws RestServiceException {
 		PageResult<PostResponse> result = new PageResult<PostResponse>();
 		List<PostResponse> respones = new ArrayList<>();
 		PageResult<Post> posts = kffPostService.findPage(query);
@@ -1202,6 +1251,28 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						response.setUserType(createUser.getUserType());
 					}
 				}
+				// 设置人的关注状态
+				if (loginUser == null) {
+					response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+				} else {
+					if (type == 2) {
+						Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER,
+								post.getCreateUserId());
+						if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+						} else {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+						}
+					} else if (type == 1) {
+						Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT,
+								post.getProjectId());
+						if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+						} else {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+						}
+					}
+				}
 				respones.add(response);
 			}
 			result.setRows(respones);
@@ -1210,7 +1281,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public PageResult<PostResponse> findPageArticleList(PaginationQuery query) throws RestServiceException {
+	public PageResult<PostResponse> findPageArticleList(PaginationQuery query,Integer type,KFFUser loginUser) 
+			throws RestServiceException {
 		PageResult<PostResponse> result = new PageResult<PostResponse>();
 		List<PostResponse> respones = new ArrayList<>();
 		PageResult<Post> posts = kffPostService.findPage(query);
@@ -1248,7 +1320,29 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					String delHTMLTag = WorkHtmlRegexpUtil.delHTMLTag(response.getPostShortDesc());
 					response.setPostShortDesc(delHTMLTag);
 				}
-
+				
+				// 设置人的关注状态
+				if (loginUser == null) {
+					response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+				} else {
+					if (type == 2) {
+						Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER,
+								post.getCreateUserId());
+						if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+						} else {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+						}
+					} else if (type == 1) {
+						Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT,
+								post.getProjectId());
+						if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+						} else {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+						}
+					}
+				}
 				respones.add(response);
 			}
 			result.setRows(respones);
@@ -4945,7 +5039,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	}
 
 	@Override
-	public List<PostResponse> findHotDiscussList(Integer projectId) throws RestServiceException {
+	public List<PostResponse> findHotDiscussList(Integer projectId,Integer type,KFFUser loginUser) 
+			throws RestServiceException {
 		if (projectId == null) {
 			throw new RestServiceException("项目id不能为空");
 		}
@@ -4963,9 +5058,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		PageResult<Post> posts = kffPostService.findPage(query);
 		if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
 			for (Post post : posts.getRows()) {
-				if (post.getPraiseNum() < 10) {
-					continue;
-				}
+				if (post.getPraiseNum() < 10) {continue;}
 				PostResponse response = new PostResponse();
 				BeanUtils.copyProperties(post, response);
 				if (StringUtils.isNotBlank(post.getPostSmallImages())) {
@@ -4986,6 +5079,28 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					KFFUser createUser = kffUserService.findByUserId(post.getCreateUserId());
 					if (null != createUser) {
 						response.setUserType(createUser.getUserType());
+					}
+				}
+				// 设置人的关注状态
+				if (loginUser == null) {
+					response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+				} else {
+					if (type == 2) {
+						Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER,
+								post.getCreateUserId());
+						if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+						} else {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+						}
+					} else if (type == 1) {
+						Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT,
+								post.getProjectId());
+						if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+						} else {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+						}
 					}
 				}
 				respones.add(response);

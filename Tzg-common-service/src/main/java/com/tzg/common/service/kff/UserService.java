@@ -59,9 +59,6 @@ public class UserService {
 
 	@Transactional(readOnly = true)
 	public KFFUser findById(java.lang.Integer id) throws RestServiceException {
-		if (id == null) {
-			throw new RestServiceException("id不能为空");
-		}
 		return userMapper.findById(id);
 	}
 
