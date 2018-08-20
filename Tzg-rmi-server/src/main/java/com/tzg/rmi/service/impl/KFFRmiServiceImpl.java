@@ -1006,6 +1006,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			}
 			appNewsPush(linkedType, post.getPostId(), kffUserc.getMobile(), praiseContent);
 		}
+		caculateEveryPostIncome(post.getPostId(), post);
 		return resultMap;
 	}
 
@@ -2921,6 +2922,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (latestPost != null) {
 			result = latestPost.getPraiseNum() == null ? 0 : (latestPost.getPraiseNum());
 		}
+		caculateEveryPostIncome(postId, post);
 		map.put("isSendPraiseToken", isSendPraiseToken);
 		map.put("retrueDzan", retrueDzan);
 		map.put("praiseNum", result);
@@ -7076,5 +7078,17 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// TODO 获得我的fans
 		PageResult<FollowResponse> result = kffFollowService.findFansPage(query);
 		return result;
+	}
+
+	/**
+	 * 
+	 * TODO 计算每篇文章的收益
+	 * @param postId
+	 * @author zhangdd
+	 * @data 2018年8月8日
+	 *
+	 */
+	private void caculateEveryPostIncome(Integer postId, Post post) {
+		kffPostService.caculateEveryPostIncome(postId, post);
 	}
 }

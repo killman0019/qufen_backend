@@ -257,4 +257,9 @@ public class TokenrecordsService {
 		coinPropertyMapper.update(coinPropertyDB);
 
 	}
+
+	public List<Tokenrecords> findAllPage(Map<String, Object> tcmap) {
+		// TODO Auto-generated method stub
+		return tokenrecordsMapper.findAllPage(tcmap);
+	}
 }

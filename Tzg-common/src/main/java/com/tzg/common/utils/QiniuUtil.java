@@ -4,8 +4,10 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
+import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.log4j.Logger;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import sun.misc.BASE64Decoder;
 
@@ -29,8 +31,10 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Paths;
 
 public class QiniuUtil {
@@ -244,7 +248,7 @@ public class QiniuUtil {
 			// System.out.println(request.headers());
 			OkHttpClient client = new OkHttpClient();
 			okhttp3.Response response = client.newCall(request).execute();
-			// System.out.println(response);
+			SyseUtil.systemErrOutJson(response);
 			System.out.println("base图片上传成功");
 			// 程序结束时，删除临时文件
 			deleteFile(excelFile);
@@ -260,17 +264,88 @@ public class QiniuUtil {
 		return null;
 	}
 
+	@SuppressWarnings("resource")
+	public static String uploadBase64StrNotprefix(String file64, String fileName) {
+		try {
+			/*String file = "D:\\1.jpg";// 图片路径
+			FileInputStream fis = null;
+			int l = (int) (new File(file).length());
+			byte[] src = new byte[l];
+			fis = new FileInputStream(new File(file));
+			fis.read(src);
+			file64 = Base64.encodeToString(src, 0);
+			System.err.println(file64);*/
+
+			/********** 生成base64end *******************/
+
+			MultipartFile multfile = base64ToMultipart(file64);
+			SyseUtil.systemErrOutJson(multfile);
+			File f = null;
+			if (multfile.equals("") || multfile.getSize() <= 0) {
+				multfile = null;
+			} else {
+				InputStream ins = multfile.getInputStream();
+				// f = new File(multfile.getOriginalFilename());
+				// inputStreamToFile(ins, f);
+				uploadStream(ins, fileName);
+			}
+
+			// String fileNamefile = multfile.getOriginalFilename();
+			// 获取文件后缀
+			// SyseUtil.systemErrOutJson(fileNamefile);
+			// String prefix = fileNamefile.substring(fileNamefile.lastIndexOf("."));
+
+			// final File excelFile =new fi
+			// MultipartFile to File
+			// multfile.transferTo(excelFile);
+
+			// 你的业务逻辑
+			int l = (int) (f.length());
+			SyseUtil.systemErrOutJson(f);
+			// System.err.println(l);
+			String url = "http://upload-z2.qiniu.com/putb64/" + l + "/key/" + UrlSafeBase64.encodeToString(fileName);
+			// 非华东空间需要根据注意事项 1 修改上传域名
+			RequestBody rb = RequestBody.create(null, file64);
+			Request request = new Request.Builder().url(url).addHeader("Content-Type", "application/octet-stream")
+					.addHeader("Authorization", "UpToken " + getUpTokenBase64()).post(rb).build();
+			// System.out.println(request.headers());
+			OkHttpClient client = new OkHttpClient();
+			okhttp3.Response response = client.newCall(request).execute();
+			// System.out.println(response);
+			System.out.println("base图片上传成功");
+			SyseUtil.systemErrOutJson(response);
+			// 程序结束时，删除临时文件
+			deleteFile(f);
+			return DOMAIN + "/" + fileName;
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	public static void inputStreamToFile(InputStream ins, File file) {
+		try {
+			OutputStream os = new FileOutputStream(file);
+			int bytesRead = 0;
+			byte[] buffer = new byte[8192];
+			while ((bytesRead = ins.read(buffer, 0, 8192)) != -1) {
+				os.write(buffer, 0, bytesRead);
+			}
+			os.close();
+			ins.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	public static String getUpTokenBase64() {
 		Auth auth = Auth.create(ACCESS_KEY, SECRET_KEY);
 		return auth.uploadToken(BUCKETNAME, null, 3600, new StringMap().put("insertOnly", 1));
-	}
-
-	public static void main(String[] args) throws Exception {
-		// uploadBase64Str(null, "testbase6dddd33");
-		String str = "data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==";
-		MultipartFile base64ToMultipart = base64ToMultipart(str);
-		System.err.println(JSON.toJSON(base64ToMultipart));
-		System.err.println("");
 	}
 
 	public static MultipartFile base64ToMultipart(String base64) {
@@ -291,6 +366,32 @@ public class QiniuUtil {
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
+		}
+	}
+
+	public static boolean GenerateImage(String imgStr, String savedImagePath) {
+		// 文件字节数组字符串数据为空
+		if (imgStr == null)
+			return false;
+		BASE64Decoder decoder = new BASE64Decoder();
+		try {
+			// Base64解码
+			byte[] b = decoder.decodeBuffer(imgStr);
+			for (int i = 0; i < b.length; ++i) {
+				{// 调整异常数据
+					if (b[i] < 0)
+						b[i] += 256;
+				}
+			}
+			// 生成文件
+			// String sangImageStr = "D:/My Documents/ip.jpg" ; // 要生成文件的路径.
+			OutputStream out = new FileOutputStream(savedImagePath);
+			out.write(b);
+			out.flush();
+			out.close();
+			return true;
+		} catch (Exception e) {
+			return false;
 		}
 	}
 
@@ -346,4 +447,35 @@ public class QiniuUtil {
 		return fileName;
 	}
 
+	public static void decoderBase64File(String base64Code, String targetPath, String catalogue) throws Exception {
+		File file = new File(catalogue);
+		if (file.exists() == false) {
+			file.mkdirs();
+		}
+		byte[] buffer = new BASE64Decoder().decodeBuffer(base64Code);
+		FileOutputStream out = new FileOutputStream(targetPath);
+		out.write(buffer);
+		out.close();
+
+	}
+
+	public static void main(String[] args) throws Exception {
+		// uploadBase64Str(null, "testbase6dddd33");
+		// String str =
+		// "data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==";
+		// decoderBase64File(str, "tesc", "D:\\image\\test4");
+		// MultipartFile file = base64ToMultipart(str);
+		// CommonsMultipartFile cFile = (CommonsMultipartFile) file;
+		// DiskFileItem fileItem = (DiskFileItem) cFile.getFileItem();
+		// InputStream inputStream = fileItem.getInputStream();
+		// uploadLocalPic("D:\\image\\test4.gif", "textc5gif");
+		// InputStream inputStream = file.getInputStream();
+		// uploadStream(inputStream, "textinput");
+		String str = "https://mmbiz.qpic.cn/mmbiz_jpg/UBHBX7j2CM5gkdWtlACWHL7iaaJA2mMslIFXpJjETrCxbNiaRkHuwTWSqR1fgDnIPiak5qLkfaeoHkoKmoxwtSvQw/640?wx_fmt=jpeg&amp;tp=webp&amp;wxfrom=5&amp;wx_lazy=1";
+		changeToLocalUrl(str, "asc");
+
+		String str1 = "data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==";
+
+		uploadBase64Str(str1, "sd");
+	}
 }

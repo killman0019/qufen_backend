@@ -150,6 +150,19 @@ public class KFFReportRmiServiceImpl implements KFFReportRmiService {
 				reportedContent.setVaild(1);// 1投诉待审核
 				reportedContent.setReportedContentCreateName(post.getCreateUserName());
 				reportedContent.setReportedContentStatus(post.getStatus());
+				if (post.getPostType() == 1) {// 1评测 2 讨论 3 文章
+					SystemParam articlePara = systemParamService.findByCode("EVA_URL");
+					reportedContent.setReportedContentUrl(articlePara.getVcParamValue() + "?id=" + post.getPostId());
+				}
+				if (post.getPostType() == 2) {// 1评测 2 讨论 3 文章
+					SystemParam articlePara = systemParamService.findByCode("DIS_URL");
+					reportedContent.setReportedContentUrl(articlePara.getVcParamValue() + "?id=" + post.getPostId());
+				}
+				if (post.getPostType() == 3) {// 1评测 2 讨论 3 文章
+					SystemParam articlePara = systemParamService.findByCode("ARTICLE_URL");
+					reportedContent.setReportedContentUrl(articlePara.getVcParamValue() + "?id=" + post.getPostId());
+				}
+
 				reportedContentService.save(reportedContent);
 				reportInfor.setReportedContentKeyId(reportedContent.getReportedContentKeyId());
 			} else {

@@ -38,7 +38,7 @@ public class BASE64MultipartFile implements MultipartFile, Serializable {
 			SyseUtil.systemErrOutJson(System.currentTimeMillis() + (int) Math.random() * 10000 + "." + header.split("/")[1]);
 			return System.currentTimeMillis() + (int) Math.random() * 10000 + "." + header.split("/")[1];
 		} else {
-			return System.currentTimeMillis() + (int) Math.random() * 10000 + "." + "png";
+			return System.currentTimeMillis() + (int) Math.random() * 10000 + "";
 		}
 	}
 
