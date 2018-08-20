@@ -185,7 +185,6 @@ public class HomeController extends BaseController {
 			String token = baseRequest.getToken();
 			Integer userId = null;
 			PaginationQuery query = new PaginationQuery();
-			query.addQueryData("userId", userId + "");
 			query.addQueryData("status", "1");
 			// query.addQueryData("sortField", "collect_num");
 			// 关注类型：1-关注项目;2-关注帖子；3-关注用户
@@ -199,6 +198,7 @@ public class HomeController extends BaseController {
 				userId = getUserIdByToken(token);
 				loginUser = kffUserService.findById(userId);
 			}
+			query.addQueryData("userId", userId);
 			PageResult<PostResponse> follows = kffProjectPostRmiService.findPageForFollowList(userId, query,type,loginUser);
 //			PageResult<PostResponse> follows = kffProjectPostRmiService.findMyPageFollowList(userId, query);
 			System.err.println("follows" + follows);

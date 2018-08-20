@@ -111,7 +111,7 @@ public class PolicyUtil {
         System.out.println("policy:"+encryptPolicy(ssr));
         System.out.println("sign:"+Md5(ssr));
         
-        String token = AccountTokenUtil.getAccountToken(6);
+        String token = AccountTokenUtil.getAccountToken(114);
         System.out.println(token);
 //        System.out.println(decryptAES(a));
         
