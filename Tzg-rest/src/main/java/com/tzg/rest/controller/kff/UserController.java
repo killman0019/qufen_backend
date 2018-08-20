@@ -1528,7 +1528,7 @@ public class UserController extends BaseController {
 			JSONObject params = getParamMapFromRequestPolicy(request);
 			String token = (String) params.get("token");
 			int userId = params.getInteger("userId");
-
+			int projectId = params.getInteger("projectId");
 			Integer pageIndex = (Integer) params.get("pageIndex") == null ? 1 : (Integer) params.get("pageIndex");
 			Integer pageSize = (Integer) params.get("pageSize") == null ? 10 : (Integer) params.get("pageSize");
 			// 关注类型：关注类型：1-关注项目;2-关注帖子；3-关注用户'
@@ -1552,9 +1552,11 @@ public class UserController extends BaseController {
 			}
 
 			PaginationQuery query = new PaginationQuery();
-
-			query.addQueryData("followedUserId", userId + "");
-
+			if (projectId == 0 && userId != 0) {
+				query.addQueryData("followedUserId", userId + "");
+			} else if (userId == 0 && projectId != 0) {
+				query.addQueryData("followedId", projectId + "");
+			}
 			query.addQueryData("followType", followType + "");
 			query.addQueryData("status", "1");
 			query.setPageIndex(pageIndex);
