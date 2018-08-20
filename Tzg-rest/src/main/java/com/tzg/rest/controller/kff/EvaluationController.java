@@ -14,15 +14,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.tzg.common.utils.sysGlobals;
 import com.tzg.entitys.kff.devaluationModel.DevaluationModelRequest;
 import com.tzg.entitys.kff.devaluationModelDetail.DevaluationModelDetail;
-import com.tzg.entitys.kff.discuss.DiscussRequest;
 import com.tzg.entitys.kff.evaluation.EvaluationRequest;
 import com.tzg.rest.controller.BaseController;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
 import com.tzg.rmi.service.KFFRmiService;
+import com.tzg.rmi.service.KFFUserRmiService;
 
 @Controller(value = "KFFEvaluationController")
 @RequestMapping("/kff/evaluation")
@@ -31,7 +32,9 @@ public class EvaluationController extends BaseController {
 
 	@Autowired
 	private KFFRmiService kffRmiService;
-
+	@Autowired
+	private KFFUserRmiService userRmiService;
+	
 	/**
 	 * @Title: saveEvaluation TODO 增加表来存储专业评测并定义接口入参格式
 	 * @Description: 发表评测
@@ -52,6 +55,13 @@ public class EvaluationController extends BaseController {
 			EvaluationRequest evaluationRequest = getParamMapFromRequestPolicy(request, EvaluationRequest.class);
 			String token = evaluationRequest.getToken();
 			Integer userId = getUserIdByToken(token);
+			//判断用户被禁用时，不能发评测
+			boolean flag = userRmiService.findUserByStatus(userId);
+			if(!flag) {
+				bre.setCode(RestErrorCode.ACCOUNT_LOCKED.getValue());
+				bre.setMsg(sysGlobals.DISABLE_ACCOUNT_MSG);
+				return bre;
+			}
 			evaluationRequest.setCreateUserId(userId);
 			map = kffRmiService.saveEvaluation(evaluationRequest);
 			bre.setData(map);

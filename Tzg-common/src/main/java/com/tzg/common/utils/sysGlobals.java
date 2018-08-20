@@ -67,6 +67,8 @@ public final class sysGlobals{
 	public static String POST_EVERY_PAGE="POST_EVERY_PAGE";
 	/**关注列表取帖子的点赞量大于5的*/
 	public static String PRISE_TO_FOLLOW_POST="PRISE_TO_FOLLOW_POST";
+	/**封号信息提示的content*/
+	public static String DISABLE_ACCOUNT_MSG = "尊敬的用户您好，您的账号被举报存在违规操作，已被禁用。若有疑问，请联系区分客服。";
 	
 	
 }

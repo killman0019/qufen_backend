@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.tzg.common.base.BaseRequest;
+import com.tzg.common.utils.sysGlobals;
 import com.tzg.entitys.kff.discuss.DiscussRequest;
 import com.tzg.entitys.kff.dtags.Dtags;
 import com.tzg.rest.controller.BaseController;
@@ -21,6 +23,7 @@ import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
 import com.tzg.rmi.service.KFFRmiService;
+import com.tzg.rmi.service.KFFUserRmiService;
 
 @Controller(value = "KFFDiscussController")
 @RequestMapping("/kff/discuss")
@@ -28,6 +31,8 @@ public class DiscussController extends BaseController {
 	private static Logger log = Logger.getLogger(DiscussController.class);
 	@Autowired
 	private KFFRmiService kffRmiService;
+	@Autowired
+	private KFFUserRmiService userRmiService;
 
 	/**
 	 * @Title: saveDiscuss
@@ -44,11 +49,22 @@ public class DiscussController extends BaseController {
 	public BaseResponseEntity saveDiscuss(HttpServletRequest request) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		Map<String, Object> map = new HashMap<String, Object>();
-
 		try {
 			DiscussRequest discussRequest = getParamMapFromRequestPolicy(request, DiscussRequest.class);
 			String token = discussRequest.getToken();
+			if(StringUtils.isBlank(token)) {
+				bre.setCode(RestErrorCode.MISSING_ARGS.getValue());
+				bre.setMsg(RestErrorCode.MISSING_ARGS.getErrorReason());
+				return bre;
+			}
 			Integer userId = getUserIdByToken(token);
+			//判断用户被禁用时，不能发爆料
+			boolean flag = userRmiService.findUserByStatus(userId);
+			if(!flag) {
+				bre.setCode(RestErrorCode.ACCOUNT_LOCKED.getValue());
+				bre.setMsg(sysGlobals.DISABLE_ACCOUNT_MSG);
+				return bre;
+			}
 			discussRequest.setCreateUserId(userId);
 			map = kffRmiService.saveDiscuss(discussRequest);
 			bre.setData(map);

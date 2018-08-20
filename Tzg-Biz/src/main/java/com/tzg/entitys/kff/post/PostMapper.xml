@@ -496,7 +496,7 @@
 		<if test="postId != null and postId.trim() != ''">
 			and post_id = #{postId}
 		</if>
-		<if test="projectId != null and projectId.trim() != ''">
+		<if test="projectId != null">
 			and project_id = #{projectId}
 		</if>
 		<if test="projectIcon != null and projectIcon.trim() != ''">
@@ -608,7 +608,7 @@
 		<if test="postId != null and postId.trim() != ''">
 			and post_id = #{postId}
 		</if>
-		<if test="projectId != null and projectId.trim() != ''">
+		<if test="projectId != null">
 			and project_id = #{projectId}
 		</if>
 		<if test="projectIcon != null and projectIcon.trim() != ''">

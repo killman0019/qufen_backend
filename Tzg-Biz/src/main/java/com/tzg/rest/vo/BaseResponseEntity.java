@@ -6,6 +6,8 @@ import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.tzg.rest.exception.rest.RestErrorCode;
+
 public class BaseResponseEntity implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -31,6 +33,17 @@ public class BaseResponseEntity implements Serializable {
 
 	public void setServerDatetime(long serverDatetime) {
 		this.serverDatetime = serverDatetime;
+	}
+	//参数缺失
+	public void setNoRequstData() {
+		this.msg = RestErrorCode.MISSING_ARGS.getErrorReason();
+		this.code =RestErrorCode.MISSING_ARGS.getValue();
+	}
+	
+	//暂无数据
+	public void setNoDataMsg() {
+		this.msg = RestErrorCode.NO_DATA_MSG.getErrorReason();
+		this.code =RestErrorCode.NO_DATA_MSG.getValue();
 	}
 
 	public BaseResponseEntity() {

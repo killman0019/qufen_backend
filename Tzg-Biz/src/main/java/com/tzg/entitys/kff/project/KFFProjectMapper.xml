@@ -332,7 +332,7 @@
 		<if test="inList != null and inList.trim() != ''">
 			and project_id in ( ${inList} )
 		</if>
-		<if test="projectId != null and projectId.trim() != ''">
+		<if test="projectId != null">
 			and project_id = #{projectId}
 		</if>
 	</sql>
@@ -371,13 +371,13 @@
 	</select>
 
 	<sql id="queryWhere">
-		<if test="projectId != null and projectId.trim() != ''">
+		<if test="projectId != null">
 			and project_id = #{projectId}
 		</if>
 		<if test="hotProject != null">
 			and follower_num > #{hotProject}
 		</if>
-		<if test="projectIcon != null and projectIcon.trim() != ''">
+		<if test="projectIcon != null">
 			and project_icon = #{projectIcon}
 		</if>
 		<if test="state != null and state.trim() != ''">

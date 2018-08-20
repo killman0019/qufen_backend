@@ -104,7 +104,7 @@
 		<if test="id != null and id.trim() != ''">
 		and id = #{id}
 		</if>
-		<if test="projectId != null and projectId.trim() != ''">
+		<if test="projectId != null">
 		and project_id = #{projectId}
 		</if>
 		<if test="modelDetailId != null and modelDetailId.trim() != ''">
