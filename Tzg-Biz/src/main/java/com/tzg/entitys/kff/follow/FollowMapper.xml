@@ -249,8 +249,19 @@
 		LEFT JOIN tbuser tu ON tf.follow_user_id
 		= tu.user_id
 		WHERE
-		tf.followed_user_id
-		=#{followedUserId}
+		1=1
+		<if test="followedUserId !=null">
+			and tf.followed_user_id = #{followedUserId}
+		</if>
+
+		<if test="followType !=null">
+			and tf.follow_type = #{followType}
+		</if>
+
+		<if test="followedId !=null">
+			and tf.followed_id = #{followedId}
+		</if>
+
 
 		AND tf.`status` = 1
 		AND tu.`status` = 1
@@ -282,7 +293,18 @@
 		LEFT JOIN tbuser tu ON tf.follow_user_id
 		= tu.user_id
 		WHERE
-		tf.followed_user_id =#{followedUserId}
+		1=1
+		<if test="followedUserId !=null">
+			and tf.followed_user_id = #{followedUserId}
+		</if>
+
+		<if test="followType !=null">
+			and tf.follow_type = #{followType}
+		</if>
+
+		<if test="followedId !=null">
+			and tf.followed_id = #{followedId}
+		</if>
 
 		AND tf.`status` = 1
 		AND tu.`status` = 1

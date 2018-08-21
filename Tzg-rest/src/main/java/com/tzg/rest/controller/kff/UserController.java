@@ -1512,7 +1512,7 @@ public class UserController extends BaseController {
 
 	/**
 	 * 
-	 * TODO 获得关注列表  比如 
+	 * TODO 获得关注列表  项目的关注列表或者是用户的粉丝列表
 	 * @param request
 	 * @return
 	 * @author zhangdd
@@ -1538,7 +1538,7 @@ public class UserController extends BaseController {
 				throw new RestServiceException(RestErrorCode.USER_NOT_LOGIN);
 			}
 			Integer loginUserId = null;
-			if (userId == 0) {
+			/*if (userId == 0) {
 				loginUserId = AccountTokenUtil.decodeAccountToken(token);
 
 				if (loginUserId == null) {
@@ -1549,20 +1549,22 @@ public class UserController extends BaseController {
 					return this.resResult(RestErrorCode.USER_NOT_EXIST);
 				}
 				userId = loginUserId;
-			}
-
+			}*/
 			PaginationQuery query = new PaginationQuery();
-			if (projectId == 0 && userId != 0) {
-				query.addQueryData("followedUserId", userId + "");
-			} else if (userId == 0 && projectId != 0) {
-				query.addQueryData("followedId", projectId + "");
-			}
+			PageResult<FollowResponse> result = null;
 			query.addQueryData("followType", followType + "");
 			query.addQueryData("status", "1");
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
-			// PageResult<FollowResponse> result = kffRmiService.findPageMyFollow(query);
-			PageResult<FollowResponse> result = kffRmiService.findFansPage(query);
+
+			if (projectId == 0 && userId != 0) {
+				query.addQueryData("followedUserId", userId + "");
+				// result = kffRmiService.findFansPage(query);
+			} else if (userId == 0 && projectId != 0) {
+				query.addQueryData("followedId", projectId + "");
+				// result = kffRmiService.findPageProjectFollow(query);
+			}
+			result = kffRmiService.findFansPage(query);
 			map.put("myFans", result);
 
 			bre.setData(map);

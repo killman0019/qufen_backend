@@ -958,4 +958,5 @@ public interface KFFRmiService {
 	 *
 	 */
 	public PageResult<FollowResponse> findFansPage(PaginationQuery query) throws RestServiceException;
+
 }
