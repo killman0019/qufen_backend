@@ -1688,7 +1688,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// tokenawardService.save(tokenaward);
 		// CoinProperty coinProperty = coinPropertyService.findByUserId(commentUser.getUserId());
 		coinPropertyService.updateCoin(tokenrecords, 1);
-		kffUserService.updateUserKFFCoinNumType(tokenrecords.getUserId(), tokenrecords.getAmount(), 2);
+		kffUserService.updateUserKFFCoinNumType(tokenrecords.getUserId(), tokenrecords.getAmount(), 1);
 		return tokenrecords.getAmount().doubleValue();
 	}
 

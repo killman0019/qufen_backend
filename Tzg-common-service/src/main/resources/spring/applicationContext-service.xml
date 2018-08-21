@@ -54,7 +54,7 @@
 <!-- 	 	<task:scheduled ref="taskoJobService" method="caculateProjectTotalScore" cron="0 0 0/2 * * ? "/>  -->
 <!--  		<task:scheduled ref="taskJobService" method="updateUserPop" cron="10 * * * * ? "/>  -->
 <!-- 		<task:scheduled ref="taskJobService" method="getProjectDateFromUrlTask" cron="0 0/5 * * * ? " /> -->
-<!-- 		<task:scheduled ref="taskJobService" method="getdatafromUrlByexchangeTask" cron="0 0/10 * * * ? " /> -->
+		<task:scheduled ref="taskJobService" method="getdatafromUrlByexchangeTask" cron="0 0/10 * * * ? " />
 <!--  		<task:scheduled ref="taskJobService" method="caculatePostTatolIncome" cron="0 0/1 * * * ? "/>  -->
 <!--  		<task:scheduled ref="taskJobService" method="caluCoinUserTask" cron="0 0/5 * * * ? "/>  -->
 	</task:scheduled-tasks>

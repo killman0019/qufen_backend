@@ -78,14 +78,14 @@ public class TransactionPairService {
 		Map<String, String> exchangeMap = new HashMap<String, String>();
 		List<Exchange> exchangeList = exchangeMapper.findByMap(exchangeMap);
 		if (CollectionUtils.isNotEmpty(exchangeList)) {
-			ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 4);
+			ExecutorService newFixedThreadPoolExchange = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 4);
 			try {
 
 				for (Exchange exchange : exchangeList) {
 
 					if (null != exchange) {
 						final Exchange exchangeF = exchange;
-						newFixedThreadPool.execute(new Runnable() {
+						newFixedThreadPoolExchange.execute(new Runnable() {
 
 							@Override
 							public void run() {
@@ -110,7 +110,7 @@ public class TransactionPairService {
 				System.err.println(e.getMessage());
 
 			} finally {
-				newFixedThreadPool.shutdown();
+				newFixedThreadPoolExchange.shutdown();
 			}
 
 		}
