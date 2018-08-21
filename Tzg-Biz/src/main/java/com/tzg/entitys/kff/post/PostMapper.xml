@@ -751,6 +751,26 @@
 	</select>
 
 
+	<update id="updateIncome" parameterType="java.util.Map">
+		update
+		tbpost
+		<set>
+			<if test="praiseIncome != null">
+				praise_income =praise_income + #{praiseIncome},
+			</if>
+			<if test="donateIncome != null">
+				donate_income =donate_income + #{donateIncome},
+			</if>
+			<if test="amount !=null ">
+				post_total_income =post_total_income + #{amount}
+			</if>
+		</set>
+		WHERE
+		post_id = #{postId,jdbcType=INTEGER}
+
+	</update>
+
+
 </mapper>
 
 

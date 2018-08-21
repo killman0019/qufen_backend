@@ -942,6 +942,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		receiveTokenRecords.setUserId(receiveUser.getUserId());
 		receiveTokenRecords.setRewardGrantType(1);
 		kffTokenrecordsService.save(receiveTokenRecords);
+		Double amountInputDB = receiveTokenRecords.getAmount().doubleValue();
 		/**
 		 * 新加资产表同步
 		 */
@@ -1006,7 +1007,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			}
 			appNewsPush(linkedType, post.getPostId(), kffUserc.getMobile(), praiseContent);
 		}
-		caculateEveryPostIncome(post.getPostId(), post);
+		caculateEveryPostIncome(post.getPostId(), post, amountInputDB, 2);
 		return resultMap;
 	}
 
@@ -1687,6 +1688,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// tokenawardService.save(tokenaward);
 		// CoinProperty coinProperty = coinPropertyService.findByUserId(commentUser.getUserId());
 		coinPropertyService.updateCoin(tokenrecords, 1);
+		kffUserService.updateUserKFFCoinNumType(tokenrecords.getUserId(), tokenrecords.getAmount(), 2);
 		return tokenrecords.getAmount().doubleValue();
 	}
 
@@ -2295,6 +2297,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		int result = 0;
 		Boolean isSendPraiseToken = false;
 		Double retrueDzan = 0.0;
+		Double amountInputDB = 0.0;
 		if (userId == null) {
 			throw new RestServiceException("用户id不能为空");
 		}
@@ -2514,7 +2517,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 										kffUserService.update(findByUserId);
 										kffTokenrecordsService.save(tokenrecords);
-
+										amountInputDB = tokenrecords.getAmount().doubleValue();
 										// 根据userId去获取
 
 										tokenaward.setUserId(createUserId);
@@ -2563,7 +2566,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 											tokenrecords.setPostId(postId);
 											tokenrecords.setPraiseId(praiseDBId);
 											kffTokenrecordsService.save(tokenrecords);
-
+											amountInputDB = tokenrecords.getAmount().doubleValue();
 											BigDecimal kffCoinNum = findByUserId.getKffCoinNum();
 											// KFFUser kffUser = new KFFUser();
 											findByUserId.setKffCoinNum(kffCoinNum.add(new BigDecimal(pc2 * createPUF + meet)));
@@ -2607,7 +2610,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 											tokenrecords.setPostId(postId);
 											tokenrecords.setPraiseId(praiseDBId);
 											kffTokenrecordsService.save(tokenrecords);
-
+											amountInputDB = tokenrecords.getAmount().doubleValue();
 											BigDecimal kffCoinNum = findByUserId.getKffCoinNum();
 											// KFFUser kffUser = new KFFUser();
 											findByUserId.setKffCoinNum(kffCoinNum.add(new BigDecimal(pc2 * createPUF)));
@@ -2660,7 +2663,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 										tokenrecords.setPostId(postId);
 										tokenrecords.setPraiseId(praiseDBId);
 										kffTokenrecordsService.save(tokenrecords);
-
+										amountInputDB = tokenrecords.getAmount().doubleValue();
 										BigDecimal kffCoinNum = findByUserId.getKffCoinNum();
 										// KFFUser kffUser = new KFFUser();
 										findByUserId.setKffCoinNum(kffCoinNum.add(new BigDecimal(pc3 * createPUF + meet2)));
@@ -2706,7 +2709,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 										tokenrecords.setPostId(postId);
 										tokenrecords.setPraiseId(praiseDBId);
 										kffTokenrecordsService.save(tokenrecords);
-
+										amountInputDB = tokenrecords.getAmount().doubleValue();
 										BigDecimal kffCoinNum = findByUserId.getKffCoinNum();
 										// KFFUser kffUser = new KFFUser();
 										findByUserId.setKffCoinNum(kffCoinNum.add(new BigDecimal(pc3 * createPUF)));
@@ -2763,7 +2766,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 									tokenrecords.setPostId(postId);
 									tokenrecords.setPraiseId(praiseDBId);
 									kffTokenrecordsService.save(tokenrecords);
-
+									amountInputDB = tokenrecords.getAmount().doubleValue();
 									BigDecimal kffCoinNum = findByUserId.getKffCoinNum();
 									// KFFUser kffUser = new KFFUser();
 									findByUserId.setKffCoinNum(kffCoinNum.add(new BigDecimal(tl * createPUF)));
@@ -2818,7 +2821,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 											tokenrecords.setPostId(postId);
 											tokenrecords.setPraiseId(praiseDBId);
 											kffTokenrecordsService.save(tokenrecords);
-
+											amountInputDB = tokenrecords.getAmount().doubleValue();
 											BigDecimal kffCoinNum = findByUserId.getKffCoinNum();
 											// KFFUser kffUser = new KFFUser();
 											findByUserId.setKffCoinNum(kffCoinNum.add(new BigDecimal(wz * createPUF + meet1)));
@@ -2861,7 +2864,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 											tokenrecords.setPostId(postId);
 											tokenrecords.setPraiseId(praiseDBId);
 											kffTokenrecordsService.save(tokenrecords);
-
+											amountInputDB = tokenrecords.getAmount().doubleValue();
 											BigDecimal kffCoinNum = findByUserId.getKffCoinNum();
 											// KFFUser kffUser = new KFFUser();
 											findByUserId.setKffCoinNum(kffCoinNum.add(new BigDecimal(wz * createPUF)));
@@ -2922,7 +2925,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (latestPost != null) {
 			result = latestPost.getPraiseNum() == null ? 0 : (latestPost.getPraiseNum());
 		}
-		caculateEveryPostIncome(postId, post);
+		caculateEveryPostIncome(postId, post, amountInputDB, 1);
 		map.put("isSendPraiseToken", isSendPraiseToken);
 		map.put("retrueDzan", retrueDzan);
 		map.put("praiseNum", result);
@@ -7082,13 +7085,27 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 	/**
 	 * 
-	 * TODO 计算每篇文章的收益
+	 * TODO 计算每篇文章的收益(点赞,打赏进行更新post表的收益)
 	 * @param postId
 	 * @author zhangdd
 	 * @data 2018年8月8日
 	 *
 	 */
-	private void caculateEveryPostIncome(Integer postId, Post post) {
-		kffPostService.caculateEveryPostIncome(postId, post);
+	private void caculateEveryPostIncome(Integer postId, Post post, Double amount, Integer type) {
+		if (type > 0 || type != null) {
+			if (amount > 0) {
+				// 判断此post 的发布时间是否在30 天之内
+				int countDays = DateUtil.countDays(new Date(), post.getCreateTime());
+				SystemParam dayCountPara = systemParamService.findByCode("PUBLISH_DAY_COUNT");
+				Integer countDaysDB = Integer.valueOf(dayCountPara.getVcParamValue());
+				if (countDays <= countDaysDB) {// 判断用户是否是30 天内发布
+					if (type == 1) {// type 统计点赞的帖子收益
+						kffPostService.updatePraiseIncome(postId, amount);
+					} else if (type == 2) {// 统计打赏的帖子收益
+						kffPostService.updateCommendationIncome(postId, amount);
+					}
+				}
+			}
+		}
 	}
 }

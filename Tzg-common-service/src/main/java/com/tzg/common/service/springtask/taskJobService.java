@@ -62,12 +62,12 @@ public class taskJobService {
 	/**
 	 * 计算post的收益
 	 */
-	/*public void caculatePostTatolIncome() {
+	public void caculatePostTatolIncome() {
 		logger.info("--------------start caculatePostTatolIncome job---");
 		postService.caculatePostTatolIncome();
 		logger.info("-------------- end caculatePostTatolIncome job---");
 	}
-	*/
+
 	/**
 	 * 
 	 * TODO 获得项目详情

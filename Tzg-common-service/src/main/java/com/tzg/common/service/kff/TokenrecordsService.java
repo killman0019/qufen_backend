@@ -255,6 +255,10 @@ public class TokenrecordsService {
 		coinPropertyDB.setCoinLock(coinlock);
 		coinPropertyDB.setCoinPropertyId(coinProperty.getCoinPropertyId());
 		coinPropertyMapper.update(coinPropertyDB);
+		KFFUser kffUser = new KFFUser();
+		kffUser.setUserId(userId);
+		kffUser.setKffCoinNum(bdSum);
+		userService.update(kffUser);
 
 	}
 

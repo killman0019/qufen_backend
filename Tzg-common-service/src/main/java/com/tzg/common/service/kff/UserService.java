@@ -802,4 +802,30 @@ public class UserService {
 		return result;
 	}
 
+	/**
+	 * 
+	 * TODO  更新用户表中的kffcoinnum字段
+	 * @param userId
+	 * @param amount
+	 * @param type
+	 * @author zhangdd
+	 * @data 2018年8月21日
+	 *
+	 */
+	public void updateUserKFFCoinNumType(Integer userId, BigDecimal amount, Integer type) {
+		// TODO 对用户表进行更新
+		if (type > 0 && userId != null && amount != null) {
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("userId", userId);
+			map.put("kffCoinNum", amount.doubleValue());
+			if (type == 1) {// typr==1 加
+
+				userMapper.increaseKffcoinNum(map);
+			}
+			if (type == 2) {
+				userMapper.decreaseKffcoinNum(map);
+			}
+		}
+
+	}
 }

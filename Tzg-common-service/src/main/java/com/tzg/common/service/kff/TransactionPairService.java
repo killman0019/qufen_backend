@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,7 +39,11 @@ public class TransactionPairService {
 	@Autowired
 	private ExchangeMapper exchangeMapper;
 
-	private static final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 4);
+	@Value("#{paramConfig['DEV_ENVIRONMENT']}")
+	private String devEnvironment;
+
+	// private static final ExecutorService newFixedThreadPool =
+	// Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 4);
 
 	public List<TransactionPair> findByMap(Map<String, String> map) {
 		// TODO 根据map进行查询
@@ -68,10 +73,14 @@ public class TransactionPairService {
 	 */
 	public void getdatafromUrlByexchangeTask() {
 		// 查询所有的交易所 的信息
+		// if (StringUtils.isNotBlank(devEnvironment) &&
+		// devEnvironment.equals(sysGlobals.DEV_ENVIRONMENT)) {
 		Map<String, String> exchangeMap = new HashMap<String, String>();
 		List<Exchange> exchangeList = exchangeMapper.findByMap(exchangeMap);
 		if (CollectionUtils.isNotEmpty(exchangeList)) {
+			ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 4);
 			try {
+
 				for (Exchange exchange : exchangeList) {
 
 					if (null != exchange) {
@@ -108,6 +117,8 @@ public class TransactionPairService {
 		System.err.println("close+++++++++++++++++++++");
 	}
 
+	// }
+
 	/**
 	 * 
 	 * TODO 根据交易所获得相关的数据
@@ -122,7 +133,7 @@ public class TransactionPairService {
 		List<TransactionPair> transactionPairList = new ArrayList<TransactionPair>();
 		Date now = new Date();
 		String dataFromUrl = HttpUtil.doGet(strUrl);
-//		System.err.println(dataFromUrl);
+		// System.err.println(dataFromUrl);
 		if (StringUtils.isNotEmpty(dataFromUrl)) {
 			JSONObject jsonObject = new JSONObject(dataFromUrl);
 			int code = (int) jsonObject.get("code");
@@ -132,11 +143,11 @@ public class TransactionPairService {
 			}
 			if (code == 0) {
 				Object data = jsonObject.get("data");
-//				System.err.println("data" + data);
+				// System.err.println("data" + data);
 				JSONObject jsonData = new JSONObject(data.toString());
-//				System.err.println(jsonData);
+				// System.err.println(jsonData);
 				JSONArray jsonArray = jsonData.getJSONArray("list");
-//				System.err.println(jsonArray);
+				// System.err.println(jsonArray);
 				for (Object object : jsonArray) {
 					JSONObject jsonBase = new JSONObject(object.toString());
 					Double usdRate = jsonBase.getDouble("usd_rate");

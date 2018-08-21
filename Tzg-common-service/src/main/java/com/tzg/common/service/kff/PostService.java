@@ -239,16 +239,17 @@ public class PostService {
 		return result.getRows();
 	}
 
-	/*public void caculatePostTatolIncome() {
+	public void caculatePostTatolIncome() {
 		// 查找所有的post的并且进行统计
 		System.err.println("定时任务开始!");
 		// List<Post> posts =null;
 		ExecutorService newFixedThreadPoolCaluaPostIncome = null;
 		try {
+			newFixedThreadPoolCaluaPostIncome = Executors.newFixedThreadPool(10);
 			int i = 0;
 			while (true) {
 				i = i + 1;
-				newFixedThreadPoolCaluaPostIncome = Executors.newFixedThreadPool(10);
+
 				List<Post> posts = selectAllPost(i);
 				if (!CollectionUtils.isEmpty(posts)) {
 					// 进行线程的跑线程
@@ -257,11 +258,12 @@ public class PostService {
 						for (Post p : posts) {
 
 							final Integer postId = p.getPostId();
+							final Post pf = p;
 							newFixedThreadPoolCaluaPostIncome.execute(new Runnable() {
 								@Override
 								public void run() {
 									try {
-										caculateEveryPostIncome(postId);
+										caculateEveryPostIncome(postId, pf);
 									} catch (Exception e) {
 										// TODO Auto-generated catch block
 										e.printStackTrace();
@@ -274,7 +276,7 @@ public class PostService {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} finally {
-						newFixedThreadPoolCaluaPostIncome.shutdown();
+						//newFixedThreadPoolCaluaPostIncome.shutdown();
 
 					}
 
@@ -303,7 +305,7 @@ public class PostService {
 			System.err.println("已经关闭");
 		}
 
-	}*/
+	}
 
 	/**
 	 * 
@@ -409,5 +411,42 @@ public class PostService {
 		}
 		return result;
 
+	}
+
+	/**
+	 * 
+	 * TODO 统计点赞的帖子收益
+	 * @param postId
+	 * @param amount
+	 * @author zhangdd
+	 * @data 2018年8月21日
+	 *
+	 */
+	public void updatePraiseIncome(Integer postId, Double amount) {
+		// TODO 统计点赞的帖子收益
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("postId", postId);
+		map.put("amount", amount);
+		map.put("praiseIncome", amount);
+
+		postMapper.updateIncome(map);
+	}
+
+	/**
+	 * 
+	 * TODO 统计打赏的帖子收益
+	 * @param postId
+	 * @param amount
+	 * @author zhangdd
+	 * @data 2018年8月21日
+	 *
+	 */
+	public void updateCommendationIncome(Integer postId, Double amount) {
+		// TODO 统计打赏的帖子收益
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("donateIncome", amount);
+		map.put("postId", postId);
+		map.put("amount", amount);
+		postMapper.updateIncome(map);
 	}
 }
