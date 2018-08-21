@@ -31,4 +31,23 @@ public class ReportedContentService {
 		// TODO 投诉册数多一条
 		reportedContentMapper.increaseReportDegree(reportedContentKeyId);
 	}
+
+	public void update(ReportedContent reportedContent) {
+		// TODO 更新对象
+		reportedContentMapper.update(reportedContent);
+	}
+
+	/**
+	 * 
+	 * TODO
+	 * @param reportContentMap
+	 * @return
+	 * @author zhangdd
+	 * @data 2018年8月21日
+	 *
+	 */
+	public Integer findIsReportToPContentFromUserId(Map<String, Object> reportContentMap) {
+		// TODO Auto-generated method stub
+		return reportedContentMapper.findIsReportToPContentFromUserId(reportContentMap);
+	}
 }

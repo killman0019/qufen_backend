@@ -34,6 +34,11 @@
 	</select>
 
 	<insert id="save" parameterType="com.tzg.entitys.kff.reportedcontent.ReportedContent">
+
+		<selectKey resultType="java.lang.Integer" keyProperty="reportedContentKeyId" order="AFTER">
+			SELECT LAST_INSERT_ID() AS reported_content_key_id
+		</selectKey>
+
 		insert into tbreportedcontent (reported_content_key_id, reported_content_id,
 		content_type, content_reported_time, status,
 		vaild, reported_content_create_id,
@@ -302,5 +307,22 @@
 		reported_content_key_id = #{reportedContentKeyId,jdbcType=INTEGER}
 
 	</update>
+
+	<select id="findIsReportToPContentFromUserId" parameterType="java.util.Map" resultType="java.lang.Integer">
+
+		SELECT
+		COUNT(1)
+		FROM
+		tbreportedcontent tc
+		LEFT JOIN tbreportinfor tf ON tc.reported_content_key_id =
+		tf.reported_content_key_id
+		WHERE
+		tc.reported_content_id = #{reportedContentId}
+		AND
+		tf.report_user_id = #{reportUserId}
+		and tc.`status` = #{tcstatus}
+		and tf.`status` =
+		#{tfstatus}
+	</select>
 
 </mapper>

@@ -14,4 +14,6 @@ public interface ReportedContentMapper extends BaseMapper<ReportedContent, Integ
 
 	void increaseReportDegree(Integer reportedContentKeyId);
 
+	Integer findIsReportToPContentFromUserId(Map<String, Object> map);
+
 }

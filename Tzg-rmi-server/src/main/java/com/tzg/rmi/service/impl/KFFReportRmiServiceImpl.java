@@ -110,79 +110,95 @@ public class KFFReportRmiServiceImpl implements KFFReportRmiService {
 			throw new RestServiceException("举报人不存在");
 		}
 
-		ReportInfor reportInfor = new ReportInfor();
-		reportInfor.setCreateTime(now);
-		reportInfor.setUpdateTime(now);
-		reportInfor.setStatus(1);
-		reportInfor.setReportModelId(reportModelId);
-		reportInfor.setReportUserName(reportUser.getUserName());
-		reportInfor.setReportUserId(reportUser.getUserId());
+		// 判断用户是否已经已经对此帖子进行投诉
+		Map<String, Object> reportContentMap = new HashMap<String, Object>();
+		reportContentMap.put("reportedContentId", contentId);
+		reportContentMap.put("reportUserId", userId);
+		
+		reportContentMap.put("tcstatus", 1);
+		reportContentMap.put("tfstatus", 1);
+		Integer reportCount = reportedContentService.findIsReportToPContentFromUserId(reportContentMap);
+		if (reportCount < 1) {// 说明此用户没有对此文章或者内容进行投诉
+			ReportInfor reportInfor = new ReportInfor();
+			reportInfor.setCreateTime(now);
+			reportInfor.setUpdateTime(now);
+			reportInfor.setStatus(1);
+			reportInfor.setReportModelId(reportModelId);
+			reportInfor.setReportUserName(reportUser.getUserName());
+			reportInfor.setReportUserId(reportUser.getUserId());
+			reportInfor.setReportUserMobile(reportUser.getMobile());
 
-		if (type == 1) {// 进行的对post相关举报
-			Post post = kffPostService.findById(contentId);
-			if (null == post) {
-				throw new RestServiceException("投诉的帖子不存在");
-			}
-			KFFUser contentCreateUser = kffUserService.findById(post.getCreateUserId());
-			if (null == contentCreateUser) {
-				throw new RestServiceException("帖子创始人不存在");
-			}
-			Map<String, Object> reportedContentMap = new HashMap<String, Object>();
-			reportedContentMap.put("status", 1);
-			reportedContentMap.put("vaild", 1);
-			reportedContentMap.put("reportedContentId", contentId);
-			reportedContentMap.put("contentTypeNotComments", "true");
-			List<ReportedContent> reportedContentList = reportedContentService.findByMap(reportedContentMap);
+			if (type == 1) {// 进行的对post相关举报
+				Post post = kffPostService.findById(contentId);
+				if (null == post) {
+					throw new RestServiceException("投诉的帖子不存在");
+				}
+				KFFUser contentCreateUser = kffUserService.findById(post.getCreateUserId());
+				if (null == contentCreateUser) {
+					throw new RestServiceException("帖子创始人不存在");
+				}
+				Map<String, Object> reportedContentMap = new HashMap<String, Object>();
+				reportedContentMap.put("status", 1);
+				reportedContentMap.put("vaild", 1);
+				reportedContentMap.put("reportedContentId", contentId);
+				reportedContentMap.put("contentTypeNotComments", "true");
+				List<ReportedContent> reportedContentList = reportedContentService.findByMap(reportedContentMap);
 
-			if (CollectionUtils.isEmpty(reportedContentList)) {
-				ReportedContent reportedContent = new ReportedContent();
-				reportedContent.setContentReportedTime(now);
-				reportedContent.setContentTitle(post.getPostTitle());
-				reportedContent.setContentType(post.getPostType());
-				reportedContent.setReportedContentCreateId(post.getCreateUserId());
-				reportedContent.setReportedContentCreateTime(post.getCreateTime());
-				reportedContent.setReportedContentId(post.getPostId());
-				reportedContent.setReportedContentUrl(null);
-				reportedContent.setReportedCreaterMobile(contentCreateUser.getMobile());
-				reportedContent.setReportedDegree(1);
-				reportedContent.setStatus(1);
-				reportedContent.setUpdateTime(now);
-				reportedContent.setVaild(1);// 1投诉待审核
-				reportedContent.setReportedContentCreateName(post.getCreateUserName());
-				reportedContent.setReportedContentStatus(post.getStatus());
-				if (post.getPostType() == 1) {// 1评测 2 讨论 3 文章
-					SystemParam articlePara = systemParamService.findByCode("EVA_URL");
-					reportedContent.setReportedContentUrl(articlePara.getVcParamValue() + "?id=" + post.getPostId());
-				}
-				if (post.getPostType() == 2) {// 1评测 2 讨论 3 文章
-					SystemParam articlePara = systemParamService.findByCode("DIS_URL");
-					reportedContent.setReportedContentUrl(articlePara.getVcParamValue() + "?id=" + post.getPostId());
-				}
-				if (post.getPostType() == 3) {// 1评测 2 讨论 3 文章
-					SystemParam articlePara = systemParamService.findByCode("ARTICLE_URL");
-					reportedContent.setReportedContentUrl(articlePara.getVcParamValue() + "?id=" + post.getPostId());
-				}
+				if (CollectionUtils.isEmpty(reportedContentList)) {
+					ReportedContent reportedContent = new ReportedContent();
+					reportedContent.setContentReportedTime(now);
+					reportedContent.setContentTitle(post.getPostTitle());
+					reportedContent.setContentType(post.getPostType());
+					reportedContent.setReportedContentCreateId(post.getCreateUserId());
+					reportedContent.setReportedContentCreateTime(post.getCreateTime());
+					reportedContent.setReportedContentId(post.getPostId());
 
-				reportedContentService.save(reportedContent);
-				reportInfor.setReportedContentKeyId(reportedContent.getReportedContentKeyId());
-			} else {
-				ReportedContent reportedContent = reportedContentList.get(0);
-				reportedContentService.increaseReportedDegree(reportedContent.getReportedContentKeyId());
-				SystemParam systemParam = systemParamService.findByCode("REPORT_DEGREE");
-				if (null != systemParam) {
-					String vcParamValue = systemParam.getVcParamValue();
-					if (reportedContent.getReportedDegree() == Integer.valueOf(vcParamValue)) {// 当举报次数到达5时,先把post进行隐藏
-						Post postDB = new Post();
-						postDB.setPostId(post.getPostId());
-						postDB.setStatus(0);
-						kffPostService.update(postDB);
+					reportedContent.setReportedCreaterMobile(contentCreateUser.getMobile());
+					reportedContent.setReportedDegree(1);
+					reportedContent.setStatus(1);
+					reportedContent.setUpdateTime(now);
+					reportedContent.setVaild(1);// 1投诉待审核
+					reportedContent.setReportedContentCreateName(post.getCreateUserName());
+					reportedContent.setReportedContentStatus(post.getStatus());
+					if (post.getPostType() == 1) {// 1评测 2 讨论 3 文章
+						SystemParam articlePara = systemParamService.findByCode("EVA_URL");
+						reportedContent.setReportedContentUrl(articlePara.getVcParamValue() + "?id=" + post.getPostId());
 					}
+					if (post.getPostType() == 2) {// 1评测 2 讨论 3 文章
+						SystemParam articlePara = systemParamService.findByCode("DIS_URL");
+						reportedContent.setReportedContentUrl(articlePara.getVcParamValue() + "?id=" + post.getPostId());
+					}
+					if (post.getPostType() == 3) {// 1评测 2 讨论 3 文章
+						SystemParam articlePara = systemParamService.findByCode("ARTICLE_URL");
+						reportedContent.setReportedContentUrl(articlePara.getVcParamValue() + "?id=" + post.getPostId());
+					}
+
+					reportedContentService.save(reportedContent);
+					reportInfor.setReportedContentKeyId(reportedContent.getReportedContentKeyId());
+				} else {
+					ReportedContent reportedContent = reportedContentList.get(0);
+					reportedContentService.increaseReportedDegree(reportedContent.getReportedContentKeyId());
+					SystemParam systemParam = systemParamService.findByCode("REPORT_DEGREE");
+					if (null != systemParam) {
+						String vcParamValue = systemParam.getVcParamValue();
+						if (reportedContent.getReportedDegree() == Integer.valueOf(vcParamValue)) {// 当举报次数到达5时,先把post进行隐藏
+							Post postDB = new Post();
+							postDB.setPostId(post.getPostId());
+							postDB.setStatus(0);
+							kffPostService.update(postDB);
+							ReportedContent reportedContentDB = new ReportedContent();
+							reportedContentDB.setUpdateTime(now);
+							reportedContentDB.setReportedContentKeyId(reportedContent.getReportedContentKeyId());
+							reportedContentDB.setReportedContentStatus(0);
+							reportedContentService.update(reportedContentDB);
+						}
+					}
+					reportInfor.setReportedContentKeyId(reportedContent.getReportedContentKeyId());
 				}
-				reportInfor.setReportedContentKeyId(reportedContent.getReportedContentKeyId());
+				reportInforService.save(reportInfor);
+
 			}
-			reportInforService.save(reportInfor);
 
 		}
-
 	}
 }

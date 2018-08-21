@@ -15,6 +15,8 @@ public class ReportInfor implements Serializable {
 
 	private String reportUserName;
 
+	private String reportUserMobile;
+
 	private Integer reportUserId;
 
 	private Date createTime;
@@ -27,6 +29,14 @@ public class ReportInfor implements Serializable {
 	private Integer status;
 
 	private Integer reportedContentKeyId;
+
+	public String getReportUserMobile() {
+		return reportUserMobile;
+	}
+
+	public void setReportUserMobile(String reportUserMobile) {
+		this.reportUserMobile = reportUserMobile;
+	}
 
 	public String getCreateTimeStr() {
 		return createTimeStr;
