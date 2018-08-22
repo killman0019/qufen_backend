@@ -1560,12 +1560,12 @@ public class UserController extends BaseController {
 				throw new RestServiceException(RestErrorCode.USER_NOT_LOGIN);
 			}
 
-			Integer loginUserId = null;
-
+			Integer loginUserId = getUserIdByToken(token);
 			PaginationQuery query = new PaginationQuery();
 			PageResult<FollowResponse> result = null;
 			query.addQueryData("followType", followType + "");
 			query.addQueryData("status", "1");
+			query.addQueryData("loginUserId", loginUserId);
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
 

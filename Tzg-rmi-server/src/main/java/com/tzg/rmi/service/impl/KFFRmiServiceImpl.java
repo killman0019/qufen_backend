@@ -1983,9 +1983,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (null == delHTMLTag || delHTMLTag.length() == 0) {
 			throw new RestServiceException("请对所发表的内容进行文字描述");
 		}
-		if (StringUtils.isBlank(discussRequest.getPostTitle())) {
+		/*if (StringUtils.isBlank(discussRequest.getPostTitle())) {
 			throw new RestServiceException("讨论标题不能为空");
-		}
+		}*/
 		if (discussRequest.getDisscussContents().length() > 3000) {
 			throw new RestServiceException("讨论内容长度超过限制");
 		}

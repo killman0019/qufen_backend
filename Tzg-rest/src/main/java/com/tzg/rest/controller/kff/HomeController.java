@@ -347,7 +347,7 @@ public class HomeController extends BaseController {
 				newQuery.addQueryData("sortField", params.getSortField());
 				// newQuery.addQueryData("sortSequence", "desc");
 			} else {
-				newQuery.addQueryData("sortField", "post_id");
+				newQuery.addQueryData("sortField", "comments_id");
 				// newQuery.addQueryData("sortSequence", "desc");
 			}
 
@@ -513,7 +513,7 @@ public class HomeController extends BaseController {
 				query.addQueryData("sortField", baseRequest.getSortField());
 				query.addQueryData("sortSequence", "desc");
 			} else {
-				query.addQueryData("sortField", "post_id");
+				query.addQueryData("sortField", "comments_id");
 				query.addQueryData("sortSequence", "desc");
 			}
 
@@ -614,7 +614,7 @@ public class HomeController extends BaseController {
 				newQuery.addQueryData("sortField", params.getSortField());
 				newQuery.addQueryData("sortSequence", "desc");
 			} else {
-				newQuery.addQueryData("sortField", "post_id");
+				newQuery.addQueryData("sortField", "comments_id");
 				newQuery.addQueryData("sortSequence", "desc");
 			}
 
