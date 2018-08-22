@@ -34,6 +34,7 @@ import com.tzg.common.utils.rest.Base64Util;
 import com.tzg.common.utils.rest.RestConstants;
 import com.tzg.entitys.kff.collect.CollectPostResponse;
 import com.tzg.entitys.kff.dareas.Dareas;
+import com.tzg.entitys.kff.follow.Follow;
 import com.tzg.entitys.kff.follow.FollowResponse;
 import com.tzg.entitys.kff.model.UserModel;
 import com.tzg.entitys.kff.tokenrecords.Tokenrecords;
@@ -45,6 +46,7 @@ import com.tzg.entitys.loginaccount.RegisterRequest;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
+import com.tzg.rmi.service.FollowRmiService;
 import com.tzg.rmi.service.KFFRmiService;
 import com.tzg.rmi.service.KFFUserRmiService;
 import com.tzg.rmi.service.SystemParamRmiService;
@@ -70,7 +72,7 @@ public class UserController extends BaseController {
 	@Autowired
 	private KFFUserRmiService kffUserRmiService;
 	@Autowired
-	private KFFUserRmiService kffUserService;
+	private FollowRmiService followRmiService;
 	
 	/** 
 	* @Title: getUserInfo 
@@ -89,14 +91,16 @@ public class UserController extends BaseController {
 	*/
 	@ResponseBody
 	@RequestMapping(value = "/getUserInfo", method = { RequestMethod.POST, RequestMethod.GET })
-	public BaseResponseEntity getUserInfo(HttpServletRequest request, HttpServletResponse response,Integer userId) {
+	public BaseResponseEntity getUserInfo(HttpServletRequest request, HttpServletResponse response,
+			Integer userId,String token) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
-		if(userId==null) {
+		if(userId==null&&StringUtils.isBlank(token)) {
 			JSONObject requestContent = HtmlUtils.getRequestContent(request);
 			userId = (Integer) requestContent.get("userId");
+			token = (String) requestContent.get("token");
 		}
-		if (null==userId) {
+		if (null==userId||StringUtils.isBlank(token)) {
 			bre.setNoRequstData();
 			return bre;
 		}
@@ -104,6 +108,19 @@ public class UserController extends BaseController {
 		if(null==user) {
 			bre.setNoDataMsg();
 			return bre;
+		}
+		//查询用户关注状态
+		Map<String,Object> seMap = new HashMap<String,Object>();
+		Integer userIdc = getUserIdByToken(token);
+		seMap.put("followUserId", userIdc);
+		seMap.put("followedUserId", userId);
+		seMap.put("status", 1);
+		seMap.put("followType", 3);//关注类型：1-关注项目;2-关注帖子；3-关注用户
+		List<Follow> follows = followRmiService.findListByAttr(seMap);
+		if(follows.isEmpty()) {
+			user.setFollowStatus(0);
+		}else {
+			user.setFollowStatus(1);
 		}
 		user.setPassword(null);
 		user.setPassword(null);

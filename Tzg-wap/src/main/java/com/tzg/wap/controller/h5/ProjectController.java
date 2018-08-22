@@ -197,7 +197,7 @@ public class ProjectController extends BaseController {
 				token = (String) requestContent.get("token");
 				kffUserId = (Integer) requestContent.get("kffUserId");
 			}
-			if(projectId==null||pageIndex==null||pageSize==null) {
+			if(pageIndex==null||pageSize==null) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
 			}
 			PaginationQuery query = new PaginationQuery();
@@ -273,7 +273,7 @@ public class ProjectController extends BaseController {
 				token = (String) requestContent.get("token");
 				kffUserId = (Integer) requestContent.get("kffUserId");
 			}
-			if(projectId==null||pageIndex==null||pageSize==null) {
+			if(pageIndex==null||pageSize==null) {
 				bre.setNoRequstData();
 				return bre;
 			}

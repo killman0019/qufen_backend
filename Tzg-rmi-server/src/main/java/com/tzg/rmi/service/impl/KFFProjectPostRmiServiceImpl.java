@@ -412,7 +412,7 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 	        		postRe.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
 	        	} else {
 	        		if (type == 2) {
-	        			Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER,
+	        			Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER,
 	        					postRe.getCreateUserId());
 	        			if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
 	        				postRe.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
@@ -420,7 +420,7 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 	        				postRe.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
 	        			}
 	        		} else if (type == 1) {
-	        			Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT,
+	        			Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT,
 	        					postRe.getProjectId());
 	        			if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
 	        				postRe.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);

@@ -134,6 +134,34 @@ public class SubmitKFFProjectRequest extends BaseRequest implements Serializable
 	private String github;
 	
 	private String bsjCirculateData;
+	
+	private Integer projectUserId;
+	private String projectMobile;
+	private Integer projectUserType;
+	
+	public Integer getProjectUserId() {
+		return projectUserId;
+	}
+
+	public void setProjectUserId(Integer projectUserId) {
+		this.projectUserId = projectUserId;
+	}
+
+	public String getProjectMobile() {
+		return projectMobile;
+	}
+
+	public void setProjectMobile(String projectMobile) {
+		this.projectMobile = projectMobile;
+	}
+
+	public Integer getProjectUserType() {
+		return projectUserType;
+	}
+
+	public void setProjectUserType(Integer projectUserType) {
+		this.projectUserType = projectUserType;
+	}
 
 	public Integer getCmcId() {
 		return cmcId;

@@ -176,7 +176,7 @@ public class PostResponse implements Serializable, Comparable {
 	private Integer type;
 	private Integer disStickTop;
 	private Date disStickUpdateTime;
-	
+
 	public String getPostUuid() {
 		return postUuid;
 	}
