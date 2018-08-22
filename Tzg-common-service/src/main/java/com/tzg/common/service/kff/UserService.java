@@ -303,16 +303,7 @@ public class UserService {
 
 			}
 			// 将APP传送过来的个推clientid保存进去
-			String uclientId = user.getClientId();
 			if (StringUtils.isNotBlank(clientId)) {
-				if (StringUtils.isBlank(uclientId)) {
-					user.setClientId(clientId);
-				}
-				if (null == appType) {
-					user.setAppType(AppType.ANDROID.getValue());
-				} else {
-					user.setAppType(appType);
-				}
 				// 判断clientid 在数据库中存在与否，存在即清空先
 				Map<String, Object> seMap = new HashMap<String, Object>();
 				seMap.put("clientId", clientId);
@@ -322,6 +313,12 @@ public class UserService {
 						kffUser.setClientId("");
 						userMapper.update(kffUser);
 					}
+				}
+				user.setClientId(clientId);
+				if (null == appType) {
+					user.setAppType(AppType.ANDROID.getValue());
+				} else {
+					user.setAppType(appType);
 				}
 			}
 			userMapper.update(user);

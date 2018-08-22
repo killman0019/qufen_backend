@@ -34,6 +34,9 @@
 		<result property="cmcId" jdbcType="INTEGER" column="cmc_id" />
 		<result property="github" jdbcType="VARCHAR" column="github" />
 		<result property="bsjCirculateData" jdbcType="VARCHAR" column="bsj_circulate_data" />
+		<result property="projectUserId" jdbcType="INTEGER" column="project_user_id" />
+		<result property="projectMobile" jdbcType="VARCHAR" column="project_mobile" />
+		<result property="projectUserType" jdbcType="INTEGER" column="project_user_type" />
 	</resultMap>
 
 	<resultMap type="com.tzg.entitys.kff.project.ProjectResponse" id="projectAndTradeResultMap" extends="BaseResultMap">
@@ -52,7 +55,8 @@
         project_id ,project_icon ,state ,project_code ,project_english_name ,project_chinese_name ,project_signature ,
         website_url ,listed ,issue_date ,issue_num ,whitepaper_url ,project_type_name ,project_type_id ,project_desc ,
         submit_user_id ,submit_user_type,submit_user_contact_info,submit_reason ,status ,createTime ,publishTime ,updateTime ,
-        total_score ,rater_num ,follower_num ,comments_num ,collect_num,totalRaterNum,cmc_id,github,bsj_circulate_data
+        total_score ,rater_num ,follower_num ,comments_num ,collect_num,totalRaterNum,cmc_id,github,bsj_circulate_data,project_user_id,
+        project_mobile,project_user_type
 	    ]]>
 	</sql>
 
@@ -92,7 +96,10 @@
         	totalRaterNum,
         	cmc_id,
         	github,
-        	bsj_circulate_data
+        	bsj_circulate_data,
+        	project_user_id,
+        	project_mobile,
+        	project_user_type
 		) VALUES (
         	#{projectIcon,jdbcType=VARCHAR} ,
         	#{state,jdbcType=INTEGER} ,
@@ -124,7 +131,10 @@
         	#{totalRaterNum,jdbcType=INTEGER} ,
             #{cmcId,jdbcType=INTEGER},
             #{github,jdbcType=VARCHAR},
-        	#{bsjCirculateData,jdbcType=VARCHAR}
+        	#{bsjCirculateData,jdbcType=VARCHAR},
+        	#{projectUserId,jdbcType=INTEGER},
+            #{projectMobile,jdbcType=VARCHAR},
+            #{projectUserType,jdbcType=INTEGER}
 		)
 	]]>
 	</insert>
@@ -224,6 +234,15 @@
 			</if>
 			<if test="bsjCirculateData != null">
 				bsj_circulate_data = #{bsjCirculateData,jdbcType=VARCHAR}
+			</if>
+			<if test="projectUserId != null">
+				project_user_id = #{projectUserId,jdbcType=INTEGER},
+			</if>
+			<if test="projectMobile != null">
+				project_mobile = #{projectMobile,jdbcType=VARCHAR},
+			</if>
+			<if test="projectUserType != null">
+				project_user_type = #{projectUserType,jdbcType=INTEGER}
 			</if>
 		</set>
 		WHERE
@@ -484,6 +503,15 @@
 		</if>
 		<if test="DYfollowerNum != null and DYfollowerNum.trim() != ''">
 			and follower_num &gt;= #{DYfollowerNum}
+		</if>
+		<if test="projectUserId != null">
+			and project_user_id = #{projectUserId,jdbcType=INTEGER}
+		</if>
+		<if test="projectMobile != null">
+			and project_mobile = #{projectMobile,jdbcType=VARCHAR}
+		</if>
+		<if test="projectUserType != null">
+			and project_user_type = #{projectUserType,jdbcType=INTEGER}
 		</if>
 
 	</sql>

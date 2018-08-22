@@ -160,6 +160,34 @@ public class ProjectResponse implements Serializable {
 	private Double percentChange24h;
 
 	private Double percentChange7d;
+	
+	private Integer projectUserId;
+	private String projectMobile;
+	private Integer projectUserType;
+	
+	public Integer getProjectUserId() {
+		return projectUserId;
+	}
+
+	public void setProjectUserId(Integer projectUserId) {
+		this.projectUserId = projectUserId;
+	}
+
+	public String getProjectMobile() {
+		return projectMobile;
+	}
+
+	public void setProjectMobile(String projectMobile) {
+		this.projectMobile = projectMobile;
+	}
+
+	public Integer getProjectUserType() {
+		return projectUserType;
+	}
+
+	public void setProjectUserType(Integer projectUserType) {
+		this.projectUserType = projectUserType;
+	}
 
 	public Integer getRank() {
 		return rank;
