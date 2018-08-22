@@ -310,7 +310,7 @@ public class MiningActivityController extends BaseController {
 			if(state==0) {
 				query.addQueryData("status1", 0);
 				query.addQueryData("status2", 1);
-				query.addQueryData("status3", 4);
+//				query.addQueryData("status3", 4);
 			}
 			if(state==1) {
 				query.addQueryData("status4", 2);
@@ -322,6 +322,30 @@ public class MiningActivityController extends BaseController {
 	        query.setPageIndex(curPage);
 	        query.setRowsPerPage(pageSize);
 			PageResult<MiningActivity> data = miningActivityRmiService.findMiningActivityPage(query);
+			if(state!=1) {
+				if(data==null) {
+					PaginationQuery queryc = new PaginationQuery();
+					queryc.addQueryData("status3", 4);
+					queryc.setPageIndex(curPage);
+					queryc.setRowsPerPage(pageSize);
+					data = miningActivityRmiService.findMiningActivityPage(queryc);
+				}else {
+					List<MiningActivity> rows = data.getRows();
+					if(!rows.isEmpty()&&rows.size()<pageSize) {
+						PaginationQuery queryc = new PaginationQuery();
+						queryc.addQueryData("status3", 4);
+						queryc.setPageIndex(curPage);
+						queryc.setRowsPerPage(pageSize);
+						PageResult<MiningActivity> datac = miningActivityRmiService.findMiningActivityPage(queryc);
+						if(null!=datac && datac.getRows().size()>0) {
+							List<MiningActivity> rowsc = datac.getRows();
+							for (MiningActivity miningActivity : rowsc) {
+								rows.add(miningActivity);
+							}
+						}
+					}
+				}
+			}
             map.put("data", data);
 			bre.setData(map);
 		} catch (RestServiceException e) {

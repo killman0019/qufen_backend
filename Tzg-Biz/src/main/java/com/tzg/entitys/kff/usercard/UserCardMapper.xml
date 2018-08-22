@@ -163,6 +163,16 @@
 		ORDER BY
 		cardID DESC
 	</select>
+	
+		<select id="selectStatusByUserIDOne" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM tbusercard
+		WHERE userId = #{userid,jdbcType=INTEGER} and valid=1
+		ORDER BY
+		cardID DESC limit 0,1
+	</select>
+	
 	<select id="selectUserCardNum" resultType="java.lang.Integer">
 		SELECT
 		cardID

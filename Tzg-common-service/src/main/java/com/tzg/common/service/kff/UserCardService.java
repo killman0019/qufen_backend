@@ -34,7 +34,6 @@ public class UserCardService {
 		userCardMapper.save(userCard);
 	}
 
-	
 	public void updataUserIdCard(UserCard userCard) {
 		userCardMapper.updateUserCard(userCard);
 
@@ -68,6 +67,11 @@ public class UserCardService {
 		UserCard userCard = userCards.get(0);
 		return userCard.getStatus();
 
+	}
+
+	public UserCard selectUserStatusOnly(Integer userId) {
+		// TODO Auto-generated method stub
+		return userCardMapper.selectStatusByUserIDOne(userId);
 	}
 
 }
