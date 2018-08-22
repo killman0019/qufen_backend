@@ -31,6 +31,7 @@ import com.tzg.common.utils.AccountTokenUtil;
 import com.tzg.common.utils.FileUtils;
 import com.tzg.common.utils.QiniuUtil;
 import com.tzg.common.utils.RandomUtil;
+import com.tzg.common.utils.SyseUtil;
 import com.tzg.common.utils.rest.Base64Util;
 import com.tzg.entitys.kff.article.ArticleDetailResponse;
 import com.tzg.entitys.kff.comments.Comments;
@@ -89,18 +90,23 @@ public class HomeController extends BaseController {
 				userId = getUserIdByToken(token);
 			}
 			PaginationQuery query = new PaginationQuery();
-//			query.addQueryData("status", "1");
-//			query.addQueryData("stickTop", "1");
-//			query.addQueryData("sortField", "stick_updateTime");
-//			query.addQueryData("notDiscuss", "true");
+
+			query.addQueryData("status", "1");
+			query.addQueryData("stickTop", "1");
+			query.addQueryData("sortField", "stick_updateTime");
+
+			query.addQueryData("notDiscuss", "true");
+
 			// query.addQueryData("praiseNum", "10");
 			// 帖子类型：1-评测；2-讨论；3-文章
 			// query.addQueryData("postType", "1");
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
+
 			Integer nowCount = baseRequest.getPageSize();
 			Integer type = 2;// 取关注人
-			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query, type,nowCount);
+			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query, type, nowCount);
+
 			map.put("recommends", recommends);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -112,7 +118,7 @@ public class HomeController extends BaseController {
 		}
 		return bre;
 	}
-	
+
 	/**
 	 * @Title: getBurstList
 	 * @Description: TODO <获取爆料列表>
@@ -139,12 +145,7 @@ public class HomeController extends BaseController {
 				userId = getUserIdByToken(token);
 			}
 			PaginationQuery query = new PaginationQuery();
-//			query.addQueryData("status", "1");
-			// query.addQueryData("stickTop", "1");
-//			query.addQueryData("sortField", "createTime");
-			// query.addQueryData("praiseNum", "10");
-			// 帖子类型：2-爆料
-//			query.addQueryData("postType", "2");
+
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
 			Integer nowCount = baseRequest.getPageSize();
@@ -161,7 +162,7 @@ public class HomeController extends BaseController {
 		}
 		return bre;
 	}
-	
+
 	/** 
 	* @Title: followList 
 	* @Description: TODO <主页-关注列表>
@@ -194,16 +195,19 @@ public class HomeController extends BaseController {
 
 			Integer type = 2;// 取关注人
 			KFFUser loginUser = null;
-			if(StringUtils.isNotBlank(token)) {
+			if (StringUtils.isNotBlank(token)) {
 				userId = getUserIdByToken(token);
 				loginUser = kffUserService.findById(userId);
 			}
 			query.addQueryData("userId", userId);
-			PageResult<PostResponse> follows = kffProjectPostRmiService.findPageForFollowList(userId, query,type,loginUser);
-//			PageResult<PostResponse> follows = kffProjectPostRmiService.findMyPageFollowList(userId, query);
+			PageResult<PostResponse> follows = kffProjectPostRmiService.findPageForFollowList(userId, query, type, loginUser);
+			// PageResult<PostResponse> follows =
+			// kffProjectPostRmiService.findMyPageFollowList(userId, query);
 			System.err.println("follows" + follows);
+
 			map.put("follows", follows);
 			bre.setData(map);
+			SyseUtil.systemErrOutJson(map);
 		} catch (RestServiceException e) {
 			logger.error("HomeController followList:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
@@ -287,10 +291,11 @@ public class HomeController extends BaseController {
 				userId = getUserIdByToken(token);
 			}
 			Integer type = 2;// 取关注人
-			ArticleDetailResponse article = kffRmiService.findArticleDetail(userId,type, postId);
+			ArticleDetailResponse article = kffRmiService.findArticleDetail(userId, type, postId);
 			map.put("articleDetail", article);
 
 			bre.setData(map);
+			SyseUtil.systemErrOutJson(bre);
 		} catch (RestServiceException e) {
 			logger.error("HomeController articleDetail:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
@@ -337,6 +342,15 @@ public class HomeController extends BaseController {
 			newQuery.addQueryData("parentCommentsIdNull", "YES");
 			newQuery.setPageIndex(params.getPageIndex());
 			newQuery.setRowsPerPage(params.getPageSize());
+
+			if (StringUtils.isNotBlank(params.getSortField())) {
+				newQuery.addQueryData("sortField", params.getSortField());
+				// newQuery.addQueryData("sortSequence", "desc");
+			} else {
+				newQuery.addQueryData("sortField", "post_id");
+				// newQuery.addQueryData("sortSequence", "desc");
+			}
+
 			PageResult<Comments> newestComments = kffRmiService.findPageNewestCommentsSelf(userId, postId, newQuery);
 			// System.err.println("这个是最新评论newestComments" + JSON.toJSONString(newestComments));
 			map.put("newestComments", newestComments);
@@ -445,9 +459,10 @@ public class HomeController extends BaseController {
 				userId = getUserIdByToken(token);
 			}
 			Integer type = 2;// 取关注人
-			DiscussDetailResponse discuss = kffRmiService.findDiscussDetail(userId, type,postId);
+			DiscussDetailResponse discuss = kffRmiService.findDiscussDetail(userId, type, postId);
 			map.put("discussDetail", discuss);
 			bre.setData(map);
+			SyseUtil.systemErrOutJson(bre);
 		} catch (RestServiceException e) {
 			logger.error("HomeController discussDetail:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
@@ -494,6 +509,14 @@ public class HomeController extends BaseController {
 			query.addQueryData("postType", KFFConstants.POST_TYPE_DISCUSS + "");
 			query.addQueryData("parentCommentsIdNull", "YES");
 
+			if (StringUtils.isNotBlank(baseRequest.getSortField())) {
+				query.addQueryData("sortField", baseRequest.getSortField());
+				query.addQueryData("sortSequence", "desc");
+			} else {
+				query.addQueryData("sortField", "post_id");
+				query.addQueryData("sortSequence", "desc");
+			}
+
 			PageResult<Comments> comments = kffRmiService.findPageDiscussCommentsList(userId, query);
 			map.put("comments", comments);
 
@@ -537,7 +560,7 @@ public class HomeController extends BaseController {
 				userId = getUserIdByToken(token);
 			}
 			Integer type = 2;// 取关注人
-			EvaluationDetailResponse evaluationDetail = kffRmiService.findEvaluationDetail(userId, type,postId);
+			EvaluationDetailResponse evaluationDetail = kffRmiService.findEvaluationDetail(userId, type, postId);
 			map.put("evaluationDetail", evaluationDetail);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -586,6 +609,15 @@ public class HomeController extends BaseController {
 			newQuery.addQueryData("parentCommentsIdNull", "YES");
 			newQuery.setPageIndex(params.getPageIndex());
 			newQuery.setRowsPerPage(params.getPageSize());
+
+			if (StringUtils.isNotBlank(params.getSortField())) {
+				newQuery.addQueryData("sortField", params.getSortField());
+				newQuery.addQueryData("sortSequence", "desc");
+			} else {
+				newQuery.addQueryData("sortField", "post_id");
+				newQuery.addQueryData("sortSequence", "desc");
+			}
+
 			PageResult<Comments> newestComments = kffRmiService.findPageNewestCommentsSelf(userId, postId, newQuery);
 			// System.err.println("最新评论newestComments" + JSONObject.toJSONString(newestComments));
 			map.put("newestComments", newestComments);

@@ -12,10 +12,16 @@ public interface FollowMapper extends BaseMapper<Follow, java.lang.Integer> {
 
 	Follow findByWhere(Map<String, Object> map);
 
-	void updateUserInfo(Map<String, Object> followMap);	
+	void updateUserInfo(Map<String, Object> followMap);
 
 	List<Follow> findFollowedProjects(Map<String, Object> map);
 
-	List<Follow> findByMap(Map<String, String> map);	
+	List<Follow> findByMap(Map<String, String> map);
+
+	Integer findPageCountFans(Map<String, Object> queryData);
+
+	List<FollowResponse> findPageFans(Map<String, Object> queryData);
+
+	
 
 }

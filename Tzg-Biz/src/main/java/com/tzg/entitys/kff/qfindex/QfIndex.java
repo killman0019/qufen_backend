@@ -56,6 +56,31 @@ public class QfIndex implements Serializable {
 	 */
 	private java.lang.Integer yxpraise;
 	/**
+	 * 个人有效评论次数
+	 */
+	private Integer yxComments;
+	/**
+	 * 个人有效分享次数
+	 */
+	private Integer yxSharePost;
+
+	public Integer getYxSharePost() {
+		return yxSharePost;
+	}
+
+	public void setYxSharePost(Integer yxSharePost) {
+		this.yxSharePost = yxSharePost;
+	}
+
+	public Integer getYxComments() {
+		return yxComments;
+	}
+
+	public void setYxComments(Integer yxComments) {
+		this.yxComments = yxComments;
+	}
+
+	/**
 	 * 创建时间
 	 */
 	private java.util.Date createTime;
@@ -65,100 +90,123 @@ public class QfIndex implements Serializable {
 	 */
 	private java.util.Date updateTime;
 	private java.lang.String updateTimeStr;
-	
-	
 
 	public java.lang.Integer getYxpraise() {
 		return yxpraise;
 	}
+
 	public void setYxpraise(java.lang.Integer yxpraise) {
 		this.yxpraise = yxpraise;
 	}
+
 	public java.util.Date getCreateTime() {
 		return createTime;
 	}
+
 	public void setCreateTime(java.util.Date createTime) {
-		this.createTimeStr =DateUtil.getDate(createTime, "yyyy-MM-dd HH:mm:ss");
+		this.createTimeStr = DateUtil.getDate(createTime, "yyyy-MM-dd HH:mm:ss");
 		this.createTime = createTime;
 	}
+
 	public java.util.Date getUpdateTime() {
 		return updateTime;
 	}
+
 	public void setUpdateTime(java.util.Date updateTime) {
-		this.updateTimeStr =DateUtil.getDate(updateTime, "yyyy-MM-dd HH:mm:ss");
+		this.updateTimeStr = DateUtil.getDate(updateTime, "yyyy-MM-dd HH:mm:ss");
 		this.updateTime = updateTime;
 	}
+
 	public java.lang.String getCreateTimeStr() {
 		return createTimeStr;
 	}
+
 	public java.lang.String getUpdateTimeStr() {
 		return updateTimeStr;
 	}
+
 	public java.lang.Integer getQfIndexId() {
 		return qfIndexId;
 	}
+
 	public void setQfIndexId(java.lang.Integer qfIndexId) {
 		this.qfIndexId = qfIndexId;
 	}
+
 	public java.lang.Integer getUserId() {
 		return userId;
 	}
+
 	public void setUserId(java.lang.Integer userId) {
 		this.userId = userId;
 	}
+
 	public java.lang.Double getContributeContent() {
 		return contributeContent;
 	}
+
 	public void setContributeContent(java.lang.Double contributeContent) {
 		this.contributeContent = contributeContent;
 	}
+
 	public java.lang.Double getLockedPosition() {
 		return lockedPosition;
 	}
+
 	public void setLockedPosition(java.lang.Double lockedPosition) {
 		this.lockedPosition = lockedPosition;
 	}
+
 	public java.lang.Double getLiveness() {
 		return liveness;
 	}
+
 	public void setLiveness(java.lang.Double liveness) {
 		this.liveness = liveness;
 	}
+
 	public java.lang.Double getInfluence() {
 		return influence;
 	}
+
 	public void setInfluence(java.lang.Double influence) {
 		this.influence = influence;
 	}
+
 	public java.lang.Double getCommunityAssessment() {
 		return communityAssessment;
 	}
+
 	public void setCommunityAssessment(java.lang.Double communityAssessment) {
 		this.communityAssessment = communityAssessment;
 	}
+
 	public java.lang.Double getHealthDegree() {
 		return healthDegree;
 	}
+
 	public void setHealthDegree(java.lang.Double healthDegree) {
 		this.healthDegree = healthDegree;
 	}
+
 	public java.lang.String getStatusHierarchyDesc() {
 		return statusHierarchyDesc;
 	}
+
 	public void setStatusHierarchyDesc(java.lang.String statusHierarchyDesc) {
 		this.statusHierarchyDesc = statusHierarchyDesc;
 	}
+
 	public java.lang.Integer getStatusHierarchyType() {
 		return statusHierarchyType;
 	}
+
 	public void setStatusHierarchyType(java.lang.Integer statusHierarchyType) {
 		this.statusHierarchyType = statusHierarchyType;
 	}
+
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
-	
-	
-	
 
 }

@@ -11,7 +11,22 @@ import com.tzg.common.base.BaseMapper;
 public interface QfIndexMapper extends BaseMapper<QfIndex, java.lang.Integer> {
 
 	QfIndex findByUserId(Integer userid);
+
 	void updateYxPraise(Integer userId);
+
 	void updateYxPraiseValid();
+
 	List<QfIndex> findByUserIds(Map<String, Object> qfUsersMap);
+
+	/**
+	 * 
+	 * TODO 分享成功,有效分享次数减少
+	 * @param shareUserId
+	 * @author zhangdd
+	 * @data 2018年8月16日
+	 *
+	 */
+	void updateyxSharePost(Integer userId);
+
+	void updateYxPraiseValidAndYxCommentsAndYxSharePost();
 }

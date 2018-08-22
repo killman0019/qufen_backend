@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tzg.common.base.BaseRequest;
 import com.tzg.common.page.PageResult;
@@ -58,9 +59,9 @@ public class UserHomeController extends BaseController {
 			JSONObject params = getParamMapFromRequestPolicy(request);
 			String token = (String) params.get("token");
 			Integer userId = (Integer) params.get("userId");
-			Integer loginUserId =null;
-			
-			if(StringUtils.isNotBlank(token)) {
+			Integer loginUserId = null;
+
+			if (StringUtils.isNotBlank(token)) {
 				loginUserId = getUserIdByToken(token);
 			}
 			KFFUserHomeResponse userResp = kffRmiService.findUserHomeByUserId(loginUserId, userId);
@@ -162,7 +163,7 @@ public class UserHomeController extends BaseController {
 				query.addQueryData("sortField", baseRequest.getSortField());
 			}
 			KFFUser loginUser = null;
-			if(StringUtils.isNotBlank(token)) {
+			if (StringUtils.isNotBlank(token)) {
 				loginUser = kffUserService.findById(userId);
 				query.addQueryData("createUserId", userId);
 			}
@@ -171,10 +172,10 @@ public class UserHomeController extends BaseController {
 			query.addQueryData("sql_keyword_orderBy", "createTime");
 			query.addQueryData("sql_keyword_sort", "desc");
 			Integer type = 2;// 取关注人
-			PageResult<PostResponse> discusses = kffRmiService.findPageDisscussList(query,type,loginUser);
+			PageResult<PostResponse> discusses = kffRmiService.findPageDisscussList(query, type, loginUser);
 			// 20180507志远去除 我的最新讨论记录 微信群
 			// PostResponse myLatestDiscuss = kffRmiService.findMyLatestDiscuss(loginUserId);
-			//System.err.println("discusses++++++++++++++" + JSONObject.toJSONString(discusses));
+			// System.err.println("discusses++++++++++++++" + JSONObject.toJSONString(discusses));
 			map.put("discusses", discusses);
 			// map.put("myLatestDiscuss", myLatestDiscuss);
 			bre.setData(map);
@@ -216,7 +217,7 @@ public class UserHomeController extends BaseController {
 				query.addQueryData("sortField", baseRequest.getSortField());
 			}
 			KFFUser loginUser = null;
-			if(StringUtils.isNotBlank(token)) {
+			if (StringUtils.isNotBlank(token)) {
 				Integer userId = getUserIdByToken(token);
 				loginUser = kffUserService.findById(userId);
 			}
@@ -225,7 +226,9 @@ public class UserHomeController extends BaseController {
 			query.setRowsPerPage(baseRequest.getPageSize());
 			query.addQueryData("sql_keyword_orderBy", "createTime");
 			query.addQueryData("sql_keyword_sort", "desc");
-			PageResult<PostResponse> articles = kffRmiService.findPageArticleList(query,type,loginUser);
+
+			PageResult<PostResponse> articles = kffRmiService.findPageArticleList(query, type, loginUser);
+
 			map.put("articles", articles);
 			bre.setData(map);
 		} catch (RestServiceException e) {

@@ -467,11 +467,7 @@
 
 		update tbtransactionpair
 		<trim prefix="set" suffixOverrides=",">
-			<!-- 拼接case when 这是一种写法 -->
-			<!--<foreach collection="list" separator="" item="cus" open="c_age = case id" close="end, "> -->
-			<!--when #{cus.id} then #{cus.age} -->
-			<!--</foreach> -->
-			<!-- 拼接case when 这是另一种写法，这种写着更专业的感觉 -->
+
 			<trim prefix="base_volume =case" suffix="end,">
 				<foreach collection="list" item="cus">
 					<if test="cus.baseVolume!=null and cus.baseVolume!=''">
@@ -520,14 +516,7 @@
 					</if>
 				</foreach>
 			</trim>
-			<trim prefix="vol =case" suffix="end,">
-				<foreach collection="list" item="cus">
-					<if test="cus.vol!=null and cus.vol!=''">
-						when main_code = #{cus.mainCode} and exchange_name = #{cus.exchangeName} and coinpair = #{cus.coinpair}
-						then #{cus.vol}
-					</if>
-				</foreach>
-			</trim>
+
 			<trim prefix="last =case" suffix="end,">
 				<foreach collection="list" item="cus">
 					<if test="cus.last!=null and cus.last!=''">

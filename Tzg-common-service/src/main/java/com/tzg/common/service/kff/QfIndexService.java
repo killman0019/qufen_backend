@@ -79,12 +79,17 @@ public class QfIndexService {
 	}
 
 	public void updateYxPraiseValid() {
-		QfIndexMapper.updateYxPraiseValid();
+		QfIndexMapper.updateYxPraiseValidAndYxCommentsAndYxSharePost();
 	}
 
 	public List<QfIndex> findByUserIds(Map<String, Object> qfUsersMap) {
-		
+
 		return QfIndexMapper.findByUserIds(qfUsersMap);
+	}
+
+	public void updateYxSharePost(Integer shareUserId) {
+		// TODO 分享奖励发放成功, 有效分享次数减少
+		QfIndexMapper.updateyxSharePost(shareUserId);
 	}
 
 }

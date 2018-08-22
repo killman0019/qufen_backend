@@ -1,5 +1,8 @@
 package com.tzg.common.service.systemParam;
 
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -113,6 +116,16 @@ public class SystemParamService {
 			}
 		}
 		return bankCardPaymentProtocol;
+	}
+
+	public List<SystemParam> findByMap(Map<String, Object> sysMap) {
+		// TODO map 查询
+		return null;
+	}
+
+	public List<SystemParam> findByCodeList(List<String> listStr) {
+		// TODO 根据codelist 查询对象
+		return null;
 	}
 
 }

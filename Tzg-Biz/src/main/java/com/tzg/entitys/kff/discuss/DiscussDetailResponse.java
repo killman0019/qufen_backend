@@ -1,6 +1,7 @@
 package com.tzg.entitys.kff.discuss;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.tzg.common.utils.DateUtil;
@@ -117,6 +118,30 @@ public class DiscussDetailResponse implements Serializable {
 	private java.lang.String createUserName;
 
 	private Integer userType;
+
+	/**
+	 * 总捐赠金额
+	 */
+	private java.math.BigDecimal commendationNum = BigDecimal.ZERO;
+
+	public java.math.BigDecimal getCommendationNum() {
+		return commendationNum;
+	}
+
+	public void setCommendationNum(java.math.BigDecimal commendationNum) {
+		this.commendationNum = commendationNum;
+	}
+
+	public List<Commendation> getCommendationList() {
+		return commendationList;
+	}
+
+	public void setCommendationList(List<Commendation> commendationList) {
+		this.commendationList = commendationList;
+	}
+
+	// 捐赠用户列表，最多8个
+	private List<Commendation> commendationList;
 
 	public Integer getUserType() {
 		return userType;

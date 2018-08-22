@@ -9,6 +9,8 @@ import java.io.Serializable;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.tzg.common.utils.SyseUtil;
+
 public class BASE64MultipartFile implements MultipartFile, Serializable {
 
 	/**
@@ -32,7 +34,12 @@ public class BASE64MultipartFile implements MultipartFile, Serializable {
 	@Override
 	public String getOriginalFilename() {
 		// TODO - implementation depends on your requirements
-		return System.currentTimeMillis() + (int) Math.random() * 10000 + "." + header.split("/")[1];
+		if (header.contains("/")) {
+			SyseUtil.systemErrOutJson(System.currentTimeMillis() + (int) Math.random() * 10000 + "." + header.split("/")[1]);
+			return System.currentTimeMillis() + (int) Math.random() * 10000 + "." + header.split("/")[1];
+		} else {
+			return System.currentTimeMillis() + (int) Math.random() * 10000 + "";
+		}
 	}
 
 	@Override

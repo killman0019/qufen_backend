@@ -633,6 +633,35 @@
 
 	</select>
 
+	<update id="increaseKffcoinNum" parameterType="java.util.Map">
+		update
+		tbuser
+		<set>
+			<if test="kffCoinNum !=null"></if>
+			kff_coin_num = kff_coin_num + #{kffCoinNum}
+		</set>
+
+		where
+		user_id = #{userId,jdbcType=INTEGER}
+
+
+	</update>
+
+	<update id="decreaseKffcoinNum" parameterType="java.util.Map">
+
+		update
+		tbuser
+		<set>
+			<if test="kffCoinNum !=null"></if>
+			kff_coin_num = kff_coin_num - #{kffCoinNum}
+		</set>
+
+		where
+		user_id = #{userId,jdbcType=INTEGER}
+
+
+	</update>
+
 </mapper>
 
 

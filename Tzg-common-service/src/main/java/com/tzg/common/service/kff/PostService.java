@@ -3,6 +3,7 @@ package com.tzg.common.service.kff;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.springframework.util.CollectionUtils;
 
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
+import com.tzg.common.utils.DateUtil;
 import com.tzg.entitys.kff.commendation.Commendation;
 import com.tzg.entitys.kff.commendation.CommendationMapper;
 import com.tzg.entitys.kff.post.Post;
@@ -43,8 +45,6 @@ public class PostService {
 
 	@Autowired
 	private TokenrecordsMapper tokenrecordsMapper;
-
-	private static final ExecutorService newFixedThreadPoolCaluaPostIncome = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 4);
 
 	@Transactional(readOnly = true)
 	public List<PostDiscussVo> findSetTopDiscuss(Map<String,Object> map) throws RestServiceException {
@@ -253,6 +253,24 @@ public class PostService {
 		return result;
 	}
 
+	@Transactional(readOnly = true)
+	public PageResult<Post> findPageRemoveSingleEva(PaginationQuery query) {
+		PageResult<Post> result = null;
+		try {
+			Integer count = postMapper.findPageCountRemoveSingleEva(query.getQueryData());
+			if (null != count && count.intValue() > 0) {
+				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
+				query.addQueryData("startRecord", Integer.toString(startRecord));
+				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
+				List<Post> list = postMapper.findPageRemoveSingleEva(query.getQueryData());
+				result = new PageResult<Post>(list, count, query);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
 	/**
 	 * 根据用户的id查询当前用户下的所有帖子
 	 * 
@@ -264,16 +282,21 @@ public class PostService {
 		return null;
 	}
 
-	public List<Post> selectAllPost() {
+	public List<Post> selectAllPost(int i) {
 		List<Post> posts = null;
 		try {
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("status", "1");
-			String dataStr = "2018-07-11 00:00:00";
+			String dataStr = "2018-06-21 00:00:00";
 			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			Date parse = format.parse(dataStr);
 			map.put("createTimeBegin", parse);
-			posts = postMapper.selectAllPost(map);
+
+			PaginationQuery query = new PaginationQuery();
+			query.setRowsPerPage(10);
+			query.setPageIndex(i);
+			query.setQueryData(map);
+			posts = selectAllPostQuery(query);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -281,37 +304,90 @@ public class PostService {
 		return posts;
 	}
 
+	private List<Post> selectAllPostQuery(PaginationQuery query) {
+		// TODO 进行分页查询整个数据库
+		PageResult<Post> result = null;
+		try {
+			Integer count = postMapper.findPageCount(query.getQueryData());
+			if (null != count && count.intValue() > 0) {
+				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
+				query.addQueryData("startRecord", Integer.toString(startRecord));
+				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
+				List<Post> list = postMapper.findPage(query.getQueryData());
+				result = new PageResult<Post>(list, count, query);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result.getRows();
+	}
+
 	public void caculatePostTatolIncome() {
 		// 查找所有的post的并且进行统计
 		System.err.println("定时任务开始!");
-		List<Post> posts = selectAllPost();
-		if (!CollectionUtils.isEmpty(posts)) {
-			// 进行线程的跑线程
+		// List<Post> posts =null;
+		ExecutorService newFixedThreadPoolCaluaPostIncome = null;
+		try {
+			newFixedThreadPoolCaluaPostIncome = Executors.newFixedThreadPool(10);
+			int i = 0;
+			while (true) {
+				i = i + 1;
 
-			try {
-				for (Post p : posts) {
-					final Integer postId = p.getPostId();
-					newFixedThreadPoolCaluaPostIncome.execute(new Runnable() {
-						@Override
-						public void run() {
-							try {
-								caculateEveryPostIncome(postId);
-							} catch (Exception e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
+				List<Post> posts = selectAllPost(i);
+				if (!CollectionUtils.isEmpty(posts)) {
+					// 进行线程的跑线程
+
+					try {
+						for (Post p : posts) {
+
+							final Integer postId = p.getPostId();
+							final Post pf = p;
+							newFixedThreadPoolCaluaPostIncome.execute(new Runnable() {
+								@Override
+								public void run() {
+									try {
+										caculateEveryPostIncome(postId, pf);
+									} catch (Exception e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+								}
+							});
+
 						}
-					});
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} finally {
+						//newFixedThreadPoolCaluaPostIncome.shutdown();
 
+					}
+
+				} else if (CollectionUtils.isEmpty(posts)) {
+					if (!newFixedThreadPoolCaluaPostIncome.isShutdown()) {
+						newFixedThreadPoolCaluaPostIncome.shutdown();
+						return;
+					}
+					System.err.println("结束");
+					return;
 				}
 
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} finally {
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (!newFixedThreadPoolCaluaPostIncome.isShutdown()) {
 				newFixedThreadPoolCaluaPostIncome.shutdown();
 			}
+			System.err.println("结束");
 		}
+		if (!newFixedThreadPoolCaluaPostIncome.isShutdown()) {
+			// newFixedThreadPoolCaluaPostIncome.shutdown();
+
+			System.err.println("已经关闭");
+		}
+
 	}
 
 	/**
@@ -322,63 +398,63 @@ public class PostService {
 	 * @data 2018年8月8日
 	 *
 	 */
-	private void caculateEveryPostIncome(Integer postId) {
-		try {
-			Double praiseIncome = 0.0d;
-			Double donateIncome = 0.0d;
-			Double postTotalIncome = 0.0d;
+	public void caculateEveryPostIncome(Integer postId, Post post) {
+		int countDays = DateUtil.countDays(new Date(), post.getCreateTime());
+		if (countDays < 30) {
+			// if (DateUtil.countDays(post.getCreateTime(), new Date()) > 30) {
+			try {
 
-			// TODO Auto-generated method stub
-			if (postId == null) {
-				return;
-			}
-			Post post = postMapper.findById(postId);
-			if (null != post) {
-				return;
-			}
-			// 查询打赏奖励表,查询对这个帖子进行的打赏
-			List<Commendation> commendations = commendationMapper.selectAllCommendationByPostId(postId);
-			if (!CollectionUtils.isEmpty(commendations)) {
-				// 打赏表不能为空
-				for (Commendation commendation : commendations) {
-					if (commendation != null) {
-						BigDecimal amount = commendation.getAmount();
-						double doubleAmount = amount.doubleValue();
-						donateIncome = donateIncome + doubleAmount;
+				Double praiseIncome = 0.0d;
+				Double donateIncome = 0.0d;
+				Double postTotalIncome = 0.0d;
+
+				// TODO Auto-generated method stub
+
+				// 查询打赏奖励表,查询对这个帖子进行的打赏
+				List<Commendation> commendations = commendationMapper.selectAllCommendationByPostId(postId);
+				if (!CollectionUtils.isEmpty(commendations)) {
+					// 打赏表不能为空
+					for (Commendation commendation : commendations) {
+						if (commendation != null) {
+							BigDecimal amount = commendation.getAmount();
+							double doubleAmount = amount.doubleValue();
+							donateIncome = donateIncome + doubleAmount;
+						}
 					}
 				}
-			}
-			// 进行点赞统计
-			Map<String, Object> tcmap = new HashMap<String, Object>();
-			tcmap.put("postId", postId + "");
-			tcmap.put("status", "1");
-			List<Tokenrecords> tokenrecords = tokenrecordsMapper.findAllPage(tcmap);
-			if (!CollectionUtils.isEmpty(tokenrecords)) {
-				for (Tokenrecords tokenrecord : tokenrecords) {
-					if (null != tokenrecord) {
-						BigDecimal amount = tokenrecord.getAmount();
-						double doubleAmout = amount.doubleValue();
-						praiseIncome = praiseIncome + doubleAmout;
+				// 进行点赞统计
+				Map<String, Object> tcmap = new HashMap<String, Object>();
+				tcmap.put("postId", postId + "");
+				tcmap.put("status", "1");
+				List<Tokenrecords> tokenrecords = tokenrecordsMapper.findAllPage(tcmap);
+				if (!CollectionUtils.isEmpty(tokenrecords)) {
+					for (Tokenrecords tokenrecord : tokenrecords) {
+						if (null != tokenrecord) {
+							BigDecimal amount = tokenrecord.getAmount();
+							double doubleAmout = amount.doubleValue();
+							praiseIncome = praiseIncome + doubleAmout;
 
+						}
 					}
 				}
+				// 进行post总收益的计算
+
+				postTotalIncome = praiseIncome + donateIncome;
+				// 将三个数据更新到数据库中
+
+				Post postDB = new Post();
+				postDB.setPostId(postId);
+				postDB.setPraiseIncome(praiseIncome);
+				postDB.setDonateIncome(donateIncome);
+				postDB.setPostTotalIncome(postTotalIncome);
+				postDB.setUpdateTime(new Date());
+				postMapper.update(postDB);
+				logger.warn("------update post income for post:" + postId + "praiseIncome:" + praiseIncome + "donateIncome:" + donateIncome
+						+ "postTotalIncome:" + postTotalIncome);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			// 进行post总收益的计算
-
-			postTotalIncome = praiseIncome + donateIncome;
-			// 将三个数据更新到数据库中
-
-			Post postDB = new Post();
-			postDB.setPostId(postId);
-			postDB.setPraiseIncome(praiseIncome);
-			postDB.setDonateIncome(donateIncome);
-			postDB.setPostTotalIncome(postTotalIncome);
-			postMapper.update(postDB);
-			logger.warn("------update post income for post:" + postId + "praiseIncome:" + praiseIncome + "donateIncome:" + donateIncome + "postTotalIncome:"
-					+ postTotalIncome);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 
@@ -418,5 +494,42 @@ public class PostService {
 		}
 		return result;
 
+	}
+
+	/**
+	 * 
+	 * TODO 统计点赞的帖子收益
+	 * @param postId
+	 * @param amount
+	 * @author zhangdd
+	 * @data 2018年8月21日
+	 *
+	 */
+	public void updatePraiseIncome(Integer postId, Double amount) {
+		// TODO 统计点赞的帖子收益
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("postId", postId);
+		map.put("amount", amount);
+		map.put("praiseIncome", amount);
+
+		postMapper.updateIncome(map);
+	}
+
+	/**
+	 * 
+	 * TODO 统计打赏的帖子收益
+	 * @param postId
+	 * @param amount
+	 * @author zhangdd
+	 * @data 2018年8月21日
+	 *
+	 */
+	public void updateCommendationIncome(Integer postId, Double amount) {
+		// TODO 统计打赏的帖子收益
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("donateIncome", amount);
+		map.put("postId", postId);
+		map.put("amount", amount);
+		postMapper.updateIncome(map);
 	}
 }

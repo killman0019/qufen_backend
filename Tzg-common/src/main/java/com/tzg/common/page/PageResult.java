@@ -3,12 +3,11 @@ package com.tzg.common.page;
 import java.io.Serializable;
 import java.util.List;
 
-
 /**
  * 封装分页结果
  * 
  */
-public class PageResult<T> implements Serializable{
+public class PageResult<T> implements Serializable {
 
 	/**
 	 * 
@@ -34,6 +33,7 @@ public class PageResult<T> implements Serializable{
 	 * 每页的记录数
 	 */
 	private int rowsPerPage = PaginationQuery.DEFAULT_ROWS_PER_PAGE;
+	// private int rowsPerPage;
 
 	/**
 	 * 当前显示页数
@@ -44,10 +44,11 @@ public class PageResult<T> implements Serializable{
 	 * 设置url查询参数
 	 */
 	private String queryParameters;
-	
-	public PageResult(){}
-	
-	public PageResult(List<T> rows,int rowCount,PaginationQuery query){
+
+	public PageResult() {
+	}
+
+	public PageResult(List<T> rows, int rowCount, PaginationQuery query) {
 		this.rows = rows;
 		this.rowCount = rowCount;
 		this.rowsPerPage = query.getRowsPerPage();
@@ -55,7 +56,7 @@ public class PageResult<T> implements Serializable{
 		this.queryParameters = query.getQueryParameters();
 		this.countPageSize();
 	}
-	
+
 	/**
 	 * 得到分页器，通过Paginator可以得到总页数等值
 	 * @return
@@ -64,7 +65,7 @@ public class PageResult<T> implements Serializable{
 	public Paginator getPaginator() {
 		return new Paginator(curPageNum,rowsPerPage,rowCount);
 	}
-    */
+	*/
 	public int getCurPageNum() {
 		return curPageNum;
 	}
@@ -123,7 +124,6 @@ public class PageResult<T> implements Serializable{
 		this.rowsPerPage = rowsPerPage;
 	}
 
-	
 	public String getQueryParameters() {
 		return queryParameters;
 	}
@@ -131,6 +131,7 @@ public class PageResult<T> implements Serializable{
 	public void setQueryParameters(String queryParameters) {
 		this.queryParameters = queryParameters;
 	}
+
 	/**
 	 * 根据总记录数计算总页数
 	 * 
@@ -146,7 +147,7 @@ public class PageResult<T> implements Serializable{
 		}
 		return pageCount;
 	}
-	
+
 	/**
 	 * 判断查询结果是否还有下一页
 	 * 

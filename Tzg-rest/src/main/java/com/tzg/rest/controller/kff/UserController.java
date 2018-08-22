@@ -32,6 +32,7 @@ import com.tzg.common.utils.FileUtils;
 import com.tzg.common.utils.HexUtil;
 import com.tzg.common.utils.RegexUtil;
 import com.tzg.common.utils.SHAUtil;
+import com.tzg.common.utils.SyseUtil;
 import com.tzg.common.utils.TzgConstant;
 import com.tzg.common.utils.rest.Base64Util;
 import com.tzg.common.utils.rest.RestConstants;
@@ -73,9 +74,12 @@ public class UserController extends BaseController {
 	private SystemParamRmiService systemParamRmiService;
 	@Autowired
 	private RedisService redisService;
+
 	@Autowired
 	private KFFUserRmiService kffUserService;
-	
+
+	BigDecimal bdSum = BigDecimal.ZERO;
+
 	/**
 	 * 
 	 * @Title: register
@@ -598,11 +602,11 @@ public class UserController extends BaseController {
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
 			KFFUser loginUser = null;
-			if(StringUtils.isNotBlank(token)) {
+			if (StringUtils.isNotBlank(token)) {
 				loginUser = kffUserService.findById(userId);
 			}
 			Integer type = 2;// 取关注人
-			PageResult<FollowResponse> result = kffRmiService.findPageMyFollow(query,type,loginUser);
+			PageResult<FollowResponse> result = kffRmiService.findPageMyFollow(query, type, loginUser);
 			map.put("myFollows", result);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -643,7 +647,7 @@ public class UserController extends BaseController {
 			query.setRowsPerPage(pageSize);
 			query.addQueryData("status", "1");
 			Integer type = 2;// 取关注人
-			PageResult<CollectPostResponse> result = kffRmiService.findPageMyCollectRecords(query,type,loginaccount);
+			PageResult<CollectPostResponse> result = kffRmiService.findPageMyCollectRecords(query, type, loginaccount);
 			map.put("myTokenRecords", result);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -901,8 +905,8 @@ public class UserController extends BaseController {
 			List<KFFUserWallet> result1 = kffRmiService.findBywalletAndType(userId);
 			map.put("myTokenRecords", result);
 			map.put("wallet", result1);
-
 			bre.setData(map);
+			SyseUtil.systemErrOutJson(bre);
 		} catch (RestServiceException e) {
 			logger.warn("myTokenRecordsList warn:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
@@ -1298,7 +1302,7 @@ public class UserController extends BaseController {
 	}
 
 	/**
-	 * 我的账单明细列表，按照时间排序
+	 * 我的账单明细列表，按照时间排序(使用中)
 	 * 
 	 * @param request
 	 *            (传入一个userId)
@@ -1341,33 +1345,36 @@ public class UserController extends BaseController {
 			query.setRowsPerPage(pageSize);
 			PageResult<TokenawardReturn> result = kffRmiService.findPageMyTokenawardReturn(query);
 			// KFFUser findUserById = kffRmiService.findToken
-			List<Tokenaward> findAllTokenawardUser = kffRmiService.findAllTokenawardUserId(userId);
-			BigDecimal bdSum = BigDecimal.ZERO;
-			for (Tokenaward tokenaward : findAllTokenawardUser) {
-				if (tokenaward.getDistributionType() == 1 && tokenaward != null) {
-					Double inviteNumber = tokenaward.getInviteRewards();
-					bdSum = bdSum.add(new BigDecimal(inviteNumber));
-				}
-			}
-			/*	List<Tokenrecords> findAllTokenrecordsUserId = kffRmiService.findAllTokenrecordsUserId(userId);
-				for (Tokenrecords tokenrecords : findAllTokenrecordsUserId) {
-					if (tokenrecords != null) {
-						if (tokenrecords.getRewardGrantType() == 1) {
-							BigDecimal amount = tokenrecords.getAmount();
-							bdSum = bdSum.add(amount);
-						}
+
+			if (pageIndex == 1) {
+				bdSum = BigDecimal.ZERO;
+				List<Tokenaward> findAllTokenawardUser = kffRmiService.findAllTokenawardUserId(userId);
+				for (Tokenaward tokenaward : findAllTokenawardUser) {
+					if (tokenaward.getDistributionType() == 1 && tokenaward != null) {// 线性
+						Double inviteNumber = tokenaward.getInviteRewards();
+						bdSum = bdSum.add(new BigDecimal(inviteNumber));
 					}
 				}
-				*/
-			List<Tokenrecords> findAllTokenrecordsUserId = kffRmiService.findAllTokenrecordsUserId(userId);
-			for (Tokenrecords tokenrecords : findAllTokenrecordsUserId) {
-				if (tokenrecords != null) {
-					if (tokenrecords.getTradeType() != null && tokenrecords.getTradeType() == 1 && tokenrecords.getRewardGrantType() != 2) {
-						BigDecimal amount = tokenrecords.getAmount();
-						bdSum = bdSum.add(amount);
-					} else if (tokenrecords.getTradeType() != null && tokenrecords.getTradeType() == 2) {
-						BigDecimal amount = tokenrecords.getAmount();
-						bdSum = bdSum.subtract(amount);
+				/*	List<Tokenrecords> findAllTokenrecordsUserId = kffRmiService.findAllTokenrecordsUserId(userId);
+					for (Tokenrecords tokenrecords : findAllTokenrecordsUserId) {
+						if (tokenrecords != null) {
+							if (tokenrecords.getRewardGrantType() == 1) {
+								BigDecimal amount = tokenrecords.getAmount();
+								bdSum = bdSum.add(amount);
+							}
+						}
+					}
+					*/
+				List<Tokenrecords> findAllTokenrecordsUserId = kffRmiService.findAllTokenrecordsUserId(userId);
+				for (Tokenrecords tokenrecords : findAllTokenrecordsUserId) {
+					if (tokenrecords != null) {
+						if (tokenrecords.getTradeType() != null && tokenrecords.getTradeType() == 1 && tokenrecords.getRewardGrantType() != 2) {// 一次性
+							BigDecimal amount = tokenrecords.getAmount();
+							bdSum = bdSum.add(amount);
+						} else if (tokenrecords.getTradeType() != null && tokenrecords.getTradeType() == 2) {
+							BigDecimal amount = tokenrecords.getAmount();
+							bdSum = bdSum.subtract(amount);
+						}
 					}
 				}
 			}
@@ -1526,10 +1533,13 @@ public class UserController extends BaseController {
 	}
 
 	/**
-	 * 获取我的粉丝列表
 	 * 
+	 * TODO 获得关注列表  项目的关注列表或者是用户的粉丝列表
 	 * @param request
 	 * @return
+	 * @author zhangdd
+	 * @data 2018年8月16日
+	 *
 	 */
 	@RequestMapping(value = "/getMyFanList", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
@@ -1539,38 +1549,39 @@ public class UserController extends BaseController {
 		try {
 			JSONObject params = getParamMapFromRequestPolicy(request);
 			String token = (String) params.get("token");
+			int userId = params.getInteger("userId");
+			int projectId = params.getInteger("projectId");
 			Integer pageIndex = (Integer) params.get("pageIndex") == null ? 1 : (Integer) params.get("pageIndex");
 			Integer pageSize = (Integer) params.get("pageSize") == null ? 10 : (Integer) params.get("pageSize");
-			// 关注类型：2-关注话题；3-关注用户
-			Integer followType = (Integer) params.get("followType") == null ? 2 : (Integer) params.get("followType");
+			// 关注类型：关注类型：1-关注项目;2-关注帖子；3-关注用户'
+			Integer followType = (Integer) params.get("followType");
 
 			if (StringUtils.isBlank(token)) {
 				throw new RestServiceException(RestErrorCode.USER_NOT_LOGIN);
 			}
-			Integer userId = null;
-			try {
-				userId = AccountTokenUtil.decodeAccountToken(token);
-			} catch (Exception e) {
-				logger.error("myFollowList decodeAccountToken error:{}", e);
-				return this.resResult(RestErrorCode.PARSE_TOKEN_ERROR, e.getMessage());
-			}
-			if (userId == null) {
-				throw new RestServiceException(RestErrorCode.USER_NOT_EXIST);
-			}
-			KFFUser loginaccount = kffRmiService.findUserById(userId);
-			if (loginaccount == null) {
-				return this.resResult(RestErrorCode.USER_NOT_EXIST);
-			}
+
+			Integer loginUserId = null;
+
 			PaginationQuery query = new PaginationQuery();
-			query.addQueryData("followUserId", userId + "");
+			PageResult<FollowResponse> result = null;
 			query.addQueryData("followType", followType + "");
 			query.addQueryData("status", "1");
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
-			Integer type = 2;// 取关注人
-			PageResult<FollowResponse> result = kffRmiService.findPageMyFollow(query,type,loginaccount);
+
+			if (projectId == 0 && userId != 0) {
+				query.addQueryData("followedUserId", userId + "");
+				// result = kffRmiService.findFansPage(query);
+			} else if (userId == 0 && projectId != 0) {
+				query.addQueryData("followedId", projectId + "");
+				// result = kffRmiService.findPageProjectFollow(query);
+			}
+			result = kffRmiService.findFansPage(query);
+
 			map.put("myFans", result);
 			bre.setData(map);
+
+			SyseUtil.systemErrOutJson(bre);
 		} catch (RestServiceException e) {
 			logger.warn("myFollowList warn:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
@@ -1580,5 +1591,4 @@ public class UserController extends BaseController {
 		}
 		return bre;
 	}
-
 }

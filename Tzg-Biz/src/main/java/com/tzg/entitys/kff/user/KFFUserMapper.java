@@ -1,6 +1,7 @@
 package com.tzg.entitys.kff.user;
 
 import com.tzg.common.base.BaseMapper;
+
 import java.util.List;
 import java.util.Map;
 
@@ -21,11 +22,11 @@ public interface KFFUserMapper extends BaseMapper<KFFUser, java.lang.Integer> {
 	public void decreaseFansNum(Integer userId);
 
 	public String findPhoneByUserId(Integer userId);
-	
+
 	// 根据用户id 去查询用户类型
 	public KFFUser findUserById(Integer userId);
 
-    public KFFUser findByMobileId(String loginName);
+	public KFFUser findByMobileId(String loginName);
 
 	public KFFUser findByUserName(String loginName);
 
@@ -38,23 +39,29 @@ public interface KFFUserMapper extends BaseMapper<KFFUser, java.lang.Integer> {
 	public void increaseEvaNum(Integer userId);
 
 	public void increaseDiscussNum(Integer userId);
-	
+
 	public Integer saveUser(KFFUser user);
-	
+
 	public void increasePraiseNum(Integer userId);
-	
+
 	public void decreasePraiseNum(Integer userId);
-	
+
 	public Integer findPopByToken(Integer userId);
-	
+
 	public void updateUserKFFPop(Integer userId);
 
 	public KFFUser findUserStatusByPhoneNumber(String mobile);
-	
+
 	public void updateUserKFFsetPopZero(Integer userId);
-	
+
 	public List<KFFUser> findPageWithCID(Map<String, Object> map);
+
 	public List<KFFUser> findListByAttr(Map<String, Object> map);
+
 	public List<KFFUser> findListByMap(Map<String, Object> map);
-	
+
+	public void increaseKffcoinNum(Map<String, Object> map);
+
+	public void decreaseKffcoinNum(Map<String, Object> map);
+
 }

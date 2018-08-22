@@ -1,6 +1,7 @@
 package com.tzg.rest.controller.kff;
 
 import java.util.Date;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -10,14 +11,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tzg.common.utils.StringUtil;
+import com.tzg.common.utils.SyseUtil;
 import com.tzg.entitys.kff.activity.MiningActivity;
 import com.tzg.entitys.kff.activity.PostShare;
+import com.tzg.entitys.kff.post.Post;
 import com.tzg.rest.controller.BaseController;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
+import com.tzg.rmi.service.KFFRmiService;
 import com.tzg.rmi.service.MiningActivityRmiService;
 import com.tzg.rmi.service.PostShareRmiService;
 
@@ -32,12 +37,15 @@ import com.tzg.rmi.service.PostShareRmiService;
 @RequestMapping("/kff/postShare")
 public class PostShareController extends BaseController {
 	private static Logger logger = Logger.getLogger(PostShareController.class);
-	
+
 	@Autowired
 	private MiningActivityRmiService miningActivityRmiService;
 	@Autowired
 	private PostShareRmiService postShareRmiService;
-	
+
+	@Autowired
+	private KFFRmiService kffRmiService;
+
 	/** 
 	* @Title: addPostShare 
 	* @Description: TODO <活动分享成功回调页面>
@@ -54,42 +62,53 @@ public class PostShareController extends BaseController {
 	* @updateContext <修改内容>
 	*/
 	@ResponseBody
-	@RequestMapping(value="/addPostShare")
+	@RequestMapping(value = "/addPostShare")
 	public BaseResponseEntity addPostShare(HttpServletRequest request) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		try {
 			JSONObject policyJson = getParamJsonFromRequestPolicy(request);
-			Integer id = (Integer)policyJson.get("activityId");
-			if(null==id) {
-				throw new RestServiceException(RestErrorCode.MISSING_ARGS); 
-			}
+			Integer id = (Integer) policyJson.get("activityId");
+			Integer postId = (Integer) policyJson.get("postId");
+
 			String token = (String) policyJson.get("token");
-			if(StringUtil.isBlank(token)) {
-				throw new RestServiceException(RestErrorCode.MISSING_ARGS); 
+			if (StringUtil.isBlank(token)) {
+				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
 			}
 			Integer userId = getUserIdByToken(token);
-			MiningActivity mnAct = miningActivityRmiService.findById(id);
-			if(null==mnAct) {
-				throw new RestServiceException(RestErrorCode.NO_DATA_MSG); 
-			}
+
 			PostShare postShare = new PostShare();
 			Date date = new Date();
 			postShare.setCreatedAt(date);
 			postShare.setUpdatedAt(date);
 			postShare.setActivityId(id);
 			postShare.setUserId(userId);
-			postShare.setType(mnAct.getType());
-			postShare.setArticleId(mnAct.getArticleId());
-			postShareRmiService.save(postShare);
+			Post post = null;
+			if (null != postId && 0 != postId) {
+				post = kffRmiService.findPostByPostId(postId);
+				if (null == post) {
+					throw new RestServiceException(RestErrorCode.MISSING_ARGS);
+				}
+				postShare.setArticleId(postId);
+				postShare.setType(post.getPostType());
+			} else {
+				MiningActivity mnAct = miningActivityRmiService.findById(id);
+				if (null == mnAct) {
+					throw new RestServiceException(RestErrorCode.NO_DATA_MSG);
+				}
+				postShare.setType(mnAct.getType());
+				postShare.setArticleId(mnAct.getArticleId());
+			}
+
+			Map<String, Object> shareMap = postShareRmiService.save(postShare, post);
+			bre.setData(shareMap);
+			SyseUtil.systemErrOutJson(bre);
 		} catch (RestServiceException e) {
 			logger.error("NewsFlashController getNewsFlashPageList:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
 		} catch (Exception e) {
 			logger.error("NewsFlashController getNewsFlashPageList:{}", e);
-			return this.resResult(RestErrorCode.SYS_ERROR,e.getMessage());
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
 		}
 		return bre;
 	}
 }
-
-

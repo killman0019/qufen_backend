@@ -1,9 +1,11 @@
 package com.tzg.common.service.kff;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -111,6 +113,39 @@ public class PraiseService {
 		map.put("projectId", projectId + "");
 		map.put("praiseType", "1");
 		return praiseMapper.findAllActivePraisesByPostId(map);
+	}
+
+	/**
+	 * 
+	 * TODO   获得当前用户的所有点赞的postid 
+	 * @param loginUserId
+	 * @return
+	 * @author zhangdd
+	 * @data 2018年8月14日
+	 *
+	 */
+	public List<Integer> findPraisedPostIdByUserId(Integer loginUserId) {
+		// TODO 获得查询此用户所有点赞数list
+		Map<String, Object> praiseMap = new HashMap<String, Object>();
+		praiseMap.put("praiseUserId", loginUserId);
+		praiseMap.put("status", "1");
+		List<Praise> praiseList = findByMap(praiseMap);
+		List<Integer> praisedPostIdList = new ArrayList<Integer>();
+		if (CollectionUtils.isEmpty(praiseList)) {
+			return praisedPostIdList;
+		}
+		for (Praise praise : praiseList) {
+			if (null != praise) {
+				praisedPostIdList.add(praise.getPostId());
+			}
+		}
+		return praisedPostIdList;
+	}
+
+	public List<Praise> findByMap(Map<String, Object> praiseMap) {
+		// TODO map 查询
+
+		return praiseMapper.findByMap(praiseMap);
 	}
 
 }

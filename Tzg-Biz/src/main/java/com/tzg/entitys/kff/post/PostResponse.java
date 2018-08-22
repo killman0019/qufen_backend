@@ -16,6 +16,10 @@ public class PostResponse implements Serializable, Comparable {
 
 	// 0 未关注；1-已关注；2-不显示关注按钮
 	private java.lang.Integer followStatus = 2;
+	/**
+	 * 0 未点 1 点赞
+	 */
+	private Integer praiseStatus = 0;
 
 	private java.lang.String actionDesc;
 
@@ -167,7 +171,9 @@ public class PostResponse implements Serializable, Comparable {
 	private java.lang.String evaluationTags;
 
 	private Double praiseIncome;
+
 	private Double donateIncome;
+
 	private Double postTotalIncome;
 	
 	private String postUuid;
@@ -223,6 +229,14 @@ public class PostResponse implements Serializable, Comparable {
 
 	public void setDisStickUpdateTime(Date disStickUpdateTime) {
 		this.disStickUpdateTime = disStickUpdateTime;
+	}
+
+	public Integer getPraiseStatus() {
+		return praiseStatus;
+	}
+
+	public void setPraiseStatus(Integer praiseStatus) {
+		this.praiseStatus = praiseStatus;
 	}
 
 	public BigDecimal getEvaTotalScore() {

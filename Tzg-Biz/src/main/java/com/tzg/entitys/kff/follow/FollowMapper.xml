@@ -243,6 +243,79 @@
 
 	</select>
 
+
+	<select id="findPageCountFans" resultType="java.lang.Integer" parameterType="java.util.Map">
+
+		SELECT
+		count(1)
+		FROM
+		tbfollow tf
+		LEFT JOIN tbuser tu ON tf.follow_user_id
+		= tu.user_id
+		WHERE
+		1=1
+		<if test="followedUserId !=null">
+			and tf.followed_user_id = #{followedUserId}
+		</if>
+
+		<if test="followType !=null">
+			and tf.follow_type = #{followType}
+		</if>
+
+		<if test="followedId !=null">
+			and tf.followed_id = #{followedId}
+		</if>
+
+
+		AND tf.`status` = 1
+		AND tu.`status` = 1
+
+
+	</select>
+
+	<select id="findPageFans" resultType="com.tzg.entitys.kff.follow.FollowResponse" parameterType="java.util.Map">
+
+		SELECT
+		tf.follow_id followId,
+		tf.followed_user_id followedUserId,
+		tf.follower_user_name
+		followerUserName,
+		tf.followed_user_id followedUserId,
+		tf.followed_user_signature followedUserSignature,
+		tf.followed_user_icon followedUserIcon,
+		tf.followed_user_name followedUserName,
+		tf.followed_id followedId,
+
+		tu.user_name userName,
+		tu.user_id userId,
+		tu.user_type userType,
+		tu.user_signature
+		userSignature,
+		tu.icon userIcon
+		FROM
+		tbfollow tf
+		LEFT JOIN tbuser tu ON tf.follow_user_id
+		= tu.user_id
+		WHERE
+		1=1
+		<if test="followedUserId !=null">
+			and tf.followed_user_id = #{followedUserId}
+		</if>
+
+		<if test="followType !=null">
+			and tf.follow_type = #{followType}
+		</if>
+
+		<if test="followedId !=null">
+			and tf.followed_id = #{followedId}
+		</if>
+
+		AND tf.`status` = 1
+		AND tu.`status` = 1
+		<![CDATA[ ORDER BY follow_id DESC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+
 </mapper>
 
 
