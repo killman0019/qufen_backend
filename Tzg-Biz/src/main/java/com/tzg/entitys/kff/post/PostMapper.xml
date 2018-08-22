@@ -30,13 +30,18 @@
 		<result property="praiseIncome" jdbcType="DOUBLE" column="praise_income" />
 		<result property="donateIncome" jdbcType="DOUBLE" column="donate_income" />
 		<result property="postTotalIncome" jdbcType="DOUBLE" column="post_total_income" />
+		<result property="type" jdbcType="INTEGER" column="type"/>
+		<result property="disStickTop" jdbcType="INTEGER" column="dis_stick_top"/>
+		<result property="disStickUpdateTime" jdbcType="TIMESTAMP" column="dis_stick_updateTime"/>
 
 	</resultMap>
 
 	<sql id="columns">
 	    <![CDATA[
-        post_id ,project_id ,project_icon ,project_code ,project_english_name ,project_chinese_name,post_title ,post_type ,post_short_desc ,post_small_images ,comments_num ,praise_num ,pageview_num ,donate_num ,collect_num ,create_user_id ,create_user_icon ,create_user_signature ,create_user_name ,createTime ,updateTime ,status,uuid,stick_top,stick_updateTime,
-         praise_income,donate_income,post_total_income
+        post_id ,project_id ,project_icon ,project_code ,project_english_name ,project_chinese_name,post_title ,
+        post_type ,post_short_desc ,post_small_images ,comments_num ,praise_num ,pageview_num ,donate_num ,collect_num ,
+        create_user_id ,create_user_icon ,create_user_signature ,create_user_name ,createTime ,updateTime ,status,uuid,
+        stick_top,stick_updateTime,praise_income,donate_income,post_total_income,type,dis_stick_top,dis_stick_updateTime
 	    ]]>
 	</sql>
 
@@ -72,7 +77,10 @@
         	stick_updateTime,
         	praise_income,
         	donate_income,
-        	post_total_income
+        	post_total_income,
+        	type,
+        	dis_stick_top,
+        	dis_stick_updateTime
 		) VALUES (
         	#{projectId,jdbcType=INTEGER} ,
         	#{projectIcon,jdbcType=VARCHAR} ,
@@ -100,7 +108,10 @@
         	#{stickUpdateTime,jdbcType=TIMESTAMP} ,
         	#{praiseIncome,jdbcType=DOUBLE} ,
         	#{donateIncome,jdbcType=DOUBLE} ,
-        	#{postTotalIncome,jdbcType=DOUBLE} 
+        	#{postTotalIncome,jdbcType=DOUBLE} ,
+        	#{type,jdbcType=INTEGER} ,
+        	#{disStickTop,jdbcType=INTEGER},
+        	#{disStickUpdateTime,jdbcType=TIMESTAMP} 
 		)
 	]]>
 	</insert>
@@ -187,6 +198,15 @@
 			<if test="postTotalIncome != null">
 				post_total_income = #{postTotalIncome,jdbcType=DOUBLE},
 			</if>
+			<if test="type != null">
+	        	type = #{type,jdbcType=INTEGER},
+	        </if>
+	        <if test="disStickTop != null">
+	        	dis_stick_top = #{disStickTop,jdbcType=INTEGER} ,
+	        </if>
+	        <if test="disStickUpdateTime != null">
+	        	dis_stick_updateTime = #{disStickUpdateTime,jdbcType=TIMESTAMP} 
+	        </if>
 		</set>
 		WHERE
 		post_id = #{postId,jdbcType=INTEGER}
@@ -279,10 +299,6 @@
 		WHERE 
         uuid = #{uuid} 
 	]]>
-	</select>
-	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
-		select count(*) from tbpost where 1=1
-		<include refid="queryWhere" />
 	</select>
 
 	<select id="findMyPageFollowListCount" resultType="java.lang.Integer" parameterType="java.util.Map">
@@ -448,6 +464,11 @@
 			order by ${sql_keyword_orderByc} ${sql_keyword_sortc}
 		</if>
 	</sql>
+	
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(1) from tbpost where 1=1
+		<include refid="queryWhere" />
+	</select>
 
 	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
 		select
@@ -475,7 +496,7 @@
 		<if test="postId != null and postId.trim() != ''">
 			and post_id = #{postId}
 		</if>
-		<if test="projectId != null and projectId.trim() != ''">
+		<if test="projectId != null">
 			and project_id = #{projectId}
 		</if>
 		<if test="projectIcon != null and projectIcon.trim() != ''">
@@ -517,7 +538,7 @@
 		<if test="collectNum != null and collectNum.trim() != ''">
 			and collect_num = #{collectNum}
 		</if>
-		<if test="createUserId != null and createUserId.trim() != ''">
+		<if test="createUserId != null">
 			and create_user_id = #{createUserId}
 		</if>
 		<if test="createUserIcon != null and createUserIcon.trim() != ''">
@@ -587,7 +608,7 @@
 		<if test="postId != null and postId.trim() != ''">
 			and post_id = #{postId}
 		</if>
-		<if test="projectId != null and projectId.trim() != ''">
+		<if test="projectId != null">
 			and project_id = #{projectId}
 		</if>
 		<if test="projectIcon != null and projectIcon.trim() != ''">
@@ -672,8 +693,16 @@
 		<if test="delPost !=null">
 			and post_id !=#{delPost}
 		</if>
+		<if test="type != null">
+        and type = #{type}
+        </if>
+        <if test="disStickTop != null">
+        and dis_stick_top = #{disStickTop}
+        </if>
+        <if test="disStickUpdateTime != null">
+        and dis_stick_updateTime = #{disStickUpdateTime} 
+        </if>
 	</sql>
-
 
 	<select id="selectAllPost" resultMap="BaseResultMap" parameterType="java.util.Map">
 		select
@@ -681,7 +710,183 @@
 		from tbpost where 1=1
 		<include refid="queryWhere" />
 	</select>
-
+	
+	
+	<select id="findSetTopDiscussCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+			SELECT count(1) from tbpost as tpt
+			LEFT JOIN tbdiscuss as tds on tpt.post_id=tds.post_id
+			<include refid="condition"/>
+	</select>
+	
+	<select id="findSetTopDiscuss" resultType="com.tzg.entitys.kff.post.PostDiscussVo" parameterType="java.util.Map">
+		select
+			tpt.post_id as postId,
+			tpt.stick_top as stickTop,
+			tpt.stick_updateTime as stickUpdateTime,
+			tpt.project_id as projectId,
+			tpt.project_icon as projectIcon,
+			tpt.project_code as projectCode,
+			tpt.project_english_name as projectEnglishName,
+			tpt.project_chinese_name as projectChineseName,
+			tpt.post_title as postTitle,
+			tpt.post_type as postType,
+			tpt.post_short_desc as postShortDesc,
+			tpt.post_small_images as postSmallImages,
+			tpt.comments_num as commentsNum,
+			tpt.praise_num as praiseNum,
+			tpt.pageview_num as pageviewNum,
+			tpt.donate_num as donateNum,
+			tpt.collect_num as collectNum,
+			tpt.create_user_id as createUserId,
+			tpt.create_user_icon as createUserIcon,
+			tpt.create_user_signature as createUserSignature,
+			tpt.create_user_name as createUserName,
+			tpt.createTime as createTime,
+			tpt.updateTime as updateTime,
+			tpt.uuid as uuid,
+			tpt.status as status,
+			tpt.praise_income as praiseIncome,
+			tpt.donate_income as donateIncome,
+			tpt.post_total_income as postTotalIncome,
+			tds.discuss_id as discussId,
+			tds.disscuss_contents as disscussContents,
+			tds.post_uuid as postUuid,
+			tds.tag_infos as tagInfos,
+			tds.is_nice_choice as isNiceChoice,
+			tds.nice_choice_at as niceChoiceAt,
+			tds.type as type,
+			tds.dis_stick_top as disStickTop,
+			tds.dis_stick_updateTime as disStickUpdateTime
+		from tbpost as tpt
+		LEFT JOIN tbdiscuss as tds on tpt.post_id=tds.post_id
+		<include refid="condition"/>
+	    ORDER BY ${sort} desc
+	    <if test="startRecord != null and endRecord!=null">
+        LIMIT ${startRecord},${endRecord} 
+        </if>
+	</select>
+	
+	<select id="findSetTopPost" resultType="com.tzg.entitys.kff.post.PostDiscussVo" parameterType="java.util.Map">
+		select
+			tpt.post_id as postId,
+			tpt.stick_top as stickTop,
+			tpt.stick_updateTime as stickUpdateTime,
+			tpt.project_id as projectId,
+			tpt.project_icon as projectIcon,
+			tpt.project_code as projectCode,
+			tpt.project_english_name as projectEnglishName,
+			tpt.project_chinese_name as projectChineseName,
+			tpt.post_title as postTitle,
+			tpt.post_type as postType,
+			tpt.post_short_desc as postShortDesc,
+			tpt.post_small_images as postSmallImages,
+			tpt.comments_num as commentsNum,
+			tpt.praise_num as praiseNum,
+			tpt.pageview_num as pageviewNum,
+			tpt.donate_num as donateNum,
+			tpt.collect_num as collectNum,
+			tpt.create_user_id as createUserId,
+			tpt.create_user_icon as createUserIcon,
+			tpt.create_user_signature as createUserSignature,
+			tpt.create_user_name as createUserName,
+			tpt.createTime as createTime,
+			tpt.updateTime as updateTime,
+			tpt.uuid as uuid,
+			tpt.status as status,
+			tpt.praise_income as praiseIncome,
+			tpt.donate_income as donateIncome,
+			tpt.post_total_income as postTotalIncome,
+			tpt.type as type,
+			tpt.dis_stick_top as disStickTop,
+			tpt.dis_stick_updateTime as disStickUpdateTime
+		from tbpost as tpt
+		<include refid="condition"/>
+	    ORDER BY ${sort} desc
+	    <if test="startRecord != null and endRecord!=null">
+        LIMIT ${startRecord},${endRecord} 
+        </if>
+	</select>
+	
+	<select id="findSetTopPostCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(1) from tbpost as tpt
+		<include refid="condition"/>
+	</select>
+	
+	<sql id="condition">
+    	<where>
+	    	<if test="id != null">
+			 id = #{id,jdbcType=INTEGER}
+			</if>
+			<if test="status!=null">
+    		  and tpt.status = #{status}
+    		</if>
+    		<if test="postType!=null">
+    		  and tpt.post_type = #{postType}
+    		</if>
+    		<if test="postTypec!=null">
+    		  and tpt.post_type != #{postTypec}
+    		</if>
+    		<if test="beginDt!=null">
+    		  and tds.nice_choice_at &gt;= #{beginDt}
+    		</if>
+    		<if test="endDt!=null">
+    		  and tds.nice_choice_at &lt;= #{endDt}
+    		</if>
+    		<if test="isNiceChoice!=null">
+    		  and tds.is_nice_choice = #{isNiceChoice}
+    		</if>
+    		<if test="type != null">
+	        	and tds.type = #{type}
+	        </if>
+	        <if test="disStickTop1!=null">
+	        	and tds.dis_stick_top != #{disStickTop1}
+	        </if>
+	        <if test="disStickTop!=null">
+	        	and tds.dis_stick_top = #{disStickTop}
+	        </if>
+	        <if test="disStickUpdateTime != null">
+	       	 	and tds.dis_stick_updateTime = #{disStickUpdateTime} 
+	        </if>
+	        <if test="typec != null">
+	        	and tpt.type = #{typec}
+	        </if>
+	        <if test="disStickTopc1!=null">
+	        	and tpt.dis_stick_top != #{disStickTopc1} 
+	        </if>
+	        <if test="disStickTopc!=null">
+	        	and tpt.dis_stick_top = #{disStickTopc} 
+	        </if>
+	        <if test="disStickUpdateTimec != null">
+	       	 	and tpt.dis_stick_updateTime = #{disStickUpdateTimec} 
+	        </if>
+	        <if test="beginDtc!=null">
+    		  and tpt.stick_updateTime &gt;= #{beginDtc}
+    		</if>
+    		<if test="endDtc!=null">
+    		  and tpt.stick_updateTime &lt;= #{endDtc}
+    		</if>
+    		<if test="stickTopc!=null">
+    		  and tpt.stick_top = #{stickTopc}
+    		</if>
+    	</where>
+    </sql>
+    
+    <update id="updateByMap" parameterType="java.util.Map">
+		UPDATE tbpost
+		<set>
+			<if test="stickTop != null">
+				stick_top = #{stickTop,jdbcType=INTEGER} ,
+			</if>
+			<if test="type != null">
+				type = #{type,jdbcType=INTEGER} ,
+			</if>
+			<if test="stickUpdateTime != null">
+				stick_updateTime = #{stickUpdateTime,jdbcType=TIMESTAMP}
+			</if>
+		</set>
+		WHERE
+		post_id = #{postId,jdbcType=INTEGER}
+	</update>
 </mapper>
 
 

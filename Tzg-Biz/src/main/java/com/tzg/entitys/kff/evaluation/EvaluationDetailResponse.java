@@ -21,7 +21,7 @@ public class EvaluationDetailResponse implements Serializable {
 	private java.lang.Integer followStatus = 2;
 	// 0-未点赞；1-已点赞，2-未登录用户不显示 数字
 	private java.lang.Integer praiseStatus = 0;
-
+	// 收藏状态:0-未收藏,1-已收藏,2-不显示收藏按钮
 	private java.lang.Integer collectStatus = 2;
 
 	// 捐赠用户列表
@@ -41,11 +41,11 @@ public class EvaluationDetailResponse implements Serializable {
 	private java.lang.Integer postId;
 	private java.lang.String postUuid;
 	/**
-	 * 1-简单测评；2-全面系统专业测评;3-部分系统专业评测；4-用户自定义专业测评
+	 * 评测类型：1-简单测评；2-全面系统专业测评;3-部分系统专业评测；4-用户自定义专业测评
 	 */
 	private java.lang.Integer modelType;
 	/**
-	 * 1-10，小数点1位
+	 * 评测总分：1-10，小数点1位
 	 */
 	private BigDecimal totalScore = BigDecimal.ZERO;
 	/**
@@ -61,7 +61,7 @@ public class EvaluationDetailResponse implements Serializable {
 	 */
 	private java.lang.String evaluationTags;
 	/**
-	 * 0删除；1有效
+	 * 状态：0删除；1有效
 	 */
 	private java.lang.Integer status = 1;
 	/**

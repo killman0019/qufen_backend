@@ -1,6 +1,5 @@
 package com.tzg.rest.controller.kff;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -24,14 +22,12 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tzg.common.base.BaseRequest;
 import com.tzg.common.constants.KFFConstants;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.utils.AccountTokenUtil;
-import com.tzg.common.utils.DozerMapperUtils;
 import com.tzg.common.utils.FileUtils;
 import com.tzg.common.utils.QiniuUtil;
 import com.tzg.common.utils.RandomUtil;
@@ -51,6 +47,7 @@ import com.tzg.rest.utils.DateUtil;
 import com.tzg.rest.vo.BaseResponseEntity;
 import com.tzg.rmi.service.KFFProjectPostRmiService;
 import com.tzg.rmi.service.KFFRmiService;
+import com.tzg.rmi.service.KFFUserRmiService;
 import com.tzg.rmi.service.SystemParamRmiService;
 
 @Controller(value = "KFFHomeController")
@@ -64,6 +61,8 @@ public class HomeController extends BaseController {
 	private KFFProjectPostRmiService kffProjectPostRmiService;
 	@Autowired
 	private SystemParamRmiService systemParamRmiService;
+	@Autowired
+	private KFFUserRmiService kffUserService;
 
 	/**
 	 * 
@@ -90,18 +89,18 @@ public class HomeController extends BaseController {
 				userId = getUserIdByToken(token);
 			}
 			PaginationQuery query = new PaginationQuery();
-			query.addQueryData("status", "1");
-			query.addQueryData("stickTop", "1");
-			query.addQueryData("sortField", "stick_updateTime");
-			query.addQueryData("notDiscuss", "true");
+//			query.addQueryData("status", "1");
+//			query.addQueryData("stickTop", "1");
+//			query.addQueryData("sortField", "stick_updateTime");
+//			query.addQueryData("notDiscuss", "true");
 			// query.addQueryData("praiseNum", "10");
 			// 帖子类型：1-评测；2-讨论；3-文章
 			// query.addQueryData("postType", "1");
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
-			Integer type = 1;// 取关注项目
-			Integer methodType = 1;// 推荐列表过来的方法
-			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query, type, methodType);
+			Integer nowCount = baseRequest.getPageSize();
+			Integer type = 2;// 取关注人
+			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query, type,nowCount);
 			map.put("recommends", recommends);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -113,7 +112,7 @@ public class HomeController extends BaseController {
 		}
 		return bre;
 	}
-
+	
 	/**
 	 * @Title: getBurstList
 	 * @Description: TODO <获取爆料列表>
@@ -140,17 +139,17 @@ public class HomeController extends BaseController {
 				userId = getUserIdByToken(token);
 			}
 			PaginationQuery query = new PaginationQuery();
-			query.addQueryData("status", "1");
+//			query.addQueryData("status", "1");
 			// query.addQueryData("stickTop", "1");
-			query.addQueryData("sortField", "createTime");
+//			query.addQueryData("sortField", "createTime");
 			// query.addQueryData("praiseNum", "10");
 			// 帖子类型：2-爆料
-			query.addQueryData("postType", "2");
+//			query.addQueryData("postType", "2");
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
+			Integer nowCount = baseRequest.getPageSize();
 			Integer type = 2;// 取关注人
-			Integer methodType = 2;// 爆料列表过来的方法
-			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query, type, methodType);
+			PageResult<PostResponse> recommends = kffRmiService.findBurstList(userId, query, type, nowCount);
 			map.put("recommends", recommends);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -162,38 +161,46 @@ public class HomeController extends BaseController {
 		}
 		return bre;
 	}
-
-	/**
-	 * 
-	 * @Title: followList
-	 * @Description: 关注列表
-	 * @param @param request
-	 * @param @param response
-	 * @param @return
-	 * @return BaseResponseEntity
-	 * @see
-	 * @throws
-	 */
-	@RequestMapping(value = "/followList", method = { RequestMethod.POST, RequestMethod.GET })
+	
+	/** 
+	* @Title: followList 
+	* @Description: TODO <主页-关注列表>
+	* @author linj <方法创建作者>
+	* @create 下午5:51:25
+	* @param @param request
+	* @param @return <参数说明>
+	* @return BaseResponseEntity 
+	* @throws 
+	* @update 下午5:51:25
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	*/
 	@ResponseBody
+	@RequestMapping(value = "/followList", method = { RequestMethod.POST, RequestMethod.GET })
 	public BaseResponseEntity followList(HttpServletRequest request) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
-
 		try {
 			BaseRequest baseRequest = getParamMapFromRequestPolicy(request, BaseRequest.class);
 			String token = baseRequest.getToken();
 			Integer userId = null;
-			userId = getUserIdByToken(token);
 			PaginationQuery query = new PaginationQuery();
-			query.addQueryData("userId", userId + "");
 			query.addQueryData("status", "1");
 			// query.addQueryData("sortField", "collect_num");
-			// 帖子类型：1-评测；2-讨论；3-文章
-			// query.addQueryData("postType", "2");
+			// 关注类型：1-关注项目;2-关注帖子；3-关注用户
+			query.addQueryData("followTypec", "2");
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
-			PageResult<PostResponse> follows = kffProjectPostRmiService.findMyPageFollowList(userId, query);
+
+			Integer type = 2;// 取关注人
+			KFFUser loginUser = null;
+			if(StringUtils.isNotBlank(token)) {
+				userId = getUserIdByToken(token);
+				loginUser = kffUserService.findById(userId);
+			}
+			query.addQueryData("userId", userId);
+			PageResult<PostResponse> follows = kffProjectPostRmiService.findPageForFollowList(userId, query,type,loginUser);
+//			PageResult<PostResponse> follows = kffProjectPostRmiService.findMyPageFollowList(userId, query);
 			System.err.println("follows" + follows);
 			map.put("follows", follows);
 			bre.setData(map);
@@ -279,7 +286,8 @@ public class HomeController extends BaseController {
 			if (StringUtils.isNotBlank(token)) {
 				userId = getUserIdByToken(token);
 			}
-			ArticleDetailResponse article = kffRmiService.findArticleDetail(userId, postId);
+			Integer type = 2;// 取关注人
+			ArticleDetailResponse article = kffRmiService.findArticleDetail(userId,type, postId);
 			map.put("articleDetail", article);
 
 			bre.setData(map);
@@ -436,7 +444,8 @@ public class HomeController extends BaseController {
 			if (StringUtils.isNotBlank(token)) {
 				userId = getUserIdByToken(token);
 			}
-			DiscussDetailResponse discuss = kffRmiService.findDiscussDetail(userId, postId);
+			Integer type = 2;// 取关注人
+			DiscussDetailResponse discuss = kffRmiService.findDiscussDetail(userId, type,postId);
 			map.put("discussDetail", discuss);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -527,9 +536,9 @@ public class HomeController extends BaseController {
 			if (StringUtils.isNotBlank(token)) {
 				userId = getUserIdByToken(token);
 			}
-			EvaluationDetailResponse evaluationDetail = kffRmiService.findEvaluationDetail(userId, postId);
+			Integer type = 2;// 取关注人
+			EvaluationDetailResponse evaluationDetail = kffRmiService.findEvaluationDetail(userId, type,postId);
 			map.put("evaluationDetail", evaluationDetail);
-
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("HomeController evaluationDetail:{}", e);

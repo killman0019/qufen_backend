@@ -177,7 +177,7 @@
 		<if test="praiseUserId != null and praiseUserId.trim() != ''">
 		and praise_user_id = #{praiseUserId}
 		</if>
-		<if test="projectId != null and projectId.trim() != ''">
+		<if test="projectId != null">
 		and project_id = #{projectId}
 		</if>
 		<if test="praiseType != null and praiseType.trim() != ''">
@@ -208,6 +208,33 @@
 		and updateTime &lt;= #{updateTimeEnd}
 		</if>
 	</sql>
+	
+	<select id="findListByAttr" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select *  from tbpraise
+		<include refid="condition"/>
+	</select>
+	
+	<select id="findListByAttrByCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(1)  from tbpraise
+		<include refid="condition"/>
+	</select>
+	
+	 <sql id="condition">
+    	<where>
+	    	<if test="praiseId != null">
+			 praise_id = #{praiseId}
+			</if>
+			<if test="postId != null">
+			and post_id = #{postId} 
+			</if>
+			<if test="status != null">
+			and status = #{status}
+			</if>
+			<if test="postType != null">
+			and post_type = #{postType}
+			</if>
+    	</where>
+    </sql>
 </mapper>
 
 

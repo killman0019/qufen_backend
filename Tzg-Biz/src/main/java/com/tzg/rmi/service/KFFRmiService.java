@@ -34,7 +34,6 @@ import com.tzg.entitys.kff.message.KFFMessage;
 import com.tzg.entitys.kff.mobileversionupdate.Mobileversionupdate;
 import com.tzg.entitys.kff.notice.KFFNotice;
 import com.tzg.entitys.kff.post.PostResponse;
-import com.tzg.entitys.kff.praise.Praise;
 import com.tzg.entitys.kff.project.KFFProject;
 import com.tzg.entitys.kff.project.ProjectResponse;
 import com.tzg.entitys.kff.project.SubmitKFFProjectRequest;
@@ -167,7 +166,7 @@ public interface KFFRmiService {
 	 * @return
 	 * @throws RestServiceException
 	 */
-	public PageResult<CollectPostResponse> findPageMyCollectRecords(PaginationQuery query) throws RestServiceException;
+	public PageResult<CollectPostResponse> findPageMyCollectRecords(PaginationQuery query,Integer type,KFFUser loginUser) throws RestServiceException;
 
 	/**
 	 * 
@@ -177,7 +176,7 @@ public interface KFFRmiService {
 	 * @return
 	 * @throws RestServiceException
 	 */
-	public PageResult<FollowResponse> findPageMyFollow(PaginationQuery query) throws RestServiceException;
+	public PageResult<FollowResponse> findPageMyFollow(PaginationQuery query,Integer type,KFFUser loginUser) throws RestServiceException;
 
 	/**
 	 * 捐赠
@@ -316,7 +315,7 @@ public interface KFFRmiService {
 	 * @return
 	 * @throws RestServiceException
 	 */
-	public PageResult<EvaluationDetailResponse> findPageEvaluationList(PaginationQuery query) throws RestServiceException;
+	public PageResult<EvaluationDetailResponse> findPageEvaluationList(PaginationQuery query,Integer type,KFFUser loginUser) throws RestServiceException;
 
 	/**
 	 * 分页获取讨论列表
@@ -325,7 +324,7 @@ public interface KFFRmiService {
 	 * @return
 	 * @throws RestServiceException
 	 */
-	public PageResult<PostResponse> findPageDisscussList(PaginationQuery query) throws RestServiceException;
+	public PageResult<PostResponse> findPageDisscussList(PaginationQuery query,Integer type,KFFUser loginUser) throws RestServiceException;
 
 	/**
 	 * 分页获取文章列表
@@ -334,7 +333,7 @@ public interface KFFRmiService {
 	 * @return
 	 * @throws RestServiceException
 	 */
-	public PageResult<PostResponse> findPageArticleList(PaginationQuery query) throws RestServiceException;
+	public PageResult<PostResponse> findPageArticleList(PaginationQuery query,Integer type,KFFUser loginUser) throws RestServiceException;
 
 	/**
 	 * 获取项目信息
@@ -395,8 +394,9 @@ public interface KFFRmiService {
 
 	public void cancelCollect(Integer userId, Integer postId) throws RestServiceException;
 
-	public PageResult<PostResponse> findPageRecommendList(Integer loginUserId, PaginationQuery query, Integer type, Integer methodType)
-			throws RestServiceException;
+	public PageResult<PostResponse> findPageRecommendList(Integer loginUserId, PaginationQuery query, Integer type, Integer nowCount) throws RestServiceException;
+	
+	public PageResult<PostResponse> findBurstList(Integer loginUserId, PaginationQuery query, Integer type, Integer nowCount);
 
 	public PageResult<PostResponse> findPageFollowList(Integer loginUserId, PaginationQuery query) throws RestServiceException;
 
@@ -410,7 +410,7 @@ public interface KFFRmiService {
 	 * @return
 	 * @throws RestServiceException
 	 */
-	public ArticleDetailResponse findArticleDetail(Integer userId, Integer postId) throws RestServiceException;
+	public ArticleDetailResponse findArticleDetail(Integer userId, Integer type,Integer postId) throws RestServiceException;
 
 	/**
 	 * 
@@ -421,7 +421,7 @@ public interface KFFRmiService {
 	 * @return
 	 * @throws RestServiceException
 	 */
-	public EvaluationDetailResponse findEvaluationDetail(Integer userId, Integer postId) throws RestServiceException;
+	public EvaluationDetailResponse findEvaluationDetail(Integer userId, Integer type,Integer postId) throws RestServiceException;
 
 	public List<Comments> findPageHotCommentsList(Integer userId, Integer postId, PaginationQuery query) throws RestServiceException;
 
@@ -429,7 +429,7 @@ public interface KFFRmiService {
 
 	public List<Comments> findAllChildCommentsList(Integer userId, Integer commentsId, PaginationQuery query) throws RestServiceException;
 
-	public DiscussDetailResponse findDiscussDetail(Integer userId, Integer postId) throws RestServiceException;
+	public DiscussDetailResponse findDiscussDetail(Integer userId, Integer type, Integer postId) throws RestServiceException;
 
 	public List<Comments> findAllDiscussCommentsList(Integer userId, Integer postId) throws RestServiceException;
 
@@ -473,7 +473,7 @@ public interface KFFRmiService {
 	 * @return
 	 * @throws RestServiceException
 	 */
-	public List<PostResponse> findHotDiscussList(Integer projectId) throws RestServiceException;
+	public List<PostResponse> findHotDiscussList(Integer projectId,Integer type,KFFUser loginUser) throws RestServiceException;
 
 	public List<CoinProperty> findCoinPropertyByUserId(Integer userId);
 

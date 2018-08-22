@@ -246,72 +246,72 @@
 		</choose>
 	</select>
 	<sql id="queryWhere">
-		<if test="commentsId != null and commentsId.trim() != ''">
+		<if test="commentsId != null">
 		and comments_id = #{commentsId}
 		</if>
-		<if test="commentUserId != null and commentUserId.trim() != ''">
+		<if test="commentUserId != null">
 		and comment_user_id = #{commentUserId}
 		</if>
-		<if test="commentUserIcon != null and commentUserIcon.trim() != ''">
+		<if test="commentUserIcon != null">
 		and comment_user_icon = #{commentUserIcon}
 		</if>
-		<if test="commentUserName != null and commentUserName.trim() != ''">
+		<if test="commentUserName != null">
 		and comment_user_name = #{commentUserName}
 		</if>
-		<if test="commentContent != null and commentContent.trim() != ''">
+		<if test="commentContent != null">
 		and comment_content = #{commentContent}
 		</if>
-		<if test="postId != null and postId.trim() != ''">
+		<if test="postId != null">
 		and post_id = #{postId}
 		</if>
-		<if test="projectId != null and projectId.trim() != ''">
+		<if test="projectId != null">
 		and project_id = #{projectId}
 		</if>
-		<if test="postType != null and postType.trim() != ''">
+		<if test="postType != null">
 		and post_type = #{postType}
 		</if>
-		<if test="praiseNum != null and praiseNum.trim() != ''">
+		<if test="praiseNum != null">
 		and praise_num >= #{praiseNum}
 		</if>
-		<if test="parentCommentsId != null and parentCommentsId.trim() != ''">
+		<if test="parentCommentsId != null">
 		and parent_comments_id = #{parentCommentsId}
 		</if>
-		<if test="parentCommentsIdNull != null and parentCommentsIdNull.trim() != ''">
+		<if test="parentCommentsIdNull != null">
 		and parent_comments_id is null
 		</if>
-		<if test="becommentedUserId != null and becommentedUserId.trim() != ''">
+		<if test="becommentedUserId != null">
 		and becommented_user_id = #{becommentedUserId}
 		</if>
-		<if test="becommentedUserName != null and becommentedUserName.trim() != ''">
+		<if test="becommentedUserName != null">
 		and becommented_user_name = #{becommentedUserName}
 		</if>
-		<if test="becommentedUserIcon != null and becommentedUserIcon.trim() != ''">
+		<if test="becommentedUserIcon != null">
 		and becommented_user_icon = #{becommentedUserIcon}
 		</if>
-		<if test="createTimeBegin != null and createTimeBegin.trim() != ''">
+		<if test="createTimeBegin != null">
 		and createTime >= #{createTimeBegin}
 		</if>
-		<if test="createTimeEnd != null and createTimeEnd.trim() != ''">
+		<if test="createTimeEnd != null">
 		and createTime &lt;= #{createTimeEnd}
 		</if>
-		<if test="updateTimeBegin != null and updateTimeBegin.trim() != ''">
+		<if test="updateTimeBegin != null">
 		and updateTime >= #{updateTimeBegin}
 		</if>
-		<if test="updateTimeEnd != null and updateTimeEnd.trim() != ''">
+		<if test="updateTimeEnd != null">
 		and updateTime &lt;= #{updateTimeEnd}
 		</if>
-		<if test="status != null and status.trim() != ''">
+		<if test="status != null">
 		and status = #{status}
 		</if>
 		
-		<if test="becommentedId != null and becommentedId.trim() != ''">
+		<if test="becommentedId != null">
 		and becommentedId = #{becommentedId}
 		</if>
 		
-		<if test="floor != null and floor.trim() != ''">
+		<if test="floor != null">
 		and floor = #{floor}
 		</if>
-		<if test="commentUUID != null and commentUUID.trim() != ''">
+		<if test="commentUUID != null">
 		and commentUUID = #{commentUUID}
 		</if>
 	</sql>

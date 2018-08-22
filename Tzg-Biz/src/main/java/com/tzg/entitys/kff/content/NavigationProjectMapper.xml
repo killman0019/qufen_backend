@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.kff.content.NavigationProjectMapper">
+  <resultMap id="BaseResultMap" type="com.tzg.entitys.kff.content.NavigationProject">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+    <result column="navigation_project_title" jdbcType="VARCHAR" property="navigationProjectTitle" />
+    <result column="project_img_path" jdbcType="VARCHAR" property="projectImgPath" />
+    <result column="navigation_id" jdbcType="INTEGER" property="navigationId" />
+    <result column="navigation_title" jdbcType="VARCHAR" property="navigationTitle" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="web_url" jdbcType="VARCHAR" property="webUrl" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="is_show" jdbcType="INTEGER" property="isShow" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, created_at, updated_at, navigation_project_title, project_img_path, navigation_id, 
+    navigation_title, sort, web_url, remark,is_show
+  </sql>
+  
+  <sql id="table_name">
+		content_navigation_project
+  </sql>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from <include refid="table_name" /> 
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from <include refid="table_name" /> 
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <insert id="save" parameterType="com.tzg.entitys.kff.content.NavigationProject"  useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+    insert into <include refid="table_name" /> (id, created_at, updated_at, 
+      navigation_project_title, project_img_path, 
+      navigation_id, navigation_title, sort, 
+      web_url, remark,is_show)
+    values (#{id,jdbcType=INTEGER}, #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, 
+      #{navigationProjectTitle,jdbcType=VARCHAR}, #{projectImgPath,jdbcType=VARCHAR}, 
+      #{navigationId,jdbcType=INTEGER}, #{navigationTitle,jdbcType=VARCHAR}, #{sort,jdbcType=INTEGER}, 
+      #{webUrl,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{isShow,jdbcType=INTEGER})
+  </insert>
+  
+  <update id="update" parameterType="com.tzg.entitys.kff.content.NavigationProject">
+    update <include refid="table_name" />
+    <set>
+      <if test="createdAt != null">
+        created_at = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null">
+        updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="navigationProjectTitle != null">
+        navigation_project_title = #{navigationProjectTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="projectImgPath != null">
+        project_img_path = #{projectImgPath,jdbcType=VARCHAR},
+      </if>
+      <if test="navigationId != null">
+        navigation_id = #{navigationId,jdbcType=INTEGER},
+      </if>
+      <if test="navigationTitle != null">
+        navigation_title = #{navigationTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null">
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="webUrl != null">
+        web_url = #{webUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="isShow != null">
+        is_show = #{isShow,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <update id="updateByMap" parameterType="java.util.Map">
+    update <include refid="table_name" />
+    <set>
+      <if test="isShow != null">
+        is_show = #{isShow,jdbcType=INTEGER},
+      </if>
+    </set>
+    where navigation_id = #{navigationId,jdbcType=INTEGER}
+  </update>
+  
+  <select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(1) from <include refid="table_name" />
+		<include refid="condition"/>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select *  from <include refid="table_name" />
+		<include refid="condition"/>
+	    <![CDATA[ ORDER BY id desc ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<select id="findListByAttr" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select *  from <include refid="table_name" />
+		<include refid="condition"/>
+	    <![CDATA[ ORDER BY id desc ]]>
+	</select>
+	
+	
+	
+	<sql id="condition">
+    	<where>
+	    	<if test="id != null">
+			 id = #{id,jdbcType=INTEGER}
+			</if>
+			<if test="titlec != null">
+			and navigation_project_title like "%"#{titlec}"%" 
+			</if>
+			<if test="navigationId != null">
+			and navigation_id = #{navigationId ,jdbcType=INTEGER}
+			</if>
+    	</where>
+    </sql>
+  
+</mapper>

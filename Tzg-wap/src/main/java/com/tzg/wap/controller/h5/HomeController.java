@@ -15,10 +15,8 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tzg.common.base.BaseRequest;
 import com.tzg.common.constants.KFFConstants;
@@ -28,14 +26,12 @@ import com.tzg.common.utils.AccountTokenUtil;
 import com.tzg.common.utils.HtmlUtils;
 import com.tzg.common.utils.RandomUtil;
 import com.tzg.common.utils.rest.Base64Util;
-import com.tzg.entitys.dataparam.DataParam;
 import com.tzg.entitys.kff.article.ArticleDetailResponse;
 import com.tzg.entitys.kff.comments.Comments;
 import com.tzg.entitys.kff.comments.CommentsShareRequest;
 import com.tzg.entitys.kff.discuss.DiscussDetailResponse;
 import com.tzg.entitys.kff.discuss.DiscussShare;
-import com.tzg.entitys.kff.evaluation.EvaluationRequest;
-import com.tzg.entitys.kff.evaluation.ProjectEvaluationDetailResponse;
+import com.tzg.entitys.kff.evaluation.EvaluationDetailResponse;
 import com.tzg.entitys.kff.evaluation.ProjectEvaluationDetailShareResponse;
 import com.tzg.entitys.kff.post.PostResponse;
 import com.tzg.entitys.kff.project.ProjectResponse;
@@ -46,6 +42,7 @@ import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
 import com.tzg.rmi.service.KFFProjectPostRmiService;
 import com.tzg.rmi.service.KFFRmiService;
+import com.tzg.rmi.service.KFFUserRmiService;
 import com.tzg.rmi.service.SystemParamRmiService;
 import com.tzg.wap.utils.DateUtil;
 
@@ -61,48 +58,53 @@ public class HomeController extends BaseController {
 	private SystemParamRmiService systemParamRmiService;
 	@Autowired
 	private KFFProjectPostRmiService kffProjectPostRmiService;
+	@Autowired
+	private KFFUserRmiService kffUserService;
 	
-	/**
-	 * 首页推荐列表
-	 * 
-	 * @param request
-	 * @param response
-	 * @param token
-	 * @param pageIndex
-	 * @param pageSize
-	 * @return
-	 */
-	@RequestMapping(value = "/recommendList", method = { RequestMethod.POST, RequestMethod.GET })
+	/** 
+	* @Title: recommendList 
+	* @Description: TODO <首页推荐列表>
+	* @author linj <方法创建作者>
+	* @create 下午5:01:53
+	* @param @param request
+	* @param @param response
+	* @param @param token 用户登录唯一标识
+	* @param @param pageIndex 第几页
+	* @param @param pageSize 每页几条
+	* @param @return <参数说明>
+	* @return BaseResponseEntity 
+	* @throws 
+	* @update 下午5:01:53
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	*/
 	@ResponseBody
-	public BaseResponseEntity evaluationList(HttpServletRequest request, HttpServletResponse response,
-			Integer pageIndex,Integer pageSize) {
+	@RequestMapping(value = "/recommendList", method = { RequestMethod.POST, RequestMethod.GET })
+	public BaseResponseEntity recommendList(HttpServletRequest request, HttpServletResponse response,
+			String token,Integer pageIndex,Integer pageSize) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
-		if(pageIndex==null&&pageSize==null) {
+		if(pageIndex==null&&pageSize==null&&StringUtils.isBlank(token)) {
 			JSONObject requestContent = HtmlUtils.getRequestContent(request);
 			pageIndex = (Integer) requestContent.get("pageIndex");
 			pageSize = (Integer) requestContent.get("pageSize");
+			token = (String) requestContent.get("token");
 		}
-		pageIndex=pageIndex==null||pageIndex<1?1:pageIndex;
-		pageSize=pageSize==null||pageSize<1?10:pageSize;
+		if (pageIndex==null||pageSize==null) {
+			throw new RestServiceException(RestErrorCode.MISSING_ARGS);
+		}
 		try {
-			// String token = (String) request.getSession().getAttribute("token");
-			Integer userId = null;
-			// if (StringUtils.isNotBlank(token)) {
-			// userId = getUserIdByToken(token);
-			// }
+			Integer userId =  null;
+			if(StringUtils.isNotBlank(token)) {
+				userId =  getUserIdByToken(token);
+			}
 			PaginationQuery query = new PaginationQuery();
-			query.addQueryData("status", "1");
-			query.addQueryData("stickTop", "1");
-			query.addQueryData("sortField", "stick_updateTime");
-			query.addQueryData("praiseNum", "10");
-			// 帖子类型：1-评测；2-讨论；3-文章
-			// query.addQueryData("postType", "1");
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
-			Integer type = 1;// 取关项目
-			Integer method = 1;// 推荐列表
-			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query, type, method);
+//			Integer type = 1;// 取关项目
+			Integer type = 2;// 取关注人
+			Integer nowCount = pageSize;
+			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query, type, nowCount);
 			map.put("recommends", recommends);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -114,49 +116,57 @@ public class HomeController extends BaseController {
 		}
 		return bre;
 	}
-
-	/**
-	 * 
-	 * @Title: followList
-	 * @Description: 关注列表
-	 * @param @param request
-	 * @param @param response
-	 * @param @return
-	 * @return BaseResponseEntity
-	 * @see
-	 * @throws
-	 */
-	@RequestMapping(value = "/followList", method = { RequestMethod.POST, RequestMethod.GET })
+	
+	
+	/** 
+	* @Title: followList 
+	* @Description: TODO <主页-关注列表>
+	* @author linj <方法创建作者>
+	* @create 下午5:51:25
+	* @param @param request
+	* @param @return <参数说明>
+	* @return BaseResponseEntity 
+	* @throws 
+	* @update 下午5:51:25
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	*/
 	@ResponseBody
-	public BaseResponseEntity followList(HttpServletRequest request, HttpServletResponse response, Integer pageIndex,
-			Integer pageSize,String token) {
+	@RequestMapping(value = "/followList", method = { RequestMethod.POST, RequestMethod.GET })
+	public BaseResponseEntity followList(HttpServletRequest request,Integer pageIndex,Integer pageSize,
+			String token) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
-		if(pageIndex==null&&pageSize==null) {
-			JSONObject requestContent = HtmlUtils.getRequestContent(request);
-			pageIndex = (Integer) requestContent.get("pageIndex");
-			pageSize = (Integer) requestContent.get("pageSize");
-			token = (String) requestContent.get("token");
-		}
-		pageIndex=pageIndex==null||pageIndex<1?1:pageIndex;
-		pageSize=pageSize==null||pageSize<1?10:pageSize;
 		try {
-			Integer userId = null;
-			if (StringUtils.isNotBlank(token)) {
-				userId = getUserIdByToken(token);
-			}else {
+			if(pageIndex==null&&pageSize==null&&StringUtils.isBlank(token)) {
+				JSONObject requestContent = HtmlUtils.getRequestContent(request);
+				pageIndex = (Integer) requestContent.get("pageIndex");
+				pageSize = (Integer) requestContent.get("pageSize");
+				token = (String) requestContent.get("token");
+			}
+			if(pageIndex==null||pageSize==null) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
 			}
+			
+			Integer userId = null;
 			PaginationQuery query = new PaginationQuery();
-			query.addQueryData("userId", userId + "");
 			query.addQueryData("status", "1");
-//			query.addQueryData("sortField", "collectNum");
-			// 帖子类型：1-评测；2-讨论；3-文章
-			// query.addQueryData("postType", "2");
+			// query.addQueryData("sortField", "collect_num");
+			// 关注类型：1-关注项目;2-关注帖子；3-关注用户
+			query.addQueryData("followTypec", "2");//除了关注帖子不展示，其他都展示出来
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
-//			PageResult<PostResponse> follows = kffRmiService.findPageFollowList(userId, query);
-			PageResult<PostResponse> follows = kffProjectPostRmiService.findMyPageFollowList(userId, query);
+
+			Integer type = 2;// 取关注人
+			KFFUser loginUser = null;
+			if(StringUtils.isNotBlank(token)) {
+				userId = getUserIdByToken(token);
+				loginUser = kffUserService.findById(userId);
+			}
+			query.addQueryData("userId", userId);
+			PageResult<PostResponse> follows = kffProjectPostRmiService.findPageForFollowList(userId, query,type,loginUser);
+//			PageResult<PostResponse> follows = kffProjectPostRmiService.findMyPageFollowList(userId, query);
+			System.out.println("follows" + follows);
 			map.put("follows", follows);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -168,7 +178,7 @@ public class HomeController extends BaseController {
 		}
 		return bre;
 	}
-
+	
 	/**
 	 * 
 	 * @Title: projectRankList
@@ -210,31 +220,41 @@ public class HomeController extends BaseController {
 		return bre;
 	}
 
-	/**
-	 * 文章详情
-	 * 
-	 * @param response
-	 * @param request
-	 * @param token
-	 * @param postId
-	 * @return
-	 */
-	@RequestMapping(value = "/articleDetail", method = { RequestMethod.POST, RequestMethod.GET })
+	/** 
+	* @Title: articleDetail 
+	* @Description: TODO <文章详情>
+	* @author linj <方法创建作者>
+	* @create 下午2:12:58
+	* @param @param response
+	* @param @param request
+	* @param @param postId 帖子-文章id
+	* @param @param token 用户登录的唯一标识
+	* @param @return <参数说明>
+	* @return BaseResponseEntity 
+	* @throws 
+	* @update 下午2:12:58
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	*/
 	@ResponseBody
-	public BaseResponseEntity articleDetail(HttpServletResponse response, HttpServletRequest request, Integer postId) {
+	@RequestMapping(value = "/articleDetail", method = { RequestMethod.POST, RequestMethod.GET })
+	public BaseResponseEntity articleDetail(HttpServletResponse response, HttpServletRequest request, 
+			Integer postId,String token) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 
 		try {
-			String token = (String) request.getSession().getAttribute("token");
-			if (postId == null || postId == 0) {
-				throw new RestServiceException(RestErrorCode.MISSING_ARG_POSTID);
+			if(StringUtils.isBlank(token)&&postId==null) {
+				JSONObject requestContent = HtmlUtils.getRequestContent(request);
+				postId = (Integer) requestContent.get("postId");
+				token = (String) requestContent.get("token");
 			}
-			Integer userId = null;
-			if (StringUtils.isNotBlank(token)) {
-				userId = getUserIdByToken(token);
+			if (StringUtils.isBlank(token)||postId==null) {
+				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
 			}
-			ArticleDetailResponse article = kffRmiService.findArticleDetail(userId, postId);
+			Integer userId = getUserIdByToken(token);
+			Integer type = 2;// 取关注人
+			ArticleDetailResponse article = kffRmiService.findArticleDetail(userId,type, postId);
 			map.put("articleDetail", article);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -399,22 +419,25 @@ public class HomeController extends BaseController {
 	 * @param postId
 	 * @return
 	 */
-	@RequestMapping(value = "/discussDetail", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public BaseResponseEntity discussDetail(HttpServletRequest request, HttpServletResponse response, Integer postId) {
+	@RequestMapping(value = "/discussDetail", method = { RequestMethod.POST, RequestMethod.GET })
+	public BaseResponseEntity discussDetail(HttpServletRequest request, HttpServletResponse response, 
+			String token,Integer postId) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 
 		try {
-			String token = (String) request.getSession().getAttribute("token");
-			if (postId == null || postId == 0) {
-				throw new RestServiceException(RestErrorCode.MISSING_ARG_POSTID);
+			if(StringUtils.isBlank(token)&&postId==null) {
+				JSONObject requestContent = HtmlUtils.getRequestContent(request);
+				postId = (Integer) requestContent.get("postId");
+				token = (String) requestContent.get("token");
 			}
-			Integer userId = null;
-			if (StringUtils.isNotBlank(token)) {
-				userId = getUserIdByToken(token);
+			if (StringUtils.isBlank(token)||postId==null) {
+				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
 			}
-			DiscussDetailResponse discuss = kffRmiService.findDiscussDetail(userId, postId);
+			Integer userId = getUserIdByToken(token);
+			Integer type = 2;// 取关注人
+			DiscussDetailResponse discuss = kffRmiService.findDiscussDetail(userId, type,postId);
 			map.put("discussDetail", discuss);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -427,43 +450,6 @@ public class HomeController extends BaseController {
 		return bre;
 	}
 
-	/**
-	 * 讨论详情页,单个评论详情页
-	 * 
-	 * @param request
-	 * @param response
-	 * @param token
-	 * @param postId
-	 * @return
-	 */
-	@RequestMapping(value = "/discussCommentList", method = { RequestMethod.POST, RequestMethod.GET })
-	@ResponseBody
-	public BaseResponseEntity discussCommentList(HttpServletRequest request, HttpServletResponse response, Integer postId) {
-		BaseResponseEntity bre = new BaseResponseEntity();
-		HashMap<String, Object> map = new HashMap<String, Object>();
-
-		try {
-			String token = (String) request.getSession().getAttribute("token");
-			if (postId == null || postId == 0) {
-				throw new RestServiceException(RestErrorCode.MISSING_ARG_POSTID);
-			}
-			Integer userId = null;
-			if (StringUtils.isNotBlank(token)) {
-				userId = getUserIdByToken(token);
-			}
-			List<Comments> comments = kffRmiService.findAllDiscussCommentsList(userId, postId);
-			map.put("comments", comments);
-
-			bre.setData(map);
-		} catch (RestServiceException e) {
-			logger.error("HomeController discussCommentList:{}", e);
-			return this.resResult(e.getErrorCode(), e.getMessage());
-		} catch (Exception e) {
-			logger.error("HomeController discussCommentList:{}", e);
-			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
-		}
-		return bre;
-	}
 
 	/**
 	 * 讨论分享页
@@ -517,20 +503,23 @@ public class HomeController extends BaseController {
 	 */
 	@RequestMapping(value = "/evaluationDetail", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public BaseResponseEntity evaluationDetail(HttpServletRequest request, HttpServletResponse response, String token, Integer postId) {
+	public BaseResponseEntity evaluationDetail(HttpServletRequest request, HttpServletResponse response, 
+			String token, Integer postId) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 
 		try {
-
-			if (postId == null || postId == 0) {
-				throw new RestServiceException(RestErrorCode.MISSING_ARG_POSTID);
+			if(StringUtils.isBlank(token)&&postId==null) {
+				JSONObject requestContent = HtmlUtils.getRequestContent(request);
+				postId = (Integer) requestContent.get("postId");
+				token = (String) requestContent.get("token");
 			}
-			Integer userId = null;
-			if (StringUtils.isNotBlank(token)) {
-				userId = getUserIdByToken(token);
+			if (StringUtils.isBlank(token)||postId==null) {
+				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
 			}
-			DiscussDetailResponse evaluationDetail = kffRmiService.findDiscussDetail(userId, postId);
+			Integer userId = getUserIdByToken(token);
+			Integer type = 2;// 取关注人
+			EvaluationDetailResponse evaluationDetail = kffRmiService.findEvaluationDetail(userId,type,postId);
 			map.put("evaluationDetail", evaluationDetail);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -542,7 +531,141 @@ public class HomeController extends BaseController {
 		}
 		return bre;
 	}
+	
+	/** 
+	* @Title: discussCommentList 
+	* @Description: TODO <爆料详情页,列表接口>
+	* @author linj <方法创建作者>
+	* @create 下午5:26:17
+	* @param @param request
+	* @param @param token
+	* @param @param postId
+	* @param @param pageIndex
+	* @param @param pageSize
+	* @param @return <参数说明>
+	* @return BaseResponseEntity 
+	* @throws 
+	* @update 下午5:26:17
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	*/
+	@ResponseBody
+	@RequestMapping(value = "/discussCommentList", method = { RequestMethod.POST, RequestMethod.GET })
+	public BaseResponseEntity discussCommentList(HttpServletRequest request,String token,Integer postId,Integer pageIndex,
+			Integer pageSize) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+		HashMap<String, Object> map = new HashMap<String, Object>();
 
+		try {
+			if(StringUtils.isBlank(token)&&null==postId&&null==pageIndex
+					&&null==pageSize) {
+				JSONObject requestContent = HtmlUtils.getRequestContent(request);
+				token = (String) requestContent.get("token");
+				postId = (Integer) requestContent.get("postId");
+				pageIndex = (Integer) requestContent.get("pageIndex");
+				pageSize = (Integer) requestContent.get("pageSize");
+			}
+			if(StringUtils.isBlank(token)||null==postId||null==pageIndex
+					||null==pageSize) {
+				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
+			}
+			Integer userId =  getUserIdByToken(token);
+			PaginationQuery query = new PaginationQuery();
+			query.setPageIndex(pageIndex);
+			query.setRowsPerPage(pageSize);
+			query.addQueryData("postId", postId + "");
+			query.addQueryData("status", KFFConstants.STATUS_ACTIVE + "");
+			query.addQueryData("postType", KFFConstants.POST_TYPE_DISCUSS + "");
+			query.addQueryData("parentCommentsIdNull", "YES");
+
+			PageResult<Comments> comments = kffRmiService.findPageDiscussCommentsList(userId, query);
+			map.put("comments", comments);
+
+			bre.setData(map);
+		} catch (RestServiceException e) {
+			logger.error("HomeController discussCommentList:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("HomeController discussCommentList:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+		}
+		return bre;
+	}
+	
+	
+	/** 
+	* @Title: postCommentList 
+	* @Description: TODO <评测,文章详情页,评论列表接口>
+	* @author linj <方法创建作者>
+	* @create 下午2:10:14
+	* @param @param request
+	* @param @param token 用户登录唯一标识
+	* @param @param postId 评测，文章的id
+	* @param @param pageIndex 第几页
+	* @param @param pageSize 每页多少条
+	* @param @param postType 帖子类型：1-评测；3-文章
+	* @param @return <参数说明>
+	* @return BaseResponseEntity 
+	* @throws 
+	* @update 下午2:10:14
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	*/
+	@ResponseBody
+	@RequestMapping(value = "/postCommentList", method = { RequestMethod.POST, RequestMethod.GET })
+	public BaseResponseEntity postCommentList(HttpServletRequest request,String token,Integer postId,
+			Integer pageIndex,Integer pageSize,Integer postType) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		try {
+			if(StringUtils.isBlank(token)&&null==postId&&null==pageIndex
+					&&null==pageSize&&null==postType) {
+				JSONObject requestContent = HtmlUtils.getRequestContent(request);
+				token = (String) requestContent.get("token");
+				postId = (Integer) requestContent.get("postId");
+				pageIndex = (Integer) requestContent.get("pageIndex");
+				pageSize = (Integer) requestContent.get("pageSize");
+				postType = (Integer) requestContent.get("postType");
+			}
+			if(StringUtils.isBlank(token)||null==postId||null==pageIndex
+					||null==pageSize||null==postType) {
+				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
+			}
+			Integer userId = getUserIdByToken(token);
+			PaginationQuery newQuery = new PaginationQuery();
+			newQuery.addQueryData("status", "1");
+			newQuery.addQueryData("postId", postId);
+			newQuery.addQueryData("postType", postType);
+			newQuery.addQueryData("parentCommentsIdNull", "YES");
+			newQuery.setPageIndex(pageIndex);
+			newQuery.setRowsPerPage(pageSize);
+			PageResult<Comments> newestComments = kffRmiService.findPageNewestCommentsSelf(userId, postId, newQuery);
+			map.put("newestComments", newestComments);
+			if (pageIndex == 1) {
+				PaginationQuery hotQuery = new PaginationQuery();
+				hotQuery.addQueryData("status", "1");
+				hotQuery.addQueryData("postId", postId);
+				hotQuery.addQueryData("postType", postType);
+				newQuery.addQueryData("parentCommentsIdNull", "YES");
+				// 点赞数最多的2个评论
+				hotQuery.addQueryData("sortField", "praise_num");
+				hotQuery.addQueryData("praiseNum", "10");
+				hotQuery.setPageIndex(1);
+				hotQuery.setRowsPerPage(2);
+				List<Comments> hotComments = kffRmiService.findPageHotCommentsListSelf(userId, postId, hotQuery);
+				map.put("hotComments", hotComments);
+			}
+			bre.setData(map);
+		} catch (RestServiceException e) {
+			logger.error("HomeController postCommentList:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("HomeController postCommentList:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+		}
+		return bre;
+	}
+	
 	/**
 	 * 分享评测详情
 	 * 

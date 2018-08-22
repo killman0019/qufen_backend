@@ -142,6 +142,24 @@ public class ProjectResponse implements Serializable {
 	private Integer totalRaterNum = 0;
 
 	private Integer cmcId;
+	
+	private String github;
+
+	private String bsjCirculateData;
+
+	private Integer rank;
+
+	private Double price;
+
+	private Double volume24h;
+
+	private Double marketCap;
+
+	private Double percentChange1h;
+
+	private Double percentChange24h;
+
+	private Double percentChange7d;
 
 	public Integer getRank() {
 		return rank;
@@ -182,24 +200,6 @@ public class ProjectResponse implements Serializable {
 	public void setPercentChange7d(Double percentChange7d) {
 		this.percentChange7d = percentChange7d;
 	}
-
-	private String github;
-
-	private String bsjCirculateData;
-
-	private Integer rank;
-
-	private Double price;
-
-	private Double volume24h;
-
-	private Double marketCap;
-
-	private Double percentChange1h;
-
-	private Double percentChange24h;
-
-	private Double percentChange7d;
 
 	public Double getPrice() {
 		return price;

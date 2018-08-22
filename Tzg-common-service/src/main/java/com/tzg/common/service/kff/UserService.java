@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -59,9 +58,6 @@ public class UserService {
 
 	@Transactional(readOnly = true)
 	public KFFUser findById(java.lang.Integer id) throws RestServiceException {
-		if (id == null) {
-			throw new RestServiceException("id不能为空");
-		}
 		return userMapper.findById(id);
 	}
 
@@ -207,7 +203,7 @@ public class UserService {
 				return null;
 			}
 			if (loninUser.getStatus() == 0) {
-				throw new RestServiceException("当前账户因违规已暂停使用，请联系客服");
+				throw new RestServiceException(sysGlobals.DISABLE_ACCOUNT_MSG);
 			}
 			Integer userId = loninUser.getUserId();
 			System.err.println("登录用户的ID  :" + userId);
@@ -759,7 +755,7 @@ public class UserService {
 		public MyTask(Map<String, Object> arr) {
 			this.arrs = arr;
 		}
-
+		
 		@Override
 		public void run() {
 			logger.info("----正在执行task---" + arrs);

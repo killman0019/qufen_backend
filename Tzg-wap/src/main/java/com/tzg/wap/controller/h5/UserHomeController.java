@@ -5,6 +5,7 @@ import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,11 +18,13 @@ import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.entitys.kff.evaluation.EvaluationDetailResponse;
 import com.tzg.entitys.kff.post.PostResponse;
+import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.entitys.kff.user.KFFUserHomeResponse;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
 import com.tzg.rmi.service.KFFRmiService;
+import com.tzg.rmi.service.KFFUserRmiService;
 
 @Controller(value = "KFFUserHomeController")
 @RequestMapping("/kff/userhome")
@@ -30,7 +33,9 @@ public class UserHomeController extends BaseController {
 
 	@Autowired
 	private KFFRmiService kffRmiService;
-
+	@Autowired
+	private KFFUserRmiService kffUserService;
+	
 	/**
 	 * 
 	 * @Title: 用户首页
@@ -78,8 +83,7 @@ public class UserHomeController extends BaseController {
 	 * @see
 	 * @throws
 	 */
-	@RequestMapping(value = "/evaluationList", method = { RequestMethod.POST,
-			RequestMethod.GET })
+	@RequestMapping(value = "/evaluationList", method = { RequestMethod.POST,RequestMethod.GET })
 	@ResponseBody
 	public BaseResponseEntity evaluationList(HttpServletRequest request,
 			HttpServletResponse response, BaseRequest baseRequest) {
@@ -101,8 +105,13 @@ public class UserHomeController extends BaseController {
 			query.addQueryData("postType", "1");
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
-			PageResult<EvaluationDetailResponse> evaluations = kffRmiService
-					.findPageEvaluationList(query);
+			Integer type = 2;// 取关注人
+			KFFUser loginUser = null;
+			if(StringUtils.isNotBlank(token)) {
+				loginUser = kffUserService.findById(loginUserId);
+				query.addQueryData("createUserId", userId);
+			}
+			PageResult<EvaluationDetailResponse> evaluations = kffRmiService.findPageEvaluationList(query,type,loginUser);
 			map.put("evaluations", evaluations);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -141,13 +150,18 @@ public class UserHomeController extends BaseController {
 			} else {
 				query.addQueryData("userId", loginUserId + "");
 			}
+			KFFUser loginUser = null;
+			if(StringUtils.isNotBlank(token)) {
+				loginUser = kffUserService.findById(userId);
+				query.addQueryData("createUserId", userId);
+			}
 			query.addQueryData("status", "1");
 			// 帖子类型：1-评测；2-讨论；3-文章
 			query.addQueryData("postType", "2");
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
-			PageResult<PostResponse> discusses = kffRmiService
-					.findPageDisscussList(query);
+			Integer type = 2;// 取关注人
+			PageResult<PostResponse> discusses = kffRmiService.findPageDisscussList(query,type,loginUser);
 			map.put("discusses", discusses);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -168,8 +182,7 @@ public class UserHomeController extends BaseController {
 	 * @param baseRequest
 	 * @return
 	 */
-	@RequestMapping(value = "/articleList", method = { RequestMethod.POST,
-			RequestMethod.GET })
+	@RequestMapping(value = "/articleList", method = { RequestMethod.POST,RequestMethod.GET })
 	@ResponseBody
 	public BaseResponseEntity articleList(HttpServletRequest request,
 			HttpServletResponse response, BaseRequest baseRequest) {
@@ -186,13 +199,18 @@ public class UserHomeController extends BaseController {
 			} else {
 				query.addQueryData("userId", loginUserId + "");
 			}
+			KFFUser loginUser = null;
+			if(StringUtils.isNotBlank(token)) {
+				loginUser = kffUserService.findById(userId);
+				query.addQueryData("createUserId", userId);
+			}
 			query.addQueryData("status", "1");
 			// 帖子类型：1-评测；2-讨论；3-文章
 			query.addQueryData("postType", "3");
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
-			PageResult<PostResponse> articles = kffRmiService
-					.findPageArticleList(query);
+			Integer type = 2;// 取关注人
+			PageResult<PostResponse> articles = kffRmiService.findPageArticleList(query,type,loginUser);
 			map.put("articles", articles);
 			bre.setData(map);
 		} catch (RestServiceException e) {

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSONObject;
 import com.tzg.common.redis.RedisService;
 import com.tzg.common.utils.AccountTokenUtil;
+import com.tzg.common.utils.HtmlUtils;
 import com.tzg.common.utils.RandomUtil;
 import com.tzg.common.utils.RegexUtil;
 import com.tzg.common.utils.sysGlobals;
@@ -196,6 +197,11 @@ public class DynamicValidateCodeController extends BaseController {
 		Map<String, Object> data = new HashMap<String, Object>();
 		// String module = "register";
 		try {
+			if(phone==null&&module==null) {
+				JSONObject requestContent = HtmlUtils.getRequestContent(request);
+				phone = (String) requestContent.get("phone");
+				module = (String) requestContent.get("module");
+			}
 
 			if (StringUtils.isBlank(module) || StringUtils.isBlank(phone)) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARGS);

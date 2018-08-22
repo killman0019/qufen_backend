@@ -22,7 +22,9 @@ import com.tzg.common.page.PaginationQuery;
 import com.tzg.entitys.kff.commendation.Commendation;
 import com.tzg.entitys.kff.commendation.CommendationMapper;
 import com.tzg.entitys.kff.post.Post;
+import com.tzg.entitys.kff.post.PostDiscussVo;
 import com.tzg.entitys.kff.post.PostMapper;
+import com.tzg.entitys.kff.post.PostResponse;
 import com.tzg.entitys.kff.tokenrecords.Tokenrecords;
 import com.tzg.entitys.kff.tokenrecords.TokenrecordsMapper;
 import com.tzg.rest.exception.rest.RestServiceException;
@@ -44,6 +46,26 @@ public class PostService {
 
 	private static final ExecutorService newFixedThreadPoolCaluaPostIncome = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 4);
 
+	@Transactional(readOnly = true)
+	public List<PostDiscussVo> findSetTopDiscuss(Map<String,Object> map) throws RestServiceException {
+		return postMapper.findSetTopDiscuss(map);
+	}
+	
+	@Transactional(readOnly = true)
+	public Integer findSetTopDiscussCount(Map<String,Object> map) throws RestServiceException {
+		return postMapper.findSetTopDiscussCount(map);
+	}
+	
+	@Transactional(readOnly = true)
+	public List<PostDiscussVo> findSetTopPost(Map<String,Object> map) throws RestServiceException {
+		return postMapper.findSetTopPost(map);
+	}
+	
+	@Transactional(readOnly = true)
+	public Integer findSetTopPostCount(Map<String,Object> map) throws RestServiceException {
+		return postMapper.findSetTopPostCount(map);
+	}
+	
 	@Transactional(readOnly = true)
 	public Post findById(java.lang.Integer id) throws RestServiceException {
 		if (id == null) {
@@ -68,6 +90,10 @@ public class PostService {
 
 	public Integer save(Post post) throws RestServiceException {
 		return postMapper.save(post);
+	}
+	
+	public Integer updateByMap(Map<String,Object> map) throws RestServiceException {
+		return postMapper.updateByMap(map);
 	}
 
 	public void update(Post post) throws RestServiceException {
@@ -94,6 +120,44 @@ public class PostService {
 		}
 		return result;
 	}
+	
+	
+	@Transactional(readOnly = true)
+	public PageResult<PostDiscussVo> findPostVoPage(PaginationQuery query) throws RestServiceException {
+		PageResult<PostDiscussVo> result = null;
+		try {
+			Integer count = postMapper.findSetTopPostCount(query.getQueryData());
+			if (null != count && count.intValue() > 0) {
+				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
+				query.addQueryData("startRecord", Integer.toString(startRecord));
+				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
+				List<PostDiscussVo> list = postMapper.findSetTopPost(query.getQueryData());
+				result = new PageResult<PostDiscussVo>(list, count, query);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	@Transactional(readOnly = true)
+	public PageResult<PostDiscussVo> findPostDiscussVoPage(PaginationQuery query) throws RestServiceException {
+		PageResult<PostDiscussVo> result = null;
+		try {
+			Integer count = postMapper.findSetTopDiscussCount(query.getQueryData());
+			if (null != count && count.intValue() > 0) {
+				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
+				query.addQueryData("startRecord", Integer.toString(startRecord));
+				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
+				List<PostDiscussVo> list = postMapper.findSetTopDiscuss(query.getQueryData());
+				result = new PageResult<PostDiscussVo>(list, count, query);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
 
 	public List<Post> findProjectActiveUsers(Map<String, Object> map) {
 
@@ -151,7 +215,26 @@ public class PostService {
 		}
 		return result;
 	}
-
+	
+	@Transactional(readOnly = true)
+	public PageResult<PostResponse> findPageForFollowList(PaginationQuery query) {
+		PageResult<PostResponse> result = null;
+		try {
+			Integer count = postMapper.findPageForFollowCount(query.getQueryData());
+			System.out.println("count------------------------------->"+count);
+//			if (null != count && count.intValue() > 0) {
+//				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
+//				query.addQueryData("startRecord", Integer.toString(startRecord));
+//				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
+//				List<PostResponse> list = postMapper.findPageForFollowList(query.getQueryData());
+//				result = new PageResult<PostResponse>(list, count, query);
+//			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
 	@Transactional(readOnly = true)
 	public PageResult<Post> findPageRecommendList(PaginationQuery query) {
 		PageResult<Post> result = null;

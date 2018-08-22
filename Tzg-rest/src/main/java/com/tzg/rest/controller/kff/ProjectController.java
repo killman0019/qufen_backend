@@ -1,6 +1,5 @@
 package com.tzg.rest.controller.kff;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tzg.common.base.BaseRequest;
 import com.tzg.common.constants.KFFConstants;
@@ -31,6 +29,7 @@ import com.tzg.entitys.kff.project.ProjectResponse;
 import com.tzg.entitys.kff.project.SubmitKFFProjectRequest;
 import com.tzg.entitys.kff.projectManage.ProjectManageTabResponse;
 import com.tzg.entitys.kff.transactionpair.TransactionPairResponse;
+import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.rest.controller.BaseController;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
@@ -38,6 +37,7 @@ import com.tzg.rest.vo.BaseResponseEntity;
 import com.tzg.rmi.service.KFFProjectPostRmiService;
 import com.tzg.rmi.service.KFFProjectRmiService;
 import com.tzg.rmi.service.KFFRmiService;
+import com.tzg.rmi.service.KFFUserRmiService;
 
 @Controller(value = "KFFProjectController")
 @RequestMapping("/kff/project")
@@ -48,9 +48,11 @@ public class ProjectController extends BaseController {
 	private KFFRmiService kffRmiService;
 	@Autowired
 	private KFFProjectPostRmiService kffProjectPostRmiService;
-
 	@Autowired
 	private KFFProjectRmiService kFFProjectRmiService;
+	@Autowired
+	private KFFUserRmiService kffUserService;
+	
 
 	/**
 	 * 
@@ -73,7 +75,13 @@ public class ProjectController extends BaseController {
 			JSONObject params = getParamMapFromRequestPolicy(request);
 			String token = (String) params.get("token");
 			Integer projectId = (Integer) params.get("projectId");
-			Integer userId = getUserIdByToken(token);
+			Integer userId = null;
+			KFFUser loginUser = null;
+			if(StringUtils.isNotBlank(token)) {
+				userId = getUserIdByToken(token);
+				loginUser = kffUserService.findById(userId);
+			}
+			Integer type = 2;// 取关注人
 			if (projectId == null) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARG_PROJID);
 			}
@@ -83,10 +91,10 @@ public class ProjectController extends BaseController {
 			// 20180613 去掉，改为 精选评测，精选打假（讨论）
 			// https://www.tapd.cn/21950911/bugtrace/bugs/view?bug_id=1121950911001000461
 			// 2条7天内回复数最高的讨论帖子
-			List<PostResponse> hotDiscuss = kffRmiService.findHotDiscussList(projectId);
+			List<PostResponse> hotDiscuss = kffRmiService.findHotDiscussList(projectId,type,loginUser);
 			map.put("hotDiscuss", hotDiscuss);
 			// 点赞量超过10 & 排名前2的内容
-			List<PostResponse> hotEva = kffProjectPostRmiService.findHotEvaList(projectId);
+			List<PostResponse> hotEva = kffProjectPostRmiService.findHotEvaList(projectId,type,loginUser);
 			map.put("hotEva", hotEva);
 
 			// 项目专业评测统计信息
@@ -236,8 +244,7 @@ public class ProjectController extends BaseController {
 
 		try {
 			BaseRequest baseRequest = getParamMapFromRequestPolicy(request, BaseRequest.class);
-			// String token = baseRequest.getToken();
-			// Integer loginUserId = getUserIdByToken(token);
+			 String token = baseRequest.getToken();
 			Integer projectId = baseRequest.getProjectId();
 			if (projectId == null) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARG_PROJID);
@@ -257,7 +264,13 @@ public class ProjectController extends BaseController {
 				query.addQueryData("sql_keyword_orderBy", "post_id");
 				query.addQueryData("sql_keyword_sort", "desc");
 			}
-			PageResult<EvaluationDetailResponse> evaluations = kffRmiService.findPageEvaluationList(query);
+			Integer type = 2;// 取关注人
+			KFFUser loginUser = null;
+			if(StringUtils.isNotBlank(token)) {
+				Integer userId = getUserIdByToken(token);
+				loginUser = kffUserService.findById(userId);
+			}
+			PageResult<EvaluationDetailResponse> evaluations = kffRmiService.findPageEvaluationList(query,type,loginUser);
 			map.put("evaluations", evaluations);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -289,8 +302,7 @@ public class ProjectController extends BaseController {
 
 		try {
 			BaseRequest baseRequest = getParamMapFromRequestPolicy(request, BaseRequest.class);
-			// String token = baseRequest.getToken();
-			// Integer loginUserId = getUserIdByToken(token);
+			 String token = baseRequest.getToken();
 			Integer projectId = baseRequest.getProjectId();
 			if (projectId == null) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARG_PROJID);
@@ -307,9 +319,16 @@ public class ProjectController extends BaseController {
 				query.addQueryData("sql_keyword_orderBy", "createTime");
 				query.addQueryData("sql_keyword_sort", "desc");
 			}
+			
+			KFFUser loginUser = null;
+			if(StringUtils.isNotBlank(token)) {
+				Integer userId = getUserIdByToken(token);
+				loginUser = kffUserService.findById(userId);
+			}
+			Integer type = 2;// 取关注人
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
-			PageResult<PostResponse> discusses = kffRmiService.findPageDisscussList(query);
+			PageResult<PostResponse> discusses = kffRmiService.findPageDisscussList(query,type,loginUser);
 			map.put("discusses", discusses);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -341,8 +360,7 @@ public class ProjectController extends BaseController {
 
 		try {
 			BaseRequest baseRequest = getParamMapFromRequestPolicy(request, BaseRequest.class);
-			// String token = baseRequest.getToken();
-			// Integer loginUserId = getUserIdByToken(token);
+			 String token = baseRequest.getToken();
 			Integer projectId = baseRequest.getProjectId();
 			if (projectId == null) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARG_PROJID);
@@ -359,9 +377,15 @@ public class ProjectController extends BaseController {
 				query.addQueryData("sql_keyword_orderBy", "post_id");
 				query.addQueryData("sql_keyword_sort", "desc");
 			}
+			KFFUser loginUser = null;
+			if(StringUtils.isNotBlank(token)) {
+				Integer userId = getUserIdByToken(token);
+				loginUser = kffUserService.findById(userId);
+			}
+			Integer type = 2;// 取关注人
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
-			PageResult<PostResponse> articles = kffRmiService.findPageArticleList(query);
+			PageResult<PostResponse> articles = kffRmiService.findPageArticleList(query,type,loginUser);
 			map.put("articles", articles);
 			bre.setData(map);
 		} catch (RestServiceException e) {

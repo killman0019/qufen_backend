@@ -26,6 +26,7 @@ import com.tzg.common.redis.RedisService;
 import com.tzg.common.utils.AccountTokenUtil;
 import com.tzg.common.utils.AesWapUtils;
 import com.tzg.common.utils.EnumConstant.SmsBuss;
+import com.tzg.common.utils.HtmlUtils;
 import com.tzg.common.utils.RegexUtil;
 import com.tzg.common.utils.SHAUtil;
 import com.tzg.common.utils.TzgConstant;
@@ -45,6 +46,7 @@ import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
 import com.tzg.rmi.service.KFFRmiService;
+import com.tzg.rmi.service.KFFUserRmiService;
 import com.tzg.rmi.service.SystemParamRmiService;
 import com.tzg.wap.utils.DateUtil;
 import com.tzg.wap.utils.HexUtil;
@@ -57,7 +59,7 @@ public class UserController extends BaseController {
 	private String registerUrl;
 	// "http://192.168.10.196:5000/user/registerSmp?invaUIH=";
 
-	private static Logger log = Logger.getLogger(UserController.class);
+	private static Logger logger = Logger.getLogger(UserController.class);
 	private static final String KEY = "abcdefgabcdefg12";
 	@Autowired
 	private KFFRmiService kffRmiService;
@@ -65,7 +67,51 @@ public class UserController extends BaseController {
 	private SystemParamRmiService systemParamRmiService;
 	@Autowired
 	private RedisService redisService;
-
+	@Autowired
+	private KFFUserRmiService kffUserRmiService;
+	@Autowired
+	private KFFUserRmiService kffUserService;
+	
+	/** 
+	* @Title: getUserInfo 
+	* @Description: TODO <获取用户信息接口>
+	* @author linj <方法创建作者>
+	* @create 上午10:17:38
+	* @param @param request
+	* @param @param response
+	* @param @param userId 需要获取哪个用户的信息
+	* @param @return <参数说明>
+	* @return BaseResponseEntity 
+	* @throws 
+	* @update 上午10:17:38
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	*/
+	@ResponseBody
+	@RequestMapping(value = "/getUserInfo", method = { RequestMethod.POST, RequestMethod.GET })
+	public BaseResponseEntity getUserInfo(HttpServletRequest request, HttpServletResponse response,Integer userId) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		if(userId==null) {
+			JSONObject requestContent = HtmlUtils.getRequestContent(request);
+			userId = (Integer) requestContent.get("userId");
+		}
+		if (null==userId) {
+			bre.setNoRequstData();
+			return bre;
+		}
+		KFFUser user = kffUserRmiService.findById(userId);
+		if(null==user) {
+			bre.setNoDataMsg();
+			return bre;
+		}
+		user.setPassword(null);
+		user.setPassword(null);
+		map.put("user", user);
+		bre.setData(map);
+		return bre;
+	}
+	
 	/**
 	 * 用户注册后生成邀请链接 (免密码登陆**** 手机号码*** 图片生成验证码*** 手机验证码*** 发到手机的验证码 密码) 邀请码 app 端注册 adasdadad
 	 * 
@@ -348,6 +394,12 @@ public class UserController extends BaseController {
 		HashMap<String, Object> map = new HashMap<String, Object>();
 
 		try {
+			if(phoneNumber==null&&password==null&&dynamicVerifyCode==null) {
+				JSONObject requestContent = HtmlUtils.getRequestContent(request);
+				phoneNumber = (String) requestContent.get("phoneNumber");
+				password = (String) requestContent.get("password");
+				dynamicVerifyCode = (String) requestContent.get("dynamicVerifyCode");
+			}
 			RegisterRequest registerRequest = new RegisterRequest();
 			registerRequest.setPassword(password);
 			registerRequest.setPhoneNumber(phoneNumber);
@@ -677,64 +729,29 @@ public class UserController extends BaseController {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		// 创建返回的map
 		HashMap<String, Object> map = new HashMap<String, Object>();
-
-		// 根据用户token 查找到用户的userID
-		Integer userId = AccountTokenUtil.decodeAccountToken(token);
-
-		if (userId == null) {
-			throw new RestServiceException(RestErrorCode.USER_NOT_EXIST);
-		}
-
 		if (null == token) {
 			throw new RestServiceException(RestErrorCode.USER_NOT_LOGIN);
 		}
-
+		// 根据用户token 查找到用户的userID
+		Integer userId = AccountTokenUtil.decodeAccountToken(token);
+		if (userId == null) {
+			throw new RestServiceException(RestErrorCode.USER_NOT_EXIST);
+		}
 		// 移动端登陆
 		KFFUser user = kffRmiService.findUserById(userId);
 		if (null == kffRmiService.selectUserCardByUserId(userId)) {
 			// usercard表中没有数据表示是移动端登陆
 			// 需要新建数据表
 			kffRmiService.setUserCardAuthentication(user.getUserId(), user.getMobile());
-
 		}
 		Integer statusNum = kffRmiService.selectUserCardStatusByUserId(user.getUserId());
-		// 用户没有进行审核
-		if (4 == statusNum) {
-			// 未进行实名审核
-			// 就直接查询usercard表返回查询结果
-			map.put("status", statusNum);
-			bre.setData(map);
-			return bre;
-		}
-
-		if (3 == statusNum) {
-			// 审核没有通过
-			//
-			map.put("status", statusNum);
-			bre.setData(map);
-			return bre;
-		}
-		if (1 == statusNum) {
-			// 审核中
-			//
-			map.put("status", statusNum);
-			bre.setData(map);
-			return bre;
-		}
-		if (2 == statusNum) {
-			// 审核成功
-			//
-			map.put("status", statusNum);
-			bre.setData(map);
-			return bre;
-		}
 		if (null == statusNum) {
 			map.put("status", 4);
-			bre.setData(map);
-			return bre;
+		}else if(null != statusNum) {
+			map.put("status", statusNum);
 		}
-
-		return null;
+		bre.setData(map);
+		return bre;
 	}
 
 	/**
@@ -925,23 +942,18 @@ public class UserController extends BaseController {
 			if (userId == null) {
 				throw new RestServiceException(RestErrorCode.USER_NOT_EXIST);
 			}
-
 			KFFUser loginaccount = kffRmiService.findUserById(userId);
-
 			if (loginaccount == null) {
 				return this.resResult(RestErrorCode.USER_NOT_EXIST);
 			}
-
 			PaginationQuery query = new PaginationQuery();
 			query.addQueryData("followUserId", userId + "");
 			query.addQueryData("followType", followType + "");
-
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
-			PageResult<FollowResponse> result = kffRmiService.findPageMyFollow(query);
-
+			Integer type = 2;// 取关注人
+			PageResult<FollowResponse> result = kffRmiService.findPageMyFollow(query,type,loginaccount);
 			map.put("myFollows", result);
-
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.warn("myFollowList warn:{}", e);
@@ -978,19 +990,16 @@ public class UserController extends BaseController {
 			}
 			Integer userId = getUserIdByToken(token);
 			KFFUser loginaccount = kffRmiService.findUserById(userId);
-
 			if (loginaccount == null) {
 				return this.resResult(RestErrorCode.USER_NOT_EXIST);
 			}
-
 			PaginationQuery query = new PaginationQuery();
 			query.addQueryData("collectUserId", userId + "");
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
-			PageResult<CollectPostResponse> result = kffRmiService.findPageMyCollectRecords(query);
-
+			Integer type = 2;// 取关注人
+			PageResult<CollectPostResponse> result = kffRmiService.findPageMyCollectRecords(query,type,loginaccount);
 			map.put("myTokenRecords", result);
-
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.warn("myCollectList warn:{}", e);

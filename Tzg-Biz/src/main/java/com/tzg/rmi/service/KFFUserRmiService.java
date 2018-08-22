@@ -33,4 +33,6 @@ public interface KFFUserRmiService {
 	 * @return
 	 */
 	public PageResult<KFFUser> selectKOLProjectPage(Integer userId, PaginationQuery query);
+	//判断用户是否禁用
+	public boolean findUserByStatus(Integer userId);
 }

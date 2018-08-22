@@ -29,6 +29,7 @@ import com.tzg.entitys.kff.evaluation.EvaluationMapper;
 import com.tzg.entitys.kff.follow.Follow;
 import com.tzg.entitys.kff.post.Post;
 import com.tzg.entitys.kff.post.PostMapper;
+import com.tzg.entitys.kff.post.PostResponse;
 import com.tzg.entitys.kff.praise.Praise;
 import com.tzg.entitys.kff.praise.PraiseMapper;
 import com.tzg.entitys.kff.project.KFFProject;
@@ -66,6 +67,12 @@ public class ProjectService {
 		return projectMapper.findListByMap(map);
 	}
 
+	
+	@Transactional(readOnly = true)
+	public List<PostResponse> findLinkedTabsByAttr(Map<String,Object> map) {
+		return projectMapper.findLinkedTabsByAttr(map);
+	}
+	
 	@Transactional(readOnly = true)
 	public KFFProject findById(java.lang.Integer id) throws RestServiceException {
 		if (id == null) {

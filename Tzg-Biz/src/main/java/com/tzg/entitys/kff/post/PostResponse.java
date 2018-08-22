@@ -2,11 +2,12 @@ package com.tzg.entitys.kff.post;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import com.tzg.common.utils.DateUtil;
 
-public class PostResponse implements Serializable {
+public class PostResponse implements Serializable, Comparable {
 
 	/**
 	 * 
@@ -47,7 +48,7 @@ public class PostResponse implements Serializable {
 	private java.lang.String projectChineseName;
 
 	/**
-	 * 项目标题
+	 * 一句话简介
 	 */
 	private java.lang.String projectSignature;
 
@@ -168,6 +169,61 @@ public class PostResponse implements Serializable {
 	private Double praiseIncome;
 	private Double donateIncome;
 	private Double postTotalIncome;
+	
+	private String postUuid;
+	private Integer isNiceChoice;
+	private Date niceChoiceAt;
+	private Integer type;
+	private Integer disStickTop;
+	private Date disStickUpdateTime;
+	
+	public String getPostUuid() {
+		return postUuid;
+	}
+
+	public void setPostUuid(String postUuid) {
+		this.postUuid = postUuid;
+	}
+
+	public Integer getIsNiceChoice() {
+		return isNiceChoice;
+	}
+
+	public void setIsNiceChoice(Integer isNiceChoice) {
+		this.isNiceChoice = isNiceChoice;
+	}
+
+	public Date getNiceChoiceAt() {
+		return niceChoiceAt;
+	}
+
+	public void setNiceChoiceAt(Date niceChoiceAt) {
+		this.niceChoiceAt = niceChoiceAt;
+	}
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
+	}
+
+	public Integer getDisStickTop() {
+		return disStickTop;
+	}
+
+	public void setDisStickTop(Integer disStickTop) {
+		this.disStickTop = disStickTop;
+	}
+
+	public Date getDisStickUpdateTime() {
+		return disStickUpdateTime;
+	}
+
+	public void setDisStickUpdateTime(Date disStickUpdateTime) {
+		this.disStickUpdateTime = disStickUpdateTime;
+	}
 
 	public BigDecimal getEvaTotalScore() {
 		return evaTotalScore;
@@ -490,5 +546,10 @@ public class PostResponse implements Serializable {
 	public void setPostTotalIncome(Double postTotalIncome) {
 		this.postTotalIncome = postTotalIncome;
 	}
+	public int compareTo(Object obj){
+		PostResponse stu = (PostResponse)obj;
+        int num = new Integer(this.postId).compareTo(new Integer(stu.postId));
+        return num;
+    }
 
 }

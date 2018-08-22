@@ -50,7 +50,12 @@ public class FollowService {
 		}
 		followMapper.update(follow);
 	}
-
+	
+	@Transactional(readOnly = true)
+	public Integer findPageCount(Map<String,Object> map) {
+		return followMapper.findPageCount(map);
+	}
+	
 	@Transactional(readOnly = true)
 	public PageResult<Follow> findPage(PaginationQuery query) throws RestServiceException {
 		PageResult<Follow> result = null;

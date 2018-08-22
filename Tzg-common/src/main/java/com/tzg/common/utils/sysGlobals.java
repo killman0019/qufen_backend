@@ -55,4 +55,20 @@ public final class sysGlobals{
 	public static String HOT_USER="HOT_USER";
 	/**发现-热门项目(关注超过500人)*/
 	public static String HOT_PROJECT="HOT_PROJECT";
+	/**爆料的点赞量超过10的内容自动加入当日的精选池*/
+	public static String DISSCS_POINT_OF_PRAISE="DISSCS_POINT_OF_PRAISE";
+	/**文章，评测的点赞量超过10的内容自动加入当日的内容池*/
+	public static String POST_POINT_OF_PRAISE="POST_POINT_OF_PRAISE";
+	/**用户的文章或评测被推至首页的时候，发送个推消息*/
+	public static String CONTENT_GETUI_MSG_BEGIN="恭喜您发布的内容《";
+	/**用户的文章或评测被推至首页的时候，发送个推消息*/
+	public static String CONTENT_GETUI_MSG_END="》被推荐至首页。";
+	/**推荐，爆料每页取出多少条让程序随机取出条数*/
+	public static String POST_EVERY_PAGE="POST_EVERY_PAGE";
+	/**关注列表取帖子的点赞量大于5的*/
+	public static String PRISE_TO_FOLLOW_POST="PRISE_TO_FOLLOW_POST";
+	/**封号信息提示的content*/
+	public static String DISABLE_ACCOUNT_MSG = "尊敬的用户您好，您的账号被举报存在违规操作，已被禁用。若有疑问，请联系区分客服。";
+	
+	
 }
