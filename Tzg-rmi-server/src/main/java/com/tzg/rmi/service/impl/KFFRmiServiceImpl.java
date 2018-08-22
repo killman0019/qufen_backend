@@ -1883,19 +1883,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		post.setProjectId(project.getProjectId());
 		post.setStatus(KFFConstants.STATUS_ACTIVE);
 		post.setUuid(uuid);
-		/**
-		 * 用户类型:1-普通用户；2-项目方；3-评测机构；4-机构用户
-		 * 用户认证账号及用户的类型不等于1，发布的文章就为推荐文章
-		 */
-		if (createUser.getUserType() != null && createUser.getUserType() == 1) {
-			post.setStickTop(0);// '是否推荐：0-否，1-是'
-			post.setType(DiscussType.ORDINARYBURST.getValue());
-		}
-		if (createUser.getUserType() != null && createUser.getUserType() != 1) {
-			post.setStickTop(1);// '是否推荐：0-否，1-是'
-			post.setStickUpdateTime(new Date());
-			post.setType(DiscussType.AUTHACCOUNTPUBLISH.getValue());
-		}
+		post.setStickTop(0);// '是否推荐：0-否，1-是'
+		post.setType(DiscussType.ORDINARYBURST.getValue());
 		kffPostService.save(post);
 		Post newPost = kffPostService.findByUUID(uuid);
 		if (newPost == null) {
@@ -1921,20 +1910,20 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// 更新用户发帖数
 		kffUserService.increasePostNum(createUser.getUserId(), KFFConstants.POST_TYPE_ARTICLE);
 		// 个推APP推送消息
-		if (null != createUser) {
-			Integer linkedType = null;
-			if (post.getPostType() == 1) {
-				linkedType = LinkedType.CUSTOMEVALUATING.getValue();
-			}
-			if (post.getPostType() == 2) {
-				linkedType = LinkedType.COUNTERFEIT.getValue();
-			}
-			if (post.getPostType() == 3) {
-				linkedType = LinkedType.ARTICLE.getValue();
-			}
-			appNewsPush(linkedType, post.getPostId(), createUser.getMobile(), sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle()
-					+ sysGlobals.CONTENT_GETUI_MSG_END);
-		}
+//		if (null != createUser) {
+//			Integer linkedType = null;
+//			if (post.getPostType() == 1) {
+//				linkedType = LinkedType.CUSTOMEVALUATING.getValue();
+//			}
+//			if (post.getPostType() == 2) {
+//				linkedType = LinkedType.COUNTERFEIT.getValue();
+//			}
+//			if (post.getPostType() == 3) {
+//				linkedType = LinkedType.ARTICLE.getValue();
+//			}
+//			appNewsPush(linkedType, post.getPostId(), createUser.getMobile(), sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle()
+//					+ sysGlobals.CONTENT_GETUI_MSG_END);
+//		}
 		return result;
 	}
 
@@ -2085,15 +2074,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		 * 用户认证账号及用户的类型不等于1，发布的爆料就为精选爆料
 		 */
 		Discuss discuss = new Discuss();
-		if (createUser.getUserType() != null && createUser.getUserType() == 1) {
-			discuss.setIsNiceChoice(sysGlobals.DISABLE);
-			discuss.setType(DiscussType.ORDINARYBURST.getValue());
-		}
-		if (createUser.getUserType() != null && createUser.getUserType() != 1) {
-			discuss.setIsNiceChoice(sysGlobals.ENABLE);
-			discuss.setNiceChoiceAt(new Date());
-			discuss.setType(DiscussType.AUTHACCOUNTPUBLISH.getValue());
-		}
+		discuss.setIsNiceChoice(sysGlobals.DISABLE);
+		discuss.setType(DiscussType.ORDINARYBURST.getValue());
 		discuss.setDisscussContents(discussRequest.getDisscussContents());
 		discuss.setPostId(newPost.getPostId());
 		discuss.setPostUuid(uuid);
