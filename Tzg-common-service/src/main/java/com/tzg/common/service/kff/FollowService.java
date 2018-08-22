@@ -51,12 +51,12 @@ public class FollowService {
 		}
 		followMapper.update(follow);
 	}
-	
+
 	@Transactional(readOnly = true)
-	public Integer findPageCount(Map<String,Object> map) {
+	public Integer findPageCount(Map<String, Object> map) {
 		return followMapper.findPageCount(map);
 	}
-	
+
 	@Transactional(readOnly = true)
 	public PageResult<Follow> findPage(PaginationQuery query) throws RestServiceException {
 		PageResult<Follow> result = null;
@@ -160,8 +160,23 @@ public class FollowService {
 				query.addQueryData("startRecord", Integer.toString(startRecord));
 				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
 				List<FollowResponse> list = followMapper.findPageFans(query.getQueryData());
+				Integer loginUserId = (Integer) query.getQueryData().get("loginUserId");
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put("followUserId", loginUserId);
+				map.put("status", 1);
+				map.put("followType", 3);
+				List<Integer> userList = followMapper.findFollowerByMap(map);
+				for (FollowResponse followResponse : list) {
+					if (userList.contains(followResponse.getUserId())) {
+						followResponse.setFollowStatus(1);// 关注状态:0-未关注；1-已关注，2-不显示
+					} else {
+						followResponse.setFollowStatus(0);
+					}
+					// followResponse.setFollowStatus(1);
+				}
 				result = new PageResult<FollowResponse>(list, count, query);
 			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

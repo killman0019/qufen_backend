@@ -82,53 +82,53 @@ public class TransactionPairService {
 		ExecutorService newFixedThreadPoolExchange = null;
 		try {
 			newFixedThreadPoolExchange = Executors.newFixedThreadPool(10);
-			int i = 0;
-			while (true) {
-				i = i + 1;
-				List<Exchange> exchangeList = selectAllExchange(i);
+			// int i = 0;
+			// while (true) {
+			// i = i + 1;
+			List<Exchange> exchangeList = selectAllExchange();
 
-				if (CollectionUtils.isNotEmpty(exchangeList)) {
+			if (CollectionUtils.isNotEmpty(exchangeList)) {
 
-					try {
+				try {
 
-						for (Exchange exchange : exchangeList) {
+					for (Exchange exchange : exchangeList) {
 
-							if (null != exchange) {
-								final Exchange exchangeF = exchange;
-								newFixedThreadPoolExchange.execute(new Runnable() {
+						if (null != exchange) {
+							final Exchange exchangeF = exchange;
+							newFixedThreadPoolExchange.execute(new Runnable() {
 
-									@Override
-									public void run() {
+								@Override
+								public void run() {
 
-										// TODO 获得数据
-										try {
-											getdataforUrlByExchangeExecutor(exchangeF);
+									// TODO 获得数据
+									try {
+										getdataforUrlByExchangeExecutor(exchangeF);
 
-											Thread.sleep(1000 * 5);
-										} catch (Exception e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
-										}
+										Thread.sleep(1000 * 5);
+									} catch (Exception e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
 									}
-								});
-								// getdataforUrlByExchangeExecutor(exchangeF);
-							}
-
+								}
+							});
+							// getdataforUrlByExchangeExecutor(exchangeF);
 						}
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						System.err.println(e.getMessage());
 
 					}
-				} else if (CollectionUtils.isEmpty(exchangeList)) {
-					if (!newFixedThreadPoolExchange.isShutdown()) {
-						newFixedThreadPoolExchange.shutdown();
-						return;
-					}
-					System.err.println("结束");
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					System.err.println(e.getMessage());
+
+				}
+			} /*else if (CollectionUtils.isEmpty(exchangeList)) {
+				if (!newFixedThreadPoolExchange.isShutdown()) {
+					newFixedThreadPoolExchange.shutdown();
 					return;
 				}
-			}
+				System.err.println("结束");
+				return;
+				}*/
+			// }
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			System.err.println(e.getMessage());
@@ -201,16 +201,24 @@ public class TransactionPairService {
 						transactionPair.setExchangeName(exchangeDB);
 						transactionPair.setUpdateTime(now);
 						transactionPair.setVaild(1);
-						transactionPairMapper.updateByMainCode(transactionPair);
-						// transactionPairList.add(transactionPair);
+						// transactionPairMapper.updateByMainCode(transactionPair);
+						transactionPairList.add(transactionPair);
 					}
 
 				}
 				// 进行数据库的更新
-				// transactionPairMapper.updateBatch(transactionPairList);
+				if (CollectionUtils.isNotEmpty(transactionPairList)) {
+					transactionPairMapper.updateBatch(transactionPairList);
+				}
 			}
 		}
 
+	}
+
+	public List<Exchange> selectAllExchange() {
+		Map<String, String> exchangeMap = new HashMap<String, String>();
+		List<Exchange> exchangeList = exchangeMapper.findByMap(exchangeMap);
+		return exchangeList;
 	}
 
 	public List<Exchange> selectAllExchange(int i) {

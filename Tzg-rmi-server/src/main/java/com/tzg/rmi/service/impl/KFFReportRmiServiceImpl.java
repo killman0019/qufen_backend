@@ -191,6 +191,7 @@ public class KFFReportRmiServiceImpl implements KFFReportRmiService {
 							reportedContentDB.setReportedContentKeyId(reportedContent.getReportedContentKeyId());
 							reportedContentDB.setReportedContentStatus(0);
 							reportedContentService.update(reportedContentDB);
+							//TODO: 个推  通知举报人   此文章被隐藏
 						}
 					}
 					reportInfor.setReportedContentKeyId(reportedContent.getReportedContentKeyId());

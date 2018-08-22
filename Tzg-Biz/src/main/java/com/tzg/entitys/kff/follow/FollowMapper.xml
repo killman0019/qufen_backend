@@ -316,6 +316,15 @@
         <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
 	</select>
 
+	<select id="findFollowerByMap" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select
+		followed_id
+		from tbfollow
+		where 1=1
+		<include refid="queryWhere" />
+
+	</select>
+
 </mapper>
 
 

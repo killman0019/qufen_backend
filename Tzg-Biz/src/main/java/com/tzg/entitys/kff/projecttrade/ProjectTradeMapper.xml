@@ -146,11 +146,6 @@
 	<update id="updateBatch" parameterType="java.util.List">
 		update tbprojecttrade
 		<trim prefix="set" suffixOverrides=",">
-			<!-- 拼接case when 这是一种写法 -->
-			<!--<foreach collection="list" separator="" item="cus" open="c_age = case id" close="end, "> -->
-			<!--when #{cus.id} then #{cus.age} -->
-			<!--</foreach> -->
-			<!-- 拼接case when 这是另一种写法，这种写着更专业的感觉 -->
 			<trim prefix="rank =case" suffix="end,">
 				<foreach collection="list" item="cus">
 					<if test="cus.rank!=null and cus.rank!=''">

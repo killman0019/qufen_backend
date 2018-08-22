@@ -63,7 +63,7 @@
 		<task:scheduled ref="taskJobService" method="updateByGrantType2" cron="0 0 0 * * ? " />
 	 	<task:scheduled ref="taskJobService" method="caculateProjectTotalScore" cron="0 0 0/2 * * ? "/> 
 		<task:scheduled ref="taskJobService" method="getProjectDateFromUrlTask" cron="0 0/5 * * * ? " />
-		<task:scheduled ref="taskJobService" method="getdatafromUrlByexchangeTask" cron="0 0/30 * * * ? " />
+		<task:scheduled ref="taskJobService" method="getdatafromUrlByexchangeTask" cron="0 0/10 * * * ? " />
 		
 		<!--  		<task:scheduled ref="taskJobService" method="caluCoinUserTask" cron="0 0/5 * * * ? "/>  -->
 	</task:scheduled-tasks>
