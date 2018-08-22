@@ -209,7 +209,7 @@
 			and create_time = #{createTime,jdbcType=TIMESTAMP}
 		</if>
 		<if test="status != null">
-			and status = #{status,jdbcType=INTEGER},
+			and status = #{status,jdbcType=INTEGER}
 		</if>
 		<if test="exchangeName != null">
 			and exchange_name = #{exchangeName,jdbcType=VARCHAR}
@@ -242,5 +242,23 @@
 			and update_time = #{updateTime,jdbcType=TIMESTAMP}
 		</if>
 	</sql>
+
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(*) from tbexchange where 1=1
+		<include refid="queryWhere" />
+
+	</select>
+
+	<select id="findPage" resultMap="BaseResultMap" resultType="java.util.Map">
+		select
+		<include refid="columns" />
+		from tbexchange where 1=1
+		<include refid="queryWhere" />
+
+		ORDER BY exchange_id desc
+			
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+
+	</select>
 
 </mapper>

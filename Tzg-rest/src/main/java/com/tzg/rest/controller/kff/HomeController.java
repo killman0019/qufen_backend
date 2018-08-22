@@ -94,6 +94,7 @@ public class HomeController extends BaseController {
 			query.addQueryData("status", "1");
 			query.addQueryData("stickTop", "1");
 			query.addQueryData("sortField", "stick_updateTime");
+
 			query.addQueryData("notDiscuss", "true");
 			// query.addQueryData("praiseNum", "10");
 			// 帖子类型：1-评测；2-讨论；3-文章
@@ -145,6 +146,7 @@ public class HomeController extends BaseController {
 			query.addQueryData("status", "1");
 			// query.addQueryData("stickTop", "1");
 			query.addQueryData("sortField", "createTime");
+			query.addQueryData("sortSequence", "DESC");
 			// query.addQueryData("praiseNum", "10");
 			// 帖子类型：2-爆料
 			query.addQueryData("postType", "2");
@@ -333,6 +335,15 @@ public class HomeController extends BaseController {
 			newQuery.addQueryData("parentCommentsIdNull", "YES");
 			newQuery.setPageIndex(params.getPageIndex());
 			newQuery.setRowsPerPage(params.getPageSize());
+
+			if (StringUtils.isNotBlank(params.getSortField())) {
+				newQuery.addQueryData("sortField", params.getSortField());
+				// newQuery.addQueryData("sortSequence", "desc");
+			} else {
+				newQuery.addQueryData("sortField", "post_id");
+				// newQuery.addQueryData("sortSequence", "desc");
+			}
+
 			PageResult<Comments> newestComments = kffRmiService.findPageNewestCommentsSelf(userId, postId, newQuery);
 			// System.err.println("这个是最新评论newestComments" + JSON.toJSONString(newestComments));
 			map.put("newestComments", newestComments);
@@ -490,6 +501,14 @@ public class HomeController extends BaseController {
 			query.addQueryData("postType", KFFConstants.POST_TYPE_DISCUSS + "");
 			query.addQueryData("parentCommentsIdNull", "YES");
 
+			if (StringUtils.isNotBlank(baseRequest.getSortField())) {
+				query.addQueryData("sortField", baseRequest.getSortField());
+				query.addQueryData("sortSequence", "desc");
+			} else {
+				query.addQueryData("sortField", "post_id");
+				query.addQueryData("sortSequence", "desc");
+			}
+
 			PageResult<Comments> comments = kffRmiService.findPageDiscussCommentsList(userId, query);
 			map.put("comments", comments);
 
@@ -582,6 +601,15 @@ public class HomeController extends BaseController {
 			newQuery.addQueryData("parentCommentsIdNull", "YES");
 			newQuery.setPageIndex(params.getPageIndex());
 			newQuery.setRowsPerPage(params.getPageSize());
+
+			if (StringUtils.isNotBlank(params.getSortField())) {
+				newQuery.addQueryData("sortField", params.getSortField());
+				newQuery.addQueryData("sortSequence", "desc");
+			} else {
+				newQuery.addQueryData("sortField", "post_id");
+				newQuery.addQueryData("sortSequence", "desc");
+			}
+
 			PageResult<Comments> newestComments = kffRmiService.findPageNewestCommentsSelf(userId, postId, newQuery);
 			// System.err.println("最新评论newestComments" + JSONObject.toJSONString(newestComments));
 			map.put("newestComments", newestComments);

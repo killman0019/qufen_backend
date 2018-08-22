@@ -196,6 +196,16 @@
         comments_id = #{commentsId} 
 	]]>
 	</select>
+
+	<sql id="orderBy">
+		<if test="sql_keyword_orderBy!=null">
+			order by ${sql_keyword_orderBy} ${sql_keyword_sort}
+		</if>
+		<if test="sql_keyword_orderByc!=null">
+			order by ${sql_keyword_orderByc} ${sql_keyword_sortc}
+		</if>
+	</sql>
+
 	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
 		select count(*) from tbcomments where 1=1
 		<include refid="queryWhere" />
@@ -207,9 +217,11 @@
 		from tbcomments where 1=1
 		<include refid="queryWhere" />
 		<choose>
-			<when test="sortField != null and sortField != ''">
+
+			<when test="sortField != null">
 				ORDER BY ${sortField} DESC
 			</when>
+
 			<otherwise>
 	                <![CDATA[ ORDER BY comments_id desc ]]>
 			</otherwise>

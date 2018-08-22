@@ -1,6 +1,8 @@
 package com.tzg.common.service.kff;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,6 +28,7 @@ import com.tzg.common.utils.getParamFromUrlUtil;
 import com.tzg.common.utils.sysGlobals;
 import com.tzg.entitys.kff.exchange.Exchange;
 import com.tzg.entitys.kff.exchange.ExchangeMapper;
+import com.tzg.entitys.kff.post.Post;
 import com.tzg.entitys.kff.transactionpair.TransactionPair;
 import com.tzg.entitys.kff.transactionpair.TransactionPairMapper;
 import com.tzg.entitys.kff.transactionpair.TransactionPairResponse;
@@ -75,44 +78,63 @@ public class TransactionPairService {
 		// 查询所有的交易所 的信息
 		// if (StringUtils.isNotBlank(devEnvironment) &&
 		// devEnvironment.equals(sysGlobals.DEV_ENVIRONMENT)) {
-		Map<String, String> exchangeMap = new HashMap<String, String>();
-		List<Exchange> exchangeList = exchangeMapper.findByMap(exchangeMap);
-		if (CollectionUtils.isNotEmpty(exchangeList)) {
-			ExecutorService newFixedThreadPoolExchange = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 4);
-			try {
 
-				for (Exchange exchange : exchangeList) {
+		ExecutorService newFixedThreadPoolExchange = null;
+		try {
+			newFixedThreadPoolExchange = Executors.newFixedThreadPool(10);
+			int i = 0;
+			while (true) {
+				i = i + 1;
+				List<Exchange> exchangeList = selectAllExchange(i);
 
-					if (null != exchange) {
-						final Exchange exchangeF = exchange;
-						newFixedThreadPoolExchange.execute(new Runnable() {
+				if (CollectionUtils.isNotEmpty(exchangeList)) {
 
-							@Override
-							public void run() {
+					try {
 
-								// TODO 获得数据
-								try {
-									getdataforUrlByExchangeExecutor(exchangeF);
+						for (Exchange exchange : exchangeList) {
 
-									Thread.sleep(1000 * 30);
-								} catch (Exception e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
+							if (null != exchange) {
+								final Exchange exchangeF = exchange;
+								newFixedThreadPoolExchange.execute(new Runnable() {
+
+									@Override
+									public void run() {
+
+										// TODO 获得数据
+										try {
+											getdataforUrlByExchangeExecutor(exchangeF);
+
+											Thread.sleep(1000 * 5);
+										} catch (Exception e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										}
+									}
+								});
+								// getdataforUrlByExchangeExecutor(exchangeF);
 							}
-						});
-						// getdataforUrlByExchangeExecutor(exchangeF);
+
+						}
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						System.err.println(e.getMessage());
+
 					}
-
+				} else if (CollectionUtils.isEmpty(exchangeList)) {
+					if (!newFixedThreadPoolExchange.isShutdown()) {
+						newFixedThreadPoolExchange.shutdown();
+						return;
+					}
+					System.err.println("结束");
+					return;
 				}
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				System.err.println(e.getMessage());
-
-			} finally {
-				newFixedThreadPoolExchange.shutdown();
 			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.err.println(e.getMessage());
 
+		} finally {
+			newFixedThreadPoolExchange.shutdown();
 		}
 		System.err.println("close+++++++++++++++++++++");
 	}
@@ -188,6 +210,42 @@ public class TransactionPairService {
 				// transactionPairMapper.updateBatch(transactionPairList);
 			}
 		}
+
+	}
+
+	public List<Exchange> selectAllExchange(int i) {
+		List<Exchange> exchangeList = null;
+		try {
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("status", "1");
+			PaginationQuery query = new PaginationQuery();
+			query.setRowsPerPage(10);
+			query.setPageIndex(i);
+			query.setQueryData(map);
+			exchangeList = selectAllExchangeQuery(query);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return exchangeList;
+	}
+
+	private List<Exchange> selectAllExchangeQuery(PaginationQuery query) {
+		// TODO Auto-generated method stub
+		PageResult<Exchange> result = null;
+		try {
+			Integer count = exchangeMapper.findPageCount(query.getQueryData());
+			if (null != count && count.intValue() > 0) {
+				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
+				query.addQueryData("startRecord", Integer.toString(startRecord));
+				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
+				List<Exchange> list = exchangeMapper.findPage(query.getQueryData());
+				result = new PageResult<Exchange>(list, count, query);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result.getRows();
 
 	}
 }

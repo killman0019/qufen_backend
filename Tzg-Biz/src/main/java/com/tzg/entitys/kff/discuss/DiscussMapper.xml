@@ -111,8 +111,15 @@
 		select
 		<include refid="columns" />
 		from tbdiscuss where 1=1
-		<include refid="queryWhere" /> 
+		<include refid="queryWhere" />
+		<choose>
+			<when test="sortField !=null">
+				ORDER BY ${sortField} ${sortSequence}
+			</when>
+			<otherwise>
 	    <![CDATA[ ORDER BY discuss_id DESC ]]>
+			</otherwise>
+		</choose>
         <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
 	</select>
 
