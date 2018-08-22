@@ -81,11 +81,13 @@ public class ProjectController extends BaseController {
 				pageSize = (Integer) requestContent.get("pageSize");
 				tabId = (Integer) requestContent.get("tabId");
 			}
-			if (StringUtils.isBlank(token)||pageIndex==null||pageSize==null||tabId==null) {
+			if (pageIndex==null||pageSize==null||tabId==null) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
 			}
-			
-			Integer userId = getUserIdByToken(token);
+			Integer userId = null;
+			if(StringUtils.isNotBlank(token)) {
+				userId = getUserIdByToken(token);
+			}
 			PaginationQuery query = new PaginationQuery();
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
@@ -102,17 +104,21 @@ public class ProjectController extends BaseController {
 		return bre;
 	}
 
-	/**
-	 * 
-	 * @Title: index
-	 * @Description: 项目主页
-	 * @param @param request
-	 * @param @param response
-	 * @param @return
-	 * @return BaseResponseEntity
-	 * @see
-	 * @throws
-	 */
+	/** 
+	* @Title: index 
+	* @Description: TODO <从列表项目进入到项目主页>
+	* @author linj <方法创建作者>
+	* @create 下午1:44:58
+	* @param @param request
+	* @param @param token 用户登录的唯一标识
+	* @param @param projectId 项目id
+	* @param @return <参数说明> 
+	* @return BaseResponseEntity 
+	* @throws 
+	* @update 下午1:44:58
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	*/
 	@ResponseBody
 	@RequestMapping(value = "/index", method = { RequestMethod.POST, RequestMethod.GET })
 	public BaseResponseEntity index(HttpServletRequest request,String token,Integer projectId) {
@@ -125,17 +131,13 @@ public class ProjectController extends BaseController {
 				projectId = (Integer) requestContent.get("projectId");
 			}
 			
-			if(StringUtils.isBlank(token)||projectId==null) {
+			if(StringUtils.isBlank(token)&&projectId==null) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
 			}
 			Integer userId = getUserIdByToken(token);
+			KFFUser loginUser = kffUserService.findById(userId);
 			ProjectResponse project = kffRmiService.findProjectById(userId, projectId);
 			map.put("project", project);
-			
-			KFFUser loginUser = null;
-			if(StringUtils.isNotBlank(token)) {
-				loginUser = kffUserService.findById(userId);
-			}
 			Integer type = 2;// 取关注人
 			// 20180613 去掉，改为 精选评测，精选打假（讨论）
 			// https://www.tapd.cn/21950911/bugtrace/bugs/view?bug_id=1121950911001000461

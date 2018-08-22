@@ -35,6 +35,8 @@ import com.tzg.entitys.kff.praise.PraiseMapper;
 import com.tzg.entitys.kff.project.KFFProject;
 import com.tzg.entitys.kff.project.KFFProjectMapper;
 import com.tzg.entitys.kff.project.ProjectResponse;
+import com.tzg.entitys.kff.project.UserProject;
+import com.tzg.entitys.kff.project.UserProjectMapper;
 import com.tzg.entitys.kff.projecttrade.ProjectTrade;
 import com.tzg.entitys.kff.projecttrade.ProjectTradeMapper;
 import com.tzg.entitys.kff.qfindex.QfIndex;
@@ -57,6 +59,8 @@ public class ProjectService {
 	private QfIndexMapper qfIndexMapper;
 	@Autowired
 	private PraiseMapper praiseMapper;
+	@Autowired
+	private UserProjectMapper userProjectMapper;
 
 	@Autowired
 	private ProjectTradeMapper projectTradeMapper;
@@ -88,8 +92,45 @@ public class ProjectService {
 		projectMapper.deleteById(id);
 	}
 
-	public void save(KFFProject project) throws RestServiceException {
-		projectMapper.save(project);
+	//1.5.0V 修改先发布项目到临时表tb_user_project
+	public void save(KFFProject projectc) throws RestServiceException {
+		UserProject projectt = new UserProject();
+		projectt.setProjectIcon(projectc.getProjectIcon());
+		projectt.setState(projectc.getState());
+		projectt.setProjectCode(projectc.getProjectCode());
+		projectt.setProjectEnglishName(projectc.getProjectEnglishName());
+		projectt.setProjectChineseName(projectc.getProjectChineseName());
+		projectt.setProjectSignature(projectc.getProjectSignature());
+		projectt.setWebsiteUrl(projectc.getWebsiteUrl());
+		projectt.setListed(projectc.getListed());
+		projectt.setIssueDate(projectc.getIssueDate());
+		projectt.setIssueNum(projectc.getIssueNum());
+		projectt.setWhitepaperUrl(projectc.getWhitepaperUrl());
+		projectt.setProjectTypeName(projectc.getProjectTypeName());
+		projectt.setProjectTypeId(projectc.getProjectTypeId());
+		projectt.setProjectDesc(projectc.getProjectDesc());
+		projectt.setSubmitUserId(projectc.getSubmitUserId());
+		projectt.setSubmitUserContactInfo(projectc.getSubmitUserContactInfo());
+		projectt.setSubmitUserType(projectc.getSubmitUserType());
+		projectt.setSubmitReason(projectc.getSubmitReason());
+		projectt.setStatus(projectc.getStatus());
+		projectt.setCreateTime(projectc.getCreateTime());
+		projectt.setPublishTime(projectc.getPublishTime());
+		projectt.setUpdateTime(projectc.getUpdateTime());
+		projectt.setTotalScore(projectc.getTotalScore());
+		projectt.setRaterNum(projectc.getRaterNum());
+		projectt.setFollowerNum(projectc.getFollowerNum());
+		projectt.setCommentsNum(projectc.getCommentsNum());
+		projectt.setCollectNum(projectc.getCollectNum());
+		projectt.setTotalraternum(Integer.valueOf(projectc.getTotalScore().toString()));
+		projectt.setCmcId(projectc.getCmcId());
+		projectt.setGithub(projectc.getGithub());
+		projectt.setBsjCirculateData(projectc.getBsjCirculateData());
+		projectt.setProjectUserId(projectc.getProjectUserId());
+		projectt.setProjectMobile(projectc.getProjectMobile());
+		projectt.setProjectUserType(projectc.getProjectUserType());
+		userProjectMapper.save(projectt);
+//		projectMapper.save(project);
 	}
 
 	public void update(KFFProject project) throws RestServiceException {

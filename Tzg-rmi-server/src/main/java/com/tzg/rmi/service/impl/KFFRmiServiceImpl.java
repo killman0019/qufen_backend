@@ -1237,10 +1237,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			List<Integer> praisedPostId = null;
 
 			// 获得点赞postidlist集合
-
-			String createUserId = (String) query.getQueryData().get("createUserId");
-			if (StringUtils.isNotEmpty(createUserId)) {
-				Integer userId = Integer.valueOf(createUserId);
+			Object createUserIdc = query.getQueryData().get("createUserId");
+			if (null!=createUserIdc) {
+				Integer userId = Integer.valueOf(createUserIdc.toString());
 				if (null != userId) {
 					praisedPostId = kffPraiseService.findPraisedPostIdByUserId(userId);
 				}
@@ -1329,13 +1328,14 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 			List<Integer> praisedPostId = null;
 
-			String createUserId = (String) query.getQueryData().get("createUserId");
-			if (StringUtils.isNotEmpty(createUserId)) {
-				Integer userId = Integer.valueOf(createUserId);
+			Object createUserIdc = query.getQueryData().get("createUserId");
+			if (null!=createUserIdc) {
+				Integer userId = Integer.valueOf(createUserIdc.toString());
 				if (null != userId) {
 					praisedPostId = kffPraiseService.findPraisedPostIdByUserId(userId);
 				}
 			}
+			
 			for (Post post : posts.getRows()) {
 				post.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(post.getPostShortDesc()));
 				PostResponse response = new PostResponse();

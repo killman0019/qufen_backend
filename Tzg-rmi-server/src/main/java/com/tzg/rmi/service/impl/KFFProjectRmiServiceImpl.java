@@ -592,7 +592,6 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 		List<Integer> projectFollow = null;
 		List<Follow> followList = null;
 		if (null != userId) {
-
 			Map<String, Object> resultMap = kffFollowService.getUserFollow(userId, 1);
 			projectFollow = (List<Integer>) resultMap.get("followedProjectIds");
 			followList = (List<Follow>) resultMap.get("followList");
