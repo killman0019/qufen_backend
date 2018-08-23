@@ -44,7 +44,7 @@
 	0 0/10 * * * ? 每十分钟
 	*/
 	-->
-	<task:scheduler id="scheduler" pool-size="70" />
+	<task:scheduler id="scheduler" pool-size="100" />
 	<task:scheduled-tasks>
 		<!-- ref指定的是任务类 method是指定需要运行的方法 cron是定时任务的表达式 -->
 
@@ -59,8 +59,8 @@
 <!--  		<task:scheduled ref="taskJobService" method="caculatePostTatolIncome" cron="0/5 *  * * * ? "/>  -->
 
 		<!-- 线上版本的定时器 -->
-		<task:scheduled ref="taskJobService" method="updateByGrantType" cron="0 0 0 * * ? " />
-		<task:scheduled ref="taskJobService" method="updateByGrantType2" cron="0 0 0 * * ? " />
+<!-- 		<task:scheduled ref="taskJobService" method="updateWeeHours" cron="10 0 0 * * ? " /> -->
+		<task:scheduled ref="taskJobService" method="updateWeeHours" cron="0 1 0 * * ? " />
 	 	<task:scheduled ref="taskJobService" method="caculateProjectTotalScore" cron="0 0 0/2 * * ? "/> 
 		<task:scheduled ref="taskJobService" method="getProjectDateFromUrlTask" cron="0 0/5 * * * ? " />
 		<task:scheduled ref="taskJobService" method="getdatafromUrlByexchangeTask" cron="0 0/10 * * * ? " />

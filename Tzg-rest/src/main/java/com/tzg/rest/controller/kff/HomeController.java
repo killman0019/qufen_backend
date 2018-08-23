@@ -563,6 +563,7 @@ public class HomeController extends BaseController {
 			EvaluationDetailResponse evaluationDetail = kffRmiService.findEvaluationDetail(userId, type, postId);
 			map.put("evaluationDetail", evaluationDetail);
 			bre.setData(map);
+			SyseUtil.systemErrOutJson(bre);
 		} catch (RestServiceException e) {
 			logger.error("HomeController evaluationDetail:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());

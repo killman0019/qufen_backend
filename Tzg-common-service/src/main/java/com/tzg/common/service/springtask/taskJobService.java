@@ -44,7 +44,35 @@ public class taskJobService {
 	@Autowired
 	private UserService userService;
 
-	public void updateByGrantType() {
+	/**
+	 * 
+	* @Title: updateWeeHours 
+	* @Description: TODO <凌晨定时任务>
+	* @author zhangdd <方法创建作者>
+	* @create 下午7:43:31
+	* @param  <参数说明>
+	* @return void 
+	* @throws 
+	* @update 下午7:43:31
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	 */
+	public void updateWeeHours() {
+		logger.info("----start caculateProjectTotalScore job---");
+		Integer a = 2;
+		tokenawardService.updateByGrantType(a);// 更新分期发放奖励
+		logger.info("-------------- end caculatePostTatolIncome job---");
+
+		logger.info("----start updateYxPraiseAndYxCommentionYxShare job---");
+		qfIndexService.updateYxPraiseValid();// 更新有效赞有效分享 有效评论
+		logger.info("--------- end updateYxPraiseAndYxCommentionYxShare job---");
+
+		logger.info("--------------start updatePop job---");
+		userService.setPop();// 更新弹框
+		logger.info("-------------- end updatePop job---");
+	}
+
+	/*public void updateByGrantType() {
 		Integer a = 2;
 		tokenawardService.updateByGrantType(a);
 		System.err.println("执行了第一个定时任务");
@@ -56,7 +84,7 @@ public class taskJobService {
 		System.err.println("执行了第二个定时任务");
 
 	}
-
+	*/
 	// 更新项目总分
 	public void caculateProjectTotalScore() {
 		logger.info("----start caculateProjectTotalScore job---");
@@ -107,10 +135,4 @@ public class taskJobService {
 
 	}
 
-	public void setPop() {
-		logger.info("--------------start getdatafromUrlByexchangeTask job---");
-		userService.setPop();
-		logger.info("-------------- end getdatafromUrlByexchangeTask job---");
-
-	}
 }

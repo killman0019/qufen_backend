@@ -13,6 +13,7 @@ import com.alibaba.fastjson.JSON;
 import com.tzg.common.constants.KFFConstants;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
+import com.tzg.common.utils.SyseUtil;
 import com.tzg.entitys.kff.evaluation.Evaluation;
 import com.tzg.entitys.kff.evaluation.EvaluationDetailResponse;
 import com.tzg.entitys.kff.evaluation.EvaluationMapper;
@@ -164,7 +165,7 @@ public class EvaluationService {
 		map.put("projectId", projectId);
 		map.put("createUserId", createUserId);
 		map.put("modelType", modelType);
-		
+
 		return evaluationMapper.findByWhere(map);
 	}
 
@@ -184,23 +185,7 @@ public class EvaluationService {
 						// 判断用户否为登陆状态 默认是2 未登录
 						// 判断用户是否已经点赞
 						Map<String, Object> map = new HashMap<String, Object>();
-						/*map.put("bepraiseUserId", response.getCreateUserId());
-						map.put("praiseUserId", userId);
-						map.put("praiseType", "1");
-						Praise praise = praiseMapper.findByPraiseId(map);*/
-						/*	map.put("postId", response.getPostId());
-							map.put("praiseType", 2);
-							map.put("praiseUserId", userId);
-							Praise praise = praiseMapper.findByPostId(map);
-							System.err.println("prai" + JSON.toJSONString(praise));
-							if (response.getCreateUserId().equals(userId)) {// 说明是自己写的帖子 已点赞
-								// response.setPraiseStatus(KFFConstants.PRAISE_STATUS_NO);
-							} else {
-								if (praise != null) {
-									// 说明已经点过赞
-									response.setPraiseStatus(praise.getStatus());
-								}
-							}*/
+
 						map.put("postId", response.getPostId());
 						map.put("praiseType", 1);
 						map.put("praiseUserId", userId);
@@ -224,12 +209,13 @@ public class EvaluationService {
 					}
 
 				}
-				System.out.println("response" + JSON.toJSONString(list));
+
 				result = new PageResult<EvaluationDetailResponse>(list, count, query);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		SyseUtil.systemErrOutJson(result);
 		return result;
 	}
 

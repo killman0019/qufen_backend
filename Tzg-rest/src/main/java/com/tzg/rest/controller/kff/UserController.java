@@ -1410,34 +1410,26 @@ public class UserController extends BaseController {
 			String token = (String) params.get("token");
 			Integer loginUserId = getUserIdByToken(token);
 
-			KFFUser loginaccount = null;
-			try {
-				loginaccount = kffRmiService.findUserById(loginUserId);
-				List<CoinProperty> userCoin = kffRmiService.findCoinPropertyByUserId(loginUserId);
-				for (CoinProperty coinProperty : userCoin) {
-					loginaccount.setKffCoinNum(new BigDecimal(coinProperty.getTotalAssets()));
-				}
-
-			} catch (RestServiceException e) {
-				return this.resResult(e.getErrorCode(), e.getMessage());
-			} catch (Exception e) {
-				return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
-			}
+			KFFUser loginaccount = kffRmiService.findUserById(loginUserId);
 
 			if (null == loginaccount) {
 				throw new RestServiceException(RestErrorCode.LOGIN_NAME_OR_PASSWORD_INCORRECT);
 			}
-			KFFUser user = kffRmiService.findUserById(loginUserId);
 
+			KFFUser userDB = new KFFUser();
+			userDB.setUserId(loginUserId);
+			userDB.setLastLoginDateTime(new Date());// 更新最新登陆时间
+			kffRmiService.updateUser(userDB);
+
+			// 以下 修复移动端出现的取值bug begin
 			Integer userCardStatus = 0;
-			if (null == user.getUsercardStatus()) {
+			if (null == loginaccount.getUsercardStatus()) {
 				userCardStatus = 4;
 			} else {
 
-				userCardStatus = user.getUsercardStatus();
+				userCardStatus = loginaccount.getUsercardStatus();
 			}
-			// Integer userCardStatusDB
-			// =kffRmiService.selectUserCardStatusByUserId(loginaccount.getUserId());
+
 			Integer userCardStatusDB = kffRmiService.selectUserStatusOnly(loginaccount.getUserId());
 			if (userCardStatusDB != userCardStatus) {
 				userCardStatus = userCardStatusDB;
@@ -1446,7 +1438,9 @@ public class UserController extends BaseController {
 				kffUser.setUsercardStatus(userCardStatus);
 				kffRmiService.updateUser(kffUser);
 			}
+
 			map.put("userCardStatus", userCardStatus);
+			// 以上 修复移动端出现的取值bug end
 			QfIndex qfIndex = kffRmiService.findQfIndexUser(loginUserId);
 			if (null != qfIndex) {
 				Integer statusHierarchyType = qfIndex.getStatusHierarchyType();
@@ -1508,14 +1502,16 @@ public class UserController extends BaseController {
 					Double tokenTodaySum = kffRmiService.findTodayToken(loginUserId);
 					Integer pop = kffRmiService.findPopByToken(loginUserId);
 
-					// tokenTodaySum = 9999.999;
 					map.put("tokenTodaySum", tokenTodaySum);
 					map.put("pop", pop);// '弹出框:0-弹出;1-不弹'
 
 					// 更新弹出框状态
-					if (DateUtil.isToday(loginaccount.getLastLoginDateTime().getTime())) {// 最后一次登陆时间不是今天
+					// 当用户的使用状态时间是今天且用户的弹窗状态是0 时 吧弹框的状态重置成1 不弹
+					// 当用户的使用时间是今天 但是 弹框状态是0 时 不执行此代码
+					//当用户的最后使用状态不是今天 ,且弹框状态是 1 时  不弹   
+					if (DateUtil.isToday(loginaccount.getLastLoginDateTime().getTime()) && (pop == 0)) {
 						// 并把时间设置成今天 :0-弹出;1-不弹',
-						kffRmiService.updateUserKFFPop(loginUserId);// 1
+						kffRmiService.updateUserKFFPop(loginUserId);// 设置成1不弹
 
 					}
 				} catch (RestServiceException e) {

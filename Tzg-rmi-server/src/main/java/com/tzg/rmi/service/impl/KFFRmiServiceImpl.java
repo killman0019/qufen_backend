@@ -1028,7 +1028,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			if (post.getPostType() == 3) {
 				linkedType = LinkedType.ARTICLE.getValue();
 			}
-			appNewsPush(linkedType, post.getPostId(), null,kffUserc.getMobile(), praiseContent);
+			appNewsPush(linkedType, post.getPostId(), null, kffUserc.getMobile(), praiseContent);
 		}
 		caculateEveryPostIncome(post.getPostId(), post, amountInputDB, 2);
 		return resultMap;
@@ -1238,7 +1238,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 			// 获得点赞postidlist集合
 			Object createUserIdc = query.getQueryData().get("createUserId");
-			if (null!=createUserIdc) {
+			if (null != createUserIdc) {
 				Integer userId = Integer.valueOf(createUserIdc.toString());
 				if (null != userId) {
 					praisedPostId = kffPraiseService.findPraisedPostIdByUserId(userId);
@@ -1329,13 +1329,13 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			List<Integer> praisedPostId = null;
 
 			Object createUserIdc = query.getQueryData().get("createUserId");
-			if (null!=createUserIdc) {
+			if (null != createUserIdc) {
 				Integer userId = Integer.valueOf(createUserIdc.toString());
 				if (null != userId) {
 					praisedPostId = kffPraiseService.findPraisedPostIdByUserId(userId);
 				}
 			}
-			
+
 			for (Post post : posts.getRows()) {
 				post.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(post.getPostShortDesc()));
 				PostResponse response = new PostResponse();
@@ -1665,7 +1665,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			if (post.getPostType() == 3) {
 				linkedType = LinkedType.ARTICLE.getValue();
 			}
-			appNewsPush(linkedType, post.getPostId(),null, kffUserc.getMobile(), praiseContent);
+			appNewsPush(linkedType, post.getPostId(), null, kffUserc.getMobile(), praiseContent);
 		}
 		return map;
 
@@ -1910,20 +1910,21 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// 更新用户发帖数
 		kffUserService.increasePostNum(createUser.getUserId(), KFFConstants.POST_TYPE_ARTICLE);
 		// 个推APP推送消息
-//		if (null != createUser) {
-//			Integer linkedType = null;
-//			if (post.getPostType() == 1) {
-//				linkedType = LinkedType.CUSTOMEVALUATING.getValue();
-//			}
-//			if (post.getPostType() == 2) {
-//				linkedType = LinkedType.COUNTERFEIT.getValue();
-//			}
-//			if (post.getPostType() == 3) {
-//				linkedType = LinkedType.ARTICLE.getValue();
-//			}
-//			appNewsPush(linkedType, post.getPostId(), createUser.getMobile(), sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle()
-//					+ sysGlobals.CONTENT_GETUI_MSG_END);
-//		}
+		// if (null != createUser) {
+		// Integer linkedType = null;
+		// if (post.getPostType() == 1) {
+		// linkedType = LinkedType.CUSTOMEVALUATING.getValue();
+		// }
+		// if (post.getPostType() == 2) {
+		// linkedType = LinkedType.COUNTERFEIT.getValue();
+		// }
+		// if (post.getPostType() == 3) {
+		// linkedType = LinkedType.ARTICLE.getValue();
+		// }
+		// appNewsPush(linkedType, post.getPostId(), createUser.getMobile(),
+		// sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle()
+		// + sysGlobals.CONTENT_GETUI_MSG_END);
+		// }
 		return result;
 	}
 
@@ -2292,7 +2293,13 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		String contentSrcReplace = qiNiuMap.get("contentSrcReplace");
 		// logger.info("缩略图的json串" + uploadIevisList);
 		/************ end *******************/
-		post.setPostSmallImages(uploadIevisList);
+
+		if (evaluationRequest.getModelType() == 1) {
+			post.setPostSmallImages(evaluationRequest.getPostSmallImages());
+		} else {
+			post.setPostSmallImages(uploadIevisList);
+		}
+
 		post.setPostTitle(evaluationRequest.getPostTitle());
 		post.setPostType(KFFConstants.POST_TYPE_EVALUATION);// 帖子类型：1-评测；2-讨论；3-文章
 		post.setPraiseNum(0);
@@ -2371,7 +2378,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				if (post.getPostType() == 3) {
 					linkedType = LinkedType.ARTICLE.getValue();
 				}
-				appNewsPush(linkedType, post.getPostId(),null, createUser.getMobile(), sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle()
+				appNewsPush(linkedType, post.getPostId(), null, createUser.getMobile(), sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle()
 						+ sysGlobals.CONTENT_GETUI_MSG_END);
 			}
 		}
@@ -3112,7 +3119,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					if (post.getPostType() == 3) {
 						linkedType = LinkedType.ARTICLE.getValue();
 					}
-					appNewsPush(linkedType, post.getPostId(),null, createUser.getMobile(), sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle()
+					appNewsPush(linkedType, post.getPostId(), null, createUser.getMobile(), sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle()
 							+ sysGlobals.CONTENT_GETUI_MSG_END);
 				}
 			}
@@ -3143,14 +3150,14 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	 * @updator <修改人 修改后更新修改时间，不同人修改再添加>
 	 * @updateContext <修改内容>
 	 */
-	public void appNewsPush(Integer linkedType, Integer id,String title, String mobile, String praiseContent) {
+	public void appNewsPush(Integer linkedType, Integer id, String title, String mobile, String praiseContent) {
 		// 个推APP推送消息
 		NewsPush newsPush = new NewsPush();
 		newsPush.setLinkedType(Short.valueOf(linkedType.toString()));
 		newsPush.setArticleId(id);
-		if(StringUtils.isBlank(title)) {
+		if (StringUtils.isBlank(title)) {
 			newsPush.setTitle(sysGlobals.GETUI_NOTIFY);
-		}else {
+		} else {
 			newsPush.setTitle(title);
 		}
 		newsPush.setPeopleRange(mobile);
@@ -3378,7 +3385,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// 查询被点赞的用户
 		KFFUser kffUserc = kffUserService.findByUserId(followedUserId);
 		if (null != kffUserc) {
-			appNewsPush(LinkedType.FOLLOW.getValue(), userId,null, kffUserc.getMobile(), praiseContent);
+			appNewsPush(LinkedType.FOLLOW.getValue(), userId, null, kffUserc.getMobile(), praiseContent);
 		}
 	}
 
@@ -4754,19 +4761,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		response.setEvaluationId(eva.getEvaluationId());
 		response.setTotalScore(eva.getTotalScore());
 		response.setEvaluationTags(eva.getEvaluationTags());
-		// if (loginUser == null) {
-		// response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
-		// } else {
-		// // 返回对帖子用户的关注状态
-		// Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(),
-		// KFFConstants.FOLLOW_TYPE_USER, post.getCreateUserId());
-		// if (follow != null && follow.getStatus() != null && follow.getStatus() ==
-		// KFFConstants.STATUS_ACTIVE) {
-		// response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
-		// } else {
-		// response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
-		// }
-		// }
+		response.setPostSmallImages(post.getPostSmallImages());
 		// 设置人的关注状态
 		if (loginUser == null) {
 			response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
@@ -5204,7 +5199,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					if (post.getPostType() == 3) {
 						linkedType = LinkedType.ARTICLE.getValue();
 					}
-					appNewsPush(linkedType, postId,null, kffUserc.getMobile(), praiseContent);
+					appNewsPush(linkedType, postId, null, kffUserc.getMobile(), praiseContent);
 				}
 			}
 		} catch (NullPointerException e) {

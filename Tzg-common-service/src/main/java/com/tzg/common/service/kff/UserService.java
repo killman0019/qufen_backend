@@ -247,7 +247,6 @@ public class UserService {
 
 		// 更新用户登录时间
 		if (user != null) {
-			user.setLastLoginDateTime(new Date());
 			if (null == user.getUsercardStatus()) {
 				Integer userCardStatus = userCardService.selectUserCardStatusByUserId(user.getUserId());
 				user.setUsercardStatus(userCardStatus);

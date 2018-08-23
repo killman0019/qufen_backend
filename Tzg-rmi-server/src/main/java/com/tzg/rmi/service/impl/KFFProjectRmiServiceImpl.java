@@ -538,7 +538,7 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 				List<ProjectResponse> projectResponseList = new ArrayList<ProjectResponse>();
 				KFFUser loginUser = kffUserService.findById(userId);
 				Integer type = 2;// 取关注人
-				PageResult<FollowResponse> followPage = kffRmiService.findPageMyFollow(queryFollow,type,loginUser);
+				PageResult<FollowResponse> followPage = kffRmiService.findPageMyFollow(queryFollow, type, loginUser);
 
 				if (null != followPage && null != followPage.getRows() && !CollectionUtils.isEmpty(followPage.getRows())) {
 					List<FollowResponse> followResponseList = followPage.getRows();
@@ -625,7 +625,7 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 					projectResponsePage = new PageResult<ProjectResponse>(projectList, projectsPage.getRowCount(), query);
 				}
 			}
-		} else if (tabId == 2 && userId != null) {
+		} else if (tabId == 2 && userId != null && !(CollectionUtils.isEmpty(followList))) {
 			// 查询用户关注的project列表
 			query.addQueryData("sortField", "follower_num");
 			query.addQueryData("sortSequence", "desc");
@@ -652,7 +652,7 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 			PaginationQuery queryOther = query;
 			projectResponsePage = selectProjectsListByProjectCodePageNew(tabId, queryOther, userId, projectFollow);
 		}
-		//System.err.println("projectResponsePage" + JSON.toJSONString(projectResponsePage));
+		// System.err.println("projectResponsePage" + JSON.toJSONString(projectResponsePage));
 		return projectResponsePage;
 	}
 
