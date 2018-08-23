@@ -121,7 +121,8 @@
 	<update id="updateByGrantType" parameterType="java.lang.Integer">
 		UPDATE tbtokenaward
 		<set>
-			grant_type = #{grantType,jdbcType=INTEGER}
+			grant_type = #{grantType,jdbcType=INTEGER},
+			updateTime = NOW()
 		</set>
 		WHERE
 		distribution_type = 1

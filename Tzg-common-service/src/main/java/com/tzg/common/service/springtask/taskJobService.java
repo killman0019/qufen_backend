@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import cn.jpush.api.report.UsersResult.User;
+
 import com.tzg.common.service.kff.PostService;
 import com.tzg.common.service.kff.ProjectService;
 import com.tzg.common.service.kff.ProjectTradeService;
@@ -13,6 +15,7 @@ import com.tzg.common.service.kff.QfIndexService;
 import com.tzg.common.service.kff.TokenawardService;
 import com.tzg.common.service.kff.TokenrecordsService;
 import com.tzg.common.service.kff.TransactionPairService;
+import com.tzg.common.service.kff.UserService;
 
 @Service
 @Transactional
@@ -37,6 +40,9 @@ public class taskJobService {
 	private TransactionPairService transactionPairService;
 	@Autowired
 	private TokenrecordsService tokenrecordsService;
+
+	@Autowired
+	private UserService userService;
 
 	public void updateByGrantType() {
 		Integer a = 2;
@@ -97,6 +103,13 @@ public class taskJobService {
 	public void caluCoinUserTask() {
 		logger.info("--------------start getdatafromUrlByexchangeTask job---");
 		tokenrecordsService.caluCoinUserTask();
+		logger.info("-------------- end getdatafromUrlByexchangeTask job---");
+
+	}
+
+	public void setPop() {
+		logger.info("--------------start getdatafromUrlByexchangeTask job---");
+		userService.setPop();
 		logger.info("-------------- end getdatafromUrlByexchangeTask job---");
 
 	}

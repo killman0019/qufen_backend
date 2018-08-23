@@ -64,4 +64,19 @@ public interface KFFUserMapper extends BaseMapper<KFFUser, java.lang.Integer> {
 
 	public void decreaseKffcoinNum(Map<String, Object> map);
 
+	/**
+	 * 
+	* @Title: setPop 
+	* @Description: TODO <将所有用户的弹出框重置成0>
+	* @author zhangdd <方法创建作者>
+	* @create 上午9:59:57
+	* @param  <参数说明>
+	* @return void 
+	* @throws 
+	* @update 上午9:59:57
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	 */
+	public void setPop();
+
 }

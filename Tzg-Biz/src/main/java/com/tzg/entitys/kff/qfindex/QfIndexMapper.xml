@@ -135,7 +135,7 @@
 		UPDATE
 		tbqfindex
 		set
-		yxpraise = yxpraise - 1
+		yxpraise = yxpraise - 1,updateTime= NOW()
 		WHERE
 		user_id = #{userId,jdbcType=INTEGER}
 	</update>
@@ -143,7 +143,7 @@
 		UPDATE
 		tbqfindex
 		set
-		yx_comments = yx_comments - 1
+		yx_comments = yx_comments - 1,updateTime= NOW()
 		WHERE
 		user_id = #{userId,jdbcType=INTEGER}
 	</update>
@@ -152,7 +152,7 @@
 		UPDATE
 		tbqfindex
 		set
-		yx_share_post = yx_share_post - 1
+		yx_share_post = yx_share_post - 1,updateTime= NOW()
 		WHERE
 		user_id = #{userId,jdbcType=INTEGER}
 	</update>
@@ -163,14 +163,15 @@
 		set
 		yxpraise = floor(status_hierarchy_type * 0.1),
 		yx_comments=floor(status_hierarchy_type * 0.1),
-		yx_share_post=floor(status_hierarchy_type * 0.1)
+		yx_share_post=floor(status_hierarchy_type * 0.1),
+		updateTime= NOW()
 	</update>
 
 	<update id="updateYxPraiseValid" parameterType="java.lang.Integer">
 		UPDATE
 		tbqfindex
 		set
-		yxpraise = floor(status_hierarchy_type * 0.1)
+		yxpraise = floor(status_hierarchy_type * 0.1),updateTime= NOW()
 
 	</update>
 
