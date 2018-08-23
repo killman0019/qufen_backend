@@ -1,5 +1,6 @@
 package com.tzg.wap.controller.h5;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
-import com.tzg.common.base.BaseRequest;
 import com.tzg.common.constants.KFFConstants;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
@@ -481,10 +481,10 @@ public class HomeController extends BaseController {
 
 			bre.setData(map);
 		} catch (RestServiceException e) {
-			logger.error("HomeController discussCommentList:{}", e);
+			logger.error("HomeController discussCommentListShare:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
 		} catch (Exception e) {
-			logger.error("HomeController discussCommentList:{}", e);
+			logger.error("HomeController discussCommentListShare:{}", e);
 			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
 		}
 		return bre;
@@ -579,8 +579,15 @@ public class HomeController extends BaseController {
 			query.addQueryData("parentCommentsIdNull", "YES");
 
 			PageResult<Comments> comments = kffRmiService.findPageDiscussCommentsList(userId, query);
+			if(null==comments) {
+				bre.setNoDataMsg();
+				return bre;
+			}
+			if(comments.getRows().isEmpty()) {
+				bre.setNoDataMsg();
+				return bre;
+			}
 			map.put("comments", comments);
-
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("HomeController discussCommentList:{}", e);
@@ -640,7 +647,7 @@ public class HomeController extends BaseController {
 			newQuery.setPageIndex(pageIndex);
 			newQuery.setRowsPerPage(pageSize);
 			PageResult<Comments> newestComments = kffRmiService.findPageNewestCommentsSelf(userId, postId, newQuery);
-			map.put("newestComments", newestComments);
+			List<Comments> hotComments = new ArrayList<>();
 			if (pageIndex == 1) {
 				PaginationQuery hotQuery = new PaginationQuery();
 				hotQuery.addQueryData("status", "1");
@@ -652,9 +659,14 @@ public class HomeController extends BaseController {
 				hotQuery.addQueryData("praiseNum", "10");
 				hotQuery.setPageIndex(1);
 				hotQuery.setRowsPerPage(2);
-				List<Comments> hotComments = kffRmiService.findPageHotCommentsListSelf(userId, postId, hotQuery);
-				map.put("hotComments", hotComments);
+				hotComments = kffRmiService.findPageHotCommentsListSelf(userId, postId, hotQuery);
 			}
+			if(null==newestComments&&newestComments==null) {
+				bre.setNoDataMsg();
+				return bre;
+			}
+			map.put("hotComments", hotComments);
+			map.put("newestComments", newestComments);
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("HomeController postCommentList:{}", e);

@@ -8,56 +8,27 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.CollectionUtils;
 
-import com.tzg.common.redis.RedisService;
-import com.tzg.common.service.kff.ArticleService;
-import com.tzg.common.service.kff.AuthenticationService;
-import com.tzg.common.service.kff.AwardPortService;
-import com.tzg.common.service.kff.CoinPropertyService;
-import com.tzg.common.service.kff.CollectService;
-import com.tzg.common.service.kff.CommendationService;
-import com.tzg.common.service.kff.CommentsService;
-import com.tzg.common.service.kff.DareasService;
-import com.tzg.common.service.kff.DevaluationModelDetailService;
-import com.tzg.common.service.kff.DevaluationModelService;
-import com.tzg.common.service.kff.DiscussService;
-import com.tzg.common.service.kff.DprojectTypeService;
-import com.tzg.common.service.kff.DtagsService;
-import com.tzg.common.service.kff.EvaluationService;
-import com.tzg.common.service.kff.FollowService;
+import com.tzg.common.enums.LinkedType;
 import com.tzg.common.service.kff.MessageService;
-import com.tzg.common.service.kff.MobileversionupdateService;
-import com.tzg.common.service.kff.NoticeService;
 import com.tzg.common.service.kff.PostService;
-import com.tzg.common.service.kff.PraiseService;
-import com.tzg.common.service.kff.ProjectService;
-import com.tzg.common.service.kff.ProjectTradeService;
-import com.tzg.common.service.kff.ProjectevastatService;
-import com.tzg.common.service.kff.QfIndexService;
 import com.tzg.common.service.kff.ReportInforService;
 import com.tzg.common.service.kff.ReportModelService;
 import com.tzg.common.service.kff.ReportedContentService;
-import com.tzg.common.service.kff.SuggestService;
-import com.tzg.common.service.kff.TokenawardService;
-import com.tzg.common.service.kff.TokenrecordsService;
-import com.tzg.common.service.kff.UserCardService;
-import com.tzg.common.service.kff.UserInvationService;
 import com.tzg.common.service.kff.UserService;
-import com.tzg.common.service.kff.UserWalletService;
 import com.tzg.common.service.systemParam.SystemParamService;
-import com.tzg.common.zookeeper.ZKClient;
+import com.tzg.common.utils.sysGlobals;
+import com.tzg.entitys.kff.comments.CommentsRequest;
+import com.tzg.entitys.kff.message.KFFMessage;
 import com.tzg.entitys.kff.post.Post;
 import com.tzg.entitys.kff.reportedcontent.ReportedContent;
 import com.tzg.entitys.kff.reportinfor.ReportInfor;
 import com.tzg.entitys.kff.reportmodel.ReportModel;
 import com.tzg.entitys.kff.user.KFFUser;
-import com.tzg.entitys.kff.userwallet.KFFUserWalletMapper;
 import com.tzg.entitys.leopard.system.SystemParam;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rmi.service.KFFReportRmiService;
-import com.tzg.rmi.service.SmsSendRmiService;
 
 /**
  * 
@@ -85,9 +56,13 @@ public class KFFReportRmiServiceImpl implements KFFReportRmiService {
 	private ReportedContentService reportedContentService;
 	@Autowired
 	private ReportInforService reportInforService;
-
 	@Autowired
 	private SystemParamService systemParamService;
+	@Autowired
+	private KFFRmiServiceImpl kffRmiServiceImpl;
+	@Autowired
+	private MessageService messageService;
+	
 
 	@Override
 	public List<ReportModel> getReportModelList() throws RestServiceException {
@@ -191,7 +166,38 @@ public class KFFReportRmiServiceImpl implements KFFReportRmiService {
 							reportedContentDB.setReportedContentKeyId(reportedContent.getReportedContentKeyId());
 							reportedContentDB.setReportedContentStatus(0);
 							reportedContentService.update(reportedContentDB);
-							//TODO: 个推  通知举报人   此文章被隐藏
+							//个推  通知被举报人   此文章被隐藏
+							Post ppot = kffPostService.findById(post.getPostId());
+							KFFUser kffUserc = kffUserService.findByUserId(ppot.getCreateUserId());
+							if (null != kffUserc) {
+								Integer linkedType = null;
+								if (ppot.getPostType() == 1) {
+									linkedType = LinkedType.CUSTOMEVALUATING.getValue();
+								}
+								if (ppot.getPostType() == 2) {
+									linkedType = LinkedType.COUNTERFEIT.getValue();
+								}
+								if (ppot.getPostType() == 3) {
+									linkedType = LinkedType.ARTICLE.getValue();
+								}
+								kffRmiServiceImpl.appNewsPush(linkedType, ppot.getPostId(),sysGlobals.DISABLE_FOR_CONTENT_TITLE,
+										kffUserc.getMobile(), sysGlobals.DISABLE_FOR_CONTENT);
+							}
+							//给被举报人发送APP消息
+							KFFMessage msg = new KFFMessage();
+							msg.setType(8);
+							msg.setStatus(1);
+							msg.setState(1);
+							msg.setCreateTime(now);
+							msg.setUpdateTime(now);
+							msg.setUserId(ppot.getCreateUserId());
+							msg.setTitle(sysGlobals.DISABLE_FOR_CONTENT_TITLE);
+							msg.setContent(sysGlobals.DISABLE_FOR_CONTENT);
+							msg.setSenderUserId(sysGlobals.QUFEN_ACCOUNT_ID);
+							msg.setJumpInfo(sysGlobals.QUFEN_ACCOUNT_ID.toString());
+							msg.setPostId(ppot.getPostId());
+							msg.setPostType(ppot.getPostType());
+							messageService.save(msg);
 						}
 					}
 					reportInfor.setReportedContentKeyId(reportedContent.getReportedContentKeyId());

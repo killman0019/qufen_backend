@@ -1028,7 +1028,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			if (post.getPostType() == 3) {
 				linkedType = LinkedType.ARTICLE.getValue();
 			}
-			appNewsPush(linkedType, post.getPostId(), kffUserc.getMobile(), praiseContent);
+			appNewsPush(linkedType, post.getPostId(), null,kffUserc.getMobile(), praiseContent);
 		}
 		caculateEveryPostIncome(post.getPostId(), post, amountInputDB, 2);
 		return resultMap;
@@ -1665,7 +1665,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			if (post.getPostType() == 3) {
 				linkedType = LinkedType.ARTICLE.getValue();
 			}
-			appNewsPush(linkedType, post.getPostId(), kffUserc.getMobile(), praiseContent);
+			appNewsPush(linkedType, post.getPostId(),null, kffUserc.getMobile(), praiseContent);
 		}
 		return map;
 
@@ -2371,7 +2371,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				if (post.getPostType() == 3) {
 					linkedType = LinkedType.ARTICLE.getValue();
 				}
-				appNewsPush(linkedType, post.getPostId(), createUser.getMobile(), sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle()
+				appNewsPush(linkedType, post.getPostId(),null, createUser.getMobile(), sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle()
 						+ sysGlobals.CONTENT_GETUI_MSG_END);
 			}
 		}
@@ -3112,7 +3112,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					if (post.getPostType() == 3) {
 						linkedType = LinkedType.ARTICLE.getValue();
 					}
-					appNewsPush(linkedType, post.getPostId(), createUser.getMobile(), sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle()
+					appNewsPush(linkedType, post.getPostId(),null, createUser.getMobile(), sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle()
 							+ sysGlobals.CONTENT_GETUI_MSG_END);
 				}
 			}
@@ -3134,19 +3134,25 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	 * @create 下午5:10:16
 	 * @param @param linkedType 链接类型:0-完整版专业评测，1-自定义评测，2-文章，3-打假，4-单项评测，5-关注
 	 * @param @param id 类型id (包括：文章id,爆料id等等)
+	 * @param @param title APP消息推送的标题
 	 * @param @param mobile APP消息推送的用户
+	 * @param @param praiseContent APP消息推送的用内容
 	 * @return void
 	 * @throws
 	 * @update 下午5:10:16
 	 * @updator <修改人 修改后更新修改时间，不同人修改再添加>
 	 * @updateContext <修改内容>
 	 */
-	public void appNewsPush(Integer linkedType, Integer id, String mobile, String praiseContent) {
+	public void appNewsPush(Integer linkedType, Integer id,String title, String mobile, String praiseContent) {
 		// 个推APP推送消息
 		NewsPush newsPush = new NewsPush();
 		newsPush.setLinkedType(Short.valueOf(linkedType.toString()));
 		newsPush.setArticleId(id);
-		newsPush.setTitle(sysGlobals.GETUI_NOTIFY);
+		if(StringUtils.isBlank(title)) {
+			newsPush.setTitle(sysGlobals.GETUI_NOTIFY);
+		}else {
+			newsPush.setTitle(title);
+		}
 		newsPush.setPeopleRange(mobile);
 		newsPush.setContent(praiseContent);
 		StringBuffer buff = new StringBuffer();
@@ -3372,7 +3378,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// 查询被点赞的用户
 		KFFUser kffUserc = kffUserService.findByUserId(followedUserId);
 		if (null != kffUserc) {
-			appNewsPush(LinkedType.FOLLOW.getValue(), userId, kffUserc.getMobile(), praiseContent);
+			appNewsPush(LinkedType.FOLLOW.getValue(), userId,null, kffUserc.getMobile(), praiseContent);
 		}
 	}
 
@@ -5198,7 +5204,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					if (post.getPostType() == 3) {
 						linkedType = LinkedType.ARTICLE.getValue();
 					}
-					appNewsPush(linkedType, postId, kffUserc.getMobile(), praiseContent);
+					appNewsPush(linkedType, postId,null, kffUserc.getMobile(), praiseContent);
 				}
 			}
 		} catch (NullPointerException e) {

@@ -69,6 +69,11 @@ public final class sysGlobals{
 	public static String PRISE_TO_FOLLOW_POST="PRISE_TO_FOLLOW_POST";
 	/**封号信息提示的content*/
 	public static String DISABLE_ACCOUNT_MSG = "尊敬的用户您好，您的账号被举报存在违规操作，已被禁用。若有疑问，请联系区分客服。";
-	
+	/**内容违规隐藏个推提示的标题*/
+	public static String DISABLE_FOR_CONTENT_TITLE = "内容违规";
+	/**内容违规隐藏个推提示的内容体*/
+	public static String DISABLE_FOR_CONTENT = "尊敬的用户您好，您发布的内容被举报涉嫌违规，已被隐藏，请注意勿违反社区规则。";
+	/**区分官方账号id*/
+	public static Integer QUFEN_ACCOUNT_ID = 2;
 	
 }

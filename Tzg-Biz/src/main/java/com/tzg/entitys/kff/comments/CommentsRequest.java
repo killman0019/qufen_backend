@@ -69,7 +69,21 @@ public class CommentsRequest extends BaseRequest implements Serializable {
 	private Integer becommentedId;
 
 	private String commentUUID;
-
+	/**
+	 * createTime
+	 */
+	private java.util.Date createTime;
+	private java.lang.String createTimeStr;
+	/**
+	 * updateTime
+	 */
+	private java.util.Date updateTime;
+	private java.lang.String updateTimeStr;
+	/**
+	 * 状态:0-删除；1-有效
+	 */
+	private java.lang.Integer status = 1;
+	
 	public String getCommentUUID() {
 		return commentUUID;
 	}
@@ -85,21 +99,6 @@ public class CommentsRequest extends BaseRequest implements Serializable {
 	public void setBecommentedId(Integer becommentedId) {
 		this.becommentedId = becommentedId;
 	}
-
-	/**
-	 * createTime
-	 */
-	private java.util.Date createTime;
-	private java.lang.String createTimeStr;
-	/**
-	 * updateTime
-	 */
-	private java.util.Date updateTime;
-	private java.lang.String updateTimeStr;
-	/**
-	 * 状态:0-删除；1-有效
-	 */
-	private java.lang.Integer status = 1;
 
 	public void setCommentsId(java.lang.Integer value) {
 		this.commentsId = value;

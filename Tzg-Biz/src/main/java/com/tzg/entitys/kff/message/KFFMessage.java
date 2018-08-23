@@ -15,7 +15,7 @@ public class KFFMessage implements Serializable {
 	 */
 	private java.lang.Integer messageId;
 	/**
-	 * 消息类型：1-关注；2-点赞；3-评论；4-赞赏；5-评论被回复；6-上榜单；7-奖励token
+	 * 消息类型：1-关注；2-点赞；3-评论；4-赞赏；5-评论被回复；6-上榜单；7-奖励token,8-内容被隐藏
 	 */
 	private java.lang.Integer type;
 	/**
