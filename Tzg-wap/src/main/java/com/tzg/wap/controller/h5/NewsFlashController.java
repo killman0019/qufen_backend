@@ -57,10 +57,10 @@ public class NewsFlashController extends BaseController {
 			}
 			bre.setData(nwFh);
 		} catch (RestServiceException e) {
-			logger.error("NewsFlashController getNewsFlashPageList:{}", e);
+			logger.error("NewsFlashController getAppNewsFlash:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
 		} catch (Exception e) {
-			logger.error("NewsFlashController getNewsFlashPageList:{}", e);
+			logger.error("NewsFlashController getAppNewsFlash:{}", e);
 			return this.resResult(RestErrorCode.SYS_ERROR,e.getMessage());
 		}
 		return bre;
