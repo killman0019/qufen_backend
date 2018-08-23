@@ -151,6 +151,12 @@
 
 
 
+	<!-- 标签和标签类型相关服务 -->
+	<bean id="kffTagsRmiService" class="com.tzg.rmi.service.impl.KFFTagsRmiServiceImpl" />
+	<dubbo:service interface="com.tzg.rmi.service.KFFTagsRmiService" ref="kffTagsRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0" />
+
+
+
 	<bean id="kffProjectPostRmiService" class="com.tzg.rmi.service.impl.KFFProjectPostRmiServiceImpl" />
 	<dubbo:service interface="com.tzg.rmi.service.KFFProjectPostRmiService" ref="kffProjectPostRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}"
 		retries="0" />

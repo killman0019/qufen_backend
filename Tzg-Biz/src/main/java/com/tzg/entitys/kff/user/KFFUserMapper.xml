@@ -662,6 +662,13 @@
 
 	</update>
 
+	<update id="setPop">
+
+		UPDATE tbuser
+		SET pop = 0
+
+	</update>
+
 </mapper>
 
 

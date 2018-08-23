@@ -212,26 +212,6 @@ public class UserService {
 
 				registerAward(userId);
 			}
-			/*	List<Tokenaward> findByUserId = tokenawardService.findByUserId(userId);
-				for (Tokenaward tokenaward : findByUserId) {
-					if(tokenaward != null) {
-						if(tokenaward.getGrantType() != null) {
-							
-							if ( tokenaward.getGrantType() == 2) {
-								
-								// 调用发放接口
-								// AwardPortService awardPortService = new AwardPortService();
-								// Integer tokenawardUserid = tokenaward.getUserId();
-								// awardPortService.registerAward(userId);
-								registerAward(userId);
-								
-								tokenaward.setGrantType(1);
-								tokenawardService.update(tokenaward);
-							}
-						}
-					}
-				
-				}*/
 
 		} else {
 			// 用户名登录
@@ -254,25 +234,6 @@ public class UserService {
 
 				registerAward(userId);
 			}
-			/*List<Tokenaward> findByUserId = tokenawardService.findByUserId(userId);
-			for (Tokenaward tokenaward : findByUserId) {
-				if(tokenaward != null) {
-					if(tokenaward.getGrantType() != null) {
-						
-						if ( tokenaward.getGrantType() == 2) {
-							
-							// 调用发放接口
-							// AwardPortService awardPortService = new AwardPortService();
-							// Integer tokenawardUserid = tokenaward.getUserId();
-							// awardPortService.registerAward(userId);
-							registerAward(userId);
-							tokenaward.setGrantType(1);
-							tokenawardService.update(tokenaward);
-						}
-					}
-				}
-			
-			}*/
 
 		}
 
@@ -286,17 +247,7 @@ public class UserService {
 
 		// 更新用户登录时间
 		if (user != null) {
-			// KFFUser updateLastLoginTime = new KFFUser();
-			// updateLastLoginTime.setUserId(user.getUserId());
-			if (null == user.getLastLoginDateTime()) {
-				updateUserKFFsetPopZero(user.getUserId());// 0
-				user.setLastLoginDateTime(new Date());
-			}
-			if (!DateUtil.isToday(user.getLastLoginDateTime().getTime())) {// 最后一次登陆时间不是今天
-				// 并把时间设置成今天
-				updateUserKFFsetPopZero(user.getUserId());// 0
-				user.setLastLoginDateTime(new Date());
-			}
+			user.setLastLoginDateTime(new Date());
 			if (null == user.getUsercardStatus()) {
 				Integer userCardStatus = userCardService.selectUserCardStatusByUserId(user.getUserId());
 				user.setUsercardStatus(userCardStatus);
@@ -752,7 +703,7 @@ public class UserService {
 		public MyTask(Map<String, Object> arr) {
 			this.arrs = arr;
 		}
-		
+
 		@Override
 		public void run() {
 			logger.info("----正在执行task---" + arrs);
@@ -819,6 +770,27 @@ public class UserService {
 				userMapper.decreaseKffcoinNum(map);
 			}
 		}
+
+	}
+
+	/**
+	 * 
+	* @Title: setPop 
+	* @Description: TODO <定时任务将所有的用户的pop状态重置成弹出状态>
+	* @author zhangdd <方法创建作者>
+	* @create 上午9:58:52
+	* @param  <参数说明>
+	* @return void 
+	* @throws 
+	* @update 上午9:58:52
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	 */
+	public void setPop() {
+
+		// '弹出框:0-弹出;1-不弹',
+
+		userMapper.setPop();
 
 	}
 }
