@@ -1472,33 +1472,33 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			response.setRank(projectTrade.getRank());
 			response.setVolume24h(projectTrade.getVolume24h());
 		}
-		
-		//查询项目方的信息
+
+		// 查询项目方的信息
 		Integer projectUserId = response.getProjectUserId();
-		if(null==projectUserId) {
-			return response;
-		}	
-		KFFUser userInfo = kffUserService.findById(projectUserId);
-		if(null==userInfo) {
+		if (null == projectUserId) {
 			return response;
 		}
-		response.setIcon(userInfo.getIcon()	);
+		KFFUser userInfo = kffUserService.findById(projectUserId);
+		if (null == userInfo) {
+			return response;
+		}
+		response.setIcon(userInfo.getIcon());
 		response.setUserName(userInfo.getUserName());
 		response.setUserSignature(userInfo.getUserSignature());
-		//获取用户有无对项目方进行关注
-		Map<String,Object> seMap = new HashMap<>();
+		// 获取用户有无对项目方进行关注
+		Map<String, Object> seMap = new HashMap<>();
 		seMap.put("followUserId", userId);
-		seMap.put("followType", 3);//关注类型：1-关注项目;2-关注帖子；3-关注用户
+		seMap.put("followType", 3);// 关注类型：1-关注项目;2-关注帖子；3-关注用户
 		seMap.put("followedUserId", projectUserId);
 		seMap.put("status", 1);
 		List<Follow> pjFollows = kffFollowService.findListByAttr(seMap);
-		if(pjFollows.isEmpty()) {
+		if (pjFollows.isEmpty()) {
 			response.setProjectFollowStatus(0);
-		}else {
+		} else {
 			response.setProjectFollowStatus(1);
 		}
 		return response;
-		
+
 	}
 
 	@Override
@@ -3155,6 +3155,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		map.put("isSendPraiseToken", isSendPraiseToken);
 		map.put("retrueDzan", retrueDzan);
 		map.put("praiseNum", result);
+		map.put("postTotalIncome", post.getPostTotalIncome());
 		// System.err.println("map参数展示" + JSON.toJSON(map));
 		return map;
 	}
