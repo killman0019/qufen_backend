@@ -160,11 +160,53 @@ public class ProjectResponse implements Serializable {
 	private Double percentChange24h;
 
 	private Double percentChange7d;
-	
+	//项目方id
 	private Integer projectUserId;
+	//项目方手机
 	private String projectMobile;
+	//项目方类型
 	private Integer projectUserType;
+	//项目方头像
+	private String icon;
+	//项目方昵称
+	private String userName;
+	//项目方简介
+	private String userSignature;
+	//对项目方的关注： 0-未关注；1-已关注
+    private java.lang.Integer projectFollowStatus=0;
 	
+	public java.lang.Integer getProjectFollowStatus() {
+		return projectFollowStatus;
+	}
+
+	public void setProjectFollowStatus(java.lang.Integer projectFollowStatus) {
+		this.projectFollowStatus = projectFollowStatus;
+	}
+
+	public String getIcon() {
+		return icon;
+	}
+
+	public void setIcon(String icon) {
+		this.icon = icon;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getUserSignature() {
+		return userSignature;
+	}
+
+	public void setUserSignature(String userSignature) {
+		this.userSignature = userSignature;
+	}
+
 	public Integer getProjectUserId() {
 		return projectUserId;
 	}
