@@ -119,10 +119,38 @@ public class DiscussDetailResponse implements Serializable {
 
 	private Integer userType;
 
+	private Double praiseIncome;
+	private Double donateIncome;
+	private Double postTotalIncome;
+
 	/**
 	 * 总捐赠金额
 	 */
 	private java.math.BigDecimal commendationNum = BigDecimal.ZERO;
+
+	public Double getPraiseIncome() {
+		return praiseIncome;
+	}
+
+	public void setPraiseIncome(Double praiseIncome) {
+		this.praiseIncome = praiseIncome;
+	}
+
+	public Double getDonateIncome() {
+		return donateIncome;
+	}
+
+	public void setDonateIncome(Double donateIncome) {
+		this.donateIncome = donateIncome;
+	}
+
+	public Double getPostTotalIncome() {
+		return postTotalIncome;
+	}
+
+	public void setPostTotalIncome(Double postTotalIncome) {
+		this.postTotalIncome = postTotalIncome;
+	}
 
 	public java.math.BigDecimal getCommendationNum() {
 		return commendationNum;

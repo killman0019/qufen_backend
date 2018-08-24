@@ -4278,7 +4278,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 		kffPostService.increasePageviewNum(postId);
 		response.setCommentsNum(post.getCommentsNum());
-
+		response.setPraiseIncome(post.getPraiseIncome());
+		response.setDonateIncome(post.getDonateIncome());
+		response.setPostTotalIncome(post.getPostTotalIncome());
 		KFFUser createUser = kffUserService.findByUserId(post.getCreateUserId());
 		if (null != createUser) {
 			response.setUserType(createUser.getUserType());
@@ -4676,7 +4678,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		totalMap.put("status", "1");
 		BigDecimal commendationNum = kffCommendationService.findCommendationNum(totalMap);
 		response.setCommendationNum(commendationNum);
-
+		response.setPraiseIncome(post.getPraiseIncome());
+		response.setDonateIncome(post.getDonateIncome());
+		response.setPostTotalIncome(post.getPostTotalIncome());
 		response.setCommentsNum(post.getCommentsNum());
 		return response;
 	}
@@ -4788,6 +4792,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		response.setTotalScore(eva.getTotalScore());
 		response.setEvaluationTags(eva.getEvaluationTags());
 		response.setPostSmallImages(post.getPostSmallImages());
+		response.setPraiseIncome(post.getPraiseIncome());
+		response.setDonateIncome(post.getDonateIncome());
+		response.setPostTotalIncome(post.getPostTotalIncome());
 		// 设置人的关注状态
 		if (loginUser == null) {
 			response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);

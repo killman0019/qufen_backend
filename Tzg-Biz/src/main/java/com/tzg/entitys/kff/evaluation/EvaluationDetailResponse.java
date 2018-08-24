@@ -160,6 +160,34 @@ public class EvaluationDetailResponse implements Serializable {
 
 	private java.util.Date stickUpdateTime;
 
+	private Double praiseIncome;
+	private Double donateIncome;
+	private Double postTotalIncome;
+
+	public Double getPraiseIncome() {
+		return praiseIncome;
+	}
+
+	public void setPraiseIncome(Double praiseIncome) {
+		this.praiseIncome = praiseIncome;
+	}
+
+	public Double getDonateIncome() {
+		return donateIncome;
+	}
+
+	public void setDonateIncome(Double donateIncome) {
+		this.donateIncome = donateIncome;
+	}
+
+	public Double getPostTotalIncome() {
+		return postTotalIncome;
+	}
+
+	public void setPostTotalIncome(Double postTotalIncome) {
+		this.postTotalIncome = postTotalIncome;
+	}
+
 	public java.util.Date getStickUpdateTime() {
 		return stickUpdateTime;
 	}
