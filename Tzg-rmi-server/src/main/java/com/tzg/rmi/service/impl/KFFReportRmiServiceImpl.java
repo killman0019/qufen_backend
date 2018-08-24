@@ -62,7 +62,6 @@ public class KFFReportRmiServiceImpl implements KFFReportRmiService {
 	private KFFRmiServiceImpl kffRmiServiceImpl;
 	@Autowired
 	private MessageService messageService;
-	
 
 	@Override
 	public List<ReportModel> getReportModelList() throws RestServiceException {
@@ -89,7 +88,7 @@ public class KFFReportRmiServiceImpl implements KFFReportRmiService {
 		Map<String, Object> reportContentMap = new HashMap<String, Object>();
 		reportContentMap.put("reportedContentId", contentId);
 		reportContentMap.put("reportUserId", userId);
-		
+
 		reportContentMap.put("tcstatus", 1);
 		reportContentMap.put("tfstatus", 1);
 		Integer reportCount = reportedContentService.findIsReportToPContentFromUserId(reportContentMap);
@@ -156,7 +155,8 @@ public class KFFReportRmiServiceImpl implements KFFReportRmiService {
 					SystemParam systemParam = systemParamService.findByCode("REPORT_DEGREE");
 					if (null != systemParam) {
 						String vcParamValue = systemParam.getVcParamValue();
-						if (reportedContent.getReportedDegree() == Integer.valueOf(vcParamValue)) {// 当举报次数到达5时,先把post进行隐藏
+						Integer valueOf = Integer.valueOf(vcParamValue) - 1;
+						if (reportedContent.getReportedDegree() == valueOf) {// 当举报次数到达5时,先把post进行隐藏
 							Post postDB = new Post();
 							postDB.setPostId(post.getPostId());
 							postDB.setStatus(0);
@@ -166,7 +166,7 @@ public class KFFReportRmiServiceImpl implements KFFReportRmiService {
 							reportedContentDB.setReportedContentKeyId(reportedContent.getReportedContentKeyId());
 							reportedContentDB.setReportedContentStatus(0);
 							reportedContentService.update(reportedContentDB);
-							//个推  通知被举报人   此文章被隐藏
+							// 个推 通知被举报人 此文章被隐藏
 							Post ppot = kffPostService.findById(post.getPostId());
 							KFFUser kffUserc = kffUserService.findByUserId(ppot.getCreateUserId());
 							if (null != kffUserc) {
@@ -180,10 +180,10 @@ public class KFFReportRmiServiceImpl implements KFFReportRmiService {
 								if (ppot.getPostType() == 3) {
 									linkedType = LinkedType.ARTICLE.getValue();
 								}
-								kffRmiServiceImpl.appNewsPush(linkedType, ppot.getPostId(),sysGlobals.DISABLE_FOR_CONTENT_TITLE,
-										kffUserc.getMobile(), sysGlobals.DISABLE_FOR_CONTENT);
+								kffRmiServiceImpl.appNewsPush(linkedType, ppot.getPostId(), sysGlobals.DISABLE_FOR_CONTENT_TITLE, kffUserc.getMobile(),
+										sysGlobals.DISABLE_FOR_CONTENT);
 							}
-							//给被举报人发送APP消息
+							// 给被举报人发送APP消息
 							KFFMessage msg = new KFFMessage();
 							msg.setType(8);
 							msg.setStatus(1);
