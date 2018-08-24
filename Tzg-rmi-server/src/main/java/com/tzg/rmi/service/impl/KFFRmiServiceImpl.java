@@ -3155,7 +3155,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		map.put("isSendPraiseToken", isSendPraiseToken);
 		map.put("retrueDzan", retrueDzan);
 		map.put("praiseNum", result);
-		map.put("postTotalIncome", post.getPostTotalIncome());
+		Post postDB = kffPostService.findById(postId);
+		map.put("postTotalIncome", postDB.getPostTotalIncome());
 		// System.err.println("map参数展示" + JSON.toJSON(map));
 		return map;
 	}

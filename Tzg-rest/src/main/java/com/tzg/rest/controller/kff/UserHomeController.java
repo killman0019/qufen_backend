@@ -220,7 +220,16 @@ public class UserHomeController extends BaseController {
 			if (StringUtils.isNotBlank(token)) {
 				Integer userId = getUserIdByToken(token);
 				loginUser = kffUserService.findById(userId);
+
 			}
+			Integer userId = baseRequest.getUserId();
+
+			if (userId != null && userId > 0) {
+				query.addQueryData("createUserId", userId + "");
+			} else {
+				query.addQueryData("createUserId", loginUser + "");
+			}
+
 			Integer type = 2;// 取关注人
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
