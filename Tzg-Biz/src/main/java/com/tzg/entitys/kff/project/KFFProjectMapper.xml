@@ -285,13 +285,9 @@
 	</delete>
 
 	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
-		SELECT
-		<include refid="columns" /> 
-	<![CDATA[
-		FROM tbproject 
+		SELECT * FROM tbproject 
 		WHERE 
         project_id = #{projectId}  and status=1
-	]]>
 	</select>
 
 	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
