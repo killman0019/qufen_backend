@@ -80,8 +80,12 @@ public class KFFReportRmiServiceImpl implements KFFReportRmiService {
 		Date now = new Date();
 
 		KFFUser reportUser = kffUserService.findById(userId);
+
 		if (null == reportUser) {
 			throw new RestServiceException("举报人不存在");
+		}
+		if (reportUser.getUsercardStatus() != 2) {
+			throw new RestServiceException("尚未实名认证");
 		}
 
 		// 判断用户是否已经已经对此帖子进行投诉
