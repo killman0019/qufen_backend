@@ -131,11 +131,15 @@ public class ProjectController extends BaseController {
 				projectId = (Integer) requestContent.get("projectId");
 			}
 			
-			if(StringUtils.isBlank(token)&&projectId==null) {
+			if(projectId==null) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
 			}
-			Integer userId = getUserIdByToken(token);
-			KFFUser loginUser = kffUserService.findById(userId);
+			Integer userId = null;
+			KFFUser loginUser = new KFFUser();
+			if(StringUtils.isNotBlank(token)) {
+				userId = getUserIdByToken(token);
+				loginUser = kffUserService.findById(userId);
+			}
 			ProjectResponse project = kffRmiService.findProjectById(userId, projectId);
 			map.put("project", project);
 			Integer type = 2;// 取关注人

@@ -249,10 +249,13 @@ public class HomeController extends BaseController {
 				postId = (Integer) requestContent.get("postId");
 				token = (String) requestContent.get("token");
 			}
-			if (StringUtils.isBlank(token)||postId==null) {
+			if (postId==null) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
 			}
-			Integer userId = getUserIdByToken(token);
+			Integer userId = null;
+			if(StringUtils.isNotBlank(token)) {
+				userId = getUserIdByToken(token);
+			}
 			Integer type = 2;// 取关注人
 			ArticleDetailResponse article = kffRmiService.findArticleDetail(userId,type, postId);
 			map.put("articleDetail", article);
@@ -432,10 +435,13 @@ public class HomeController extends BaseController {
 				postId = (Integer) requestContent.get("postId");
 				token = (String) requestContent.get("token");
 			}
-			if (StringUtils.isBlank(token)||postId==null) {
+			if (postId==null) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
 			}
-			Integer userId = getUserIdByToken(token);
+			Integer userId = null;
+			if(StringUtils.isNotBlank(token)) {
+				userId = getUserIdByToken(token);
+			}
 			Integer type = 2;// 取关注人
 			DiscussDetailResponse discuss = kffRmiService.findDiscussDetail(userId, type,postId);
 			map.put("discussDetail", discuss);
@@ -514,10 +520,13 @@ public class HomeController extends BaseController {
 				postId = (Integer) requestContent.get("postId");
 				token = (String) requestContent.get("token");
 			}
-			if (StringUtils.isBlank(token)||postId==null) {
+			if (postId==null) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
 			}
-			Integer userId = getUserIdByToken(token);
+			Integer userId = null;
+			if(StringUtils.isNotBlank(token)) {
+				userId = getUserIdByToken(token);
+			}
 			Integer type = 2;// 取关注人
 			EvaluationDetailResponse evaluationDetail = kffRmiService.findEvaluationDetail(userId,type,postId);
 			map.put("evaluationDetail", evaluationDetail);
@@ -565,11 +574,13 @@ public class HomeController extends BaseController {
 				pageIndex = (Integer) requestContent.get("pageIndex");
 				pageSize = (Integer) requestContent.get("pageSize");
 			}
-			if(StringUtils.isBlank(token)||null==postId||null==pageIndex
-					||null==pageSize) {
+			if(null==postId||null==pageIndex||null==pageSize) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
 			}
-			Integer userId =  getUserIdByToken(token);
+			Integer userId =  null;
+			if(StringUtils.isNotBlank(token)) {
+				userId =  getUserIdByToken(token);
+			}
 			PaginationQuery query = new PaginationQuery();
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
@@ -634,11 +645,14 @@ public class HomeController extends BaseController {
 				pageSize = (Integer) requestContent.get("pageSize");
 				postType = (Integer) requestContent.get("postType");
 			}
-			if(StringUtils.isBlank(token)||null==postId||null==pageIndex
+			if(null==postId||null==pageIndex
 					||null==pageSize||null==postType) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
 			}
-			Integer userId = getUserIdByToken(token);
+			Integer userId = null;
+			if(StringUtils.isNotBlank(token)) {
+				userId = getUserIdByToken(token);
+			}
 			PaginationQuery newQuery = new PaginationQuery();
 			newQuery.addQueryData("status", "1");
 			newQuery.addQueryData("postId", postId);

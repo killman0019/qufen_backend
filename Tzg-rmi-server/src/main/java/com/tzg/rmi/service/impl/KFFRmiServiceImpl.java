@@ -1402,9 +1402,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	@Override
 	public ProjectResponse findProjectById(Integer userId, Integer projectId) throws RestServiceException {
 		ProjectResponse response = new ProjectResponse();
-		if (userId == null) {
-			throw new RestServiceException("用户ID不能为空");
-		}
 		if (projectId == null) {
 			throw new RestServiceException("项目ID不能为空");
 		}
@@ -1414,42 +1411,45 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 
 		BeanUtils.copyProperties(project, response);
-
-		PaginationQuery query = new PaginationQuery();
-		query.addQueryData("followUserId", userId + "");
-		query.addQueryData("followType", "1"); // 关注类型：1-关注项目;2-关注帖子；3-关注用户
-		query.addQueryData("status", "1");
-		query.addQueryData("followedId", projectId + "");
-		query.setPageIndex(1);
-		query.setRowsPerPage(1);
-		PageResult<Follow> follows = kffFollowService.findPage(query);
-		if (follows != null && CollectionUtils.isNotEmpty(follows.getRows())) {
-			response.setFollowStatus(1);
-		} else {
+		if(null!=userId) {
+			PaginationQuery query = new PaginationQuery();
+			query.addQueryData("followUserId", userId + "");
+			query.addQueryData("followType", "1"); // 关注类型：1-关注项目;2-关注帖子；3-关注用户
+			query.addQueryData("status", "1");
+			query.addQueryData("followedId", projectId + "");
+			query.setPageIndex(1);
+			query.setRowsPerPage(1);
+			PageResult<Follow> follows = kffFollowService.findPage(query);
+			if (follows != null && CollectionUtils.isNotEmpty(follows.getRows())) {
+				response.setFollowStatus(1);
+			} else {
+				response.setFollowStatus(0);
+			}
+		}else {
 			response.setFollowStatus(0);
 		}
-
 		// 关注的用户
 		PaginationQuery userquery = new PaginationQuery();
-		userquery.addQueryData("followUserId", userId + "");
-		userquery.addQueryData("followType", "3"); // 关注类型：1-关注项目;2-关注帖子；3-关注用户
-		userquery.addQueryData("status", "1");
-		userquery.setPageIndex(1);
-		userquery.setRowsPerPage(1);
-		List<KFFUser> activeUsers = findProjectActiveUsers(projectId);
-		if (CollectionUtils.isNotEmpty(activeUsers)) {
-			for (KFFUser user : activeUsers) {
-				if (null != user) {
-					userquery.addQueryData("followedId", user.getUserId() + "");
-					PageResult<Follow> followsuser = kffFollowService.findPage(userquery);
-					if (followsuser != null && CollectionUtils.isNotEmpty(followsuser.getRows())) {
-						user.setFollowStatus(KFFConstants.STATUS_ACTIVE);
+		if(null!=userId) {
+			userquery.addQueryData("followUserId", userId + "");
+			userquery.addQueryData("followType", "3"); // 关注类型：1-关注项目;2-关注帖子；3-关注用户
+			userquery.addQueryData("status", "1");
+			userquery.setPageIndex(1);
+			userquery.setRowsPerPage(1);
+			List<KFFUser> activeUsers = findProjectActiveUsers(projectId);
+			if (CollectionUtils.isNotEmpty(activeUsers)) {
+				for (KFFUser user : activeUsers) {
+					if (null != user) {
+						userquery.addQueryData("followedId", user.getUserId() + "");
+						PageResult<Follow> followsuser = kffFollowService.findPage(userquery);
+						if (followsuser != null && CollectionUtils.isNotEmpty(followsuser.getRows())) {
+							user.setFollowStatus(KFFConstants.STATUS_ACTIVE);
+						}
 					}
 				}
 			}
+			response.setActiveUsers(activeUsers);
 		}
-		response.setActiveUsers(activeUsers);
-
 		KFFUser owner = kffUserService.findById(project.getSubmitUserId());
 		if (owner != null) {
 			userquery.addQueryData("followedId", owner.getUserId() + "");
@@ -1485,17 +1485,21 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		response.setIcon(userInfo.getIcon());
 		response.setUserName(userInfo.getUserName());
 		response.setUserSignature(userInfo.getUserSignature());
-		// 获取用户有无对项目方进行关注
-		Map<String, Object> seMap = new HashMap<>();
-		seMap.put("followUserId", userId);
-		seMap.put("followType", 3);// 关注类型：1-关注项目;2-关注帖子；3-关注用户
-		seMap.put("followedUserId", projectUserId);
-		seMap.put("status", 1);
-		List<Follow> pjFollows = kffFollowService.findListByAttr(seMap);
-		if (pjFollows.isEmpty()) {
+		//获取用户有无对项目方进行关注
+		if(null!=userId) {
+			Map<String,Object> seMap = new HashMap<>();
+			seMap.put("followUserId", userId);
+			seMap.put("followType", 3);//关注类型：1-关注项目;2-关注帖子；3-关注用户
+			seMap.put("followedUserId", projectUserId);
+			seMap.put("status", 1);
+			List<Follow> pjFollows = kffFollowService.findListByAttr(seMap);
+			if(pjFollows.isEmpty()) {
+				response.setProjectFollowStatus(0);
+			}else {
+				response.setProjectFollowStatus(1);
+			}
+		}else {
 			response.setProjectFollowStatus(0);
-		} else {
-			response.setProjectFollowStatus(1);
 		}
 		return response;
 

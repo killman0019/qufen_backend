@@ -100,7 +100,7 @@ public class UserController extends BaseController {
 			userId = (Integer) requestContent.get("userId");
 			token = (String) requestContent.get("token");
 		}
-		if (null==userId||StringUtils.isBlank(token)) {
+		if (null==userId) {
 			bre.setNoRequstData();
 			return bre;
 		}
@@ -111,16 +111,23 @@ public class UserController extends BaseController {
 		}
 		//查询用户关注状态
 		Map<String,Object> seMap = new HashMap<String,Object>();
-		Integer userIdc = getUserIdByToken(token);
-		seMap.put("followUserId", userIdc);
-		seMap.put("followedUserId", userId);
-		seMap.put("status", 1);
-		seMap.put("followType", 3);//关注类型：1-关注项目;2-关注帖子；3-关注用户
-		List<Follow> follows = followRmiService.findListByAttr(seMap);
-		if(follows.isEmpty()) {
-			user.setFollowStatus(0);
+		Integer userIdc = null;
+		if(StringUtils.isNotBlank(token)) {
+			userIdc = getUserIdByToken(token);
+		}
+		if(null!=userIdc) {
+			seMap.put("followUserId", userIdc);
+			seMap.put("followedUserId", userId);
+			seMap.put("status", 1);
+			seMap.put("followType", 3);//关注类型：1-关注项目;2-关注帖子；3-关注用户
+			List<Follow> follows = followRmiService.findListByAttr(seMap);
+			if(follows.isEmpty()) {
+				user.setFollowStatus(0);
+			}else {
+				user.setFollowStatus(1);
+			}
 		}else {
-			user.setFollowStatus(1);
+			user.setFollowStatus(0);
 		}
 		user.setPassword(null);
 		user.setPassword(null);
