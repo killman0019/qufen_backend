@@ -57,7 +57,7 @@
 	        status_hierarchy_desc ,
 	        status_hierarchy_type ,
 	        yxpraise ,
-	        yx_commnets ,
+	        yx_comments ,
 	        yx_share_post ,
         	createTime ,
         	updateTime

@@ -7329,7 +7329,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					String replaceAllimg = img.replaceAll(RegexUtil.BASE64PICNULL, "");
 					String fileName = DateUtil.getCurrentTimeSS() + createid + i;
 					UrlQiniu = QiniuUtil.uploadBase64Str(replaceAllimg, fileName);
-					System.err.println("UrlQiniu++++++++++" + UrlQiniu);
+					//System.err.println("UrlQiniu++++++++++" + UrlQiniu);
 				} else {
 					imagSuffix = GetPicSuffixUtil.getimagSuffix(img);
 					String fileName = DateUtil.getCurrentTimeSS() + createid + i + imagSuffix;// ?imageView2/0/format/png
