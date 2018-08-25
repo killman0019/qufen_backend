@@ -59,12 +59,12 @@
 <!--  		<task:scheduled ref="taskJobService" method="caculatePostTatolIncome" cron="0/5 *  * * * ? "/>  -->
 
 		<!-- 线上版本的定时器 -->
-<!-- 		<task:scheduled ref="taskJobService" method="updateWeeHours" cron="10 0 0 * * ? " /> -->
 		<task:scheduled ref="taskJobService" method="updateWeeHours" cron="0 1 0 * * ? " />
 	 	<task:scheduled ref="taskJobService" method="caculateProjectTotalScore" cron="0 0 0/2 * * ? "/> 
 		<task:scheduled ref="taskJobService" method="getProjectDateFromUrlTask" cron="0 0/5 * * * ? " />
 		<task:scheduled ref="taskJobService" method="getdatafromUrlByexchangeTask" cron="0 0/10 * * * ? " />
 		<task:scheduled ref="taskJobService" method="caculatePostTatolIncome" cron="0 0/5  * * * ? "/>
+
 		<!--  		<task:scheduled ref="taskJobService" method="caluCoinUserTask" cron="0 0/5 * * * ? "/>  -->
 	</task:scheduled-tasks>
 
