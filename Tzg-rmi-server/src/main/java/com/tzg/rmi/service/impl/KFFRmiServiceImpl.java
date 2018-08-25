@@ -1757,8 +1757,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	private Double grantCommnetsAward(Post post, QfIndex postCreateUserQfIndex, QfIndex commentUserQfIndex, KFFUser commentUser, Integer commentsId) {
 		// TODO 进行token发放
 		Date now = new Date();
-		SystemParam commentFirstAwardTokenParam = systemParamService.findByCode("COMMENT_FIRST_AWARD_TOKEN");
-		SystemParam commentAwardTokenParam = systemParamService.findByCode("COMMENT_AWARD_TOKEN");
+		SystemParam commentFirstAwardTokenParam = systemParamService.findByCode(sysGlobals.COMMENT_FIRST_AWARD_TOKEN);
+		SystemParam commentAwardTokenParam = systemParamService.findByCode(sysGlobals.COMMENT_AWARD_TOKEN);
 		// Double commentFirstAwardToken = 5.0;// 当前内容下首次评论的奖励token数
 		// Double commentAwardToken = 2.0;// 当前内容下除首次评论的奖励token数
 		Double commentFirstAwardToken = Double.valueOf(commentFirstAwardTokenParam.getVcParamValue());
@@ -2624,12 +2624,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 						// List<SystemParam> systemParamList =
 						// systemParamService.findByCodeList(listStr);
-						SystemParam genealEvaPraiseAwardToken = systemParamService.findByCode("GENERAL_EVA_PRAISE_AWARD_TOKEN");
-						SystemParam profeEvaPraiseAwaedToken = systemParamService.findByCode("PROFE_EVA_PRAISE_AWARD_TOKEN");
-						SystemParam singleEvaPraiseAwardToken = systemParamService.findByCode("SINGLE_EVA_PRAISE_AWARD_TOKEN");
-						SystemParam discussPraiseAwardToken = systemParamService.findByCode("DISCUSS_PRAISE_AWARD_TOKEN");
-						SystemParam articlePraiseAwardToken = systemParamService.findByCode("ARTICLE_PRAISE_AWARD_TOKEN");
-						SystemParam yxPraiseTokenToPraiser = systemParamService.findByCode("YX_PRAISE_TOKEN_TO_PRAYSER");
+						SystemParam genealEvaPraiseAwardToken = systemParamService.findByCode(sysGlobals.GENERAL_EVA_PRAISE_AWARD_TOKEN);
+						SystemParam profeEvaPraiseAwaedToken = systemParamService.findByCode(sysGlobals.PROFE_EVA_PRAISE_AWARD_TOKEN);
+						SystemParam singleEvaPraiseAwardToken = systemParamService.findByCode(sysGlobals.SINGLE_EVA_PRAISE_AWARD_TOKEN);
+						SystemParam discussPraiseAwardToken = systemParamService.findByCode(sysGlobals.DISCUSS_PRAISE_AWARD_TOKEN);
+						SystemParam articlePraiseAwardToken = systemParamService.findByCode(sysGlobals.ARTICLE_PRAISE_AWARD_TOKEN);
+						SystemParam yxPraiseTokenToPraiser = systemParamService.findByCode(sysGlobals.YX_PRAISE_TOKEN_TO_PRAYSER);
 						// 判断 帖子类型是1-评测 , 2-讨论 , 3-文章
 
 						/*	Double pc = 5.00d; // 普通评测点赞奖励
@@ -5019,10 +5019,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			// UserCard findBycreateUserId = userCardService.findByUserid(commentUserId);
 			// UserCard findByUserid = userCardService.findByUserid(userId);
 
-			SystemParam articlrCommentAwardPara = systemParamService.findByCode("ARTICLE_COMMENT_AWARD");
-			SystemParam discussCommentAwardPara = systemParamService.findByCode("DISCUSS_COMMENT_AWARD");
-			SystemParam evaCommentAward = systemParamService.findByCode("EVA_COMMENT_AWARD");
-			SystemParam singleEvaCommentAwardPara = systemParamService.findByCode("SINFLE_EVA_COMMENT_AWARD");
+			SystemParam articlrCommentAwardPara = systemParamService.findByCode(sysGlobals.ARTICLE_COMMENT_AWARD);
+			SystemParam discussCommentAwardPara = systemParamService.findByCode(sysGlobals.DISCUSS_COMMENT_AWARD);
+			SystemParam evaCommentAward = systemParamService.findByCode(sysGlobals.EVA_COMMENT_AWARD);
+			SystemParam singleEvaCommentAwardPara = systemParamService.findByCode(sysGlobals.SINFLE_EVA_COMMENT_AWARD);
 			/*Double profesEvaluat = 2.00d; // 评测的专业完整版评论赞奖励
 			Double aloneEvaluat = 2.00d; // 单项评测评论赞奖励
 			Double discuss = 2.00d; // 讨论的评论赞奖励
@@ -7726,7 +7726,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			if (amount > 0) {
 				// 判断此post 的发布时间是否在30 天之内
 				int countDays = DateUtil.countDays(new Date(), post.getCreateTime());
-				SystemParam dayCountPara = systemParamService.findByCode("PUBLISH_DAY_COUNT");
+				SystemParam dayCountPara = systemParamService.findByCode(sysGlobals.PUBLISH_DAY_COUNT);
 				Integer countDaysDB = Integer.valueOf(dayCountPara.getVcParamValue());
 				if (countDays <= countDaysDB) {// 判断用户是否是30 天内发布
 					if (type == 1) {// type 统计点赞的帖子收益

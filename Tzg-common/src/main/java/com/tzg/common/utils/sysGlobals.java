@@ -12,6 +12,74 @@ public final class sysGlobals {
 	public static final Integer DISABLE = 1;
 	/**判断正式环境才发送短信*/
 	public static final String DEV_ENVIRONMENT = "FORMAL";
+	/**
+	 * 文章的评论点赞奖励
+	 */
+	public static final String ARTICLE_COMMENT_AWARD = "ARTICLE_COMMENT_AWARD";
+	/**
+	 * 讨论的评论点赞奖励
+	 */
+	public static final String DISCUSS_COMMENT_AWARD = "DISCUSS_COMMENT_AWARD";
+	/**
+	 * 评测的评论点赞奖励
+	 */
+	public static final String EVA_COMMENT_AWARD = "EVA_COMMENT_AWARD";
+	/**
+	 * 单项评测的评论点赞奖励
+	 */
+	public static final String SINFLE_EVA_COMMENT_AWARD = "SINFLE_EVA_COMMENT_AWARD";
+	/**
+	 * 限制发布时间计算收益
+	 */
+	public static final String PUBLISH_DAY_COUNT = "PUBLISH_DAY_COUNT";
+	/**
+	 * 首次评论点赞奖励的token数量
+	 */
+	public static final String COMMENT_FIRST_AWARD_TOKEN = "COMMENT_FIRST_AWARD_TOKEN";
+	/**
+	 * 非首次评论点赞奖励的token数量
+	 */
+	public static final String COMMENT_AWARD_TOKEN = "COMMENT_AWARD_TOKEN";
+	/**
+	 * 普通评测点赞奖励
+	 */
+	public static final String GENERAL_EVA_PRAISE_AWARD_TOKEN = "GENERAL_EVA_PRAISE_AWARD_TOKEN";
+	/**
+	 * 专业评测点赞奖励
+	 */
+	public static final String PROFE_EVA_PRAISE_AWARD_TOKEN = "PROFE_EVA_PRAISE_AWARD_TOKEN";
+	/**
+	 * 单项评测点赞奖励
+	 */
+	public static final String SINGLE_EVA_PRAISE_AWARD_TOKEN = "SINGLE_EVA_PRAISE_AWARD_TOKEN";
+	/**
+	 * 讨论点赞奖励
+	 */
+	public static final String DISCUSS_PRAISE_AWARD_TOKEN = "DISCUSS_PRAISE_AWARD_TOKEN";
+	/**
+	 * 文章点赞奖励
+	 */
+	public static final String ARTICLE_PRAISE_AWARD_TOKEN = "ARTICLE_PRAISE_AWARD_TOKEN";
+	/**
+	 * 有效赞点赞给点赞人的奖励
+	 */
+	public static final String YX_PRAISE_TOKEN_TO_PRAYSER = "YX_PRAISE_TOKEN_TO_PRAYSER";
+	/**
+	 * 评测的url
+	 */
+	public static final String EVA_URL = "EVA_URL";
+	/**
+	 * 投诉次数达到多少次帖子隐藏
+	 */
+	public static final String REPORT_DEGREE = "REPORT_DEGREE";
+	/**
+	 * 文章的url
+	 */
+	public static final String ARTICLE_URL = "ARTICLE_URL";
+	/**
+	 * 讨论的url
+	 */
+	public static final String DIS_URL = "DIS_URL";
 
 	/**推送给全部用户默认一次取多少消息*/
 	public static Integer DEFAULT_MSG_COUNT = 1000;

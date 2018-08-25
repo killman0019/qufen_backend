@@ -203,7 +203,7 @@ public class HomeController extends BaseController {
 			PageResult<PostResponse> follows = kffProjectPostRmiService.findPageForFollowList(userId, query, type, loginUser);
 			// PageResult<PostResponse> follows =
 			// kffProjectPostRmiService.findMyPageFollowList(userId, query);
-			System.err.println("follows" + follows);
+			// System.err.println("follows" + follows);
 
 			map.put("follows", follows);
 			bre.setData(map);

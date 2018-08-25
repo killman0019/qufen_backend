@@ -139,15 +139,15 @@ public class KFFReportRmiServiceImpl implements KFFReportRmiService {
 					reportedContent.setReportedContentCreateName(post.getCreateUserName());
 					reportedContent.setReportedContentStatus(post.getStatus());
 					if (post.getPostType() == 1) {// 1评测 2 讨论 3 文章
-						SystemParam articlePara = systemParamService.findByCode("EVA_URL");
+						SystemParam articlePara = systemParamService.findByCode(sysGlobals.EVA_URL);
 						reportedContent.setReportedContentUrl(articlePara.getVcParamValue() + "?id=" + post.getPostId());
 					}
 					if (post.getPostType() == 2) {// 1评测 2 讨论 3 文章
-						SystemParam articlePara = systemParamService.findByCode("DIS_URL");
+						SystemParam articlePara = systemParamService.findByCode(sysGlobals.DIS_URL);
 						reportedContent.setReportedContentUrl(articlePara.getVcParamValue() + "?id=" + post.getPostId());
 					}
 					if (post.getPostType() == 3) {// 1评测 2 讨论 3 文章
-						SystemParam articlePara = systemParamService.findByCode("ARTICLE_URL");
+						SystemParam articlePara = systemParamService.findByCode(sysGlobals.ARTICLE_URL);
 						reportedContent.setReportedContentUrl(articlePara.getVcParamValue() + "?id=" + post.getPostId());
 					}
 
@@ -156,7 +156,7 @@ public class KFFReportRmiServiceImpl implements KFFReportRmiService {
 				} else {
 					ReportedContent reportedContent = reportedContentList.get(0);
 					reportedContentService.increaseReportedDegree(reportedContent.getReportedContentKeyId());
-					SystemParam systemParam = systemParamService.findByCode("REPORT_DEGREE");
+					SystemParam systemParam = systemParamService.findByCode(sysGlobals.REPORT_DEGREE);
 					if (null != systemParam) {
 						String vcParamValue = systemParam.getVcParamValue();
 						Integer valueOf = Integer.valueOf(vcParamValue) - 1;
