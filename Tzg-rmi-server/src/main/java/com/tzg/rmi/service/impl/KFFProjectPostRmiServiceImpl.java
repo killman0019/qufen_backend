@@ -448,7 +448,7 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 			}
 	        List<PostResponse> returnPost = new ArrayList<PostResponse>();
 	        int beginNum = query.getPageIndex();
-	        int endNum = query.getRowsPerPage();
+	        int endNum = query.getRowsPerPage()*beginNum;
 	        int bbt = (beginNum-1)*10;
 	        for (int i = bbt; i < postResp.size(); i++) {
 	        	if(i<endNum) {
