@@ -21,6 +21,7 @@ import com.tzg.common.service.kff.TokenrecordsService;
 import com.tzg.common.service.kff.UserService;
 import com.tzg.common.service.systemParam.SystemParamService;
 import com.tzg.common.utils.DateUtil;
+import com.tzg.common.utils.sysGlobals;
 import com.tzg.entitys.kff.activity.PostShare;
 import com.tzg.entitys.kff.post.Post;
 import com.tzg.entitys.kff.qfindex.QfIndex;
@@ -69,6 +70,7 @@ public class PostShareRmiServiceImpl implements PostShareRmiService {
 		shareMap.put("amount", null);
 		if (isShareToTokenAward(postShare)) {
 			shareMap = sharePostTokenAward(postShare, post);
+			
 		}
 
 		return shareMap;

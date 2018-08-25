@@ -34,6 +34,7 @@ import com.tzg.common.utils.RegexUtil;
 import com.tzg.common.utils.SHAUtil;
 import com.tzg.common.utils.SyseUtil;
 import com.tzg.common.utils.TzgConstant;
+import com.tzg.common.utils.sysGlobals;
 import com.tzg.common.utils.rest.Base64Util;
 import com.tzg.common.utils.rest.RestConstants;
 import com.tzg.entitys.kff.coinproperty.CoinProperty;
@@ -1448,6 +1449,13 @@ public class UserController extends BaseController {
 				map.put("statusHierarchyType", statusHierarchyType);
 				map.put("statusHierarchyDesc", statusHierarchyDesc);
 			}
+
+			SystemParam syspara = systemParamRmiService.findByCode(sysGlobals.REGISTER_AWARD_TOKEN_TOTE);
+			if (null != syspara) {
+				Integer awardToken = Integer.valueOf(syspara.getVcParamValue());
+				map.put("awardToken", awardToken);
+			}
+
 			map.put("user", this.formatLoginaccount(loginaccount));
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -1508,7 +1516,7 @@ public class UserController extends BaseController {
 					// 更新弹出框状态
 					// 当用户的使用状态时间是今天且用户的弹窗状态是0 时 吧弹框的状态重置成1 不弹
 					// 当用户的使用时间是今天 但是 弹框状态是0 时 不执行此代码
-					//当用户的最后使用状态不是今天 ,且弹框状态是 1 时  不弹   
+					// 当用户的最后使用状态不是今天 ,且弹框状态是 1 时 不弹
 					if (DateUtil.isToday(loginaccount.getLastLoginDateTime().getTime()) && (pop == 0)) {
 						// 并把时间设置成今天 :0-弹出;1-不弹',
 						kffRmiService.updateUserKFFPop(loginUserId);// 设置成1不弹

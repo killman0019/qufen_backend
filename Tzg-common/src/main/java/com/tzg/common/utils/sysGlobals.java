@@ -80,6 +80,7 @@ public final class sysGlobals {
 	 * 讨论的url
 	 */
 	public static final String DIS_URL = "DIS_URL";
+	public static final String REGISTER_AWARD_TOKEN_TOTE = "REGISTER_AWARD_TOKEN_TOTE";
 
 	/**推送给全部用户默认一次取多少消息*/
 	public static Integer DEFAULT_MSG_COUNT = 1000;
