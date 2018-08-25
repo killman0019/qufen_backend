@@ -841,7 +841,7 @@
 				and tds.type = #{type}
 			</if>
 			<if test="disStickTop1!=null">
-				and tds.dis_stick_top != #{disStickTop1}
+				and (tds.dis_stick_top != #{disStickTop1} or tds.dis_stick_top is null )
 			</if>
 			<if test="disStickTop!=null">
 				and tds.dis_stick_top = #{disStickTop}
@@ -853,7 +853,7 @@
 				and tpt.type = #{typec}
 			</if>
 			<if test="disStickTopc1!=null">
-				and tpt.dis_stick_top != #{disStickTopc1}
+				and (tpt.dis_stick_top != #{disStickTopc1}  or tpt.dis_stick_top is null )
 			</if>
 			<if test="disStickTopc!=null">
 				and tpt.dis_stick_top = #{disStickTopc}
