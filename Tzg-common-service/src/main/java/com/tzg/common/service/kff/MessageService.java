@@ -1,6 +1,7 @@
 package com.tzg.common.service.kff;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -77,6 +78,11 @@ public class MessageService {
 		}
 		messageMapper.updateAllMessageRead(userId);
 
+	}
+
+	public Integer findSumMessage(Map<String, Object> messageMap) {
+		Integer count = messageMapper.findPageCount(messageMap);
+		return count;
 	}
 
 }

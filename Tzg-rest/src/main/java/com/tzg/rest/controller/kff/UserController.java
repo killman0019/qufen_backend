@@ -867,7 +867,7 @@ public class UserController extends BaseController {
 	}
 
 	/**
-	 * 我的资产明细列表，按照时间排序
+	 * 我的资产明细列表，按照时间排序(使用中)
 	 * 
 	 * @param request
 	 *            (传入一个userId)
@@ -1385,6 +1385,7 @@ public class UserController extends BaseController {
 			map.put("myTokenBill", result);
 
 			bre.setData(map);
+			SyseUtil.systemErrOutJson(bre);
 		} catch (RestServiceException e) {
 			logger.warn("myTokenRecordsList warn:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
@@ -1456,8 +1457,11 @@ public class UserController extends BaseController {
 				map.put("awardToken", awardToken);
 			}
 
+			Integer messageSum = kffRmiService.findSumMessage(loginUserId);
+			map.put("messageSum", messageSum);
 			map.put("user", this.formatLoginaccount(loginaccount));
 			bre.setData(map);
+			SyseUtil.systemErrOutJson(bre);
 		} catch (RestServiceException e) {
 			logger.warn("getUserInfo warn:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());

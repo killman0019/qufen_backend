@@ -80,7 +80,14 @@ public final class sysGlobals {
 	 * 讨论的url
 	 */
 	public static final String DIS_URL = "DIS_URL";
+	/**
+	 * 分享后给前台的邀请奖励token数 (不能包含W 字母)
+	 */
 	public static final String REGISTER_AWARD_TOKEN_TOTE = "REGISTER_AWARD_TOKEN_TOTE";
+	/**
+	 * 帖子中的内容抽离的图片最多总数(最多图片数)
+	 */
+	public static final String POST_IMAGE_SUM = "POST_IMAGE_SUM";
 
 	/**推送给全部用户默认一次取多少消息*/
 	public static Integer DEFAULT_MSG_COUNT = 1000;

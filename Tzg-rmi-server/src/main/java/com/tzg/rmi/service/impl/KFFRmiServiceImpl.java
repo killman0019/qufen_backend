@@ -1411,7 +1411,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 
 		BeanUtils.copyProperties(project, response);
-		if(null!=userId) {
+		if (null != userId) {
 			PaginationQuery query = new PaginationQuery();
 			query.addQueryData("followUserId", userId + "");
 			query.addQueryData("followType", "1"); // 关注类型：1-关注项目;2-关注帖子；3-关注用户
@@ -1425,12 +1425,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			} else {
 				response.setFollowStatus(0);
 			}
-		}else {
+		} else {
 			response.setFollowStatus(0);
 		}
 		// 关注的用户
 		PaginationQuery userquery = new PaginationQuery();
-		if(null!=userId) {
+		if (null != userId) {
 			userquery.addQueryData("followUserId", userId + "");
 			userquery.addQueryData("followType", "3"); // 关注类型：1-关注项目;2-关注帖子；3-关注用户
 			userquery.addQueryData("status", "1");
@@ -1485,20 +1485,20 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		response.setIcon(userInfo.getIcon());
 		response.setUserName(userInfo.getUserName());
 		response.setUserSignature(userInfo.getUserSignature());
-		//获取用户有无对项目方进行关注
-		if(null!=userId) {
-			Map<String,Object> seMap = new HashMap<>();
+		// 获取用户有无对项目方进行关注
+		if (null != userId) {
+			Map<String, Object> seMap = new HashMap<>();
 			seMap.put("followUserId", userId);
-			seMap.put("followType", 3);//关注类型：1-关注项目;2-关注帖子；3-关注用户
+			seMap.put("followType", 3);// 关注类型：1-关注项目;2-关注帖子；3-关注用户
 			seMap.put("followedUserId", projectUserId);
 			seMap.put("status", 1);
 			List<Follow> pjFollows = kffFollowService.findListByAttr(seMap);
-			if(pjFollows.isEmpty()) {
+			if (pjFollows.isEmpty()) {
 				response.setProjectFollowStatus(0);
-			}else {
+			} else {
 				response.setProjectFollowStatus(1);
 			}
-		}else {
+		} else {
 			response.setProjectFollowStatus(0);
 		}
 		return response;
@@ -7304,24 +7304,21 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	@Override
 	public Map<String, String> grabUrlAndReplaceQiniu(String content, Integer createid) throws RestServiceException {
 		Map<String, String> map = new HashMap<String, String>();
+		SystemParam sysPara = systemParamService.findByCode(sysGlobals.POST_IMAGE_SUM);
+		Integer picSum = Integer.valueOf(sysPara.getVcParamValue());
 		logger.info("开始进行抽离图片");
 		List<String> imgSrc = GetImgUrl.getImgStr(content);
 		List<String> imgDB = new ArrayList<String>();
 		String contentSrcReplace = null;
 		int i = 0;
 		for (String img : imgSrc) {
-			// logger.info("抽离的图片路径");
-			// logger.info(img);
 			if (img.contains("https://pic.qufen.top") || img.contains("http://pic.qufen.top")) {
 				// 说明是h5富文本传来的,服务器中存有图片,直接截取存放数据库
 				logger.info("h5富文本传来的图片绝对路径:" + img);
-				if (imgDB.size() <= 9) {// 文章图片改成9张时间:2018-8-14 16:23
+				if (imgDB.size() < picSum) {// 文章图片改成9张时间:2018-8-14 16:23
 					imgDB.add(img);
 				}
 			} else {
-				// 生成url名称
-				// logger.info("img :原图片路径: " + img);
-				// 获取图片后缀
 				String UrlQiniu = "";
 				String imagSuffix = "";
 
@@ -7329,7 +7326,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					String replaceAllimg = img.replaceAll(RegexUtil.BASE64PICNULL, "");
 					String fileName = DateUtil.getCurrentTimeSS() + createid + i;
 					UrlQiniu = QiniuUtil.uploadBase64Str(replaceAllimg, fileName);
-					//System.err.println("UrlQiniu++++++++++" + UrlQiniu);
 				} else {
 					imagSuffix = GetPicSuffixUtil.getimagSuffix(img);
 					String fileName = DateUtil.getCurrentTimeSS() + createid + i + imagSuffix;// ?imageView2/0/format/png
@@ -7341,13 +7337,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						logger.info(img + "上传七牛失败!");
 						logger.info("坑逼百度!!!!");
 					} else {
-						if (imgDB.size() <= 9) {// 文章图片改成9张时间:2018-8-14 16:23
+						if (imgDB.size() < picSum) {// 文章图片改成9张时间:2018-8-14 16:23
 							imgDB.add(UrlQiniu);
 						}
-						// logger.info("picurlIpName : 替换后的图片路径: " + UrlQiniu);
 						if (i == 0) {
-							// logger.info("原img将被代替" + img);
-							// logger.info("七牛的url" + UrlQiniu);
 							if (imagSuffix.trim() == "") {
 								UrlQiniu = UrlQiniu + "?imageView2/0/format/png";
 								logger.info("UrlQiniu" + UrlQiniu);
@@ -7359,7 +7352,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 								logger.info("UrlQiniu" + UrlQiniu);
 							}
 							contentSrcReplace = contentSrcReplace.replace(img, UrlQiniu);
-							// logger.info(contentSrcReplace);
 						}
 
 						i = i + 1;
@@ -7367,12 +7359,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				}
 			}
 		}
-		// logger.info("图片抽离成功!");
+
 		String uploadIeviwList = uploadIeviwListQiniu(imgDB);
-		// logger.info("缩略图的json串" + uploadIeviwList);
 		map.put("uploadIeviwList", uploadIeviwList);
 		map.put("contentSrcReplace", contentSrcReplace);
-		// logger.info(contentSrcReplace);
+
 		return map;
 	}
 
@@ -7739,4 +7730,14 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 	}
 
+	@Override
+	public Integer findSumMessage(Integer loginUserId) throws RestServiceException {
+		// TODO 获得我的未读消息总数
+		Map<String, Object> messageMap = new HashMap<String, Object>();
+		messageMap.put("userId", loginUserId);
+		messageMap.put("state", 1);// 状态：1-未读；2-已读',
+		messageMap.put("status", 1);
+		Integer sum = kffMessageService.findSumMessage(messageMap);
+		return sum;
+	}
 }

@@ -962,4 +962,21 @@ public interface KFFRmiService {
 	 */
 	public PageResult<FollowResponse> findFansPage(PaginationQuery query) throws RestServiceException;
 
+	/**
+	 * 
+	* @Title: findSumMessage 
+	* @Description: TODO <获得我的消息总数>
+	* @author zhangdd <方法创建作者>
+	* @create 下午3:45:41
+	* @param @param messageMap
+	* @param @return
+	* @param @throws RestServiceException <参数说明>
+	* @return Integer 
+	* @throws 
+	* @update 下午3:45:41
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	 */
+	public Integer findSumMessage(Integer loginUserId) throws RestServiceException;
+
 }
