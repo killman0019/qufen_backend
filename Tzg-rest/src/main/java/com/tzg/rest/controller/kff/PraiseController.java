@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.tzg.common.utils.SyseUtil;
 import com.tzg.rest.controller.BaseController;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
@@ -49,7 +50,7 @@ public class PraiseController extends BaseController {
 		try {
 			JSONObject params = getParamMapFromRequestPolicy(request);
 			String token = (String) params.get("token");
-			if(StringUtils.isBlank(token)) {
+			if (StringUtils.isBlank(token)) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
 			}
 			Integer postId = (Integer) params.get("postId");
@@ -60,7 +61,7 @@ public class PraiseController extends BaseController {
 
 			Map<String, Object> savePraisemap = kffRmiService.savePraise(userId, postId);
 			bre.setData(savePraisemap);
-			//System.err.println(JSON.toJSON(savePraisemap));
+			SyseUtil.systemErrOutJson(bre);
 		} catch (RestServiceException e) {
 			logger.error("PraiseController savePostPraise:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());

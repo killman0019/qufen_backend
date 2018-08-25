@@ -113,7 +113,7 @@
 				yxpraise = #{yxpraise,jdbcType=INTEGER} ,
 			</if>
 			<if test="yxComments != null">
-				yx_commnets = #{yxComments,jdbcType=INTEGER} ,
+				yx_comments = #{yxComments,jdbcType=INTEGER} ,
 			</if>
 			<if test="yxSharePost != null">
 				yx_share_post = #{yxSharePost,jdbcType=INTEGER} ,
@@ -157,7 +157,7 @@
 		user_id = #{userId,jdbcType=INTEGER}
 	</update>
 
-	<update id="updateYxPraiseValidAndYxCommentsAndYxSharePost" parameterType="java.lang.Integer">
+	<update id="updateYxAll" parameterType="java.lang.Integer">
 		UPDATE
 		tbqfindex
 		set
