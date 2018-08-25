@@ -79,7 +79,7 @@ public class QfIndexService {
 	}
 
 	public void updateYxPraiseValid() {
-		QfIndexMapper.updateYxPraiseValidAndYxCommentsAndYxSharePost();
+		QfIndexMapper.updateYxAll();
 	}
 
 	public List<QfIndex> findByUserIds(Map<String, Object> qfUsersMap) {
