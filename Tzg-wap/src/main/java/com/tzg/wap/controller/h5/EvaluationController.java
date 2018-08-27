@@ -68,8 +68,8 @@ public class EvaluationController extends BaseController {
 			Integer userId = getUserIdByToken(token);
 			evaluationRequest.setCreateUserId(userId);
 			KFFProject project = kffRmiService.selectProjectByprojectName(projectName);
-
 			evaluationRequest.setProjectId(project.getProjectId());
+			evaluationRequest.setEvaluationTags(evaluationData.getEvaluationTags());
 			//
 			evaluationRequest.setModelType(evaluationData.getModelType());
 			/*if (2 == evaluationRequest.getModelType() || 4 == evaluationRequest.getModelType()) {

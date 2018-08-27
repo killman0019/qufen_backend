@@ -1473,19 +1473,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			response.setVolume24h(projectTrade.getVolume24h());
 		}
 
-		// 查询项目方的信息
-		Integer projectUserId = response.getProjectUserId();
-		if (null == projectUserId) {
-			return response;
-		}
-		KFFUser userInfo = kffUserService.findById(projectUserId);
-		if (null == userInfo) {
-			return response;
-		}
-		response.setIcon(userInfo.getIcon());
-		response.setUserName(userInfo.getUserName());
-		response.setUserSignature(userInfo.getUserSignature());
 		// 获取用户有无对项目方进行关注
+		Integer projectUserId = response.getProjectUserId();
 		if (null != userId) {
 			Map<String, Object> seMap = new HashMap<>();
 			seMap.put("followUserId", userId);
@@ -1501,6 +1490,24 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		} else {
 			response.setProjectFollowStatus(0);
 		}
+		
+		// 查询项目方的信息
+		if (null == projectUserId) {
+			response.setIcon(null);
+			response.setUserName(null);
+			response.setUserSignature(null);
+			return response;
+		}
+		KFFUser userInfo = kffUserService.findById(projectUserId);
+		if (null == userInfo) {
+			response.setIcon(null);
+			response.setUserName(null);
+			response.setUserSignature(null);
+			return response;
+		}
+		response.setIcon(userInfo.getIcon());
+		response.setUserName(userInfo.getUserName());
+		response.setUserSignature(userInfo.getUserSignature());
 		return response;
 
 	}

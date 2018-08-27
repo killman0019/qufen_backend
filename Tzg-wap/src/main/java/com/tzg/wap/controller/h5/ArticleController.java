@@ -78,6 +78,7 @@ public class ArticleController extends BaseController {
 			Integer userId = AccountTokenUtil.decodeAccountToken(token);
 			ArticleRequest articleRequest = new ArticleRequest();
 			articleRequest.setCreateUserId(userId);
+			articleRequest.setTagInfos(articleRequestData.getTagInfos());
 			articleRequest.setArticleContents(articleContents);
 			String postTitle = articleRequestData.getPostTitle();
 			articleRequest.setPostTitle(postTitle);
