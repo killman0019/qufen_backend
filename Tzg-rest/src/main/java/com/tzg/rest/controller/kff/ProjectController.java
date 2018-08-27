@@ -53,7 +53,6 @@ public class ProjectController extends BaseController {
 	private KFFProjectRmiService kFFProjectRmiService;
 	@Autowired
 	private KFFUserRmiService kffUserService;
-	
 
 	/**
 	 * 
@@ -78,7 +77,7 @@ public class ProjectController extends BaseController {
 			Integer projectId = (Integer) params.get("projectId");
 			Integer userId = null;
 			KFFUser loginUser = null;
-			if(StringUtils.isNotBlank(token)) {
+			if (StringUtils.isNotBlank(token)) {
 				userId = getUserIdByToken(token);
 				loginUser = kffUserService.findById(userId);
 			}
@@ -92,10 +91,10 @@ public class ProjectController extends BaseController {
 			// 20180613 去掉，改为 精选评测，精选打假（讨论）
 			// https://www.tapd.cn/21950911/bugtrace/bugs/view?bug_id=1121950911001000461
 			// 2条7天内回复数最高的讨论帖子
-			List<PostResponse> hotDiscuss = kffRmiService.findHotDiscussList(projectId,type,loginUser);
+			List<PostResponse> hotDiscuss = kffRmiService.findHotDiscussList(projectId, type, loginUser);
 			map.put("hotDiscuss", hotDiscuss);
 			// 点赞量超过10 & 排名前2的内容
-			List<PostResponse> hotEva = kffProjectPostRmiService.findHotEvaList(projectId,type,loginUser);
+			List<PostResponse> hotEva = kffProjectPostRmiService.findHotEvaList(projectId, type, loginUser);
 			map.put("hotEva", hotEva);
 
 			// 项目专业评测统计信息
@@ -246,7 +245,7 @@ public class ProjectController extends BaseController {
 
 		try {
 			BaseRequest baseRequest = getParamMapFromRequestPolicy(request, BaseRequest.class);
-			 String token = baseRequest.getToken();
+			String token = baseRequest.getToken();
 			Integer projectId = baseRequest.getProjectId();
 			if (projectId == null) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARG_PROJID);
@@ -269,11 +268,11 @@ public class ProjectController extends BaseController {
 			}
 			Integer type = 2;// 取关注人
 			KFFUser loginUser = null;
-			if(StringUtils.isNotBlank(token)) {
+			if (StringUtils.isNotBlank(token)) {
 				Integer userId = getUserIdByToken(token);
 				loginUser = kffUserService.findById(userId);
 			}
-			PageResult<EvaluationDetailResponse> evaluations = kffRmiService.findPageEvaluationList(query,type,loginUser);
+			PageResult<EvaluationDetailResponse> evaluations = kffRmiService.findPageEvaluationList(query, type, loginUser);
 			map.put("evaluations", evaluations);
 			bre.setData(map);
 			SyseUtil.systemErrOutJson(bre);
@@ -306,7 +305,7 @@ public class ProjectController extends BaseController {
 
 		try {
 			BaseRequest baseRequest = getParamMapFromRequestPolicy(request, BaseRequest.class);
-			 String token = baseRequest.getToken();
+			String token = baseRequest.getToken();
 			Integer projectId = baseRequest.getProjectId();
 			if (projectId == null) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARG_PROJID);
@@ -323,16 +322,16 @@ public class ProjectController extends BaseController {
 				query.addQueryData("sql_keyword_orderBy", "createTime");
 				query.addQueryData("sql_keyword_sort", "desc");
 			}
-			
+
 			KFFUser loginUser = null;
-			if(StringUtils.isNotBlank(token)) {
+			if (StringUtils.isNotBlank(token)) {
 				Integer userId = getUserIdByToken(token);
 				loginUser = kffUserService.findById(userId);
 			}
 			Integer type = 2;// 取关注人
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
-			PageResult<PostResponse> discusses = kffRmiService.findPageDisscussList(query,type,loginUser);
+			PageResult<PostResponse> discusses = kffRmiService.findPageDisscussList(query, type, loginUser);
 			map.put("discusses", discusses);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -364,7 +363,7 @@ public class ProjectController extends BaseController {
 
 		try {
 			BaseRequest baseRequest = getParamMapFromRequestPolicy(request, BaseRequest.class);
-			 String token = baseRequest.getToken();
+			String token = baseRequest.getToken();
 			Integer projectId = baseRequest.getProjectId();
 			if (projectId == null) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARG_PROJID);
@@ -382,16 +381,18 @@ public class ProjectController extends BaseController {
 				query.addQueryData("sql_keyword_sort", "desc");
 			}
 			KFFUser loginUser = null;
-			if(StringUtils.isNotBlank(token)) {
+			if (StringUtils.isNotBlank(token)) {
 				Integer userId = getUserIdByToken(token);
+				//query.addQueryData("createUserId", "userId");
 				loginUser = kffUserService.findById(userId);
 			}
 			Integer type = 2;// 取关注人
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
-			PageResult<PostResponse> articles = kffRmiService.findPageArticleList(query,type,loginUser);
+			PageResult<PostResponse> articles = kffRmiService.findPageArticleList(query, type, loginUser);
 			map.put("articles", articles);
 			bre.setData(map);
+			SyseUtil.systemErrOutJson(map);
 		} catch (RestServiceException e) {
 			logger.error("ProjectController articleList:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());

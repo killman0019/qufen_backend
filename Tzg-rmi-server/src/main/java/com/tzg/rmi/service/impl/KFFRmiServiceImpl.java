@@ -1031,6 +1031,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			appNewsPush(linkedType, post.getPostId(), null, kffUserc.getMobile(), praiseContent);
 		}
 		caculateEveryPostIncome(post.getPostId(), post, amountInputDB, 2);
+		Post postDB = kffPostService.findById(post.getPostId());
+		resultMap.put("postTotalIncome", postDB.getPostTotalIncome());
 		return resultMap;
 	}
 
@@ -1093,6 +1095,18 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			result.setQueryParameters(posts.getQueryParameters());
 			result.setRowCount(posts.getRowCount());
 			result.setRowsPerPage(posts.getRowsPerPage());
+
+			List<Integer> praisedPostId = null;
+
+			// 获得点赞postidlist集合
+
+			if (null != loginUser) {
+				Integer userId = loginUser.getUserId();
+				if (null != userId) {
+					praisedPostId = kffPraiseService.findPraisedPostIdByUserId(userId);
+				}
+			}
+
 			for (Post post : posts.getRows()) {
 				EvaluationDetailResponse response = new EvaluationDetailResponse();
 				if (null != post) {
@@ -1127,6 +1141,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					KFFUser createUser = kffUserService.findByUserId(post.getCreateUserId());
 					if (null != createUser) {
 						response.setUserType(createUser.getUserType());
+					}
+				}
+				if (null != praisedPostId && !CollectionUtils.isEmpty(praisedPostId)) {
+					if (praisedPostId.contains(post.getPostId())) {
+						response.setPraiseStatus(1);
 					}
 				}
 				// 设置人的关注状态
@@ -1237,9 +1256,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			List<Integer> praisedPostId = null;
 
 			// 获得点赞postidlist集合
-			Object createUserIdc = query.getQueryData().get("createUserId");
-			if (null != createUserIdc) {
-				Integer userId = Integer.valueOf(createUserIdc.toString());
+
+			if (null != loginUser) {
+				Integer userId = loginUser.getUserId();
 				if (null != userId) {
 					praisedPostId = kffPraiseService.findPraisedPostIdByUserId(userId);
 				}
@@ -1328,9 +1347,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 			List<Integer> praisedPostId = null;
 
-			Object createUserIdc = query.getQueryData().get("createUserId");
-			if (null != createUserIdc) {
-				Integer userId = Integer.valueOf(createUserIdc.toString());
+			if (null != loginUser) {
+				Integer userId = loginUser.getUserId();
 				if (null != userId) {
 					praisedPostId = kffPraiseService.findPraisedPostIdByUserId(userId);
 				}
@@ -1391,6 +1409,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 							response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
 						}
 					}
+
 				}
 				respones.add(response);
 			}
@@ -1790,7 +1809,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		tokenrecords.setRewardGrantType(1);
 		tokenrecords.setAwardType(1);
 		tokenrecords.setAwardTypeId(commentsId);
-
+		tokenrecords.setPostId(post.getPostId());
 		/*tokenaward.setUserId(commentUser.getUserId());
 		tokenaward.setTokenAwardFunctionDesc("评论奖励");
 		tokenaward.setTokenAwardFunctionType(24);
@@ -2141,7 +2160,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			}
 			appNewsPush(linkedType, newPost.getPostId(), null, createUser.getMobile(), sysGlobals.CONTENT_GETUI_MSG_BEGIN + newPost.getPostTitle()
 					+ sysGlobals.CONTENT_GETUI_MSG_END);
-			//向APP端推送消息
+			// 向APP端推送消息
 			KFFMessage msg = new KFFMessage();
 			msg.setType(12);
 			msg.setStatus(1);
@@ -2150,7 +2169,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			msg.setUpdateTime(now);
 			msg.setUserId(newPost.getCreateUserId());
 			msg.setTitle(sysGlobals.GETUI_NOTIFY);
-			msg.setContent(sysGlobals.CONTENT_GETUI_MSG_BEGIN + newPost.getPostTitle()+ sysGlobals.CONTENT_GETUI_MSG_END);
+			msg.setContent(sysGlobals.CONTENT_GETUI_MSG_BEGIN + newPost.getPostTitle() + sysGlobals.CONTENT_GETUI_MSG_END);
 			msg.setSenderUserId(sysGlobals.QUFEN_ACCOUNT_ID);
 			msg.setJumpInfo(sysGlobals.QUFEN_ACCOUNT_ID.toString());
 			msg.setPostId(newPost.getPostId());
@@ -2452,7 +2471,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				}
 				appNewsPush(linkedType, post.getPostId(), null, createUser.getMobile(), sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle()
 						+ sysGlobals.CONTENT_GETUI_MSG_END);
-				//向APP端推送消息
+				// 向APP端推送消息
 				KFFMessage msg = new KFFMessage();
 				msg.setType(12);
 				msg.setStatus(1);
@@ -2461,7 +2480,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				msg.setUpdateTime(now);
 				msg.setUserId(post.getCreateUserId());
 				msg.setTitle(sysGlobals.GETUI_NOTIFY);
-				msg.setContent(sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle()+ sysGlobals.CONTENT_GETUI_MSG_END);
+				msg.setContent(sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle() + sysGlobals.CONTENT_GETUI_MSG_END);
 				msg.setSenderUserId(sysGlobals.QUFEN_ACCOUNT_ID);
 				msg.setJumpInfo(sysGlobals.QUFEN_ACCOUNT_ID.toString());
 				msg.setPostId(post.getPostId());
@@ -2644,9 +2663,17 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				}
 
 				// 满足点赞条件额外送币
-				Double meet = 10000.00000000d;
-				Double meet1 = 4000.00000000d;
-				Double meet2 = 2000.00000000d;
+				SystemParam evaModelType2And4 = systemParamService.findByCode(sysGlobals.EVA_MODELTYPE_2_AND_4_EXTRA_PRAISE_AWARD);
+				SystemParam articleSys = systemParamService.findByCode(sysGlobals.ARTICLE_EXTRA_PRAISE_AWARD);
+				SystemParam evaModelType3 = systemParamService.findByCode(sysGlobals.EVA_MODELTYPE_3_EXTRA_PRAISE_AWARD);
+				SystemParam praiseNumSys = systemParamService.findByCode(sysGlobals.PRAISE_NUM_EXTRA_AWARD);
+				// Double meet = 10000.00000000d;// 全面系统评测和用户自定义
+				// Double meet1 = 4000.00000000d;// 文章
+				// Double meet2 = 2000.00000000d;// 部分评测
+				Double meet1 = Double.valueOf(articleSys.getVcParamValue());
+				Double meet2 = Double.valueOf(evaModelType3.getVcParamValue());
+				Double meet = Double.valueOf(evaModelType2And4.getVcParamValue());
+				Integer praiseNum = Integer.valueOf(praiseNumSys.getVcParamValue());// 50
 				// 创建生成交易流水的交易日期
 				Date date = new Date();
 				String stringDate = DateUtil.getDate(date, "yyyy-MM-dd");// 生成交易时间字符串
@@ -2790,7 +2817,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 									Tokenaward tokenaward = new Tokenaward();
 									if (praiseId.getStatus() == 1 && validPraise > 0 && validPraise != 0) {
 										// 证明是有效赞
-										if (kffPostService.findById(postId).getPraiseNum() == 50) {
+										if (kffPostService.findById(postId).getPraiseNum() == praiseNum) {
 											tokenrecords.setFunctionDesc("点赞奖励(专评)");
 											tokenrecords.setFunctionType(17);
 											tokenrecords.setAmount(new BigDecimal(pc2 * createPUF + meet)); // 点赞奖励生成流水
@@ -2885,7 +2912,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 							if (evaluation.getModelType() == 3) {
 								// 用户自定义单项评测
 								if (null != praiseId && praiseId.getStatus() == 1 && validPraise > 0 && validPraise != 0) {
-									if (kffPostService.findById(postId).getPraiseNum() == 50) {
+									if (kffPostService.findById(postId).getPraiseNum() == praiseNum) {
 										Tokenrecords tokenrecords = new Tokenrecords();
 										Tokenaward tokenaward = new Tokenaward();
 										tokenrecords.setFunctionDesc("点赞奖励(单评)");
@@ -3045,7 +3072,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 								if (praiseId.getStatus() == 1 && validPraise > 0 && validPraise != 0) {
 									// 证明是有效赞
 									if (praiseId.getPraiseType() == 1) {
-										if (kffPostService.findById(postId).getPraiseNum() == 50) {
+										if (kffPostService.findById(postId).getPraiseNum() == praiseNum) {
 											tokenrecords.setFunctionDesc("点赞奖励(文章)");
 											tokenrecords.setFunctionType(17);
 											tokenrecords.setAmount(new BigDecimal(wz * createPUF + meet1)); // 点赞奖励生成流水
@@ -3208,7 +3235,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					}
 					appNewsPush(linkedType, post.getPostId(), null, createUser.getMobile(), sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle()
 							+ sysGlobals.CONTENT_GETUI_MSG_END);
-					//推送点赞过10上推荐发APP消息
+					// 推送点赞过10上推荐发APP消息
 					KFFMessage msg = new KFFMessage();
 					msg.setType(12);
 					msg.setStatus(1);
@@ -3217,7 +3244,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					msg.setUpdateTime(now);
 					msg.setUserId(post.getCreateUserId());
 					msg.setTitle(sysGlobals.GETUI_NOTIFY);
-					msg.setContent(sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle()+ sysGlobals.CONTENT_GETUI_MSG_END);
+					msg.setContent(sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle() + sysGlobals.CONTENT_GETUI_MSG_END);
 					msg.setSenderUserId(sysGlobals.QUFEN_ACCOUNT_ID);
 					msg.setJumpInfo(sysGlobals.QUFEN_ACCOUNT_ID.toString());
 					msg.setPostId(post.getPostId());
@@ -3774,6 +3801,16 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			loginUser = kffUserService.findById(loginUserId);
 			registerAward(loginUserId);
 		}
+
+		List<Integer> praisedPostId = null;
+
+		// 获得点赞postidlist集合
+
+		if (null != loginUserId) {
+			praisedPostId = kffPraiseService.findPraisedPostIdByUserId(loginUserId);
+
+		}
+
 		if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
 			result.setCurPageNum(posts.getCurPageNum());
 			result.setPageSize(posts.getPageSize());
@@ -3886,6 +3923,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 							response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
 						} else {
 							response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+						}
+					}
+
+					if (null != praisedPostId && !CollectionUtils.isEmpty(praisedPostId)) {
+						if (praisedPostId.contains(post.getPostId())) {
+							response.setPraiseStatus(1);
 						}
 					}
 				}
@@ -4112,9 +4155,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						}
 					}
 				}
-				if(post.getDisStickTop()==null) {
+				if (post.getDisStickTop() == null) {
 					response.setDisStickTop(0);
-				}else {
+				} else {
 					response.setDisStickTop(post.getDisStickTop());
 				}
 				response.setDisStickUpdateTime(post.getDisStickUpdateTime());
