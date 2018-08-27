@@ -2648,7 +2648,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 						// KFFUser findByUserId = kffUserService.findById(createUserId);
 						CoinProperty findByCreateUser = coinPropertyService.findByUserId(createUserId);// 获取可以使用的币值
-						isSendPraiseToken = sendPraiseAwardToPraiser(userId, validPraise, praiseId, format, replaceAllDate, postType, zanToken);
+						isSendPraiseToken = sendPraiseAwardToPraiser(userId, validPraise, praiseId, format, replaceAllDate, postType, zanToken, postId);
 						if (isSendPraiseToken) {
 							retrueDzan = zanToken;
 						} else {
@@ -7583,7 +7583,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 	@SuppressWarnings("unused")
 	private Boolean sendPraiseAwardToPraiser(Integer userId, Integer validPraise, Praise praiseId, String format, String replaceAllDate, Integer postType,
-			Double zanToken) throws RestServiceException {
+			Double zanToken, Integer postId) throws RestServiceException {
 
 		try {
 			if (postType > 3 || postType < 0) {
@@ -7606,6 +7606,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					tokenrecords.setCreateTime(new Date());
 					tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
 					tokenrecords.setMemo("给予点赞人奖励"); // 流水备注
+					tokenrecords.setPostId(postId);
 					CoinProperty findByCreateUser = coinPropertyService.findByUserId(userId);// 获取可以使用的币值
 					if (null != findByCreateUser) {
 						Double coinLock = findByCreateUser.getCoinLock();// 获得当前锁定的token
@@ -7623,6 +7624,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					tokenaward.setTokenAwardFunctionDesc("给予点赞人奖励");
 					tokenaward.setTokenAwardFunctionType(23);
 					tokenaward.setDistributionType(2);
+					tokenaward.setPostId(postId);
 					// Double rewardToken = tokenaward.getInviteRewards();
 					// Double priaiseAward = tokenaward.getPriaiseAward();
 					tokenaward.setPriaiseAward(zanToken); // 点赞奖励.

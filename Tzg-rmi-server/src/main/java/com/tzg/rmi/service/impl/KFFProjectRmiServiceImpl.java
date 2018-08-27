@@ -1,7 +1,5 @@
 package com.tzg.rmi.service.impl;
 
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -15,10 +13,8 @@ import java.util.TreeMap;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.test.annotation.IfProfileValue;
 import org.springframework.util.CollectionUtils;
 
-import com.alibaba.dubbo.remoting.exchange.ExchangeServer;
 import com.alibaba.fastjson.JSON;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
@@ -66,7 +62,6 @@ import com.tzg.entitys.kff.follow.FollowResponse;
 import com.tzg.entitys.kff.project.KFFProject;
 import com.tzg.entitys.kff.project.ProjectResponse;
 import com.tzg.entitys.kff.projectManage.ProjectManage;
-import com.tzg.entitys.kff.projectManage.ProjectManageResponse;
 import com.tzg.entitys.kff.projectManage.ProjectManageTabResponse;
 import com.tzg.entitys.kff.projecttrade.ProjectTrade;
 import com.tzg.entitys.kff.transactionpair.TransactionPair;
@@ -243,59 +238,6 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 		}
 		return projectResponsePage;
 	}
-
-	/**
-	 * 根据codelist 查询项目列表
-	 * 
-	 * @param projectList
-	 * @return
-	 */
-
-	/*private List<ProjectResponse> selectProjectsListByProjectCodeList(String projectList, PaginationQuery query, Integer userId) {
-		// TODO Auto-generated method stub
-		projectList = "TRX,ELF,SMT,ADA";
-		List<ProjectResponse> projectResponseList = new ArrayList<ProjectResponse>();
-
-		List<Integer> followedProjectIds = new ArrayList<Integer>();
-		// 判断此项目是否被这个用户 关注
-		PaginationQuery queryFollow = new PaginationQuery();
-		queryFollow.addQueryData("followUserId", userId + "");
-		queryFollow.addQueryData("followType", "1"); // 关注类型：1-关注项目;2-关注帖子；3-关注用户
-		queryFollow.addQueryData("status", "1");
-		queryFollow.setPageIndex(1);
-		queryFollow.setRowsPerPage(2000);
-		PageResult<Follow> follows = kffFollowService.findPage(queryFollow);
-		if (follows != null && !CollectionUtils.isEmpty((follows.getRows()))) {
-			for (Follow follow : follows.getRows()) {
-				followedProjectIds.add(follow.getFollowedId());
-			}
-		}
-
-		if (StringUtils.isNotEmpty(projectList)) {
-			String[] projectCodes = projectList.split(",");
-			if (projectCodes.length != 0) {
-				for (int i = 0; i < projectCodes.length; i++) {
-					String projectCode = projectCodes[i];
-					if (StringUtils.isNotEmpty(projectCode)) {
-						// 根据projectcode查询project对象
-						ProjectResponse projectResponse = selectProjectByCode(projectCode, userId);
-
-						if (null != projectResponse) {
-							// 0-未关注；1-已关注
-							if (null != projectResponse.getProjectId() && followedProjectIds.contains(projectResponse.getProjectId())) {
-								projectResponse.setFollowStatus(1);// 设置成关注
-							} else {
-								projectResponse.setFollowStatus(0);// 设置成未关注
-							}
-						}
-
-						projectResponseList.add(projectResponse);
-					}
-				}
-			}
-		}
-		return projectResponseList;
-	}*/
 
 	/**
 	 * 根据code查询project
@@ -586,8 +528,7 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 	@Override
 	public PageResult<ProjectResponse> showProjectListNew(Integer tabId, Integer userId, PaginationQuery query) {
 		// TODO 根据tabId查询project分页展示
-		Integer pageIndex = query.getPageIndex();
-		Integer pageSize = query.getRowsPerPage();
+
 		PageResult<ProjectResponse> projectResponsePage = null;
 		List<Integer> projectFollow = null;
 		List<Follow> followList = null;
@@ -650,6 +591,8 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 		} else {
 			// 除了关注和全部
 			PaginationQuery queryOther = query;
+			queryOther.addQueryData("sortField", "follower_num");
+			queryOther.addQueryData("sortSequence", "desc");
 			projectResponsePage = selectProjectsListByProjectCodePageNew(tabId, queryOther, userId, projectFollow);
 		}
 		// System.err.println("projectResponsePage" + JSON.toJSONString(projectResponsePage));
@@ -681,12 +624,10 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 						}
 					}
 				}
-				System.err.println("projectIds" + JSON.toJSONString(projectIds));
 				if (!CollectionUtils.isEmpty(projectIds)) {
 					if (projectIds.size() == 1) {
 						query.addQueryData("projectId", projectIds.get(0));
 					} else {
-						String projectIdListDB = StringUtils.join(projectIds.toArray(), ",");// 进入数据库的查询参数
 						query.addQueryData("inList", projectIds);
 					}
 				}
