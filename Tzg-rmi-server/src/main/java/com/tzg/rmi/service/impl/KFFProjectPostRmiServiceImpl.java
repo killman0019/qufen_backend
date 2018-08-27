@@ -386,7 +386,7 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 							if(postResponse.getPostType()==PostType.EVALUATION.getValue()) {
 								Evaluation eval = kffEvaluationService.findByPostId(postResponse.getPostId());
 								if(null!=eval) {
-									postResponse.setTagInfos(eval.getEvaluationTags());
+									postResponse.setEvaluationTags(eval.getEvaluationTags());
 								}
 							}
 							ts.add(postResponse);
@@ -418,7 +418,7 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 							if(postResponse.getPostType()==PostType.EVALUATION.getValue()) {
 								Evaluation eval = kffEvaluationService.findByPostId(postResponse.getPostId());
 								if(null!=eval) {
-									postResponse.setTagInfos(eval.getEvaluationTags());
+									postResponse.setEvaluationTags(eval.getEvaluationTags());
 								}
 							}
 							ts.add(postResponse);
@@ -448,7 +448,7 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 							if(postResponse.getPostType()==PostType.EVALUATION.getValue()) {
 								Evaluation eval = kffEvaluationService.findByPostId(postResponse.getPostId());
 								if(null!=eval) {
-									postResponse.setTagInfos(eval.getEvaluationTags());
+									postResponse.setEvaluationTags(eval.getEvaluationTags());
 								}
 							}
 							ts.add(postResponse);
