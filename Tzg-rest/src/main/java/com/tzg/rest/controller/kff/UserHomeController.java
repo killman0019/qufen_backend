@@ -17,6 +17,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.tzg.common.base.BaseRequest;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
+import com.tzg.common.utils.SyseUtil;
 import com.tzg.entitys.kff.evaluation.EvaluationDetailResponse;
 import com.tzg.entitys.kff.post.PostResponse;
 import com.tzg.entitys.kff.user.KFFUser;
@@ -167,6 +168,11 @@ public class UserHomeController extends BaseController {
 				loginUser = kffUserService.findById(userId);
 				query.addQueryData("createUserId", userId);
 			}
+			if (userId != null && userId > 0) {
+				query.addQueryData("createUserId", userId + "");
+			} else {
+				query.addQueryData("createUserId", loginUserId + "");
+			}
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
 			query.addQueryData("sql_keyword_orderBy", "createTime");
@@ -227,7 +233,7 @@ public class UserHomeController extends BaseController {
 			if (userId != null && userId > 0) {
 				query.addQueryData("createUserId", userId + "");
 			} else {
-				query.addQueryData("createUserId", loginUser + "");
+				query.addQueryData("createUserId", loginUser.getUserId() + "");
 			}
 
 			Integer type = 2;// 取关注人
@@ -240,6 +246,7 @@ public class UserHomeController extends BaseController {
 
 			map.put("articles", articles);
 			bre.setData(map);
+			SyseUtil.systemErrOutJson(bre);
 		} catch (RestServiceException e) {
 			logger.error("UserHomeController articleList:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
