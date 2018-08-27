@@ -2099,21 +2099,57 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (newPost == null) {
 			throw new RestServiceException("帖子不存在" + uuid);
 		}
+		// 更新用户发帖数
+		kffUserService.increasePostNum(createUser.getUserId(), KFFConstants.POST_TYPE_DISCUSS);
 		/**
 		 * 用户类型:1-普通用户；2-项目方；3-评测机构；4-机构用户
 		 * 用户认证账号及用户的类型不等于1，发布的爆料就为精选爆料
 		 */
 		Discuss discuss = new Discuss();
-		discuss.setIsNiceChoice(sysGlobals.DISABLE);
-		discuss.setType(DiscussType.ORDINARYBURST.getValue());
 		discuss.setDisscussContents(discussRequest.getDisscussContents());
 		discuss.setPostId(newPost.getPostId());
 		discuss.setPostUuid(uuid);
 		discuss.setTagInfos(discussRequest.getTagInfos());
+		if (createUser.getUserType() != null && createUser.getUserType() == 1) {
+			discuss.setIsNiceChoice(sysGlobals.DISABLE);
+			discuss.setType(DiscussType.ORDINARYBURST.getValue());
+		}
+		if (createUser.getUserType() != null && createUser.getUserType() != 1) {
+			discuss.setIsNiceChoice(sysGlobals.ENABLE);
+			discuss.setNiceChoiceAt(new Date());
+			discuss.setType(DiscussType.AUTHACCOUNTPUBLISH.getValue());
+		}
 		kffDiscussService.save(discuss);
-
-		// 更新用户发帖数
-		kffUserService.increasePostNum(createUser.getUserId(), KFFConstants.POST_TYPE_DISCUSS);
+		// 个推APP推送消息
+		if (null != createUser) {
+			Integer linkedType = null;
+			if (newPost.getPostType() == 1) {
+				linkedType = LinkedType.CUSTOMEVALUATING.getValue();
+			}
+			if (newPost.getPostType() == 2) {
+				linkedType = LinkedType.COUNTERFEIT.getValue();
+			}
+			if (newPost.getPostType() == 3) {
+				linkedType = LinkedType.ARTICLE.getValue();
+			}
+			appNewsPush(linkedType, newPost.getPostId(), null, createUser.getMobile(), sysGlobals.CONTENT_GETUI_MSG_BEGIN + newPost.getPostTitle()
+					+ sysGlobals.CONTENT_GETUI_MSG_END);
+			//向APP端推送消息
+			KFFMessage msg = new KFFMessage();
+			msg.setType(12);
+			msg.setStatus(1);
+			msg.setState(1);
+			msg.setCreateTime(now);
+			msg.setUpdateTime(now);
+			msg.setUserId(newPost.getCreateUserId());
+			msg.setTitle(sysGlobals.GETUI_NOTIFY);
+			msg.setContent(sysGlobals.CONTENT_GETUI_MSG_BEGIN + newPost.getPostTitle()+ sysGlobals.CONTENT_GETUI_MSG_END);
+			msg.setSenderUserId(sysGlobals.QUFEN_ACCOUNT_ID);
+			msg.setJumpInfo(sysGlobals.QUFEN_ACCOUNT_ID.toString());
+			msg.setPostId(newPost.getPostId());
+			msg.setPostType(newPost.getPostType());
+			kffMessageService.save(msg);
+		}
 		result.put("postId", newPost.getPostId());
 		result.put("postType", newPost.getPostType());
 		return result;
@@ -2409,6 +2445,21 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				}
 				appNewsPush(linkedType, post.getPostId(), null, createUser.getMobile(), sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle()
 						+ sysGlobals.CONTENT_GETUI_MSG_END);
+				//向APP端推送消息
+				KFFMessage msg = new KFFMessage();
+				msg.setType(12);
+				msg.setStatus(1);
+				msg.setState(1);
+				msg.setCreateTime(now);
+				msg.setUpdateTime(now);
+				msg.setUserId(post.getCreateUserId());
+				msg.setTitle(sysGlobals.GETUI_NOTIFY);
+				msg.setContent(sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle()+ sysGlobals.CONTENT_GETUI_MSG_END);
+				msg.setSenderUserId(sysGlobals.QUFEN_ACCOUNT_ID);
+				msg.setJumpInfo(sysGlobals.QUFEN_ACCOUNT_ID.toString());
+				msg.setPostId(post.getPostId());
+				msg.setPostType(post.getPostType());
+				kffMessageService.save(msg);
 			}
 		}
 		return result;
@@ -3150,6 +3201,21 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					}
 					appNewsPush(linkedType, post.getPostId(), null, createUser.getMobile(), sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle()
 							+ sysGlobals.CONTENT_GETUI_MSG_END);
+					//推送点赞过10上推荐发APP消息
+					KFFMessage msg = new KFFMessage();
+					msg.setType(12);
+					msg.setStatus(1);
+					msg.setState(1);
+					msg.setCreateTime(now);
+					msg.setUpdateTime(now);
+					msg.setUserId(post.getCreateUserId());
+					msg.setTitle(sysGlobals.GETUI_NOTIFY);
+					msg.setContent(sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle()+ sysGlobals.CONTENT_GETUI_MSG_END);
+					msg.setSenderUserId(sysGlobals.QUFEN_ACCOUNT_ID);
+					msg.setJumpInfo(sysGlobals.QUFEN_ACCOUNT_ID.toString());
+					msg.setPostId(post.getPostId());
+					msg.setPostType(post.getPostType());
+					kffMessageService.save(msg);
 				}
 			}
 		}
@@ -3690,25 +3756,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				}
 			}
 		}
-		// =======
-		// int rowsPerPage = query.getRowsPerPage();
-		//
-		// if (pageIndex == 1 && method == 2) {// 首页取带有置顶的页面
-		// rowsPerPage = 9;
-		// query.setRowsPerPage(rowsPerPage);
-		// Map<String, Object> disMap = new HashMap<String, Object>();
-		// disMap.put("disStickTop", 1 + "");
-		// disMap.put("status", "1");
-		// List<Discuss> discussList = kffDiscussService.findByMap(disMap);
-		// if (CollectionUtils.isNotEmpty(discussList)) {
-		// Discuss discuss = discussList.get(0);
-		// if (null != discuss) {
-		// posts = kffPostService.findPageIncludeSkick(query, discuss.getPostId());
-		// // System.err.println(JSON.toJSONString(posts));
-		// >>>>>>> zhangdd_dev_v1.5.0
-		// }
-		// }
-		// }
 		Integer count = kffPostService.findSetTopDiscussCount(query.getQueryData());
 		posts = new PageResult<PostDiscussVo>(postDisscussList, count, query);
 		KFFUser loginUser = null;
@@ -3963,7 +4010,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				response.setPraiseIncome(post.getPraiseIncome());
 				response.setDonateIncome(post.getDonateIncome());
 				response.setPostTotalIncome(post.getPostTotalIncome());
-
 				if (null != praisedPostId && !CollectionUtils.isEmpty(praisedPostId)) {
 					if (praisedPostId.contains(post.getPostId())) {
 						response.setPraiseStatus(1);
@@ -4059,6 +4105,14 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						}
 					}
 				}
+				if(post.getDisStickTop()==null) {
+					response.setDisStickTop(0);
+				}else {
+					response.setDisStickTop(post.getDisStickTop());
+				}
+				response.setDisStickUpdateTime(post.getDisStickUpdateTime());
+				response.setIsNiceChoice(post.getIsNiceChoice());
+				response.setNiceChoiceAt(post.getNiceChoiceAt());
 				postResponse.add(response);
 			}
 		}
