@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.utils.AccountTokenUtil;
+import com.tzg.common.utils.SyseUtil;
 import com.tzg.entitys.kff.commendation.CommendationRequest;
 import com.tzg.entitys.kff.suggest.SuggestRequest;
 import com.tzg.rest.controller.BaseController;
@@ -35,15 +36,14 @@ import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
 import com.tzg.rmi.service.KFFRmiService;
 
-@Controller(value="KFFTokenrecordsController")
+@Controller(value = "KFFTokenrecordsController")
 @RequestMapping("/kff/token")
 public class TokenController extends BaseController {
 	private static Logger log = Logger.getLogger(TokenController.class);
-	
+
 	@Autowired
 	private KFFRmiService kffRmiService;
-	
-	
+
 	/**
 	 * 
 	* @Title: commendation
@@ -55,11 +55,11 @@ public class TokenController extends BaseController {
 	* @see    
 	* @throws
 	 */
-	@RequestMapping(value="/commendation",method = {RequestMethod.POST,RequestMethod.GET})
+	@RequestMapping(value = "/commendation", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public BaseResponseEntity commendation(HttpServletRequest request) {
 		BaseResponseEntity bre = new BaseResponseEntity();
-        Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<String, Object>();
 
 		try {
 			CommendationRequest commendationRequest = getParamMapFromRequestPolicy(request, CommendationRequest.class);
@@ -67,16 +67,15 @@ public class TokenController extends BaseController {
 			Integer userId = getUserIdByToken(token);
 			commendationRequest.setSendUserId(userId);
 			map = kffRmiService.saveCommendation(commendationRequest);
-            bre.setData(map);
+			bre.setData(map);
+			SyseUtil.systemErrOutJson(bre);
 		} catch (RestServiceException e) {
 			logger.error("TokenController commendation:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
 		} catch (Exception e) {
 			logger.error("TokenController commendation:{}", e);
-			return this.resResult(RestErrorCode.SYS_ERROR,e.getMessage());
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
 		}
 		return bre;
 	}
 }
-
-
