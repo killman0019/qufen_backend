@@ -1783,7 +1783,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		tokenrecords.setRewardGrantType(1);
 		tokenrecords.setAwardType(1);
 		tokenrecords.setAwardTypeId(commentsId);
-
+		tokenrecords.setPostId(post.getPostId());
 		/*tokenaward.setUserId(commentUser.getUserId());
 		tokenaward.setTokenAwardFunctionDesc("评论奖励");
 		tokenaward.setTokenAwardFunctionType(24);
@@ -2134,7 +2134,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			}
 			appNewsPush(linkedType, newPost.getPostId(), null, createUser.getMobile(), sysGlobals.CONTENT_GETUI_MSG_BEGIN + newPost.getPostTitle()
 					+ sysGlobals.CONTENT_GETUI_MSG_END);
-			//向APP端推送消息
+			// 向APP端推送消息
 			KFFMessage msg = new KFFMessage();
 			msg.setType(12);
 			msg.setStatus(1);
@@ -2143,7 +2143,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			msg.setUpdateTime(now);
 			msg.setUserId(newPost.getCreateUserId());
 			msg.setTitle(sysGlobals.GETUI_NOTIFY);
-			msg.setContent(sysGlobals.CONTENT_GETUI_MSG_BEGIN + newPost.getPostTitle()+ sysGlobals.CONTENT_GETUI_MSG_END);
+			msg.setContent(sysGlobals.CONTENT_GETUI_MSG_BEGIN + newPost.getPostTitle() + sysGlobals.CONTENT_GETUI_MSG_END);
 			msg.setSenderUserId(sysGlobals.QUFEN_ACCOUNT_ID);
 			msg.setJumpInfo(sysGlobals.QUFEN_ACCOUNT_ID.toString());
 			msg.setPostId(newPost.getPostId());
@@ -2445,7 +2445,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				}
 				appNewsPush(linkedType, post.getPostId(), null, createUser.getMobile(), sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle()
 						+ sysGlobals.CONTENT_GETUI_MSG_END);
-				//向APP端推送消息
+				// 向APP端推送消息
 				KFFMessage msg = new KFFMessage();
 				msg.setType(12);
 				msg.setStatus(1);
@@ -2454,7 +2454,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				msg.setUpdateTime(now);
 				msg.setUserId(post.getCreateUserId());
 				msg.setTitle(sysGlobals.GETUI_NOTIFY);
-				msg.setContent(sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle()+ sysGlobals.CONTENT_GETUI_MSG_END);
+				msg.setContent(sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle() + sysGlobals.CONTENT_GETUI_MSG_END);
 				msg.setSenderUserId(sysGlobals.QUFEN_ACCOUNT_ID);
 				msg.setJumpInfo(sysGlobals.QUFEN_ACCOUNT_ID.toString());
 				msg.setPostId(post.getPostId());
@@ -3201,7 +3201,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					}
 					appNewsPush(linkedType, post.getPostId(), null, createUser.getMobile(), sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle()
 							+ sysGlobals.CONTENT_GETUI_MSG_END);
-					//推送点赞过10上推荐发APP消息
+					// 推送点赞过10上推荐发APP消息
 					KFFMessage msg = new KFFMessage();
 					msg.setType(12);
 					msg.setStatus(1);
@@ -3210,7 +3210,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					msg.setUpdateTime(now);
 					msg.setUserId(post.getCreateUserId());
 					msg.setTitle(sysGlobals.GETUI_NOTIFY);
-					msg.setContent(sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle()+ sysGlobals.CONTENT_GETUI_MSG_END);
+					msg.setContent(sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle() + sysGlobals.CONTENT_GETUI_MSG_END);
 					msg.setSenderUserId(sysGlobals.QUFEN_ACCOUNT_ID);
 					msg.setJumpInfo(sysGlobals.QUFEN_ACCOUNT_ID.toString());
 					msg.setPostId(post.getPostId());
@@ -4105,9 +4105,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						}
 					}
 				}
-				if(post.getDisStickTop()==null) {
+				if (post.getDisStickTop() == null) {
 					response.setDisStickTop(0);
-				}else {
+				} else {
 					response.setDisStickTop(post.getDisStickTop());
 				}
 				response.setDisStickUpdateTime(post.getDisStickUpdateTime());
