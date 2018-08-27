@@ -659,6 +659,9 @@
     		<if test="status!=null">
     		  and tbt.status != #{status}
     		</if>
+    		<if test="statusc!=null">
+    		  and tbt.status = #{statusc}
+    		</if>
     		<if test="praiseNum!=null">
     		  and tbt.praise_num &gt; #{praiseNum}
     		</if>

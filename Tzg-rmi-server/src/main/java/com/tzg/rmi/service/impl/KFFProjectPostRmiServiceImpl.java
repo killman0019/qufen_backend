@@ -24,6 +24,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.google.common.base.Objects;
 import com.tzg.common.constants.KFFConstants;
 import com.tzg.common.enums.FollowType;
+import com.tzg.common.enums.PostType;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.redis.RedisService;
@@ -62,6 +63,7 @@ import com.tzg.common.utils.H5AgainDeltagsUtil;
 import com.tzg.common.utils.sysGlobals;
 import com.tzg.common.zookeeper.ZKClient;
 import com.tzg.entitys.kff.app.NewsFlash;
+import com.tzg.entitys.kff.article.Article;
 import com.tzg.entitys.kff.comments.Comments;
 import com.tzg.entitys.kff.devaluationModel.DevaluationModel;
 import com.tzg.entitys.kff.devaluationModelDetail.DevaluationModelDetail;
@@ -363,12 +365,30 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 					seMap.clear();
 					seMap.put("projectId", follow.getFollowedId());
 					seMap.put("state", 2);//审核状态：1；待审核；2-审核通过；3-拒绝
-					seMap.put("status", 1);//状态：0-删除；1-有效
+					seMap.put("statusc", 1);//状态：0-删除；1-有效
 					seMap.put("praiseNum", count);//点赞人数必须大于数据库配置的值
 					List<PostResponse> projectAndPosts = kffProjectService.findLinkedTabsByAttr(seMap);
 					System.out.println("projectAndPosts1.size------------------------>"+projectAndPosts.size());
 					if(!projectAndPosts.isEmpty()) {
 						for (PostResponse postResponse : projectAndPosts) {
+							if(postResponse.getPostType()==PostType.ARTICLE.getValue()) {
+								Article article = kffArticleService.findByPostId(postResponse.getPostId());
+								if(null!=article) {
+									postResponse.setTagInfos(article.getTagInfos());
+								}
+							}
+							if(postResponse.getPostType()==PostType.DICCUSS.getValue()) {
+								Discuss discuss = kffDiscussService.findByPostId(postResponse.getPostId());
+								if(null!=discuss) {
+									postResponse.setTagInfos(discuss.getTagInfos());
+								}
+							}
+							if(postResponse.getPostType()==PostType.EVALUATION.getValue()) {
+								Evaluation eval = kffEvaluationService.findByPostId(postResponse.getPostId());
+								if(null!=eval) {
+									postResponse.setTagInfos(eval.getEvaluationTags());
+								}
+							}
 							ts.add(postResponse);
 						}
 					}
@@ -378,23 +398,59 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 					//关注用户发布的内容（评测、爆料、文章）
 					seMap.clear();
 					seMap.put("createUserId", follow.getFollowedId());
-					seMap.put("status", 1);//状态：0-删除；1-有效
+					seMap.put("statusc", 1);//状态：0-删除；1-有效
 					List<PostResponse> projectAndPosts = kffProjectService.findLinkedTabsByAttr(seMap);
 					System.out.println("projectAndPosts2.size------------------------>"+projectAndPosts.size());
 					if(!projectAndPosts.isEmpty()) {
 						for (PostResponse postResponse : projectAndPosts) {
+							if(postResponse.getPostType()==PostType.ARTICLE.getValue()) {
+								Article article = kffArticleService.findByPostId(postResponse.getPostId());
+								if(null!=article) {
+									postResponse.setTagInfos(article.getTagInfos());
+								}
+							}
+							if(postResponse.getPostType()==PostType.DICCUSS.getValue()) {
+								Discuss discuss = kffDiscussService.findByPostId(postResponse.getPostId());
+								if(null!=discuss) {
+									postResponse.setTagInfos(discuss.getTagInfos());
+								}
+							}
+							if(postResponse.getPostType()==PostType.EVALUATION.getValue()) {
+								Evaluation eval = kffEvaluationService.findByPostId(postResponse.getPostId());
+								if(null!=eval) {
+									postResponse.setTagInfos(eval.getEvaluationTags());
+								}
+							}
 							ts.add(postResponse);
 						}
 					}
 					//关注用户评论了内容（评测、爆料、文章）；
 					seMap.clear();
 					seMap.put("commentUserId", follow.getFollowedId());//状态：0-删除；1-有效
-					seMap.put("status", 1);//状态：0-删除；1-有效
+					seMap.put("statusc", 1);//状态：0-删除；1-有效
 					seMap.put("commitTp", 1);//是否要连接tbcomments
 					List<PostResponse> commitAndPosts = kffProjectService.findLinkedTabsByAttr(seMap);
 					System.out.println("commitAndPosts.size------------------------>"+commitAndPosts.size());
 					if(!commitAndPosts.isEmpty()) {
 						for (PostResponse postResponse : commitAndPosts) {
+							if(postResponse.getPostType()==PostType.ARTICLE.getValue()) {
+								Article article = kffArticleService.findByPostId(postResponse.getPostId());
+								if(null!=article) {
+									postResponse.setTagInfos(article.getTagInfos());
+								}
+							}
+							if(postResponse.getPostType()==PostType.DICCUSS.getValue()) {
+								Discuss discuss = kffDiscussService.findByPostId(postResponse.getPostId());
+								if(null!=discuss) {
+									postResponse.setTagInfos(discuss.getTagInfos());
+								}
+							}
+							if(postResponse.getPostType()==PostType.EVALUATION.getValue()) {
+								Evaluation eval = kffEvaluationService.findByPostId(postResponse.getPostId());
+								if(null!=eval) {
+									postResponse.setTagInfos(eval.getEvaluationTags());
+								}
+							}
 							ts.add(postResponse);
 						}
 					}
