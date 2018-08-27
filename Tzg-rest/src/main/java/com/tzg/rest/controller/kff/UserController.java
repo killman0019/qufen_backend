@@ -1345,7 +1345,6 @@ public class UserController extends BaseController {
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
 			PageResult<TokenawardReturn> result = kffRmiService.findPageMyTokenawardReturn(query);
-			// KFFUser findUserById = kffRmiService.findToken
 
 			if (pageIndex == 1) {
 				bdSum = BigDecimal.ZERO;
@@ -1356,16 +1355,7 @@ public class UserController extends BaseController {
 						bdSum = bdSum.add(new BigDecimal(inviteNumber));
 					}
 				}
-				/*	List<Tokenrecords> findAllTokenrecordsUserId = kffRmiService.findAllTokenrecordsUserId(userId);
-					for (Tokenrecords tokenrecords : findAllTokenrecordsUserId) {
-						if (tokenrecords != null) {
-							if (tokenrecords.getRewardGrantType() == 1) {
-								BigDecimal amount = tokenrecords.getAmount();
-								bdSum = bdSum.add(amount);
-							}
-						}
-					}
-					*/
+
 				List<Tokenrecords> findAllTokenrecordsUserId = kffRmiService.findAllTokenrecordsUserId(userId);
 				for (Tokenrecords tokenrecords : findAllTokenrecordsUserId) {
 					if (tokenrecords != null) {
@@ -1413,7 +1403,10 @@ public class UserController extends BaseController {
 			Integer loginUserId = getUserIdByToken(token);
 
 			KFFUser loginaccount = kffRmiService.findUserById(loginUserId);
-
+			List<CoinProperty> userCoin = kffRmiService.findCoinPropertyByUserId(loginUserId);
+			for (CoinProperty coinProperty : userCoin) {
+				loginaccount.setKffCoinNum(new BigDecimal(coinProperty.getTotalAssets()));// 修复token数量不一致bug
+			}
 			if (null == loginaccount) {
 				throw new RestServiceException(RestErrorCode.LOGIN_NAME_OR_PASSWORD_INCORRECT);
 			}
@@ -1521,7 +1514,15 @@ public class UserController extends BaseController {
 					// 当用户的使用状态时间是今天且用户的弹窗状态是0 时 吧弹框的状态重置成1 不弹
 					// 当用户的使用时间是今天 但是 弹框状态是0 时 不执行此代码
 					// 当用户的最后使用状态不是今天 ,且弹框状态是 1 时 不弹
-					if (DateUtil.isToday(loginaccount.getLastLoginDateTime().getTime()) && (pop == 0)) {
+					if (loginaccount.getLastLoginDateTime() == null) {
+						KFFUser userDB = new KFFUser();
+						userDB.setLastLoginDateTime(new Date());
+						userDB.setUserId(loginUserId);
+
+						kffRmiService.updateUser(userDB);
+					}
+
+					if (loginaccount.getLastLoginDateTime() != null && DateUtil.isToday(loginaccount.getLastLoginDateTime().getTime()) && (pop == 0)) {
 						// 并把时间设置成今天 :0-弹出;1-不弹',
 						kffRmiService.updateUserKFFPop(loginUserId);// 设置成1不弹
 

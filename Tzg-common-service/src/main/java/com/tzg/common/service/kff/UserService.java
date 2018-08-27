@@ -763,10 +763,10 @@ public class UserService {
 			map.put("kffCoinNum", amount.doubleValue());
 			if (type == 1) {// typr==1 加
 
-				userMapper.increaseKffcoinNum(map);
+				// userMapper.increaseKffcoinNum(map);
 			}
 			if (type == 2) {
-				userMapper.decreaseKffcoinNum(map);
+				// userMapper.decreaseKffcoinNum(map);
 			}
 		}
 

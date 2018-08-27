@@ -6633,10 +6633,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 	@Override
 	public List<CoinProperty> findCoinPropertyById(Integer userId, Date coinUnlockTime, Integer coinUnlockType) throws RestServiceException {
-		KFFUser user = null;
+		/*/KFFUser user = null;
 		if (userId != null && userId != 0) {
 			user = kffUserService.findById(userId);
-		}
+		}*/
 		List<CoinProperty> result = new ArrayList<>();
 
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -6653,9 +6653,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 				Double coinUnlock = coinPropertys.getCoinUnlock();
 				Double coinLock = coinPropertys.getCoinLock();
-				BigDecimal kffCoinNum = user.getKffCoinNum();
-				user.setKffCoinNum(kffCoinNum.add(new BigDecimal(coinUnlock)));
-				kffUserService.update(user);
+
 				if (coinUnlockTime != null && userId != null && userId > 0 && coinUnlockType == 1) {
 
 					childQuery.setCoinLock(coinLock += coinUnlock);
