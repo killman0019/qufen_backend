@@ -3,6 +3,7 @@ package com.tzg.rmi.service.impl;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -350,9 +351,8 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 			KFFUser loginUser) {
 		PageResult<PostResponse> result = new PageResult<>();
 		TreeSet<PostResponse> ts = new TreeSet<PostResponse>();
-//		PageResult<Follow> follows = kffFollowService.findPage(query);
 		List<Follow> followList = kffFollowService.findListByAttr(query.getQueryData());
-		
+//		long be2 = new Date().getTime();
 		if(!followList.isEmpty()) {
 			SystemParam sysPar = systemParamService.findByCode(sysGlobals.PRISE_TO_FOLLOW_POST);
 			Integer count = Integer.valueOf(sysPar.getVcParamValue());
@@ -368,27 +368,9 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 					seMap.put("statusc", 1);//状态：0-删除；1-有效
 					seMap.put("praiseNum", count);//点赞人数必须大于数据库配置的值
 					List<PostResponse> projectAndPosts = kffProjectService.findLinkedTabsByAttr(seMap);
-					System.out.println("projectAndPosts1.size------------------------>"+projectAndPosts.size());
+//					System.out.println("projectAndPosts1.size------------------------>"+projectAndPosts.size());
 					if(!projectAndPosts.isEmpty()) {
 						for (PostResponse postResponse : projectAndPosts) {
-							if(postResponse.getPostType()==PostType.ARTICLE.getValue()) {
-								Article article = kffArticleService.findByPostId(postResponse.getPostId());
-								if(null!=article) {
-									postResponse.setTagInfos(article.getTagInfos());
-								}
-							}
-							if(postResponse.getPostType()==PostType.DICCUSS.getValue()) {
-								Discuss discuss = kffDiscussService.findByPostId(postResponse.getPostId());
-								if(null!=discuss) {
-									postResponse.setTagInfos(discuss.getTagInfos());
-								}
-							}
-							if(postResponse.getPostType()==PostType.EVALUATION.getValue()) {
-								Evaluation eval = kffEvaluationService.findByPostId(postResponse.getPostId());
-								if(null!=eval) {
-									postResponse.setEvaluationTags(eval.getEvaluationTags());
-								}
-							}
 							ts.add(postResponse);
 						}
 					}
@@ -400,27 +382,9 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 					seMap.put("createUserId", follow.getFollowedId());
 					seMap.put("statusc", 1);//状态：0-删除；1-有效
 					List<PostResponse> projectAndPosts = kffProjectService.findLinkedTabsByAttr(seMap);
-					System.out.println("projectAndPosts2.size------------------------>"+projectAndPosts.size());
+//					System.out.println("projectAndPosts2.size------------------------>"+projectAndPosts.size());
 					if(!projectAndPosts.isEmpty()) {
 						for (PostResponse postResponse : projectAndPosts) {
-							if(postResponse.getPostType()==PostType.ARTICLE.getValue()) {
-								Article article = kffArticleService.findByPostId(postResponse.getPostId());
-								if(null!=article) {
-									postResponse.setTagInfos(article.getTagInfos());
-								}
-							}
-							if(postResponse.getPostType()==PostType.DICCUSS.getValue()) {
-								Discuss discuss = kffDiscussService.findByPostId(postResponse.getPostId());
-								if(null!=discuss) {
-									postResponse.setTagInfos(discuss.getTagInfos());
-								}
-							}
-							if(postResponse.getPostType()==PostType.EVALUATION.getValue()) {
-								Evaluation eval = kffEvaluationService.findByPostId(postResponse.getPostId());
-								if(null!=eval) {
-									postResponse.setEvaluationTags(eval.getEvaluationTags());
-								}
-							}
 							ts.add(postResponse);
 						}
 					}
@@ -430,34 +394,19 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 					seMap.put("statusc", 1);//状态：0-删除；1-有效
 					seMap.put("commitTp", 1);//是否要连接tbcomments
 					List<PostResponse> commitAndPosts = kffProjectService.findLinkedTabsByAttr(seMap);
-					System.out.println("commitAndPosts.size------------------------>"+commitAndPosts.size());
+//					System.out.println("commitAndPosts.size------------------------>"+commitAndPosts.size());
 					if(!commitAndPosts.isEmpty()) {
 						for (PostResponse postResponse : commitAndPosts) {
-							if(postResponse.getPostType()==PostType.ARTICLE.getValue()) {
-								Article article = kffArticleService.findByPostId(postResponse.getPostId());
-								if(null!=article) {
-									postResponse.setTagInfos(article.getTagInfos());
-								}
-							}
-							if(postResponse.getPostType()==PostType.DICCUSS.getValue()) {
-								Discuss discuss = kffDiscussService.findByPostId(postResponse.getPostId());
-								if(null!=discuss) {
-									postResponse.setTagInfos(discuss.getTagInfos());
-								}
-							}
-							if(postResponse.getPostType()==PostType.EVALUATION.getValue()) {
-								Evaluation eval = kffEvaluationService.findByPostId(postResponse.getPostId());
-								if(null!=eval) {
-									postResponse.setEvaluationTags(eval.getEvaluationTags());
-								}
-							}
 							ts.add(postResponse);
 						}
 					}
 				}
 			}
 		}
+//		long ed2 = new Date().getTime();
+//		System.out.println("pp2----------------------------------->"+(ed2-be2));
 		
+//		long be3 = new Date().getTime();
 		if(!ts.isEmpty()) {
 			List<PostResponse> postResp = new ArrayList<PostResponse>();
 			Iterator<PostResponse> iterator = ts.iterator();
@@ -508,7 +457,26 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 	        int bbt = (beginNum-1)*10;
 	        for (int i = bbt; i < postResp.size(); i++) {
 	        	if(i<endNum) {
-	        		returnPost.add(postResp.get(i));
+	        		PostResponse postResponse = postResp.get(i);
+	        		if(postResponse.getPostType()==PostType.ARTICLE.getValue()) {
+						Article article = kffArticleService.findByPostId(postResponse.getPostId());
+						if(null!=article) {
+							postResponse.setTagInfos(article.getTagInfos());
+						}
+					}
+					if(postResponse.getPostType()==PostType.DICCUSS.getValue()) {
+						Discuss discuss = kffDiscussService.findByPostId(postResponse.getPostId());
+						if(null!=discuss) {
+							postResponse.setTagInfos(discuss.getTagInfos());
+						}
+					}
+					if(postResponse.getPostType()==PostType.EVALUATION.getValue()) {
+						Evaluation eval = kffEvaluationService.findByPostId(postResponse.getPostId());
+						if(null!=eval) {
+							postResponse.setEvaluationTags(eval.getEvaluationTags());
+						}
+					}
+	        		returnPost.add(postResponse);
 	        	}else {
 	        		break;
 	        	}
@@ -516,6 +484,8 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 			Integer count = ts.size();
 			result = new PageResult<PostResponse>(returnPost, count, query);
 		}
+//		long ed3 = new Date().getTime();
+//		System.out.println("pp3---------------------------------------->"+(ed3-be3));
 		return result;
 	}
 	
