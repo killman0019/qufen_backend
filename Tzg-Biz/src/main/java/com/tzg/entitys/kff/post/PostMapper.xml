@@ -461,7 +461,7 @@
 			order by ${sql_keyword_orderBy} ${sql_keyword_sort}
 		</if>
 		<if test="sql_keyword_orderByc!=null">
-			order by ${sql_keyword_orderByc} ${sql_keyword_sortc}
+			, ${sql_keyword_orderByc} ${sql_keyword_sortc}
 		</if>
 	</sql>
 
@@ -853,7 +853,7 @@
 				and tpt.type = #{typec}
 			</if>
 			<if test="disStickTopc1!=null">
-				and (tpt.dis_stick_top != #{disStickTopc1}  or tpt.dis_stick_top is null )
+				and (tpt.dis_stick_top != #{disStickTopc1} or tpt.dis_stick_top is null )
 			</if>
 			<if test="disStickTopc!=null">
 				and tpt.dis_stick_top = #{disStickTopc}

@@ -260,11 +260,15 @@ public class ProjectController extends BaseController {
 			query.setRowsPerPage(baseRequest.getPageSize());
 
 			if (StringUtils.isNotBlank(baseRequest.getSortField())) {
-				query.addQueryData("sql_keyword_orderByc", baseRequest.getSortField());
+				query.addQueryData("sql_keyword_orderBy", "tp." + baseRequest.getSortField());
+				query.addQueryData("sql_keyword_sort", "desc");
+				query.addQueryData("sql_keyword_orderByc", "tp.post_id");
 				query.addQueryData("sql_keyword_sortc", "desc");
 			} else {
-				query.addQueryData("sql_keyword_orderBy", "post_id");
+				query.addQueryData("sql_keyword_orderBy", "tp.post_id");
 				query.addQueryData("sql_keyword_sort", "desc");
+				query.addQueryData("sql_keyword_orderByc", "tp.praise_num");
+				query.addQueryData("sql_keyword_sortc", "desc");
 			}
 			Integer type = 2;// 取关注人
 			KFFUser loginUser = null;
@@ -316,11 +320,15 @@ public class ProjectController extends BaseController {
 			// 帖子类型：1-评测；2-讨论；3-文章
 			query.addQueryData("postType", "2");
 			if (StringUtils.isNotBlank(baseRequest.getSortField())) {
-				query.addQueryData("sql_keyword_orderByc", baseRequest.getSortField());
+				query.addQueryData("sql_keyword_orderBy", baseRequest.getSortField());
+				query.addQueryData("sql_keyword_sort", "desc");
+				query.addQueryData("sql_keyword_orderByc", "post_id");
 				query.addQueryData("sql_keyword_sortc", "desc");
 			} else {
-				query.addQueryData("sql_keyword_orderBy", "createTime");
+				query.addQueryData("sql_keyword_orderBy", "post_id");
 				query.addQueryData("sql_keyword_sort", "desc");
+				query.addQueryData("sql_keyword_orderByc", "praise_num");
+				query.addQueryData("sql_keyword_sortc", "desc");
 			}
 
 			KFFUser loginUser = null;
@@ -374,16 +382,21 @@ public class ProjectController extends BaseController {
 			// 帖子类型：1-评测；2-讨论；3-文章
 			query.addQueryData("postType", "3");
 			if (StringUtils.isNotBlank(baseRequest.getSortField())) {
-				query.addQueryData("sql_keyword_orderByc", baseRequest.getSortField());
+				query.addQueryData("sql_keyword_orderBy", baseRequest.getSortField());
+				query.addQueryData("sql_keyword_sort", "desc");
+				query.addQueryData("sql_keyword_orderByc", "post_id");
 				query.addQueryData("sql_keyword_sortc", "desc");
+
 			} else {
 				query.addQueryData("sql_keyword_orderBy", "post_id");
 				query.addQueryData("sql_keyword_sort", "desc");
+				query.addQueryData("sql_keyword_orderByc", "praise_num");
+				query.addQueryData("sql_keyword_sortc", "desc");
 			}
 			KFFUser loginUser = null;
 			if (StringUtils.isNotBlank(token)) {
 				Integer userId = getUserIdByToken(token);
-				//query.addQueryData("createUserId", "userId");
+				// query.addQueryData("createUserId", "userId");
 				loginUser = kffUserService.findById(userId);
 			}
 			Integer type = 2;// 取关注人
