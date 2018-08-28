@@ -88,6 +88,24 @@ public final class sysGlobals {
 	 * 帖子中的内容抽离的图片最多总数(最多图片数)
 	 */
 	public static final String POST_IMAGE_SUM = "POST_IMAGE_SUM";
+	/**
+	 * 全面系统评测和用户自定义 点赞格外奖励
+	 * 
+	 */
+
+	public static final String EVA_MODELTYPE_2_AND_4_EXTRA_PRAISE_AWARD = "EVA_MODELTYPE_2_AND_4_EXTRA_PRAISE_AWARD";
+	/**
+	 * 文章的点赞格外奖励
+	 */
+	public static final String ARTICLE_EXTRA_PRAISE_AWARD = "ARTICLE_EXTRA_PRAISE_AWARD";
+	/**
+	 * 部分评测点赞格外奖励
+	 */
+	public static final String EVA_MODELTYPE_3_EXTRA_PRAISE_AWARD = "EVA_MODELTYPE_3_EXTRA_PRAISE_AWARD";
+	/**
+	 * 达到此赞数获得格外奖励
+	 */
+	public static final String PRAISE_NUM_EXTRA_AWARD = "PRAISE_NUM_EXTRA_AWARD";
 
 	/**推送给全部用户默认一次取多少消息*/
 	public static Integer DEFAULT_MSG_COUNT = 1000;
