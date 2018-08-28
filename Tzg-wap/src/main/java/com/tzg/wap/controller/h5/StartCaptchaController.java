@@ -1,6 +1,5 @@
 package com.tzg.wap.controller.h5;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,9 +18,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.tzg.common.redis.RedisService;
-import com.tzg.common.utils.AccountTokenUtil;
 import com.tzg.common.utils.GeetestConfig;
 import com.tzg.common.utils.GeetestLib;
+import com.tzg.common.utils.SyseUtil;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
@@ -60,8 +59,7 @@ public class StartCaptchaController extends BaseController {
 			redisService.put("userid", userid, 3600);
 			resStr = gtSdk.getResponseStr();
 			System.out.println(JSON.toJSON(resStr));
-			/*PrintWriter out = response.getWriter();
-			out.println(resStr);*/
+
 			resMap.put("resStr", resStr);
 			bre.setData(resMap);
 		} catch (RestServiceException e) {
@@ -74,8 +72,8 @@ public class StartCaptchaController extends BaseController {
 		return bre;
 	}
 
-	@RequestMapping(value = "/checkStartCaptcha", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
+	@RequestMapping(value = "/checkStartCaptcha", method = { RequestMethod.POST, RequestMethod.GET })
 	public BaseResponseEntity checkStartCaptcha(HttpServletRequest request, HttpServletResponse response) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		try {
@@ -114,7 +112,7 @@ public class StartCaptchaController extends BaseController {
 
 			if (gtResult == 1) {
 				// 验证成功
-				PrintWriter out = response.getWriter();
+				// PrintWriter out = response.getWriter();
 				JSONObject data = new JSONObject();
 				try {
 					data.put("status", "success");
@@ -122,8 +120,9 @@ public class StartCaptchaController extends BaseController {
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
-				// out.println(data.toString());
-				map.put("data", data.toJSONString());
+
+				map.put("data", data);
+
 			} else {
 				// 验证失败
 				JSONObject data = new JSONObject();
@@ -133,11 +132,12 @@ public class StartCaptchaController extends BaseController {
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
-				/*PrintWriter out = response.getWriter();
-				out.println(data.toString());*/
-				map.put("data", data.toJSONString());
+
+				map.put("data", data);
+
 			}
 			bre.setData(map);
+			SyseUtil.systemErrOutJson(bre);
 		} catch (RestServiceException e) {
 			logger.error("StartCaptchaController checkStartCaptcha：", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
