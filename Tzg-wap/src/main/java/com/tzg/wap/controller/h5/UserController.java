@@ -73,7 +73,7 @@ public class UserController extends BaseController {
 	private KFFUserRmiService kffUserRmiService;
 	@Autowired
 	private FollowRmiService followRmiService;
-	
+
 	/** 
 	* @Title: getUserInfo 
 	* @Description: TODO <获取用户信息接口>
@@ -91,42 +91,41 @@ public class UserController extends BaseController {
 	*/
 	@ResponseBody
 	@RequestMapping(value = "/getUserInfo", method = { RequestMethod.POST, RequestMethod.GET })
-	public BaseResponseEntity getUserInfo(HttpServletRequest request, HttpServletResponse response,
-			Integer userId,String token) {
+	public BaseResponseEntity getUserInfo(HttpServletRequest request, HttpServletResponse response, Integer userId, String token) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
-		if(userId==null&&StringUtils.isBlank(token)) {
+		if (userId == null && StringUtils.isBlank(token)) {
 			JSONObject requestContent = HtmlUtils.getRequestContent(request);
 			userId = (Integer) requestContent.get("userId");
 			token = (String) requestContent.get("token");
 		}
-		if (null==userId) {
+		if (null == userId) {
 			bre.setNoRequstData();
 			return bre;
 		}
 		KFFUser user = kffUserRmiService.findById(userId);
-		if(null==user) {
+		if (null == user) {
 			bre.setNoDataMsg();
 			return bre;
 		}
-		//查询用户关注状态
-		Map<String,Object> seMap = new HashMap<String,Object>();
+		// 查询用户关注状态
+		Map<String, Object> seMap = new HashMap<String, Object>();
 		Integer userIdc = null;
-		if(StringUtils.isNotBlank(token)) {
+		if (StringUtils.isNotBlank(token)) {
 			userIdc = getUserIdByToken(token);
 		}
-		if(null!=userIdc) {
+		if (null != userIdc) {
 			seMap.put("followUserId", userIdc);
 			seMap.put("followedUserId", userId);
 			seMap.put("status", 1);
-			seMap.put("followType", 3);//关注类型：1-关注项目;2-关注帖子；3-关注用户
+			seMap.put("followType", 3);// 关注类型：1-关注项目;2-关注帖子；3-关注用户
 			List<Follow> follows = followRmiService.findListByAttr(seMap);
-			if(follows.isEmpty()) {
+			if (follows.isEmpty()) {
 				user.setFollowStatus(0);
-			}else {
+			} else {
 				user.setFollowStatus(1);
 			}
-		}else {
+		} else {
 			user.setFollowStatus(0);
 		}
 		user.setPassword(null);
@@ -135,7 +134,7 @@ public class UserController extends BaseController {
 		bre.setData(map);
 		return bre;
 	}
-	
+
 	/**
 	 * 用户注册后生成邀请链接 (免密码登陆**** 手机号码*** 图片生成验证码*** 手机验证码*** 发到手机的验证码 密码) 邀请码 app 端注册 adasdadad
 	 * 
@@ -150,7 +149,7 @@ public class UserController extends BaseController {
 	@RequestMapping(value = "/registerInva", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public BaseResponseEntity registerInva(HttpServletRequest response, HttpServletRequest request, String phoneNumber, String checkCode, String phoneCode,
-			String dynamicVerifyCode, String invaUIH, String password) {
+			String dynamicVerifyCode, String invaUIH, String password, Boolean isRobot) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		// 验证手机号的合法性
@@ -238,13 +237,15 @@ public class UserController extends BaseController {
 			logger.error("RegisterInvaController registerInva：", e);
 			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
 		}
-		if (!dynamicVerifyCode.equals(cacheCode)) {
+		if (!isRobot) {
+			if (!dynamicVerifyCode.equals(cacheCode)) {
 
-			map.put("reStatus", 0);// 1注册成功 0 注册不成功
-			map.put("reason", "短信验证码输入不正确");
-			bre.setData(map);
+				map.put("reStatus", 0);// 1注册成功 0 注册不成功
+				map.put("reason", "短信验证码输入不正确");
+				bre.setData(map);
 
-			return bre;
+				return bre;
+			}
 		}
 		// 手机验证码成功 保存用户信息
 		// 将邀请二维码字符进行转码转化成对应的userID
@@ -417,7 +418,7 @@ public class UserController extends BaseController {
 		HashMap<String, Object> map = new HashMap<String, Object>();
 
 		try {
-			if(phoneNumber==null&&password==null&&dynamicVerifyCode==null) {
+			if (phoneNumber == null && password == null && dynamicVerifyCode == null) {
 				JSONObject requestContent = HtmlUtils.getRequestContent(request);
 				phoneNumber = (String) requestContent.get("phoneNumber");
 				password = (String) requestContent.get("password");
@@ -770,7 +771,7 @@ public class UserController extends BaseController {
 		Integer statusNum = kffRmiService.selectUserCardStatusByUserId(user.getUserId());
 		if (null == statusNum) {
 			map.put("status", 4);
-		}else if(null != statusNum) {
+		} else if (null != statusNum) {
 			map.put("status", statusNum);
 		}
 		bre.setData(map);
@@ -975,7 +976,7 @@ public class UserController extends BaseController {
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
 			Integer type = 2;// 取关注人
-			PageResult<FollowResponse> result = kffRmiService.findPageMyFollow(query,type,loginaccount);
+			PageResult<FollowResponse> result = kffRmiService.findPageMyFollow(query, type, loginaccount);
 			map.put("myFollows", result);
 			bre.setData(map);
 		} catch (RestServiceException e) {
@@ -1021,7 +1022,7 @@ public class UserController extends BaseController {
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
 			Integer type = 2;// 取关注人
-			PageResult<CollectPostResponse> result = kffRmiService.findPageMyCollectRecords(query,type,loginaccount);
+			PageResult<CollectPostResponse> result = kffRmiService.findPageMyCollectRecords(query, type, loginaccount);
 			map.put("myTokenRecords", result);
 			bre.setData(map);
 		} catch (RestServiceException e) {
