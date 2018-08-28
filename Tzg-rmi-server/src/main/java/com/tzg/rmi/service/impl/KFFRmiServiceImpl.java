@@ -908,8 +908,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (sendUser == null) {
 			throw new RestServiceException("发送用户不存在");
 		}
-		if (sendUser.getKffCoinNum().compareTo(commendationRequest.getAmount()) < 0) {
-			throw new RestServiceException("账户余额不足:捐赠数量" + commendationRequest.getAmount().intValue() + "余额数量" + sendUser.getKffCoinNum().intValue());
+		CoinProperty sendUserCoinProperty = coinPropertyService.findByUserId(commendationRequest.getSendUserId());
+		if (new BigDecimal(sendUserCoinProperty.getCoinLock()).compareTo(commendationRequest.getAmount()) < 0) {
+			throw new RestServiceException("账户余额不足:捐赠数量" + commendationRequest.getAmount().intValue() + "余额数量" + sendUserCoinProperty.getCoinLock().intValue());
 		}
 
 		// 帖子捐赠人数加+1
@@ -1509,7 +1510,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		} else {
 			response.setProjectFollowStatus(0);
 		}
-		
+
 		// 查询项目方的信息
 		if (null == projectUserId) {
 			response.setIcon(null);

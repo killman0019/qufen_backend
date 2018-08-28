@@ -1414,6 +1414,7 @@ public class UserController extends BaseController {
 			KFFUser userDB = new KFFUser();
 			userDB.setUserId(loginUserId);
 			userDB.setLastLoginDateTime(new Date());// 更新最新登陆时间
+			userDB.setKffCoinNum(loginaccount.getKffCoinNum());// 修复user表kffcoinnum 不正确bug
 			kffRmiService.updateUser(userDB);
 
 			// 以下 修复移动端出现的取值bug begin
