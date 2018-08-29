@@ -978,13 +978,13 @@
 		tbpost
 		<set>
 			<if test="praiseIncome != null">
-				praise_income =praise_income + #{praiseIncome},
+				praise_income =IFNULL(praise_income,0) + #{praiseIncome},
 			</if>
 			<if test="donateIncome != null">
-				donate_income =donate_income + #{donateIncome},
+				donate_income =IFNULL(donate_income,0) + #{donateIncome},
 			</if>
 			<if test="amount !=null ">
-				post_total_income =post_total_income + #{amount}
+				post_total_income =IFNULL(post_total_income,0) + #{amount}
 
 			</if>
 		</set>
