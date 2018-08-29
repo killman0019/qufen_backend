@@ -2646,7 +2646,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			int countDays = DateUtil.countDays(new Date(), post.getCreateTime());
 			SystemParam dayCountPara = systemParamService.findByCode(sysGlobals.PUBLISH_DAY_COUNT);
 			Integer countDaysDB = Integer.valueOf(dayCountPara.getVcParamValue());
-			if (countDays <= countDaysDB) {// 判断用户是否是30 天内发布  点赞有效
+			if (countDays <= countDaysDB) {// 判断用户是否是30 天内发布 点赞有效
 
 				Integer postType = posts.getPostType();
 				System.err.println("我是帖子类型 :" + postType);
@@ -7852,8 +7852,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					}
 				}
 			}
-			if (type == 2) {// 统计打赏的帖子收益
-				kffPostService.updateCommendationIncome(postId, amount);
+			if (amount > 0) {
+				if (type == 2) {// 统计打赏的帖子收益
+					kffPostService.updateCommendationIncome(postId, amount);
+				}
 			}
 		}
 	}
