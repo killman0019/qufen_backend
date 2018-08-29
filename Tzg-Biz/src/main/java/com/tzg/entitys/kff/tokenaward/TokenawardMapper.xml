@@ -125,7 +125,7 @@
 			updateTime = NOW()
 		</set>
 		WHERE
-		distribution_type = 1
+		distribution_type = 1 and grant_type =1
 	</update>
 
 	<update id="update" parameterType="com.tzg.entitys.kff.tokenaward.Tokenaward">
