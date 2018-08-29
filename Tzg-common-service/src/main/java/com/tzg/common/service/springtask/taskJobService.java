@@ -16,6 +16,8 @@ import com.tzg.common.service.kff.TokenawardService;
 import com.tzg.common.service.kff.TokenrecordsService;
 import com.tzg.common.service.kff.TransactionPairService;
 import com.tzg.common.service.kff.UserService;
+import com.tzg.common.service.systemParam.SystemParamService;
+import com.tzg.common.utils.sysGlobals;
 
 @Service
 @Transactional
@@ -44,6 +46,9 @@ public class taskJobService {
 	@Autowired
 	private UserService userService;
 
+	@Autowired
+	private SystemParamService systemParamService;
+
 	/**
 	 * 
 	* @Title: updateWeeHours 
@@ -70,6 +75,7 @@ public class taskJobService {
 		logger.info("--------------start updatePop job---");
 		userService.setPop();// 更新弹框
 		logger.info("-------------- end updatePop job---");
+		systemParamService.updateTime(sysGlobals.TASK_TOKEN_AWARD);
 	}
 
 	/*public void updateByGrantType() {

@@ -3,6 +3,9 @@ package com.tzg.rmi.service.impl;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -59,6 +62,7 @@ import com.tzg.common.service.kff.UserInvationService;
 import com.tzg.common.service.kff.UserService;
 import com.tzg.common.service.kff.UserWalletService;
 import com.tzg.common.service.systemParam.SystemParamService;
+import com.tzg.common.utils.DateUtil;
 import com.tzg.common.utils.H5AgainDeltagsUtil;
 import com.tzg.common.utils.sysGlobals;
 import com.tzg.common.zookeeper.ZKClient;
@@ -312,27 +316,6 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 
 	}
 
-	public static void main(String[] args) {
-		Set<NewsFlash> set = new HashSet<NewsFlash>();
-
-		NewsFlash nw1 = new NewsFlash();
-		nw1.setId(1);
-		set.add(nw1);
-		NewsFlash nw2 = new NewsFlash();
-		nw2.setId(2);
-		set.add(nw2);
-		NewsFlash nw3 = new NewsFlash();
-		nw3.setId(2);
-		set.add(nw3);
-
-		Iterator<NewsFlash> it = set.iterator();
-		while (it.hasNext()) {
-			NewsFlash str = it.next();
-			System.out.println(str.getId());
-		}
-
-	}
-
 	/**
 	 * 关注项目：
 		点赞量超过5的内容（评测、爆料、文章）
@@ -380,9 +363,7 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 					// 关注用户发布的内容（评测、爆料、文章）
 					seMap.clear();
 					seMap.put("createUserId", follow.getFollowedId());
-
 					seMap.put("statusc", 1);// 状态：0-删除；1-有效
-
 					List<PostResponse> projectAndPosts = kffProjectService.findLinkedTabsByAttr(seMap);
 //					System.out.println("projectAndPosts2.size------------------------>"+projectAndPosts.size());
 					if(!projectAndPosts.isEmpty()) {
@@ -455,6 +436,27 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 				}
 				postResp.add(postRe);
 			}
+			//将list降序排列
+			Collections.sort(postResp, new Comparator<PostResponse>(){
+			       @Override
+			       public int compare(PostResponse arg0, PostResponse arg1) {
+				   int mark = 1;
+				   try {
+					Date date0 = arg0.getcreateTime();
+					Date date1 = arg1.getcreateTime();
+					if(date0.getTime() > date1.getTime()){
+					    mark =  -1;
+					}
+					if(arg0.getcreateTime().equals(arg1.getcreateTime())){
+					    mark =  0;
+					}
+				   } catch (Exception e) {
+					logger.error("日期转换异常", e);
+					e.printStackTrace();
+				   }
+				   return mark;
+				} //compare
+			});
 	        List<PostResponse> returnPost = new ArrayList<PostResponse>();
 	        int beginNum = query.getPageIndex();
 	        int endNum = query.getRowsPerPage()*beginNum;

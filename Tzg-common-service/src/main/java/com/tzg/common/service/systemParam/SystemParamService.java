@@ -1,5 +1,6 @@
 package com.tzg.common.service.systemParam;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -126,6 +127,13 @@ public class SystemParamService {
 	public List<SystemParam> findByCodeList(List<String> listStr) {
 		// TODO 根据codelist 查询对象
 		return null;
+	}
+
+	public void updateTime(String taskTokenAward) {
+		// TODO Auto-generated method stub
+		SystemParam sysparam = findByCode(taskTokenAward);
+		sysparam.setDtModify(new Date());
+		systemParamMapper.update(sysparam);
 	}
 
 }

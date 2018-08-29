@@ -203,6 +203,12 @@ public class TransactionPairService {
 						transactionPair.setVaild(1);
 						// transactionPairMapper.updateByMainCode(transactionPair);
 						transactionPairList.add(transactionPair);
+						if (transactionPairList.size() >= 50) {
+							if (CollectionUtils.isNotEmpty(transactionPairList)) {
+								transactionPairMapper.updateBatch(transactionPairList);
+								transactionPairList.clear();
+							}
+						}
 					}
 
 				}

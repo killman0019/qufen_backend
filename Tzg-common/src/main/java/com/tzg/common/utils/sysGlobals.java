@@ -106,6 +106,10 @@ public final class sysGlobals {
 	 * 达到此赞数获得格外奖励
 	 */
 	public static final String PRAISE_NUM_EXTRA_AWARD = "PRAISE_NUM_EXTRA_AWARD";
+	/**
+	 * 定时任务启动时间,有效赞 有效评论有效分享,弹框,登陆奖励
+	 */
+	public static final String TASK_TOKEN_AWARD = "TASK_TOKEN_AWARD";
 
 	/**推送给全部用户默认一次取多少消息*/
 	public static Integer DEFAULT_MSG_COUNT = 1000;
