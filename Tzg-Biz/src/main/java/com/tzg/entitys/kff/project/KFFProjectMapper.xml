@@ -638,8 +638,8 @@
 			tbu.user_type as userType
 		FROM
 			tbproject  as tbp
-		LEFT JOIN tbpost tbt ON tbp.project_id = tbt.project_id
-		LEFT JOIN tbuser tbu ON tbu.user_id = tbt.create_user_id
+		INNER JOIN tbpost tbt ON tbp.project_id = tbt.project_id
+		INNER JOIN tbuser tbu ON tbu.user_id = tbt.create_user_id
 		<if test="commitTp!=null">
    		  LEFT JOIN tbcomments as tbc ON tbt.create_user_id = tbc.comment_user_id
    		</if>
