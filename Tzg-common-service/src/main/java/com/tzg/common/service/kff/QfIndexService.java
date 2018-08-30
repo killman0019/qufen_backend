@@ -92,4 +92,9 @@ public class QfIndexService {
 		QfIndexMapper.updateyxSharePost(shareUserId);
 	}
 
+	public void updateYXcomment(Integer userId) {
+		// TODO 分享成功,有效评论次数减少
+		QfIndexMapper.updateYXcomment(userId);
+	}
+
 }
