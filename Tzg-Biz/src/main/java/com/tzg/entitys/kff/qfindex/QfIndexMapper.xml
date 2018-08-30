@@ -165,6 +165,7 @@
 		yx_comments=floor(status_hierarchy_type * 0.1),
 		yx_share_post=floor(status_hierarchy_type * 0.1),
 		updateTime= NOW()
+		where status_hierarchy_type > 0
 	</update>
 
 	<update id="updateYxPraiseValid" parameterType="java.lang.Integer">

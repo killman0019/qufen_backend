@@ -42,6 +42,7 @@
 	30 * * * * ? 每半分钟触发一次
 	0 0/30 * * * ? 每30分钟
 	0 0/10 * * * ? 每十分钟
+	0 0 12 * * ?
 	*/
 	-->
 	<task:scheduler id="scheduler" pool-size="100" />
@@ -59,7 +60,7 @@
 <!--  		<task:scheduled ref="taskJobService" method="caculatePostTatolIncome" cron="0/5 *  * * * ? "/>  -->
 
 		<!-- 线上版本的定时器 -->
-		<task:scheduled ref="taskJobService" method="updateWeeHours" cron="0 1 0 * * ? " />
+		<task:scheduled ref="taskJobService" method="updateWeeHours" cron="0 0 1 * * ?" />
 	 	<task:scheduled ref="taskJobService" method="caculateProjectTotalScore" cron="0 0 0/2 * * ? "/> 
 		<task:scheduled ref="taskJobService" method="getProjectDateFromUrlTask" cron="0 0/5 * * * ? " />
 		<task:scheduled ref="taskJobService" method="getdatafromUrlByexchangeTask" cron="0 0/10 * * * ? " />
