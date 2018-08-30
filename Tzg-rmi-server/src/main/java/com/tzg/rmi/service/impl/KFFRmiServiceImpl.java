@@ -1837,6 +1837,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// CoinProperty coinProperty = coinPropertyService.findByUserId(commentUser.getUserId());
 		coinPropertyService.updateCoin(tokenrecords, 1);
 		kffUserService.updateUserKFFCoinNumType(tokenrecords.getUserId(), tokenrecords.getAmount(), 1);
+		qfIndexService.updateYXcomment(tokenrecords.getUserId());
 		return tokenrecords.getAmount().doubleValue();
 	}
 
