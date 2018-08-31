@@ -20,6 +20,9 @@
 	<dubbo:reference id="kffRmiService" interface="com.tzg.rmi.service.KFFRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0"
 		check="false" />
 
+	<dubbo:reference id="kffRobotRmiService" interface="com.tzg.rmi.service.KFFRobotRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0"
+		check="false" />
+
 	<dubbo:reference id="kffPostRmiService" interface="com.tzg.rmi.service.KFFPostRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0"
 		check="false" />
 
@@ -49,8 +52,8 @@
 
 	<dubbo:reference id="userRmiService" interface="com.tzg.rmi.service.KFFUserRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0"
 		check="false" />
-		
-		<dubbo:reference id="tagsRmiService" interface="com.tzg.rmi.service.KFFTagsRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0"
+
+	<dubbo:reference id="tagsRmiService" interface="com.tzg.rmi.service.KFFTagsRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0"
 		check="false" />
 
 	<dubbo:reference id="navigationRmiService" interface="com.tzg.rmi.service.NavigationRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}"

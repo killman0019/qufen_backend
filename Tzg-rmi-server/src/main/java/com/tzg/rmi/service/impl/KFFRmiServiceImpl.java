@@ -24,6 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import cn.jpush.api.report.UsersResult.User;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -7869,5 +7871,24 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		messageMap.put("status", 1);
 		Integer sum = kffMessageService.findSumMessage(messageMap);
 		return sum;
+	}
+
+	/**
+	 * 
+	* @Title: countViews 
+	* @Description: TODO <用于统计阅读次数>
+	* @author zhangdd <方法创建作者>
+	* @create 上午10:14:45
+	* @param @param post
+	* @param @param user
+	* @param @return <参数说明>
+	* @return Map<String,Object> 
+	* @throws 
+	* @update 上午10:14:45
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	 */
+	public Map<String, Object> countViews(Post post, KFFUser user) {
+		return null;
 	}
 }

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzg.entitys.kff.robot.RobotMapper">
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.kff.robot.Robot">
+		<id column="robot_id" property="robotId" jdbcType="INTEGER" />
+		<result column="user_id" property="userId" jdbcType="INTEGER" />
+		<result column="status" property="status" jdbcType="INTEGER" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<sql id="columns">
+		robot_id, user_id, status, create_time, update_time
+	</sql>
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="columns" />
+		from tbrobot
+		where robot_id = #{robotId,jdbcType=INTEGER}
+	</select>
+
+	<insert id="save" parameterType="com.tzg.entitys.kff.robot.Robot">
+		insert into tbrobot (robot_id, user_id, status,
+		create_time, update_time)
+		values (#{robotId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER},
+		#{status,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.kff.robot.Robot">
+		update tbrobot
+		<set>
+			<if test="userId != null">
+				user_id = #{userId,jdbcType=INTEGER},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=INTEGER},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where robot_id = #{robotId,jdbcType=INTEGER}
+	</update>
+
+
+	<sql id="queryWhere">
+		<if test="userId != null">
+			user_id = #{userId,jdbcType=INTEGER},
+		</if>
+		<if test="status != null">
+			status = #{status,jdbcType=INTEGER},
+		</if>
+		<if test="createTime != null">
+			create_time = #{createTime,jdbcType=TIMESTAMP},
+		</if>
+		<if test="updateTime != null">
+			update_time = #{updateTime,jdbcType=TIMESTAMP},
+		</if>
+
+	</sql>
+
+
+
+
+</mapper>

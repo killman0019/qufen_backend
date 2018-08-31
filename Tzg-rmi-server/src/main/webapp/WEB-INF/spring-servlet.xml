@@ -83,6 +83,11 @@
 	<bean id="kffRmiService" class="com.tzg.rmi.service.impl.KFFRmiServiceImpl" />
 	<dubbo:service interface="com.tzg.rmi.service.KFFRmiService" ref="kffRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0" />
 
+	<!--机器人相关服务 -->
+	<bean id="kffRobotRmiService" class="com.tzg.rmi.service.impl.KFFRobotRmiServiceImpl" />
+	<dubbo:service interface="com.tzg.rmi.service.KFFRobotRmiService" ref="kffRobotRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0" />
+
+
 	<!--posts收益相关统计相关服务 -->
 	<bean id="kffPostRmiService" class="com.tzg.rmi.service.impl.KFFPostRmiServiceImpl" />
 	<dubbo:service interface="com.tzg.rmi.service.KFFPostRmiService" ref="kffPostRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0" />

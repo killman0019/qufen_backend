@@ -1,5 +1,6 @@
 package com.tzg.rmi.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,9 +12,12 @@ import org.springframework.util.CollectionUtils;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.service.kff.FollowService;
+import com.tzg.common.service.kff.InteractionRootService;
 import com.tzg.common.service.kff.UserService;
+import com.tzg.entitys.kff.interactionroot.InteractionRoot;
 import com.tzg.entitys.kff.project.ProjectResponse;
 import com.tzg.entitys.kff.user.KFFUser;
+import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rmi.service.KFFUserRmiService;
 
 public class KFFUserRmiServiceImpl implements KFFUserRmiService {
@@ -26,6 +30,9 @@ public class KFFUserRmiServiceImpl implements KFFUserRmiService {
 	@Autowired
 	private FollowService kffFollowService;
 
+	@Autowired
+	private InteractionRootService interactionRootService;
+
 	public KFFUser findById(Integer id) {
 		return userService.findById(id);
 	}
@@ -37,21 +44,20 @@ public class KFFUserRmiServiceImpl implements KFFUserRmiService {
 	public List<KFFUser> findListByMap(Map<String, Object> map) {
 		return userService.findListByMap(map);
 	}
-	
+
 	public boolean findUserByStatus(Integer userId) {
 		KFFUser user = userService.findById(userId);
-		if(null==user) {
+		if (null == user) {
 			return false;
 		}
-		//状态：0-删除；1-有效
-		if(user.getStatus()==0) {
+		// 状态：0-删除；1-有效
+		if (user.getStatus() == 0) {
 			return false;
-		}else if(user.getStatus()==1) {
+		} else if (user.getStatus() == 1) {
 			return true;
 		}
 		return false;
 	}
-	
 
 	@Override
 	public PageResult<KFFUser> selectKOLProjectPage(Integer userId, PaginationQuery query) {
@@ -81,4 +87,5 @@ public class KFFUserRmiServiceImpl implements KFFUserRmiService {
 		}
 		return userPage;
 	}
+
 }

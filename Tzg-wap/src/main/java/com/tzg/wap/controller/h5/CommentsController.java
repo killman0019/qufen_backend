@@ -18,6 +18,8 @@ import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
 import com.tzg.rmi.service.KFFRmiService;
+import com.tzg.rmi.service.KFFRobotRmiService;
+import com.tzg.rmi.service.KFFUserRmiService;
 
 @Controller(value = "KFFCommentsController")
 @RequestMapping("/kff/comments")
@@ -26,6 +28,12 @@ public class CommentsController extends BaseController {
 
 	@Autowired
 	private KFFRmiService kffRmiService;
+
+	@Autowired
+	private KFFUserRmiService kffUserRmiService;
+
+	@Autowired
+	private KFFRobotRmiService kffRobotRmiService;
 
 	/**
 	 * 评论帖子
@@ -45,7 +53,8 @@ public class CommentsController extends BaseController {
 			String token = (String) request.getSession().getAttribute("token");
 			Integer userId = getUserIdByToken(token);
 			comment.setCommentUserId(userId);
-			kffRmiService.saveComment(comment);
+			CommentsRequest resultComment = kffRobotRmiService.createComment(comment, userId);
+			kffRmiService.saveComment(resultComment);
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("CommentsController saveComment:{}", e);
@@ -56,6 +65,5 @@ public class CommentsController extends BaseController {
 		}
 		return bre;
 	}
-
 
 }

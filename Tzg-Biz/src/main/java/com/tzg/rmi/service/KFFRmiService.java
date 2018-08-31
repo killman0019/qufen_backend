@@ -979,4 +979,21 @@ public interface KFFRmiService {
 	 */
 	public Integer findSumMessage(Integer loginUserId) throws RestServiceException;
 
+	/**
+	 * 
+	* @Title: countViews 
+	* @Description: TODO <统计阅读次数>
+	* @author zhangdd <方法创建作者>
+	* @create 上午10:16:03
+	* @param @param post
+	* @param @param user
+	* @param @return
+	* @param @throws RestServiceException <参数说明>
+	* @return Map<String,Object> 
+	* @throws 
+	* @update 上午10:16:03
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	 */
+	public Map<String, Object> countViews(Post post, KFFUser user) throws RestServiceException;
 }
