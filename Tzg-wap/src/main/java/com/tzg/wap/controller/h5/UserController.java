@@ -52,6 +52,7 @@ import com.tzg.rmi.service.KFFUserRmiService;
 import com.tzg.rmi.service.SystemParamRmiService;
 import com.tzg.wap.utils.DateUtil;
 import com.tzg.wap.utils.HexUtil;
+import com.vdurmont.emoji.EmojiParser;
 
 @Controller(value = "KFFUserController")
 @RequestMapping("/kff/user")
@@ -854,32 +855,36 @@ public class UserController extends BaseController {
 	 * ==== =========================
 	 */
 
-	/**
-	 * 更换用户信息(头像.昵称)
-	 * 
-	 * @param request
-	 * @param response
-	 * @param token
-	 * @param userName
-	 * @param sex
-	 * @param userSignature
-	 * @param areaName
-	 * @return
-	 */
 	@RequestMapping(value = "/updateUserInfo", method = { RequestMethod.POST, RequestMethod.GET })
-	public @ResponseBody BaseResponseEntity updateUserInfo(HttpServletRequest request, HttpServletResponse response, String userName, Integer sex,
-			String userSignature, String areaName) {
+	public @ResponseBody BaseResponseEntity updateUserInfo(HttpServletRequest request, String token, String userName, String userIcon, String userSignature,
+			Integer sex, String areaName) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		Map<String, Object> map = new HashMap<String, Object>();
 		try {
-			String token = (String) request.getSession().getAttribute("token");
+
+			JSONObject requestContent = HtmlUtils.getRequestContent(request);
+			if (StringUtils.isEmpty(token) && StringUtils.isEmpty(userName) && sex == null && StringUtils.isEmpty(userSignature)
+					&& StringUtils.isEmpty(areaName) && StringUtils.isEmpty(userIcon)) {
+				token = (String) requestContent.get("token");
+				userName = (String) requestContent.get("userName");
+				sex = (Integer) requestContent.get("sex");
+				userSignature = (String) requestContent.get("userSignature");
+				areaName = (String) requestContent.get("areaName");
+				userIcon = (String) requestContent.get("userIcon");
+			}
 			if (StringUtils.isBlank(token)) {
 				throw new RestServiceException(RestErrorCode.USER_NOT_LOGIN);
 			}
 			if (sex != null && sex != 1 && sex != 2) {
 				throw new RestServiceException(RestErrorCode.USER_SEX_WRONG);
 			}
-
+			// 去除表情
+			if (StringUtils.isNotEmpty(userName)) {
+				userName = EmojiParser.removeAllEmojis(userName);
+			}
+			if (StringUtils.isNotEmpty(userSignature)) {
+				userSignature = EmojiParser.removeAllEmojis(userSignature);
+			}
 			Integer userId = null;
 			try {
 				userId = AccountTokenUtil.decodeAccountToken(token);
@@ -898,6 +903,7 @@ public class UserController extends BaseController {
 			}
 
 			KFFUser account = new KFFUser();
+			com.tzg.common.utils.DozerMapperUtils.map(loginaccount, account);
 			account.setUserId(loginaccount.getUserId());
 			if (StringUtils.isNotBlank(userName)) {
 				account.setUserName(userName);
@@ -911,9 +917,14 @@ public class UserController extends BaseController {
 			if (sex != null) {
 				account.setSex(sex);
 			}
+			if (StringUtils.isNotBlank(userIcon)) {
+				account.setIcon(userIcon);
+			}
 			account.setUpdateTime(new Date());
-			kffRmiService.updateUser(account);
+			kffRmiService.updateUserInfo(account);
 
+			KFFUser newuser = kffRmiService.findUserById(userId);
+			map.put("user", newuser);
 			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("UserController updateUserInfo error,reason：{}", e);
