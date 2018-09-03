@@ -92,4 +92,14 @@ public class QfIndexService {
 		QfIndexMapper.updateyxSharePost(shareUserId);
 	}
 
+	public void updateSetYxPraise(Integer userId) {
+		// TODO 仅仅更新有效赞
+		QfIndexMapper.updateSetYxPraise(userId);
+	}
+
+	public void updateSetYxComment(Integer userId) {
+		// TODO 仅仅更新有效评论
+		QfIndexMapper.updateSetYxComment(userId);
+	}
+
 }

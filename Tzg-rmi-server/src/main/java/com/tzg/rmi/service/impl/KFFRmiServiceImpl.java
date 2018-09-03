@@ -1757,6 +1757,18 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 																					// 的用户
 							QfIndex commentUserQfIndex = qfIndexService.findByUserId(commentUser.getUserId());
 							if (null != commentUserQfIndex) {
+
+								Integer yxComment = commentUserQfIndex.getYxComments();// 有效赞
+								if (yxComment != (int) (Math.floor(commentUserQfIndex.getStatusHierarchyType() * 0.1))) {
+									if (DateUtil.isToday(commentUserQfIndex.getUpdateTime().getTime())) {// 判断点赞人的更新时间是不是今天
+																											// 是今天不更新
+																											// 不是今天更新
+
+									} else {
+										qfIndexService.updateSetYxComment(commentUserQfIndex.getUserId());
+									}
+								}
+
 								if (commentUserQfIndex.getStatusHierarchyType() > 0 && commentUserQfIndex.getYxComments() > 0) {
 									// 发布人进行实名认证并且区分指数>0并且评论的用户的有效评论数大于0
 									// 进行token发放奖励
@@ -2655,8 +2667,18 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				// 根据点赞人的id 去查看他的有效点赞
 				QfIndex qfIndexPraiseUser = qfIndexService.findByUserId(userId);
 				if (null != qfIndexPraiseUser) {
-					Integer qfIndexId = qfIndexPraiseUser.getQfIndexId();// 区分指数
+					// Integer qfIndexId = qfIndexPraiseUser.getQfIndexId();// 区分指数
 					Integer yxPraise = qfIndexPraiseUser.getYxpraise();// 有效赞
+					if (yxPraise != (int) (Math.floor(qfIndexPraiseUser.getStatusHierarchyType() * 0.1))) {
+						if (DateUtil.isToday(qfIndexPraiseUser.getUpdateTime().getTime())) {// 判断点赞人的更新时间是不是今天
+																							// 是今天不更新
+																							// 不是今天更新
+
+						} else {
+							qfIndexService.updateSetYxPraise(qfIndexPraiseUser.getUserId());
+						}
+
+					}
 					// 根据帖子的id 去获取内容贡献者的id
 					System.err.println("帖子的id: " + postId);
 					Post creatUserPost = kffPostService.findById(postId);
