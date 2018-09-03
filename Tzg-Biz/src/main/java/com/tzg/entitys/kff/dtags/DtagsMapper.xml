@@ -86,20 +86,6 @@
 	]]>
 	</select>
 
-	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
-		select count(*) from d_tags where 1=1
-		<include refid="queryWhere" />
-	</select>
-
-	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
-		select
-		<include refid="columns" />
-		from d_tags where 1=1
-		<include refid="queryWhere" /> 
-	    <![CDATA[ ORDER BY tag_id DESC ]]>
-        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
-	</select>
-
 	<select id="findAllTags" resultMap="BaseResultMap">
 		select
 		<include refid="columns" />
@@ -113,6 +99,9 @@
 	<sql id="queryWhere">
 		<if test="tagId != null and tagId.trim() != ''">
 			and tag_id = #{tagId}
+		</if>
+		<if test="title != null">
+			and (tag_name like "%" #{title} "%" or memo like "%" #{title} "%")
 		</if>
 		<if test="tagName != null and tagName.trim() != ''">
 			and tag_name = #{tagName}
@@ -132,7 +121,7 @@
 		<if test="updateTimeEnd != null and updateTimeEnd.trim() != ''">
 			and updateTime &lt;= #{updateTimeEnd}
 		</if>
-		<if test="status != null and status.trim() != ''">
+		<if test="status != null">
 			and status = #{status}
 		</if>
 
@@ -150,9 +139,57 @@
 		<where>
 			<include refid="queryWhere" />
 		</where>
-
-
 	</select>
+	
+	<sql id="table_name">
+		d_tags
+    </sql>
+    
+    <select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(1) from d_tags where 1=1
+		<include refid="queryWhere" />
+	</select>
+
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select * from d_tags where 1=1
+		<include refid="queryWhere" /> 
+	    <choose>
+			<when test="sortField != null and sortField != ''">
+				ORDER BY ${sortField} ${sortSequence}
+			</when>
+			<otherwise>
+	    	 <![CDATA[ ORDER BY tag_id DESC ]]>
+			</otherwise>
+		</choose>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<select id="findListByAttr" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select * from <include refid="table_name" />
+		<include refid="condition"/>
+	    <![CDATA[ ORDER BY id DESC ]]>
+	</select>
+	
+	<update id="updateByMap" parameterType="java.util.Map">
+	     update <include refid="table_name" /> 
+	    <set>
+	      <if test="status != null">
+	        status = #{status},
+	      </if>
+	    </set>
+	    <include refid="condition"/>
+	</update>
+	
+	<sql id="condition">
+    	<where>
+	    	<if test="tagId != null">
+			 tag_id = #{tagId,jdbcType=INTEGER}
+			</if>
+			<if test="title != null">
+			and (tag_name like "%"#{title}"%" or memo like "%"#{title}"%")
+			</if>
+    	</where>
+    </sql>
 
 
 </mapper>

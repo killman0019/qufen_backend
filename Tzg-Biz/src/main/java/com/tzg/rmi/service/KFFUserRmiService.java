@@ -3,9 +3,10 @@ package com.tzg.rmi.service;
 import java.util.List;
 import java.util.Map;
 
+import com.tzg.entitys.kff.dtags.Dtags;
 import com.tzg.entitys.kff.follow.Follow;
 import com.tzg.entitys.kff.user.KFFUser;
-
+import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.entitys.kff.project.ProjectResponse;
@@ -18,6 +19,8 @@ import com.tzg.entitys.kff.project.ProjectResponse;
 * @version v1.0.0 
 */
 public interface KFFUserRmiService {
+	
+	public PageResult<KFFUser> findPage(PaginationQuery query);
 
 	public KFFUser findById(Integer id);
 	

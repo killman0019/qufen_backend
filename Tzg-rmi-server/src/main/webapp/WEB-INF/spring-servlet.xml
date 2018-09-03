@@ -78,6 +78,11 @@
 		</property>
 	</bean>
 	<dubbo:service interface="com.tzg.common.redis.RedisService" ref="redisService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0" />
+	
+	<!-- 话题相关服务 -->
+	<bean id="dTagsRmiService" class="com.tzg.rmi.service.impl.DtagsRmiServiceImpl" />
+	<dubbo:service interface="com.tzg.rmi.service.DtagsRmiService" ref="dTagsRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" 
+		retries="0" />
 
 	<!--开封府相关服务 -->
 	<bean id="kffRmiService" class="com.tzg.rmi.service.impl.KFFRmiServiceImpl" />

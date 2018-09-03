@@ -12,51 +12,19 @@ import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.CollectionUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
-import com.tzg.common.redis.RedisService;
-import com.tzg.common.service.kff.ArticleService;
-import com.tzg.common.service.kff.AuthenticationService;
-import com.tzg.common.service.kff.AwardPortService;
-import com.tzg.common.service.kff.CoinPropertyService;
-import com.tzg.common.service.kff.CollectService;
-import com.tzg.common.service.kff.CommendationService;
-import com.tzg.common.service.kff.CommentsService;
-import com.tzg.common.service.kff.DareasService;
-import com.tzg.common.service.kff.DevaluationModelDetailService;
-import com.tzg.common.service.kff.DevaluationModelService;
-import com.tzg.common.service.kff.DiscussService;
-import com.tzg.common.service.kff.DprojectTypeService;
-import com.tzg.common.service.kff.DtagsService;
-import com.tzg.common.service.kff.EvaluationService;
-import com.tzg.common.service.kff.ExchangeService;
 import com.tzg.common.service.kff.FollowService;
-import com.tzg.common.service.kff.MessageService;
-import com.tzg.common.service.kff.MobileversionupdateService;
-import com.tzg.common.service.kff.NoticeService;
-import com.tzg.common.service.kff.PostService;
-import com.tzg.common.service.kff.PraiseService;
 import com.tzg.common.service.kff.ProjectForTabService;
 import com.tzg.common.service.kff.ProjectManageService;
 import com.tzg.common.service.kff.ProjectService;
 import com.tzg.common.service.kff.ProjectTradeService;
-import com.tzg.common.service.kff.ProjectevastatService;
-import com.tzg.common.service.kff.QfIndexService;
-import com.tzg.common.service.kff.SuggestService;
-import com.tzg.common.service.kff.TokenawardService;
-import com.tzg.common.service.kff.TokenrecordsService;
 import com.tzg.common.service.kff.TransactionPairService;
-import com.tzg.common.service.kff.UserCardService;
-import com.tzg.common.service.kff.UserInvationService;
 import com.tzg.common.service.kff.UserService;
-import com.tzg.common.service.kff.UserWalletService;
-import com.tzg.common.service.systemParam.SystemParamService;
 import com.tzg.common.utils.DozerMapperUtils;
-import com.tzg.common.zookeeper.ZKClient;
 import com.tzg.entitys.kff.follow.Follow;
 import com.tzg.entitys.kff.follow.FollowResponse;
 import com.tzg.entitys.kff.project.KFFProject;
@@ -67,104 +35,34 @@ import com.tzg.entitys.kff.projecttrade.ProjectTrade;
 import com.tzg.entitys.kff.transactionpair.TransactionPair;
 import com.tzg.entitys.kff.transactionpair.TransactionPairResponse;
 import com.tzg.entitys.kff.user.KFFUser;
-import com.tzg.entitys.kff.userwallet.KFFUserWalletMapper;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rmi.service.KFFProjectRmiService;
 import com.tzg.rmi.service.KFFRmiService;
-import com.tzg.rmi.service.SmsSendRmiService;
 
 public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 
 	@Autowired
 	private KFFRmiService kffRmiService;
 	@Autowired
-	private ArticleService kffArticleService;
-	@Autowired
-	private CollectService kffCollectService;
-	@Autowired
-	private CommentsService kffCommentsService;
-	@Autowired
-	private DiscussService kffDiscussService;
-	@Autowired
-	private EvaluationService kffEvaluationService;
-	@Autowired
-	private DevaluationModelService kffDevaluationModelService;
-	@Autowired
-	private DevaluationModelDetailService kffDevaluationModelDetailService;
-	@Autowired
 	private FollowService kffFollowService;
-	@Autowired
-	private PostService kffPostService;
-	@Autowired
-	private MessageService kffMessageService;
-	@Autowired
-	private MobileversionupdateService kffMobileversionupdateService;
-	@Autowired
-	private PraiseService kffPraiseService;
 	@Autowired
 	private ProjectService kffProjectService;
 	@Autowired
-	private TokenrecordsService kffTokenrecordsService;
-	@Autowired
 	private UserService kffUserService;
 	@Autowired
-	private NoticeService kffNoticeService;
-	@Autowired
-	private SuggestService kffSuggestService;
-	@Autowired
-	private DareasService kffDareasService;
-	@Autowired
-	private DtagsService kffDtagsService;
-	@Autowired
-	private DprojectTypeService kffDprojectTypeService;
-	@Autowired
-	private CommendationService kffCommendationService;
-	@Autowired
-	private ProjectevastatService kffProjectevastatService;
-	@Autowired
-	private UserCardService userCardService;
-	@Autowired
-	private AuthenticationService authenticationService;
-	@Autowired
-	private SmsSendRmiService smsSendRmiService;
-	@Autowired
-	private UserInvationService userInvationService;
-	@Autowired
-	private QfIndexService qfIndexService;
-	@Autowired
-	private CoinPropertyService coinPropertyService;
-	@Autowired
-	private TokenawardService tokenawardService;
-	@Autowired
-	private UserWalletService userWalletService;
-	@Autowired
-	private TokenawardService kffTokenawardService;
-	@Autowired
-	private AwardPortService awardPortService;
-	@Autowired
-	private KFFUserWalletMapper kFFUserWalletMapper;
-	@Autowired
-	private ZKClient zkClient;
-	@Autowired
-	private SystemParamService systemParamService;
-	@Autowired
-	private RedisService redisService;
-	@Autowired
-	private ThreadPoolTaskExecutor taskExecutor;
-
-	@Autowired
 	private ProjectManageService projectManageService;
-
 	@Autowired
 	private ProjectForTabService projectForTabService;
-
-	@Autowired
-	private ExchangeService exchangeService;
-
 	@Autowired
 	private TransactionPairService transactionPairService;
 	@Autowired
 	private ProjectTradeService projectTradeService;
+	
+	
+	public PageResult<KFFProject> findPage(PaginationQuery query){
+		PageResult<KFFProject> result = kffProjectService.findPage(query);
+		return result;
+	}
 
 	/**
 	 * 1 全部 2 关注

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tzg.common.base.BaseService;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.entitys.kff.dtags.Dtags;
@@ -15,8 +16,8 @@ import com.tzg.entitys.kff.dtags.DtagsReponse;
 import com.tzg.rest.exception.rest.RestServiceException;
 
 @Service(value = "KFFDtagsService")
-@Transactional
-public class DtagsService {
+@Transactional(rollbackFor=Exception.class)
+public class DtagsService  extends BaseService {
 
 	@Autowired
 	private DtagsMapper dtagsMapper;
@@ -46,6 +47,12 @@ public class DtagsService {
 		}
 		dtagsMapper.update(dtags);
 	}
+	
+	@Transactional(readOnly = true)
+	public List<Dtags> findListByAttr(Map<String, Object> map) {
+		return dtagsMapper.findListByAttr(map);
+	}
+
 
 	@Transactional(readOnly = true)
 	public PageResult<Dtags> findPage(PaginationQuery query) throws RestServiceException {
@@ -64,6 +71,10 @@ public class DtagsService {
 		}
 		return result;
 	}
+	
+	public void updateByMap(Map<String,Object> map) throws RestServiceException {	
+		dtagsMapper.updateByMap(map);
+	}	
 
 	public List<Dtags> findAllTags() {
 

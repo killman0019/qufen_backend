@@ -471,9 +471,7 @@
 	</select>
 
 	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
-		select
-		<include refid="columns" />
-		from tbpost where 1=1
+		select * from tbpost where 1=1
 		<include refid="queryWhere" />
 		<include refid="orderBy" />
         <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
@@ -495,6 +493,9 @@
 	<sql id="queryWhere">
 		<if test="postId != null and postId.trim() != ''">
 			and post_id = #{postId}
+		</if>
+		<if test="title != null">
+			and ((post_title = "%" #{title} "%" and post_type!=2) or (post_short_desc = "%" #{title} "%" and post_type==2))
 		</if>
 		<if test="projectId != null">
 			and project_id = #{projectId}
@@ -562,7 +563,7 @@
 		<if test="updateTimeEnd != null and updateTimeEnd.trim() != ''">
 			and updateTime &lt;= #{updateTimeEnd}
 		</if>
-		<if test="status != null and status.trim() != ''">
+		<if test="status != null">
 			and status = #{status}
 		</if>
 		<if test="uuid != null and uuid.trim() != ''">

@@ -48,6 +48,7 @@ import com.tzg.common.service.systemParam.SystemParamService;
 import com.tzg.common.utils.DozerMapperUtils;
 import com.tzg.common.zookeeper.ZKClient;
 import com.tzg.entitys.kff.bgroupmustread.BGroupMustRead;
+import com.tzg.entitys.kff.dtags.Dtags;
 import com.tzg.entitys.kff.post.Post;
 import com.tzg.entitys.kff.post.PostResponse;
 import com.tzg.entitys.kff.userwallet.KFFUserWalletMapper;
@@ -70,84 +71,14 @@ import com.tzg.rmi.service.SmsSendRmiService;
 public class KFFPostRmiServiceImpl implements KFFPostRmiService {
 
 	@Autowired
-	private KFFRmiService kffRmiService;
-	@Autowired
-	private ArticleService kffArticleService;
-	@Autowired
-	private CollectService kffCollectService;
-	@Autowired
-	private CommentsService kffCommentsService;
-	@Autowired
-	private DiscussService kffDiscussService;
-	@Autowired
-	private EvaluationService kffEvaluationService;
-	@Autowired
-	private DevaluationModelService kffDevaluationModelService;
-	@Autowired
-	private DevaluationModelDetailService kffDevaluationModelDetailService;
-	@Autowired
-	private FollowService kffFollowService;
-	@Autowired
 	private PostService kffPostService;
 	@Autowired
-	private MessageService kffMessageService;
-	@Autowired
-	private MobileversionupdateService kffMobileversionupdateService;
-	@Autowired
-	private PraiseService kffPraiseService;
-	@Autowired
-	private ProjectService kffProjectService;
-	@Autowired
-	private TokenrecordsService kffTokenrecordsService;
-	@Autowired
-	private UserService kffUserService;
-	@Autowired
-	private NoticeService kffNoticeService;
-	@Autowired
-	private SuggestService kffSuggestService;
-	@Autowired
-	private DareasService kffDareasService;
-	@Autowired
-	private DtagsService kffDtagsService;
-	@Autowired
-	private DprojectTypeService kffDprojectTypeService;
-	@Autowired
-	private CommendationService kffCommendationService;
-	@Autowired
-	private ProjectevastatService kffProjectevastatService;
-	@Autowired
-	private UserCardService userCardService;
-	@Autowired
-	private AuthenticationService authenticationService;
-	@Autowired
-	private SmsSendRmiService smsSendRmiService;
-	@Autowired
-	private UserInvationService userInvationService;
-	@Autowired
-	private QfIndexService qfIndexService;
-	@Autowired
-	private CoinPropertyService coinPropertyService;
-	@Autowired
-	private TokenawardService tokenawardService;
-	@Autowired
-	private UserWalletService userWalletService;
-	@Autowired
-	private TokenawardService kffTokenawardService;
-	@Autowired
-	private AwardPortService awardPortService;
-	@Autowired
-	private KFFUserWalletMapper kFFUserWalletMapper;
-	@Autowired
-	private ZKClient zkClient;
-	@Autowired
-	private SystemParamService systemParamService;
-	@Autowired
-	private RedisService redisService;
-	@Autowired
-	private ThreadPoolTaskExecutor taskExecutor;
-
-	@Autowired
 	private BGroupMustReadService bgroupMustReadService;
+	
+	public PageResult<Post> findPage(PaginationQuery query) throws RestServiceException {
+		PageResult<Post> result = kffPostService.findPage(query);
+		return result;
+	}
 
 	/**
 	 * 暂时未使用(已在别处实现,此代码后期修改)
