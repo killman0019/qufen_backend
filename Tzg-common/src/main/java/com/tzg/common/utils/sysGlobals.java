@@ -122,6 +122,14 @@ public final class sysGlobals {
 	 * 关注数量结束
 	 */
 	public static final String RBT_FOLLOW_NUM_END = "RBT_FOLLOW_NUM_END";
+	/**
+	 * 点赞开始
+	 */
+	public static final String RBT_PRAISE_NUM_BEGIN = "RBT_PRAISE_NUM_BEGIN";
+	/**
+	 * 点赞结束
+	 */
+	public static final String RBT_PRAISE_NUM_END = "RBT_PRAISE_NUM_END";
 
 	/**推送给全部用户默认一次取多少消息*/
 	public static Integer DEFAULT_MSG_COUNT = 1000;

@@ -8,17 +8,26 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
+import com.tzg.common.redis.RedisService;
 import com.tzg.common.service.systemParam.SystemParamService;
 import com.tzg.common.utils.AccountTokenUtil;
 import com.tzg.common.utils.DateUtil;
+import com.tzg.common.utils.HttpUtil;
+import com.tzg.common.utils.RandomUtil;
 import com.tzg.common.utils.sysGlobals;
+import com.tzg.entitys.kff.follow.Follow;
+import com.tzg.entitys.kff.follow.FollowMapper;
 import com.tzg.entitys.kff.post.Post;
 import com.tzg.entitys.kff.post.PostMapper;
 import com.tzg.entitys.kff.robot.Robot;
@@ -41,6 +50,74 @@ public class RobotService {
 
 	@Autowired
 	private PostMapper postMapper;
+	@Autowired
+	private RedisService redisService;
+
+	@Autowired
+	private FollowMapper followMapper;
+
+	@Value("#{paramConfig['DEV_ENVIRONMENT']}")
+	private static String devEnvironment;
+
+	/**
+	 * 
+	* @Title: putRedis 
+	* @Description: TODO <零点定时Redis存放23小时>
+	* @author zhangdd <方法创建作者>
+	* @create 下午7:35:19
+	* @param  <参数说明>
+	* @return void 
+	* @throws 
+	* @update 下午7:35:19
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	 */
+	public void putRedis() {
+
+		try {
+			// 关注
+			SystemParam sysBeginf = systemParamService.findByCode(sysGlobals.RBT_FOLLOW_NUM_BEGIN);
+			Integer fBegin = Integer.valueOf(sysBeginf.getVcParamValue());
+			SystemParam sysEndf = systemParamService.findByCode(sysGlobals.RBT_FOLLOW_NUM_END);
+			Integer fEnd = Integer.valueOf(sysEndf.getVcParamValue());
+			Integer followNum = RandomUtil.randomNumber(fBegin, fEnd);
+			redisService.del("followNumRBT");
+			redisService.put("followNumRBT", followNum + "", 60 * 60 * 24);
+
+			// 点赞
+			SystemParam sysBeginp = systemParamService.findByCode(sysGlobals.RBT_PRAISE_NUM_BEGIN);
+			Integer pBegin = Integer.valueOf(sysBeginp.getVcParamValue());
+			SystemParam sysEndp = systemParamService.findByCode(sysGlobals.RBT_PRAISE_NUM_END);
+			Integer pEnd = Integer.valueOf(sysEndp.getVcParamValue());
+			Integer PraiseNum = RandomUtil.randomNumber(pBegin, pEnd);
+			redisService.del("followNumRBT");
+			redisService.put("followNumRBT", PraiseNum + "", 60 * 60 * 24);
+
+			// 打赏
+			SystemParam sysBeginCd = systemParamService.findByCode(sysGlobals.RBT_PRAISE_NUM_BEGIN);
+			Integer CdBegin = Integer.valueOf(sysBeginCd.getVcParamValue());
+			SystemParam sysEndCd = systemParamService.findByCode(sysGlobals.RBT_PRAISE_NUM_END);
+			Integer CdEnd = Integer.valueOf(sysEndCd.getVcParamValue());
+			Integer commdationNum = RandomUtil.randomNumber(CdBegin, CdEnd);
+			redisService.del("commendationNumRBT");
+			redisService.put("commendationNumRBT", commdationNum + "", 60 * 60 * 24);
+
+			// 评论
+			SystemParam sysBeginC = systemParamService.findByCode(sysGlobals.RBT_PRAISE_NUM_BEGIN);
+			Integer CBegin = Integer.valueOf(sysBeginC.getVcParamValue());
+			SystemParam sysEndC = systemParamService.findByCode(sysGlobals.RBT_PRAISE_NUM_END);
+			Integer CEnd = Integer.valueOf(sysEndC.getVcParamValue());
+			Integer commentNum = RandomUtil.randomNumber(CBegin, CEnd);
+			redisService.del("commentNumRBT");
+			redisService.put("commentNumRBT", commentNum + "", 60 * 60 * 24);
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * 
@@ -161,16 +238,9 @@ public class RobotService {
 	* @updateContext <修改内容>
 	 */
 	protected void robotPraise(Post postf) {
-		// TODO 点赞
-		KFFUser robotUser = findOneRobot();
-		String token = AccountTokenUtil.getAccountToken(robotUser.getUserId());
-		SystemParam sysBegin = systemParamService.findByCode(sysGlobals.RBT_FOLLOW_NUM_BEGIN);
-		Integer begin = Integer.valueOf(sysBegin.getVcParamValue());
-		SystemParam sysEnd = systemParamService.findByCode(sysGlobals.RBT_FOLLOW_NUM_END);
-		Integer end = Integer.valueOf(sysEnd.getVcParamValue());
-		if (end > begin) {
 
-		}
+		// TODO 点赞
+
 		// 产生对象
 
 	}
@@ -201,6 +271,7 @@ public class RobotService {
 	* @create 下午6:22:39
 	* @param @param postf <参数说明>
 	* @return void 
+	 * @throws Exception 
 	* @throws 
 	* @update 下午6:22:39
 	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
@@ -208,6 +279,50 @@ public class RobotService {
 	 */
 	protected void robotFollow(Post postf) {
 		// TODO 关注
+		try {
+			if (postf != null) {
+				KFFUser robotUser = findOneRobot();
+				String token = AccountTokenUtil.getAccountToken(robotUser.getUserId());
+
+				String followNum = redisService.get("followNumRBT");
+				if (StringUtils.isEmpty(followNum)) {
+					putRedis();
+					followNum = redisService.get("followNumRBT");
+				}
+				Integer createUserId = postf.getCreateUserId();
+				Map<String, String> followMap = new HashMap<String, String>();
+				followMap.put("followType", 3 + "");
+				followMap.put("followedUserId", createUserId + "");
+				followMap.put("status", 1 + "");
+				String createTimeStr = DateUtil.getDate(postf.getCreateTime());
+				followMap.put("createTimeBegin", createTimeStr);
+				List<Follow> followList = followMapper.findByMap(followMap);
+				if (CollectionUtils.isNotEmpty(followList)) {
+					if (followList.size() < Integer.valueOf(followNum)) {
+						// 调用接口,进行对创建人进行关注
+						Integer followType = 3;
+						Integer followedId = createUserId;
+
+						String para = "followType=" + followType + "&followedId=" + followedId + "&token=" + token;
+						String regiUrlLocal = null;
+						if (StringUtils.isNotBlank(devEnvironment) && devEnvironment.equals(sysGlobals.DEV_ENVIRONMENT)) {
+							regiUrlLocal = "http://192.168.10.153:803/kff/follow/saveFollow?";// 线上url
+						} else {
+							regiUrlLocal = "http://192.168.10.153:803/kff/follow/saveFollow?";// 本地url
+						}
+						String str = regiUrlLocal + para;
+						String doGet = HttpUtil.doGet(str);
+						if (doGet != null) {
+							JSONObject parseObject = JSON.parseObject(doGet);
+
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -225,6 +340,50 @@ public class RobotService {
 	 */
 	protected void robotCommendation(Post postf) {
 		// TODO 打赏
+
+		try {
+			if (postf != null) {
+				KFFUser robotUser = findOneRobot();
+				String token = AccountTokenUtil.getAccountToken(robotUser.getUserId());
+				SystemParam sysBeginCd = systemParamService.findByCode(sysGlobals.RBT_PRAISE_NUM_BEGIN);
+				Integer CdBegin = Integer.valueOf(sysBeginCd.getVcParamValue());
+				SystemParam sysEndCd = systemParamService.findByCode(sysGlobals.RBT_PRAISE_NUM_END);
+				Integer CdEnd = Integer.valueOf(sysEndCd.getVcParamValue());
+
+				Integer createUserId = postf.getCreateUserId();
+				Map<String, String> followMap = new HashMap<String, String>();
+				followMap.put("followType", 3 + "");
+				followMap.put("followedUserId", createUserId + "");
+				followMap.put("status", 1 + "");
+				String createTimeStr = DateUtil.getDate(postf.getCreateTime());
+				followMap.put("createTimeBegin", createTimeStr);
+				List<Follow> followList = followMapper.findByMap(followMap);
+				if (CollectionUtils.isNotEmpty(followList)) {
+					if (followList.size() < Integer.valueOf(followNum)) {
+						// 调用接口,进行对创建人进行关注
+						Integer followType = 3;
+						Integer followedId = createUserId;
+
+						String para = "followType=" + followType + "&followedId=" + followedId + "&token=" + token;
+						String regiUrlLocal = null;
+						if (StringUtils.isNotBlank(devEnvironment) && devEnvironment.equals(sysGlobals.DEV_ENVIRONMENT)) {
+							regiUrlLocal = "http://192.168.10.153:803/kff/follow/saveFollow?";// 线上url
+						} else {
+							regiUrlLocal = "http://192.168.10.153:803/kff/follow/saveFollow?";// 本地url
+						}
+						String str = regiUrlLocal + para;
+						String doGet = HttpUtil.doGet(str);
+						if (doGet != null) {
+							JSONObject parseObject = JSON.parseObject(doGet);
+
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 

@@ -6,7 +6,7 @@ import com.tzg.common.utils.SyseUtil;
 public class TestMain {
 
 	public static void main(String[] args) {
-		String sys = DateUtil.getSpecifiedDayBeforeOrAfter(5);
-		SyseUtil.systemErrOutJson(sys);
+
+		SyseUtil.systemErrOutJson(Runtime.getRuntime().availableProcessors());
 	}
 }
