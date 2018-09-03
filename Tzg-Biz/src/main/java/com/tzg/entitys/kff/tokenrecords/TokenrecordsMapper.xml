@@ -282,6 +282,13 @@
 		<include refid="queryWhere" />
 	</select>
 
+	<select id="findByMap" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="columns" />
+		from tbtokenrecords where 1=1
+		<include refid="queryWhere" />
+	</select>
+
 </mapper>
 
 

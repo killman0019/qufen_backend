@@ -666,6 +666,7 @@
 
 		UPDATE tbuser
 		SET pop = 0
+		where status =1 and pop=1
 
 	</update>
 
