@@ -2778,12 +2778,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 								retrueDzan = 0.0;
 							}
 
-							Map<String, Object> tokenMap = new HashMap<String, Object>();
-							tokenMap.put("userId", praiseId.getPraiseUserId());
-							tokenMap.put("amount", wz * createPUF + meet1);
-							tokenMap.put("postId", postId);
-							List<Tokenrecords> tokenRecordList = tokenrecordsService.findByMap(tokenMap);
-
 							if (postType == 1) {
 								// 证明是评测的帖子
 								// 判断评测的类型 (1-简单评测, 2-全面专业评测 , 3-部分系统单项评测)
@@ -2863,6 +2857,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 										if (praiseId.getStatus() == 1 && validPraise > 0 && validPraise != 0) {
 											// 证明是有效赞
 											if (kffPostService.findById(postId).getPraiseNum() >= praiseNum) {
+												Map<String, Object> tokenMap = new HashMap<String, Object>();
+												tokenMap.put("userId", praiseId.getPraiseUserId());
+												tokenMap.put("amount", wz * createPUF + meet);
+												tokenMap.put("postId", postId);
+												List<Tokenrecords> tokenRecordList = tokenrecordsService.findByMap(tokenMap);
 												if (CollectionUtils.isEmpty(tokenRecordList)) {
 													tokenrecords.setFunctionDesc("点赞奖励(专评)");
 													tokenrecords.setFunctionType(17);
@@ -2965,6 +2964,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 									// 用户自定义单项评测
 									if (null != praiseId && praiseId.getStatus() == 1 && validPraise > 0 && validPraise != 0) {
 										if (kffPostService.findById(postId).getPraiseNum() >= praiseNum) {
+											Map<String, Object> tokenMap = new HashMap<String, Object>();
+											tokenMap.put("userId", praiseId.getPraiseUserId());
+											tokenMap.put("amount", wz * createPUF + meet2);
+											tokenMap.put("postId", postId);
+											List<Tokenrecords> tokenRecordList = tokenrecordsService.findByMap(tokenMap);
 											if (CollectionUtils.isEmpty(tokenRecordList)) {
 												Tokenrecords tokenrecords = new Tokenrecords();
 												Tokenaward tokenaward = new Tokenaward();
@@ -3131,7 +3135,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 										// 证明是有效赞
 										if (praiseId.getPraiseType() == 1) {
 											if (kffPostService.findById(postId).getPraiseNum() >= praiseNum) {
-
+												Map<String, Object> tokenMap = new HashMap<String, Object>();
+												tokenMap.put("userId", praiseId.getPraiseUserId());
+												tokenMap.put("amount", wz * createPUF + meet1);
+												tokenMap.put("postId", postId);
+												List<Tokenrecords> tokenRecordList = tokenrecordsService.findByMap(tokenMap);
 												if (CollectionUtils.isEmpty(tokenRecordList)) {
 
 													tokenrecords.setFunctionDesc("点赞奖励(文章)");
