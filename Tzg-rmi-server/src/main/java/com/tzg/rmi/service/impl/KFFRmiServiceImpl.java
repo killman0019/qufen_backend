@@ -2859,7 +2859,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 											if (kffPostService.findById(postId).getPraiseNum() >= praiseNum) {
 												Map<String, Object> tokenMap = new HashMap<String, Object>();
 												tokenMap.put("userId", praiseId.getPraiseUserId());
-												tokenMap.put("amount", wz * createPUF + meet);
+												tokenMap.put("amount", new BigDecimal(pc2 * createPUF + meet));
 												tokenMap.put("postId", postId);
 												List<Tokenrecords> tokenRecordList = tokenrecordsService.findByMap(tokenMap);
 												if (CollectionUtils.isEmpty(tokenRecordList)) {
@@ -2966,7 +2966,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 										if (kffPostService.findById(postId).getPraiseNum() >= praiseNum) {
 											Map<String, Object> tokenMap = new HashMap<String, Object>();
 											tokenMap.put("userId", praiseId.getPraiseUserId());
-											tokenMap.put("amount", wz * createPUF + meet2);
+											tokenMap.put("amount", new BigDecimal(pc3 * createPUF + meet2));
 											tokenMap.put("postId", postId);
 											List<Tokenrecords> tokenRecordList = tokenrecordsService.findByMap(tokenMap);
 											if (CollectionUtils.isEmpty(tokenRecordList)) {
@@ -3137,7 +3137,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 											if (kffPostService.findById(postId).getPraiseNum() >= praiseNum) {
 												Map<String, Object> tokenMap = new HashMap<String, Object>();
 												tokenMap.put("userId", praiseId.getPraiseUserId());
-												tokenMap.put("amount", wz * createPUF + meet1);
+												tokenMap.put("amount", new BigDecimal(wz * createPUF + meet1));
 												tokenMap.put("postId", postId);
 												List<Tokenrecords> tokenRecordList = tokenrecordsService.findByMap(tokenMap);
 												if (CollectionUtils.isEmpty(tokenRecordList)) {
