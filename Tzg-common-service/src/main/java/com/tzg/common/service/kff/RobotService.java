@@ -4,7 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -36,7 +39,7 @@ public class RobotService {
 	private SystemParamService systemParamService;
 
 	@Autowired
-	private PostMapper mapper;
+	private PostMapper postMapper;
 
 	/**
 	 * 
@@ -123,6 +126,44 @@ public class RobotService {
 	* @updateContext <修改内容>
 	 */
 	public void robotCommendationTask() {
+		while (true) {
+			int i = 1;
+
+			PageResult<Post> postPage = getPostList(i);
+			i = i * 10 + 1;
+			if (null != postPage && CollectionUtils.isEmpty(postPage.getRows())) {
+				break;
+			}
+			if (null != postPage && CollectionUtils.isNotEmpty(postPage.getRows())) {
+				ExecutorService newFixedThreadPoolrobotCommentdation = null;
+				try {
+					newFixedThreadPoolrobotCommentdation = Executors.newFixedThreadPool(10);
+					for (Post post : postPage.getRows()) {
+						final Post postf = post;
+						newFixedThreadPoolrobotCommentdation.execute(new Runnable() {
+
+							@Override
+							public void run() {
+								// TODO Auto-generated method stub
+								robotCommendation(postf);
+							}
+						});
+					}
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} finally {
+					if (!newFixedThreadPoolrobotCommentdation.isShutdown()) {
+						newFixedThreadPoolrobotCommentdation.shutdown();
+					}
+
+				}
+			}
+		}
+	}
+
+	protected void robotCommendation(Post postf) {
+		// TODO 多线程
 
 	}
 
@@ -139,20 +180,25 @@ public class RobotService {
 	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
 	* @updateContext <修改内容>
 	 */
-	private PageResult<Post> getPostList(PaginationQuery query) {
+	private PageResult<Post> getPostList(int i) {
 		PageResult<Post> result = null;
 		SystemParam param = systemParamService.findByCode(sysGlobals.ROBOT_GET_POST_CREATE_TIME);
 		int days = Integer.valueOf(param.getVcParamValue());
 		if (days > 0) {
 			String postCreateBegin = DateUtil.getSpecifiedDayBeforeOrAfter(days);
-
+			PaginationQuery query = new PaginationQuery();
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("createTimeBegin", postCreateBegin);
+			query.setQueryData(map);
+			query.setPageIndex(i);
+			query.setRowsPerPage(10);
 			try {
-				Integer count = mapper.findPageCount(query.getQueryData());
+				Integer count = postMapper.findPageCount(query.getQueryData());
 				if (null != count && count.intValue() > 0) {
 					int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
 					query.addQueryData("startRecord", Integer.toString(startRecord));
 					query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
-					List<Post> list = mapper.findPage(query.getQueryData());
+					List<Post> list = postMapper.findPage(query.getQueryData());
 					result = new PageResult<Post>(list, count, query);
 				}
 			} catch (Exception e) {
