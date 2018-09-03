@@ -37,4 +37,6 @@ public interface QfIndexMapper extends BaseMapper<QfIndex, java.lang.Integer> {
 	void updateSetYxComment(Integer userId);
 
 	void updateSetSharePost(Integer userId);
+
+	void updateSetAll(Integer userId);
 }

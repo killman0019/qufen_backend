@@ -207,6 +207,18 @@
 	</update>
 
 
+	<update id="updateSetAll" parameterType="java.lang.Integer">
+		UPDATE
+		tbqfindex
+		set
+		yxpraise = floor(status_hierarchy_type * 0.1),
+		yx_comments=floor(status_hierarchy_type * 0.1),
+		yx_share_post=floor(status_hierarchy_type
+		* 0.1),
+		updateTime= NOW() where user_id = #{userId,jdbcType=INTEGER}
+
+	</update>
+
 
 
 	<delete id="deleteById" parameterType="java.lang.Integer">

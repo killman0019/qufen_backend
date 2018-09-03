@@ -1763,7 +1763,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 																											// 不是今天更新
 
 									} else {
-										qfIndexService.updateSetYxComment(commentUserQfIndex.getUserId());
+										qfIndexService.updateSetAll(commentUserQfIndex.getUserId());
 									}
 								}
 
@@ -2666,7 +2666,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 																						// 不是今天更新
 
 					} else {
-						qfIndexService.updateSetYxPraise(qfIndexPraiseUser.getUserId());
+						qfIndexService.updateSetAll(qfIndexPraiseUser.getUserId());
 					}
 
 				}

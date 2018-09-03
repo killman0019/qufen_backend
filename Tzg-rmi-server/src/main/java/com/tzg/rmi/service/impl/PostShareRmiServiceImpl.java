@@ -124,7 +124,7 @@ public class PostShareRmiServiceImpl implements PostShareRmiService {
 																				// 不是今天更新
 
 					} else {
-						qfIndexService.updateSetYxComment(qfShare.getUserId());
+						qfIndexService.updateSetAll(qfShare.getUserId());
 					}
 				}
 

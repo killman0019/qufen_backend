@@ -114,4 +114,8 @@ public class QfIndexService {
 
 	}
 
+	public void updateSetAll(Integer userId) {
+		QfIndexMapper.updateSetAll(userId);
+	}
+
 }
