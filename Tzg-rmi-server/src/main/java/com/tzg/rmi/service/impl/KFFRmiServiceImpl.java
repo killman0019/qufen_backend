@@ -2858,7 +2858,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 											// 证明是有效赞
 											if (kffPostService.findById(postId).getPraiseNum() >= praiseNum) {
 												Map<String, Object> tokenMap = new HashMap<String, Object>();
-												tokenMap.put("userId", praiseId.getPraiseUserId());
+												//tokenMap.put("userId", praiseId.getPraiseUserId());
 												tokenMap.put("amount", new BigDecimal(pc2 * createPUF + meet));
 												tokenMap.put("postId", postId);
 												List<Tokenrecords> tokenRecordList = tokenrecordsService.findByMap(tokenMap);
@@ -2965,7 +2965,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 									if (null != praiseId && praiseId.getStatus() == 1 && validPraise > 0 && validPraise != 0) {
 										if (kffPostService.findById(postId).getPraiseNum() >= praiseNum) {
 											Map<String, Object> tokenMap = new HashMap<String, Object>();
-											tokenMap.put("userId", praiseId.getPraiseUserId());
+										//	tokenMap.put("userId", praiseId.getPraiseUserId());
 											tokenMap.put("amount", new BigDecimal(pc3 * createPUF + meet2));
 											tokenMap.put("postId", postId);
 											List<Tokenrecords> tokenRecordList = tokenrecordsService.findByMap(tokenMap);
@@ -3136,7 +3136,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 										if (praiseId.getPraiseType() == 1) {
 											if (kffPostService.findById(postId).getPraiseNum() >= praiseNum) {
 												Map<String, Object> tokenMap = new HashMap<String, Object>();
-												tokenMap.put("userId", praiseId.getPraiseUserId());
+											//	tokenMap.put("userId", praiseId.getPraiseUserId());
 												tokenMap.put("amount", new BigDecimal(wz * createPUF + meet1));
 												tokenMap.put("postId", postId);
 												List<Tokenrecords> tokenRecordList = tokenrecordsService.findByMap(tokenMap);
