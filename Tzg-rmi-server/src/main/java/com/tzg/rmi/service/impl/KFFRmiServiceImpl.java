@@ -1766,6 +1766,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 										qfIndexService.updateSetAll(commentUserQfIndex.getUserId());
 									}
 								}
+								commentUserQfIndex = qfIndexService.findByUserId(commentUser.getUserId());
 
 								if (commentUserQfIndex.getStatusHierarchyType() > 0 && commentUserQfIndex.getYxComments() > 0) {
 									// 发布人进行实名认证并且区分指数>0并且评论的用户的有效评论数大于0
@@ -2670,6 +2671,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					}
 
 				}
+				qfIndexPraiseUser = qfIndexService.findByUserId(userId);
+				yxPraise = qfIndexPraiseUser.getYxpraise();// 有效赞
+
 				int countDays = DateUtil.countDays(new Date(), post.getCreateTime());
 				SystemParam dayCountPara = systemParamService.findByCode(sysGlobals.PUBLISH_DAY_COUNT);
 				Integer countDaysDB = Integer.valueOf(dayCountPara.getVcParamValue());

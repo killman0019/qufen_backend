@@ -113,21 +113,25 @@ public class PostShareRmiServiceImpl implements PostShareRmiService {
 		QfIndex qfShare = qfIndexService.findByUserId(shareUserId);
 		BigDecimal amount = null;
 		Boolean isShareAward = false;
+		Integer yxSharePost = 0;
+		if (null != qfShare) {
+			yxSharePost = qfShare.getYxSharePost();// 有效分享次数
+			if (yxSharePost != (int) (Math.floor(qfShare.getStatusHierarchyType() * 0.1))) {
+				if (DateUtil.isToday(qfShare.getUpdateTime().getTime())) {// 判断点赞人的更新时间是不是今天
+																			// 是今天不更新
+																			// 不是今天更新
 
+				} else {
+					qfIndexService.updateSetAll(qfShare.getUserId());
+				}
+			}
+		}
+		qfShare = qfIndexService.findByUserId(shareUserId);
 		if (qfCreatePost != null && qfShare != null && qfCreatePost.getStatusHierarchyType() > 0 && qfShare.getStatusHierarchyType() > 0) {
 			if (qfShare.getYxSharePost() != null && qfShare.getYxSharePost() > 0) {
 
-				Integer yxSharePost = qfShare.getYxSharePost();// 有效分享次数
-				if (yxSharePost != (int) (Math.floor(qfShare.getStatusHierarchyType() * 0.1))) {
-					if (DateUtil.isToday(qfShare.getUpdateTime().getTime())) {// 判断点赞人的更新时间是不是今天
-																				// 是今天不更新
-																				// 不是今天更新
-
-					} else {
-						qfIndexService.updateSetAll(qfShare.getUserId());
-					}
-				}
-
+				qfShare = qfIndexService.findByUserId(shareUserId);
+				yxSharePost = qfShare.getYxSharePost();
 				Tokenrecords tokenrecords = new Tokenrecords();
 				tokenrecords.setUserId(postShare.getUserId());
 				String format = String.format("%010d", postShare.getArticleId());
