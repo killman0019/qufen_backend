@@ -2656,28 +2656,28 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			}
 
 			// 判断此post 的发布时间是否在30 天之内
-			int countDays = DateUtil.countDays(new Date(), post.getCreateTime());
-			SystemParam dayCountPara = systemParamService.findByCode(sysGlobals.PUBLISH_DAY_COUNT);
-			Integer countDaysDB = Integer.valueOf(dayCountPara.getVcParamValue());
-			if (countDays <= countDaysDB) {// 判断用户是否是30 天内发布 点赞有效
+			QfIndex qfIndexPraiseUser = qfIndexService.findByUserId(userId);
+			if (null != qfIndexPraiseUser) {
+				// Integer qfIndexId = qfIndexPraiseUser.getQfIndexId();// 区分指数
+				Integer yxPraise = qfIndexPraiseUser.getYxpraise();// 有效赞
+				if (yxPraise != (int) (Math.floor(qfIndexPraiseUser.getStatusHierarchyType() * 0.1))) {
+					if (DateUtil.isToday(qfIndexPraiseUser.getUpdateTime().getTime())) {// 判断点赞人的更新时间是不是今天
+																						// 是今天不更新
+																						// 不是今天更新
 
-				Integer postType = posts.getPostType();
-				System.err.println("我是帖子类型 :" + postType);
-				// 根据点赞人的id 去查看他的有效点赞
-				QfIndex qfIndexPraiseUser = qfIndexService.findByUserId(userId);
-				if (null != qfIndexPraiseUser) {
-					// Integer qfIndexId = qfIndexPraiseUser.getQfIndexId();// 区分指数
-					Integer yxPraise = qfIndexPraiseUser.getYxpraise();// 有效赞
-					if (yxPraise != (int) (Math.floor(qfIndexPraiseUser.getStatusHierarchyType() * 0.1))) {
-						if (DateUtil.isToday(qfIndexPraiseUser.getUpdateTime().getTime())) {// 判断点赞人的更新时间是不是今天
-																							// 是今天不更新
-																							// 不是今天更新
-
-						} else {
-							qfIndexService.updateSetYxPraise(qfIndexPraiseUser.getUserId());
-						}
-
+					} else {
+						qfIndexService.updateSetYxPraise(qfIndexPraiseUser.getUserId());
 					}
+
+				}
+				int countDays = DateUtil.countDays(new Date(), post.getCreateTime());
+				SystemParam dayCountPara = systemParamService.findByCode(sysGlobals.PUBLISH_DAY_COUNT);
+				Integer countDaysDB = Integer.valueOf(dayCountPara.getVcParamValue());
+				if (countDays <= countDaysDB) {// 判断用户是否是30 天内发布 点赞有效
+
+					Integer postType = posts.getPostType();
+					System.err.println("我是帖子类型 :" + postType);
+					// 根据点赞人的id 去查看他的有效点赞
 
 					// 根据帖子的id 去获取内容贡献者的id
 					System.err.println("帖子的id: " + postId);
