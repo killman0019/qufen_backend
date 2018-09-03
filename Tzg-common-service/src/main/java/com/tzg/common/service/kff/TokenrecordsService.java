@@ -266,4 +266,9 @@ public class TokenrecordsService {
 		// TODO Auto-generated method stub
 		return tokenrecordsMapper.findAllPage(tcmap);
 	}
+
+	public List<Tokenrecords> findByMap(Map<String, Object> tokenMap) {
+		// TODO Auto-generated method stub
+		return tokenrecordsMapper.findByMap(tokenMap);
+	}
 }

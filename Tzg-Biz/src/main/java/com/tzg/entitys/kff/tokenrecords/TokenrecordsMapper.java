@@ -19,6 +19,8 @@ public interface TokenrecordsMapper extends BaseMapper<Tokenrecords, java.lang.I
 
 	List<Tokenrecords> findAllTokenrecordsUserId(Integer userId);
 
-	Double findTodayToken(Map<String, Object> map);	
+	Double findTodayToken(Map<String, Object> map);
+
+	List<Tokenrecords> findByMap(Map<String, Object> tokenMap);	
 
 }
