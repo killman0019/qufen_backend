@@ -110,6 +110,10 @@ public final class sysGlobals {
 	 * 定时任务启动时间,有效赞 有效评论有效分享,弹框,登陆奖励
 	 */
 	public static final String TASK_TOKEN_AWARD = "TASK_TOKEN_AWARD";
+	/**
+	 * 机器人扫描的创建内容时间区域前几天
+	 */
+	public static final String ROBOT_GET_POST_CREATE_TIME = "ROBOT_GET_POST_CREATE_TIME";
 
 	/**推送给全部用户默认一次取多少消息*/
 	public static Integer DEFAULT_MSG_COUNT = 1000;
