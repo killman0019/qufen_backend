@@ -130,7 +130,7 @@ public class PostShareRmiServiceImpl implements PostShareRmiService {
 		if (qfCreatePost != null && qfShare != null && qfCreatePost.getStatusHierarchyType() > 0 && qfShare.getStatusHierarchyType() > 0) {
 			if (qfShare.getYxSharePost() != null && qfShare.getYxSharePost() > 0) {
 
-				qfShare = qfIndexService.findByUserId(shareUserId);
+			
 				yxSharePost = qfShare.getYxSharePost();
 				Tokenrecords tokenrecords = new Tokenrecords();
 				tokenrecords.setUserId(postShare.getUserId());
