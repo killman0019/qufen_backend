@@ -113,7 +113,7 @@ public class PostShareRmiServiceImpl implements PostShareRmiService {
 		QfIndex qfShare = qfIndexService.findByUserId(shareUserId);
 		BigDecimal amount = null;
 		Boolean isShareAward = false;
-
+		qfShare = qfIndexService.findByUserId(shareUserId);
 		if (qfCreatePost != null && qfShare != null && qfCreatePost.getStatusHierarchyType() > 0 && qfShare.getStatusHierarchyType() > 0) {
 			if (qfShare.getYxSharePost() != null && qfShare.getYxSharePost() > 0) {
 
