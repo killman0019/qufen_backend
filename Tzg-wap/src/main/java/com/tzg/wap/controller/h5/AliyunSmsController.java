@@ -49,6 +49,7 @@ public class AliyunSmsController extends BaseController {
 	 * @param module
 	 * @return
 	 */
+	 
 	@RequestMapping(value = "/sendAliyun", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
 	public BaseResponseEntity sendencrypt(HttpServletRequest request, HttpServletResponse response, String phone, String module) {
