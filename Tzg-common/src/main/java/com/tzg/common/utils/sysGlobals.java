@@ -114,6 +114,14 @@ public final class sysGlobals {
 	 * 机器人扫描的创建内容时间区域前几天
 	 */
 	public static final String ROBOT_GET_POST_CREATE_TIME = "ROBOT_GET_POST_CREATE_TIME";
+	/**
+	 * 关注数量开始
+	 */
+	public static final String RBT_FOLLOW_NUM_BEGIN = "RBT_FOLLOW_NUM_BEGIN";
+	/**
+	 * 关注数量结束
+	 */
+	public static final String RBT_FOLLOW_NUM_END = "RBT_FOLLOW_NUM_END";
 
 	/**推送给全部用户默认一次取多少消息*/
 	public static Integer DEFAULT_MSG_COUNT = 1000;

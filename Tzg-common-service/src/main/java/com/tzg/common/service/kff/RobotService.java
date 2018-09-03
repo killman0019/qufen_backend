@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.service.systemParam.SystemParamService;
+import com.tzg.common.utils.AccountTokenUtil;
 import com.tzg.common.utils.DateUtil;
 import com.tzg.common.utils.sysGlobals;
 import com.tzg.entitys.kff.post.Post;
@@ -80,40 +81,6 @@ public class RobotService {
 
 	/**
 	 * 
-	* @Title: robotPraiseTask 
-	* @Description: TODO <机器人进行点赞>
-	* @author zhangdd <方法创建作者>
-	* @create 下午4:44:50
-	* @param  <参数说明>
-	* @return void 
-	* @throws 
-	* @update 下午4:44:50
-	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
-	* @updateContext <修改内容>
-	 */
-	public void robotPraiseTask() {
-
-	}
-
-	/**
-	 * 
-	* @Title: robotCommentTask 
-	* @Description: TODO <机器人评论>
-	* @author zhangdd <方法创建作者>
-	* @create 下午4:45:45
-	* @param  <参数说明>
-	* @return void 
-	* @throws 
-	* @update 下午4:45:45
-	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
-	* @updateContext <修改内容>
-	 */
-	public void robotCommentTask() {
-
-	}
-
-	/**
-	 * 
 	* @Title: robotCommendationTask 
 	* @Description: TODO <机器人打赏>
 	* @author zhangdd <方法创建作者>
@@ -125,12 +92,13 @@ public class RobotService {
 	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
 	* @updateContext <修改内容>
 	 */
-	public void robotCommendationTask() {
+	public void robotTask(final int k) {
+		int i = 0;
+		int j = 1;
 		while (true) {
-			int i = 1;
-
-			PageResult<Post> postPage = getPostList(i);
-			i = i * 10 + 1;
+			i = i + 1;
+			PageResult<Post> postPage = getPostList(j);
+			j = i * 10 + 1;
 			if (null != postPage && CollectionUtils.isEmpty(postPage.getRows())) {
 				break;
 			}
@@ -145,7 +113,24 @@ public class RobotService {
 							@Override
 							public void run() {
 								// TODO Auto-generated method stub
-								robotCommendation(postf);
+								switch (k) {
+								case 4:
+									robotFollow(postf);// 关注
+									break;
+								case 3:
+									robotCommendation(postf);// 打赏
+									break;
+								case 2:
+									robotComment(postf);// 评论
+									break;
+								case 1:
+									robotPraise(postf);// 点赞
+									break;
+
+								default:
+									break;
+								}
+
 							}
 						});
 					}
@@ -162,8 +147,84 @@ public class RobotService {
 		}
 	}
 
+	/**
+	 * 
+	* @Title: robotPraise 
+	* @Description: TODO <点赞>
+	* @author zhangdd <方法创建作者>
+	* @create 下午6:22:18
+	* @param @param postf <参数说明>
+	* @return void 
+	* @throws 
+	* @update 下午6:22:18
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	 */
+	protected void robotPraise(Post postf) {
+		// TODO 点赞
+		KFFUser robotUser = findOneRobot();
+		String token = AccountTokenUtil.getAccountToken(robotUser.getUserId());
+		SystemParam sysBegin = systemParamService.findByCode(sysGlobals.RBT_FOLLOW_NUM_BEGIN);
+		Integer begin = Integer.valueOf(sysBegin.getVcParamValue());
+		SystemParam sysEnd = systemParamService.findByCode(sysGlobals.RBT_FOLLOW_NUM_END);
+		Integer end = Integer.valueOf(sysEnd.getVcParamValue());
+		if (end > begin) {
+
+		}
+		// 产生对象
+
+	}
+
+	/**
+	 * 
+	* @Title: robotComment 
+	* @Description: TODO <评论>
+	* @author zhangdd <方法创建作者>
+	* @create 下午6:22:30
+	* @param @param postf <参数说明>
+	* @return void 
+	* @throws 
+	* @update 下午6:22:30
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	 */
+	protected void robotComment(Post postf) {
+		// TODO 评论
+
+	}
+
+	/**
+	 * 
+	* @Title: robotFollow 
+	* @Description: TODO <关注>
+	* @author zhangdd <方法创建作者>
+	* @create 下午6:22:39
+	* @param @param postf <参数说明>
+	* @return void 
+	* @throws 
+	* @update 下午6:22:39
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	 */
+	protected void robotFollow(Post postf) {
+		// TODO 关注
+	}
+
+	/**
+	 * 
+	* @Title: robotCommendation 
+	* @Description: TODO <打赏>
+	* @author zhangdd <方法创建作者>
+	* @create 下午6:22:54
+	* @param @param postf <参数说明>
+	* @return void 
+	* @throws 
+	* @update 下午6:22:54
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	 */
 	protected void robotCommendation(Post postf) {
-		// TODO 多线程
+		// TODO 打赏
 
 	}
 
