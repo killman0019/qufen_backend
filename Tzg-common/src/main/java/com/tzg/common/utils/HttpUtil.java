@@ -22,6 +22,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -418,17 +419,12 @@ public class HttpUtil {
 			// HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(f).build();
 
 			HttpClient client = HttpClients.custom().setSSLSocketFactory(f).build();
+			RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(5000).setConnectionRequestTimeout(1000).setSocketTimeout(5000).build();
 
-			// HttpClient client = new DefaultHttpClient();
-			/*try {
-				SSLContext sslContext = SSLContext.getInstance("TLS");
-			} catch (NoSuchAlgorithmException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}*/
 			System.setProperty("https.protocols", "TLSv1.2,TLSv1.1,SSLv3");
 			// 发送get请求
 			HttpGet request = new HttpGet(url);
+			request.setConfig(requestConfig);
 			HttpResponse response = client.execute(request);
 
 			/**请求发送成功，并得到响应**/
