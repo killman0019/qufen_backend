@@ -113,8 +113,7 @@ public class PostShareRmiServiceImpl implements PostShareRmiService {
 		QfIndex qfShare = qfIndexService.findByUserId(shareUserId);
 		BigDecimal amount = null;
 		Boolean isShareAward = false;
-<<<<<<< HEAD
-=======
+
 		Integer yxSharePost = 0;
 		if (null != qfShare) {
 			yxSharePost = qfShare.getYxSharePost();// 有效分享次数
@@ -128,7 +127,7 @@ public class PostShareRmiServiceImpl implements PostShareRmiService {
 				}
 			}
 		}
->>>>>>> test_dev
+
 		qfShare = qfIndexService.findByUserId(shareUserId);
 		if (qfCreatePost != null && qfShare != null && qfCreatePost.getStatusHierarchyType() > 0 && qfShare.getStatusHierarchyType() > 0) {
 			if (qfShare.getYxSharePost() != null && qfShare.getYxSharePost() > 0) {
