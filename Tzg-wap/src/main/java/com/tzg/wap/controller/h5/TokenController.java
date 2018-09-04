@@ -12,7 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSONObject;
+import com.tzg.common.utils.HtmlUtils;
 import com.tzg.entitys.kff.commendation.CommendationRequest;
+import com.tzg.entitys.kff.comments.CommentsRequest;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
@@ -50,7 +53,12 @@ public class TokenController extends BaseController {
 		HashMap<String, Object> map = new HashMap<String, Object>();
 
 		try {
+			if (token == null) {
+				JSONObject params = HtmlUtils.getRequestContent(request);
+				token = (String) params.get("token");
 
+				commendationRequest = params.getObject("commendationRequest", CommendationRequest.class);
+			}
 			Integer userId = getUserIdByToken(token);
 			commendationRequest.setSendUserId(userId);
 			kffRmiService.saveCommendation(commendationRequest);

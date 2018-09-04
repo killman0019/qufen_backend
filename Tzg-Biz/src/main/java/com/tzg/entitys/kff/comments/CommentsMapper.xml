@@ -259,72 +259,80 @@
 	</select>
 	<sql id="queryWhere">
 		<if test="commentsId != null">
-		and comments_id = #{commentsId}
+			and comments_id = #{commentsId}
 		</if>
 		<if test="commentUserId != null">
-		and comment_user_id = #{commentUserId}
+			and comment_user_id = #{commentUserId}
 		</if>
 		<if test="commentUserIcon != null">
-		and comment_user_icon = #{commentUserIcon}
+			and comment_user_icon = #{commentUserIcon}
 		</if>
 		<if test="commentUserName != null">
-		and comment_user_name = #{commentUserName}
+			and comment_user_name = #{commentUserName}
 		</if>
 		<if test="commentContent != null">
-		and comment_content = #{commentContent}
+			and comment_content = #{commentContent}
 		</if>
 		<if test="postId != null">
-		and post_id = #{postId}
+			and post_id = #{postId}
 		</if>
 		<if test="projectId != null">
-		and project_id = #{projectId}
+			and project_id = #{projectId}
 		</if>
 		<if test="postType != null">
-		and post_type = #{postType}
+			and post_type = #{postType}
 		</if>
 		<if test="praiseNum != null">
-		and praise_num >= #{praiseNum}
+			and praise_num >= #{praiseNum}
 		</if>
 		<if test="parentCommentsId != null">
-		and parent_comments_id = #{parentCommentsId}
+			and parent_comments_id = #{parentCommentsId}
 		</if>
 		<if test="parentCommentsIdNull != null">
-		and parent_comments_id is null
+			and parent_comments_id is null
 		</if>
 		<if test="becommentedUserId != null">
-		and becommented_user_id = #{becommentedUserId}
+			and becommented_user_id = #{becommentedUserId}
 		</if>
 		<if test="becommentedUserName != null">
-		and becommented_user_name = #{becommentedUserName}
+			and becommented_user_name = #{becommentedUserName}
 		</if>
 		<if test="becommentedUserIcon != null">
-		and becommented_user_icon = #{becommentedUserIcon}
+			and becommented_user_icon = #{becommentedUserIcon}
 		</if>
 		<if test="createTimeBegin != null">
-		and createTime >= #{createTimeBegin}
+			and createTime >= #{createTimeBegin}
 		</if>
 		<if test="createTimeEnd != null">
-		and createTime &lt;= #{createTimeEnd}
+			and createTime &lt;= #{createTimeEnd}
 		</if>
 		<if test="updateTimeBegin != null">
-		and updateTime >= #{updateTimeBegin}
+			and updateTime >= #{updateTimeBegin}
 		</if>
 		<if test="updateTimeEnd != null">
-		and updateTime &lt;= #{updateTimeEnd}
+			and updateTime &lt;= #{updateTimeEnd}
 		</if>
 		<if test="status != null">
-		and status = #{status}
+			and status = #{status}
 		</if>
-		
+
 		<if test="becommentedId != null">
-		and becommentedId = #{becommentedId}
+			and becommentedId = #{becommentedId}
 		</if>
-		
+
 		<if test="floor != null">
-		and floor = #{floor}
+			and floor = #{floor}
 		</if>
 		<if test="commentUUID != null">
-		and commentUUID = #{commentUUID}
+			and commentUUID = #{commentUUID}
+		</if>
+		<if test="contextlenth !=null">
+			and length(comment_content)>= #{contextlenth}
+		</if>
+
+		<if test="isNullParentCommentsId !=null">
+
+			and parent_comments_id is null
 		</if>
 	</sql>
 	<select id="findBidPraiseNum" resultMap="BaseResultMap" parameterType="java.lang.Integer">
@@ -379,7 +387,15 @@
 
 
 
+	<select id="findByMap" resultMap="BaseResultMap" parameterType="java.util.Map">
 
+		select
+		<include refid="columns" />
+		from tbcomments
+		where 1=1
+		<include refid="queryWhere" />
+
+	</select>
 </mapper>
 
 

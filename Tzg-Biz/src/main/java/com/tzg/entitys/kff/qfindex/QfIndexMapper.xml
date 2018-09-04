@@ -310,9 +310,9 @@
 		</if>
 		<if test="userIds != null and userIds.trim() != ''">
 			and user_id in
-			<foreach collection="userIds" item="userId" index="index" open="(" separator="," close=")">
-				#{userId}
-			</foreach>
+			
+			(#{userId})
+			
 		</if>
 
 	</sql>

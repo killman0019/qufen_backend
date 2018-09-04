@@ -46,6 +46,7 @@ import com.tzg.common.service.kff.ProjectService;
 import com.tzg.common.service.kff.ProjectTradeService;
 import com.tzg.common.service.kff.ProjectevastatService;
 import com.tzg.common.service.kff.QfIndexService;
+import com.tzg.common.service.kff.RobotService;
 import com.tzg.common.service.kff.SuggestService;
 import com.tzg.common.service.kff.TokenawardService;
 import com.tzg.common.service.kff.TokenrecordsService;
@@ -165,6 +166,9 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 	private TransactionPairService transactionPairService;
 	@Autowired
 	private ProjectTradeService projectTradeService;
+
+	@Autowired
+	private RobotService robotService;
 
 	/**
 	 * 1 全部 2 关注
@@ -695,22 +699,7 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 
 	@Override
 	public void text() throws RestServiceException {
-		Date now = new Date();
-		// TODO Auto-generated method stub
-		/*PaginationQuery query = new PaginationQuery();
-		query.setPageIndex(1);
-		query.setRowsPerPage(10);
-		PageResult<ProjectResponse> findAllProjectAndTrade = kffProjectService.findAllProjectAndTrade(query);*/
-		// System.err.println(JSON.toJSONString(findAllProjectAndTrade));
-		// transactionPairService.getdatafromUrlByexchangeTask();
-		List<ProjectTrade> projectTradeList = new ArrayList<ProjectTrade>();
-		for (int i = 1; i < 5; i++) {
-			ProjectTrade projectTrade = new ProjectTrade();
-			projectTrade.setProjectTradeId(i);
-			projectTrade.setUpdataTime(now);
-			projectTrade.setPrice(2.0);
-			projectTradeList.add(projectTrade);
-		}
-		projectTradeService.updateBatch(projectTradeList);
+		
+		robotService.robotTask(3);
 	}
 }

@@ -96,7 +96,7 @@ public class RobotService {
 	public void putRedis() {
 
 		try {
-			// 关注
+			// 关注//每天取一次
 			SystemParam sysBeginf = systemParamService.findByCode(sysGlobals.RBT_FOLLOW_NUM_BEGIN);
 			Integer fBegin = Integer.valueOf(sysBeginf.getVcParamValue());
 			SystemParam sysEndf = systemParamService.findByCode(sysGlobals.RBT_FOLLOW_NUM_END);
@@ -105,7 +105,7 @@ public class RobotService {
 			redisService.del("followNumRBT");
 			redisService.put("followNumRBT", followNum + "", 60 * 60 * 24);
 
-			// 点赞
+			// 点赞//每天选一次
 			SystemParam sysBeginp = systemParamService.findByCode(sysGlobals.RBT_PRAISE_NUM_BEGIN);
 			Integer pBegin = Integer.valueOf(sysBeginp.getVcParamValue());
 			SystemParam sysEndp = systemParamService.findByCode(sysGlobals.RBT_PRAISE_NUM_END);
@@ -123,7 +123,7 @@ public class RobotService {
 			redisService.del("commendationNumRBT");
 			redisService.put("commendationNumRBT", commdationNum + "", 60 * 60 * 24);
 
-			// 评论
+			// 评论//每天取一次
 			SystemParam sysBeginC = systemParamService.findByCode(sysGlobals.RBT_PRAISE_NUM_BEGIN);
 			Integer CBegin = Integer.valueOf(sysBeginC.getVcParamValue());
 			SystemParam sysEndC = systemParamService.findByCode(sysGlobals.RBT_PRAISE_NUM_END);
@@ -174,7 +174,9 @@ public class RobotService {
 				if (CollectionUtils.isNotEmpty(commentLibraryList)) {
 					commentLibrary = commentLibraryList.get(0);
 					if (null != commentLibrary) {
-						break;
+						if (commentLibrary.getType() == type && commentLibrary.getStatus() == 1) {
+							break;
+						}
 					}
 				}
 			}
@@ -323,7 +325,7 @@ public class RobotService {
 				praiseMap.put("bepraiseUserId", createUserId + "");
 				praiseMap.put("status", "1");
 				List<Praise> praiseList = praiseMapper.findByMap(praiseMap);
-				if (praiseList.size() <= 10) {
+				if (praiseList.size() <= Integer.valueOf(praiseNum)) {
 					Integer postId = postf.getPostId();
 					String regiUrlLocal = null;
 					String para = "token=" + token + "&postId=" + postId;
@@ -360,34 +362,65 @@ public class RobotService {
 	* @updateContext <修改内容>
 	 */
 	protected void robotComment(Post postf) {
-		if (null != postf) {
-			// TODO 评论
+		try {
+			if (null != postf) {
+				// TODO 评论
+				Map<String, Object> commMap = new HashMap<String, Object>();
+				commMap.put("postId", postf.getPostId());
+				commMap.put("becommentedUserId", postf.getCreateUserId());
+				commMap.put("status", 1);
+				String commentNum = redisService.get("commentNumRBT");
+				if (StringUtils.isEmpty(commentNum)) {
+					putRedis();
+					commentNum = redisService.get("commentNumRBT");
+				}
+				List<Comments> comm = commentsMapper.findByMap(commMap);
+				if (CollectionUtils.isNotEmpty(comm)) {
+					if (comm.size() <= Integer.valueOf(commentNum)) {
+						for (Comments comments : comm) {
+							if (null != comments) {
+								Integer commentUserId = comments.getCommentUserId();
+								Robot robot = robotMapper.findByUserId(commentUserId);
+								if (null == robot) {// 表示这个是真人
+									// 对评论进行二级评论
+									CommentLibrary commentLib = findOneConnentLibrary(1);
+									if (null != commentLib) {
+										// 进行调用接口
+										KFFUser robotUser = findOneRobot();
+										String token = AccountTokenUtil.getAccountToken(robotUser.getUserId());
+										Integer postId = postf.getPostId();
+										String regiUrlLocal = null;
+										CommentsRequest commentsRequest = new CommentsRequest();
+										commentsRequest.setCommentContent(commentLib.getContent());
+										commentsRequest.setPostId(postId);
 
-			// 二级回复
-			// 查找所有的一级评论
-			Map<String, Object> commMap = new HashMap<String, Object>();
-			commMap.put("postId", postf.getPostId());
-			commMap.put("becommentedUserId", postf.getCreateUserId());
-			commMap.put("status", 1);
-			commMap.put("contextlenth", 10);
-			List<Comments> comm = commentsMapper.findByMap(commMap);
-			if (CollectionUtils.isNotEmpty(comm)) {
-				for (Comments comments : comm) {
-					if (null != comments) {
-						Integer commentUserId = comments.getCommentUserId();
-						Robot robot = robotMapper.findByUserId(commentUserId);
-						if (null == robot) {// 表示这个是真人
-							// 对评论进行二级评论
-							CommentLibrary commentLib = findOneConnentLibrary(2);
-							if (null != commentLib) {
-								// 进行调用接口
+										String para = "token=" + token + "&commentsRequest=" + commentsRequest;
+										if (StringUtils.isNotBlank(devEnvironment) && devEnvironment.equals(sysGlobals.DEV_ENVIRONMENT)) {
+											regiUrlLocal = "http://192.168.10.153:803/kff/comments/saveComment?";// 线上url
+										} else {
+											regiUrlLocal = "http://192.168.10.153:803/kff/comments/saveComment?";// 本地url
+										}
+										String str = regiUrlLocal + para;
+										String doGet = HttpUtil.doGet(str);
+										if (doGet != null) {
+											JSONObject parseObject = JSON.parseObject(doGet);
 
+										}
+
+									}
+								}
 							}
 						}
 					}
 				}
-			}
 
+			}
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -413,7 +446,7 @@ public class RobotService {
 				commMap.put("postId", postf.getPostId());
 				commMap.put("becommentedUserId", postf.getCreateUserId());
 				commMap.put("status", 1);
-				commMap.put("contextlenth", 10);
+				commMap.put("contextlenth", 30);
 				commMap.put("isNullParentCommentsId", "true");
 				List<Comments> comm = commentsMapper.findByMap(commMap);
 				if (CollectionUtils.isNotEmpty(comm)) {
@@ -560,15 +593,20 @@ public class RobotService {
 				commendationRequest.setSendUserIcon(user.getIcon());
 				commendationRequest.setSendUserId(user.getUserId());
 
-				String para = "commendationRequest=" + commendationRequest + "&token=" + token;
+				// String para = "commendationRequest=" + commendationRequest + "&token=" + token;
+				Map<String, Object> param = new HashMap<String, Object>();
+				param.put("commendationRequest", commendationRequest);
+				param.put("token", token);
+
 				String regiUrlLocal = null;
 				if (StringUtils.isNotBlank(devEnvironment) && devEnvironment.equals(sysGlobals.DEV_ENVIRONMENT)) {
-					regiUrlLocal = "http://192.168.10.153:803/kff/token/commendation?";// 线上url
+					regiUrlLocal = "http://192.168.10.153:803/kff/token/commendation";// 线上url
 				} else {
-					regiUrlLocal = "http://192.168.10.153:803/kff/token/commendation?";// 本地url
+					regiUrlLocal = "http://192.168.10.153:803/kff/token/commendation";// 本地url
 				}
-				String str = regiUrlLocal + para;
-				String doGet = HttpUtil.doGet(str);
+
+				String doGet = HttpUtil.doPost(regiUrlLocal, param);
+				// String doGet = HttpUtil.doPost(regiUrlLocal, param)
 				if (doGet != null) {
 					JSONObject parseObject = JSON.parseObject(doGet);
 
