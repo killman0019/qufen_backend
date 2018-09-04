@@ -38,4 +38,8 @@ public interface QfIndexMapper extends BaseMapper<QfIndex, java.lang.Integer> {
 
 	void updateSetSharePost(Integer userId);
 
+<<<<<<< HEAD
+=======
+	void updateSetAll(Integer userId);
+>>>>>>> test_dev
 }

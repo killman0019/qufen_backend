@@ -210,7 +210,7 @@
 		<if test="tokenRecordsId != null and tokenRecordsId.trim() != ''">
 			and token_records_id = #{tokenRecordsId}
 		</if>
-		<if test="userId != null and userId.trim() != ''">
+		<if test="userId != null">
 			and user_id = #{userId}
 		</if>
 		<if test="tradeCode != null and tradeCode.trim() != ''">
