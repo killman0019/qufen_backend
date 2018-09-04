@@ -79,6 +79,16 @@ public class KFFPostRmiServiceImpl implements KFFPostRmiService {
 		PageResult<Post> result = kffPostService.findPage(query);
 		return result;
 	}
+	
+	public PageResult<Post> findPageWithEvaluation(PaginationQuery query){
+		return kffPostService.findPageWithEvaluation(query);
+	}
+	public PageResult<Post> findPageWithDiscuss(PaginationQuery query){
+		return kffPostService.findPageWithDiscuss(query);
+	}
+	public PageResult<Post> findPageWithArticle(PaginationQuery query){
+		return kffPostService.findPageWithArticle(query);
+	}
 
 	/**
 	 * 暂时未使用(已在别处实现,此代码后期修改)

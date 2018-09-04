@@ -871,8 +871,71 @@
 			<if test="stickTopc!=null">
 				and tpt.stick_top = #{stickTopc}
 			</if>
+			<if test="praiseNum!=null">
+				and tpt.praise_num &gt;= #{praiseNum}
+			</if>
+			<if test="tagName1!=null">
+				and tbt.evaluation_tags like concat("%",#{tagName1},"%") 
+			</if>
+			<if test="tagName2!=null">
+				and tbt.tag_infos like concat("%",#{tagName2},"%")
+			</if>
+			<if test="tagName3!=null">
+				and tbt.tag_infos like concat("%",#{tagName3},"%")
+			</if>
 		</where>
 	</sql>
+	
+	<select id="findPageWithEvaluation" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		tpt.*
+		from tbpost as tpt
+		LEFT JOIN tbevaluation as tbt on tpt.post_id=tbt.post_id
+		<include refid="condition" />
+		<include refid="orderBy"/>
+		<if test="startRecord != null and endRecord!=null">
+			LIMIT ${startRecord},${endRecord}
+		</if>
+	</select>
+	<select id="findPageWithEvaluationCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(1) from tbpost as tpt
+		LEFT JOIN tbevaluation as tbt on tpt.post_id=tbt.post_id
+		<include refid="condition" />
+	</select>
+	
+	<select id="findPageWithDiscuss" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		tpt.*
+		from tbpost as tpt
+		LEFT JOIN tbdiscuss as tbt on tpt.post_id=tbt.post_id
+		<include refid="condition" />
+		<include refid="orderBy"/>
+		<if test="startRecord != null and endRecord!=null">
+			LIMIT ${startRecord},${endRecord}
+		</if>
+	</select>
+	<select id="findPageWithDiscussCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(1) from tbpost as tpt
+		LEFT JOIN tbdiscuss as tbt on tpt.post_id=tbt.post_id
+		<include refid="condition" />
+	</select>
+	
+	<select id="findPageWithArticle" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		tpt.*
+		from tbpost as tpt
+		LEFT JOIN tbarticle as tbt on tpt.post_id=tbt.post_id
+		<include refid="condition" />
+		<include refid="orderBy"/>
+		<if test="startRecord != null and endRecord!=null">
+			LIMIT ${startRecord},${endRecord}
+		</if>
+	</select>
+	<select id="findPageWithArticleCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(1) from tbpost as tpt
+		LEFT JOIN tbarticle as tbt on tpt.post_id=tbt.post_id
+		<include refid="condition" />
+	</select>
 
 	<update id="updateByMap" parameterType="java.util.Map">
 		UPDATE tbpost

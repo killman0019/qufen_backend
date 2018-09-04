@@ -88,5 +88,16 @@ public interface PostMapper extends BaseMapper<Post, java.lang.Integer> {
 	 *
 	 */
 	void updateIncome(Map<String, Object> map);
+	
+	
+	List<Post> findPageWithEvaluation(Map<String, Object> map);
+	Integer findPageWithEvaluationCount(Map<String, Object> map);
+	
+	List<Post> findPageWithDiscuss(Map<String, Object> map);
+	Integer findPageWithDiscussCount(Map<String, Object> map);
+	
+	List<Post> findPageWithArticle(Map<String, Object> map);
+	Integer findPageWithArticleCount(Map<String, Object> map);
+	
 
 }

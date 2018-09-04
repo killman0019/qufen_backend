@@ -33,5 +33,9 @@ public interface KFFPostRmiService {
 	public PageResult<PostResponse> showBGmustRead(PaginationQuery query) throws RestServiceException;
 	
 	public PageResult<Post> findPage(PaginationQuery query) throws RestServiceException;
+	
+	public PageResult<Post> findPageWithEvaluation(PaginationQuery query);
+	public PageResult<Post> findPageWithDiscuss(PaginationQuery query);
+	public PageResult<Post> findPageWithArticle(PaginationQuery query);
 
 }

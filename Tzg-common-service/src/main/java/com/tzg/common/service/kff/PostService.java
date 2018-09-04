@@ -120,6 +120,59 @@ public class PostService {
 		return result;
 	}
 	
+	@Transactional(readOnly = true)
+	public PageResult<Post> findPageWithEvaluation(PaginationQuery query) throws RestServiceException {
+		PageResult<Post> result = null;
+		try {
+			Integer count = postMapper.findPageWithEvaluationCount(query.getQueryData());
+			if (null != count && count.intValue() > 0) {
+				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
+				query.addQueryData("startRecord", Integer.toString(startRecord));
+				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
+				List<Post> list = postMapper.findPageWithEvaluation(query.getQueryData());
+				result = new PageResult<Post>(list, count, query);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	@Transactional(readOnly = true)
+	public PageResult<Post> findPageWithDiscuss(PaginationQuery query) throws RestServiceException {
+		PageResult<Post> result = null;
+		try {
+			Integer count = postMapper.findPageWithDiscussCount(query.getQueryData());
+			if (null != count && count.intValue() > 0) {
+				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
+				query.addQueryData("startRecord", Integer.toString(startRecord));
+				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
+				List<Post> list = postMapper.findPageWithDiscuss(query.getQueryData());
+				result = new PageResult<Post>(list, count, query);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	@Transactional(readOnly = true)
+	public PageResult<Post> findPageWithArticle(PaginationQuery query) throws RestServiceException {
+		PageResult<Post> result = null;
+		try {
+			Integer count = postMapper.findPageWithArticleCount(query.getQueryData());
+			if (null != count && count.intValue() > 0) {
+				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
+				query.addQueryData("startRecord", Integer.toString(startRecord));
+				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
+				List<Post> list = postMapper.findPageWithArticle(query.getQueryData());
+				result = new PageResult<Post>(list, count, query);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
 	
 	@Transactional(readOnly = true)
 	public PageResult<PostDiscussVo> findPostVoPage(PaginationQuery query) throws RestServiceException {
