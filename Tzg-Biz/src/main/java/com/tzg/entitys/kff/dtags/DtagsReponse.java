@@ -1,6 +1,7 @@
 package com.tzg.entitys.kff.dtags;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class DtagsReponse implements Serializable {
 
@@ -40,6 +41,37 @@ public class DtagsReponse implements Serializable {
 	private Integer tagTypeOrderNumder;
 
 	private String typeName;
+	
+	//图标地址
+	private String imgPath;
+	//是否推荐：0-否，1-是
+	private Integer stickTop;
+	//操作推荐时间
+	private Date stickUpdateTime;
+
+	public String getImgPath() {
+		return imgPath;
+	}
+
+	public void setImgPath(String imgPath) {
+		this.imgPath = imgPath;
+	}
+
+	public Integer getStickTop() {
+		return stickTop;
+	}
+
+	public void setStickTop(Integer stickTop) {
+		this.stickTop = stickTop;
+	}
+
+	public Date getStickUpdateTime() {
+		return stickUpdateTime;
+	}
+
+	public void setStickUpdateTime(Date stickUpdateTime) {
+		this.stickUpdateTime = stickUpdateTime;
+	}
 
 	public java.lang.Integer getTagId() {
 		return tagId;

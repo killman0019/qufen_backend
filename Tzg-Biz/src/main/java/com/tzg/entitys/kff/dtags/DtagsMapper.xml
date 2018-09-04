@@ -9,12 +9,13 @@
 		<result property="updateTime" jdbcType="TIMESTAMP" column="updateTime" />
 		<result property="status" jdbcType="BIT" column="status" />
 		<result property="typeId" jdbcType="INTEGER" column="type_id" />
+		<result property="imgPath" jdbcType="VARCHAR" column="img_path" />
+		<result property="stickTop" jdbcType="INTEGER" column="stick_top" />
+		<result property="stickUpdateTime" jdbcType="TIMESTAMP" column="stick_update_time" />
 	</resultMap>
 
 	<sql id="columns">
-	    <![CDATA[
-        tag_id ,tag_name ,create_user_id ,createTime ,updateTime ,status,type_id
-	    ]]>
+        tag_id ,tag_name ,create_user_id ,createTime ,updateTime ,status,type_id,img_path,stick_top,stick_update_time
 	</sql>
 
 	<insert id="save" parameterType="com.tzg.entitys.kff.dtags.Dtags" useGeneratedKeys="true" keyProperty="tagId">
@@ -124,9 +125,17 @@
 		<if test="status != null">
 			and status = #{status}
 		</if>
-
 		<if test="typeId != null ">
 			and type_id = #{typeId}
+		</if>
+		<if test="imgPath != null">
+			and img_path = #{imgPath,jdbcType=VARCHAR}
+		</if>
+		<if test="stickTop != null">
+			and stick_top = #{stickTop,jdbcType=INTEGER}
+		</if>
+		<if test="stickUpdateTime != null">
+			and stick_update_time = #{stickUpdateTime,jdbcType=TIMESTAMP} 
 		</if>
 	</sql>
 
@@ -167,7 +176,15 @@
 	<select id="findListByAttr" resultMap="BaseResultMap" parameterType="java.util.Map">
 		select * from <include refid="table_name" />
 		<include refid="condition"/>
-	    <![CDATA[ ORDER BY id DESC ]]>
+	    <choose>
+			<when test="sortField != null and sortField != ''">
+				ORDER BY ${sortField} ${sortSequence}
+			</when>
+			<otherwise>
+	    	    ORDER BY id DESC 
+			</otherwise>
+		</choose>
+		LIMIT ${startRecord},${endRecord} 
 	</select>
 	
 	<update id="updateByMap" parameterType="java.util.Map">
@@ -187,6 +204,12 @@
 			</if>
 			<if test="title != null">
 			and (tag_name like "%"#{title}"%" or memo like "%"#{title}"%")
+			</if>
+			<if test="status != null">
+			and status = #{status,jdbcType=INTEGER}
+			</if>
+			<if test="stickTop != null">
+			and stick_top = #{stickTop,jdbcType=INTEGER}
 			</if>
     	</where>
     </sql>

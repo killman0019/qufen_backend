@@ -1,6 +1,8 @@
 package com.tzg.entitys.kff.dtags;
 
 import java.io.Serializable;
+import java.util.Date;
+
 import com.tzg.common.utils.DateUtil;
 
 public class Dtags implements Serializable {
@@ -37,6 +39,36 @@ public class Dtags implements Serializable {
 	private java.lang.Boolean status;
 
 	private Integer typeId;
+	//图标地址
+	private String imgPath;
+	//是否推荐：0-否，1-是
+	private Integer stickTop;
+	//操作推荐时间
+	private Date stickUpdateTime;
+
+	public String getImgPath() {
+		return imgPath;
+	}
+
+	public void setImgPath(String imgPath) {
+		this.imgPath = imgPath;
+	}
+
+	public Integer getStickTop() {
+		return stickTop;
+	}
+
+	public void setStickTop(Integer stickTop) {
+		this.stickTop = stickTop;
+	}
+
+	public Date getStickUpdateTime() {
+		return stickUpdateTime;
+	}
+
+	public void setStickUpdateTime(Date stickUpdateTime) {
+		this.stickUpdateTime = stickUpdateTime;
+	}
 
 	public Integer getTypeId() {
 		return typeId;

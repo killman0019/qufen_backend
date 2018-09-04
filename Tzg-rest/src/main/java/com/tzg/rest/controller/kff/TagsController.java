@@ -15,20 +15,23 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
 import com.tzg.common.utils.SyseUtil;
-import com.tzg.entitys.kff.dtags.DtagsReponse;
+import com.tzg.entitys.kff.dtags.Dtags;
 import com.tzg.entitys.kff.tagstype.TagsTypeResponse;
 import com.tzg.rest.controller.BaseController;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
+import com.tzg.rmi.service.DtagsRmiService;
 import com.tzg.rmi.service.KFFTagsRmiService;
 
-@Controller(value = "TagsController")
+@Controller
 @RequestMapping("/kff/tags")
 public class TagsController extends BaseController {
-	private static Logger log = Logger.getLogger(TagsController.class);
+	private static Logger logger = Logger.getLogger(TagsController.class);
 	@Autowired
 	private KFFTagsRmiService kffTagsRmiService;
+	@Autowired
+	private DtagsRmiService dTagsRmiService;
 
 	/**
 	 * 
@@ -59,10 +62,51 @@ public class TagsController extends BaseController {
 			bre.setData(map);
 			SyseUtil.systemErrOutJson(bre);
 		} catch (RestServiceException e) {
-			logger.error("ArticleController saveArticle:{}", e);
+			logger.error("TagsController getTagsAndTagType:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
 		} catch (Exception e) {
-			logger.error("ArticleController saveArticle:{}", e);
+			logger.error("TagsController getTagsAndTagType:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+		}
+		return bre;
+	}
+	
+	/** 
+	* @Title: getDTagsInfo 
+	* @Description: TODO <爆料页面获取话题接口>
+	* @author linj <方法创建作者>
+	* @create 下午7:29:07
+	* @param @param request
+	* @param @return <参数说明>
+	* @return BaseResponseEntity 
+	* @throws 
+	* @update 下午7:29:07
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	*/
+	@ResponseBody
+	@RequestMapping(value = "/getDTagsInfo")
+	public BaseResponseEntity getDTagsInfo(HttpServletRequest request) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+		try {
+			Map<String,Object> seMap = new HashMap<>();
+			seMap.put("status", 1);
+			seMap.put("stickTop", 1);//是否推荐：0-否，1-是
+			seMap.put("sortField", "stick_update_time");
+			seMap.put("sortSequence", "desc");
+			seMap.put("startRecord", 0);
+			seMap.put("endRecord", 20);
+			List<Dtags> data = dTagsRmiService.findListByAttr(seMap);
+			if(data.isEmpty()) {
+				bre.setNoDataMsg();
+				return bre;
+			}
+			bre.setData(data);
+		} catch (RestServiceException e) {
+			logger.error("TagsController getDTags:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("TagsController getDTags:{}", e);
 			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
 		}
 		return bre;
