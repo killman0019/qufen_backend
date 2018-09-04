@@ -257,7 +257,7 @@ public class RobotService {
 								// TODO Auto-generated method stub
 								switch (k) {
 								case 5:
-									robotComment(postf);// 关注
+									robotComment(postf);// 一级评论
 									break;
 								case 4:
 									robotFollow(postf);// 关注
@@ -375,46 +375,38 @@ public class RobotService {
 					commentNum = redisService.get("commentNumRBT");
 				}
 				List<Comments> comm = commentsMapper.findByMap(commMap);
-				if (CollectionUtils.isNotEmpty(comm)) {
-					if (comm.size() <= Integer.valueOf(commentNum)) {
-						for (Comments comments : comm) {
-							if (null != comments) {
-								Integer commentUserId = comments.getCommentUserId();
-								Robot robot = robotMapper.findByUserId(commentUserId);
-								if (null == robot) {// 表示这个是真人
-									// 对评论进行二级评论
-									CommentLibrary commentLib = findOneConnentLibrary(1);
-									if (null != commentLib) {
-										// 进行调用接口
-										KFFUser robotUser = findOneRobot();
-										String token = AccountTokenUtil.getAccountToken(robotUser.getUserId());
-										Integer postId = postf.getPostId();
-										String regiUrlLocal = null;
-										CommentsRequest commentsRequest = new CommentsRequest();
-										commentsRequest.setCommentContent(commentLib.getContent());
-										commentsRequest.setPostId(postId);
 
-										String para = "token=" + token + "&commentsRequest=" + commentsRequest;
-										if (StringUtils.isNotBlank(devEnvironment) && devEnvironment.equals(sysGlobals.DEV_ENVIRONMENT)) {
-											regiUrlLocal = "http://192.168.10.153:803/kff/comments/saveComment?";// 线上url
-										} else {
-											regiUrlLocal = "http://192.168.10.153:803/kff/comments/saveComment?";// 本地url
-										}
-										String str = regiUrlLocal + para;
-										String doGet = HttpUtil.doGet(str);
-										if (doGet != null) {
-											JSONObject parseObject = JSON.parseObject(doGet);
+				if (comm.size() <= Integer.valueOf(commentNum)) {
 
-										}
+					CommentLibrary commentLib = findOneConnentLibrary(1);
+					if (null != commentLib) {
+						// 进行调用接口
+						KFFUser robotUser = findOneRobot();
+						String token = AccountTokenUtil.getAccountToken(robotUser.getUserId());
+						Integer postId = postf.getPostId();
+						String regiUrlLocal = null;
+						CommentsRequest commentsRequest = new CommentsRequest();
+						commentsRequest.setCommentContent(commentLib.getContent());
+						commentsRequest.setPostId(postId);
 
-									}
-								}
-							}
+						String para = "token=" + token + "&commentContent=" + commentLib.getContent() + "&postId=" + postId;
+						if (StringUtils.isNotBlank(devEnvironment) && devEnvironment.equals(sysGlobals.DEV_ENVIRONMENT)) {
+							regiUrlLocal = "http://192.168.10.153:803/kff/comments/saveComment?";// 线上url
+						} else {
+							regiUrlLocal = "http://192.168.10.153:803/kff/comments/saveComment?";// 本地url
 						}
+						String str = regiUrlLocal + para;
+						String doGet = HttpUtil.doGet(str);
+						if (doGet != null) {
+							JSONObject parseObject = JSON.parseObject(doGet);
+
+						}
+
 					}
 				}
 
 			}
+
 		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -444,7 +436,6 @@ public class RobotService {
 				// 查找所有的一级评论
 				Map<String, Object> commMap = new HashMap<String, Object>();
 				commMap.put("postId", postf.getPostId());
-				commMap.put("becommentedUserId", postf.getCreateUserId());
 				commMap.put("status", 1);
 				commMap.put("contextlenth", 30);
 				commMap.put("isNullParentCommentsId", "true");
@@ -467,7 +458,8 @@ public class RobotService {
 									commentsRequest.setCommentContent(commentLib.getContent());
 									commentsRequest.setPostId(postId);
 									commentsRequest.setParentCommentsId(comments.getCommentsId());
-									String para = "token=" + token + "&commentsRequest=" + commentsRequest;
+									String para = "token=" + token + "&commentContent=" + commentLib.getContent() + "&postId=" + postId + "&parentCommentsId="
+											+ comments.getCommentsId() + "&becommentedId=" + comments.getCommentsId();
 									if (StringUtils.isNotBlank(devEnvironment) && devEnvironment.equals(sysGlobals.DEV_ENVIRONMENT)) {
 										regiUrlLocal = "http://192.168.10.153:803/kff/comments/saveComment?";// 线上url
 									} else {
@@ -529,27 +521,27 @@ public class RobotService {
 				String createTimeStr = DateUtil.getDate(postf.getCreateTime());
 				followMap.put("createTimeBegin", createTimeStr);
 				List<Follow> followList = followMapper.findByMap(followMap);
-				if (CollectionUtils.isNotEmpty(followList)) {
-					if (followList.size() < Integer.valueOf(followNum)) {
-						// 调用接口,进行对创建人进行关注
-						Integer followType = 3;
-						Integer followedId = createUserId;
 
-						String para = "followType=" + followType + "&followedId=" + followedId + "&token=" + token;
-						String regiUrlLocal = null;
-						if (StringUtils.isNotBlank(devEnvironment) && devEnvironment.equals(sysGlobals.DEV_ENVIRONMENT)) {
-							regiUrlLocal = "http://192.168.10.153:803/kff/follow/saveFollow?";// 线上url
-						} else {
-							regiUrlLocal = "http://192.168.10.153:803/kff/follow/saveFollow?";// 本地url
-						}
-						String str = regiUrlLocal + para;
-						String doGet = HttpUtil.doGet(str);
-						if (doGet != null) {
-							JSONObject parseObject = JSON.parseObject(doGet);
+				if (followList.size() < Integer.valueOf(followNum)) {
+					// 调用接口,进行对创建人进行关注
+					Integer followType = 3;
+					Integer followedId = createUserId;
 
-						}
+					String para = "followType=" + followType + "&followedId=" + followedId + "&token=" + token;
+					String regiUrlLocal = null;
+					if (StringUtils.isNotBlank(devEnvironment) && devEnvironment.equals(sysGlobals.DEV_ENVIRONMENT)) {
+						regiUrlLocal = "http://192.168.10.153:803/kff/follow/saveFollow?";// 线上url
+					} else {
+						regiUrlLocal = "http://192.168.10.153:803/kff/follow/saveFollow?";// 本地url
+					}
+					String str = regiUrlLocal + para;
+					String doGet = HttpUtil.doGet(str);
+					if (doGet != null) {
+						JSONObject parseObject = JSON.parseObject(doGet);
+
 					}
 				}
+
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -582,7 +574,7 @@ public class RobotService {
 				Integer CdBegin = Integer.valueOf(sysBeginCd.getVcParamValue());
 				SystemParam sysEndCd = systemParamService.findByCode(sysGlobals.RBT_COMMENDATION_NUM_END);
 				Integer CdEnd = Integer.valueOf(sysEndCd.getVcParamValue());
-				Integer cmNum = RandomUtil.randomNumber(CdBegin / 5, CdEnd / 5);
+				Integer cmNum = RandomUtil.randomNumber(CdBegin / 5, CdEnd / 5) * 5;
 
 				CommendationRequest commendationRequest = new CommendationRequest();
 				commendationRequest.setAmount(new BigDecimal(cmNum));
@@ -593,20 +585,19 @@ public class RobotService {
 				commendationRequest.setSendUserIcon(user.getIcon());
 				commendationRequest.setSendUserId(user.getUserId());
 
-				// String para = "commendationRequest=" + commendationRequest + "&token=" + token;
-				Map<String, Object> param = new HashMap<String, Object>();
-				param.put("commendationRequest", commendationRequest);
-				param.put("token", token);
+				String para = "amount=" + new BigDecimal(cmNum) + "&token=" + token + "&postId=" + postf.getPostId() + "&postType=" + postf.getPostType()
+						+ "&projectId=" + postf.getProjectId() + "&receiveUserId=" + postf.getCreateUserId() + "&sendUserIcon=" + user.getIcon()
+						+ "&sendUserId=" + user.getUserId();
 
 				String regiUrlLocal = null;
 				if (StringUtils.isNotBlank(devEnvironment) && devEnvironment.equals(sysGlobals.DEV_ENVIRONMENT)) {
-					regiUrlLocal = "http://192.168.10.153:803/kff/token/commendation";// 线上url
+					regiUrlLocal = "http://192.168.10.153:803/kff/token/commendation?";// 线上url
 				} else {
-					regiUrlLocal = "http://192.168.10.153:803/kff/token/commendation";// 本地url
+					regiUrlLocal = "http://192.168.10.153:803/kff/token/commendation?";// 本地url
 				}
+				String str = regiUrlLocal + para;
+				String doGet = HttpUtil.doGet(str);
 
-				String doGet = HttpUtil.doPost(regiUrlLocal, param);
-				// String doGet = HttpUtil.doPost(regiUrlLocal, param)
 				if (doGet != null) {
 					JSONObject parseObject = JSON.parseObject(doGet);
 

@@ -57,6 +57,7 @@ import com.tzg.common.service.kff.UserService;
 import com.tzg.common.service.kff.UserWalletService;
 import com.tzg.common.service.systemParam.SystemParamService;
 import com.tzg.common.utils.DozerMapperUtils;
+import com.tzg.common.utils.RandomUtil;
 import com.tzg.common.zookeeper.ZKClient;
 import com.tzg.entitys.kff.follow.Follow;
 import com.tzg.entitys.kff.follow.FollowResponse;
@@ -699,7 +700,16 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 
 	@Override
 	public void text() throws RestServiceException {
-		
-		robotService.robotTask(3);
+		for (int i = 0; i < 10; i++) {
+			Integer n = RandomUtil.randomNumber(1, 5);
+			robotService.robotTask(n);
+			try {
+				Thread.sleep(10 * 1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
 	}
 }

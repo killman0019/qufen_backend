@@ -193,6 +193,8 @@
     	from tbcommendation where 1=1
 		and post_id = #{postId}
 	</select>
+	
+
 </mapper>
 
 

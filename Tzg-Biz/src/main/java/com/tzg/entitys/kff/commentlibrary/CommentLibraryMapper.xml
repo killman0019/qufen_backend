@@ -84,5 +84,42 @@
 		</set>
 		where id = #{id,jdbcType=INTEGER}
 	</update>
+	<sql id="queryWhere">
+		<if test="content != null">
+			and content = #{content,jdbcType=VARCHAR}
+		</if>
+		<if test="type != null">
+			and type = #{type,jdbcType=INTEGER}
+		</if>
+		<if test="createTime != null">
+			and create_time = #{createTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="updateTime != null">
+			and update_time = #{updateTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="status != null">
+			and status = #{status,jdbcType=INTEGER}
+		</if>
+		<if test="id !=null">
+			and id = #{id,jdbcType=INTEGER}
+		</if>
+
+	</sql>
+	<select id="findAllPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(*) from tbcommentlibrary where 1=1
+		<include refid="queryWhere" />
+
+	</select>
+
+	<select id="findByMap" resultMap="BaseResultMap" parameterType="java.util.Map">
+
+		select
+		<include refid="columns" />
+		from
+		tbcommentlibrary
+		where 1=1
+		<include refid="queryWhere" />
+
+	</select>
 
 </mapper>

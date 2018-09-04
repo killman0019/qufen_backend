@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
 import com.tzg.common.utils.HtmlUtils;
+import com.tzg.common.utils.SyseUtil;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
@@ -26,8 +27,7 @@ public class FollowController extends BaseController {
 
 	@Autowired
 	private KFFRmiService kffRmiService;
-	
-	
+
 	/** 
 	* @Title: saveFollow 
 	* @Description: TODO <关注接口>
@@ -45,36 +45,35 @@ public class FollowController extends BaseController {
 	* @updateContext <修改内容>
 	*/
 	@ResponseBody
-	@RequestMapping(value="/saveFollow",method = {RequestMethod.POST,RequestMethod.GET})
-	public BaseResponseEntity saveFollow(HttpServletRequest request,String token,Integer followType, 
-			Integer followedId) {
+	@RequestMapping(value = "/saveFollow", method = { RequestMethod.POST, RequestMethod.GET })
+	public BaseResponseEntity saveFollow(HttpServletRequest request, String token, Integer followType, Integer followedId) {
 		BaseResponseEntity bre = new BaseResponseEntity();
-        HashMap<String, Object> map = new HashMap<String, Object>();
+		HashMap<String, Object> map = new HashMap<String, Object>();
 		try {
-			if(followedId==null&&followType==null&&StringUtils.isBlank(token)) {
+			if (followedId == null && followType == null && StringUtils.isBlank(token)) {
 				JSONObject requestContent = HtmlUtils.getRequestContent(request);
 				token = (String) requestContent.get("token");
 				followType = (Integer) requestContent.get("followType");
 				followedId = (Integer) requestContent.get("followedId");
 			}
-			if(followedId==null||followType==null||StringUtils.isBlank(token)) {
+			if (followedId == null || followType == null || StringUtils.isBlank(token)) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
 			}
 			Integer userId = getUserIdByToken(token);
-			kffRmiService.saveFollow(userId,followType,followedId);
-            map.put("followStatus", 1);
-            bre.setData(map);
+			kffRmiService.saveFollow(userId, followType, followedId);
+			map.put("followStatus", 1);
+			bre.setData(map);
+			SyseUtil.systemErrOutJson(bre);
 		} catch (RestServiceException e) {
 			log.error("FollowController saveFollow:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
 		} catch (Exception e) {
 			log.error("FollowController saveFollow:{}", e);
-			return this.resResult(RestErrorCode.SYS_ERROR,e.getMessage());
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
 		}
 		return bre;
 	}
-	
-	
+
 	/** 
 	* @Title: cancelFollow 
 	* @Description: TODO <取消关注接口>
@@ -92,31 +91,30 @@ public class FollowController extends BaseController {
 	* @updateContext <修改内容>
 	*/
 	@ResponseBody
-	@RequestMapping(value="/cancelFollow",method = {RequestMethod.POST,RequestMethod.GET})
-	public BaseResponseEntity cancelFollow(HttpServletRequest request,String token,Integer followType, 
-			Integer followedId) {
+	@RequestMapping(value = "/cancelFollow", method = { RequestMethod.POST, RequestMethod.GET })
+	public BaseResponseEntity cancelFollow(HttpServletRequest request, String token, Integer followType, Integer followedId) {
 		BaseResponseEntity bre = new BaseResponseEntity();
-        HashMap<String, Object> map = new HashMap<String, Object>();
+		HashMap<String, Object> map = new HashMap<String, Object>();
 		try {
-			if(followedId==null&&followType==null&&StringUtils.isBlank(token)) {
+			if (followedId == null && followType == null && StringUtils.isBlank(token)) {
 				JSONObject requestContent = HtmlUtils.getRequestContent(request);
 				token = (String) requestContent.get("token");
 				followType = (Integer) requestContent.get("followType");
 				followedId = (Integer) requestContent.get("followedId");
 			}
-			if(followedId==null||followType==null||StringUtils.isBlank(token)) {
+			if (followedId == null || followType == null || StringUtils.isBlank(token)) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
-			}       
-    		Integer userId = getUserIdByToken(token);
-			kffRmiService.cancelFollow(userId,followType,followedId);
+			}
+			Integer userId = getUserIdByToken(token);
+			kffRmiService.cancelFollow(userId, followType, followedId);
 			map.put("followStatus", 0);
-            bre.setData(map);
+			bre.setData(map);
 		} catch (RestServiceException e) {
 			log.error("FollowController cancelFollow:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
 		} catch (Exception e) {
 			log.error("FollowController cancelFollow:{}", e);
-			return this.resResult(RestErrorCode.SYS_ERROR,e.getMessage());
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
 		}
 		return bre;
 	}

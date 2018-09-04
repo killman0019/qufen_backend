@@ -1,6 +1,7 @@
 package com.tzg.wap.controller.h5;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
 import com.tzg.common.utils.HtmlUtils;
+import com.tzg.common.utils.SyseUtil;
 import com.tzg.entitys.kff.commendation.CommendationRequest;
 import com.tzg.entitys.kff.comments.CommentsRequest;
 import com.tzg.rest.exception.rest.RestErrorCode;
@@ -61,8 +63,10 @@ public class TokenController extends BaseController {
 			}
 			Integer userId = getUserIdByToken(token);
 			commendationRequest.setSendUserId(userId);
-			kffRmiService.saveCommendation(commendationRequest);
+			Map<String, Object> result = kffRmiService.saveCommendation(commendationRequest);
+			map.put("result", result);
 			bre.setData(map);
+			SyseUtil.systemErrOutJson(bre);
 		} catch (RestServiceException e) {
 			logger.error("TokenController commendation:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());

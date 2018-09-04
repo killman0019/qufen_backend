@@ -12,6 +12,7 @@ import com.tzg.common.service.kff.PostService;
 import com.tzg.common.service.kff.ProjectService;
 import com.tzg.common.service.kff.ProjectTradeService;
 import com.tzg.common.service.kff.QfIndexService;
+import com.tzg.common.service.kff.RobotService;
 import com.tzg.common.service.kff.TokenawardService;
 import com.tzg.common.service.kff.TokenrecordsService;
 import com.tzg.common.service.kff.TransactionPairService;
@@ -48,6 +49,104 @@ public class taskJobService {
 
 	@Autowired
 	private SystemParamService systemParamService;
+
+	@Autowired
+	private RobotService robotService;
+
+	/**
+	 * 
+	* @Title: robotComment 
+	* @Description: TODO <一级评论>
+	* @author zhangdd <方法创建作者>
+	* @create 下午8:03:56
+	* @param  <参数说明>
+	* @return void 
+	* @throws 
+	* @update 下午8:03:56
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	 */
+	public void robotComment() {
+		logger.info("----start robotComment job---");
+		robotService.robotTask(5);
+		logger.info("----end robotComment job---");
+	}
+
+	/**
+	 * 
+	* @Title: robotFollow 
+	* @Description: TODO <用一句话描述这个方法的作用>
+	* @author zhangdd <方法创建作者>
+	* @create 下午8:05:08
+	* @param  <参数说明>
+	* @return void 
+	* @throws 
+	* @update 下午8:05:08
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	 */
+	public void robotFollow() {
+		logger.info("----start robotFollow job---");
+		robotService.robotTask(4);
+		logger.info("----end robotFollow job---");
+	}
+
+	/**
+	 * 
+	* @Title: robotCommendation 
+	* @Description: TODO <用一句话描述这个方法的作用>
+	* @author zhangdd <方法创建作者>
+	* @create 下午8:05:13
+	* @param  <参数说明>
+	* @return void 
+	* @throws 
+	* @update 下午8:05:13
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	 */
+	public void robotCommendation() {
+		logger.info("----start robotCommendation job---");
+		robotService.robotTask(3);
+		logger.info("----end robotCommendation job---");
+	}
+
+	/**
+	 * 
+	* @Title: robotSecondComment 
+	* @Description: TODO <用一句话描述这个方法的作用>
+	* @author zhangdd <方法创建作者>
+	* @create 下午8:05:17
+	* @param  <参数说明>
+	* @return void 
+	* @throws 
+	* @update 下午8:05:17
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	 */
+	public void robotSecondComment() {
+		logger.info("----start robotSecondComment job---");
+		robotService.robotTask(2);
+		logger.info("----end robotSecondComment job---");
+	}
+
+	/**
+	 * 
+	* @Title: robotPraise 
+	* @Description: TODO <用一句话描述这个方法的作用>
+	* @author zhangdd <方法创建作者>
+	* @create 下午8:05:20
+	* @param  <参数说明>
+	* @return void 
+	* @throws 
+	* @update 下午8:05:20
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	 */
+	public void robotPraise() {
+		logger.info("----start robotPraise job---");
+		robotService.robotTask(1);
+		logger.info("----end robotPraise job---");
+	}
 
 	/**
 	 * 
