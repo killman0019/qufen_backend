@@ -8,6 +8,7 @@
 		<result property="createTime" jdbcType="TIMESTAMP" column="createTime" />
 		<result property="updateTime" jdbcType="TIMESTAMP" column="updateTime" />
 		<result property="status" jdbcType="BIT" column="status" />
+		<result property="memo" jdbcType="VARCHAR" column="memo" />
 		<result property="typeId" jdbcType="INTEGER" column="type_id" />
 		<result property="imgPath" jdbcType="VARCHAR" column="img_path" />
 		<result property="stickTop" jdbcType="INTEGER" column="stick_top" />
@@ -15,7 +16,7 @@
 	</resultMap>
 
 	<sql id="columns">
-        tag_id ,tag_name ,create_user_id ,createTime ,updateTime ,status,type_id,img_path,stick_top,stick_update_time
+        tag_id ,tag_name ,create_user_id ,createTime ,updateTime ,status,memo,type_id,img_path,stick_top,stick_update_time
 	</sql>
 
 	<insert id="save" parameterType="com.tzg.entitys.kff.dtags.Dtags" useGeneratedKeys="true" keyProperty="tagId">

@@ -24,9 +24,6 @@ public class DtagsService  extends BaseService {
 
 	@Transactional(readOnly = true)
 	public Dtags findById(java.lang.Integer id) throws RestServiceException {
-		if (id == null) {
-			throw new RestServiceException("id不能为空");
-		}
 		return dtagsMapper.findById(id);
 	}
 

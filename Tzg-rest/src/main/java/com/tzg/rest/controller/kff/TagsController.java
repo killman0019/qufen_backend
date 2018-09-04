@@ -55,8 +55,8 @@ public class TagsController extends BaseController {
 		Map<String, Object> map = new HashMap<String, Object>();
 
 		try {
-			JSONObject params = getParamMapFromRequestPolicy(request);
-			Integer typeId = params.getInteger("typeId");
+			JSONObject policyJson = getParamMapFromRequestPolicy(request);
+			Integer typeId = policyJson.getInteger("typeId");
 			List<TagsTypeResponse> result = kffTagsRmiService.getTagsAndTagType(typeId);
 			map.put("result", result);
 			bre.setData(map);
@@ -103,10 +103,51 @@ public class TagsController extends BaseController {
 			}
 			bre.setData(data);
 		} catch (RestServiceException e) {
-			logger.error("TagsController getDTags:{}", e);
+			logger.error("TagsController getDTagsInfo:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
 		} catch (Exception e) {
-			logger.error("TagsController getDTags:{}", e);
+			logger.error("TagsController getDTagsInfo:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+		}
+		return bre;
+	}
+	
+	/** 
+	* @Title: getDTagDetail 
+	* @Description: TODO <获取单个话题的信息接口>
+	* @author linj <方法创建作者>
+	* @create 上午10:12:15
+	* @param @param request
+	* @param @param id 话题id
+	* @param @return <参数说明>
+	* @return BaseResponseEntity 
+	* @throws 
+	* @update 上午10:12:15
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	*/
+	@ResponseBody
+	@RequestMapping(value = "/getDTagDetail")
+	public BaseResponseEntity getDTagDetail(HttpServletRequest request) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+		try {
+			JSONObject params = getParamJsonFromRequestPolicy(request);
+			Integer id = params.getInteger("id");
+			if(null==id) {
+				bre.setNoDataMsg();
+				return bre;
+			}
+			Dtags dTags = dTagsRmiService.findById(id);
+			if(null==dTags) {
+				bre.setNoDataMsg();
+				return bre;
+			}
+			bre.setData(dTags);
+		} catch (RestServiceException e) {
+			logger.error("TagsController getDTagDetail:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("TagsController getDTagDetail:{}", e);
 			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
 		}
 		return bre;

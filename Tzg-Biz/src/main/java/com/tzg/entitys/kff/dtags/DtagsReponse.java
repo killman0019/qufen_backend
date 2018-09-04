@@ -33,6 +33,8 @@ public class DtagsReponse implements Serializable {
 	 * 状态:0-删除;1-有效
 	 */
 	private java.lang.Boolean status;
+	
+	private String memo;
 
 	private Integer typeId;
 
@@ -48,6 +50,14 @@ public class DtagsReponse implements Serializable {
 	private Integer stickTop;
 	//操作推荐时间
 	private Date stickUpdateTime;
+
+	public String getMemo() {
+		return memo;
+	}
+
+	public void setMemo(String memo) {
+		this.memo = memo;
+	}
 
 	public String getImgPath() {
 		return imgPath;
