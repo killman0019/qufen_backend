@@ -16,7 +16,7 @@
 		select
 		<include refid="columns" />
 		from tbrobot
-		where robot_id = #{robotId,jdbcType=INTEGER}
+		where robot_id = #{robotId,jdbcType=INTEGER} and status = 1
 	</select>
 
 	<insert id="save" parameterType="com.tzg.entitys.kff.robot.Robot">

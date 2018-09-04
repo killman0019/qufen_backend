@@ -1,5 +1,6 @@
 package com.tzg.common.service.kff;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -26,10 +28,16 @@ import com.tzg.common.utils.DateUtil;
 import com.tzg.common.utils.HttpUtil;
 import com.tzg.common.utils.RandomUtil;
 import com.tzg.common.utils.sysGlobals;
+import com.tzg.entitys.kff.commendation.CommendationRequest;
+import com.tzg.entitys.kff.commentlibrary.CommentLibrary;
+import com.tzg.entitys.kff.commentlibrary.CommentLibraryMapper;
+import com.tzg.entitys.kff.comments.CommentsMapper;
 import com.tzg.entitys.kff.follow.Follow;
 import com.tzg.entitys.kff.follow.FollowMapper;
 import com.tzg.entitys.kff.post.Post;
 import com.tzg.entitys.kff.post.PostMapper;
+import com.tzg.entitys.kff.praise.Praise;
+import com.tzg.entitys.kff.praise.PraiseMapper;
 import com.tzg.entitys.kff.robot.Robot;
 import com.tzg.entitys.kff.robot.RobotMapper;
 import com.tzg.entitys.kff.user.KFFUser;
@@ -55,6 +63,15 @@ public class RobotService {
 
 	@Autowired
 	private FollowMapper followMapper;
+
+	@Autowired
+	private PraiseMapper praiseMapper;
+
+	@Autowired
+	private CommentLibraryMapper commentLibraryMapper;
+
+	@Autowired
+	private CommentsMapper commentsMapper;
 
 	@Value("#{paramConfig['DEV_ENVIRONMENT']}")
 	private static String devEnvironment;
@@ -90,8 +107,8 @@ public class RobotService {
 			SystemParam sysEndp = systemParamService.findByCode(sysGlobals.RBT_PRAISE_NUM_END);
 			Integer pEnd = Integer.valueOf(sysEndp.getVcParamValue());
 			Integer PraiseNum = RandomUtil.randomNumber(pBegin, pEnd);
-			redisService.del("followNumRBT");
-			redisService.put("followNumRBT", PraiseNum + "", 60 * 60 * 24);
+			redisService.del("PraiseNumRBT");
+			redisService.put("PraiseNumRBT", PraiseNum + "", 60 * 60 * 24);
 
 			// 打赏
 			SystemParam sysBeginCd = systemParamService.findByCode(sysGlobals.RBT_PRAISE_NUM_BEGIN);
@@ -110,6 +127,7 @@ public class RobotService {
 			Integer commentNum = RandomUtil.randomNumber(CBegin, CEnd);
 			redisService.del("commentNumRBT");
 			redisService.put("commentNumRBT", commentNum + "", 60 * 60 * 24);
+
 		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -117,6 +135,47 @@ public class RobotService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * 
+	* @Title: findOneConnentLibrary 
+	* @Description: TODO <根据类型获得评论库中的评论>
+	* @author zhangdd <方法创建作者>
+	* @create 上午10:41:33
+	* @param @param type
+	* @param @return <参数说明>
+	* @return CommentLibrary 
+	* @throws 
+	* @update 上午10:41:33
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	 */
+	public CommentLibrary findOneConnentLibrary(Integer type) {
+		// 查询评论库的总量
+
+		Map<String, Object> clMap = new HashMap<String, Object>();
+		clMap.put("status", 1);
+		Integer clCount = commentLibraryMapper.findAllPageCount(clMap);
+		Random random = new Random();
+		CommentLibrary commentLibrary = null;
+		while (true) {
+			int id = random.nextInt(clCount + 1);
+			if (commentLibrary == null) {
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put("type", type);
+				map.put("id", id);
+				map.put("status", 1);
+				List<CommentLibrary> commentLibraryList = commentLibraryMapper.findByMap(map);
+				if (CollectionUtils.isNotEmpty(commentLibraryList)) {
+					commentLibrary = commentLibraryList.get(0);
+					if (null != commentLibrary) {
+						break;
+					}
+				}
+			}
+		}
+		return commentLibrary;
 	}
 
 	/**
@@ -134,7 +193,7 @@ public class RobotService {
 	 */
 	public KFFUser findOneRobot() {
 		Map<String, Object> map = new HashMap<String, Object>();
-
+		map.put("status", 1);
 		Integer count = robotMapper.findPageCount(map);
 		Random random = new Random();
 		Robot robot = null;
@@ -240,9 +299,44 @@ public class RobotService {
 	protected void robotPraise(Post postf) {
 
 		// TODO 点赞
+		try {
+			if (null != postf) {
+				KFFUser robotUser = findOneRobot();
+				String token = AccountTokenUtil.getAccountToken(robotUser.getUserId());
+				String praiseNum = redisService.get("PraiseNumRBT");
+				if (StringUtils.isEmpty(praiseNum)) {
+					putRedis();
+					praiseNum = redisService.get("followNumRBT");
+				}
+				Integer createUserId = postf.getCreateUserId();
+				Map<String, Object> praiseMap = new HashMap<String, Object>();
+				praiseMap.put("praiseType", 1 + "");
+				praiseMap.put("postId", 1 + postf.getPostId() + "");
+				praiseMap.put("postType", postf.getType() + "");
+				praiseMap.put("bepraiseUserId", createUserId + "");
+				praiseMap.put("status", "1");
+				List<Praise> praiseList = praiseMapper.findByMap(praiseMap);
+				if (praiseList.size() <= 10) {
+					Integer postId = postf.getPostId();
+					String regiUrlLocal = null;
+					String para = "token=" + token + "&postId=" + postId;
+					if (StringUtils.isNotBlank(devEnvironment) && devEnvironment.equals(sysGlobals.DEV_ENVIRONMENT)) {
+						regiUrlLocal = "http://192.168.10.153:803/kff/praise/savePostPraise?";// 线上url
+					} else {
+						regiUrlLocal = "http://192.168.10.153:803/kff/praise/savePostPraise?";// 本地url
+					}
+					String str = regiUrlLocal + para;
+					String doGet = HttpUtil.doGet(str);
+					if (doGet != null) {
+						JSONObject parseObject = JSON.parseObject(doGet);
 
-		// 产生对象
-
+					}
+				}
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -259,8 +353,18 @@ public class RobotService {
 	* @updateContext <修改内容>
 	 */
 	protected void robotComment(Post postf) {
-		// TODO 评论
+		if (null != postf) {
+			// TODO 评论
+			// findOneConnentLibrary()
+			// 二级回复
+			// 查找所有的一级评论
+			Map<String, Object> commMap = new HashMap<String, Object>();
+			commMap.put("postId", postf.getPostId());
+			commMap.put("becommentedUserId", postf.getCreateUserId());
+			commMap.put("status", 1);
+			commMap.put("contextlenth", 10);
 
+		}
 	}
 
 	/**
@@ -345,41 +449,37 @@ public class RobotService {
 			if (postf != null) {
 				KFFUser robotUser = findOneRobot();
 				String token = AccountTokenUtil.getAccountToken(robotUser.getUserId());
-				SystemParam sysBeginCd = systemParamService.findByCode(sysGlobals.RBT_PRAISE_NUM_BEGIN);
+				KFFUser user = usermapper.findById(robotUser.getUserId());
+				SystemParam sysBeginCd = systemParamService.findByCode(sysGlobals.RBT_COMMENDATION_NUM_BEGIN);
 				Integer CdBegin = Integer.valueOf(sysBeginCd.getVcParamValue());
-				SystemParam sysEndCd = systemParamService.findByCode(sysGlobals.RBT_PRAISE_NUM_END);
+				SystemParam sysEndCd = systemParamService.findByCode(sysGlobals.RBT_COMMENDATION_NUM_END);
 				Integer CdEnd = Integer.valueOf(sysEndCd.getVcParamValue());
+				Integer cmNum = RandomUtil.randomNumber(CdBegin / 5, CdEnd / 5);
 
-				Integer createUserId = postf.getCreateUserId();
-				Map<String, String> followMap = new HashMap<String, String>();
-				followMap.put("followType", 3 + "");
-				followMap.put("followedUserId", createUserId + "");
-				followMap.put("status", 1 + "");
-				String createTimeStr = DateUtil.getDate(postf.getCreateTime());
-				followMap.put("createTimeBegin", createTimeStr);
-				List<Follow> followList = followMapper.findByMap(followMap);
-				if (CollectionUtils.isNotEmpty(followList)) {
-					if (followList.size() < Integer.valueOf(followNum)) {
-						// 调用接口,进行对创建人进行关注
-						Integer followType = 3;
-						Integer followedId = createUserId;
+				CommendationRequest commendationRequest = new CommendationRequest();
+				commendationRequest.setAmount(new BigDecimal(cmNum));
+				commendationRequest.setPostId(postf.getPostId());
+				commendationRequest.setPostType(postf.getPostType());
+				commendationRequest.setProjectId(postf.getProjectId());
+				commendationRequest.setReceiveUserId(postf.getCreateUserId());
+				commendationRequest.setSendUserIcon(user.getIcon());
+				commendationRequest.setSendUserId(user.getUserId());
 
-						String para = "followType=" + followType + "&followedId=" + followedId + "&token=" + token;
-						String regiUrlLocal = null;
-						if (StringUtils.isNotBlank(devEnvironment) && devEnvironment.equals(sysGlobals.DEV_ENVIRONMENT)) {
-							regiUrlLocal = "http://192.168.10.153:803/kff/follow/saveFollow?";// 线上url
-						} else {
-							regiUrlLocal = "http://192.168.10.153:803/kff/follow/saveFollow?";// 本地url
-						}
-						String str = regiUrlLocal + para;
-						String doGet = HttpUtil.doGet(str);
-						if (doGet != null) {
-							JSONObject parseObject = JSON.parseObject(doGet);
+				String para = "commendationRequest=" + commendationRequest + "&token=" + token;
+				String regiUrlLocal = null;
+				if (StringUtils.isNotBlank(devEnvironment) && devEnvironment.equals(sysGlobals.DEV_ENVIRONMENT)) {
+					regiUrlLocal = "http://192.168.10.153:803/kff/token/commendation?";// 线上url
+				} else {
+					regiUrlLocal = "http://192.168.10.153:803/kff/token/commendation?";// 本地url
+				}
+				String str = regiUrlLocal + para;
+				String doGet = HttpUtil.doGet(str);
+				if (doGet != null) {
+					JSONObject parseObject = JSON.parseObject(doGet);
 
-						}
-					}
 				}
 			}
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

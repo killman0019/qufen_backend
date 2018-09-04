@@ -207,32 +207,6 @@
 	</update>
 
 
-	<update id="updateSetYxPraise" parameterType="java.lang.Integer">
-		UPDATE
-		tbqfindex
-		set
-		yxpraise = floor(status_hierarchy_type * 0.1),updateTime= NOW() where user_id = #{userId,jdbcType=INTEGER}
-
-	</update>
-
-	<update id="updateSetYxComment" parameterType="java.lang.Integer">
-		UPDATE
-		tbqfindex
-		set
-		yx_comments = floor(status_hierarchy_type * 0.1),updateTime= NOW() where user_id = #{userId,jdbcType=INTEGER}
-
-	</update>
-
-	<update id="updateSetSharePost" parameterType="java.lang.Integer">
-		UPDATE
-		tbqfindex
-		set
-		yx_share_post = floor(status_hierarchy_type * 0.1),updateTime= NOW() where user_id = #{userId,jdbcType=INTEGER}
-
-	</update>
-
-
-
 	<delete id="deleteById" parameterType="java.lang.Integer">
 	<![CDATA[
 		DELETE FROM tbqfindex WHERE
