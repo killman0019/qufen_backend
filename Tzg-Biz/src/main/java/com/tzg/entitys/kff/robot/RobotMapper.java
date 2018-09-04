@@ -7,4 +7,6 @@ import com.tzg.common.base.BaseMapper;
 @Repository
 public interface RobotMapper extends BaseMapper<Robot, java.lang.Integer> {
 
+	Robot findByUserId(Integer commentUserId);
+
 }

@@ -32,8 +32,8 @@ public class InteractionRootService {
 	* @updateContext <修改内容>
 	 */
 	public List<InteractionRoot> findByMap(Map<String, Object> map) {
+		return interactionRootMapper.findByMap(map);
 
-		return null;
 	}
 
 	public List<Integer> findUserIdList() {

@@ -1,6 +1,8 @@
 package com.tzg.common.service.kff;
 
 import java.math.BigDecimal;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +33,9 @@ import com.tzg.common.utils.sysGlobals;
 import com.tzg.entitys.kff.commendation.CommendationRequest;
 import com.tzg.entitys.kff.commentlibrary.CommentLibrary;
 import com.tzg.entitys.kff.commentlibrary.CommentLibraryMapper;
+import com.tzg.entitys.kff.comments.Comments;
 import com.tzg.entitys.kff.comments.CommentsMapper;
+import com.tzg.entitys.kff.comments.CommentsRequest;
 import com.tzg.entitys.kff.follow.Follow;
 import com.tzg.entitys.kff.follow.FollowMapper;
 import com.tzg.entitys.kff.post.Post;
@@ -250,6 +254,9 @@ public class RobotService {
 							public void run() {
 								// TODO Auto-generated method stub
 								switch (k) {
+								case 5:
+									robotComment(postf);// 关注
+									break;
 								case 4:
 									robotFollow(postf);// 关注
 									break;
@@ -257,7 +264,7 @@ public class RobotService {
 									robotCommendation(postf);// 打赏
 									break;
 								case 2:
-									robotComment(postf);// 评论
+									robotSecondComment(postf);// 评论
 									break;
 								case 1:
 									robotPraise(postf);// 点赞
@@ -342,7 +349,52 @@ public class RobotService {
 	/**
 	 * 
 	* @Title: robotComment 
-	* @Description: TODO <评论>
+	* @Description: TODO <进行一级评论>
+	* @author zhangdd <方法创建作者>
+	* @create 下午3:22:57
+	* @param @param postf <参数说明>
+	* @return void 
+	* @throws 
+	* @update 下午3:22:57
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	 */
+	protected void robotComment(Post postf) {
+		if (null != postf) {
+			// TODO 评论
+
+			// 二级回复
+			// 查找所有的一级评论
+			Map<String, Object> commMap = new HashMap<String, Object>();
+			commMap.put("postId", postf.getPostId());
+			commMap.put("becommentedUserId", postf.getCreateUserId());
+			commMap.put("status", 1);
+			commMap.put("contextlenth", 10);
+			List<Comments> comm = commentsMapper.findByMap(commMap);
+			if (CollectionUtils.isNotEmpty(comm)) {
+				for (Comments comments : comm) {
+					if (null != comments) {
+						Integer commentUserId = comments.getCommentUserId();
+						Robot robot = robotMapper.findByUserId(commentUserId);
+						if (null == robot) {// 表示这个是真人
+							// 对评论进行二级评论
+							CommentLibrary commentLib = findOneConnentLibrary(2);
+							if (null != commentLib) {
+								// 进行调用接口
+
+							}
+						}
+					}
+				}
+			}
+
+		}
+	}
+
+	/**
+	 * 
+	* @Title: robotSecondComment 
+	* @Description: TODO <二级评论>
 	* @author zhangdd <方法创建作者>
 	* @create 下午6:22:30
 	* @param @param postf <参数说明>
@@ -352,18 +404,61 @@ public class RobotService {
 	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
 	* @updateContext <修改内容>
 	 */
-	protected void robotComment(Post postf) {
-		if (null != postf) {
-			// TODO 评论
-			// findOneConnentLibrary()
-			// 二级回复
-			// 查找所有的一级评论
-			Map<String, Object> commMap = new HashMap<String, Object>();
-			commMap.put("postId", postf.getPostId());
-			commMap.put("becommentedUserId", postf.getCreateUserId());
-			commMap.put("status", 1);
-			commMap.put("contextlenth", 10);
+	protected void robotSecondComment(Post postf) {
+		try {
+			if (null != postf) {
+				// TODO 评论
+				// 查找所有的一级评论
+				Map<String, Object> commMap = new HashMap<String, Object>();
+				commMap.put("postId", postf.getPostId());
+				commMap.put("becommentedUserId", postf.getCreateUserId());
+				commMap.put("status", 1);
+				commMap.put("contextlenth", 10);
+				commMap.put("isNullParentCommentsId", "true");
+				List<Comments> comm = commentsMapper.findByMap(commMap);
+				if (CollectionUtils.isNotEmpty(comm)) {
+					for (Comments comments : comm) {
+						if (null != comments) {
+							Integer commentUserId = comments.getCommentUserId();
+							Robot robot = robotMapper.findByUserId(commentUserId);
+							if (null == robot) {// 表示这个是真人
+								// 对评论进行二级评论
+								CommentLibrary commentLib = findOneConnentLibrary(2);
+								if (null != commentLib) {
+									// 进行调用接口
+									KFFUser robotUser = findOneRobot();
+									String token = AccountTokenUtil.getAccountToken(robotUser.getUserId());
+									Integer postId = postf.getPostId();
+									String regiUrlLocal = null;
+									CommentsRequest commentsRequest = new CommentsRequest();
+									commentsRequest.setCommentContent(commentLib.getContent());
+									commentsRequest.setPostId(postId);
+									commentsRequest.setParentCommentsId(comments.getCommentsId());
+									String para = "token=" + token + "&commentsRequest=" + commentsRequest;
+									if (StringUtils.isNotBlank(devEnvironment) && devEnvironment.equals(sysGlobals.DEV_ENVIRONMENT)) {
+										regiUrlLocal = "http://192.168.10.153:803/kff/comments/saveComment?";// 线上url
+									} else {
+										regiUrlLocal = "http://192.168.10.153:803/kff/comments/saveComment?";// 本地url
+									}
+									String str = regiUrlLocal + para;
+									String doGet = HttpUtil.doGet(str);
+									if (doGet != null) {
+										JSONObject parseObject = JSON.parseObject(doGet);
 
+									}
+								}
+							}
+						}
+					}
+				}
+
+			}
+		} catch (KeyManagementException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

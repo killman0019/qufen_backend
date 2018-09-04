@@ -278,6 +278,95 @@ public class UserController extends BaseController {
 	}
 
 	/**
+	 * 
+	* @Title: regAnLogin 
+	* @Description: TODO <注册登录接口只有手机号码和手机验证码>
+	* @author zhangdd <方法创建作者>
+	* @create 下午3:49:34
+	* @param @param response
+	* @param @param request
+	* @param @param phoneNumber
+	* @param @param dynamicVerifyCode
+	* @param @return <参数说明>
+	* @return BaseResponseEntity 
+	* @throws 
+	* @update 下午3:49:34
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	 */
+	@RequestMapping(value = "/regAnLogin", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public BaseResponseEntity regAnLogin(HttpServletRequest response, HttpServletRequest request, String phoneNumber, String dynamicVerifyCode) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		// 验证手机号的合法性
+
+		String phonefmt = RegexUtil.PHONEREGEX;
+		// 判断手机号码手机是否符合标注
+		if (!phoneNumber.matches(phonefmt)) {
+			throw new RestServiceException(RestErrorCode.PHONE_FORMAT_ERROR);
+		}
+
+		Integer userStatus = kffRmiService.selectUserStatusByPhone(phoneNumber);
+		if (userStatus == 0) {
+			logger.info("手机号码已经被禁用!");
+			map.put("reStatus", 0);// 1注册成功 0 注册不成功
+			map.put("reason", "手机号已被禁用,请联系客服!");
+			bre.setData(map);
+			return bre;
+		}
+
+		String cacheCode = null;
+		try {
+			String module = "register";
+			// key_rest_sms_login15537791297sms
+			String cacheKey = new StringBuffer(RestConstants.key_rest).append(module).append(phoneNumber).toString();
+			cacheCode = redisService.get(cacheKey);
+		} catch (Exception e) {
+
+			logger.error("RegisterInvaController registerInva：", e);
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+		}
+
+		if (!dynamicVerifyCode.equals(cacheCode)) {
+
+			map.put("reStatus", 0);// 1注册成功 0 注册不成功
+			map.put("reason", "短信验证码输入不正确");
+			bre.setData(map);
+
+			return bre;
+		}
+		// 验证手机是否已经注册
+		KFFUser user = kffRmiService.findUserByPhoneNumber(phoneNumber);
+		if (null != user) {// 已经注册
+			// 进行登录操作
+			KFFUser loginaccount = kffRmiService.login(phoneNumber, null, null, null);
+
+			map.put("reStatus", 1);// 1注册成功 0 注册不成功
+			String token = AccountTokenUtil.getAccountToken(loginaccount.getUserId());
+			map.put("token", token);
+			bre.setData(map);
+			return bre;
+		}
+		if (null == user) {// 未注册
+			KFFUser KffUser = kffRmiService.saveUserByphonePass(phoneNumber, null, null);
+
+			if (null != KffUser) {
+				map.put("reStatus", 1);// 注册成功
+
+				String token = AccountTokenUtil.getAccountToken(KffUser.getUserId());
+				map.put("token", token);
+				bre.setData(map);
+				kffRmiService.registerAward(KffUser.getUserId());
+				return bre;
+			}
+			// 1是成功
+		}
+		return null;
+
+	}
+
+	/**
 	 * 点击注册后跳转到url
 	 * 
 	 * @param request

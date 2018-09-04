@@ -14,7 +14,7 @@
 	</sql>
 	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
 		select
-		<include refid="Base_Column_List" />
+		<include refid="columns" />
 		from tbcommentlibrary
 		where id = #{id,jdbcType=INTEGER}
 	</select>

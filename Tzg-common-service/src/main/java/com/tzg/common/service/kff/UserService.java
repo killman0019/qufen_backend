@@ -181,14 +181,17 @@ public class UserService {
 		KFFUser user = null;
 		if (StringUtils.isBlank(loginName)) {
 			throw new RestServiceException(RestErrorCode.USER_ID_BLANK);
-		} else if (StringUtils.isBlank(password)) {
+		} /*else if (StringUtils.isBlank(password)) {
 			throw new RestServiceException(RestErrorCode.PASSWORD_NULL);
-		}
-		logger.info("UserService login pwd before:" + password);
-		password = SHAUtil.encode(password);
-		logger.info("UserService login pwd after:" + password);
+			}*/
 		PaginationQuery query = new PaginationQuery();
-		query.addQueryData("password", password);
+		if (StringUtils.isNotEmpty(password)) {
+			logger.info("UserService login pwd before:" + password);
+			password = SHAUtil.encode(password);
+			logger.info("UserService login pwd after:" + password);
+
+			query.addQueryData("password", password);
+		}
 		KFFUser loninUser = new KFFUser();
 		if (loginName.length() == 11 && loginName.matches(RegexUtil.PHONEREGEX)) {
 			// 手机号登录

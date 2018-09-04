@@ -49,21 +49,26 @@
 
 	<sql id="queryWhere">
 		<if test="userId != null">
-			user_id = #{userId,jdbcType=INTEGER},
+			and user_id = #{userId,jdbcType=INTEGER}
 		</if>
 		<if test="status != null">
-			status = #{status,jdbcType=INTEGER},
+			and status = #{status,jdbcType=INTEGER}
 		</if>
 		<if test="createTime != null">
-			create_time = #{createTime,jdbcType=TIMESTAMP},
+			and create_time = #{createTime,jdbcType=TIMESTAMP}
 		</if>
 		<if test="updateTime != null">
-			update_time = #{updateTime,jdbcType=TIMESTAMP},
+			and update_time = #{updateTime,jdbcType=TIMESTAMP}
 		</if>
 
 	</sql>
 
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(*) from tbrobot where 1=1
+		<include refid="queryWhere" />
 
+
+	</select>
 
 
 </mapper>
