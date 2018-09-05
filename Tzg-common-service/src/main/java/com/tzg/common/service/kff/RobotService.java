@@ -212,7 +212,7 @@ public class RobotService {
 			}
 			if (robot != null) {
 				user = usermapper.findById(robot.getUserId());
-				if (null != user) {
+				if (null != user && user.getStatus() == 1) {
 					break;
 				}
 			}
@@ -236,11 +236,11 @@ public class RobotService {
 	 */
 	public void robotTask(final int k) {
 		int i = 0;
-		int j = 1;
+
 		while (true) {
 			i = i + 1;
-			PageResult<Post> postPage = getPostList(j);
-			j = i * 10 + 1;
+			PageResult<Post> postPage = getPostList(i);// j 1 i 0 i 1 j 11
+
 			if (null != postPage && CollectionUtils.isEmpty(postPage.getRows())) {
 				break;
 			}

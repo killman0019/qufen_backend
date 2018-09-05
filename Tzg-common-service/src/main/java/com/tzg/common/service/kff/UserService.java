@@ -412,6 +412,7 @@ public class UserService {
 		user.setKffCoinNum(BigDecimal.ZERO);
 		user.setStatus(1);
 		user.setReferLevel(0);
+		user.setUsercardStatus(4);
 		// 不为null 判断邀请人是第几等级
 		if (null != invaUserId) {
 			// 根据invauserID 查询用户user表 进行查询

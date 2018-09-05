@@ -47,91 +47,87 @@ import com.tzg.rest.mvc.util.MapWapper;
  */
 public class RequestJsonParamMethodArgumentResolver extends AbstractNamedValueMethodArgumentResolver implements WebArgumentResolver {
 
-    private ObjectMapper mapper = new ObjectMapper();
-    
+	private ObjectMapper mapper = new ObjectMapper();
+
 	public RequestJsonParamMethodArgumentResolver() {
 		super(null);
 	}
-	
+
 	public boolean supportsParameter(MethodParameter parameter) {
 
-	    if (parameter.hasParameterAnnotation(RequestJsonParam.class)) {
-		    return true;
+		if (parameter.hasParameterAnnotation(RequestJsonParam.class)) {
+			return true;
 		}
 		return false;
 	}
 
 	@Override
 	protected NamedValueInfo createNamedValueInfo(MethodParameter parameter) {
-	    RequestJsonParam annotation = parameter.getParameterAnnotation(RequestJsonParam.class);
-		return new RequestJsonParamNamedValueInfo(annotation); 
-				
+		RequestJsonParam annotation = parameter.getParameterAnnotation(RequestJsonParam.class);
+		return new RequestJsonParamNamedValueInfo(annotation);
+
 	}
 
 	@Override
 	protected Object resolveName(String name, MethodParameter parameter, NativeWebRequest webRequest) throws Exception {
 		String[] paramValues = webRequest.getParameterValues(name);
 		Class<?> paramType = parameter.getParameterType();
-        if (paramValues == null) {
-            return null;
-            
-        } 
-        
-        try {
-            if(paramValues.length == 1) {
-                String text = paramValues[0]; 
-                Type type = parameter.getGenericParameterType();
+		if (paramValues == null) {
+			return null;
 
-                if(MapWapper.class.isAssignableFrom(paramType)) {
-                    MapWapper<?, ?> jsonMap = (MapWapper<?, ?>) paramType.newInstance();
-                    
-                    MapType mapType = (MapType) getJavaType(HashMap.class);
-                    
-                    if(type instanceof ParameterizedType) {
-                        mapType = (MapType) mapType.narrowKey((Class<?>)((ParameterizedType)type).getActualTypeArguments()[0]);
-                        mapType = (MapType) mapType.narrowContentsBy((Class<?>)((ParameterizedType)type).getActualTypeArguments()[1]); 
-                    }
-                    jsonMap.setInnerMap(mapper.<Map>readValue(text, mapType));
-                    return jsonMap;
-                }
-                
-                JavaType javaType = getJavaType(paramType);
+		}
 
+		try {
+			if (paramValues.length == 1) {
+				String text = paramValues[0];
+				Type type = parameter.getGenericParameterType();
 
-                if(Collection.class.isAssignableFrom(paramType)) {
-                    javaType = javaType.narrowContentsBy((Class<?>)((ParameterizedType)type).getActualTypeArguments()[0]);                        
-                }
+				if (MapWapper.class.isAssignableFrom(paramType)) {
+					MapWapper<?, ?> jsonMap = (MapWapper<?, ?>) paramType.newInstance();
 
-                return mapper.readValue(paramValues[0], javaType);
-            }
-            
-        } catch (Exception e) {
-            throw new JsonMappingException("Could not read request json parameter", e);
-        }
+					MapType mapType = (MapType) getJavaType(HashMap.class);
 
-        throw new UnsupportedOperationException(
-                "too many request json parameter '" + name + "' for method parameter type [" + paramType + "], only support one json parameter");
+					if (type instanceof ParameterizedType) {
+						mapType = (MapType) mapType.narrowKey((Class<?>) ((ParameterizedType) type).getActualTypeArguments()[0]);
+						mapType = (MapType) mapType.narrowContentsBy((Class<?>) ((ParameterizedType) type).getActualTypeArguments()[1]);
+					}
+					jsonMap.setInnerMap(mapper.<Map> readValue(text, mapType));
+					return jsonMap;
+				}
+
+				JavaType javaType = getJavaType(paramType);
+
+				if (Collection.class.isAssignableFrom(paramType)) {
+					javaType = javaType.narrowContentsBy((Class<?>) ((ParameterizedType) type).getActualTypeArguments()[0]);
+				}
+
+				return mapper.readValue(paramValues[0], javaType);
+			}
+
+		} catch (Exception e) {
+			throw new JsonMappingException("Could not read request json parameter", e);
+		}
+
+		throw new UnsupportedOperationException("too many request json parameter '" + name + "' for method parameter type [" + paramType
+				+ "], only support one json parameter");
 	}
-	
+
 	protected JavaType getJavaType(Class<?> clazz) {
-        return TypeFactory.type(clazz);
-    }
+		return TypeFactory.type(clazz);
+	}
 
 	@Override
 	protected void handleMissingValue(String paramName, MethodParameter parameter) throws ServletException {
-	    String paramType = parameter.getParameterType().getName();
-	    throw new ServletRequestBindingException(
-                "Missing request json parameter '" + paramName + "' for method parameter type [" + paramType + "]");
+		String paramType = parameter.getParameterType().getName();
+		throw new ServletRequestBindingException("Missing request json parameter '" + paramName + "' for method parameter type [" + paramType + "]");
 	}
 
-	
-	
 	private class RequestJsonParamNamedValueInfo extends NamedValueInfo {
 
 		private RequestJsonParamNamedValueInfo() {
 			super("", false, null);
 		}
-		
+
 		private RequestJsonParamNamedValueInfo(RequestJsonParam annotation) {
 			super(annotation.value(), annotation.required(), null);
 		}
@@ -140,11 +136,11 @@ public class RequestJsonParamMethodArgumentResolver extends AbstractNamedValueMe
 	/**
 	 * spring 3.1之前
 	 */
-    @Override
-    public Object resolveArgument(MethodParameter parameter, NativeWebRequest request) throws Exception {
-        if(!supportsParameter(parameter)) {
-            return WebArgumentResolver.UNRESOLVED;
-        }
-        return resolveArgument(parameter, null, request, null);
-    }
+	@Override
+	public Object resolveArgument(MethodParameter parameter, NativeWebRequest request) throws Exception {
+		if (!supportsParameter(parameter)) {
+			return WebArgumentResolver.UNRESOLVED;
+		}
+		return resolveArgument(parameter, null, request, null);
+	}
 }

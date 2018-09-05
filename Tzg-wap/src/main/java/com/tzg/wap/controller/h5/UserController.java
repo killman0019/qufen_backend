@@ -310,15 +310,17 @@ public class UserController extends BaseController {
 		Integer userStatus = kffRmiService.selectUserStatusByPhone(phoneNumber);
 		if (userStatus == 0) {
 			logger.info("手机号码已经被禁用!");
-			map.put("reStatus", 0);// 1注册成功 0 注册不成功
-			map.put("reason", "手机号已被禁用,请联系客服!");
+			// map.put("reStatus", 0);// 1注册成功 0 注册不成功
+			// map.put("reason", "手机号已被禁用,请联系客服!");
 			bre.setData(map);
+			bre.setCode(11035);
+			bre.setMsg("手机号已被禁用,请联系客服!");
 			return bre;
 		}
 
 		String cacheCode = null;
 		try {
-			String module = "register";
+			String module = "reganlogin";
 			// key_rest_sms_login15537791297sms
 			String cacheKey = new StringBuffer(RestConstants.key_rest).append(module).append(phoneNumber).toString();
 			cacheCode = redisService.get(cacheKey);
@@ -330,9 +332,11 @@ public class UserController extends BaseController {
 
 		if (!dynamicVerifyCode.equals(cacheCode)) {
 
-			map.put("reStatus", 0);// 1注册成功 0 注册不成功
-			map.put("reason", "短信验证码输入不正确");
+			// map.put("reStatus", 0);// 1注册成功 0 注册不成功
+			// map.put("reason", "短信验证码输入不正确");
 			bre.setData(map);
+			bre.setMsg("短信验证码输入不正确");
+			bre.setCode(11012);
 
 			return bre;
 		}

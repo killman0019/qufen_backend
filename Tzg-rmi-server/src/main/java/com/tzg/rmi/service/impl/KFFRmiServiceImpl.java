@@ -270,6 +270,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	@Value("#{paramConfig['SMS_FORGETPASDWORD_TEMPLATE_CODE']}")
 	private String smsForgetpasdwoedTemplateCode;
 
+	@Value("#{paramConfig['SMS_REGANLOGIN_TEMPLATE_CODE']}")
+	private String smsReganloginTemplateCode;
+
 	@Value("#{paramConfig['ipPicUrl']}")
 	private String ipPicUrl;
 	@Value("#{paramConfig['DEV_ENVIRONMENT']}")
@@ -1020,7 +1023,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// 个推APP推送消息
 		// 查询被点赞的用户
 		KFFUser kffUserc = kffUserService.findByUserId(post.getCreateUserId());
-		if (null != kffUserc) {
+		if (null != kffUserc && post.getPostType() != 4) {
 			Integer linkedType = null;
 			if (post.getPostType() == 1) {
 				linkedType = LinkedType.CUSTOMEVALUATING.getValue();
@@ -1712,7 +1715,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		} else {
 			kffUserc = kffUserService.findByUserId(post.getCreateUserId());
 		}
-		if (null != kffUserc) {
+		if (null != kffUserc && post.getPostType() != 4) {
 			Integer linkedType = null;
 			if (post.getPostType() == 1) {
 				linkedType = LinkedType.CUSTOMEVALUATING.getValue();
@@ -7125,6 +7128,13 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			// 忘记密码
 			if (module.equals("forgetPassword")) {
 				request.setTemplateCode(smsForgetpasdwoedTemplateCode);
+				// 放置json串
+				map.put("code", dynamicValidateCode);// 放置code 验证码
+				request.setPhoneNumbers(phone);
+			}
+			// 登陆注册
+			if (module.equals("reganlogin")) {
+				request.setTemplateCode(smsReganloginTemplateCode);
 				// 放置json串
 				map.put("code", dynamicValidateCode);// 放置code 验证码
 				request.setPhoneNumbers(phone);

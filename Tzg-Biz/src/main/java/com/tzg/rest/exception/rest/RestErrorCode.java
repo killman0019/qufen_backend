@@ -88,7 +88,7 @@ public enum RestErrorCode {
 
 	CHECK_CODE_FORMAT_ERROR(11033, "验证码格式不正确"),
 
-	CHECK_CODE_ERROE(11034, "验证码输入不正确"),
+	CHECK_CODE_ERROE(11034, "验证码输入不正确"), PHONE_FORBIDDEN(11035, "手机号码禁用"),
 	/** ------------------ 用户信息相关错误码以12开头 ----------------- */
 
 	VCNAME_NULL(12001, "姓名不能为空"),
