@@ -27,6 +27,27 @@ public class DateUtil {
 		String now = sdf.format(date);
 		return now;
 	}
+	
+	public static Date countEndTime(Integer rewardDate) throws ParseException {
+		SimpleDateFormat sf = new SimpleDateFormat(datePattern);
+		SimpleDateFormat sft = new SimpleDateFormat(dateTimePattern); 
+		Calendar cal=Calendar.getInstance();      
+		int h=cal.get(Calendar.HOUR_OF_DAY);   
+		String nowDt = null;
+		cal.add(Calendar.DAY_OF_MONTH, rewardDate);
+		if(h>=0&&h<12) {
+		    nowDt = sf.format(cal.getTime()) + " 12:00:00";
+//		    System.out.println("增加一天后日期:"+nowDt);
+//		    System.out.println("nowTime..."+nowTime);
+		}
+		if(h>=12&&h<24) {
+		    nowDt = sf.format(cal.getTime()) + " 00:00:00";
+//		    System.out.println("增加一天后日期:"+nowDt);
+//		    System.out.println("nowTime..."+nowTime);
+		}
+		return sft.parse(nowDt);
+	}
+
 
 	/**
 	 * 根据默认日期格式，返回日期字符串。

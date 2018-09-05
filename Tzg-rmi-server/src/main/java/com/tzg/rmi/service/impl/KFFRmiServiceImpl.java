@@ -1965,22 +1965,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		result.put("postType", newPost.getPostType());
 		// 更新用户发帖数
 		kffUserService.increasePostNum(createUser.getUserId(), KFFConstants.POST_TYPE_ARTICLE);
-		// 个推APP推送消息
-		// if (null != createUser) {
-		// Integer linkedType = null;
-		// if (post.getPostType() == 1) {
-		// linkedType = LinkedType.CUSTOMEVALUATING.getValue();
-		// }
-		// if (post.getPostType() == 2) {
-		// linkedType = LinkedType.COUNTERFEIT.getValue();
-		// }
-		// if (post.getPostType() == 3) {
-		// linkedType = LinkedType.ARTICLE.getValue();
-		// }
-		// appNewsPush(linkedType, post.getPostId(), createUser.getMobile(),
-		// sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle()
-		// + sysGlobals.CONTENT_GETUI_MSG_END);
-		// }
 		return result;
 	}
 

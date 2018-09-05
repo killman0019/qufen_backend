@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.kff.activity.RewardActivityMapper">
+  <resultMap id="BaseResultMap" type="com.tzg.entitys.kff.activity.RewardActivity">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+    <result column="post_id" jdbcType="INTEGER" property="postId" />
+    <result column="reward_date" jdbcType="INTEGER" property="rewardDate" />
+    <result column="begin_time" jdbcType="TIMESTAMP" property="beginTime" />
+    <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+    <result column="reward_money" jdbcType="DECIMAL" property="rewardMoney" />
+    <result column="tag_infos" jdbcType="VARCHAR" property="tagInfos" />
+    <result column="answer_count" jdbcType="INTEGER" property="answerCount" />
+    <result column="state" jdbcType="INTEGER" property="state" />
+    <result column="is_activity" jdbcType="INTEGER" property="isActivity" />
+    <result column="is_nice_choice" jdbcType="INTEGER" property="isNiceChoice" />
+    <result column="nice_choice_at" jdbcType="TIMESTAMP" property="niceChoiceAt" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="dis_stick_top" jdbcType="INTEGER" property="disStickTop" />
+    <result column="dis_stick_updateTime" jdbcType="TIMESTAMP" property="disStickUpdatetime" />
+    <result column="reward_contents" jdbcType="VARCHAR" property="rewardContents" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, created_at, updated_at, post_id, reward_date, begin_time, end_time, reward_money, 
+    tag_infos, answer_count, state, is_activity, is_nice_choice, nice_choice_at, type, 
+    dis_stick_top, dis_stick_updateTime,reward_contents
+  </sql>
+  
+  <sql id="table_name">
+		activity_reward_activity
+  </sql>
+  
+  <select id="findById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select * from <include refid="table_name" />
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <delete id="deleteById" parameterType="java.lang.Integer">
+    delete from <include refid="table_name" />
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <insert id="save" parameterType="com.tzg.entitys.kff.activity.RewardActivity">
+    insert into activity_reward_activity (id, created_at, updated_at, 
+      post_id, reward_date, begin_time, 
+      end_time, reward_money, tag_infos, 
+      answer_count, state, is_activity, 
+      is_nice_choice, nice_choice_at, type, 
+      dis_stick_top, dis_stick_updateTime,reward_contents)
+    values (#{id,jdbcType=INTEGER}, #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, 
+      #{postId,jdbcType=INTEGER}, #{rewardDate,jdbcType=INTEGER}, #{beginTime,jdbcType=TIMESTAMP}, 
+      #{endTime,jdbcType=TIMESTAMP}, #{rewardMoney,jdbcType=DECIMAL}, #{tagInfos,jdbcType=VARCHAR}, 
+      #{answerCount,jdbcType=INTEGER}, #{state,jdbcType=INTEGER}, #{isActivity,jdbcType=INTEGER}, 
+      #{isNiceChoice,jdbcType=INTEGER}, #{niceChoiceAt,jdbcType=TIMESTAMP}, #{type,jdbcType=INTEGER}, 
+      #{disStickTop,jdbcType=INTEGER}, #{disStickUpdatetime,jdbcType=TIMESTAMP},#{rewardContents,jdbcType=VARCHAR})
+  </insert>
+  
+  <update id="update" parameterType="com.tzg.entitys.kff.activity.RewardActivity">
+    update activity_reward_activity
+    <set>
+      <if test="createdAt != null">
+        created_at = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null">
+        updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="postId != null">
+        post_id = #{postId,jdbcType=INTEGER},
+      </if>
+      <if test="rewardDate != null">
+        reward_date = #{rewardDate,jdbcType=INTEGER},
+      </if>
+      <if test="beginTime != null">
+        begin_time = #{beginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null">
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="rewardMoney != null">
+        reward_money = #{rewardMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="tagInfos != null">
+        tag_infos = #{tagInfos,jdbcType=VARCHAR},
+      </if>
+      <if test="answerCount != null">
+        answer_count = #{answerCount,jdbcType=INTEGER},
+      </if>
+      <if test="state != null">
+        state = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="isActivity != null">
+        is_activity = #{isActivity,jdbcType=INTEGER},
+      </if>
+      <if test="isNiceChoice != null">
+        is_nice_choice = #{isNiceChoice,jdbcType=INTEGER},
+      </if>
+      <if test="niceChoiceAt != null">
+        nice_choice_at = #{niceChoiceAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="disStickTop != null">
+        dis_stick_top = #{disStickTop,jdbcType=INTEGER},
+      </if>
+      <if test="disStickUpdatetime != null">
+        dis_stick_updateTime = #{disStickUpdatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="rewardContents != null">
+        reward_contents = #{rewardContents,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from <include refid="table_name" />
+		<include refid="condition"/>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select *  from <include refid="table_name" />
+		<include refid="condition"/>
+	    <![CDATA[ ORDER BY id DESC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<sql id="condition">
+    	<where>
+	    	<if test="id != null">
+			 id = #{id,jdbcType=INTEGER}
+			</if>
+    	</where>
+    </sql>
+    
+    <select id="findListByAttr" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select * from <include refid="table_name" />
+		<include refid="condition"/>
+	    <![CDATA[ ORDER BY id DESC ]]>
+	</select>
+</mapper>

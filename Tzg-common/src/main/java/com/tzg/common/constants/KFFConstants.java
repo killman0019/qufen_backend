@@ -45,6 +45,7 @@ public class KFFConstants {
 	public static final int POST_TYPE_EVALUATION = 1;	
 	public static final int POST_TYPE_DISCUSS = 2;	
 	public static final int POST_TYPE_ARTICLE = 3;	
+	public static final int POST_TYPE_REWARD = 4;
 
 	//1-帖子点赞；2-评论点赞
 	public static final int PRAISE_TYPE_POST = 1;	

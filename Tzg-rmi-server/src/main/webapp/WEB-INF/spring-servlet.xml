@@ -79,6 +79,11 @@
 	</bean>
 	<dubbo:service interface="com.tzg.common.redis.RedisService" ref="redisService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" retries="0" />
 	
+	<!-- 悬赏服务 -->
+	<bean id="rewardActivityRmiService" class="com.tzg.rmi.service.impl.RewardActivityRmiServiceImpl" />
+	<dubbo:service interface="com.tzg.rmi.service.RewardActivityRmiService" ref="rewardActivityRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" 
+		retries="0" />
+		
 	<!-- 话题相关服务 -->
 	<bean id="dTagsRmiService" class="com.tzg.rmi.service.impl.DtagsRmiServiceImpl" />
 	<dubbo:service interface="com.tzg.rmi.service.DtagsRmiService" ref="dTagsRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}" 

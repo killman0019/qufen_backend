@@ -827,7 +827,7 @@
 				and tpt.post_type = #{postType}
 			</if>
 			<if test="postTypec!=null">
-				and tpt.post_type != #{postTypec}
+				and tpt.post_type != #{postTypec} and tpt.post_type != 4
 			</if>
 			<if test="beginDt!=null">
 				and tds.nice_choice_at &gt;= #{beginDt}

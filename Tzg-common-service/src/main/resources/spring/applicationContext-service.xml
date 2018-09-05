@@ -64,10 +64,9 @@
 		<task:scheduled ref="taskJobService" method="getProjectDateFromUrlTask" cron="0 0/5 * * * ? " />
 		<task:scheduled ref="taskJobService" method="getdatafromUrlByexchangeTask" cron="0 0/10 * * * ? " />
 
+		<!-- 一次性定时器 -->
 <!-- 		<task:scheduled ref="taskJobService" method="caculatePostTatolIncome" cron="0 0/30 * * * ? "/> -->
-
 <!--  		<task:scheduled ref="taskJobService" method="caluCoinUserTask" cron="0 0/30 * * * ? "/>    -->
-
 	</task:scheduled-tasks>
 
 </beans>
