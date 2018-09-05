@@ -471,11 +471,12 @@ public class QiniuUtil {
 		// uploadLocalPic("D:\\image\\test4.gif", "textc5gif");
 		// InputStream inputStream = file.getInputStream();
 		// uploadStream(inputStream, "textinput");
-		String str = "https://mmbiz.qpic.cn/mmbiz_jpg/UBHBX7j2CM5gkdWtlACWHL7iaaJA2mMslIFXpJjETrCxbNiaRkHuwTWSqR1fgDnIPiak5qLkfaeoHkoKmoxwtSvQw/640?wx_fmt=jpeg&amp;tp=webp&amp;wxfrom=5&amp;wx_lazy=1";
-		changeToLocalUrl(str, "asc");
+		String str = "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1536161684199&di=ba686a5258767c2bc8173d0c02147df5&imgtype=0&src=http%3A%2F%2Fimg4q.duitang.com%2Fuploads%2Fitem%2F201409%2F06%2F20140906130504_eBFP5.jpeg";
+		changeToLocalUrl(str, "robot");
 
-		String str1 = "data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==";
+		// String str1 =
+		// "data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==";
 
-		uploadBase64Str(str1, "sd");
+		// uploadBase64Str(str1, "sd");
 	}
 }
