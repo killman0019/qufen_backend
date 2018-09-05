@@ -4,13 +4,14 @@
 	<resultMap id="BaseResultMap" type="com.tzg.entitys.kff.commentlibrary.CommentLibrary">
 		<id column="id" property="id" jdbcType="INTEGER" />
 		<result column="content" property="content" jdbcType="VARCHAR" />
+		<result column="import_name" property="importName" jdbcType="VARCHAR" />
 		<result column="type" property="type" jdbcType="INTEGER" />
 		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
 		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
 		<result column="status" property="status" jdbcType="INTEGER" />
 	</resultMap>
 	<sql id="columns">
-		id, content, type, create_time, update_time, status
+		id, content, type, create_time, update_time, status,import_name
 	</sql>
 	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
 		select
@@ -41,6 +42,9 @@
 			<if test="status != null">
 				status,
 			</if>
+			<if test="importName != null">
+				import_name,
+			</if>
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			<if test="id != null">
@@ -61,6 +65,9 @@
 			<if test="status != null">
 				#{status,jdbcType=INTEGER},
 			</if>
+			<if test="importName != null">
+				#{importName,jdbcType=VARCHAR},
+			</if>
 		</trim>
 	</insert>
 	<update id="update" parameterType="com.tzg.entitys.kff.commentlibrary.CommentLibrary">
@@ -80,6 +87,9 @@
 			</if>
 			<if test="status != null">
 				status = #{status,jdbcType=INTEGER},
+			</if>
+			<if test="importName != null">
+				import_name = #{importName,jdbcType=VARCHAR},
 			</if>
 		</set>
 		where id = #{id,jdbcType=INTEGER}
@@ -102,6 +112,9 @@
 		</if>
 		<if test="id !=null">
 			and id = #{id,jdbcType=INTEGER}
+		</if>
+		<if test="importName !=null">
+			and import_name = #{importName,jdbcType=VARCHAR}
 		</if>
 
 	</sql>

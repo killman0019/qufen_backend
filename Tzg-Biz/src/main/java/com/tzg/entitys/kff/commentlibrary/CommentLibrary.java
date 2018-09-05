@@ -21,6 +21,16 @@ public class CommentLibrary implements Serializable {
 
 	private Integer status;
 
+	private String importName;
+
+	public String getImportName() {
+		return importName;
+	}
+
+	public void setImportName(String importName) {
+		this.importName = importName;
+	}
+
 	public Integer getId() {
 		return id;
 	}
