@@ -6613,7 +6613,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 
 		Discuss discuss = kffDiscussService.findByPostId(postId);
-		discussShare.setTagInfo(discuss.getTagInfos());
+		if (discuss != null) {
+			discussShare.setTagInfo(discuss.getTagInfos());
+		}
 		// 防止post
 		post.setPostId(null);
 		post.setUpdateTime(null);
