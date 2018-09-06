@@ -3304,7 +3304,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				kffPostService.updateByMap(seMap);
 				// 个推APP推送消息
 				KFFUser createUser = kffUserService.findById(praise.getBepraiseUserId());
-				if (null != createUser) {
+				if (null != createUser && post.getPostType() != 4) {
 					Integer linkedType = null;
 					if (post.getPostType() == 1) {
 						linkedType = LinkedType.CUSTOMEVALUATING.getValue();

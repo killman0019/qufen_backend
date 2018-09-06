@@ -485,9 +485,9 @@ public class RobotService {
 								Map<String, Object> pareMap = new HashMap<String, Object>();
 								pareMap.put("parentCommentsId", commentUserId);
 								pareMap.put("postId", postId);
-								List<Comments> commP = commentsMapper.findByMap(commMap);
+								List<Comments> commP = commentsMapper.findByMap(pareMap);
 								if (commP.size() > Integer.valueOf(commentNum)) {
-									return;
+									continue;
 								}
 								// 对评论进行二级评论
 								CommentLibrary commentLib = findOneConnentLibrary(2);
