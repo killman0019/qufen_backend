@@ -107,17 +107,16 @@ public class CoinPropertyService {
 	public void updateCoin(Tokenrecords tokenrecords, Integer type) {
 
 		CoinProperty coinPropertyUser = coinPropertyMapper.findByUserId(tokenrecords.getUserId()); // 接受打赏的人
-		if (null == coinPropertyUser) {
-			throw new RestServiceException("个人账单生成异常");
-		}
-		Double coinLockSend = coinPropertyUser.getCoinLock();
-		if (type == 1) { // 加法
-			coinLockSend = new BigDecimal(Double.toString(coinLockSend)).add(tokenrecords.getAmount()).doubleValue();
-		} else if (type == 2) {// 减法
-			coinLockSend = new BigDecimal(Double.toString(coinLockSend)).subtract(tokenrecords.getAmount()).doubleValue();
-		}
-		coinPropertyUser.setCoinLock(coinLockSend);
-		coinPropertyMapper.update(coinPropertyUser);
+		if (null != coinPropertyUser) {
 
+			Double coinLockSend = coinPropertyUser.getCoinLock();
+			if (type == 1) { // 加法
+				coinLockSend = new BigDecimal(Double.toString(coinLockSend)).add(tokenrecords.getAmount()).doubleValue();
+			} else if (type == 2) {// 减法
+				coinLockSend = new BigDecimal(Double.toString(coinLockSend)).subtract(tokenrecords.getAmount()).doubleValue();
+			}
+			coinPropertyUser.setCoinLock(coinLockSend);
+			coinPropertyMapper.update(coinPropertyUser);
+		}
 	}
 }

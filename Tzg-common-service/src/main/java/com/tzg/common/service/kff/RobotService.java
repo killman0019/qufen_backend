@@ -255,21 +255,21 @@ public class RobotService {
 	 */
 	public void robotTask(final int k) {
 		int i = 0;
+		ExecutorService newFixedThreadPoolrobot = null;
+		try {
+			newFixedThreadPoolrobot = Executors.newFixedThreadPool(10);
+			while (true) {
+				i = i + 1;
+				PageResult<Post> postPage = getPostList(i);// j 1 i 0 i 1 j 11
 
-		while (true) {
-			i = i + 1;
-			PageResult<Post> postPage = getPostList(i);// j 1 i 0 i 1 j 11
+				if (null != postPage && CollectionUtils.isEmpty(postPage.getRows())) {
+					break;
+				}
+				if (null != postPage && CollectionUtils.isNotEmpty(postPage.getRows())) {
 
-			if (null != postPage && CollectionUtils.isEmpty(postPage.getRows())) {
-				break;
-			}
-			if (null != postPage && CollectionUtils.isNotEmpty(postPage.getRows())) {
-				ExecutorService newFixedThreadPoolrobotCommentdation = null;
-				try {
-					newFixedThreadPoolrobotCommentdation = Executors.newFixedThreadPool(10);
 					for (Post post : postPage.getRows()) {
 						final Post postf = post;
-						newFixedThreadPoolrobotCommentdation.execute(new Runnable() {
+						newFixedThreadPoolrobot.execute(new Runnable() {
 
 							@Override
 							public void run() {
@@ -298,17 +298,18 @@ public class RobotService {
 							}
 						});
 					}
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} finally {
-					if (!newFixedThreadPoolrobotCommentdation.isShutdown()) {
-						newFixedThreadPoolrobotCommentdation.shutdown();
-					}
-
 				}
 			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (!newFixedThreadPoolrobot.isShutdown()) {
+				newFixedThreadPoolrobot.shutdown();
+			}
+
 		}
+
 	}
 
 	/**
@@ -390,7 +391,7 @@ public class RobotService {
 				// TODO 评论
 				Map<String, Object> commMap = new HashMap<String, Object>();
 				commMap.put("postId", postf.getPostId());
-				commMap.put("becommentedUserId", postf.getCreateUserId());
+				commMap.put("isNullParentCommentsId", "true");
 				commMap.put("status", 1);
 				String commentNum = redisService.get("commentNumRBT");
 				if (StringUtils.isEmpty(commentNum)) {
@@ -706,6 +707,8 @@ public class RobotService {
 			PaginationQuery query = new PaginationQuery();
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("createTimeBegin", postCreateBegin);
+			map.put("sql_keyword_orderBy", "createTime");
+			map.put("sql_keyword_sort", "DESC");
 			query.setQueryData(map);
 			query.setPageIndex(i);
 			query.setRowsPerPage(10);

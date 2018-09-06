@@ -148,43 +148,43 @@
 	</select>
 
 	<sql id="queryWhere">
-		<if test="commendationId != null and commendationId.trim() != ''">
+		<if test="commendationId != null ">
 			and commendation_id = #{commendationId}
 		</if>
-		<if test="status != null and status.trim() != ''">
+		<if test="status != null ">
 			and status = #{status}
 		</if>
-		<if test="createTimeBegin != null and createTimeBegin.trim() != ''">
+		<if test="createTimeBegin != null ">
 			and createTime >= #{createTimeBegin}
 		</if>
-		<if test="createTimeEnd != null and createTimeEnd.trim() != ''">
+		<if test="createTimeEnd != null ">
 			and createTime &lt;= #{createTimeEnd}
 		</if>
-		<if test="updateTimeBegin != null and updateTimeBegin.trim() != ''">
+		<if test="updateTimeBegin != null ">
 			and updateTime >= #{updateTimeBegin}
 		</if>
-		<if test="updateTimeEnd != null and updateTimeEnd.trim() != ''">
+		<if test="updateTimeEnd != null ">
 			and updateTime &lt;= #{updateTimeEnd}
 		</if>
-		<if test="sendUserId != null and sendUserId.trim() != ''">
+		<if test="sendUserId != null ">
 			and send_user_id = #{sendUserId}
 		</if>
-		<if test="sendUserIcon != null and sendUserIcon.trim() != ''">
+		<if test="sendUserIcon != null ">
 			and send_user_icon = #{sendUserIcon}
 		</if>
-		<if test="receiveUserId != null and receiveUserId.trim() != ''">
+		<if test="receiveUserId != null ">
 			and receive_user_id = #{receiveUserId}
 		</if>
-		<if test="postId != null and postId.trim() != ''">
+		<if test="postId != null ">
 			and post_id = #{postId}
 		</if>
 		<if test="projectId != null">
 			and project_id = #{projectId}
 		</if>
-		<if test="postType != null and postType.trim() != ''">
+		<if test="postType != null ">
 			and post_type = #{postType}
 		</if>
-		<if test="amount != null and amount.trim() != ''">
+		<if test="amount != null ">
 			and amount = #{amount}
 		</if>
 	</sql>

@@ -334,6 +334,10 @@
 
 			and parent_comments_id is null
 		</if>
+		<if test="isNotNullParentCommentsId !=null">
+
+			and parent_comments_id is not null
+		</if>
 	</sql>
 	<select id="findBidPraiseNum" resultMap="BaseResultMap" parameterType="java.lang.Integer">
 		select
