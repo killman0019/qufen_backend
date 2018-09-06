@@ -60,10 +60,10 @@
 <!-- 		<task:scheduled ref="taskJobService" method="getdatafromUrlByexchangeTask" cron="0 0/30 * * * ? " /> -->
 <!--  		<task:scheduled ref="taskJobService" method="caculatePostTatolIncome" cron="0/5 *  * * * ? "/>  -->
 		<task:scheduled ref="taskJobService" method="robotComment" cron=" 0 0/5 * * * ?" />
-		<task:scheduled ref="taskJobService" method="robotFollow" cron="0 0/7  * * * ?" />
-		<task:scheduled ref="taskJobService" method="robotCommendation" cron="0 0/13  * * * ?" />
+<!-- 		<task:scheduled ref="taskJobService" method="robotFollow" cron="0 0/7  * * * ?" /> -->
+<!-- 		<task:scheduled ref="taskJobService" method="robotCommendation" cron="0 0/13  * * * ?" /> -->
 		<task:scheduled ref="taskJobService" method="robotSecondComment" cron=" 0 0/4  * * * ?" />
-		<task:scheduled ref="taskJobService" method="robotPraise" cron="0 0/6  * * * ?" />
+<!-- 		<task:scheduled ref="taskJobService" method="robotPraise" cron="0 0/6  * * * ?" /> -->
 		
 		<!-- 线上版本的定时器 -->
 		

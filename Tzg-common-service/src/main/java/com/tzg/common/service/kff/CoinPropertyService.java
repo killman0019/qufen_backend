@@ -19,7 +19,7 @@ import com.tzg.entitys.kff.tokenrecords.Tokenrecords;
 import com.tzg.rest.exception.rest.RestServiceException;
 
 @Service(value = "KFFCoinPropertyService")
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class CoinPropertyService {
 
 	@Autowired

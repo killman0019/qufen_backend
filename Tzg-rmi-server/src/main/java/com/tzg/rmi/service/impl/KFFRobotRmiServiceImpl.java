@@ -48,6 +48,9 @@ public class KFFRobotRmiServiceImpl implements KFFRobotRmiService {
 		} else {
 			// 产生一个随机的机器人代替作者
 			KFFUser robotUser = robotService.findOneRobot();
+			if (null == robotUser) {
+				return comment;
+			}
 			CommentsRequest robotComment = new CommentsRequest();
 			DozerMapperUtils.map(comment, robotComment);
 			if (null != robotUser) {

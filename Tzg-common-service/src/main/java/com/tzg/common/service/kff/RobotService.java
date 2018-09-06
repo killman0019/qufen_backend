@@ -12,12 +12,12 @@ import java.util.concurrent.Executors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -89,6 +89,8 @@ public class RobotService {
 
 	@Value("#{paramConfig['DEV_ENVIRONMENT']}")
 	private static String devEnvironment;
+
+	private static final Log logger = LogFactory.getLog(RobotService.class);
 
 	/**
 	 * 
@@ -326,6 +328,7 @@ public class RobotService {
 
 		// TODO 点赞
 		try {
+			logger.warn("robotPraise begin :" + "postId" + postf.getPostId() + "title" + postf.getPostTitle());
 			if (null != postf) {
 				KFFUser robotUser = findOneRobot();
 				String token = AccountTokenUtil.getAccountToken(robotUser.getUserId());
@@ -382,6 +385,7 @@ public class RobotService {
 	 */
 	protected void robotComment(Post postf) {
 		try {
+			logger.warn("robotComment begin :" + "postId" + postf.getPostId() + "title" + postf.getPostTitle());
 			if (null != postf) {
 				// TODO 评论
 				Map<String, Object> commMap = new HashMap<String, Object>();
@@ -454,6 +458,7 @@ public class RobotService {
 	 */
 	protected void robotSecondComment(Post postf) {
 		try {
+			logger.warn("robotSecondComment begin :" + "postId" + postf.getPostId() + "title" + postf.getPostTitle());
 			if (null != postf) {
 				// TODO 评论
 				// 查找所有的一级评论
@@ -548,6 +553,7 @@ public class RobotService {
 	protected void robotFollow(Post postf) {
 		// TODO 关注
 		try {
+			logger.warn("robotFollow begin :" + "postId" + postf.getPostId() + "title" + postf.getPostTitle());
 			if (postf != null) {
 				KFFUser robotUser = findOneRobot();
 				if (robotUser == null) {
@@ -615,6 +621,7 @@ public class RobotService {
 		// TODO 打赏
 
 		try {
+			logger.warn("robotCommendation begin :" + "postId" + postf.getPostId() + "title" + postf.getPostTitle());
 			if (postf != null) {
 				KFFUser robotUser = findOneRobot();
 				if (robotUser != null) {// 用户的账号余额为0时
