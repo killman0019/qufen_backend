@@ -1,4 +1,4 @@
-package com.tzg.rest.controller.kff;
+package com.tzg.wap.controller.h5;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSONObject;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
+import com.tzg.common.utils.HtmlUtils;
 import com.tzg.common.utils.StringUtil;
 import com.tzg.entitys.kff.dtags.Dtags;
 import com.tzg.entitys.kff.post.Post;
 import com.tzg.entitys.kff.project.KFFProject;
 import com.tzg.entitys.kff.user.KFFUser;
-import com.tzg.rest.controller.BaseController;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
@@ -27,7 +27,7 @@ import com.tzg.rmi.service.KFFProjectRmiService;
 import com.tzg.rmi.service.KFFUserRmiService;
 
 @Controller
-@RequestMapping("/kff/search")
+@RequestMapping("/H5/search")
 public class SearchController extends BaseController {
 	private static Logger logger = Logger.getLogger(SearchController.class);
 	
@@ -57,21 +57,24 @@ public class SearchController extends BaseController {
 	*/
 	@ResponseBody
 	@RequestMapping(value="/indexSearch",method = {RequestMethod.POST,RequestMethod.GET})
-	public BaseResponseEntity indexSearch(HttpServletRequest request) {
+	public BaseResponseEntity indexSearch(HttpServletRequest request,Integer type,Integer pageIndex,
+			Integer pageSize,String title) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		try {
-			JSONObject policyJson = getParamJsonFromRequestPolicy(request);
-			Integer type = (Integer)policyJson.get("type");//状态：1-项目，2-内容，3-用户，4-话题
-			Integer curPage = (Integer)policyJson.get("pageIndex");
-			Integer pageSize = (Integer)policyJson.get("pageSize");
-			String title = (String)policyJson.get("title");
-			if(null==type || null==curPage||null==pageSize||
+			if(pageIndex==null&&StringUtil.isBlank(title)&&pageSize==null&&type==null) {
+				JSONObject requestContent = HtmlUtils.getRequestContent(request);
+				pageIndex = (Integer) requestContent.get("pageIndex");
+				title = (String) requestContent.get("title");
+				pageSize = (Integer) requestContent.get("pageSize");
+				type = (Integer) requestContent.get("type");
+			}
+			if(null==type || null==pageIndex||null==pageSize||
 					StringUtil.isBlank(title)) {
 				bre.setNoRequstData();
 				return bre;
 			}
 			PaginationQuery query = new PaginationQuery();
-			query.setPageIndex(curPage);
+			query.setPageIndex(pageIndex);
 	        query.setRowsPerPage(pageSize);
 	        query.addQueryData("title", title.trim());
 	        query.addQueryData("status", 1);

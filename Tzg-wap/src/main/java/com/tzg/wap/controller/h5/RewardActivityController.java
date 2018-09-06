@@ -26,7 +26,7 @@ import com.tzg.rmi.service.KFFUserRmiService;
 import com.tzg.rmi.service.RewardActivityRmiService;
 
 @Controller
-@RequestMapping("/wap/rewardActivity")
+@RequestMapping("/H5/rewardActivity")
 public class RewardActivityController extends BaseController {
 	private static Logger logger = Logger.getLogger(RewardActivityController.class);
 
