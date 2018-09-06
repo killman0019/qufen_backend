@@ -6,7 +6,7 @@ package com.tzg.common.enums;
 * @author linj<作者>
 * @date 2018年7月4日 上午9:23:48 
 * @version v1.0.0 
-*  帖子类型：1-评测；2-讨论；3-文章
+*  帖子类型：1-评测；2-讨论；3-文章,4-悬赏
 */
 public enum PostType{
 	/**
@@ -20,7 +20,11 @@ public enum PostType{
 	/**
 	 * 3-文章
 	 */
-	ARTICLE(3,"文章");
+	ARTICLE(3,"文章"),
+	/**
+	 * 4-悬赏
+	 */
+	REWARD(4,"悬赏");
 	
 	private Integer value;
 	private String desc;

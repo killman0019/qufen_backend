@@ -4152,7 +4152,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			}
 		}
 		result.setRows(postResponse);
-
 		return result;
 	}
 

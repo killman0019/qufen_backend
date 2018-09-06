@@ -114,6 +114,57 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
   
+  <select id="findSetTopPost" resultType="com.tzg.entitys.kff.post.PostDiscussVo" parameterType="java.util.Map">
+		select
+		tpt.post_id as postId,
+		tpt.stick_top as stickTop,
+		tpt.stick_updateTime as stickUpdateTime,
+		tpt.project_id as projectId,
+		tpt.project_icon as projectIcon,
+		tpt.project_code as projectCode,
+		tpt.project_english_name as projectEnglishName,
+		tpt.project_chinese_name as projectChineseName,
+		tpt.post_title as postTitle,
+		tpt.post_type as postType,
+		tpt.post_short_desc as postShortDesc,
+		tpt.post_small_images as postSmallImages,
+		tpt.comments_num as commentsNum,
+		tpt.praise_num as praiseNum,
+		tpt.pageview_num as pageviewNum,
+		tpt.donate_num as donateNum,
+		tpt.collect_num as collectNum,
+		tpt.create_user_id as createUserId,
+		tpt.create_user_icon as createUserIcon,
+		tpt.create_user_signature as createUserSignature,
+		tpt.create_user_name as createUserName,
+		tpt.createTime as createTime,
+		tpt.updateTime as updateTime,
+		tpt.uuid as uuid,
+		tpt.status as status,
+		tpt.praise_income as praiseIncome,
+		tpt.donate_income as donateIncome,
+		tpt.post_total_income as postTotalIncome,
+		rac.is_nice_choice as isNiceChoice,
+		rac.nice_choice_at as niceChoiceAt,
+		rac.type as type,
+		rac.dis_stick_top as disStickTop,
+		rac.dis_stick_updateTime as disStickUpdateTime
+		from <include refid="table_name" /> as rac
+    	INNER JOIN tbpost as tpt on tpt.post_id=rac.post_id
+		<include refid="condition" />
+		ORDER BY ${sort} desc
+		<if test="startRecord != null and endRecord!=null">
+			LIMIT ${startRecord},${endRecord}
+		</if>
+	</select>
+	
+	<select id="findSetTopPostCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(1) from <include refid="table_name" /> as rac
+    	INNER JOIN tbpost as tpt on tpt.post_id=rac.post_id
+		<include refid="condition" />
+	</select>
+  
+  
   <select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
     	select count(*) from <include refid="table_name" />
 		<include refid="condition"/>
@@ -131,11 +182,29 @@
 	    	<if test="id != null">
 			 id = #{id,jdbcType=INTEGER}
 			</if>
+			<if test="status != null">
+			and tpt.status = #{status}
+			</if>
+			<if test="postTypec != null">
+			and tpt.post_type = #{postTypec}
+			</if>
+			<if test="disStickTopc != null">
+			and rac.dis_stick_top = #{disStickTopc}
+			</if>
+			<if test="disStickTopc1!=null">
+			and (rac.dis_stick_top != #{disStickTopc1} or rac.dis_stick_top is null )
+			</if>
+			<if test="stickTopc!=null">
+			and rac.is_nice_choice = #{stickTopc}
+			</if>
+			<if test="postId!=null">
+			and rac.post_id = #{postId}
+			</if>
     	</where>
     </sql>
     
     <select id="findListByAttr" resultMap="BaseResultMap" parameterType="java.util.Map">
-		select * from <include refid="table_name" />
+		select * from <include refid="table_name" /> as rac
 		<include refid="condition"/>
 	    <![CDATA[ ORDER BY id DESC ]]>
 	</select>

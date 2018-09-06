@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.tzg.common.utils.DateUtil;
 
-public class PostResponse implements Serializable, Comparable {
+public class PostResponse implements Serializable, Comparable<Object> {
 
 	/**
 	 * 
@@ -182,6 +182,36 @@ public class PostResponse implements Serializable, Comparable {
 	private Integer type;
 	private Integer disStickTop;
 	private Date disStickUpdateTime;
+	//悬赏金额
+	private BigDecimal rewardMoney;
+	//回答人数
+	private Integer answerCount;
+	//截止时间
+	private Date endTime;
+
+	public BigDecimal getRewardMoney() {
+		return rewardMoney;
+	}
+
+	public void setRewardMoney(BigDecimal rewardMoney) {
+		this.rewardMoney = rewardMoney;
+	}
+
+	public Integer getAnswerCount() {
+		return answerCount;
+	}
+
+	public void setAnswerCount(Integer answerCount) {
+		this.answerCount = answerCount;
+	}
+
+	public Date getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(Date endTime) {
+		this.endTime = endTime;
+	}
 
 	public String getPostUuid() {
 		return postUuid;

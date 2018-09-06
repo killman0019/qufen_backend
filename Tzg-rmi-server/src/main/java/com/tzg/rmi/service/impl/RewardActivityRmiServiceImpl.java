@@ -2,7 +2,6 @@ package com.tzg.rmi.service.impl;
 
 import java.text.ParseException;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -29,6 +28,7 @@ import com.tzg.common.utils.sysGlobals;
 import com.tzg.entitys.kff.activity.RewardActivity;
 import com.tzg.entitys.kff.article.ArticleRequest;
 import com.tzg.entitys.kff.post.Post;
+import com.tzg.entitys.kff.post.PostResponse;
 import com.tzg.entitys.kff.project.KFFProject;
 import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.rest.exception.rest.RestServiceException;
@@ -61,10 +61,13 @@ public class RewardActivityRmiServiceImpl implements RewardActivityRmiService {
 	public List<RewardActivity> findListByAttr(Map<String, Object> map) {
 		return rewardActivityService.findListByAttr(map);
 	}
+	public PageResult<PostResponse> findPageRewardList(Integer loginUserId, PaginationQuery query,
+			Integer type){
+		return rewardActivityService.findPageRewardList(loginUserId, query,type);
+	}
 	
 	public void saveRewardActivity(ArticleRequest articleRequest,Integer rewardDate,String rewardMoney) 
 			throws RestServiceException {
-		Map<String, Object> result = new HashMap<>();
 		String uuid = UUID.randomUUID().toString().replace("-", "");
 		if (articleRequest.getArticleContents().length() > 16777215) {
 			throw new RestServiceException("悬赏内容长度超过限制");

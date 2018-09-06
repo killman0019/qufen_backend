@@ -1,4 +1,4 @@
-package com.tzg.rest.controller.kff;
+package com.tzg.wap.controller.h5;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -14,11 +14,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.tzg.common.base.BaseRequest;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
+import com.tzg.common.utils.HtmlUtils;
 import com.tzg.common.utils.StringUtil;
 import com.tzg.common.utils.sysGlobals;
 import com.tzg.entitys.kff.article.ArticleRequest;
 import com.tzg.entitys.kff.post.PostResponse;
-import com.tzg.rest.controller.BaseController;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
@@ -26,7 +26,7 @@ import com.tzg.rmi.service.KFFUserRmiService;
 import com.tzg.rmi.service.RewardActivityRmiService;
 
 @Controller
-@RequestMapping("/kff/rewardActivity")
+@RequestMapping("/wap/rewardActivity")
 public class RewardActivityController extends BaseController {
 	private static Logger logger = Logger.getLogger(RewardActivityController.class);
 
@@ -57,17 +57,21 @@ public class RewardActivityController extends BaseController {
 	*/
 	@ResponseBody
 	@RequestMapping(value = "/saveRewardActivity", method = { RequestMethod.POST, RequestMethod.GET })
-	public BaseResponseEntity saveRewardActivity(BaseRequest baseRequest,HttpServletRequest request) {
+	public BaseResponseEntity saveRewardActivity(BaseRequest baseRequest,HttpServletRequest request,Integer rewardDate,
+			String rewardMoney,String token,Integer projectId,String rewardContents,String postTitle,String tagInfos) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		try {
-			JSONObject params = getParamJsonFromRequestPolicy(request);
-			Integer rewardDate = params.getInteger("rewardDate");
-			String rewardMoney = params.getString("rewardMoney");
-			String token = params.getString("token");
-			Integer projectId = params.getInteger("projectId");
-			String rewardContents = params.getString("rewardContents");
-			String postTitle = params.getString("postTitle");
-			String tagInfos = params.getString("tagInfos");
+			if(rewardDate==null&&StringUtil.isBlank(rewardMoney)&&StringUtil.isBlank(token)&&projectId==null
+					&&StringUtil.isBlank(rewardContents)&&StringUtil.isBlank(postTitle)&&StringUtil.isBlank(tagInfos)) {
+				JSONObject requestContent = HtmlUtils.getRequestContent(request);
+				rewardDate = (Integer) requestContent.get("rewardDate");
+				rewardMoney = (String) requestContent.get("rewardMoney");
+				token = (String) requestContent.get("token");
+				projectId = (Integer) requestContent.get("projectId");
+				rewardContents = (String) requestContent.get("rewardContents");
+				postTitle = (String) requestContent.get("postTitle");
+				tagInfos = (String) requestContent.get("tagInfos");
+			}
 			if(null==rewardDate||StringUtil.isBlank(rewardMoney)||StringUtil.isBlank(token)||null==projectId
 					||StringUtil.isBlank(rewardContents)||StringUtil.isBlank(postTitle)) {
 				bre.setNoRequstData();
@@ -119,13 +123,16 @@ public class RewardActivityController extends BaseController {
 	*/
 	@ResponseBody
 	@RequestMapping(value = "/rewardList", method = { RequestMethod.POST, RequestMethod.GET })
-	public BaseResponseEntity rewardList(HttpServletRequest request) {
+	public BaseResponseEntity rewardList(HttpServletRequest request,Integer pageIndex,Integer pageSize,
+			String token) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		try {
-			JSONObject params = getParamJsonFromRequestPolicy(request);
-			Integer pageIndex = params.getInteger("pageIndex");
-			Integer pageSize = params.getInteger("pageSize");
-			String token = params.getString("token");
+			if(pageIndex==null&&StringUtil.isBlank(token)&&pageSize==null) {
+				JSONObject requestContent = HtmlUtils.getRequestContent(request);
+				pageIndex = (Integer) requestContent.get("pageIndex");
+				token = (String) requestContent.get("token");
+				pageSize = (Integer) requestContent.get("pageSize");
+			}
 			if(null==pageIndex||pageSize==null) {
 				bre.setNoRequstData();
 				return bre;

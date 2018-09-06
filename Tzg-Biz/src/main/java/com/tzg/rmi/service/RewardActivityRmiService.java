@@ -7,6 +7,7 @@ import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.entitys.kff.activity.RewardActivity;
 import com.tzg.entitys.kff.article.ArticleRequest;
+import com.tzg.entitys.kff.post.PostResponse;
 
 /** 
 * @ClassName: RewardActivityRmiService 
@@ -24,4 +25,6 @@ public interface RewardActivityRmiService {
 	public List<RewardActivity> findListByAttr(Map<String, Object> map);
 	
 	public void saveRewardActivity(ArticleRequest articleRequest,Integer rewardDate,String rewardMoney);
+	
+	public PageResult<PostResponse> findPageRewardList(Integer loginUserId, PaginationQuery query, Integer type);
 }

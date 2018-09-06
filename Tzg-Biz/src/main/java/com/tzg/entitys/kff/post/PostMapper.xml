@@ -495,7 +495,7 @@
 			and post_id = #{postId}
 		</if>
 		<if test="title != null">
-			and ((post_title = "%" #{title} "%" and post_type!=2) or (post_short_desc = "%" #{title} "%" and post_type==2))
+			and ((post_title like concat("%",#{title},"%") and post_type!=2) or (post_short_desc like concat("%",#{title},"%") and post_type=2))
 		</if>
 		<if test="projectId != null">
 			and project_id = #{projectId}
