@@ -55,6 +55,25 @@ public class taskJobService {
 
 	/**
 	 * 
+	* @Title: putRedis 
+	* @Description: TODO <初始参数>
+	* @author zhangdd <方法创建作者>
+	* @create 上午10:57:16
+	* @param  <参数说明>
+	* @return void 
+	* @throws 
+	* @update 上午10:57:16
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	 */
+	public void putRedis() {
+		logger.info("----start putRedis job---");
+		robotService.putRedis();
+		logger.info("----end putRedis job---");
+	}
+
+	/**
+	 * 
 	* @Title: robotComment 
 	* @Description: TODO <一级评论>
 	* @author zhangdd <方法创建作者>

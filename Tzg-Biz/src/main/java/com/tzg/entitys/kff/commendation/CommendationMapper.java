@@ -23,4 +23,6 @@ public interface CommendationMapper extends BaseMapper<Commendation, java.lang.I
 	 */
 	List<Commendation> selectAllCommendationByPostId(Integer postId);
 
+	List<Commendation> findByMap(Map<String, Object> map);
+
 }

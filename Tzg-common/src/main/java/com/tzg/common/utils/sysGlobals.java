@@ -138,6 +138,14 @@ public final class sysGlobals {
 	 * 赞助结束
 	 */
 	public static final String RBT_COMMENDATION_NUM_END = "RBT_COMMENDATION_NUM_END";
+	/**
+	 * 机器人赞助起点次数
+	 */
+	public static final String ROBOT_COMMENDATION_BEGIN_COUNT = "ROBOT_COMMENDATION_BEGIN_COUNT";
+	/**
+	 * 线上的前端url
+	 */
+	public static final String WEB_URL = "WEB_URL";
 
 	/**推送给全部用户默认一次取多少消息*/
 	public static Integer DEFAULT_MSG_COUNT = 1000;

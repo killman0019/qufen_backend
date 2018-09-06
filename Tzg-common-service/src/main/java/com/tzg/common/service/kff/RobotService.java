@@ -30,6 +30,10 @@ import com.tzg.common.utils.DateUtil;
 import com.tzg.common.utils.HttpUtil;
 import com.tzg.common.utils.RandomUtil;
 import com.tzg.common.utils.sysGlobals;
+import com.tzg.entitys.kff.coinproperty.CoinProperty;
+import com.tzg.entitys.kff.coinproperty.CoinPropertyMapper;
+import com.tzg.entitys.kff.commendation.Commendation;
+import com.tzg.entitys.kff.commendation.CommendationMapper;
 import com.tzg.entitys.kff.commendation.CommendationRequest;
 import com.tzg.entitys.kff.commentlibrary.CommentLibrary;
 import com.tzg.entitys.kff.commentlibrary.CommentLibraryMapper;
@@ -77,6 +81,12 @@ public class RobotService {
 	@Autowired
 	private CommentsMapper commentsMapper;
 
+	@Autowired
+	private CoinPropertyMapper coinPropertyMapper;
+
+	@Autowired
+	private CommendationMapper commendationMapper;
+
 	@Value("#{paramConfig['DEV_ENVIRONMENT']}")
 	private static String devEnvironment;
 
@@ -114,7 +124,7 @@ public class RobotService {
 			redisService.del("PraiseNumRBT");
 			redisService.put("PraiseNumRBT", PraiseNum + "", 60 * 60 * 24);
 
-			// 打赏
+			/*// 打赏
 			SystemParam sysBeginCd = systemParamService.findByCode(sysGlobals.RBT_PRAISE_NUM_BEGIN);
 			Integer CdBegin = Integer.valueOf(sysBeginCd.getVcParamValue());
 			SystemParam sysEndCd = systemParamService.findByCode(sysGlobals.RBT_PRAISE_NUM_END);
@@ -122,7 +132,7 @@ public class RobotService {
 			Integer commdationNum = RandomUtil.randomNumber(CdBegin, CdEnd);
 			redisService.del("commendationNumRBT");
 			redisService.put("commendationNumRBT", commdationNum + "", 60 * 60 * 24);
-
+			*/
 			// 评论//每天取一次
 			SystemParam sysBeginC = systemParamService.findByCode(sysGlobals.RBT_PRAISE_NUM_BEGIN);
 			Integer CBegin = Integer.valueOf(sysBeginC.getVcParamValue());
@@ -163,6 +173,9 @@ public class RobotService {
 		Integer clCount = commentLibraryMapper.findAllPageCount(clMap);
 		Random random = new Random();
 		CommentLibrary commentLibrary = null;
+		if (clCount == 0) {
+			return commentLibrary;
+		}
 		while (true) {
 			int id = random.nextInt(clCount + 1);
 			if (commentLibrary == null) {
@@ -201,9 +214,13 @@ public class RobotService {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("status", 1);
 		Integer count = robotMapper.findPageCount(map);
+
 		Random random = new Random();
 		Robot robot = null;
 		KFFUser user = null;
+		if (count == 0) {
+			return user;
+		}
 		while (true) {
 			int id = random.nextInt(count + 1);
 			if (user == null) {
@@ -326,11 +343,13 @@ public class RobotService {
 				praiseMap.put("status", "1");
 				List<Praise> praiseList = praiseMapper.findByMap(praiseMap);
 				if (praiseList.size() <= Integer.valueOf(praiseNum)) {
+					SystemParam sysUrl = systemParamService.findByCode(sysGlobals.WEB_URL);// https://m.qufen.top/wap
+					String url = sysUrl.getVcParamValue();
 					Integer postId = postf.getPostId();
 					String regiUrlLocal = null;
 					String para = "token=" + token + "&postId=" + postId;
 					if (StringUtils.isNotBlank(devEnvironment) && devEnvironment.equals(sysGlobals.DEV_ENVIRONMENT)) {
-						regiUrlLocal = "http://192.168.10.153:803/kff/praise/savePostPraise?";// 线上url
+						regiUrlLocal = url + "/kff/praise/savePostPraise?";// 线上url
 					} else {
 						regiUrlLocal = "http://192.168.10.153:803/kff/praise/savePostPraise?";// 本地url
 					}
@@ -382,16 +401,20 @@ public class RobotService {
 					if (null != commentLib) {
 						// 进行调用接口
 						KFFUser robotUser = findOneRobot();
+						if (robotUser == null) {
+							return;
+						}
 						String token = AccountTokenUtil.getAccountToken(robotUser.getUserId());
 						Integer postId = postf.getPostId();
 						String regiUrlLocal = null;
 						CommentsRequest commentsRequest = new CommentsRequest();
 						commentsRequest.setCommentContent(commentLib.getContent());
 						commentsRequest.setPostId(postId);
-
+						SystemParam sysUrl = systemParamService.findByCode(sysGlobals.WEB_URL);// https://m.qufen.top/wap
+						String url = sysUrl.getVcParamValue();
 						String para = "token=" + token + "&commentContent=" + commentLib.getContent() + "&postId=" + postId;
 						if (StringUtils.isNotBlank(devEnvironment) && devEnvironment.equals(sysGlobals.DEV_ENVIRONMENT)) {
-							regiUrlLocal = "http://192.168.10.153:803/kff/comments/saveComment?";// 线上url
+							regiUrlLocal = url + "/kff/comments/saveComment?";// 线上url
 						} else {
 							regiUrlLocal = "http://192.168.10.153:803/kff/comments/saveComment?";// 本地url
 						}
@@ -440,20 +463,38 @@ public class RobotService {
 				commMap.put("contextlenth", 30);
 				commMap.put("isNullParentCommentsId", "true");
 				List<Comments> comm = commentsMapper.findByMap(commMap);
+				String commentNum = redisService.get("commentNumRBT");
+				if (StringUtils.isEmpty(commentNum)) {
+					putRedis();
+					commentNum = redisService.get("commentNumRBT");
+				}
 				if (CollectionUtils.isNotEmpty(comm)) {
 					for (Comments comments : comm) {
 						if (null != comments) {
 							Integer commentUserId = comments.getCommentUserId();
 							Robot robot = robotMapper.findByUserId(commentUserId);
+							Integer postId = postf.getPostId();
 							if (null == robot) {// 表示这个是真人
+								// 判断这个二级评论是否达到规定值
+								Map<String, Object> pareMap = new HashMap<String, Object>();
+								pareMap.put("parentCommentsId", commentUserId);
+								pareMap.put("postId", postId);
+								List<Comments> commP = commentsMapper.findByMap(commMap);
+								if (commP.size() > Integer.valueOf(commentNum)) {
+									return;
+								}
 								// 对评论进行二级评论
 								CommentLibrary commentLib = findOneConnentLibrary(2);
 								if (null != commentLib) {
 									// 进行调用接口
 									KFFUser robotUser = findOneRobot();
+									if (robotUser == null) {
+										return;
+									}
 									String token = AccountTokenUtil.getAccountToken(robotUser.getUserId());
-									Integer postId = postf.getPostId();
 									String regiUrlLocal = null;
+									SystemParam sysUrl = systemParamService.findByCode(sysGlobals.WEB_URL);// https://m.qufen.top/wap
+									String url = sysUrl.getVcParamValue();
 									CommentsRequest commentsRequest = new CommentsRequest();
 									commentsRequest.setCommentContent(commentLib.getContent());
 									commentsRequest.setPostId(postId);
@@ -461,7 +502,7 @@ public class RobotService {
 									String para = "token=" + token + "&commentContent=" + commentLib.getContent() + "&postId=" + postId + "&parentCommentsId="
 											+ comments.getCommentsId() + "&becommentedId=" + comments.getCommentsId();
 									if (StringUtils.isNotBlank(devEnvironment) && devEnvironment.equals(sysGlobals.DEV_ENVIRONMENT)) {
-										regiUrlLocal = "http://192.168.10.153:803/kff/comments/saveComment?";// 线上url
+										regiUrlLocal = url + "/kff/comments/saveComment?";// 线上url
 									} else {
 										regiUrlLocal = "http://192.168.10.153:803/kff/comments/saveComment?";// 本地url
 									}
@@ -482,6 +523,9 @@ public class RobotService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -506,6 +550,9 @@ public class RobotService {
 		try {
 			if (postf != null) {
 				KFFUser robotUser = findOneRobot();
+				if (robotUser == null) {
+					return;
+				}
 				String token = AccountTokenUtil.getAccountToken(robotUser.getUserId());
 
 				String followNum = redisService.get("followNumRBT");
@@ -529,8 +576,10 @@ public class RobotService {
 
 					String para = "followType=" + followType + "&followedId=" + followedId + "&token=" + token;
 					String regiUrlLocal = null;
+					SystemParam sysUrl = systemParamService.findByCode(sysGlobals.WEB_URL);// https://m.qufen.top/wap
+					String url = sysUrl.getVcParamValue();
 					if (StringUtils.isNotBlank(devEnvironment) && devEnvironment.equals(sysGlobals.DEV_ENVIRONMENT)) {
-						regiUrlLocal = "http://192.168.10.153:803/kff/follow/saveFollow?";// 线上url
+						regiUrlLocal = url + "/kff/follow/saveFollow?";// 线上url
 					} else {
 						regiUrlLocal = "http://192.168.10.153:803/kff/follow/saveFollow?";// 本地url
 					}
@@ -568,42 +617,59 @@ public class RobotService {
 		try {
 			if (postf != null) {
 				KFFUser robotUser = findOneRobot();
-				String token = AccountTokenUtil.getAccountToken(robotUser.getUserId());
-				KFFUser user = usermapper.findById(robotUser.getUserId());
-				SystemParam sysBeginCd = systemParamService.findByCode(sysGlobals.RBT_COMMENDATION_NUM_BEGIN);
-				Integer CdBegin = Integer.valueOf(sysBeginCd.getVcParamValue());
-				SystemParam sysEndCd = systemParamService.findByCode(sysGlobals.RBT_COMMENDATION_NUM_END);
-				Integer CdEnd = Integer.valueOf(sysEndCd.getVcParamValue());
-				Integer cmNum = RandomUtil.randomNumber(CdBegin / 5, CdEnd / 5) * 5;
+				if (robotUser != null) {// 用户的账号余额为0时
+					Integer RBTUserId = robotUser.getUserId();
+					CoinProperty coinProperty = coinPropertyMapper.findByUserId(RBTUserId);
+					SystemParam sysBegin = systemParamService.findByCode(sysGlobals.ROBOT_COMMENDATION_BEGIN_COUNT);
+					Integer beg = Integer.valueOf(sysBegin.getVcParamValue());
+					Map<String, Object> map = new HashMap<String, Object>();
+					map.put("receiveUserId", postf.getCreateUserId());
+					map.put("postId", postf.getPostId());
+					map.put("status", 1);
+					List<Commendation> commendationList = commendationMapper.findByMap(map);
+					if (commendationList.size() > beg) {
+						return;
+					}
+					String token = AccountTokenUtil.getAccountToken(robotUser.getUserId());
+					KFFUser user = usermapper.findById(robotUser.getUserId());
+					SystemParam sysBeginCd = systemParamService.findByCode(sysGlobals.RBT_COMMENDATION_NUM_BEGIN);
+					Integer CdBegin = Integer.valueOf(sysBeginCd.getVcParamValue());
+					SystemParam sysEndCd = systemParamService.findByCode(sysGlobals.RBT_COMMENDATION_NUM_END);
+					Integer CdEnd = Integer.valueOf(sysEndCd.getVcParamValue());
+					Integer cmNum = RandomUtil.randomNumber(CdBegin / 5, CdEnd / 5) * 5;
+					if (coinProperty.getCoinLock() < cmNum) {
+						return;
+					}
+					CommendationRequest commendationRequest = new CommendationRequest();
+					commendationRequest.setAmount(new BigDecimal(cmNum));
+					commendationRequest.setPostId(postf.getPostId());
+					commendationRequest.setPostType(postf.getPostType());
+					commendationRequest.setProjectId(postf.getProjectId());
+					commendationRequest.setReceiveUserId(postf.getCreateUserId());
+					commendationRequest.setSendUserIcon(user.getIcon());
+					commendationRequest.setSendUserId(user.getUserId());
 
-				CommendationRequest commendationRequest = new CommendationRequest();
-				commendationRequest.setAmount(new BigDecimal(cmNum));
-				commendationRequest.setPostId(postf.getPostId());
-				commendationRequest.setPostType(postf.getPostType());
-				commendationRequest.setProjectId(postf.getProjectId());
-				commendationRequest.setReceiveUserId(postf.getCreateUserId());
-				commendationRequest.setSendUserIcon(user.getIcon());
-				commendationRequest.setSendUserId(user.getUserId());
+					String para = "amount=" + new BigDecimal(cmNum) + "&token=" + token + "&postId=" + postf.getPostId() + "&postType=" + postf.getPostType()
+							+ "&projectId=" + postf.getProjectId() + "&receiveUserId=" + postf.getCreateUserId() + "&sendUserIcon=" + user.getIcon()
+							+ "&sendUserId=" + user.getUserId();
 
-				String para = "amount=" + new BigDecimal(cmNum) + "&token=" + token + "&postId=" + postf.getPostId() + "&postType=" + postf.getPostType()
-						+ "&projectId=" + postf.getProjectId() + "&receiveUserId=" + postf.getCreateUserId() + "&sendUserIcon=" + user.getIcon()
-						+ "&sendUserId=" + user.getUserId();
+					String regiUrlLocal = null;
+					SystemParam sysUrl = systemParamService.findByCode(sysGlobals.WEB_URL);// https://m.qufen.top/wap
+					String url = sysUrl.getVcParamValue();
+					if (StringUtils.isNotBlank(devEnvironment) && devEnvironment.equals(sysGlobals.DEV_ENVIRONMENT)) {
+						regiUrlLocal = url + "/kff/token/commendation?";// 线上url
+					} else {
+						regiUrlLocal = "http://192.168.10.153:803/kff/token/commendation?";// 本地url
+					}
+					String str = regiUrlLocal + para;
+					String doGet = HttpUtil.doGet(str);
 
-				String regiUrlLocal = null;
-				if (StringUtils.isNotBlank(devEnvironment) && devEnvironment.equals(sysGlobals.DEV_ENVIRONMENT)) {
-					regiUrlLocal = "http://192.168.10.153:803/kff/token/commendation?";// 线上url
-				} else {
-					regiUrlLocal = "http://192.168.10.153:803/kff/token/commendation?";// 本地url
-				}
-				String str = regiUrlLocal + para;
-				String doGet = HttpUtil.doGet(str);
+					if (doGet != null) {
+						JSONObject parseObject = JSON.parseObject(doGet);
 
-				if (doGet != null) {
-					JSONObject parseObject = JSON.parseObject(doGet);
-
+					}
 				}
 			}
-
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
