@@ -31,4 +31,7 @@ public interface RewardActivityRmiService {
 	public Map<String, Object> findOneByAttr(Map<String, Object> map);
 	
 	public void updateRewardActivityAndPost(Integer postId,Integer id);
+	
+	public PostResponse findRewardDetail(Integer userId, Integer type, Integer postId);
+	
 }

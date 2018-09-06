@@ -188,6 +188,17 @@ public class PostResponse implements Serializable, Comparable<Object> {
 	private Integer answerCount;
 	//截止时间
 	private Date endTime;
+	//悬赏内容
+	private String rewardContents;
+
+	
+	public String getRewardContents() {
+		return rewardContents;
+	}
+
+	public void setRewardContents(String rewardContents) {
+		this.rewardContents = rewardContents;
+	}
 
 	public BigDecimal getRewardMoney() {
 		return rewardMoney;

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,8 +27,10 @@ import com.tzg.entitys.kff.post.Post;
 import com.tzg.entitys.kff.post.PostDiscussVo;
 import com.tzg.entitys.kff.post.PostFile;
 import com.tzg.entitys.kff.post.PostResponse;
+import com.tzg.entitys.kff.praise.Praise;
 import com.tzg.entitys.kff.project.KFFProject;
 import com.tzg.entitys.kff.user.KFFUser;
+import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 
 @Service
@@ -45,7 +48,9 @@ public class RewardActivityService {
 	@Autowired
 	private ProjectService kffProjectService;
 	@Autowired
-	private PostService postService;
+	private PostService kffPostService;
+	@Autowired
+	private CommendationService kffCommendationService;
 	
 	@Transactional(readOnly = true)
 	public RewardActivity findById(java.lang.Integer id) {
@@ -272,11 +277,86 @@ public class RewardActivityService {
 		return result;
 	}
 	
+	@Transactional(readOnly=true)
+	public PostResponse findRewardDetail(Integer userId, Integer type, Integer postId) throws RestServiceException {
+		PostResponse response = new PostResponse();
+		// 登录和非登录用户区别只有关注状态按钮显示
+		KFFUser loginUser = null;
+		if (userId != null) {
+			loginUser = kffUserService.findById(userId);
+		}
+		if (postId == null || postId == 0) {
+			throw new RestServiceException(RestErrorCode.MISSING_ARG_POSTID);
+		}
+		Post post = kffPostService.findById(postId);
+		if (post == null) {
+			throw new RestServiceException(RestErrorCode.POST_NOT_EXIST);
+		}
+		BeanUtils.copyProperties(post, response);
+		Map<String,Object> seMap = new HashMap<>();
+		seMap.put("postId", postId);
+		List<RewardActivity> reActs = rewardActivityMapper.findListByAttr(seMap);
+		if(reActs.isEmpty()) {
+			throw new RestServiceException(RestErrorCode.NO_DATA_MSG);
+		}
+		RewardActivity reAct = reActs.get(0);
+		response.setRewardContents(reAct.getRewardContents());
+		response.setTagInfos(reAct.getTagInfos());
+		response.setPostSmallImages(post.getPostSmallImages());
+		response.setPraiseIncome(post.getPraiseIncome());
+		response.setDonateIncome(post.getDonateIncome());
+		response.setPostTotalIncome(post.getPostTotalIncome());
+		// 设置人的关注状态
+		if (loginUser == null) {
+			response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+		} else {
+			if (type == 2) {
+				Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER, post.getCreateUserId());
+				if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+					response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+				} else {
+					response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+				}
+			} else if (type == 1) {
+				Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT, post.getProjectId());
+				if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+					response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+				} else {
+					response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+				}
+			}
+		}
+		// 点赞状态
+		if (loginUser == null) {
+			response.setPraiseStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+		} else {
+			Praise follow = kffPraiseService.findByPostId(userId, postId);
+			if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+				response.setPraiseStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+			} else {
+				response.setPraiseStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+			}
+		}
+		if (null != loginUser) {
+			KFFUser ceateUser = kffUserService.findById(post.getCreateUserId());
+			response.setUserType(ceateUser.getUserType());
+		}
+		response.setIsNiceChoice(reAct.getIsNiceChoice());
+		response.setNiceChoiceAt(reAct.getNiceChoiceAt());
+		response.setType(reAct.getType());
+		response.setRewardMoney(reAct.getRewardMoney());
+		response.setAnswerCount(reAct.getAnswerCount());
+		response.setEndTime(reAct.getEndTime());
+		response.setCommentsNum(post.getCommentsNum());
+		response.setTagInfos(reAct.getTagInfos());
+		return response;
+	}
+	
 	public void updateRewardActivityAndPost(Integer postId,Integer id) {
 		Post post = new Post();
 		post.setPostId(postId);
 		post.setStatus(0);
-		postService.update(post);
+		kffPostService.update(post);
 		RewardActivity reAct = new RewardActivity();
 		reAct.setId(id);
 		reAct.setState(2);//悬赏的状态：0-进行中，1-已结束，2-已撤销

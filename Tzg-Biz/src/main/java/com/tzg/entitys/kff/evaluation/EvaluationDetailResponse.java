@@ -7,7 +7,6 @@ import java.util.List;
 import com.tzg.common.utils.DateUtil;
 import com.tzg.entitys.kff.commendation.Commendation;
 import com.tzg.entitys.kff.devaluationModel.DevaluationModel;
-import com.tzg.entitys.kff.devaluationModelDetail.DevaluationModelDetail;
 import com.tzg.entitys.kff.post.PostFile;
 
 public class EvaluationDetailResponse implements Serializable {

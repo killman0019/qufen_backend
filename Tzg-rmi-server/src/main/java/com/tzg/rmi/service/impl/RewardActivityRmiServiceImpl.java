@@ -27,6 +27,7 @@ import com.tzg.common.utils.WorkHtmlRegexpUtil;
 import com.tzg.common.utils.sysGlobals;
 import com.tzg.entitys.kff.activity.RewardActivity;
 import com.tzg.entitys.kff.article.ArticleRequest;
+import com.tzg.entitys.kff.evaluation.EvaluationDetailResponse;
 import com.tzg.entitys.kff.post.Post;
 import com.tzg.entitys.kff.post.PostResponse;
 import com.tzg.entitys.kff.project.KFFProject;
@@ -72,6 +73,10 @@ public class RewardActivityRmiServiceImpl implements RewardActivityRmiService {
 	
 	public void updateRewardActivityAndPost(Integer postId,Integer id) {
 		rewardActivityService.updateRewardActivityAndPost(postId,id);
+	}
+	
+	public PostResponse findRewardDetail(Integer userId, Integer type, Integer postId) {
+		return rewardActivityService.findRewardDetail(userId,type,postId);
 	}
 	
 	public void saveRewardActivity(ArticleRequest articleRequest,Integer rewardDate,String rewardMoney) 

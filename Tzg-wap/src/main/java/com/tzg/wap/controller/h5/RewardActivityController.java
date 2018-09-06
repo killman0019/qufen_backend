@@ -20,6 +20,7 @@ import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.utils.DateUtil;
 import com.tzg.common.utils.HtmlUtils;
 import com.tzg.common.utils.StringUtil;
+import com.tzg.common.utils.SyseUtil;
 import com.tzg.common.utils.sysGlobals;
 import com.tzg.entitys.kff.article.ArticleRequest;
 import com.tzg.entitys.kff.post.PostResponse;
@@ -162,6 +163,54 @@ public class RewardActivityController extends BaseController {
 			return this.resResult(e.getErrorCode(), e.getMessage());
 		} catch (Exception e) {
 			logger.error("RewardActivityController rewardList:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+		}
+		return bre;
+	}
+	
+	/** 
+	* @Title: rewardDetail 
+	* @Description: TODO <悬赏详情接口>
+	* @author linj <方法创建作者>
+	* @create 下午7:36:24
+	* @param @param request
+	* @param @param token 用户登录唯一标识
+	* @param @param postId 帖子的id
+	* @param @return <参数说明>
+	* @return BaseResponseEntity 
+	* @throws 
+	* @update 下午7:36:24
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	*/
+	@ResponseBody
+	@RequestMapping(value = "/rewardDetail", method = { RequestMethod.POST, RequestMethod.GET })
+	public BaseResponseEntity rewardDetail(HttpServletRequest request,String token,Integer postId) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+		try {
+			
+			if(postId==null&&StringUtil.isBlank(token)) {
+				JSONObject requestContent = HtmlUtils.getRequestContent(request);
+				postId = (Integer) requestContent.get("postId");
+				token = (String) requestContent.get("token");
+			}
+			if(null==postId) {
+				bre.setNoRequstData();
+				return bre;
+			}
+			Integer userId = null;
+			if (StringUtils.isNotBlank(token)) {
+				userId = getUserIdByToken(token);
+			}
+			Integer type = 2;// 取关注人
+			PostResponse evaluationDetail = rewardActivityRmiService.findRewardDetail(userId, type, postId);
+			bre.setData(evaluationDetail);
+			SyseUtil.systemErrOutJson(bre);
+		} catch (RestServiceException e) {
+			logger.error("HomeController evaluationDetail:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("HomeController evaluationDetail:{}", e);
 			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
 		}
 		return bre;
