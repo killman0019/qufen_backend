@@ -1,6 +1,5 @@
 package com.tzg.common.utils;
 
-import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -28,6 +27,16 @@ public class DateUtil {
 		return now;
 	}
 	
+	public static boolean biTimeCount(String beginTime) {
+		long afTime = getDate(beginTime, dateTimePattern).getTime();
+		long nowTime = new Date().getTime();
+		long tt = nowTime-afTime;
+		if(tt>3600000) {
+			return false;
+		}else {
+			return true;
+		}
+	}
 	public static Date countEndTime(Integer rewardDate) throws ParseException {
 		SimpleDateFormat sf = new SimpleDateFormat(datePattern);
 		SimpleDateFormat sft = new SimpleDateFormat(dateTimePattern); 

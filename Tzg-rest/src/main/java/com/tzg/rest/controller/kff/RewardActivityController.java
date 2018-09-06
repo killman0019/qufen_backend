@@ -1,5 +1,8 @@
 package com.tzg.rest.controller.kff;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
@@ -14,6 +17,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.tzg.common.base.BaseRequest;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
+import com.tzg.common.utils.DateUtil;
 import com.tzg.common.utils.StringUtil;
 import com.tzg.common.utils.sysGlobals;
 import com.tzg.entitys.kff.article.ArticleRequest;
@@ -155,4 +159,61 @@ public class RewardActivityController extends BaseController {
 		}
 		return bre;
 	}
+	
+	/** 
+	* @Title: stopReward 
+	* @Description: TODO <终止悬赏接口>
+	* @author linj <方法创建作者>
+	* @create 下午4:32:42
+	* @param @param request
+	* @param @param postId 悬赏的帖子id
+	* @param @param token 用户登录唯一标识
+	* @param @return <参数说明>
+	* @return BaseResponseEntity 
+	* @throws 
+	* @update 下午4:32:42
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	*/
+	@ResponseBody
+	@RequestMapping(value = "/stopReward", method = { RequestMethod.POST, RequestMethod.GET })
+	public BaseResponseEntity stopReward(HttpServletRequest request) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+		try {
+			JSONObject params = getParamJsonFromRequestPolicy(request);
+			Integer postId = params.getInteger("postId");
+			String token = params.getString("token");
+			if(null==postId||StringUtil.isBlank(token)) {
+				bre.setNoRequstData();
+				return bre;
+			}
+			Integer userId = getUserIdByToken(token);
+			Map<String,Object> seMap = new HashMap<>();
+			seMap.put("postTypec", 4);
+			seMap.put("postId", postId);
+			seMap.put("createUserId", userId);
+			Map<String, Object> reMap = rewardActivityRmiService.findOneByAttr(seMap);
+			if(null==reMap||reMap.isEmpty()) {
+				bre.setNoDataMsg();
+				return bre;
+			}
+			Integer id = Integer.valueOf(reMap.get("id").toString());
+			String beginTime = reMap.get("beginTime").toString();
+			boolean flag = DateUtil.biTimeCount(beginTime);
+			if(flag) {
+				rewardActivityRmiService.updateRewardActivityAndPost(postId,id);
+				bre.setSuccessMsg();
+			}else {
+				bre.setNoDataMsg();
+			}
+		} catch (RestServiceException e) {
+			logger.error("RewardActivityController rewardList:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("RewardActivityController rewardList:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+		}
+		return bre;
+	}
+	
 }

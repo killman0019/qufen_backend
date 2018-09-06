@@ -27,4 +27,8 @@ public interface RewardActivityRmiService {
 	public void saveRewardActivity(ArticleRequest articleRequest,Integer rewardDate,String rewardMoney);
 	
 	public PageResult<PostResponse> findPageRewardList(Integer loginUserId, PaginationQuery query, Integer type);
+	
+	public Map<String, Object> findOneByAttr(Map<String, Object> map);
+	
+	public void updateRewardActivityAndPost(Integer postId,Integer id);
 }

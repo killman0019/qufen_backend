@@ -22,6 +22,7 @@ import com.tzg.common.utils.StringUtil;
 import com.tzg.entitys.kff.activity.RewardActivity;
 import com.tzg.entitys.kff.activity.RewardActivityMapper;
 import com.tzg.entitys.kff.follow.Follow;
+import com.tzg.entitys.kff.post.Post;
 import com.tzg.entitys.kff.post.PostDiscussVo;
 import com.tzg.entitys.kff.post.PostFile;
 import com.tzg.entitys.kff.post.PostResponse;
@@ -43,6 +44,8 @@ public class RewardActivityService {
 	private FollowService kffFollowService;
 	@Autowired
 	private ProjectService kffProjectService;
+	@Autowired
+	private PostService postService;
 	
 	@Transactional(readOnly = true)
 	public RewardActivity findById(java.lang.Integer id) {
@@ -79,6 +82,11 @@ public class RewardActivityService {
 	@Transactional(readOnly = true)
 	public Integer findSetTopPostCount(Map<String,Object> map) throws RestServiceException {
 		return rewardActivityMapper.findSetTopPostCount(map);
+	}
+	
+	@Transactional(readOnly = true)
+	public Map<String, Object> findOneByAttr(Map<String, Object> map){
+		return rewardActivityMapper.findOneByAttr(map);
 	}
 	
 	@Transactional(readOnly=true)
@@ -262,6 +270,17 @@ public class RewardActivityService {
 			e.printStackTrace();
 		}
 		return result;
+	}
+	
+	public void updateRewardActivityAndPost(Integer postId,Integer id) {
+		Post post = new Post();
+		post.setPostId(postId);
+		post.setStatus(0);
+		postService.update(post);
+		RewardActivity reAct = new RewardActivity();
+		reAct.setId(id);
+		reAct.setState(2);//悬赏的状态：0-进行中，1-已结束，2-已撤销
+		rewardActivityMapper.update(reAct);
 	}
 
 }

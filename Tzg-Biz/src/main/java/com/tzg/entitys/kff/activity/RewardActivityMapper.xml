@@ -200,11 +200,25 @@
 			<if test="postId!=null">
 			and rac.post_id = #{postId}
 			</if>
+			<if test="createUserId != null">
+			and tpt.create_user_id = #{createUserId}
+			</if>
     	</where>
     </sql>
     
     <select id="findListByAttr" resultMap="BaseResultMap" parameterType="java.util.Map">
 		select * from <include refid="table_name" /> as rac
+		<include refid="condition"/>
+	    <![CDATA[ ORDER BY id DESC ]]>
+	</select>
+	
+	<select id="findOneByAttr" resultType="java.util.Map" parameterType="java.util.Map">
+		select 
+			rac.id as id,
+			rac.begin_time as beginTime,
+			tpt.post_id as postId
+		from <include refid="table_name" /> as rac
+    	INNER JOIN tbpost as tpt on tpt.post_id=rac.post_id
 		<include refid="condition"/>
 	    <![CDATA[ ORDER BY id DESC ]]>
 	</select>

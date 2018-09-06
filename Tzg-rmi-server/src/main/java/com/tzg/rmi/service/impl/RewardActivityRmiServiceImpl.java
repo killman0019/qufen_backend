@@ -66,6 +66,14 @@ public class RewardActivityRmiServiceImpl implements RewardActivityRmiService {
 		return rewardActivityService.findPageRewardList(loginUserId, query,type);
 	}
 	
+	public Map<String, Object> findOneByAttr(Map<String, Object> map){
+		return rewardActivityService.findOneByAttr(map);
+	}
+	
+	public void updateRewardActivityAndPost(Integer postId,Integer id) {
+		rewardActivityService.updateRewardActivityAndPost(postId,id);
+	}
+	
 	public void saveRewardActivity(ArticleRequest articleRequest,Integer rewardDate,String rewardMoney) 
 			throws RestServiceException {
 		String uuid = UUID.randomUUID().toString().replace("-", "");

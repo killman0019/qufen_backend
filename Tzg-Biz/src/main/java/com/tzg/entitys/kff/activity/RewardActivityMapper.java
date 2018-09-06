@@ -13,5 +13,5 @@ public interface RewardActivityMapper extends BaseMapper<RewardActivity, java.la
     List<PostDiscussVo> findSetTopPost(Map<String, Object> map);
     Integer findSetTopPostCount(Map<String, Object> map);
     
-
+    Map<String, Object> findOneByAttr(Map<String, Object> map);
 }
