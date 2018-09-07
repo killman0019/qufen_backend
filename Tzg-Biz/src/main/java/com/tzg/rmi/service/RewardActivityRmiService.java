@@ -1,5 +1,6 @@
 package com.tzg.rmi.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -7,6 +8,7 @@ import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.entitys.kff.activity.RewardActivity;
 import com.tzg.entitys.kff.article.ArticleRequest;
+import com.tzg.entitys.kff.coinproperty.CoinProperty;
 import com.tzg.entitys.kff.post.PostResponse;
 
 /** 
@@ -24,7 +26,7 @@ public interface RewardActivityRmiService {
 	
 	public List<RewardActivity> findListByAttr(Map<String, Object> map);
 	
-	public void saveRewardActivity(ArticleRequest articleRequest,Integer rewardDate,String rewardMoney);
+	public void saveRewardActivity(ArticleRequest articleRequest,Integer rewardDate,BigDecimal rewardMoney,CoinProperty coinProty);
 	
 	public PageResult<PostResponse> findPageRewardList(Integer loginUserId, PaginationQuery query, Integer type);
 	

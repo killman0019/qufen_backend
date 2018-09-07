@@ -23,6 +23,7 @@ import com.tzg.common.utils.H5AgainDeltagsUtil;
 import com.tzg.common.utils.StringUtil;
 import com.tzg.entitys.kff.activity.RewardActivity;
 import com.tzg.entitys.kff.activity.RewardActivityMapper;
+import com.tzg.entitys.kff.coinproperty.CoinProperty;
 import com.tzg.entitys.kff.follow.Follow;
 import com.tzg.entitys.kff.post.Post;
 import com.tzg.entitys.kff.post.PostDiscussVo;
@@ -50,6 +51,8 @@ public class RewardActivityService {
 	private ProjectService kffProjectService;
 	@Autowired
 	private PostService kffPostService;
+	@Autowired
+	private CoinPropertyService coinPropertyService;
 	@Autowired
 	private CommendationService kffCommendationService;
 	
@@ -489,6 +492,18 @@ public class RewardActivityService {
 		reAct.setId(id);
 		reAct.setState(2);//悬赏的状态：0-进行中，1-已结束，2-已撤销
 		rewardActivityMapper.update(reAct);
+		//需要将悬赏的奖励token返回给用户
+		Post postc = kffPostService.findById(postId);
+		RewardActivity reActc = rewardActivityMapper.findById(id);
+		//计算用户的token
+		Map<String,Object> seMap = new HashMap<>();
+		seMap.put("userId", postc.getCreateUserId());
+		List<CoinProperty> coinPr = coinPropertyService.findListByAttr(seMap);
+		if(coinPr.isEmpty()) {
+			throw new RuntimeException("该用户没有对应的token记录");
+		}
+		CoinProperty coinProty = coinPr.get(0);
+	    coinPropertyService.countAddForReward(coinProty,reActc.getRewardMoney(),post.getPostId());
 	}
 
 }

@@ -1,6 +1,8 @@
 package com.tzg.wap.controller.h5;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,10 +25,12 @@ import com.tzg.common.utils.StringUtil;
 import com.tzg.common.utils.SyseUtil;
 import com.tzg.common.utils.sysGlobals;
 import com.tzg.entitys.kff.article.ArticleRequest;
+import com.tzg.entitys.kff.coinproperty.CoinProperty;
 import com.tzg.entitys.kff.post.PostResponse;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
+import com.tzg.rmi.service.CoinPropertyRmiService;
 import com.tzg.rmi.service.KFFUserRmiService;
 import com.tzg.rmi.service.RewardActivityRmiService;
 
@@ -39,7 +43,8 @@ public class RewardActivityController extends BaseController {
 	private KFFUserRmiService userRmiService;
 	@Autowired
 	private RewardActivityRmiService rewardActivityRmiService;
-	
+	@Autowired
+	private CoinPropertyRmiService coinPropertyRmiService;
 	/** 
 	* @Title: saveRewardActivity 
 	* @Description: TODO <发布悬赏接口>
@@ -95,13 +100,32 @@ public class RewardActivityController extends BaseController {
 				bre.setMsg("有效期最长是15天");
 				return bre;
 			}
+			//校验用户可用的token是否够
+			Map<String,Object> seMap = new HashMap<>();
+			seMap.put("userId", userId);
+			List<CoinProperty> coinPr = coinPropertyRmiService.findListByAttr(seMap);
+			if(coinPr.isEmpty()) {
+				bre.setCode(RestErrorCode.SYS_ERROR.getValue());
+				bre.setMsg("该用户没有对应的token记录");
+				return bre;
+			}
+			CoinProperty coinProty = coinPr.get(0);
+			BigDecimal nowRewardMoney = StringUtil.toBeBigDecimal(rewardMoney);
+			BigDecimal coinLock = StringUtil.toBeBigDecimal(coinProty.getCoinLock().toString());
+			BigDecimal senCount = StringUtil.subBigDecimal(coinLock, nowRewardMoney);
+			BigDecimal num = new BigDecimal("0");
+			if(senCount.compareTo(num)<0) {
+				bre.setCode(RestErrorCode.SYS_ERROR.getValue());
+				bre.setMsg("该用户没有足够的token币");
+				return bre;
+			}
 			ArticleRequest articleRequest = new ArticleRequest();
 			articleRequest.setCreateUserId(userId);
 			articleRequest.setProjectId(projectId);
 			articleRequest.setPostTitle(postTitle);
 			articleRequest.setArticleContents(rewardContents);
 			articleRequest.setTagInfos(tagInfos);
-			rewardActivityRmiService.saveRewardActivity(articleRequest, rewardDate,rewardMoney);
+			rewardActivityRmiService.saveRewardActivity(articleRequest, rewardDate,nowRewardMoney,coinProty);
 			bre.setSuccessMsg();
 		} catch (RestServiceException e) {
 			logger.error("RewardActivityController saveRewardActivity:{}", e);
@@ -260,8 +284,10 @@ public class RewardActivityController extends BaseController {
 			boolean flag = DateUtil.biTimeCount(beginTime);
 			if(flag) {
 				rewardActivityRmiService.updateRewardActivityAndPost(postId,id);
+				bre.setSuccessMsg();
+			}else {
+				bre.setNoDataMsg();
 			}
-			bre.setSuccessMsg();
 		} catch (RestServiceException e) {
 			logger.error("RewardActivityController rewardList:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());

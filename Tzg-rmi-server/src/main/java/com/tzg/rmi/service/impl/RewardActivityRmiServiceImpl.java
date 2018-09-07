@@ -1,5 +1,6 @@
 package com.tzg.rmi.service.impl;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
@@ -16,6 +17,7 @@ import com.tzg.common.enums.DiscussType;
 import com.tzg.common.enums.RewardActivityState;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
+import com.tzg.common.service.kff.CoinPropertyService;
 import com.tzg.common.service.kff.PostService;
 import com.tzg.common.service.kff.ProjectService;
 import com.tzg.common.service.kff.RewardActivityService;
@@ -27,6 +29,7 @@ import com.tzg.common.utils.WorkHtmlRegexpUtil;
 import com.tzg.common.utils.sysGlobals;
 import com.tzg.entitys.kff.activity.RewardActivity;
 import com.tzg.entitys.kff.article.ArticleRequest;
+import com.tzg.entitys.kff.coinproperty.CoinProperty;
 import com.tzg.entitys.kff.post.Post;
 import com.tzg.entitys.kff.post.PostResponse;
 import com.tzg.entitys.kff.project.KFFProject;
@@ -49,6 +52,8 @@ public class RewardActivityRmiServiceImpl implements RewardActivityRmiService {
 	private KFFRmiServiceImpl kffRmiServiceImpl;
 	@Autowired
 	private PostService kffPostService;
+	@Autowired
+	private CoinPropertyService coinPropertyService;
 	
 	public PageResult<RewardActivity> findPage(PaginationQuery query) throws RestServiceException {
 		return rewardActivityService.findPage(query);
@@ -83,8 +88,8 @@ public class RewardActivityRmiServiceImpl implements RewardActivityRmiService {
 		return rewardActivityService.findRewardDetail(userId,type,postId);
 	}
 	
-	public void saveRewardActivity(ArticleRequest articleRequest,Integer rewardDate,String rewardMoney) 
-			throws RestServiceException {
+	public void saveRewardActivity(ArticleRequest articleRequest,Integer rewardDate,BigDecimal rewardMoney,
+			CoinProperty coinProty) throws RestServiceException {
 		String uuid = UUID.randomUUID().toString().replace("-", "");
 		if (articleRequest.getArticleContents().length() > 16777215) {
 			throw new RestServiceException("悬赏内容长度超过限制");
@@ -149,13 +154,15 @@ public class RewardActivityRmiServiceImpl implements RewardActivityRmiService {
 		post.setStatus(KFFConstants.STATUS_ACTIVE);
 		post.setUuid(uuid);
 		kffPostService.save(post);
+		//计算用户的token
+		coinPropertyService.countReduceForReward(coinProty,rewardMoney,post.getPostId());
 		//保存悬赏子表
 		RewardActivity reAct = new RewardActivity();
 		reAct.setCreatedAt(now);
 		reAct.setUpdatedAt(now);
 		reAct.setPostId(post.getPostId());
 		reAct.setRewardDate(rewardDate);
-		reAct.setRewardMoney(StringUtil.toBeBigDecimal(rewardMoney));
+		reAct.setRewardMoney(rewardMoney);
 		reAct.setBeginTime(now);
 		try {
 			reAct.setEndTime(DateUtil.countEndTime(rewardDate));

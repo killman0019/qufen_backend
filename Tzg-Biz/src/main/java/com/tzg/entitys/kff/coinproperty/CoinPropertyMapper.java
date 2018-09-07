@@ -19,6 +19,9 @@ public interface CoinPropertyMapper extends BaseMapper<CoinProperty, java.lang.I
 	List<CoinProperty> findCoinPropertyByUserId(Integer userId);
 
 	List<CoinProperty> findAllCoinpropertyCoinUnlock(Integer userId, Double coinUnlock);
-
+	
+	List<CoinProperty> findListByAttr(Map<String, Object> map);
+	
+	void updateByMap(Map<String, Object> map);
 
 }
