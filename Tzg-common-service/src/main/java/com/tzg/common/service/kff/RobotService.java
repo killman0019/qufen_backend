@@ -198,6 +198,9 @@ public class RobotService {
 						}
 					}
 				}
+				if (CollectionUtils.isEmpty(commentLibraryList)) {
+					break;
+				}
 			}
 		}
 		return commentLibrary;
