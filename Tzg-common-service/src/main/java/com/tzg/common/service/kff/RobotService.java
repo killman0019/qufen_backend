@@ -182,7 +182,9 @@ public class RobotService {
 		if (clCount == 0) {
 			return commentLibrary;
 		}
+		int i = 0;
 		while (true) {
+			i++;
 			int id = random.nextInt(clCount + 1);
 			if (commentLibrary == null) {
 				Map<String, Object> map = new HashMap<String, Object>();
@@ -199,6 +201,9 @@ public class RobotService {
 					}
 				}
 				if (CollectionUtils.isEmpty(commentLibraryList)) {
+					break;
+				}
+				if (i == 100) {
 					break;
 				}
 			}
@@ -223,7 +228,7 @@ public class RobotService {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("status", 1);
 		Integer count = robotMapper.findPageCount(map);
-
+		int i = 0;
 		Random random = new Random();
 		Robot robot = null;
 		KFFUser user = null;
@@ -231,6 +236,7 @@ public class RobotService {
 			return user;
 		}
 		while (true) {
+			i++;
 			int id = random.nextInt(count + 1);
 			if (user == null) {
 				robot = robotMapper.findById(id);
@@ -241,6 +247,10 @@ public class RobotService {
 				if (null != user && user.getStatus() == 1) {
 					break;
 				}
+			}
+
+			if (i == 100) {
+				break;
 			}
 		}
 
@@ -289,7 +299,7 @@ public class RobotService {
 								// TODO Auto-generated method stub
 								switch (k) {
 								case 5:
-									robotComment(postf);// 一级评论
+								//	robotComment(postf);// 一级评论
 									break;
 								case 4:
 									robotFollow(postf);// 关注
@@ -298,7 +308,7 @@ public class RobotService {
 									robotCommendation(postf);// 打赏
 									break;
 								case 2:
-									robotSecondComment(postf);// 评论
+									//robotSecondComment(postf);// 评论
 									break;
 								case 1:
 									robotPraise(postf);// 点赞
