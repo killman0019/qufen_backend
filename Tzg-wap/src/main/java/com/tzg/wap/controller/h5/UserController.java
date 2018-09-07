@@ -161,15 +161,20 @@ public class UserController extends BaseController {
 			return bre;
 		}
 		String passwordAes = null;
-		try {
-			passwordAes = AesWapUtils.aesDecrypt(password, KEY);
-			System.out.println("passwordAes" + passwordAes);
-		} catch (Exception e1) {
-			logger.info("解密失败!");
-			map.put("reStatus", 0);// 1注册成功 0 注册不成功
-			map.put("reason", "请重新输入密码!");
-			bre.setData(map);
-			return bre;
+		if (isRobot) {
+			passwordAes = password;
+			System.err.println("robot注册");
+		} else {
+			try {
+				passwordAes = AesWapUtils.aesDecrypt(password, KEY);
+				System.out.println("passwordAes" + passwordAes);
+			} catch (Exception e1) {
+				logger.info("解密失败!");
+				map.put("reStatus", 0);// 1注册成功 0 注册不成功
+				map.put("reason", "请重新输入密码!");
+				bre.setData(map);
+				return bre;
+			}
 		}
 		if (null == phoneNumber) {
 			throw new RestServiceException(RestErrorCode.PHONE_NULL);

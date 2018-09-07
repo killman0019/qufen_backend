@@ -1,5 +1,7 @@
 package com.tzg.wap.controller.h5;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,6 +64,7 @@ public class PraiseController extends BaseController {
 			Map<String, Object> savePraisemap = kffRmiService.savePraise(userId, postId);
 			bre.setData(savePraisemap);
 			SyseUtil.systemErrOutJson(bre);
+			System.err.println("时间:" + new SimpleDateFormat("YYYY-MM-DD HH:MM:SS").format(new Date()));
 		} catch (RestServiceException e) {
 			logger.error("PraiseController savePostPraise:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());

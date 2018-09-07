@@ -1,5 +1,6 @@
 package com.tzg.rest.controller.kff;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
@@ -102,6 +103,7 @@ public class PostShareController extends BaseController {
 			Map<String, Object> shareMap = postShareRmiService.save(postShare, post);
 			bre.setData(shareMap);
 			SyseUtil.systemErrOutJson(bre);
+			
 		} catch (RestServiceException e) {
 			logger.error("NewsFlashController getNewsFlashPageList:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());

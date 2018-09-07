@@ -52,6 +52,7 @@ import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.entitys.kff.user.KFFUserMapper;
 import com.tzg.entitys.kff.userqfindex.Userqfindex;
 import com.tzg.entitys.leopard.system.SystemParam;
+import com.tzg.rmi.service.KFFRmiService;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
@@ -86,6 +87,9 @@ public class RobotService {
 
 	@Autowired
 	private CommendationMapper commendationMapper;
+
+	@Autowired
+	private KFFRmiService KFFRmiService;
 
 	@Value("#{paramConfig['DEV_ENVIRONMENT']}")
 	private static String devEnvironment;
@@ -338,12 +342,12 @@ public class RobotService {
 					putRedis();
 					praiseNum = redisService.get("followNumRBT");
 				}
-				Integer createUserId = postf.getCreateUserId();
+				// Integer createUserId = postf.getCreateUserId();
 				Map<String, Object> praiseMap = new HashMap<String, Object>();
 				praiseMap.put("praiseType", 1 + "");
 				praiseMap.put("postId", 1 + postf.getPostId() + "");
-				praiseMap.put("postType", postf.getType() + "");
-				praiseMap.put("bepraiseUserId", createUserId + "");
+
+				// praiseMap.put("bepraiseUserId", createUserId + "");
 				praiseMap.put("status", "1");
 				List<Praise> praiseList = praiseMapper.findByMap(praiseMap);
 				if (praiseList.size() <= Integer.valueOf(praiseNum)) {
@@ -352,6 +356,7 @@ public class RobotService {
 					Integer postId = postf.getPostId();
 					String regiUrlLocal = null;
 					String para = "token=" + token + "&postId=" + postId;
+
 					if (StringUtils.isNotBlank(devEnvironment) && devEnvironment.equals(sysGlobals.DEV_ENVIRONMENT)) {
 						regiUrlLocal = url + "/kff/praise/savePostPraise?";// 线上url
 					} else {
@@ -483,10 +488,10 @@ public class RobotService {
 							if (null == robot) {// 表示这个是真人
 								// 判断这个二级评论是否达到规定值
 								Map<String, Object> pareMap = new HashMap<String, Object>();
-								pareMap.put("parentCommentsId", commentUserId);
+								pareMap.put("parentCommentsId", comments.getCommentsId());
 								pareMap.put("postId", postId);
 								List<Comments> commP = commentsMapper.findByMap(pareMap);
-								if (commP.size() > Integer.valueOf(commentNum)) {
+								if (CollectionUtils.isNotEmpty(commP)) {
 									continue;
 								}
 								// 对评论进行二级评论
@@ -580,7 +585,16 @@ public class RobotService {
 					// 调用接口,进行对创建人进行关注
 					Integer followType = 3;
 					Integer followedId = createUserId;
-
+					// 判读这个机器人有没有关注过这个用户,关注过就跳过
+					Map<String, String> followRobotMap = new HashMap<String, String>();
+					followRobotMap.put("followType", 3 + "");
+					followRobotMap.put("followedUserId", createUserId + "");
+					followRobotMap.put("status", 1 + "");
+					followRobotMap.put("followUserId", robotUser.getUserId() + "");
+					List<Follow> followRobotList = followMapper.findByMap(followRobotMap);
+					if (CollectionUtils.isNotEmpty(followRobotList)) {// 说明已经关注过这个用户
+						return;
+					}
 					String para = "followType=" + followType + "&followedId=" + followedId + "&token=" + token;
 					String regiUrlLocal = null;
 					SystemParam sysUrl = systemParamService.findByCode(sysGlobals.WEB_URL);// https://m.qufen.top/wap
