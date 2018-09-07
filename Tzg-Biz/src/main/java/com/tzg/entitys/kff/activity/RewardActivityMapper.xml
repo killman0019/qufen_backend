@@ -166,7 +166,7 @@
   
   
   <select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
-    	select count(*) from <include refid="table_name" />
+    	select count(1) from <include refid="table_name" />
 		<include refid="condition"/>
 	</select>
     
@@ -177,10 +177,60 @@
         <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
 	</select>
 	
+	<select id="findLinkedPage" resultType="com.tzg.entitys.kff.post.PostResponse" parameterType="java.util.Map">
+		select
+		tpt.post_id as postId,
+		tpt.project_id as projectId,
+		tpt.project_icon as projectIcon,
+		tpt.project_code as projectCode,
+		tpt.project_english_name as projectEnglishName,
+		tpt.project_chinese_name as projectChineseName,
+		tpt.post_title as postTitle,
+		tpt.post_type as postType,
+		tpt.post_short_desc as postShortDesc,
+		tpt.post_small_images as postSmallImages,
+		tpt.comments_num as commentsNum,
+		tpt.praise_num as praiseNum,
+		tpt.pageview_num as pageviewNum,
+		tpt.donate_num as donateNum,
+		tpt.collect_num as collectNum,
+		tpt.create_user_id as createUserId,
+		tpt.create_user_icon as createUserIcon,
+		tpt.create_user_signature as createUserSignature,
+		tpt.create_user_name as createUserName,
+		tpt.createTime as createTime,
+		tpt.updateTime as updateTime,
+		tpt.uuid as uuid,
+		tpt.status as status,
+		tpt.praise_income as praiseIncome,
+		tpt.donate_income as donateIncome,
+		tpt.post_total_income as postTotalIncome,
+		tbc.tag_infos as tagInfos,
+		tbc.discuss_id as discussId,
+		tbc.disscuss_contents as disscussContents,
+		tbc.reward_money as rewardMoney
+		from tbdiscuss as tbc
+    	INNER JOIN tbpost as tpt on tpt.post_id=tbc.post_id
+		<include refid="condition" />
+		ORDER BY ${sort} desc
+		<if test="startRecord != null and endRecord!=null">
+			LIMIT ${startRecord},${endRecord}
+		</if>
+	</select>
+	
+	<select id="findLinkedPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(1) from tbdiscuss as tbc
+    	INNER JOIN tbpost as tpt on tpt.post_id=tbc.post_id
+		<include refid="condition" />
+	</select>
+	
 	<sql id="condition">
     	<where>
 	    	<if test="id != null">
 			 id = #{id,jdbcType=INTEGER}
+			</if>
+			<if test="rewardActivityId != null">
+			and tbc.reward_activity_id = #{rewardActivityId}
 			</if>
 			<if test="status != null">
 			and tpt.status = #{status}

@@ -271,4 +271,71 @@ public class RewardActivityController extends BaseController {
 		}
 		return bre;
 	}
+	
+	/** 
+	* @Title: getRewardAnswer 
+	* @Description: TODO <悬赏精彩，全部回答接口>
+	* @author linj <方法创建作者>
+	* @create 上午11:35:18
+	* @param @param request
+	* @param @param rewarId //悬赏id
+	* @param @param types //回答类型：1-精彩回答，2-全部回答
+	* @param @param token //用户登录唯一标识
+	* @param @param pageIndex //第几页
+	* @param @param pageSize //当前页有几条
+	* @param @return <参数说明>
+	* @return BaseResponseEntity 
+	* @throws 
+	* @update 上午11:35:18
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	*/
+	@ResponseBody
+	@RequestMapping(value = "/getRewardAnswerList", method = { RequestMethod.POST, RequestMethod.GET })
+	public BaseResponseEntity getRewardAnswerList(HttpServletRequest request,Integer rewarId,Integer types,
+			String token,Integer pageIndex,Integer pageSize) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+		try {
+			if(rewarId==null&&StringUtil.isBlank(token)&&types==null&&pageIndex==null&&pageSize==null) {
+				JSONObject requestContent = HtmlUtils.getRequestContent(request);
+				rewarId = (Integer) requestContent.get("rewarId");
+				token = (String) requestContent.get("token");
+				types = (Integer) requestContent.get("types");
+				pageIndex = (Integer) requestContent.get("pageIndex");
+				pageSize = (Integer) requestContent.get("pageSize");
+			}
+			if(null==rewarId||null==types||null==pageSize||null==pageIndex) {
+				bre.setNoRequstData();
+				return bre;
+			}
+			Integer userId = null;
+			if (StringUtils.isNotBlank(token)) {
+				userId = getUserIdByToken(token);
+			}
+			PaginationQuery query = new PaginationQuery();
+			query.addQueryData("rewardActivityId", rewarId);
+			if(types==1) {
+				query.addQueryData("sort", "tpt.praise_num");
+			}
+			if(types==2) {
+				query.addQueryData("sort", "tpt.createTime");
+			}
+			query.setPageIndex(pageIndex);
+			query.setRowsPerPage(pageSize);
+			Integer type = 2;// 取关注人
+			PageResult<PostResponse> answers = rewardActivityRmiService.findRewardAnswerList(userId, query, type);
+			if(null!=answers&&!answers.getRows().isEmpty()) {
+				bre.setData(answers);
+				return bre;
+			}
+			bre.setNoDataMsg();
+		} catch (RestServiceException e) {
+			logger.error("RewardActivityController getRewardAnswer:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("RewardActivityController getRewardAnswer:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+		}
+		return bre;
+	}
 }

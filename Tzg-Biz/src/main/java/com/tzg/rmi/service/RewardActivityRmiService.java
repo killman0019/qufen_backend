@@ -34,4 +34,6 @@ public interface RewardActivityRmiService {
 	
 	public PostResponse findRewardDetail(Integer userId, Integer type, Integer postId);
 	
+	public PageResult<PostResponse> findRewardAnswerList(Integer loginUserId, PaginationQuery query, Integer type);
+	
 }
