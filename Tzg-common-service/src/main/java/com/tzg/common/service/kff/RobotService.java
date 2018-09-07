@@ -260,6 +260,7 @@ public class RobotService {
 	public void robotTask(final int k) {
 		int i = 0;
 		ExecutorService newFixedThreadPoolrobot = null;
+
 		try {
 			newFixedThreadPoolrobot = Executors.newFixedThreadPool(10);
 			while (true) {
@@ -272,6 +273,11 @@ public class RobotService {
 				if (null != postPage && CollectionUtils.isNotEmpty(postPage.getRows())) {
 
 					for (Post post : postPage.getRows()) {
+						Integer r = RandomUtil.randomNumber(1, 3);
+						if (r == 1) {
+							continue;// 1/3的可能性不走接口
+						}
+
 						final Post postf = post;
 						newFixedThreadPoolrobot.execute(new Runnable() {
 
@@ -471,7 +477,7 @@ public class RobotService {
 				Map<String, Object> commMap = new HashMap<String, Object>();
 				commMap.put("postId", postf.getPostId());
 				commMap.put("status", 1);
-				commMap.put("contextlenth", 30);
+				commMap.put("contextlenth", 60);
 				commMap.put("isNullParentCommentsId", "true");
 				List<Comments> comm = commentsMapper.findByMap(commMap);
 				String commentNum = redisService.get("commentNumRBT");
@@ -649,7 +655,7 @@ public class RobotService {
 					map.put("postId", postf.getPostId());
 					map.put("status", 1);
 					List<Commendation> commendationList = commendationMapper.findByMap(map);
-					if (commendationList.size() > beg) {
+					if (commendationList.size() >= beg) {
 						return;
 					}
 					String token = AccountTokenUtil.getAccountToken(robotUser.getUserId());

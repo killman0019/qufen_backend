@@ -1,6 +1,6 @@
 package com.tzg.wap;
 
-import com.tzg.common.utils.RandomUtil;
+import com.tzg.common.utils.DateUtil;
 
 public class TestMain {
 
@@ -9,9 +9,7 @@ public class TestMain {
 		// 100--------300
 		// 20---60
 		// 0----100//0----20
-		for (int j = 0; j <= 1000; j++) {
-			int i = RandomUtil.randomNumber(0, 20) * 5;
-			System.err.println(i);
-		}
+		String postCreateBegin = DateUtil.getSpecifiedDayBeforeOrAfter(1);
+		System.err.println(postCreateBegin);
 	}
 }
