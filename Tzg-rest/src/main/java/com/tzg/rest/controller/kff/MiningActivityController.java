@@ -104,8 +104,6 @@ public class MiningActivityController extends BaseController {
 		int con=ran.nextInt(list.size());
 		return con;
 	}
-
-	
 	
 	/** 
 	* @Title: getHotProjectAndHotUser 

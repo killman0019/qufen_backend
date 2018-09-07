@@ -471,9 +471,7 @@
 	</select>
 
 	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
-		select
-		<include refid="columns" />
-		from tbpost where 1=1
+		select * from tbpost where 1=1
 		<include refid="queryWhere" />
 		<include refid="orderBy" />
         <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
@@ -495,6 +493,9 @@
 	<sql id="queryWhere">
 		<if test="postId != null and postId.trim() != ''">
 			and post_id = #{postId}
+		</if>
+		<if test="title != null">
+			and ((post_title like concat("%",#{title},"%") and post_type!=2) or (post_short_desc like concat("%",#{title},"%") and post_type=2))
 		</if>
 		<if test="projectId != null">
 			and project_id = #{projectId}
@@ -562,7 +563,7 @@
 		<if test="updateTimeEnd != null and updateTimeEnd.trim() != ''">
 			and updateTime &lt;= #{updateTimeEnd}
 		</if>
-		<if test="status != null and status.trim() != ''">
+		<if test="status != null">
 			and status = #{status}
 		</if>
 		<if test="uuid != null and uuid.trim() != ''">
@@ -826,7 +827,7 @@
 				and tpt.post_type = #{postType}
 			</if>
 			<if test="postTypec!=null">
-				and tpt.post_type != #{postTypec}
+				and tpt.post_type != #{postTypec} and tpt.post_type != 4
 			</if>
 			<if test="beginDt!=null">
 				and tds.nice_choice_at &gt;= #{beginDt}
@@ -870,8 +871,71 @@
 			<if test="stickTopc!=null">
 				and tpt.stick_top = #{stickTopc}
 			</if>
+			<if test="praiseNum!=null">
+				and tpt.praise_num &gt;= #{praiseNum}
+			</if>
+			<if test="tagName1!=null">
+				and tbt.evaluation_tags like concat("%",#{tagName1},"%") 
+			</if>
+			<if test="tagName2!=null">
+				and tbt.tag_infos like concat("%",#{tagName2},"%")
+			</if>
+			<if test="tagName3!=null">
+				and tbt.tag_infos like concat("%",#{tagName3},"%")
+			</if>
 		</where>
 	</sql>
+	
+	<select id="findPageWithEvaluation" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		tpt.*
+		from tbpost as tpt
+		LEFT JOIN tbevaluation as tbt on tpt.post_id=tbt.post_id
+		<include refid="condition" />
+		<include refid="orderBy"/>
+		<if test="startRecord != null and endRecord!=null">
+			LIMIT ${startRecord},${endRecord}
+		</if>
+	</select>
+	<select id="findPageWithEvaluationCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(1) from tbpost as tpt
+		LEFT JOIN tbevaluation as tbt on tpt.post_id=tbt.post_id
+		<include refid="condition" />
+	</select>
+	
+	<select id="findPageWithDiscuss" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		tpt.*
+		from tbpost as tpt
+		LEFT JOIN tbdiscuss as tbt on tpt.post_id=tbt.post_id
+		<include refid="condition" />
+		<include refid="orderBy"/>
+		<if test="startRecord != null and endRecord!=null">
+			LIMIT ${startRecord},${endRecord}
+		</if>
+	</select>
+	<select id="findPageWithDiscussCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(1) from tbpost as tpt
+		LEFT JOIN tbdiscuss as tbt on tpt.post_id=tbt.post_id
+		<include refid="condition" />
+	</select>
+	
+	<select id="findPageWithArticle" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		tpt.*
+		from tbpost as tpt
+		LEFT JOIN tbarticle as tbt on tpt.post_id=tbt.post_id
+		<include refid="condition" />
+		<include refid="orderBy"/>
+		<if test="startRecord != null and endRecord!=null">
+			LIMIT ${startRecord},${endRecord}
+		</if>
+	</select>
+	<select id="findPageWithArticleCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(1) from tbpost as tpt
+		LEFT JOIN tbarticle as tbt on tpt.post_id=tbt.post_id
+		<include refid="condition" />
+	</select>
 
 	<update id="updateByMap" parameterType="java.util.Map">
 		UPDATE tbpost

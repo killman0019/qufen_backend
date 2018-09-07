@@ -1979,22 +1979,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		result.put("postType", newPost.getPostType());
 		// 更新用户发帖数
 		kffUserService.increasePostNum(createUser.getUserId(), KFFConstants.POST_TYPE_ARTICLE);
-		// 个推APP推送消息
-		// if (null != createUser) {
-		// Integer linkedType = null;
-		// if (post.getPostType() == 1) {
-		// linkedType = LinkedType.CUSTOMEVALUATING.getValue();
-		// }
-		// if (post.getPostType() == 2) {
-		// linkedType = LinkedType.COUNTERFEIT.getValue();
-		// }
-		// if (post.getPostType() == 3) {
-		// linkedType = LinkedType.ARTICLE.getValue();
-		// }
-		// appNewsPush(linkedType, post.getPostId(), createUser.getMobile(),
-		// sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle()
-		// + sysGlobals.CONTENT_GETUI_MSG_END);
-		// }
 		return result;
 	}
 
@@ -2162,35 +2146,35 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 		kffDiscussService.save(discuss);
 		// 个推APP推送消息
-		if (null != createUser) {
-			Integer linkedType = null;
-			if (newPost.getPostType() == 1) {
-				linkedType = LinkedType.CUSTOMEVALUATING.getValue();
-			}
-			if (newPost.getPostType() == 2) {
-				linkedType = LinkedType.COUNTERFEIT.getValue();
-			}
-			if (newPost.getPostType() == 3) {
-				linkedType = LinkedType.ARTICLE.getValue();
-			}
-			appNewsPush(linkedType, newPost.getPostId(), null, createUser.getMobile(), sysGlobals.CONTENT_GETUI_MSG_BEGIN + newPost.getPostTitle()
-					+ sysGlobals.CONTENT_GETUI_MSG_END);
-			// 向APP端推送消息
-			KFFMessage msg = new KFFMessage();
-			msg.setType(12);
-			msg.setStatus(1);
-			msg.setState(1);
-			msg.setCreateTime(now);
-			msg.setUpdateTime(now);
-			msg.setUserId(newPost.getCreateUserId());
-			msg.setTitle(sysGlobals.GETUI_NOTIFY);
-			msg.setContent(sysGlobals.CONTENT_GETUI_MSG_BEGIN + newPost.getPostTitle() + sysGlobals.CONTENT_GETUI_MSG_END);
-			msg.setSenderUserId(sysGlobals.QUFEN_ACCOUNT_ID);
-			msg.setJumpInfo(sysGlobals.QUFEN_ACCOUNT_ID.toString());
-			msg.setPostId(newPost.getPostId());
-			msg.setPostType(newPost.getPostType());
-			kffMessageService.save(msg);
-		}
+//		if (null != createUser) {
+//			Integer linkedType = null;
+//			if (newPost.getPostType() == 1) {
+//				linkedType = LinkedType.CUSTOMEVALUATING.getValue();
+//			}
+//			if (newPost.getPostType() == 2) {
+//				linkedType = LinkedType.COUNTERFEIT.getValue();
+//			}
+//			if (newPost.getPostType() == 3) {
+//				linkedType = LinkedType.ARTICLE.getValue();
+//			}
+//			appNewsPush(linkedType, newPost.getPostId(), null, createUser.getMobile(), sysGlobals.CONTENT_GETUI_MSG_BEGIN + newPost.getPostTitle()
+//					+ sysGlobals.CONTENT_GETUI_MSG_END);
+//			// 向APP端推送消息
+//			KFFMessage msg = new KFFMessage();
+//			msg.setType(12);
+//			msg.setStatus(1);
+//			msg.setState(1);
+//			msg.setCreateTime(now);
+//			msg.setUpdateTime(now);
+//			msg.setUserId(newPost.getCreateUserId());
+//			msg.setTitle(sysGlobals.GETUI_NOTIFY);
+//			msg.setContent(sysGlobals.CONTENT_GETUI_MSG_BEGIN + newPost.getPostTitle() + sysGlobals.CONTENT_GETUI_MSG_END);
+//			msg.setSenderUserId(sysGlobals.QUFEN_ACCOUNT_ID);
+//			msg.setJumpInfo(sysGlobals.QUFEN_ACCOUNT_ID.toString());
+//			msg.setPostId(newPost.getPostId());
+//			msg.setPostType(newPost.getPostType());
+//			kffMessageService.save(msg);
+//		}
 		result.put("postId", newPost.getPostId());
 		result.put("postType", newPost.getPostType());
 		return result;
@@ -4243,7 +4227,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			}
 		}
 		result.setRows(postResponse);
-
 		return result;
 	}
 

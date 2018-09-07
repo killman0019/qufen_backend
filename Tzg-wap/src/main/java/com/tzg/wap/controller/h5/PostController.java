@@ -1,6 +1,4 @@
-package com.tzg.rest.controller.kff;
-
-import java.util.HashMap;
+package com.tzg.wap.controller.h5;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -11,14 +9,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
+import com.tzg.common.utils.HtmlUtils;
 import com.tzg.entitys.kff.dtags.Dtags;
 import com.tzg.entitys.kff.post.Post;
-import com.tzg.entitys.kff.post.PostResponse;
-import com.tzg.rest.controller.BaseController;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
@@ -26,7 +22,7 @@ import com.tzg.rmi.service.DtagsRmiService;
 import com.tzg.rmi.service.KFFPostRmiService;
 
 @Controller(value = "KFFPostController")
-@RequestMapping("/kff/post")
+@RequestMapping("/H5/post")
 public class PostController extends BaseController {
 	private static Logger logger = Logger.getLogger(PostController.class);
 
@@ -36,42 +32,6 @@ public class PostController extends BaseController {
 	@Autowired
 	private DtagsRmiService dTagsRmiService;
 
-	/**
-	 * 币圈必读
-	 * 
-	 * @param request
-	 * @return
-	 */
-	@RequestMapping(value = "/getBgMustRead", method = { RequestMethod.POST, RequestMethod.GET })
-	@ResponseBody
-	public BaseResponseEntity getBgMustRead(HttpServletRequest request) {
-		BaseResponseEntity bre = new BaseResponseEntity();
-		HashMap<String, Object> map = new HashMap<String, Object>();
-
-		try {
-			JSONObject params = getParamMapFromRequestPolicy(request);
-
-			Integer pageIndex = (Integer) params.get("pageIndex");
-			Integer pageSize = (Integer) params.get("pageSize");
-
-			PaginationQuery query = new PaginationQuery();
-			query.setPageIndex(pageIndex);
-			query.setRowsPerPage(pageSize);
-			PageResult<PostResponse> BgmustReadPage = kffPostRmiService.showBGmustRead(query);
-			map.put("BgmustReadPage", BgmustReadPage);
-			System.err.println("BgmustReadPage" + JSON.toJSONString(BgmustReadPage));
-			bre.setData(map);
-			System.err.println(JSON.toJSON(BgmustReadPage));
-		} catch (RestServiceException e) {
-			logger.error("PostController getBgMustRead:{}", e);
-			return this.resResult(e.getErrorCode(), e.getMessage());
-		} catch (Exception e) {
-			logger.error("PostController getBgMustRead:{}", e);
-			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
-		}
-		return bre;
-	}
-	
 	/** 
 	* @Title: getPostInfoWithTags 
 	* @Description: TODO <获取话题下的评测，文章，爆料接口>
@@ -92,15 +52,18 @@ public class PostController extends BaseController {
 	*/
 	@ResponseBody
 	@RequestMapping(value = "/getPostInfoWithTags", method = { RequestMethod.POST, RequestMethod.GET })
-	public BaseResponseEntity getPostInfoWithTags(HttpServletRequest request) {
+	public BaseResponseEntity getPostInfoWithTags(HttpServletRequest request,Integer type,Integer sort,
+			Integer tagId,Integer pageIndex,Integer pageSize) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		try {
-			JSONObject params = getParamJsonFromRequestPolicy(request);
-			Integer type = params.getInteger("type");//帖子类型：1-评测；2-讨论；3-文章
-			Integer sort = params.getInteger("sort");//展示类型：1-精选，2-最新
-			Integer tagId = params.getInteger("tagId");//话题id
-			Integer pageIndex = params.getInteger("pageIndex");
-			Integer pageSize = params.getInteger("pageSize");
+			if(pageIndex==null&&pageSize==null&&type==null&&sort==null&&tagId==null) {
+				JSONObject requestContent = HtmlUtils.getRequestContent(request);
+				pageIndex = (Integer) requestContent.get("pageIndex");
+				pageSize = (Integer) requestContent.get("pageSize");
+				type = (Integer) requestContent.get("type");
+				sort = (Integer) requestContent.get("sort");
+				tagId = (Integer) requestContent.get("tagId");
+			}
 			if(null==type||null==sort||null==pageIndex||null==pageSize||
 					tagId==null) {
 				bre.setNoRequstData();
@@ -111,7 +74,6 @@ public class PostController extends BaseController {
 				bre.setNoDataMsg();
 				return bre;
 			}
-			
 			PaginationQuery query = new PaginationQuery();
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);

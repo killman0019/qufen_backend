@@ -127,6 +127,25 @@ public class DiscussDetailResponse implements Serializable {
 	 * 总捐赠金额
 	 */
 	private java.math.BigDecimal commendationNum = BigDecimal.ZERO;
+	
+	private Integer rewardActivityId;
+	private BigDecimal rewardMoney;
+
+	public Integer getRewardActivityId() {
+		return rewardActivityId;
+	}
+
+	public void setRewardActivityId(Integer rewardActivityId) {
+		this.rewardActivityId = rewardActivityId;
+	}
+
+	public BigDecimal getRewardMoney() {
+		return rewardMoney;
+	}
+
+	public void setRewardMoney(BigDecimal rewardMoney) {
+		this.rewardMoney = rewardMoney;
+	}
 
 	public Double getPraiseIncome() {
 		return praiseIncome;

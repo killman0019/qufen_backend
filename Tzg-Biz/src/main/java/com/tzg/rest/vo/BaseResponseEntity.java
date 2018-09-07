@@ -45,6 +45,12 @@ public class BaseResponseEntity implements Serializable {
 		this.msg = RestErrorCode.NO_DATA_MSG.getErrorReason();
 		this.code =RestErrorCode.NO_DATA_MSG.getValue();
 	}
+	
+	//操作成功
+	public void setSuccessMsg(){
+		this.msg = RestErrorCode.SYS_SUCCESS.getErrorReason();
+		this.code =RestErrorCode.SYS_SUCCESS.getValue();
+    }
 
 	public BaseResponseEntity() {
 		this.setCode(0);
