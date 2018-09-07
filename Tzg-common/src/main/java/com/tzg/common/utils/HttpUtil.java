@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.net.URI;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -14,7 +15,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import javax.security.cert.CertificateException;
+import javax.security.cert.X509Certificate;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -45,6 +53,9 @@ import com.tzg.common.utils.sysGlobals;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
+
+import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 
 //import net.sf.json.JSONObject;
 
@@ -413,7 +424,40 @@ public class HttpUtil {
 		try {
 
 			SSLContext sslContext = SSLContexts.custom().useTLS().build();
+			SSLContext sc = SSLContext.getInstance("TLS");
+			sc.init(null, new TrustManager[] {
 
+			new X509TrustManager() {
+
+				@Override
+				public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws java.security.cert.CertificateException {
+					// TODO Auto-generated method stub
+
+				}
+
+				@Override
+				public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws java.security.cert.CertificateException {
+					// TODO Auto-generated method stub
+
+				}
+
+				@Override
+				public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+					// TODO Auto-generated method stub
+					return null;
+				}
+
+			} }, new SecureRandom());
+			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+			HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+
+				@Override
+				public boolean verify(String hostname, SSLSession session) {
+					// TODO Auto-generated method stub
+					return false;
+				}
+
+			});
 			SSLConnectionSocketFactory f = new SSLConnectionSocketFactory(sslContext, new String[] { "TLSv1", "TLSv1.2" }, null, null);
 
 			// HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(f).build();
@@ -450,6 +494,36 @@ public class HttpUtil {
 
 		BufferedReader in = null;
 		try {
+
+			SSLContext sc = SSLContext.getInstance("TLS");
+			sc.init(null, new TrustManager[] { new X509TrustManager() {
+
+				@Override
+				public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws java.security.cert.CertificateException {
+					// TODO Auto-generated method stub
+
+				}
+
+				@Override
+				public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws java.security.cert.CertificateException {
+					// TODO Auto-generated method stub
+
+				}
+
+				@Override
+				public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+					// TODO Auto-generated method stub
+					return null;
+				}
+			} }, new SecureRandom());
+			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+			HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+				@Override
+				public boolean verify(String arg0, SSLSession arg1) {
+					return true;
+				}
+			});
+
 			// 定义HttpClient
 			HttpClient client = new DefaultHttpClient();
 			// 实例化HTTP方法

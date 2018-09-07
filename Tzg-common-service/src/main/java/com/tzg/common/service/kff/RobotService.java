@@ -358,7 +358,7 @@ public class RobotService {
 				List<Praise> praiseList = praiseMapper.findByMap(praiseMap);
 				if (praiseList.size() <= Integer.valueOf(praiseNum)) {
 					SystemParam sysUrl = systemParamService.findByCode(sysGlobals.WEB_URL);// https://m.qufen.top/wap
-					String url = sysUrl.getVcParamValue();
+					String url = sysUrl.getVcParamValue().trim();
 					Integer postId = postf.getPostId();
 					String regiUrlLocal = null;
 					String para = "token=" + token + "&postId=" + postId;
@@ -427,7 +427,7 @@ public class RobotService {
 						commentsRequest.setCommentContent(commentLib.getContent());
 						commentsRequest.setPostId(postId);
 						SystemParam sysUrl = systemParamService.findByCode(sysGlobals.WEB_URL);// https://m.qufen.top/wap
-						String url = sysUrl.getVcParamValue();
+						String url = sysUrl.getVcParamValue().trim();
 						String para = "token=" + token + "&commentContent=" + commentLib.getContent() + "&postId=" + postId;
 						if (StringUtils.isNotBlank(devEnvironment) && devEnvironment.equals(sysGlobals.DEV_ENVIRONMENT)) {
 							regiUrlLocal = url + "/kff/comments/saveComment?";// 线上url
@@ -511,7 +511,7 @@ public class RobotService {
 									String token = AccountTokenUtil.getAccountToken(robotUser.getUserId());
 									String regiUrlLocal = null;
 									SystemParam sysUrl = systemParamService.findByCode(sysGlobals.WEB_URL);// https://m.qufen.top/wap
-									String url = sysUrl.getVcParamValue();
+									String url = sysUrl.getVcParamValue().trim();
 									CommentsRequest commentsRequest = new CommentsRequest();
 									commentsRequest.setCommentContent(commentLib.getContent());
 									commentsRequest.setPostId(postId);
@@ -604,7 +604,7 @@ public class RobotService {
 					String para = "followType=" + followType + "&followedId=" + followedId + "&token=" + token;
 					String regiUrlLocal = null;
 					SystemParam sysUrl = systemParamService.findByCode(sysGlobals.WEB_URL);// https://m.qufen.top/wap
-					String url = sysUrl.getVcParamValue();
+					String url = sysUrl.getVcParamValue().trim();
 					if (StringUtils.isNotBlank(devEnvironment) && devEnvironment.equals(sysGlobals.DEV_ENVIRONMENT)) {
 						regiUrlLocal = url + "/kff/follow/saveFollow?";// 线上url
 					} else {
@@ -683,7 +683,7 @@ public class RobotService {
 
 					String regiUrlLocal = null;
 					SystemParam sysUrl = systemParamService.findByCode(sysGlobals.WEB_URL);// https://m.qufen.top/wap
-					String url = sysUrl.getVcParamValue();
+					String url = sysUrl.getVcParamValue().trim();
 					if (StringUtils.isNotBlank(devEnvironment) && devEnvironment.equals(sysGlobals.DEV_ENVIRONMENT)) {
 						regiUrlLocal = url + "/kff/token/commendation?";// 线上url
 					} else {
