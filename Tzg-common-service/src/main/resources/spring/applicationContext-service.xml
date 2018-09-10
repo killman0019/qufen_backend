@@ -63,7 +63,7 @@
 		<task:scheduled ref="taskJobService" method="robotFollow" cron="0 0/3 * * * ?" />
 		<task:scheduled ref="taskJobService" method="robotCommendation" cron="0 0/5 * * * ?" />
 		<task:scheduled ref="taskJobService" method="robotSecondComment" cron="0 0/5 * * * ?" />
-		<task:scheduled ref="taskJobService" method="robotPraise" cron="0 0/2 * * * ?" />
+		<task:scheduled ref="taskJobService" method="robotPraise" cron="0/10 * * * * ?" />
 		
 		<!-- 线上版本的定时器 -->
 		
