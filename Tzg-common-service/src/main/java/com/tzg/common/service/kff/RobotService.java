@@ -489,6 +489,7 @@ public class RobotService {
 									commentsRequest.setPostId(postId);
 									commentsRequest.setParentCommentsId(comments.getCommentsId());
 									commentsRequest.setCommentUserId(robotUser.getUserId());
+									commentsRequest.setBecommentedId(comments.getCommentsId());
 									KFFRmiService.saveComment(commentsRequest);
 								}
 							}
