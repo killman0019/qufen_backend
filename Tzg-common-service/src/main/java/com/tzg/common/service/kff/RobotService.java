@@ -343,14 +343,11 @@ public class RobotService {
 					String praiseNum = redisService.get("PraiseNumRBT");
 					if (StringUtils.isEmpty(praiseNum)) {
 						putRedis();
-						praiseNum = redisService.get("followNumRBT");
+						praiseNum = redisService.get("PraiseNumRBT");
 					}
-					// Integer createUserId = postf.getCreateUserId();
 					Map<String, Object> praiseMap = new HashMap<String, Object>();
 					praiseMap.put("praiseType", 1 + "");
 					praiseMap.put("postId", 1 + postf.getPostId() + "");
-
-					// praiseMap.put("bepraiseUserId", createUserId + "");
 					praiseMap.put("status", "1");
 					List<Praise> praiseList = praiseMapper.findByMap(praiseMap);
 					if (praiseList.size() <= Integer.valueOf(praiseNum)) {
@@ -360,7 +357,6 @@ public class RobotService {
 				}
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			System.err.println("++++++++end robot praise +++++++");
@@ -420,10 +416,8 @@ public class RobotService {
 			}
 
 		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			System.err.println("++++++++end robot comment +++++++");
@@ -448,7 +442,6 @@ public class RobotService {
 		try {
 			logger.warn("robotSecondComment begin :" + "postId" + postf.getPostId() + "title" + postf.getPostTitle());
 			if (null != postf) {
-				// TODO 评论
 				// 查找所有的一级评论
 				Map<String, Object> commMap = new HashMap<String, Object>();
 				commMap.put("postId", postf.getPostId());
