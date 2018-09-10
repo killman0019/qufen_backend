@@ -349,13 +349,13 @@ public class RobotService {
 						putRedis();
 						praiseNum = redisService.get("PraiseNumRBT");
 					}
-					Map<String, Object> praiseMap = new HashMap<String, Object>();
+					/*Map<String, Object> praiseMap = new HashMap<String, Object>();
 					praiseMap.put("praiseType", 1 + "");
 					praiseMap.put("postId", 1 + postf.getPostId() + "");
 
-					List<Praise> praiseList = praiseMapper.findByMap(praiseMap);
+					List<Praise> praiseList = praiseMapper.findByMap(praiseMap);*/
 
-					if (praiseList.size() < Integer.valueOf(praiseNum)) {
+					if (postf.getPraiseNum() < Integer.valueOf(praiseNum)) {
 						Integer postId = postf.getPostId();
 						KFFRmiService.savePraise(robotUser.getUserId(), postId);
 
