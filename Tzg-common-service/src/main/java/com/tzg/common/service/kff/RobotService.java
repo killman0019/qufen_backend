@@ -355,7 +355,7 @@ public class RobotService {
 					praiseMap.put("status", "1");
 					List<Praise> praiseList = praiseMapper.findByMap(praiseMap);
 					if (null != praiseList) {
-						if (praiseList.size() <= Integer.valueOf(praiseNum)) {
+						if (praiseList.size() < (Integer.valueOf(praiseNum))) {
 							Integer postId = postf.getPostId();
 							KFFRmiService.savePraise(robotUser.getUserId(), postId);
 						}

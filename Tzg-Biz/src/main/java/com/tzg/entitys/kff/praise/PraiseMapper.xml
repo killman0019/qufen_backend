@@ -190,19 +190,19 @@
 			and project_id = #{projectId}
 
 		</if>
-		<if test="praiseType != null and praiseType.trim() != ''">
+		<if test="praiseType != null ">
 			and praise_type = #{praiseType}
 		</if>
 		<if test="postId != null  ">
 			and post_id = #{postId}
 		</if>
-		<if test="postType != null and postType.trim() != ''">
+		<if test="postType != null ">
 			and post_type = #{postType}
 		</if>
 		<if test="bepraiseUserId != null and bepraiseUserId.trim() != ''">
 			and bepraise_user_id = #{bepraiseUserId}
 		</if>
-		<if test="status != null and status.trim() != ''">
+		<if test="status != null ">
 			and status = #{status}
 		</if>
 		<if test="createTimeBegin != null and createTimeBegin.trim() != ''">
