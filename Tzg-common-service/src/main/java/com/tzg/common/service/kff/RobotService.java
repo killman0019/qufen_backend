@@ -352,13 +352,13 @@ public class RobotService {
 					Map<String, Object> praiseMap = new HashMap<String, Object>();
 					praiseMap.put("praiseType", 1 + "");
 					praiseMap.put("postId", 1 + postf.getPostId() + "");
-					praiseMap.put("status", "1");
+
 					List<Praise> praiseList = praiseMapper.findByMap(praiseMap);
-					if (null != praiseList) {
-						if (praiseList.size() < (Integer.valueOf(praiseNum))) {
-							Integer postId = postf.getPostId();
-							KFFRmiService.savePraise(robotUser.getUserId(), postId);
-						}
+
+					if (praiseList.size() < Integer.valueOf(praiseNum)) {
+						Integer postId = postf.getPostId();
+						KFFRmiService.savePraise(robotUser.getUserId(), postId);
+
 					}
 				}
 			}
