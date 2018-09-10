@@ -385,6 +385,16 @@ public class UserController extends BaseController {
 				map.put("token", token);
 				bre.setData(map);
 				kffRmiService.registerAward(KffUser.getUserId());
+				// 根据token获得userId
+				Integer userId = AccountTokenUtil.decodeAccountToken(token);
+				// 根据userID生成code2
+				String userIdTo2code = HexUtil.userIdTo2code(userId);
+				// 将生成的2code 放在数据库中
+				kffRmiService.saveUserInvation(userId, userIdTo2code);
+				// 生成URL注册链接
+				String user2codeUrl = registerUrl + userIdTo2code;
+				logger.info(user2codeUrl);
+				map.put("url", user2codeUrl);
 				return bre;
 			}
 			// 1是成功
