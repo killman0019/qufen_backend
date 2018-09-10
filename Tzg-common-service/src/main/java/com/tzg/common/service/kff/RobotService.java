@@ -186,7 +186,7 @@ public class RobotService {
 			} else {
 
 				if (commentLibraryList.size() > 1) {
-					Integer count = RandomUtil.randomNumber(0, commentLibraryList.size());
+					Integer count = RandomUtil.randomNumber(0, commentLibraryList.size() - 1);
 					commentLibrary = commentLibraryList.get(count);
 
 				}
@@ -226,7 +226,7 @@ public class RobotService {
 				}
 			}
 			if (count > 1) {
-				Integer id = RandomUtil.randomNumber(0, count);
+				Integer id = RandomUtil.randomNumber(0, count - 1);
 				Robot robot = robotList.get(id);
 				if (robot != null) {
 					KFFUser kffUser = userMapper.findById(robot.getUserId());
@@ -258,56 +258,60 @@ public class RobotService {
 		ExecutorService newFixedThreadPoolrobot = null;
 
 		try {
-			newFixedThreadPoolrobot = Executors.newFixedThreadPool(10);
-			while (true) {
-				i = i + 1;
-				PageResult<Post> postPage = getPostList(i);// j 1 i 0 i 1 j 11
+			// 判断时间是否在时间区间内
+			int hour = DateUtil.getHour();
+			if (hour <= 22 && hour >= 9) {
+				newFixedThreadPoolrobot = Executors.newFixedThreadPool(10);
+				while (true) {
+					i = i + 1;
 
-				if (null != postPage && CollectionUtils.isEmpty(postPage.getRows())) {
-					break;
-				}
-				if (null != postPage && CollectionUtils.isNotEmpty(postPage.getRows())) {
+					PageResult<Post> postPage = getPostList(i);// j 1 i 0 i 1 j 11
 
-					for (Post post : postPage.getRows()) {
-						Integer r = RandomUtil.randomNumber(1, 3);
-						if (r == 1) {
-							continue;// 1/3的可能性不走接口
-						}
+					if (null != postPage && CollectionUtils.isEmpty(postPage.getRows())) {
+						break;
+					}
+					if (null != postPage && CollectionUtils.isNotEmpty(postPage.getRows())) {
 
-						final Post postf = post;
-						newFixedThreadPoolrobot.execute(new Runnable() {
-
-							@Override
-							public void run() {
-								// TODO Auto-generated method stub
-								switch (k) {
-								case 5:
-									robotComment(postf);// 一级评论
-									break;
-								case 4:
-									robotFollow(postf);// 关注
-									break;
-								case 3:
-									robotCommendation(postf);// 打赏
-									break;
-								case 2:
-									robotSecondComment(postf);// 评论
-									break;
-								case 1:
-									robotPraise(postf);// 点赞
-									break;
-
-								default:
-									break;
-								}
-
+						for (Post post : postPage.getRows()) {
+							Integer r = RandomUtil.randomNumber(1, 3);
+							if (r == 1) {
+								continue;// 1/3的可能性不走接口
 							}
-						});
+
+							final Post postf = post;
+							newFixedThreadPoolrobot.execute(new Runnable() {
+
+								@Override
+								public void run() {
+									switch (k) {
+									case 5:
+										robotComment(postf);// 一级评论
+										break;
+									case 4:
+										robotFollow(postf);// 关注
+										break;
+									case 3:
+										robotCommendation(postf);// 打赏
+										break;
+									case 2:
+										robotSecondComment(postf);// 评论
+										break;
+									case 1:
+										robotPraise(postf);// 点赞
+										break;
+
+									default:
+										break;
+									}
+
+								}
+							});
+						}
 					}
 				}
+
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			if (!newFixedThreadPoolrobot.isShutdown()) {
@@ -343,24 +347,22 @@ public class RobotService {
 					String praiseNum = redisService.get("PraiseNumRBT");
 					if (StringUtils.isEmpty(praiseNum)) {
 						putRedis();
-						praiseNum = redisService.get("followNumRBT");
+						praiseNum = redisService.get("PraiseNumRBT");
 					}
-					// Integer createUserId = postf.getCreateUserId();
 					Map<String, Object> praiseMap = new HashMap<String, Object>();
 					praiseMap.put("praiseType", 1 + "");
 					praiseMap.put("postId", 1 + postf.getPostId() + "");
-
-					// praiseMap.put("bepraiseUserId", createUserId + "");
 					praiseMap.put("status", "1");
 					List<Praise> praiseList = praiseMapper.findByMap(praiseMap);
-					if (praiseList.size() <= Integer.valueOf(praiseNum)) {
-						Integer postId = postf.getPostId();
-						KFFRmiService.savePraise(robotUser.getUserId(), postId);
+					if (null != praiseList) {
+						if (praiseList.size() <= Integer.valueOf(praiseNum)) {
+							Integer postId = postf.getPostId();
+							KFFRmiService.savePraise(robotUser.getUserId(), postId);
+						}
 					}
 				}
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			System.err.println("++++++++end robot praise +++++++");
@@ -420,10 +422,8 @@ public class RobotService {
 			}
 
 		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			System.err.println("++++++++end robot comment +++++++");
@@ -448,7 +448,6 @@ public class RobotService {
 		try {
 			logger.warn("robotSecondComment begin :" + "postId" + postf.getPostId() + "title" + postf.getPostTitle());
 			if (null != postf) {
-				// TODO 评论
 				// 查找所有的一级评论
 				Map<String, Object> commMap = new HashMap<String, Object>();
 				commMap.put("postId", postf.getPostId());
@@ -489,6 +488,7 @@ public class RobotService {
 									commentsRequest.setPostId(postId);
 									commentsRequest.setParentCommentsId(comments.getCommentsId());
 									commentsRequest.setCommentUserId(robotUser.getUserId());
+									commentsRequest.setBecommentedId(comments.getCommentsId());
 									KFFRmiService.saveComment(commentsRequest);
 								}
 							}
