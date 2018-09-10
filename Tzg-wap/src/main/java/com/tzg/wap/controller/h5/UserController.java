@@ -376,7 +376,7 @@ public class UserController extends BaseController {
 			String userIdTo2code = HexUtil.userIdTo2code(loginaccount.getUserId());
 			String user2codeUrl = enveUrl + userIdTo2code;
 			logger.info(user2codeUrl);
-			map.put("url", user2codeUrl);
+			map.put("invaUIH", userIdTo2code);
 			bre.setData(map);
 			return bre;
 		}
@@ -405,7 +405,7 @@ public class UserController extends BaseController {
 				// 生成URL注册链接
 				String user2codeUrl = enveUrl + userIdTo2code;
 				logger.info(user2codeUrl);
-				map.put("url", user2codeUrl);
+				map.put("invaUIH", userIdTo2code);
 				return bre;
 			}
 			// 1是成功
