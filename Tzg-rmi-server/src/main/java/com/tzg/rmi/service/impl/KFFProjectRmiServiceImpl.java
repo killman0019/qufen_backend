@@ -700,16 +700,15 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 
 	@Override
 	public void text() throws RestServiceException {
-		for (int i = 0; i < 10; i++) {
-			Integer n = RandomUtil.randomNumber(1, 5);
-			robotService.robotTask(n);
+		for (int i = 0; i < 100; i++) {
+			int f = RandomUtil.randomNumber(1, 5);
+			robotService.robotTask(f);
 			try {
-				Thread.sleep(10 * 1000);
+				Thread.sleep(3 * 1000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-
 	}
 }

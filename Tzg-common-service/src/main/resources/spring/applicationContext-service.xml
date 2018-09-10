@@ -59,11 +59,11 @@
 <!-- 		<task:scheduled ref="taskJobService" method="getProjectDateFromUrlTask" cron="0 0/5 * * * ? " /> -->
 <!-- 		<task:scheduled ref="taskJobService" method="getdatafromUrlByexchangeTask" cron="0 0/30 * * * ? " /> -->
 <!--  		<task:scheduled ref="taskJobService" method="caculatePostTatolIncome" cron="0/5 *  * * * ? "/>  -->
-		<task:scheduled ref="taskJobService" method="robotComment" cron=" 0 0/5 * * * ?" />
-		<task:scheduled ref="taskJobService" method="robotFollow" cron="0 0/7  * * * ?" />
-		<task:scheduled ref="taskJobService" method="robotCommendation" cron="0 0/2  * * * ?" />
-		<task:scheduled ref="taskJobService" method="robotSecondComment" cron=" 0 0/4  * * * ?" />
-		<task:scheduled ref="taskJobService" method="robotPraise" cron="0 0/6  * * * ?" />
+		<task:scheduled ref="taskJobService" method="robotComment" cron=" 0 0/4 9-22 * * ?" />
+		<task:scheduled ref="taskJobService" method="robotFollow" cron="0 0/3 9-22 * * ?" />
+		<task:scheduled ref="taskJobService" method="robotCommendation" cron="0 0/5 9-22 * * ?" />
+		<task:scheduled ref="taskJobService" method="robotSecondComment" cron="0 0/5 9,10,11,12,13,14,15,16,17,18,19,20,21,22 * * ?" />
+		<task:scheduled ref="taskJobService" method="robotPraise" cron="0 0/2 9-23 * * ?" />
 		
 		<!-- 线上版本的定时器 -->
 		

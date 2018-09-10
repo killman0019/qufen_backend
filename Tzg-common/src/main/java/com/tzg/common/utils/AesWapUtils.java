@@ -150,4 +150,17 @@ public class AesWapUtils {
 		return StringUtils.isEmpty(encryptStr) ? null : aesDecryptByBytes(base64Decode(encryptStr), decryptKey);
 	}
 
+	public static void main(String[] args) {
+		try {
+			String str = aesEncrypt("aaaaa");
+			SyseUtil.systemErrOutJson(str);
+			String aesEncrypt = aesDecrypt(str, KEY);
+			SyseUtil.systemErrOutJson(aesEncrypt);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
 }

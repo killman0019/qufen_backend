@@ -1,17 +1,14 @@
 package com.tzg.wap;
 
 import com.tzg.common.utils.RandomUtil;
+import com.tzg.common.utils.SyseUtil;
 
 public class TestMain {
 
 	public static void main(String[] args) {
-
-		// 100--------300
-		// 20---60
-		// 0----100//0----20
-		for (int j = 0; j <= 1000; j++) {
-			int i = RandomUtil.randomNumber(0, 20) * 5;
-			System.err.println(i);
+		for (int i = 0; i < 100; i++) {
+			Integer count = RandomUtil.randomNumber(0, 2);
+			SyseUtil.systemErrOutJson(count);
 		}
 	}
 }
