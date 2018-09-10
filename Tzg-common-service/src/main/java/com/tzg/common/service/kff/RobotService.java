@@ -186,7 +186,7 @@ public class RobotService {
 			} else {
 
 				if (commentLibraryList.size() > 1) {
-					Integer count = RandomUtil.randomNumber(0, commentLibraryList.size());
+					Integer count = RandomUtil.randomNumber(0, commentLibraryList.size() - 1);
 					commentLibrary = commentLibraryList.get(count);
 
 				}
@@ -226,7 +226,7 @@ public class RobotService {
 				}
 			}
 			if (count > 1) {
-				Integer id = RandomUtil.randomNumber(0, count);
+				Integer id = RandomUtil.randomNumber(0, count - 1);
 				Robot robot = robotList.get(id);
 				if (robot != null) {
 					KFFUser kffUser = userMapper.findById(robot.getUserId());

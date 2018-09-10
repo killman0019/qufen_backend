@@ -373,6 +373,10 @@ public class UserController extends BaseController {
 			map.put("reStatus", 1);// 1注册成功 0 注册不成功
 			String token = AccountTokenUtil.getAccountToken(loginaccount.getUserId());
 			map.put("token", token);
+			String userIdTo2code = HexUtil.userIdTo2code(loginaccount.getUserId());
+			String user2codeUrl = enveUrl + userIdTo2code;
+			logger.info(user2codeUrl);
+			map.put("url", user2codeUrl);
 			bre.setData(map);
 			return bre;
 		}
