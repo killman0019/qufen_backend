@@ -62,7 +62,8 @@ public class UserController extends BaseController {
 	@Value("#{paramConfig['registerUrl']}")
 	private String registerUrl;
 	// "http://192.168.10.196:5000/user/registerSmp?invaUIH=";
-
+	@Value("#{paramConfig['enveUrl']}")
+	private String enveUrl;
 	private static Logger logger = Logger.getLogger(UserController.class);
 	private static final String KEY = "abcdefgabcdefg12";
 	@Autowired
@@ -319,7 +320,7 @@ public class UserController extends BaseController {
 	 */
 	@RequestMapping(value = "/regAnLogin", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public BaseResponseEntity regAnLogin(HttpServletRequest response, HttpServletRequest request, String phoneNumber, String dynamicVerifyCode) {
+	public BaseResponseEntity regAnLogin(HttpServletRequest response, HttpServletRequest request, String phoneNumber, String dynamicVerifyCode, String invaUIH) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		// 验证手机号的合法性
@@ -376,7 +377,13 @@ public class UserController extends BaseController {
 			return bre;
 		}
 		if (null == user) {// 未注册
-			KFFUser KffUser = kffRmiService.saveUserByphonePass(phoneNumber, null, null);
+			// 手机验证码成功 保存用户信息
+			// 将邀请二维码字符进行转码转化成对应的userID
+			Integer invaUserId = null;
+			if (null != invaUIH) {
+				invaUserId = HexUtil.code2ToUserId(invaUIH);
+			}
+			KFFUser KffUser = kffRmiService.saveUserByphonePass(phoneNumber, invaUserId, null);
 
 			if (null != KffUser) {
 				map.put("reStatus", 1);// 注册成功
@@ -392,7 +399,7 @@ public class UserController extends BaseController {
 				// 将生成的2code 放在数据库中
 				kffRmiService.saveUserInvation(userId, userIdTo2code);
 				// 生成URL注册链接
-				String user2codeUrl = registerUrl + userIdTo2code;
+				String user2codeUrl = enveUrl + userIdTo2code;
 				logger.info(user2codeUrl);
 				map.put("url", user2codeUrl);
 				return bre;

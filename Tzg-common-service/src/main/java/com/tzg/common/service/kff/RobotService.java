@@ -258,53 +258,59 @@ public class RobotService {
 		ExecutorService newFixedThreadPoolrobot = null;
 
 		try {
-			newFixedThreadPoolrobot = Executors.newFixedThreadPool(10);
-			while (true) {
-				i = i + 1;
-				PageResult<Post> postPage = getPostList(i);// j 1 i 0 i 1 j 11
+			// 判断时间是否在时间区间内
+			int hour = DateUtil.getHour();
+			if (hour <= 22 && hour >= 9) {
+				newFixedThreadPoolrobot = Executors.newFixedThreadPool(10);
+				while (true) {
+					i = i + 1;
 
-				if (null != postPage && CollectionUtils.isEmpty(postPage.getRows())) {
-					break;
-				}
-				if (null != postPage && CollectionUtils.isNotEmpty(postPage.getRows())) {
+					PageResult<Post> postPage = getPostList(i);// j 1 i 0 i 1 j 11
 
-					for (Post post : postPage.getRows()) {
-						Integer r = RandomUtil.randomNumber(1, 3);
-						if (r == 1) {
-							continue;// 1/3的可能性不走接口
-						}
+					if (null != postPage && CollectionUtils.isEmpty(postPage.getRows())) {
+						break;
+					}
+					if (null != postPage && CollectionUtils.isNotEmpty(postPage.getRows())) {
 
-						final Post postf = post;
-						newFixedThreadPoolrobot.execute(new Runnable() {
-
-							@Override
-							public void run() {
-								// TODO Auto-generated method stub
-								switch (k) {
-								case 5:
-									robotComment(postf);// 一级评论
-									break;
-								case 4:
-									robotFollow(postf);// 关注
-									break;
-								case 3:
-									robotCommendation(postf);// 打赏
-									break;
-								case 2:
-									robotSecondComment(postf);// 评论
-									break;
-								case 1:
-									robotPraise(postf);// 点赞
-									break;
-
-								default:
-									break;
-								}
-
+						for (Post post : postPage.getRows()) {
+							Integer r = RandomUtil.randomNumber(1, 3);
+							if (r == 1) {
+								continue;// 1/3的可能性不走接口
 							}
-						});
+
+							final Post postf = post;
+							newFixedThreadPoolrobot.execute(new Runnable() {
+
+								@Override
+								public void run() {
+									// TODO Auto-generated method stub
+									switch (k) {
+									case 5:
+										robotComment(postf);// 一级评论
+										break;
+									case 4:
+										robotFollow(postf);// 关注
+										break;
+									case 3:
+										robotCommendation(postf);// 打赏
+										break;
+									case 2:
+										robotSecondComment(postf);// 评论
+										break;
+									case 1:
+										robotPraise(postf);// 点赞
+										break;
+
+									default:
+										break;
+									}
+
+								}
+							});
+						}
 					}
 				}
+
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
