@@ -80,7 +80,16 @@
 		user_id = #{userId,jdbcType=INTEGER}
 	</select>
 
+	<select id="findByMap" resultMap="BaseResultMap" parameterType="java.util.Map">
 
+		select
+		<include refid="columns" />
+		from
+		tbrobot where
+		1=1
+		<include refid="queryWhere" />
+
+	</select>
 
 
 </mapper>

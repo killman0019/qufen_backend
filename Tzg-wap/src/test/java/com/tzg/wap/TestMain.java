@@ -1,15 +1,14 @@
 package com.tzg.wap;
 
-import com.tzg.common.utils.DateUtil;
+import com.tzg.common.utils.RandomUtil;
+import com.tzg.common.utils.SyseUtil;
 
 public class TestMain {
 
 	public static void main(String[] args) {
-
-		// 100--------300
-		// 20---60
-		// 0----100//0----20
-		String postCreateBegin = DateUtil.getSpecifiedDayBeforeOrAfter(1);
-		System.err.println(postCreateBegin);
+		for (int i = 0; i < 100; i++) {
+			Integer count = RandomUtil.randomNumber(0, 2);
+			SyseUtil.systemErrOutJson(count);
+		}
 	}
 }
