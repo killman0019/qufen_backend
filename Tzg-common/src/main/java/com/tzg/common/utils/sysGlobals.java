@@ -81,9 +81,14 @@ public final class sysGlobals {
 	 */
 	public static final String DIS_URL = "DIS_URL";
 	/**
-	 * 分享后给前台的邀请奖励token数 (不能包含W 字母)
+	 * 注册邀请最高奖励总数
 	 */
 	public static final String REGISTER_AWARD_TOKEN_TOTE = "REGISTER_AWARD_TOKEN_TOTE";
+
+	/**
+	 * 分享内容得到token奖励
+	 */
+	public static final String SHARE_POST_AWARD_TOKEN = "SHARE_POST_AWARD_TOKEN";
 	/**
 	 * 帖子中的内容抽离的图片最多总数(最多图片数)
 	 */
@@ -146,6 +151,10 @@ public final class sysGlobals {
 	 * 线上的前端url
 	 */
 	public static final String WEB_URL = "WEB_URL";
+	/**
+	 * 邀请每个用户获得奖励
+	 */
+	public static final String INVA_EACH_AWARD = "INVA_EACH_AWARD";
 
 	/**推送给全部用户默认一次取多少消息*/
 	public static Integer DEFAULT_MSG_COUNT = 1000;

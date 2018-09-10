@@ -8,6 +8,7 @@ import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.entitys.kff.project.ProjectResponse;
+import com.tzg.entitys.kff.qfindex.QfindexResponse;
 import com.tzg.rest.exception.rest.RestServiceException;
 
 /** 
@@ -37,5 +38,21 @@ public interface KFFUserRmiService {
 	// 判断用户是否禁用
 	public boolean findUserByStatus(Integer userId);
 
-	
+	/**
+	 * 
+	* @Title: getMember 
+	* @Description: TODO <获得用户的会员中心>
+	* @author zhangdd <方法创建作者>
+	* @create 下午5:26:08
+	* @param @param userId
+	* @param @return
+	* @param @throws RestServiceException <参数说明>
+	* @return QfindexResponse 
+	* @throws 
+	* @update 下午5:26:08
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	 */
+	public QfindexResponse getMember(Integer userId) throws RestServiceException;
+
 }

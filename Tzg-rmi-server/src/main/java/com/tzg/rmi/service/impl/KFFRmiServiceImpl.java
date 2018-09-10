@@ -4064,9 +4064,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			List<PostDiscussVo> postDiscuss = kffPostService.findSetTopPost(seMap);
 			if (!postDiscuss.isEmpty()) {
 				for (PostDiscussVo postDiscussVo : postDiscuss) {
-					if(postDiscussVo.getPostType()==1) {
+					if (postDiscussVo.getPostType() == 1) {
 						Evaluation eval = kffEvaluationService.findByPostId(postDiscussVo.getPostId());
-						if(eval.getModelType()==1) {
+						if (eval.getModelType() == 1) {
 							continue;
 						}
 					}
@@ -4088,9 +4088,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				// 从中随机取出rowsPerPage条，等于小于rowsPerPage条就全部取出
 				if (postDiscusWithDt.size() <= nowCount) {
 					for (PostDiscussVo postDiscussVo : postDiscusWithDt) {
-						if(postDiscussVo.getPostType()==1) {
+						if (postDiscussVo.getPostType() == 1) {
 							Evaluation eval = kffEvaluationService.findByPostId(postDiscussVo.getPostId());
-							if(eval.getModelType()==1) {
+							if (eval.getModelType() == 1) {
 								continue;
 							}
 						}
@@ -4110,9 +4110,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					}
 					for (int i = 0; i < usList.size(); i++) {
 						PostDiscussVo postDiscussVo = postDiscusWithDt.get(usList.get(i));
-						if(postDiscussVo.getPostType()==1) {
+						if (postDiscussVo.getPostType() == 1) {
 							Evaluation eval = kffEvaluationService.findByPostId(postDiscussVo.getPostId());
-							if(eval.getModelType()==1) {
+							if (eval.getModelType() == 1) {
 								continue;
 							}
 						}
@@ -4953,23 +4953,25 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		query.addQueryData("status", KFFConstants.STATUS_ACTIVE + "");
 
 		PageResult<Comments> comments = kffCommentsService.findPage(query);
-		if (CollectionUtils.isNotEmpty(comments.getRows())) {
-			PaginationQuery childQuery = new PaginationQuery();
-			childQuery.setPageIndex(1);
-			childQuery.setRowsPerPage(2);
-			childQuery.addQueryData("postType", KFFConstants.POST_TYPE_DISCUSS + "");
-			for (Comments comment : comments.getRows()) {
-				Comments finalComment = new Comments();
-				BeanUtils.copyProperties(comment, finalComment);
-				childQuery.addQueryData("parentCommentsId", comment.getCommentsId() + "");
-				PageResult<Comments> childComments = kffCommentsService.findPage(childQuery);
-				if (childComments != null && CollectionUtils.isNotEmpty(childComments.getRows())) {
-					finalComment.setChildCommentsList(childComments.getRows());
-					finalComment.setChildCommentsNum(childComments.getRowCount());
-				}
-				// 登录用户判断点赞状态
+		if (comments != null) {
+			if (CollectionUtils.isNotEmpty(comments.getRows())) {
+				PaginationQuery childQuery = new PaginationQuery();
+				childQuery.setPageIndex(1);
+				childQuery.setRowsPerPage(2);
+				childQuery.addQueryData("postType", KFFConstants.POST_TYPE_DISCUSS + "");
+				for (Comments comment : comments.getRows()) {
+					Comments finalComment = new Comments();
+					BeanUtils.copyProperties(comment, finalComment);
+					childQuery.addQueryData("parentCommentsId", comment.getCommentsId() + "");
+					PageResult<Comments> childComments = kffCommentsService.findPage(childQuery);
+					if (childComments != null && CollectionUtils.isNotEmpty(childComments.getRows())) {
+						finalComment.setChildCommentsList(childComments.getRows());
+						finalComment.setChildCommentsNum(childComments.getRowCount());
+					}
+					// 登录用户判断点赞状态
 
-				result.add(finalComment);
+					result.add(finalComment);
+				}
 			}
 		}
 		return result;

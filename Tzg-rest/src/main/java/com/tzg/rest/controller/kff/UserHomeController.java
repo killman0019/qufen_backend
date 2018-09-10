@@ -20,6 +20,7 @@ import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.utils.SyseUtil;
 import com.tzg.entitys.kff.evaluation.EvaluationDetailResponse;
 import com.tzg.entitys.kff.post.PostResponse;
+import com.tzg.entitys.kff.qfindex.QfindexResponse;
 import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.entitys.kff.user.KFFUserHomeResponse;
 import com.tzg.rest.controller.BaseController;
@@ -257,4 +258,31 @@ public class UserHomeController extends BaseController {
 		return bre;
 	}
 
+	@RequestMapping(value = "/getMember", method = { RequestMethod.POST, RequestMethod.GET })
+	@ResponseBody
+	public BaseResponseEntity getMember(HttpServletRequest request) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+		HashMap<String, Object> map = new HashMap<String, Object>();
+
+		try {
+			JSONObject params = getParamMapFromRequestPolicy(request);
+			String token = (String) params.get("token");
+			if (token == null) {
+				throw new RestServiceException("请重新登录");
+			}
+			Integer userId = getUserIdByToken(token);
+			KFFUser loginUser = kffUserService.findById(userId);
+			QfindexResponse qfindexResponse = kffUserService.getMember(userId);
+			map.put("result", qfindexResponse);
+			bre.setData(map);
+			SyseUtil.systemErrOutJson(bre);
+		} catch (RestServiceException e) {
+			logger.error("UserHomeController articleList:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("UserHomeController articleList:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+		}
+		return bre;
+	}
 }

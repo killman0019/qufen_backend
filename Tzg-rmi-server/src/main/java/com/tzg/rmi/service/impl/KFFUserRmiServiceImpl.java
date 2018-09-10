@@ -1,6 +1,5 @@
 package com.tzg.rmi.service.impl;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,9 +12,10 @@ import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.service.kff.FollowService;
 import com.tzg.common.service.kff.InteractionRootService;
+import com.tzg.common.service.kff.QfIndexService;
 import com.tzg.common.service.kff.UserService;
-import com.tzg.entitys.kff.interactionroot.InteractionRoot;
-import com.tzg.entitys.kff.project.ProjectResponse;
+import com.tzg.entitys.kff.qfindex.QfIndexMapper;
+import com.tzg.entitys.kff.qfindex.QfindexResponse;
 import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rmi.service.KFFUserRmiService;
@@ -32,6 +32,8 @@ public class KFFUserRmiServiceImpl implements KFFUserRmiService {
 
 	@Autowired
 	private InteractionRootService interactionRootService;
+	@Autowired
+	private QfIndexService qfIndexService;
 
 	public KFFUser findById(Integer id) {
 		return userService.findById(id);
@@ -59,6 +61,7 @@ public class KFFUserRmiServiceImpl implements KFFUserRmiService {
 		return false;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public PageResult<KFFUser> selectKOLProjectPage(Integer userId, PaginationQuery query) {
 		// TODO 获得kol
@@ -88,4 +91,13 @@ public class KFFUserRmiServiceImpl implements KFFUserRmiService {
 		return userPage;
 	}
 
+	@Override
+	public QfindexResponse getMember(Integer userId) throws RestServiceException {
+		// TODO 获得用户的会员中心
+		if (null == userId) {
+			throw new RestServiceException("用户没有登录");
+		}
+		QfindexResponse response = qfIndexService.getMember(userId);
+		return response;
+	}
 }
