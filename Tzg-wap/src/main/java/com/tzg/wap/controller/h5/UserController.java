@@ -259,14 +259,16 @@ public class UserController extends BaseController {
 			logger.error("RegisterInvaController registerInva：", e);
 			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
 		}
-		if (!isRobot) {
-			if (!dynamicVerifyCode.equals(cacheCode)) {
+		if (isRobot != null) {
+			if (!isRobot) {
+				if (!dynamicVerifyCode.equals(cacheCode)) {
 
-				map.put("reStatus", 0);// 1注册成功 0 注册不成功
-				map.put("reason", "短信验证码输入不正确");
-				bre.setData(map);
+					map.put("reStatus", 0);// 1注册成功 0 注册不成功
+					map.put("reason", "短信验证码输入不正确");
+					bre.setData(map);
 
-				return bre;
+					return bre;
+				}
 			}
 		}
 		// 手机验证码成功 保存用户信息
