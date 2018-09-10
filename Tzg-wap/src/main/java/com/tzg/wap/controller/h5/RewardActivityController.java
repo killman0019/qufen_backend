@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
 import com.tzg.common.base.BaseRequest;
+import com.tzg.common.enums.RewardActivityState;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.utils.DateUtil;
@@ -117,6 +118,13 @@ public class RewardActivityController extends BaseController {
 			if(senCount.compareTo(num)<0) {
 				bre.setCode(RestErrorCode.SYS_ERROR.getValue());
 				bre.setMsg("该用户没有足够的token币");
+				return bre;
+			}
+			//判断法的token币是否大于1000
+			BigDecimal tk = new BigDecimal("1000");
+			if(nowRewardMoney.compareTo(tk)<0) {
+				bre.setCode(RestErrorCode.SYS_ERROR.getValue());
+				bre.setMsg("发布悬赏必须要1000个token币以上");
 				return bre;
 			}
 			ArticleRequest articleRequest = new ArticleRequest();
@@ -271,6 +279,16 @@ public class RewardActivityController extends BaseController {
 			}
 			Integer userId = getUserIdByToken(token);
 			Map<String,Object> seMap = new HashMap<>();
+			//终止的条件是1小时内没有回答的记录
+			seMap.put("postId", postId);
+			seMap.put("state", RewardActivityState.STARTING.getValue());
+			Integer reActCount = rewardActivityRmiService.findLinkedCount(seMap);
+			if(reActCount>0) {
+				bre.setCode(RestErrorCode.SYS_ERROR.getValue());
+				bre.setMsg("该悬赏已有用户回答，无法终止");
+				return bre;
+			}
+			seMap.clear();
 			seMap.put("postTypec", 4);
 			seMap.put("postId", postId);
 			seMap.put("createUserId", userId);

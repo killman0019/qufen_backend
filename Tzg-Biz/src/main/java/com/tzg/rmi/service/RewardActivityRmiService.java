@@ -38,4 +38,6 @@ public interface RewardActivityRmiService {
 	
 	public PageResult<PostResponse> findRewardAnswerList(Integer loginUserId, PaginationQuery query, Integer type);
 	
+	public Integer findLinkedCount(Map<String, Object> map);
+	
 }

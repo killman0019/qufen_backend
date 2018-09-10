@@ -282,6 +282,11 @@ public class RewardActivityService {
 	}
 	
 	@Transactional(readOnly = true)
+	public Integer findLinkedCount(Map<String, Object> map) {
+		return rewardActivityMapper.findLinkedCount(map);
+	}
+	
+	@Transactional(readOnly = true)
 	public PageResult<PostResponse> findRewardAnswerList(Integer loginUserId, PaginationQuery query, Integer type){
 		PageResult<PostResponse> result = new PageResult<PostResponse>();
 		List<PostResponse> postResponse = new ArrayList<>();

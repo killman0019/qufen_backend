@@ -224,6 +224,13 @@
 		<include refid="condition" />
 	</select>
 	
+	
+	<select id="findLinkedCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(1) from <include refid="table_name" /> as rac 
+    	INNER JOIN tbdiscuss as tbc on rac.id=tbc.reward_activity_id
+		<include refid="condition" />
+	</select>
+	
 	<sql id="condition">
     	<where>
 	    	<if test="id != null">
@@ -252,6 +259,9 @@
 			</if>
 			<if test="createUserId != null">
 			and tpt.create_user_id = #{createUserId}
+			</if>
+			<if test="state != null">
+			and rac.state = #{state}
 			</if>
     	</where>
     </sql>

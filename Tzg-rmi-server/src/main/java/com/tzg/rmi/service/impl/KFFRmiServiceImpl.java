@@ -4040,6 +4040,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			List<PostDiscussVo> postDiscuss = kffPostService.findSetTopPost(seMap);
 			if (!postDiscuss.isEmpty()) {
 				for (PostDiscussVo postDiscussVo : postDiscuss) {
+					if(postDiscussVo.getPostType()==1) {
+						Evaluation eval = kffEvaluationService.findByPostId(postDiscussVo.getPostId());
+						if(eval.getModelType()==1) {
+							continue;
+						}
+					}
 					postDisscussList.add(postDiscussVo);
 				}
 			}
@@ -4058,6 +4064,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				// 从中随机取出rowsPerPage条，等于小于rowsPerPage条就全部取出
 				if (postDiscusWithDt.size() <= nowCount) {
 					for (PostDiscussVo postDiscussVo : postDiscusWithDt) {
+						if(postDiscussVo.getPostType()==1) {
+							Evaluation eval = kffEvaluationService.findByPostId(postDiscussVo.getPostId());
+							if(eval.getModelType()==1) {
+								continue;
+							}
+						}
 						postDisscussList.add(postDiscussVo);
 					}
 				} else {
@@ -4074,6 +4086,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					}
 					for (int i = 0; i < usList.size(); i++) {
 						PostDiscussVo postDiscussVo = postDiscusWithDt.get(usList.get(i));
+						if(postDiscussVo.getPostType()==1) {
+							Evaluation eval = kffEvaluationService.findByPostId(postDiscussVo.getPostId());
+							if(eval.getModelType()==1) {
+								continue;
+							}
+						}
 						postDisscussList.add(postDiscussVo);
 					}
 				}

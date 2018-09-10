@@ -19,4 +19,5 @@ public interface RewardActivityMapper extends BaseMapper<RewardActivity, java.la
     List<PostResponse> findLinkedPage(Map<String, Object> map);
     Integer findLinkedPageCount(Map<String, Object> map);
     
+    Integer findLinkedCount(Map<String, Object> map);
 }

@@ -76,6 +76,10 @@ public class RewardActivityRmiServiceImpl implements RewardActivityRmiService {
 		return rewardActivityService.findRewardAnswerList(loginUserId, query,type);
 	}
 	
+	public Integer findLinkedCount(Map<String, Object> map) {
+		return rewardActivityService.findLinkedCount(map);
+	}
+	
 	public Map<String, Object> findOneByAttr(Map<String, Object> map){
 		return rewardActivityService.findOneByAttr(map);
 	}
