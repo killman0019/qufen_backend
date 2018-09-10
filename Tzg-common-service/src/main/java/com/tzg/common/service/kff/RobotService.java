@@ -203,7 +203,7 @@ public class RobotService {
 				if (CollectionUtils.isEmpty(commentLibraryList)) {
 					break;
 				}
-				if (i == 100) {
+				if (i == 10) {
 					break;
 				}
 			}
@@ -249,7 +249,7 @@ public class RobotService {
 				}
 			}
 
-			if (i == 100) {
+			if (i == 50) {
 				break;
 			}
 		}
@@ -381,6 +381,7 @@ public class RobotService {
 					} else {
 						regiUrlLocal = "http://192.168.10.153:803/kff/praise/savePostPraise?";// 本地url
 					}
+					regiUrlLocal = url + "/kff/praise/savePostPraise?";// 线上url
 					String str = regiUrlLocal + para;
 					String doGet = HttpUtil.doGet(str);
 					if (doGet != null) {

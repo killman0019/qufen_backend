@@ -29,6 +29,7 @@ import com.tzg.common.utils.EnumConstant.SmsBuss;
 import com.tzg.common.utils.HtmlUtils;
 import com.tzg.common.utils.RegexUtil;
 import com.tzg.common.utils.SHAUtil;
+import com.tzg.common.utils.SyseUtil;
 import com.tzg.common.utils.TzgConstant;
 import com.tzg.common.utils.rest.Base64Util;
 import com.tzg.common.utils.rest.RestConstants;
@@ -160,11 +161,26 @@ public class UserController extends BaseController {
 			bre.setData(map);
 			return bre;
 		}
+		SyseUtil.systemErrOutJson(isRobot);
 		String passwordAes = null;
-		if (isRobot) {
-			passwordAes = password;
-			System.err.println("robot注册");
-		} else {
+		if (isRobot != null) {
+			if (isRobot) {
+				passwordAes = password;
+				System.err.println("robot注册");
+			} else {
+				try {
+					passwordAes = AesWapUtils.aesDecrypt(password, KEY);
+					System.out.println("passwordAes" + passwordAes);
+				} catch (Exception e1) {
+					logger.info("解密失败!");
+					map.put("reStatus", 0);// 1注册成功 0 注册不成功
+					map.put("reason", "请重新输入密码!");
+					bre.setData(map);
+					return bre;
+				}
+			}
+		}
+		if (isRobot == null) {
 			try {
 				passwordAes = AesWapUtils.aesDecrypt(password, KEY);
 				System.out.println("passwordAes" + passwordAes);
