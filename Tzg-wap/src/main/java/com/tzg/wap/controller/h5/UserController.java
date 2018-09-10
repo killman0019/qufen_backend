@@ -374,8 +374,7 @@ public class UserController extends BaseController {
 			String token = AccountTokenUtil.getAccountToken(loginaccount.getUserId());
 			map.put("token", token);
 			String userIdTo2code = HexUtil.userIdTo2code(loginaccount.getUserId());
-			String user2codeUrl = enveUrl + userIdTo2code;
-			logger.info(user2codeUrl);
+
 			map.put("invaUIH", userIdTo2code);
 			bre.setData(map);
 			return bre;
@@ -384,8 +383,10 @@ public class UserController extends BaseController {
 			// 手机验证码成功 保存用户信息
 			// 将邀请二维码字符进行转码转化成对应的userID
 			Integer invaUserId = null;
-			if (null != invaUIH) {
-				invaUserId = HexUtil.code2ToUserId(invaUIH);
+			if (!"undefined".equals(invaUIH)) {
+				if (StringUtils.isNotEmpty(invaUIH)) {
+					invaUserId = HexUtil.code2ToUserId(invaUIH);
+				}
 			}
 			KFFUser KffUser = kffRmiService.saveUserByphonePass(phoneNumber, invaUserId, null);
 
