@@ -283,7 +283,6 @@ public class RobotService {
 
 								@Override
 								public void run() {
-									// TODO Auto-generated method stub
 									switch (k) {
 									case 5:
 										robotComment(postf);// 一级评论
@@ -313,7 +312,6 @@ public class RobotService {
 
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			if (!newFixedThreadPoolrobot.isShutdown()) {
