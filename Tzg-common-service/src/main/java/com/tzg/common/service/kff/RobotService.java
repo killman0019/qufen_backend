@@ -350,9 +350,11 @@ public class RobotService {
 					praiseMap.put("postId", 1 + postf.getPostId() + "");
 					praiseMap.put("status", "1");
 					List<Praise> praiseList = praiseMapper.findByMap(praiseMap);
-					if (praiseList.size() <= Integer.valueOf(praiseNum)) {
-						Integer postId = postf.getPostId();
-						KFFRmiService.savePraise(robotUser.getUserId(), postId);
+					if (null != praiseList) {
+						if (praiseList.size() <= Integer.valueOf(praiseNum)) {
+							Integer postId = postf.getPostId();
+							KFFRmiService.savePraise(robotUser.getUserId(), postId);
+						}
 					}
 				}
 			}
