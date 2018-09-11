@@ -130,7 +130,16 @@ public class DiscussDetailResponse implements Serializable {
 	
 	private Integer rewardActivityId;
 	private BigDecimal rewardMoney;
+	//每个用户回答悬赏能中奖的金额
+	private BigDecimal rewardMoneyToOne;
 
+	public BigDecimal getRewardMoneyToOne() {
+		return rewardMoneyToOne;
+	}
+
+	public void setRewardMoneyToOne(BigDecimal rewardMoneyToOne) {
+		this.rewardMoneyToOne = rewardMoneyToOne;
+	}
 	public Integer getRewardActivityId() {
 		return rewardActivityId;
 	}
