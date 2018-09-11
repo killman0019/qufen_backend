@@ -213,49 +213,49 @@
 		<if test="userId != null">
 			and user_id = #{userId}
 		</if>
-		<if test="tradeCode != null and tradeCode.trim() != ''">
+		<if test="tradeCode != null ">
 			and trade_code = #{tradeCode}
 		</if>
-		<if test="tradeType != null and tradeType.trim() != ''">
+		<if test="tradeType != null ">
 			and trade_type = #{tradeType}
 		</if>
-		<if test="functionDesc != null and functionDesc.trim() != ''">
+		<if test="functionDesc != null ">
 			and function_desc = #{functionDesc}
 		</if>
-		<if test="functionType != null and functionType.trim() != ''">
+		<if test="functionType != null ">
 			and function_type = #{functionType}
 		</if>
 		<if test="amount != null">
 			and amount = #{amount}
 		</if>
-		<if test="tradeDateBegin != null and tradeDateBegin.trim() != ''">
+		<if test="tradeDateBegin != null ">
 			and trade_date >= #{tradeDateBegin}
 		</if>
-		<if test="tradeDateEnd != null and tradeDateEnd.trim() != ''">
+		<if test="tradeDateEnd != null ">
 			and trade_date &lt;= #{tradeDateEnd}
 		</if>
 		<if test="balance != null ">
 			and balance = #{balance}
 		</if>
-		<if test="createTimeBegin != null and createTimeBegin.trim() != ''">
+		<if test="createTimeBegin != null">
 			and createTime >= #{createTimeBegin}
 		</if>
-		<if test="createTimeEnd != null and createTimeEnd.trim() != ''">
+		<if test="createTimeEnd != null ">
 			and createTime &lt;= #{createTimeEnd}
 		</if>
-		<if test="updateTimeBegin != null and updateTimeBegin.trim() != ''">
+		<if test="updateTimeBegin != null ">
 			and updateTime >= #{updateTimeBegin}
 		</if>
-		<if test="updateTimeEnd != null and updateTimeEnd.trim() != ''">
+		<if test="updateTimeEnd != null ">
 			and updateTime &lt;= #{updateTimeEnd}
 		</if>
-		<if test="status != null and status.trim() != ''">
+		<if test="status != null ">
 			and status = #{status}
 		</if>
-		<if test="memo != null and memo.trim() != ''">
+		<if test="memo != null ">
 			and memo = #{memo}
 		</if>
-		<if test="rewardGrantType != null and rewardToken.trim() != ''">
+		<if test="rewardGrantType != null ">
 			and rewardGrantType = #{rewardGrantType}
 		</if>
 
@@ -272,6 +272,12 @@
 
 		<if test="awardType != null">
 			and award_type = #{awardType}
+		</if>
+
+		<if test="functionTypeAll !=null">
+
+			and (function_type =16 or function_type =18 or function_type= 23 or function_type =24 or function_type=26 or function_type=28 or function_type=29)
+
 		</if>
 	</sql>
 

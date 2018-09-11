@@ -155,6 +155,18 @@ public final class sysGlobals {
 	 * 邀请每个用户获得奖励
 	 */
 	public static final String INVA_EACH_AWARD = "INVA_EACH_AWARD";
+	/**
+	 * 发布每篇专业评测所获得奖励
+	 */
+	public static final String PUSH_EVA_GET_AWARD = "PUSH_EVA_GET_AWARD";
+	/**
+	 * 阅读的奖励
+	 */
+	public static final String READING_AWARD = "READING_AWARD";
+	/**
+	 * 阅读达到此篇数的评测才能获到奖励
+	 */
+	public static final String CAN_GET_AWARD_READING_COUNT = "CAN_GET_AWARD_READING_COUNT";
 
 	/**推送给全部用户默认一次取多少消息*/
 	public static Integer DEFAULT_MSG_COUNT = 1000;

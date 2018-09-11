@@ -26,6 +26,10 @@ public class QfindexResponse implements Serializable {
 	 */
 	private Integer praiseReceStatus = 0;
 	/**
+	 * 获得点赞总奖励
+	 */
+	private Double praiseAwardSum;
+	/**
 	 * 
 	 * 分享次数
 	 */
@@ -43,6 +47,10 @@ public class QfindexResponse implements Serializable {
 	 */
 	private Integer sharePostReceStatus = 0;
 	/**
+	 * 获得分享总奖励
+	 */
+	private Double sharePostAwardSum;
+	/**
 	 * 评论次数
 	 */
 	private Integer commentDegr;
@@ -59,6 +67,10 @@ public class QfindexResponse implements Serializable {
 	 */
 	private Integer commentReceStatus = 0;
 	/**
+	 * 获得的评论总奖励
+	 */
+	private Double commentAwardSum;
+	/**
 	 * 评测次数
 	 */
 	private Integer evaDegr;
@@ -70,6 +82,11 @@ public class QfindexResponse implements Serializable {
 	 * 评测的总次数
 	 */
 	private Integer evaAwardSumDegr;
+	/**
+	 * 获得发布评测的总奖励
+	 */
+	private Double evaAwardSum;
+
 	/**
 	 * 评测的领取奖励
 	 */
@@ -92,6 +109,10 @@ public class QfindexResponse implements Serializable {
 	 */
 	private Integer readingReceStatus = 0;
 	/**
+	 * 获得阅读总奖励
+	 */
+	private Double readingAwardSum;
+	/**
 	 * 区分指数
 	 */
 	private Integer statusHierarchyType;
@@ -109,6 +130,46 @@ public class QfindexResponse implements Serializable {
 	private BigDecimal invaEachAward;
 
 	private Double todayAward;
+
+	public Double getPraiseAwardSum() {
+		return praiseAwardSum;
+	}
+
+	public void setPraiseAwardSum(Double praiseAwardSum) {
+		this.praiseAwardSum = praiseAwardSum;
+	}
+
+	public Double getSharePostAwardSum() {
+		return sharePostAwardSum;
+	}
+
+	public void setSharePostAwardSum(Double sharePostAwardSum) {
+		this.sharePostAwardSum = sharePostAwardSum;
+	}
+
+	public Double getCommentAwardSum() {
+		return commentAwardSum;
+	}
+
+	public void setCommentAwardSum(Double commentAwardSum) {
+		this.commentAwardSum = commentAwardSum;
+	}
+
+	public Double getEvaAwardSum() {
+		return evaAwardSum;
+	}
+
+	public void setEvaAwardSum(Double evaAwardSum) {
+		this.evaAwardSum = evaAwardSum;
+	}
+
+	public Double getReadingAwardSum() {
+		return readingAwardSum;
+	}
+
+	public void setReadingAwardSum(Double readingAwardSum) {
+		this.readingAwardSum = readingAwardSum;
+	}
 
 	public Double getTodayAward() {
 		return todayAward;

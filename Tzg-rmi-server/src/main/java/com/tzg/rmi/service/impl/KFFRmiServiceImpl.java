@@ -2488,13 +2488,35 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					// 不是今天更新
 
 				} else {
-					qfIndexService.updateSetAll(qfindex.getUserId());//每天置零
+					qfIndexService.updateSetAll(qfindex.getUserId());// 每天置零
 				}
-				Integer pushEvaDegr = qfindex.getPushEvaDegr();
-				Integer statusHierarchyType = qfindex.getStatusHierarchyType();
+				QfIndex qfIndexNew = qfIndexService.findByUserId(createUser.getUserId());
+				Integer pushEvaDegr = qfIndexNew.getPushEvaDegr();
+				Integer statusHierarchyType = qfIndexNew.getStatusHierarchyType();
 				int i = (int) Math.floor(statusHierarchyType * 0.1);
 				if (pushEvaDegr < i) {
 					qfIndexService.increasePushEvaCount(createUser.getUserId());
+					// TODO: 添加发布奖励
+					SystemParam pushEvaGetAwardSys = systemParamService.findByCode(sysGlobals.PUSH_EVA_GET_AWARD);
+					Tokenrecords tokenrecords = new Tokenrecords();
+					tokenrecords.setUserId(createUser.getUserId());
+					String format = String.format("%010d", postId);
+					tokenrecords.setTradeCode(format);
+					tokenrecords.setTradeDate(now);
+					tokenrecords.setFunctionDesc("发布专业评测获得奖励");
+					tokenrecords.setFunctionType(28);
+					tokenrecords.setAmount(new BigDecimal(pushEvaGetAwardSys.getVcParamValue()));
+					tokenrecords.setTradeDate(now);
+					tokenrecords.setCreateTime(now);
+					tokenrecords.setUpdateTime(now);
+					tokenrecords.setStatus(1);
+					tokenrecords.setRewardGrantType(1);
+					tokenrecords.setPostId(postId);
+					tokenrecords.setTradeType(1);
+					tokenrecordsService.save(tokenrecords);
+
+					coinPropertyService.updateCoin(tokenrecords, 1);
+
 				}
 
 			}
@@ -4999,6 +5021,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 	@Override
 	public EvaluationDetailResponse findEvaluationDetail(Integer userId, Integer type, Integer postId) throws RestServiceException {
+		Date now = new Date();
 		EvaluationDetailResponse response = new EvaluationDetailResponse();
 		// 登录和非登录用户区别只有关注状态按钮显示
 		KFFUser loginUser = null;
@@ -5101,6 +5124,62 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (null != article) {
 			response.setTagInfos(article.getTagInfos());
 		}
+
+		// 添加阅读次数
+
+		QfIndex qfIndexUser = qfIndexService.findByUserId(userId);// 阅读人的区分指数
+		QfIndex qfindexCreater = qfIndexService.findByUserId(post.getCreateUserId());
+		if (userId != post.getCreateUserId()) {
+			if (qfIndexUser != null && qfindexCreater != null) {
+				if (qfIndexUser.getStatusHierarchyType() > 0) {
+					if (null != qfIndexUser) {
+
+						Integer readingDegr = qfIndexUser.getReadingDegr();
+						if (readingDegr != 0) {
+
+							if (DateUtil.isToday(qfIndexUser.getUpdateTime().getTime())) {// 判断点赞人的更新时间是不是今天
+																							// 是今天不更新
+																							// 不是今天更新
+
+							} else {
+								qfIndexService.updateSetAll(qfIndexUser.getUserId());
+							}
+
+						}
+					}
+					QfIndex qfIndexNew = qfIndexService.findByUserId(userId);
+					if (qfindexCreater.getStatusHierarchyType() > 0) {
+						// 添加阅读次数
+						SystemParam canGetAwardReadingCountSys = systemParamService.findByCode(sysGlobals.CAN_GET_AWARD_READING_COUNT);
+						int i = Integer.valueOf(canGetAwardReadingCountSys.getVcParamValue());
+						if (qfIndexNew.getReadingDegr() < i) {
+							qfIndexService.increaseReadingDegr(userId);
+						}
+						if (qfIndexNew.getReadingDegr() == i - 1) {
+							SystemParam readingAwardSys = systemParamService.findByCode(sysGlobals.READING_AWARD);
+							Tokenrecords tokenrecords = new Tokenrecords();
+							tokenrecords.setUserId(userId);
+							String format = String.format("%010d", postId);
+							tokenrecords.setTradeCode(format);
+							tokenrecords.setTradeDate(now);
+							tokenrecords.setFunctionDesc("阅读专业评测获得奖励");
+							tokenrecords.setFunctionType(28);
+							tokenrecords.setAmount(new BigDecimal(readingAwardSys.getVcParamValue()));
+							tokenrecords.setTradeDate(now);
+							tokenrecords.setCreateTime(now);
+							tokenrecords.setUpdateTime(now);
+							tokenrecords.setStatus(1);
+							tokenrecords.setRewardGrantType(1);
+							tokenrecords.setPostId(postId);
+							tokenrecordsService.save(tokenrecords);
+
+							coinPropertyService.updateCoin(tokenrecords, 1);
+						}
+					}
+				}
+			}
+		}
+
 		return response;
 
 	}
