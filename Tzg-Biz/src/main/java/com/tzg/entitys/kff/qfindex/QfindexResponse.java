@@ -128,7 +128,9 @@ public class QfindexResponse implements Serializable {
 	 * 每邀请一个好友的奖励 后台配置
 	 */
 	private BigDecimal invaEachAward;
-
+	/**
+	 * 今天获得奖励
+	 */
 	private Double todayAward;
 
 	public Double getPraiseAwardSum() {
