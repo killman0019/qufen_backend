@@ -1,9 +1,13 @@
 package com.tzg.common.service.kff;
 
 import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,9 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.service.systemParam.SystemParamService;
+import com.tzg.common.utils.DateUtil;
 import com.tzg.common.utils.sysGlobals;
 import com.tzg.entitys.kff.qfindex.QfIndex;
 import com.tzg.entitys.kff.qfindex.QfindexResponse;
+import com.tzg.entitys.kff.tokenrecords.Tokenrecords;
+import com.tzg.entitys.kff.tokenrecords.TokenrecordsMapper;
 import com.tzg.entitys.leopard.system.SystemParam;
 import com.tzg.rest.exception.rest.RestServiceException;
 
@@ -25,6 +32,9 @@ public class QfIndexService {
 	private com.tzg.entitys.kff.qfindex.QfIndexMapper QfIndexMapper;
 	@Autowired
 	private SystemParamService systemParamService;
+
+	@Autowired
+	private TokenrecordsMapper tokenrecordsMapper;
 
 	@Transactional(readOnly = true)
 	public QfIndex findById(java.lang.Integer id) throws RestServiceException {
@@ -144,23 +154,74 @@ public class QfIndexService {
 		QfindexResponse qfindexResponse = new QfindexResponse();
 		if (userId != null) {
 
+			QfIndex qfindex = QfIndexMapper.findByUserId(userId);
+			if (qfindex != null) {
+				// 今日赚币
+				Map<String, Object> tokenMap = new HashMap<String, Object>();
+				long current = System.currentTimeMillis();// 当前时间毫秒数
+				long zero = current / (1000 * 3600 * 24) * (1000 * 3600 * 24) - TimeZone.getDefault().getRawOffset();// 今天零点零分零秒的毫秒数
+				long twelve = zero + 24 * 60 * 60 * 1000 - 1;// 今天23点59分59秒的毫秒数
+				Date createTimeBegin = new Date(zero);
+				Date createTimeEnd = new Date(twelve);
+				tokenMap.put("userId", userId);
+				tokenMap.put("tradeType", 1);
+				tokenMap.put("functionTypeAll", "true");
+				tokenMap.put("creatTimeBegin", createTimeBegin);
+				tokenMap.put("creatTimeEnd", createTimeEnd);
+				tokenMap.put("status", 1);
+				List<Tokenrecords> tokenRecordsList = tokenrecordsMapper.findByMap(tokenMap);// TODO
+																								// 待完成添加时间区间
+				Double amountSum = 0.0;// 所有挣的币
+				Double loginSum = 0.0;// 所有登陆奖励
+				if (CollectionUtils.isNotEmpty(tokenRecordsList)) {
+					for (Tokenrecords tokenrecords : tokenRecordsList) {
+						amountSum = amountSum + (tokenrecords.getAmount().doubleValue());
+						if (tokenrecords.getFunctionType() == 16 || tokenrecords.getFunctionType() == 18) {
+							loginSum = loginSum + (tokenrecords.getAmount().doubleValue());
+						}
+					}
+
+				}
+				qfindexResponse.setTodayAward(amountSum);// 今天所有赚的币
+				qfindexResponse.setLoginAward(BigDecimal.valueOf(loginSum));// 今日的登陆奖励
+				qfindexResponse.setStatusHierarchyType(qfindex.getStatusHierarchyType());// 区分指数
+
+				SystemParam sys = systemParamService.findByCode(sysGlobals.INVA_EACH_AWARD);
+				SystemParam sharePostSys = systemParamService.findByCode(sysGlobals.SHARE_POST_AWARD_TOKEN);
+				SystemParam praiseAwardSys = systemParamService.findByCode(sysGlobals.YX_PRAISE_TOKEN_TO_PRAYSER);
+				SystemParam commentAwardSys = systemParamService.findByCode(sysGlobals.COMMENT_AWARD_TOKEN);
+
+				qfindexResponse.setInvaEachAward(new BigDecimal(sys.getVcParamValue()));// 每邀请一个用户获得奖励
+
+				qfindexResponse.setSharePostAward(Double.valueOf(sharePostSys.getVcParamValue()));// 每次分享获得奖励
+				qfindexResponse.setPraiseAward(Double.valueOf(praiseAwardSys.getVcParamValue()));// 进行点赞给点赞人的奖励
+				qfindexResponse.setCommentAward(Double.valueOf(commentAwardSys.getVcParamValue()));// 给予评论人的奖励
+
+				// 获得评论收益 从交易流失表中
+				// 获得区分指数取整数值
+
+				int i = (int) Math.floor(qfindex.getStatusHierarchyType() * 0.01);// 向下取整
+				Integer yxComments = qfindex.getYxComments();
+				Integer yxSharePost = qfindex.getYxSharePost();
+				Integer yxPraise = qfindex.getYxpraise();
+				Integer yxCommentRece = i - yxComments;
+				Integer yxSharePostRece = i - yxSharePost;
+				Integer yxPraiseRece = i = yxPraise;
+				qfindexResponse.setCommentDegr(yxCommentRece);
+				qfindexResponse.setPraiseDegr(yxPraiseRece);
+				qfindexResponse.setSharePostDegr(yxSharePostRece);
+				if (yxCommentRece == i) {
+					qfindexResponse.setCommentReceStatus(1);// 已领取
+				}
+				if (yxPraiseRece == i) {
+					qfindexResponse.setPraiseReceStatus(1);
+				}
+				if (yxSharePostRece == i) {
+					qfindexResponse.setSharePostReceStatus(1);
+				}
+
+			}
 		}
-
-		QfIndex qfindex = QfIndexMapper.findByUserId(userId);
-		if (qfindex != null) {
-			qfindexResponse.setStatusHierarchyType(qfindex.getStatusHierarchyType());// 区分指数
-			SystemParam sys = systemParamService.findByCode(sysGlobals.INVA_EACH_AWARD);
-			SystemParam sharePostSys = systemParamService.findByCode(sysGlobals.SHARE_POST_AWARD_TOKEN);
-			SystemParam praiseAwardSys = systemParamService.findByCode(sysGlobals.YX_PRAISE_TOKEN_TO_PRAYSER);
-			SystemParam commentAwardSys = systemParamService.findByCode(sysGlobals.COMMENT_AWARD_TOKEN);
-			qfindexResponse.setInvaEachAward(new BigDecimal(sys.getVcParamValue()));// 每邀请一个用户获得奖励
-			qfindexResponse.setSharePostAward(Double.valueOf(sharePostSys.getVcParamValue()));// 每次分享获得奖励
-
-			qfindexResponse.setPraiseAward(Double.valueOf(praiseAwardSys.getVcParamValue()));// 进行点赞给点赞人的奖励
-			qfindexResponse.setCommentAward(Double.valueOf(commentAwardSys.getVcParamValue()));// 给予评论人的奖励
-
-		}
-
 		return qfindexResponse;
 	}
 }

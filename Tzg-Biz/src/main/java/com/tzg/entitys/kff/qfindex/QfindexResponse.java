@@ -104,9 +104,19 @@ public class QfindexResponse implements Serializable {
 	 */
 	private BigDecimal invaAward;
 	/**
-	 * 没邀请一个好友的奖励 后台配置
+	 * 每邀请一个好友的奖励 后台配置
 	 */
 	private BigDecimal invaEachAward;
+
+	private Double todayAward;
+
+	public Double getTodayAward() {
+		return todayAward;
+	}
+
+	public void setTodayAward(Double todayAward) {
+		this.todayAward = todayAward;
+	}
 
 	public BigDecimal getInvaEachAward() {
 		return invaEachAward;

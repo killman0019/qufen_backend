@@ -17,7 +17,8 @@
 		<result property="updateTime" jdbcType="TIMESTAMP" column="updateTime" />
 		<result property="yxComments" jdbcType="INTEGER" column="yx_comments" />
 		<result property="yxSharePost" jdbcType="INTEGER" column="yx_share_post" />
-
+		<result property="readingDegr" jdbcType="INTEGER" column="reading_degr" />
+		<result property="pushEvaDegr" jdbcType="INTEGER" column="push_eva_degr" />
 	</resultMap>
 
 	<sql id="columns">
@@ -36,7 +37,9 @@
         yx_comments ,
         yx_share_post ,
         createTime ,
-        updateTime
+        updateTime ,
+        reading_degr ,
+        push_eva_degr
         
 	    ]]>
 	</sql>
@@ -60,7 +63,10 @@
 	        yx_comments ,
 	        yx_share_post ,
         	createTime ,
-        	updateTime
+        	updateTime ,
+        	reading_degr ,
+        	push_eva_degr
+        	
 		) VALUES (
 		
         	#{userId,jdbcType=INTEGER} ,
@@ -76,7 +82,9 @@
         	#{yxComments,jdbcType=INTEGER} ,
         	#{yxSharePost,jdbcType=INTEGER} ,
         	#{createTime,jdbcType=TIMESTAMP} ,
-        	#{updateTime,jdbcType=TIMESTAMP} 
+        	#{updateTime,jdbcType=TIMESTAMP} ,
+        	#{readingDegr,jdbcType=INTEGER} ,
+        	#{pushEvaDegr,jdbcType=INTEGER}
         	
 		)
 	]]>
@@ -122,7 +130,13 @@
 				createTime = #{createTime,jdbcType=TIMESTAMP} ,
 			</if>
 			<if test="updateTime != null">
-				updateTime = #{updateTime,jdbcType=TIMESTAMP}
+				updateTime = #{updateTime,jdbcType=TIMESTAMP} ,
+			</if>
+			<if test="readingDegr != null">
+				reading_degr = #{readingDegr,jdbcType=INTEGER} ,
+			</if>
+			<if test="pushEvaDegr != null">
+				push_eva_degr = #{pushEvaDegr,jdbcType=INTEGER}
 			</if>
 
 
@@ -165,12 +179,16 @@
 		yx_comments=floor(status_hierarchy_type * 0.1),
 		yx_share_post=floor(status_hierarchy_type
 		* 0.1),
+		reading_degr=0,
+		push_eva_degr=0,
 		updateTime= NOW()
 		where status_hierarchy_type > 0 and (
 		yxpraise &lt; floor(status_hierarchy_type * 0.1)
 		OR yx_comments &lt; floor(status_hierarchy_type * 0.1)
 		OR yx_share_post &lt;
 		floor(status_hierarchy_type * 0.1)
+		OR reading_degr != 0
+		OR push_eva_degr !=0
 		)
 
 	</update>
@@ -326,9 +344,9 @@
 		</if>
 		<if test="userIds != null and userIds.trim() != ''">
 			and user_id in
-			
+
 			(#{userId})
-			
+
 		</if>
 
 	</sql>
