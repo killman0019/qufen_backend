@@ -692,9 +692,10 @@ public class RobotService {
 			queryEva.addQueryData("status", "1");
 			// 帖子类型：1-评测；2-讨论；3-文章
 			queryEva.addQueryData("postType", "1");
+			queryEva.addQueryData("createTimeBegin", postCreateBegin);
 			queryEva.setPageIndex(i);
 			queryEva.setRowsPerPage(5);
-			PageResult<Post> posts = kffPostService.findPageRemoveSingleEva(query);
+			PageResult<Post> posts = kffPostService.findPageRemoveSingleEva(queryEva);
 			if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
 				List<Post> postList = posts.getRows();
 				result.addAll(postList);
