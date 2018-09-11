@@ -580,6 +580,11 @@
 		<if test="postTotalIncome != null and postTotalIncome.trim() != ''">
 			and post_total_income = #{postTotalIncome,jdbcType=DOUBLE}
 		</if>
+		<if test="isNotEva !=null">
+
+			and (post_type = 2 OR post_type = 3)
+
+		</if>
 	</sql>
 
 	<select id="findPageRecommendList" resultMap="BaseResultMap" parameterType="java.util.Map">

@@ -3,6 +3,7 @@ package com.tzg.common.service.kff;
 import java.math.BigDecimal;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,6 +91,9 @@ public class RobotService {
 
 	@Autowired
 	private KFFRmiService KFFRmiService;
+
+	@Autowired
+	private PostService kffPostService;
 
 	@Value("#{paramConfig['DEV_ENVIRONMENT']}")
 	private static String devEnvironment;
@@ -265,14 +269,14 @@ public class RobotService {
 				while (true) {
 					i = i + 1;
 
-					PageResult<Post> postPage = getPostList(i);// j 1 i 0 i 1 j 11
+					List<Post> postPage = getPostList(i);// j 1 i 0 i 1 j 11
 
-					if (null != postPage && CollectionUtils.isEmpty(postPage.getRows())) {
+					if (null != postPage && CollectionUtils.isEmpty(postPage)) {
 						break;
 					}
-					if (null != postPage && CollectionUtils.isNotEmpty(postPage.getRows())) {
+					if (null != postPage && CollectionUtils.isNotEmpty(postPage)) {
 
-						for (Post post : postPage.getRows()) {
+						for (Post post : postPage) {
 							Integer r = RandomUtil.randomNumber(1, 3);
 							if (r == 1) {
 								continue;// 1/3的可能性不走接口
@@ -652,8 +656,9 @@ public class RobotService {
 	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
 	* @updateContext <修改内容>
 	 */
-	private PageResult<Post> getPostList(int i) {
-		PageResult<Post> result = null;
+	private List<Post> getPostList(int i) {
+		List<Post> result = new ArrayList<Post>();
+		PageResult<Post> resultPage = null;
 		SystemParam param = systemParamService.findByCode(sysGlobals.ROBOT_GET_POST_CREATE_TIME);
 		int days = Integer.valueOf(param.getVcParamValue());
 		if (days > 0) {
@@ -663,9 +668,11 @@ public class RobotService {
 			map.put("createTimeBegin", postCreateBegin);
 			map.put("sql_keyword_orderBy", "createTime");
 			map.put("sql_keyword_sort", "DESC");
+			map.put("isNotEva", "true");
 			query.setQueryData(map);
 			query.setPageIndex(i);
-			query.setRowsPerPage(10);
+			query.setRowsPerPage(5);
+
 			try {
 				Integer count = postMapper.findPageCount(query.getQueryData());
 				if (null != count && count.intValue() > 0) {
@@ -673,10 +680,24 @@ public class RobotService {
 					query.addQueryData("startRecord", Integer.toString(startRecord));
 					query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
 					List<Post> list = postMapper.findPage(query.getQueryData());
-					result = new PageResult<Post>(list, count, query);
+					resultPage = new PageResult<Post>(list, count, query);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
+			}
+
+			result.addAll(resultPage.getRows());
+			// 添加评测部分
+			PaginationQuery queryEva = new PaginationQuery();
+			queryEva.addQueryData("status", "1");
+			// 帖子类型：1-评测；2-讨论；3-文章
+			queryEva.addQueryData("postType", "1");
+			queryEva.setPageIndex(i);
+			queryEva.setRowsPerPage(5);
+			PageResult<Post> posts = kffPostService.findPageRemoveSingleEva(query);
+			if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
+				List<Post> postList = posts.getRows();
+				result.addAll(postList);
 			}
 			return result;
 
