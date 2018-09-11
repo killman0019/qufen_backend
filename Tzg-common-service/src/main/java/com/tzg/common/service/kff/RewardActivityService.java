@@ -70,6 +70,15 @@ public class RewardActivityService {
 		return rewardActivityMapper.findListByAttr(map);
 	}
 
+	@Transactional(readOnly = true)
+	public RewardActivity findFirstByAttr(Map<String, Object> map) {
+		 List<RewardActivity> reActs = rewardActivityMapper.findListByAttr(map);
+		 if(reActs.isEmpty()) {
+			 return null;
+		 }
+		 return reActs.get(0);
+	}
+	
 	public void saveRewardActivity(RewardActivity reAct) throws RestServiceException {
 		rewardActivityMapper.save(reAct);
 	}

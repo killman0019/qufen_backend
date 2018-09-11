@@ -430,23 +430,24 @@ public class HomeController extends BaseController {
 		return bre;
 	}
 
-	/**
-	 * 
-	 * @Title: discussDetail
-	 * @Description: 讨论详情
-	 * @param @param request
-	 * @param @param response
-	 * @param @return
-	 * @return BaseResponseEntity
-	 * @see
-	 * @throws
-	 */
-	@RequestMapping(value = "/discussDetail", method = { RequestMethod.POST, RequestMethod.GET })
+	/** 
+	* @Title: discussDetail 
+	* @Description: TODO <爆料详情>
+	* @author linj <方法创建作者>
+	* @create 下午2:56:10
+	* @param @param request
+	* @param @return <参数说明>
+	* @return BaseResponseEntity 
+	* @throws 
+	* @update 下午2:56:10
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	*/
 	@ResponseBody
+	@RequestMapping(value = "/discussDetail", method = { RequestMethod.POST, RequestMethod.GET })
 	public BaseResponseEntity discussDetail(HttpServletRequest request) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
-
 		try {
 			JSONObject params = getParamMapFromRequestPolicy(request);
 			String token = (String) params.get("token");

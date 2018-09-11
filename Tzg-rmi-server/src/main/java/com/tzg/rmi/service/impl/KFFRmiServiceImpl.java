@@ -3888,16 +3888,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			loginUser = kffUserService.findById(loginUserId);
 			registerAward(loginUserId);
 		}
-
 		List<Integer> praisedPostId = null;
-
 		// 获得点赞postidlist集合
-
 		if (null != loginUserId) {
 			praisedPostId = kffPraiseService.findPraisedPostIdByUserId(loginUserId);
 
 		}
-
 		if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
 			result.setCurPageNum(posts.getCurPageNum());
 			result.setPageSize(posts.getPageSize());
@@ -3967,28 +3963,38 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				if (1 == postType) {
 					// 查询评测和文章的标签
 					Evaluation evation = kffEvaluationService.findByPostId(post.getPostId());
-					if (null != evation) {
+					if(null!=evation) {
 						response.setEvaluationTags(evation.getEvaluationTags());
-					} else {
-						response.setEvaluationTags(null);
 					}
 				}
-				if (2 == postType) {
+				if (2 == postType||4 == postType) {
 					// 查询爆料的标签
 					Discuss discuss = kffDiscussService.findByPostId(post.getPostId());
-					if (null != discuss) {
+					if(null!=discuss) {
 						response.setTagInfos(discuss.getTagInfos());
-					} else {
-						response.setTagInfos(null);
 					}
 				}
 				if (3 == postType) {
 					// 查询文章的标签
 					Article ac = kffArticleService.findByPostId(post.getPostId());
-					if (null != ac) {
+					if(ac!=null) {
 						response.setTagInfos(ac.getTagInfos());
-					} else {
-						response.setTagInfos(null);
+					}
+				}
+				if (4 == postType) {
+					// 查询悬赏的标签
+					seMap.clear();
+					seMap.put("postId", post.getPostId());
+					RewardActivity ac = rewardActivityService.findFirstByAttr(seMap);
+					if(ac!=null) {
+						//取悬赏总奖励
+						response.setRewardMoney(ac.getRewardMoney());
+						Discuss discuss = kffDiscussService.findByPostId(post.getPostId());
+						if(StringUtils.isBlank(discuss.getRewardMoney().toString())) {
+							response.setRewardMoneyToOne(new BigDecimal("0"));
+						}else {
+							response.setRewardMoneyToOne(discuss.getRewardMoney());
+						}
 					}
 				}
 				// 设置人的关注状态
@@ -4769,24 +4775,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		BeanUtils.copyProperties(post, response);
 
 		Discuss discuss = kffDiscussService.findByPostId(postId);
-		if (discuss != null) {
-			response.setDisscussContents(discuss.getDisscussContents());
-			response.setDiscussId(discuss.getDiscussId());
-			response.setTagInfos(discuss.getTagInfos());
+		if (discuss == null) {
+			throw new RestServiceException(RestErrorCode.POST_NOT_EXIST);
 		}
-		// if (loginUser == null) {
-		// response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
-		// } else {
-		// // 返回对帖子用户的关注状态
-		// Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(),
-		// KFFConstants.FOLLOW_TYPE_USER, post.getCreateUserId());
-		// if (follow != null && follow.getStatus() != null && follow.getStatus() ==
-		// KFFConstants.STATUS_ACTIVE) {
-		// response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
-		// } else {
-		// response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
-		// }
-		// }
+		response.setDisscussContents(discuss.getDisscussContents());
+		response.setDiscussId(discuss.getDiscussId());
+		response.setTagInfos(discuss.getTagInfos());
 		// 设置人的关注状态
 		if (loginUser == null) {
 			response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
@@ -4871,9 +4865,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				hotCommentsresult.add(finalComment);
 			}
 		}
-
 		response.setHotComments(hotCommentsresult);
-
 		// 赞赏用户列表最多8个
 		List<Commendation> donateUsers = new ArrayList<>();
 		PaginationQuery query = new PaginationQuery();
@@ -4895,6 +4887,21 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		response.setDonateIncome(post.getDonateIncome());
 		response.setPostTotalIncome(post.getPostTotalIncome());
 		response.setCommentsNum(post.getCommentsNum());
+		//-------v1.6 新增悬赏回答--------------
+		if(post.getPostType()==4) {
+			RewardActivity ac = rewardActivityService.findById(discuss.getRewardActivityId());
+			if(ac!=null) {
+				//取悬赏总奖励
+				response.setRewardMoney(ac.getRewardMoney());
+				if(StringUtils.isBlank(discuss.getRewardMoney().toString())) {
+					response.setRewardMoneyToOne(new BigDecimal("0"));
+				}else {
+					response.setRewardMoneyToOne(discuss.getRewardMoney());
+				}
+				response.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(post.getPostShortDesc()));
+				response.setPostTitle(post.getPostTitle());
+			}
+		}
 		return response;
 	}
 
