@@ -64,6 +64,25 @@ public class QfIndex implements Serializable {
 	 */
 	private Integer yxSharePost;
 
+	private Integer readingDegr;
+	private Integer pushEvaDegr;
+
+	public Integer getReadingDegr() {
+		return readingDegr;
+	}
+
+	public void setReadingDegr(Integer readingDegr) {
+		this.readingDegr = readingDegr;
+	}
+
+	public Integer getPushEvaDegr() {
+		return pushEvaDegr;
+	}
+
+	public void setPushEvaDegr(Integer pushEvaDegr) {
+		this.pushEvaDegr = pushEvaDegr;
+	}
+
 	public Integer getYxSharePost() {
 		return yxSharePost;
 	}

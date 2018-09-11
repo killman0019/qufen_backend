@@ -2479,6 +2479,26 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// kffProjectService.updateTotalScore(project.getProjectId(), totalScore);
 		// 更新评测人数
 		kffProjectService.increaseRaterNum(project.getProjectId());
+		// 更新区分指数表中的发布评测次数字段
+		if (evaluation.getModelType() != 1) {// 去除简单评测的所有专业评测
+			QfIndex qfindex = qfIndexService.findByUserId(createUser.getUserId());
+			if (null != qfindex) {
+				if (DateUtil.isToday(qfindex.getUpdateTime().getTime())) {// 判断点赞人的更新时间是不是今天
+					// 是今天不更新
+					// 不是今天更新
+
+				} else {
+					qfIndexService.updateSetAll(qfindex.getUserId());//每天置零
+				}
+				Integer pushEvaDegr = qfindex.getPushEvaDegr();
+				Integer statusHierarchyType = qfindex.getStatusHierarchyType();
+				int i = (int) Math.floor(statusHierarchyType * 0.1);
+				if (pushEvaDegr < i) {
+					qfIndexService.increasePushEvaCount(createUser.getUserId());
+				}
+
+			}
+		}
 		// 个推APP推送消息
 		if (evaluationRequest.getModelType() != null && evaluationRequest.getModelType() != 1) {
 			if (null != createUser) {

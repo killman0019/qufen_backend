@@ -173,11 +173,15 @@ public class QfIndexService {
 																								// 待完成添加时间区间
 				Double amountSum = 0.0;// 所有挣的币
 				Double loginSum = 0.0;// 所有登陆奖励
+				Double commentSum = 0.0;
 				if (CollectionUtils.isNotEmpty(tokenRecordsList)) {
 					for (Tokenrecords tokenrecords : tokenRecordsList) {
 						amountSum = amountSum + (tokenrecords.getAmount().doubleValue());
 						if (tokenrecords.getFunctionType() == 16 || tokenrecords.getFunctionType() == 18) {
 							loginSum = loginSum + (tokenrecords.getAmount().doubleValue());
+						}
+						if (tokenrecords.getFunctionType() == 24) {
+							commentSum = commentSum + (tokenrecords.getAmount().doubleValue());
 						}
 					}
 
@@ -220,8 +224,33 @@ public class QfIndexService {
 					qfindexResponse.setSharePostReceStatus(1);
 				}
 
+				qfindexResponse.setCommentAward(commentSum);// 评论奖励
+
+				Double praiseSum = yxPraiseRece * Double.valueOf(praiseAwardSys.getVcParamValue());
+				qfindexResponse.setPraiseAward(praiseSum);// 点赞奖励
+				Double sharePostSum = yxSharePostRece * Double.valueOf(sharePostSys.getVcParamValue());
+				qfindexResponse.setSharePostAward(sharePostSum);// 分享奖励
+
 			}
 		}
 		return qfindexResponse;
+	}
+
+	/**
+	 * 
+	* @Title: increasePushEvaCount 
+	* @Description: TODO <增加区分指数表中的有效评测次数>
+	* @author zhangdd <方法创建作者>
+	* @create 上午11:40:39
+	* @param @param userId <参数说明>
+	* @return void 
+	* @throws 
+	* @update 上午11:40:39
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	 */
+	public void increasePushEvaCount(Integer userId) {
+
+		QfIndexMapper.increasePushEvaCount(userId);
 	}
 }

@@ -40,6 +40,6 @@ public interface QfIndexMapper extends BaseMapper<QfIndex, java.lang.Integer> {
 
 	void updateSetAll(Integer userId);
 
-	
+	void increasePushEvaCount(Integer userId);
 
 }

@@ -185,7 +185,8 @@
 		where status_hierarchy_type > 0 and (
 		yxpraise &lt; floor(status_hierarchy_type * 0.1)
 		OR yx_comments &lt; floor(status_hierarchy_type * 0.1)
-		OR yx_share_post &lt;
+		OR
+		yx_share_post &lt;
 		floor(status_hierarchy_type * 0.1)
 		OR reading_degr != 0
 		OR push_eva_degr !=0
@@ -234,7 +235,19 @@
 		yx_comments=floor(status_hierarchy_type * 0.1),
 		yx_share_post=floor(status_hierarchy_type
 		* 0.1),
+		push_eva_degr =0 ,
 		updateTime= NOW() where user_id = #{userId,jdbcType=INTEGER}
+
+	</update>
+
+	<update id="increasePushEvaCount" parameterType="java.lang.Integer">
+		update
+		tbqfindex
+		set
+		push_eva_degr = IFNULL(push_eva_degr,0) +1 ,
+		updateTime= NOW()
+		where user_id = #{userId,jdbcType=INTEGER}
+
 
 	</update>
 
