@@ -192,7 +192,17 @@ public class PostResponse implements Serializable, Comparable<Object> {
 	private String rewardContents;
 	//每个用户回答悬赏能中奖的金额
 	private BigDecimal rewardMoneyToOne;
+	//悬赏的PostId
+	private Integer postIdToReward;
 	
+	public Integer getPostIdToReward() {
+		return postIdToReward;
+	}
+
+	public void setPostIdToReward(Integer postIdToReward) {
+		this.postIdToReward = postIdToReward;
+	}
+
 	public BigDecimal getRewardMoneyToOne() {
 		return rewardMoneyToOne;
 	}

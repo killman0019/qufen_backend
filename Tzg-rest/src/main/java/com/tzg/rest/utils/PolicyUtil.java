@@ -107,7 +107,7 @@ public class PolicyUtil {
 //    mytoken ==MzI6MTUzMjY1ODU1MDUwMTphY2ZhMWE3YTM0YzY2MTM2NzMxMjZhZmY0MTkwZDY4Nw==
 //        String str = "{\"phoneNumber\":\"15967158998\",\"password\":\"11111111\",\"dynamicVerifyCode\":\"488258\"}";
 //        String ssr = "{\"token\":\"MTE0OjE1MzYyMTQyNTQxOTE6MTg0ZWZmNWUxZGJmYzFkZDRkZWQzMTdjZWY3MDRlOGU=\",\"pageIndex\":1,\"pageSize\":10}";
-    	String ssr = "{\"token\":\"NTU3ODk6MTUzNjIyNjA3MzMzNjplYmYzZTA4MDM1MDM0NWQ2MGMwMjg1NTFkOGY5MzJjYw==\",\"rewarId\":1,\"type\":1,\"pageIndex\":1,\"pageSize\":10}";
+    	String ssr = "{\"pageIndex\":1,\"pageSize\":10}";
         System.out.println("policy:"+encryptPolicy(ssr));
         System.out.println("sign:"+Md5(ssr));
         

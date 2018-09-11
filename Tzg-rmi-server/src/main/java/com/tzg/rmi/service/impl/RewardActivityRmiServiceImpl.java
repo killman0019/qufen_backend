@@ -24,10 +24,10 @@ import com.tzg.common.service.kff.RewardActivityService;
 import com.tzg.common.service.kff.UserService;
 import com.tzg.common.utils.DateUtil;
 import com.tzg.common.utils.H5AgainDeltagsUtil;
-import com.tzg.common.utils.StringUtil;
 import com.tzg.common.utils.WorkHtmlRegexpUtil;
 import com.tzg.common.utils.sysGlobals;
 import com.tzg.entitys.kff.activity.RewardActivity;
+import com.tzg.entitys.kff.activity.RewardActivityVo;
 import com.tzg.entitys.kff.article.ArticleRequest;
 import com.tzg.entitys.kff.coinproperty.CoinProperty;
 import com.tzg.entitys.kff.post.Post;
@@ -74,6 +74,10 @@ public class RewardActivityRmiServiceImpl implements RewardActivityRmiService {
 	public PageResult<PostResponse> findRewardAnswerList(Integer loginUserId, PaginationQuery query, 
 			Integer type){
 		return rewardActivityService.findRewardAnswerList(loginUserId, query,type);
+	}
+	
+	public PageResult<RewardActivityVo> getRewardActivityList( PaginationQuery query){
+		return rewardActivityService.getRewardActivityList(query);
 	}
 	
 	public Integer findLinkedCount(Map<String, Object> map) {

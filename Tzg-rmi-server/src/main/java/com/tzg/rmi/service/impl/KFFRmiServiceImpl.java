@@ -2169,6 +2169,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					rewardActivity.setType(DiscussType.DOTPRAISE.getValue());
 					rewardActivityService.update(rewardActivity);
 				}
+				newPost.setPostType(4);
+				kffPostService.update(newPost);
 			}
 		}
 		kffDiscussService.save(discuss);
@@ -3830,7 +3832,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (pageIndex == 1) {
 			seMap.clear();
 			seMap.put("status", "1");
-			seMap.put("postType", "2");
+			seMap.put("postTypec1", PostType.DICCUSS.getValue());
+			seMap.put("postTypec2", PostType.REWARD.getValue());
 			seMap.put("disStickTop", 1);// 置顶的
 			seMap.put("sort", "tds.dis_stick_updateTime");
 			seMap.put("startRecord", 0);
@@ -3845,7 +3848,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		SystemParam sysPar = systemParamService.findByCode(sysGlobals.POST_EVERY_PAGE);
 		query.setRowsPerPage(Integer.valueOf(sysPar.getVcParamValue()));
 		query.addQueryData("status", "1");
-		query.addQueryData("postType", PostType.DICCUSS.getValue());
+		query.addQueryData("postTypec1", PostType.DICCUSS.getValue());
+		query.addQueryData("postTypec2", PostType.REWARD.getValue());
 		query.addQueryData("disStickTop1", 1);// 不置顶的
 		query.addQueryData("isNiceChoice", sysGlobals.ENABLE);// 获取精选的爆料
 		query.addQueryData("sort", "tds.nice_choice_at");
@@ -3909,6 +3913,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				response.setCreateUserId(post.getCreateUserId());
 				response.setPostId(post.getPostId());
 				response.setPostType(post.getPostType());
+				System.out.println("post.getPostType()........."+post.getPostType());
 				response.setProjectId(post.getProjectId());
 				response.setStatus(post.getStatus());
 				response.setPraiseIncome(post.getPraiseIncome());
@@ -3967,7 +3972,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						response.setEvaluationTags(evation.getEvaluationTags());
 					}
 				}
-				if (2 == postType||4 == postType) {
+				if (2 == postType) {
 					// 查询爆料的标签
 					Discuss discuss = kffDiscussService.findByPostId(post.getPostId());
 					if(null!=discuss) {
@@ -3983,17 +3988,15 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				}
 				if (4 == postType) {
 					// 查询悬赏的标签
-					seMap.clear();
-					seMap.put("postId", post.getPostId());
-					RewardActivity ac = rewardActivityService.findFirstByAttr(seMap);
-					if(ac!=null) {
-						//取悬赏总奖励
-						response.setRewardMoney(ac.getRewardMoney());
-						Discuss discuss = kffDiscussService.findByPostId(post.getPostId());
-						if(StringUtils.isBlank(discuss.getRewardMoney().toString())) {
-							response.setRewardMoneyToOne(new BigDecimal("0"));
-						}else {
+					Discuss discuss = kffDiscussService.findByPostId(post.getPostId());
+					if(null!=discuss) {
+						response.setTagInfos(discuss.getTagInfos());
+						RewardActivity ac = rewardActivityService.findById(discuss.getRewardActivityId());
+						if(ac!=null) {
+							//取悬赏总奖励
+							response.setRewardMoney(ac.getRewardMoney());
 							response.setRewardMoneyToOne(discuss.getRewardMoney());
+							response.setPostIdToReward(ac.getPostId());
 						}
 					}
 				}
@@ -4893,13 +4896,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			if(ac!=null) {
 				//取悬赏总奖励
 				response.setRewardMoney(ac.getRewardMoney());
-				if(StringUtils.isBlank(discuss.getRewardMoney().toString())) {
-					response.setRewardMoneyToOne(new BigDecimal("0"));
-				}else {
-					response.setRewardMoneyToOne(discuss.getRewardMoney());
-				}
+				response.setRewardMoneyToOne(discuss.getRewardMoney());
 				response.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(post.getPostShortDesc()));
 				response.setPostTitle(post.getPostTitle());
+				response.setPostId(ac.getPostId());
 			}
 		}
 		return response;

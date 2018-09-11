@@ -27,6 +27,7 @@ import com.tzg.common.utils.StringUtil;
 import com.tzg.common.utils.sysGlobals;
 import com.tzg.entitys.kff.activity.RewardActivity;
 import com.tzg.entitys.kff.activity.RewardActivityMapper;
+import com.tzg.entitys.kff.activity.RewardActivityVo;
 import com.tzg.entitys.kff.coinproperty.CoinProperty;
 import com.tzg.entitys.kff.follow.Follow;
 import com.tzg.entitys.kff.post.Post;
@@ -409,6 +410,24 @@ public class RewardActivityService {
 			}
 		}
 		result.setRows(postResponse);
+		return result;
+	}
+	
+	@Transactional(readOnly = true)
+	public PageResult<RewardActivityVo> getRewardActivityList(PaginationQuery query) throws RestServiceException {
+		PageResult<RewardActivityVo> result = null;
+		try {
+			Integer count = rewardActivityMapper.findRewardActivityListCount(query.getQueryData());
+			if (null != count && count.intValue() > 0) {
+				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
+				query.addQueryData("startRecord", Integer.toString(startRecord));
+				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
+				List<RewardActivityVo> list = rewardActivityMapper.findRewardActivityListPage(query.getQueryData());
+				result = new PageResult<RewardActivityVo>(list, count, query);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return result;
 	}
 

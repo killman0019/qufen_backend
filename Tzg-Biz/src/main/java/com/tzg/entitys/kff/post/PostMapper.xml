@@ -826,6 +826,9 @@
 			<if test="postType!=null">
 				and tpt.post_type = #{postType}
 			</if>
+			<if test="postTypec1!=null and postTypec2!=null">
+				and (tpt.post_type = #{postTypec1} or tpt.post_type = #{postTypec2})
+			</if>
 			<if test="postTypec!=null">
 				and tpt.post_type != #{postTypec} and tpt.post_type != 4
 			</if>

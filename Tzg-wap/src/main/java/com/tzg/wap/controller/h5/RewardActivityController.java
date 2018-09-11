@@ -1,6 +1,7 @@
 package com.tzg.wap.controller.h5;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import com.tzg.common.utils.HtmlUtils;
 import com.tzg.common.utils.StringUtil;
 import com.tzg.common.utils.SyseUtil;
 import com.tzg.common.utils.sysGlobals;
+import com.tzg.entitys.kff.activity.RewardActivityVo;
 import com.tzg.entitys.kff.article.ArticleRequest;
 import com.tzg.entitys.kff.coinproperty.CoinProperty;
 import com.tzg.entitys.kff.post.PostResponse;
@@ -370,6 +372,56 @@ public class RewardActivityController extends BaseController {
 			PageResult<PostResponse> answers = rewardActivityRmiService.findRewardAnswerList(userId, query, type);
 			if(null!=answers&&!answers.getRows().isEmpty()) {
 				bre.setData(answers);
+				return bre;
+			}
+			bre.setNoDataMsg();
+		} catch (RestServiceException e) {
+			logger.error("RewardActivityController getRewardAnswer:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("RewardActivityController getRewardAnswer:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+		}
+		return bre;
+	}
+	
+	/** 
+	* @Title: getRewardActivityList 
+	* @Description: TODO <尽调挖矿接口>
+	* @author linj <方法创建作者>
+	* @create 下午4:59:48
+	* @param @param request
+	* @param @return <参数说明>
+	* @return BaseResponseEntity 
+	* @throws 
+	* @update 下午4:59:48
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	*/
+	@ResponseBody
+	@RequestMapping(value = "/getRewardActivityList", method = { RequestMethod.POST, RequestMethod.GET })
+	public BaseResponseEntity getRewardActivityList(HttpServletRequest request,Integer pageIndex,Integer pageSize) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+		try {
+			if(pageIndex==null&&pageSize==null) {
+				JSONObject requestContent = HtmlUtils.getRequestContent(request);
+				pageIndex = (Integer) requestContent.get("pageIndex");
+				pageSize = (Integer) requestContent.get("pageSize");
+			}
+			if(null==pageSize||null==pageIndex) {
+				bre.setNoRequstData();
+				return bre;
+			}
+			PaginationQuery query = new PaginationQuery();
+			query.addQueryData("sort", "rac.updated_at");
+			query.addQueryData("state", RewardActivityState.STARTING.getValue());
+			query.addQueryData("isActivity", sysGlobals.ENABLE);
+			query.addQueryData("endTime", new Date());
+			query.setPageIndex(pageIndex);
+			query.setRowsPerPage(pageSize);
+			PageResult<RewardActivityVo> data = rewardActivityRmiService.getRewardActivityList(query);
+			if(null!=data&&!data.getRows().isEmpty()) {
+				bre.setData(data);
 				return bre;
 			}
 			bre.setNoDataMsg();

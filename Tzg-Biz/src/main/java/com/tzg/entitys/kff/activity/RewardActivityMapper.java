@@ -20,4 +20,8 @@ public interface RewardActivityMapper extends BaseMapper<RewardActivity, java.la
     Integer findLinkedPageCount(Map<String, Object> map);
     
     Integer findLinkedCount(Map<String, Object> map);
+    
+    List<RewardActivityVo> findRewardActivityListPage(Map<String, Object> map);
+    Integer findRewardActivityListCount(Map<String, Object> map);
+    
 }

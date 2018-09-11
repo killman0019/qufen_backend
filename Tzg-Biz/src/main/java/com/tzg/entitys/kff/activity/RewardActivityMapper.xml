@@ -224,6 +224,32 @@
 		<include refid="condition" />
 	</select>
 	
+	<select id="findRewardActivityListCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(1) from <include refid="table_name" /> as rac
+    	INNER JOIN tbpost as tpt on tpt.post_id=rac.post_id
+		<include refid="condition" />
+	</select>
+	
+	<select id="findRewardActivityListPage" resultType="com.tzg.entitys.kff.activity.RewardActivityVo" parameterType="java.util.Map">
+		select
+			tpt.post_id as postId,
+			tpt.project_id as projectId,
+			tpt.project_icon as projectIcon,
+			tpt.project_code as projectCode,
+			tpt.post_title as postTitle,
+			rac.reward_money as rewardMoney,
+			rac.begin_time as beginTime,
+			rac.end_time as endTime,
+			rac.state as state
+		from <include refid="table_name" /> as rac
+    	INNER JOIN tbpost as tpt on tpt.post_id=rac.post_id
+		<include refid="condition" />
+		ORDER BY ${sort} desc
+		<if test="startRecord != null and endRecord!=null">
+			LIMIT ${startRecord},${endRecord}
+		</if>
+	</select>
+	
 	
 	<select id="findLinkedCount" resultType="java.lang.Integer" parameterType="java.util.Map">
 		select count(1) from <include refid="table_name" /> as rac 
@@ -262,6 +288,12 @@
 			</if>
 			<if test="state != null">
 			and rac.state = #{state}
+			</if>
+			<if test="isActivity != null">
+			and rac.is_activity = #{isActivity}
+			</if>
+			<if test="endTime != null">
+			and rac.end_time &gt; #{endTime}
 			</if>
     	</where>
     </sql>

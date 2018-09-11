@@ -7,6 +7,7 @@ import java.util.Map;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.entitys.kff.activity.RewardActivity;
+import com.tzg.entitys.kff.activity.RewardActivityVo;
 import com.tzg.entitys.kff.article.ArticleRequest;
 import com.tzg.entitys.kff.coinproperty.CoinProperty;
 import com.tzg.entitys.kff.post.PostResponse;
@@ -37,6 +38,8 @@ public interface RewardActivityRmiService {
 	public PostResponse findRewardDetail(Integer userId, Integer type, Integer postId);
 	
 	public PageResult<PostResponse> findRewardAnswerList(Integer loginUserId, PaginationQuery query, Integer type);
+	
+	public PageResult<RewardActivityVo> getRewardActivityList(PaginationQuery query);
 	
 	public Integer findLinkedCount(Map<String, Object> map);
 	
