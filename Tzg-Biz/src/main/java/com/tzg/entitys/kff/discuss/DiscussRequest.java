@@ -31,9 +31,17 @@ public class DiscussRequest implements Serializable {
      * 标签ID，名称的json串
      */ 	
 	private java.lang.String tagInfos;
-
-
+	//用户 回答悬赏的帖子id
+	private Integer postId;
 	
+	public Integer getPostId() {
+		return postId;
+	}
+
+	public void setPostId(Integer postId) {
+		this.postId = postId;
+	}
+
 	public String getToken() {
 		return token;
 	}

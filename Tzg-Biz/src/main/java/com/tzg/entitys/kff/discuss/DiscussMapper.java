@@ -19,4 +19,6 @@ public interface DiscussMapper extends BaseMapper<Discuss, java.lang.Integer> {
 	List<Discuss> findByMap(Map<String, Object> disMap);
 	
 	Integer updateByMap(Map<String,Object> map);
+	
+	Integer findByCount(Map<String, Object> map);
 }
