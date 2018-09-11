@@ -1,5 +1,6 @@
 package com.tzg.common.service.kff;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,11 +17,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alibaba.dubbo.common.utils.CollectionUtils;
 import com.alibaba.fastjson.JSONArray;
 import com.tzg.common.constants.KFFConstants;
+import com.tzg.common.enums.DiscussType;
 import com.tzg.common.enums.PostType;
+import com.tzg.common.enums.RewardActivityState;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.utils.H5AgainDeltagsUtil;
 import com.tzg.common.utils.StringUtil;
+import com.tzg.common.utils.sysGlobals;
 import com.tzg.entitys.kff.activity.RewardActivity;
 import com.tzg.entitys.kff.activity.RewardActivityMapper;
 import com.tzg.entitys.kff.coinproperty.CoinProperty;
@@ -54,7 +58,7 @@ public class RewardActivityService {
 	@Autowired
 	private CoinPropertyService coinPropertyService;
 	@Autowired
-	private CommendationService kffCommendationService;
+	private DiscussService discussService;
 	
 	@Transactional(readOnly = true)
 	public RewardActivity findById(java.lang.Integer id) {
@@ -68,6 +72,10 @@ public class RewardActivityService {
 
 	public void saveRewardActivity(RewardActivity reAct) throws RestServiceException {
 		rewardActivityMapper.save(reAct);
+	}
+	
+	public void update(RewardActivity reAct) {
+		rewardActivityMapper.update(reAct);
 	}
 	
 	@Transactional(readOnly = true)
@@ -495,13 +503,26 @@ public class RewardActivityService {
 		kffPostService.update(post);
 		RewardActivity reAct = new RewardActivity();
 		reAct.setId(id);
-		reAct.setState(2);//悬赏的状态：0-进行中，1-已结束，2-已撤销
+		reAct.setState(RewardActivityState.REVOKEING.getValue());//悬赏的状态：0-进行中，1-已结束，2-已撤销
+		reAct.setIsActivity(sysGlobals.DISABLE);
+		reAct.setIsNiceChoice(sysGlobals.DISABLE);
+		reAct.setType(DiscussType.ORDINARYBURST.getValue());
+		reAct.setDisStickTop(0);//置顶状态：1置顶 0 不置顶
 		rewardActivityMapper.update(reAct);
+		//将悬赏的所有回答（即爆料表）全部置为不可操作状态
+		Map<String,Object> seMap = new HashMap<>();
+		seMap.put("rewardActivityId", id);
+		seMap.put("isNiceChoice", sysGlobals.DISABLE);
+		seMap.put("type", DiscussType.ORDINARYBURST.getValue());
+		seMap.put("disStickTop", 0);//置顶状态：1置顶 0 不置顶
+		seMap.put("rewardMoney", new BigDecimal("0"));
+		discussService.updateByMap(seMap);
+		
 		//需要将悬赏的奖励token返回给用户
 		Post postc = kffPostService.findById(postId);
 		RewardActivity reActc = rewardActivityMapper.findById(id);
 		//计算用户的token
-		Map<String,Object> seMap = new HashMap<>();
+		seMap.clear();
 		seMap.put("userId", postc.getCreateUserId());
 		List<CoinProperty> coinPr = coinPropertyService.findListByAttr(seMap);
 		if(coinPr.isEmpty()) {

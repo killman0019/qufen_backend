@@ -68,6 +68,7 @@ import com.tzg.common.service.kff.ProjectService;
 import com.tzg.common.service.kff.ProjectTradeService;
 import com.tzg.common.service.kff.ProjectevastatService;
 import com.tzg.common.service.kff.QfIndexService;
+import com.tzg.common.service.kff.RewardActivityService;
 import com.tzg.common.service.kff.SuggestService;
 import com.tzg.common.service.kff.TokenawardService;
 import com.tzg.common.service.kff.TokenrecordsService;
@@ -92,6 +93,7 @@ import com.tzg.common.utils.WorkHtmlRegexpUtil;
 import com.tzg.common.utils.sysGlobals;
 import com.tzg.common.utils.web.HttpUtil;
 import com.tzg.common.zookeeper.ZKClient;
+import com.tzg.entitys.kff.activity.RewardActivity;
 import com.tzg.entitys.kff.app.NewsPush;
 import com.tzg.entitys.kff.article.Article;
 import com.tzg.entitys.kff.article.ArticleDetailResponse;
@@ -241,6 +243,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	private ProjectTradeService projectTradeService;
 	@Autowired
 	private TokenrecordsService tokenrecordsService;
+	@Autowired
+	private RewardActivityService rewardActivityService;
 
 	@Value("#{paramConfig['registerUrl']}")
 	private String contentself;
@@ -2143,6 +2147,29 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			discuss.setIsNiceChoice(sysGlobals.ENABLE);
 			discuss.setNiceChoiceAt(new Date());
 			discuss.setType(DiscussType.AUTHACCOUNTPUBLISH.getValue());
+		}
+		//判断这个爆料是不是悬赏的答案
+		if(discussRequest.getPostId()!=null) {
+			Map<String,Object> seMap = new HashMap<>();
+			seMap.put("postId", discussRequest.getPostId());
+			List<RewardActivity> rewards = rewardActivityService.findListByAttr(seMap);
+			if(!rewards.isEmpty()) {
+				RewardActivity reward = rewards.get(0);
+				discuss.setRewardActivityId(reward.getId());
+				//精评类型：0-回答超过5个的,3-普通悬赏
+				seMap.clear();
+				seMap.put("rewardActivityId", reward.getId());
+				Integer count = kffDiscussService.findByCount(seMap);
+				if(count==4) {
+					RewardActivity rewardActivity = new RewardActivity();
+					rewardActivity.setId(reward.getId());
+					rewardActivity.setIsNiceChoice(sysGlobals.ENABLE);
+					rewardActivity.setNiceChoiceAt(new Date());
+					//精评类型：0-回答超过5个的，1-认证账号发布，2-人工精选,3-普通悬赏
+					rewardActivity.setType(DiscussType.DOTPRAISE.getValue());
+					rewardActivityService.update(rewardActivity);
+				}
+			}
 		}
 		kffDiscussService.save(discuss);
 		// 个推APP推送消息

@@ -98,11 +98,24 @@
 				type = #{type,jdbcType=INTEGER} ,
 			</if>
 			<if test="niceChoiceAt != null">
-				nice_choice_at = #{niceChoiceAt,jdbcType=TIMESTAMP}
+				nice_choice_at = #{niceChoiceAt,jdbcType=TIMESTAMP},
+			</if>
+			<if test="disStickTop != null">
+				dis_stick_top = #{disStickTop,jdbcType=INTEGER} ,
+			</if>
+			<if test="rewardMoney != null">
+				reward_money = #{rewardMoney,jdbcType=DECIMAL} 
 			</if>
 		</set>
 		WHERE
-		post_id = #{postId,jdbcType=INTEGER}
+		<choose>
+            <when test="rewardActivityId != null">
+               reward_activity_id = #{rewardActivityId,jdbcType=INTEGER}
+            </when>
+            <otherwise>
+                 post_id = #{postId,jdbcType=INTEGER}
+            </otherwise>
+        </choose>
 	</update>
 
 	<delete id="deleteById" parameterType="java.lang.Integer">
@@ -195,25 +208,30 @@
 		<if test="type != null">
 			and type = #{type}
 		</if>
+		<if test="rewardActivityId != null">
+			and reward_activity_id = #{rewardActivityId}
+		</if>
 	</sql>
 	<select id="findDisscussBypostId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
 		select
 		<include refid="columns" />
 		from tbdiscuss where 1=1
 		and post_id = #{postId}
-
 	</select>
 
 	<select id="findByMap" parameterType="java.util.Map" resultMap="BaseResultMap">
-
 		select
 		<include refid="columns" />
 		from tbdiscuss
 		where 1=1
 		<include refid="queryWhere" />
-
 	</select>
-
+	
+	<select id="findByCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+		select count(1) from tbdiscuss
+		where 1=1
+		<include refid="queryWhere" />
+	</select>
 </mapper>
 
 
