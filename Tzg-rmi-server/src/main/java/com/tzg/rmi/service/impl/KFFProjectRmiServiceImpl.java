@@ -2,7 +2,6 @@ package com.tzg.rmi.service.impl;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -22,23 +21,15 @@ import com.tzg.common.service.kff.ProjectForTabService;
 import com.tzg.common.service.kff.ProjectManageService;
 import com.tzg.common.service.kff.ProjectService;
 import com.tzg.common.service.kff.ProjectTradeService;
-<<<<<<< HEAD
-import com.tzg.common.service.kff.ProjectevastatService;
-import com.tzg.common.service.kff.QfIndexService;
+
 import com.tzg.common.service.kff.RobotService;
-import com.tzg.common.service.kff.SuggestService;
-import com.tzg.common.service.kff.TokenawardService;
-import com.tzg.common.service.kff.TokenrecordsService;
-=======
->>>>>>> origin/test_dev
+
 import com.tzg.common.service.kff.TransactionPairService;
 import com.tzg.common.service.kff.UserService;
 import com.tzg.common.utils.DozerMapperUtils;
-<<<<<<< HEAD
+
 import com.tzg.common.utils.RandomUtil;
-import com.tzg.common.zookeeper.ZKClient;
-=======
->>>>>>> origin/test_dev
+
 import com.tzg.entitys.kff.follow.Follow;
 import com.tzg.entitys.kff.follow.FollowResponse;
 import com.tzg.entitys.kff.project.KFFProject;
@@ -71,9 +62,8 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 	private TransactionPairService transactionPairService;
 	@Autowired
 	private ProjectTradeService projectTradeService;
-	
-	
-	public PageResult<KFFProject> findPage(PaginationQuery query){
+
+	public PageResult<KFFProject> findPage(PaginationQuery query) {
 		PageResult<KFFProject> result = kffProjectService.findPage(query);
 		return result;
 	}

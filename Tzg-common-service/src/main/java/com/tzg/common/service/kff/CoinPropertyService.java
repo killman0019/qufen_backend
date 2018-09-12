@@ -20,26 +20,22 @@ import com.tzg.entitys.kff.tokenrecords.Tokenrecords;
 import com.tzg.rest.exception.rest.RestServiceException;
 
 @Service(value = "KFFCoinPropertyService")
-<<<<<<< HEAD
 @Transactional(rollbackFor = Exception.class)
-=======
-@Transactional(rollbackFor=Exception.class)
->>>>>>> origin/test_dev
 public class CoinPropertyService {
 
 	@Autowired
 	private CoinPropertyMapper coinPropertyMapper;
 	@Autowired
 	private TokenrecordsService kffTokenrecordsService;
-	
-	//用户发布悬赏减少token币
-	public boolean countReduceForReward(CoinProperty coinProty,BigDecimal rewardMoney,Integer postId) {
-		//修改token币数据
+
+	// 用户发布悬赏减少token币
+	public boolean countReduceForReward(CoinProperty coinProty, BigDecimal rewardMoney, Integer postId) {
+		// 修改token币数据
 		BigDecimal coinLock = StringUtil.toBeBigDecimal(coinProty.getCoinLock().toString());
 		BigDecimal senCount = StringUtil.subBigDecimal(coinLock, rewardMoney);
 		coinProty.setCoinLock(Double.valueOf(senCount.toString()));
 		coinPropertyMapper.update(coinProty);
-		//添加token币的流水
+		// 添加token币的流水
 		Date date = new Date();
 		Tokenrecords tokenrecords = new Tokenrecords();
 		tokenrecords.setUserId(coinProty.getUserId());
@@ -61,15 +57,15 @@ public class CoinPropertyService {
 		kffTokenrecordsService.save(tokenrecords);
 		return true;
 	}
-	
-	//悬赏终止，返还用户的token币
-	public boolean countAddForReward(CoinProperty coinProty,BigDecimal rewardMoney,Integer postId) {
-		//修改token币数据
+
+	// 悬赏终止，返还用户的token币
+	public boolean countAddForReward(CoinProperty coinProty, BigDecimal rewardMoney, Integer postId) {
+		// 修改token币数据
 		BigDecimal coinLock = StringUtil.toBeBigDecimal(coinProty.getCoinLock().toString());
 		BigDecimal senCount = StringUtil.addBigDecimal(coinLock, rewardMoney);
 		coinProty.setCoinLock(Double.valueOf(senCount.toString()));
 		coinPropertyMapper.update(coinProty);
-		//添加token币的流水
+		// 添加token币的流水
 		Date date = new Date();
 		Tokenrecords tokenrecords = new Tokenrecords();
 		tokenrecords.setUserId(coinProty.getUserId());
@@ -111,10 +107,10 @@ public class CoinPropertyService {
 	public void save(CoinProperty coinProperty) throws RestServiceException {
 		coinPropertyMapper.save(coinProperty);
 	}
-	
-	public void updateByMap(Map<String,Object> map) throws RestServiceException {	
+
+	public void updateByMap(Map<String, Object> map) throws RestServiceException {
 		coinPropertyMapper.updateByMap(map);
-	}	
+	}
 
 	public void update(CoinProperty coinPropertyId) throws RestServiceException {
 		if (coinPropertyId.getUserId() == null) {
@@ -122,7 +118,7 @@ public class CoinPropertyService {
 		}
 		coinPropertyMapper.update(coinPropertyId);
 	}
-	
+
 	@Transactional(readOnly = true)
 	public List<CoinProperty> findListByAttr(Map<String, Object> map) {
 		return coinPropertyMapper.findListByAttr(map);

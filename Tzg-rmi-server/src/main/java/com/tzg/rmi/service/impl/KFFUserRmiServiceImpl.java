@@ -14,11 +14,9 @@ import com.tzg.common.service.kff.FollowService;
 import com.tzg.common.service.kff.InteractionRootService;
 import com.tzg.common.service.kff.QfIndexService;
 import com.tzg.common.service.kff.UserService;
-<<<<<<< HEAD
-import com.tzg.entitys.kff.qfindex.QfIndexMapper;
+
 import com.tzg.entitys.kff.qfindex.QfindexResponse;
-=======
->>>>>>> origin/test_dev
+
 import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rmi.service.KFFUserRmiService;
@@ -32,7 +30,7 @@ public class KFFUserRmiServiceImpl implements KFFUserRmiService {
 
 	@Autowired
 	private FollowService kffFollowService;
-	
+
 	public PageResult<KFFUser> findPage(PaginationQuery query) throws RestServiceException {
 		PageResult<KFFUser> result = userService.findPage(query);
 		return result;
