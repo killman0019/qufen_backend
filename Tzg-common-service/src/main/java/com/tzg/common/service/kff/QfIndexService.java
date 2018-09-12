@@ -175,7 +175,7 @@ public class QfIndexService {
 					Double amountSum = 0.0;// 所有挣的币
 					Double loginSum = 0.0;// 所有登陆奖励
 					Double commentSum = 0.0;// 所有评论奖励
-					Double invaAward = 0.0;
+					Double invaAward = 0.0;// 所有邀请奖励
 					if (CollectionUtils.isNotEmpty(tokenRecordsList)) {
 						for (Tokenrecords tokenrecords : tokenRecordsList) {
 							amountSum = amountSum + (tokenrecords.getAmount().doubleValue());

@@ -659,8 +659,7 @@ public class ProjectController extends BaseController {
 			PageResult<TransactionPairResponse> exchangeAndPtranPairPage = kFFProjectRmiService.selectExchangeAndTranPair(projectId, query);
 			map.put("TransactionPairResponse", exchangeAndPtranPairPage);
 			bre.setData(map);
-			// System.err.println("exchangeAndPtranPairPage" +
-			// JSON.toJSONString(exchangeAndPtranPairPage));
+			SyseUtil.systemErrOutJson(map);
 		} catch (RestServiceException e) {
 			logger.error("ProjectController getExchangeAndTranPair:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());

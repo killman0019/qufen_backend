@@ -20,6 +20,8 @@ public class TransactionPair implements Serializable {
 	private String coinpair;
 
 	private String exchangeName;
+
+	private String exchangeLogo;
 	private Date createTime;
 	private String createTimeStr;
 
@@ -42,6 +44,14 @@ public class TransactionPair implements Serializable {
 	private Double changeDaily;
 
 	private Double usdRate;
+
+	public String getExchangeLogo() {
+		return exchangeLogo;
+	}
+
+	public void setExchangeLogo(String exchangeLogo) {
+		this.exchangeLogo = exchangeLogo;
+	}
 
 	public Double getLast() {
 		return last;

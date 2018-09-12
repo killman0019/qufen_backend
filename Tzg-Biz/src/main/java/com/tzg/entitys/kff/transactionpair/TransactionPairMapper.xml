@@ -8,6 +8,7 @@
 		<result column="main_code" property="mainCode" jdbcType="VARCHAR" />
 		<result column="coinpair" property="coinpair" jdbcType="VARCHAR" />
 		<result column="exchange_name" property="exchangeName" jdbcType="VARCHAR" />
+		<result column="exchange_logo" property="exchangeLogo" jdbcType="VARCHAR" />
 		<result column="exchange_display_name" property="exchangeDisplayName" jdbcType="VARCHAR" />
 		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
 		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
@@ -22,7 +23,8 @@
 	</resultMap>
 	<sql id="columns">
 		transaction_pair_id, exchange_id, status, main_code, coinpair, exchange_name, create_time,update_time,exchange_display_name,vaild
-		, last, high, low, base_volume, vol, change_daily,
+		, last, high, low, base_volume, vol,
+		change_daily,exchange_logo,
 		usd_rate
 	</sql>
 	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
@@ -39,7 +41,7 @@
 		insert into tbtransactionpair (transaction_pair_id, exchange_id, status,
 		main_code, coinpair, exchange_name, create_time,update_time,exchange_display_name,vaild,
 		last, high, low,
-		base_volume, vol, change_daily,
+		base_volume, vol, change_daily,exchange_logo,
 		usd_rate
 		)
 		values
@@ -49,7 +51,8 @@
 		#{exchangeName,jdbcType=VARCHAR},#{createTime,jdbcType=TIMESTAMP},#{exchangeDisplayName,jdbcType=VARCHAR},
 		#{updateTime,jdbcType=TIMESTAMP},#{vaild,jdbcType=INTEGER},
 		#{last,jdbcType=DOUBLE}, #{high,jdbcType=DOUBLE}, #{low,jdbcType=DOUBLE},
-		#{baseVolume,jdbcType=DOUBLE}, #{vol,jdbcType=DOUBLE}, #{changeDaily,jdbcType=DOUBLE},
+		#{baseVolume,jdbcType=DOUBLE}, #{vol,jdbcType=DOUBLE},
+		#{changeDaily,jdbcType=DOUBLE},#{exchangeLogo,jdbcType=VARCHAR},
 		#{usdRate,jdbcType=DOUBLE}}
 		)
 	</insert>
@@ -73,6 +76,9 @@
 			</if>
 			<if test="exchangeName != null">
 				exchange_name,
+			</if>
+			<if test="exchangeLogo != null">
+				exchange_logo,
 			</if>
 			<if test="createTime != null">
 				create_time,
@@ -120,6 +126,9 @@
 			</if>
 			<if test="exchangeName != null">
 				#{exchangeName,jdbcType=VARCHAR},
+			</if>
+			<if test="exchangeLogo != null">
+				#{exchangeLogo,jdbcType=VARCHAR},
 			</if>
 			<if test="createTime != null">
 				#{createTime,jdbcType=TIMESTAMP},
@@ -171,6 +180,9 @@
 			<if test="exchangeName != null">
 				exchange_name = #{exchangeName,jdbcType=VARCHAR},
 			</if>
+			<if test="exchangeLogo != null">
+				exchange_logo = #{exchangeLogo,jdbcType=VARCHAR},
+			</if>
 			<if test="exchangeDisplayName != null">
 				exchange_display_name = #{exchangeDisplayName,jdbcType=VARCHAR},
 			</if>
@@ -215,7 +227,9 @@
 		#{mainCode,jdbcType=VARCHAR},
 		coinpair = #{coinpair,jdbcType=VARCHAR},
 		exchange_name = #{exchangeName,jdbcType=VARCHAR},
-		exchange_display_name = #{exchangeDisplayName,jdbcType=VARCHAR},
+		exchange_logo = #{exchangeLogo,jdbcType=VARCHAR},
+		exchange_display_name =
+		#{exchangeDisplayName,jdbcType=VARCHAR},
 		create_time =
 		#{createTime,jdbcType=TIMESTAMP},
 		update_time =
@@ -229,7 +243,8 @@
 		base_volume = #{baseVolume,jdbcType=DOUBLE},
 		vol = #{vol,jdbcType=DOUBLE},
 		change_daily = #{changeDaily,jdbcType=DOUBLE},
-		usd_rate = #{usdRate,jdbcType=DOUBLE}
+		usd_rate =
+		#{usdRate,jdbcType=DOUBLE}
 		where
 		transaction_pair_id = #{transactionPairId,jdbcType=INTEGER}
 	</update>
@@ -287,6 +302,9 @@
 		<if test="exchangeName != null">
 			and exchange_name = #{exchangeName,jdbcType=VARCHAR}
 		</if>
+		<if test="exchangeLogo != null">
+			and exchange_logo = #{exchangeLogo,jdbcType=VARCHAR}
+		</if>
 		<if test="exchangeDisplayName != null">
 			and exchange_display_name = #{exchangeDisplayName,jdbcType=VARCHAR}
 		</if>
@@ -342,6 +360,9 @@
 		</if>
 		<if test="item.exchangeName != null">
 			and exchange_name = #{exchangeName,jdbcType=VARCHAR}
+		</if>
+		<if test="item.exchangeLogo != null">
+			and exchange_logo = #{exchangeLogo,jdbcType=VARCHAR}
 		</if>
 		<if test="item.exchangeDisplayName != null">
 			and exchange_display_name = #{exchangeDisplayName,jdbcType=VARCHAR}
@@ -418,6 +439,9 @@
 			</if>
 			<if test="exchangeName != null">
 				exchange_name = #{exchangeName,jdbcType=VARCHAR},
+			</if>
+			<if test="exchangeLogo != null">
+				exchange_logo = #{exchangelogo,jdbcType=VARCHAR},
 			</if>
 			<if test="exchangeDisplayName != null">
 				exchange_display_name = #{exchangeDisplayName,jdbcType=VARCHAR},

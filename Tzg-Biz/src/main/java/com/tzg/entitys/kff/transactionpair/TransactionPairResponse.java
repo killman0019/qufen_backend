@@ -23,6 +23,7 @@ public class TransactionPairResponse implements Serializable {
 	private String coinpair;
 
 	private String exchangeName;
+	private String exchangeLogo;
 
 	private Integer vaild;
 	private Double last;
@@ -47,6 +48,14 @@ public class TransactionPairResponse implements Serializable {
 
 	public Double getLast() {
 		return last;
+	}
+
+	public String getExchangeLogo() {
+		return exchangeLogo;
+	}
+
+	public void setExchangeLogo(String exchangeLogo) {
+		this.exchangeLogo = exchangeLogo;
 	}
 
 	public void setLast(Double last) {
