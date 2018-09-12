@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.kff.userqfindex.UserqfindexMapper">	
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.kff.userqfindex.Userqfindex">
+		<result property="qfindexId" jdbcType="INTEGER" column="qfindex_id"/>
+		<result property="userId" jdbcType="INTEGER" column="user_id"/>
+		<result property="totalIndex" jdbcType="INTEGER" column="total_index"/>
+		<result property="contentWeight" jdbcType="INTEGER" column="content_weight"/>
+		<result property="locktokenWeight" jdbcType="INTEGER" column="locktoken_weight"/>
+		<result property="activeWeight" jdbcType="INTEGER" column="active_weight"/>
+		<result property="influenceWeight" jdbcType="INTEGER" column="influence_weight"/>
+		<result property="communityWeight" jdbcType="INTEGER" column="community_weight"/>
+		<result property="healthyWeight" jdbcType="INTEGER" column="healthy_weight"/>
+		<result property="createTime" jdbcType="TIMESTAMP" column="createTime"/>
+		<result property="updateTime" jdbcType="TIMESTAMP" column="updateTime"/>
+		<result property="status" jdbcType="INTEGER" column="status"/>
+		<result property="memo" jdbcType="VARCHAR" column="memo"/>
+    </resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+        qfindex_id ,user_id ,total_index ,content_weight ,locktoken_weight ,active_weight ,influence_weight ,community_weight ,healthy_weight ,createTime ,updateTime ,status ,memo 
+	    ]]>
+	</sql>
+	
+	<insert id="save" parameterType="com.tzg.entitys.kff.userqfindex.Userqfindex" useGeneratedKeys="true" keyProperty="qfindexId">
+		<selectKey resultType="java.lang.Integer" keyProperty="qfindexId" order="AFTER" >
+	      SELECT LAST_INSERT_ID() AS qfindex_id
+	    </selectKey>
+	<![CDATA[
+		INSERT INTO tbuserqfindex (
+        	user_id ,
+        	total_index ,
+        	content_weight ,
+        	locktoken_weight ,
+        	active_weight ,
+        	influence_weight ,
+        	community_weight ,
+        	healthy_weight ,
+        	createTime ,
+        	updateTime ,
+        	status ,
+        	memo 
+		) VALUES (
+        	#{userId,jdbcType=INTEGER} ,
+        	#{totalIndex,jdbcType=INTEGER} ,
+        	#{contentWeight,jdbcType=INTEGER} ,
+        	#{locktokenWeight,jdbcType=INTEGER} ,
+        	#{activeWeight,jdbcType=INTEGER} ,
+        	#{influenceWeight,jdbcType=INTEGER} ,
+        	#{communityWeight,jdbcType=INTEGER} ,
+        	#{healthyWeight,jdbcType=INTEGER} ,
+        	#{createTime,jdbcType=TIMESTAMP} ,
+        	#{updateTime,jdbcType=TIMESTAMP} ,
+        	#{status,jdbcType=INTEGER} ,
+        	#{memo,jdbcType=VARCHAR} 
+		)
+	]]>
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.kff.userqfindex.Userqfindex">
+		UPDATE tbuserqfindex
+		<set>
+			<if test="userId != null">
+	        user_id = #{userId,jdbcType=INTEGER} ,
+	        </if>
+			<if test="totalIndex != null">
+	        total_index = #{totalIndex,jdbcType=INTEGER} ,
+	        </if>
+			<if test="contentWeight != null">
+	        content_weight = #{contentWeight,jdbcType=INTEGER} ,
+	        </if>
+			<if test="locktokenWeight != null">
+	        locktoken_weight = #{locktokenWeight,jdbcType=INTEGER} ,
+	        </if>
+			<if test="activeWeight != null">
+	        active_weight = #{activeWeight,jdbcType=INTEGER} ,
+	        </if>
+			<if test="influenceWeight != null">
+	        influence_weight = #{influenceWeight,jdbcType=INTEGER} ,
+	        </if>
+			<if test="communityWeight != null">
+	        community_weight = #{communityWeight,jdbcType=INTEGER} ,
+	        </if>
+			<if test="healthyWeight != null">
+	        healthy_weight = #{healthyWeight,jdbcType=INTEGER} ,
+	        </if>
+			<if test="createTime != null">
+	        createTime = #{createTime,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="updateTime != null">
+	        updateTime = #{updateTime,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="status != null">
+	        status = #{status,jdbcType=INTEGER} ,
+	        </if>
+			<if test="memo != null">
+	        memo = #{memo,jdbcType=VARCHAR} 
+	        </if>
+	    </set>
+		WHERE 
+	        qfindex_id = #{qfindexId,jdbcType=INTEGER} 
+	</update>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbuserqfindex WHERE
+        qfindex_id = #{qfindexId} 
+	]]>
+	</delete>
+    
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbuserqfindex 
+		WHERE 
+        qfindex_id = #{qfindexId} 
+	]]>
+	</select>
+	 
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from tbuserqfindex where 1=1
+		<include refid="queryWhere"/>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbuserqfindex where 1=1
+		<include refid="queryWhere"/> 
+	    <![CDATA[ ORDER BY qfindex_id DESC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<sql id="queryWhere">
+		<if test="qfindexId != null and qfindexId.trim() != ''">
+		and qfindex_id = #{qfindexId}
+		</if>
+		<if test="userId != null and userId.trim() != ''">
+		and user_id = #{userId}
+		</if>
+		<if test="totalIndex != null and totalIndex.trim() != ''">
+		and total_index = #{totalIndex}
+		</if>
+		<if test="contentWeight != null and contentWeight.trim() != ''">
+		and content_weight = #{contentWeight}
+		</if>
+		<if test="locktokenWeight != null and locktokenWeight.trim() != ''">
+		and locktoken_weight = #{locktokenWeight}
+		</if>
+		<if test="activeWeight != null and activeWeight.trim() != ''">
+		and active_weight = #{activeWeight}
+		</if>
+		<if test="influenceWeight != null and influenceWeight.trim() != ''">
+		and influence_weight = #{influenceWeight}
+		</if>
+		<if test="communityWeight != null and communityWeight.trim() != ''">
+		and community_weight = #{communityWeight}
+		</if>
+		<if test="healthyWeight != null and healthyWeight.trim() != ''">
+		and healthy_weight = #{healthyWeight}
+		</if>
+		<if test="createTimeBegin != null and createTimeBegin.trim() != ''">
+		and createTime >= #{createTimeBegin}
+		</if>
+		<if test="createTimeEnd != null and createTimeEnd.trim() != ''">
+		and createTime &lt;= #{createTimeEnd}
+		</if>
+		<if test="updateTimeBegin != null and updateTimeBegin.trim() != ''">
+		and updateTime >= #{updateTimeBegin}
+		</if>
+		<if test="updateTimeEnd != null and updateTimeEnd.trim() != ''">
+		and updateTime &lt;= #{updateTimeEnd}
+		</if>
+		<if test="status != null and status.trim() != ''">
+		and status = #{status}
+		</if>
+		<if test="memo != null and memo.trim() != ''">
+		and memo = #{memo}
+		</if>
+	</sql>
+</mapper>
+
+

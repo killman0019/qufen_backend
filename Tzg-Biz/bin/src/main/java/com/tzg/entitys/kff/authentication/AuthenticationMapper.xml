@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzg.entitys.kff.authentication.AuthenticationMapper">
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.kff.authentication.Authentication">
+		<id column="accountAuthenticationId" property="accountauthenticationid" jdbcType="INTEGER" />
+		<result column="userId" property="userid" jdbcType="INTEGER" />
+		<result column="type" property="type" jdbcType="INTEGER" />
+		<result column="qufenNickName" property="qufennickname" jdbcType="VARCHAR" />
+		<result column="authInformation" property="authinformation" jdbcType="VARCHAR" />
+		<result column="company" property="company" jdbcType="VARCHAR" />
+		<result column="registrationNum" property="registrationnum" jdbcType="VARCHAR" />
+		<result column="licencePic" property="licencepic" jdbcType="VARCHAR" />
+		<result column="missivePic" property="missivepic" jdbcType="VARCHAR" />
+		<result column="operatorName" property="operatorname" jdbcType="VARCHAR" />
+		<result column="assistPic" property="assistpic" jdbcType="VARCHAR" />
+		<result column="link" property="link" jdbcType="VARCHAR" />
+		<result column="wechat" property="wechat" jdbcType="VARCHAR" />
+		<result column="number" property="number" jdbcType="VARCHAR" />
+		<result column="mail" property="mail" jdbcType="VARCHAR" />
+		<result column="mediaName" property="medianame" jdbcType="VARCHAR" />
+		<result column="mediaChannel" property="mediachannel" jdbcType="VARCHAR" />
+		<result column="mediaIntroduce" property="mediaintroduce" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="INTEGER" />
+		<result column="valid" property="valid" jdbcType="INTEGER" />
+		<result column="createData" property="createdata" jdbcType="DATE" />
+		<result column="notPassReason" property="notpassreason" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		accountAuthenticationId, userId, type, qufenNickName,
+		authInformation, company,
+		registrationNum,
+		licencePic, missivePic,
+		operatorName, assistPic, link, wechat, number, mail,
+		mediaName,
+		mediaChannel, mediaIntroduce, status, valid, createData, notPassReason
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from tbauthentication
+		where accountAuthenticationId =
+		#{accountauthenticationid,jdbcType=INTEGER}
+	</select>
+
+	<insert id="save" parameterType="com.tzg.entitys.kff.authentication.Authentication">
+		insert into tbauthentication
+		(accountAuthenticationId, userId,
+		type, qufenNickName, authInformation,
+		company, registrationNum, licencePic,
+		missivePic, operatorName,
+		assistPic,
+		link, wechat, number,
+		mail, mediaName, mediaChannel,
+		mediaIntroduce, status, valid,
+		createData, notPassReason)
+		values
+		(#{accountauthenticationid,jdbcType=INTEGER},
+		#{userid,jdbcType=INTEGER},
+		#{type,jdbcType=INTEGER},
+		#{qufennickname,jdbcType=VARCHAR},
+		#{authinformation,jdbcType=VARCHAR},
+		#{company,jdbcType=VARCHAR},
+		#{registrationnum,jdbcType=VARCHAR}, #{licencepic,jdbcType=VARCHAR},
+		#{missivepic,jdbcType=VARCHAR}, #{operatorname,jdbcType=VARCHAR},
+		#{assistpic,jdbcType=VARCHAR},
+		#{link,jdbcType=VARCHAR},
+		#{wechat,jdbcType=VARCHAR}, #{number,jdbcType=VARCHAR},
+		#{mail,jdbcType=VARCHAR}, #{medianame,jdbcType=VARCHAR},
+		#{mediachannel,jdbcType=VARCHAR},
+		#{mediaintroduce,jdbcType=VARCHAR},
+		#{status,jdbcType=INTEGER}, #{valid,jdbcType=INTEGER},
+		#{createdata,jdbcType=DATE}, #{notpassreason,jdbcType=VARCHAR})
+	</insert>
+
+	<insert id="saveAuthenByUserId" parameterType="com.tzg.entitys.kff.authentication.Authentication">
+		insert into tbauthentication
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="accountauthenticationid != null">
+				accountAuthenticationId,
+			</if>
+			<if test="userid != null">
+				userId,
+			</if>
+			<if test="type != null">
+				type,
+			</if>
+			<if test="qufennickname != null">
+				qufenNickName,
+			</if>
+			<if test="authinformation != null">
+				authInformation,
+			</if>
+			<if test="company != null">
+				company,
+			</if>
+			<if test="registrationnum != null">
+				registrationNum,
+			</if>
+			<if test="licencepic != null">
+				licencePic,
+			</if>
+			<if test="missivepic != null">
+				missivePic,
+			</if>
+			<if test="operatorname != null">
+				operatorName,
+			</if>
+			<if test="assistpic != null">
+				assistPic,
+			</if>
+			<if test="link != null">
+				link,
+			</if>
+			<if test="wechat != null">
+				wechat,
+			</if>
+			<if test="number != null">
+				number,
+			</if>
+			<if test="mail != null">
+				mail,
+			</if>
+			<if test="medianame != null">
+				mediaName,
+			</if>
+			<if test="mediachannel != null">
+				mediaChannel,
+			</if>
+			<if test="mediaintroduce != null">
+				mediaIntroduce,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="valid != null">
+				valid,
+			</if>
+			<if test="createdata != null">
+				createData,
+			</if>
+			<if test="notpassreason != null">
+				notPassReason,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="accountauthenticationid != null">
+				#{accountauthenticationid,jdbcType=INTEGER},
+			</if>
+			<if test="userid != null">
+				#{userid,jdbcType=INTEGER},
+			</if>
+			<if test="type != null">
+				#{type,jdbcType=INTEGER},
+			</if>
+			<if test="qufennickname != null">
+				#{qufennickname,jdbcType=VARCHAR},
+			</if>
+			<if test="authinformation != null">
+				#{authinformation,jdbcType=VARCHAR},
+			</if>
+			<if test="company != null">
+				#{company,jdbcType=VARCHAR},
+			</if>
+			<if test="registrationnum != null">
+				#{registrationnum,jdbcType=VARCHAR},
+			</if>
+			<if test="licencepic != null">
+				#{licencepic,jdbcType=VARCHAR},
+			</if>
+			<if test="missivepic != null">
+				#{missivepic,jdbcType=VARCHAR},
+			</if>
+			<if test="operatorname != null">
+				#{operatorname,jdbcType=VARCHAR},
+			</if>
+			<if test="assistpic != null">
+				#{assistpic,jdbcType=VARCHAR},
+			</if>
+			<if test="link != null">
+				#{link,jdbcType=VARCHAR},
+			</if>
+			<if test="wechat != null">
+				#{wechat,jdbcType=VARCHAR},
+			</if>
+			<if test="number != null">
+				#{number,jdbcType=VARCHAR},
+			</if>
+			<if test="mail != null">
+				#{mail,jdbcType=VARCHAR},
+			</if>
+			<if test="medianame != null">
+				#{medianame,jdbcType=VARCHAR},
+			</if>
+			<if test="mediachannel != null">
+				#{mediachannel,jdbcType=VARCHAR},
+			</if>
+			<if test="mediaintroduce != null">
+				#{mediaintroduce,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=INTEGER},
+			</if>
+			<if test="valid != null">
+				#{valid,jdbcType=INTEGER},
+			</if>
+			<if test="createdata != null">
+				#{createdata,jdbcType=DATE},
+			</if>
+			<if test="notpassreason != null">
+				#{notpassreason,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+
+	<update id="updataAuthenByUserId" parameterType="com.tzg.entitys.kff.authentication.Authentication">
+		update tbauthentication
+		<set>
+			<if test="userid != null">
+				userId = #{userid,jdbcType=INTEGER},
+			</if>
+			<if test="type != null">
+				type = #{type,jdbcType=INTEGER},
+			</if>
+			<if test="qufennickname != null">
+				qufenNickName = #{qufennickname,jdbcType=VARCHAR},
+			</if>
+			<if test="authinformation != null">
+				authInformation = #{authinformation,jdbcType=VARCHAR},
+			</if>
+			<if test="company != null">
+				company = #{company,jdbcType=VARCHAR},
+			</if>
+			<if test="registrationnum != null">
+				registrationNum = #{registrationnum,jdbcType=VARCHAR},
+			</if>
+			<if test="licencepic != null">
+				licencePic = #{licencepic,jdbcType=VARCHAR},
+			</if>
+			<if test="missivepic != null">
+				missivePic = #{missivepic,jdbcType=VARCHAR},
+			</if>
+			<if test="operatorname != null">
+				operatorName = #{operatorname,jdbcType=VARCHAR},
+			</if>
+			<if test="assistpic != null">
+				assistPic = #{assistpic,jdbcType=VARCHAR},
+			</if>
+			<if test="link != null">
+				link = #{link,jdbcType=VARCHAR},
+			</if>
+			<if test="wechat != null">
+				wechat = #{wechat,jdbcType=VARCHAR},
+			</if>
+			<if test="number != null">
+				number = #{number,jdbcType=VARCHAR},
+			</if>
+			<if test="mail != null">
+				mail = #{mail,jdbcType=VARCHAR},
+			</if>
+			<if test="medianame != null">
+				mediaName = #{medianame,jdbcType=VARCHAR},
+			</if>
+			<if test="mediachannel != null">
+				mediaChannel = #{mediachannel,jdbcType=VARCHAR},
+			</if>
+			<if test="mediaintroduce != null">
+				mediaIntroduce = #{mediaintroduce,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=INTEGER},
+			</if>
+			<if test="valid != null">
+				valid = #{valid,jdbcType=INTEGER},
+			</if>
+			<if test="createdata != null">
+				createData = #{createdata,jdbcType=DATE},
+			</if>
+			<if test="notpassreason != null">
+				notPassReason = #{notpassreason,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where userId = #{userid,jdbcType=INTEGER} and ( notPassReason = "" OR notPassReason IS NULL ) and valid =1
+	</update>
+
+	<update id="updateByPrimaryKey" parameterType="com.tzg.entitys.kff.authentication.Authentication">
+		update
+		tbauthentication
+		set userId = #{userid,jdbcType=INTEGER},
+		type =
+		#{type,jdbcType=INTEGER},
+		qufenNickName =
+		#{qufennickname,jdbcType=VARCHAR},
+		authInformation =
+		#{authinformation,jdbcType=VARCHAR},
+		company =
+		#{company,jdbcType=VARCHAR},
+		registrationNum =
+		#{registrationnum,jdbcType=VARCHAR},
+		licencePic =
+		#{licencepic,jdbcType=VARCHAR},
+		missivePic =
+		#{missivepic,jdbcType=VARCHAR},
+		operatorName =
+		#{operatorname,jdbcType=VARCHAR},
+		assistPic =
+		#{assistpic,jdbcType=VARCHAR},
+		link = #{link,jdbcType=VARCHAR},
+		wechat =
+		#{wechat,jdbcType=VARCHAR},
+		number =
+		#{number,jdbcType=VARCHAR},
+		mail =
+		#{mail,jdbcType=VARCHAR},
+		mediaName = #{medianame,jdbcType=VARCHAR},
+		mediaChannel = #{mediachannel,jdbcType=VARCHAR},
+		mediaIntroduce =
+		#{mediaintroduce,jdbcType=VARCHAR},
+		status =
+		#{status,jdbcType=INTEGER},
+		valid = #{valid,jdbcType=INTEGER},
+		createData = #{createdata,jdbcType=DATE},
+		notPassReason =
+		#{notpassreason,jdbcType=VARCHAR}
+		where userId = #{userid,jdbcType=INTEGER}
+	</update>
+
+	<select id="selectAuthenticationByUserId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM tbauthentication
+		WHERE userId = #{userid,jdbcType=INTEGER} and valid =1
+		ORDER BY
+		accountAuthenticationId DESC
+
+	</select>
+
+</mapper>

@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.kff.userwallet.KFFUserWalletMapper">	
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.kff.userwallet.KFFUserWallet">
+		<result property="userWalletId" jdbcType="INTEGER" column="user_wallet_id"/>
+		<result property="userId" jdbcType="INTEGER" column="user_id"/>
+		<result property="userName" jdbcType="VARCHAR" column="user_name"/>
+		<result property="mobile" jdbcType="VARCHAR" column="mobile"/>
+		<result property="createTime" jdbcType="TIMESTAMP" column="createtime"/>
+		<result property="updateTime" jdbcType="TIMESTAMP" column="updatetime"/>
+		<result property="wallet" jdbcType="VARCHAR" column="wallet"/>
+		<result property="walletType" jdbcType="INTEGER" column="wallet_type"/>
+    </resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+	    user_wallet_id,
+        user_id ,
+        user_name ,
+        mobile ,
+        createTime ,
+        updateTime ,
+        wallet ,
+        wallet_type 
+	    ]]>
+	</sql>
+	
+	<insert id="save" parameterType="com.tzg.entitys.kff.userwallet.KFFUserWallet" useGeneratedKeys="true" keyProperty="userWalletId">
+		<selectKey resultType="java.lang.Integer" keyProperty="userWalletId" order="AFTER" >
+	      SELECT LAST_INSERT_ID() AS userWalletId
+	    </selectKey>
+	<![CDATA[
+		INSERT INTO tbuserwallet (
+        user_id ,
+        user_name ,
+        mobile ,
+        createTime ,
+        updateTime ,
+        wallet ,
+        wallet_type 
+		) VALUES (
+        	#{userId,jdbcType=INTEGER} ,
+        	#{userName,jdbcType=VARCHAR} ,
+        	#{mobile,jdbcType=VARCHAR} ,
+        	#{createTime,jdbcType=TIMESTAMP} ,
+        	#{updateTime,jdbcType=TIMESTAMP} ,
+        	#{wallet,jdbcType=VARCHAR} ,
+        	#{walletType,jdbcType=INTEGER} 
+		)
+	]]>
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.kff.userwallet.KFFUserWallet">
+		UPDATE tbuserwallet
+		<set>
+			
+			<if test="userId != null">
+	        user_id = #{userId,jdbcType=INTEGER} ,
+	        </if>
+			<if test="userName != null">
+	        user_name = #{userName,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="mobile != null">
+	        mobile = #{mobile,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="createTime != null">
+	        createTime = #{createTime,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="updateTime != null">
+	        updateTime = #{updateTime,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="wallet != null">
+	        wallet = #{wallet,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="walletType != null">
+	        wallet_type = #{walletType,jdbcType=INTEGER} ,
+	        </if>
+	    </set>
+		WHERE 
+	        user_wallet_id = #{userWalletId,jdbcType=INTEGER} 
+	</update>
+	
+	<update id="updateWallet" parameterType="com.tzg.entitys.kff.userwallet.KFFUserWallet">
+		UPDATE tbuserwallet
+		<set>
+			
+			<if test="userId != null">
+	        user_id = #{userId,jdbcType=INTEGER} ,
+	        </if>
+			<if test="userName != null">
+	        user_name = #{userName,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="mobile != null">
+	        mobile = #{mobile,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="createTime != null">
+	        createTime = #{createTime,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="updateTime != null">
+	        updateTime = #{updateTime,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="wallet != null">
+	        wallet = #{wallet,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="walletType != null">
+	        wallet_type = #{walletType,jdbcType=INTEGER} ,
+	        </if>
+	    </set>
+		WHERE 
+	        user_id = #{userId,jdbcType=INTEGER} 
+	        and
+	        wallet = #{wallet,jdbcType=VARCHAR} .
+	      </update>
+	<update id="updateUserWallet" parameterType="com.tzg.entitys.kff.userwallet.KFFUserWallet">
+		UPDATE tbuserwallet
+		<set>
+			
+			<if test="userId != null">
+	        user_id = #{userId,jdbcType=INTEGER} ,
+	        </if>
+			<if test="userName != null">
+	        user_name = #{userName,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="mobile != null">
+	        mobile = #{mobile,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="createTime != null">
+	        createTime = #{createTime,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="updateTime != null">
+	        updateTime = #{updateTime,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="wallet != null">
+	        wallet = #{wallet,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="walletType != null">
+	        wallet_type = #{walletType,jdbcType=INTEGER} ,
+	        </if>
+	    </set>
+		WHERE 
+	        user_wallet_id = #{userWalletId,jdbcType=INTEGER} 
+	       
+	</update>
+	
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbuserwallet 
+		WHERE 
+        user_wallet_id = #{userWalletId,jdbcType=INTEGER} 
+	]]>
+	</select>
+	<select id="findUserId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbuserwallet 
+		WHERE 
+        user_id = #{userId,jdbcType=INTEGER} 
+	]]>
+	</select>
+	
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from tbuserwallet where 1=1
+		<include refid="queryWhere"/>
+	</select>
+	<select id="findReferCount" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+    	select count(*) from tbuserwallet where 1=1
+		<![CDATA[
+		FROM tbuser 
+		WHERE 
+        user_wallet_id = #{userWalletId,jdbcType=INTEGER}
+	]]>
+	</select>
+	<select id="findbyWallet" resultMap="BaseResultMap" parameterType="com.tzg.entitys.kff.userwallet.KFFUserWallet">
+    	SELECT <include refid="columns"/> 
+		<![CDATA[
+		FROM tbuserwallet 
+		WHERE 
+        user_id = #{userId,jdbcType=INTEGER} 
+        and
+        wallet = #{wallet,jdbcType=VARCHAR}
+	]]>
+	</select>
+	<select id="findBywalletAndType" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    	select  <include refid="columns"/> 
+		<![CDATA[
+		FROM tbuserwallet 
+		WHERE 
+        user_id = #{userId,jdbcType=INTEGER} 
+	]]>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbuserwallet where 1=1
+		<include refid="queryWhere"/> 
+	    <![CDATA[ ORDER BY user_wallet_id DESC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<select id="findAllPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbuserwallet where 1=1
+		<include refid="queryWhere"/> 
+	    <![CDATA[ ORDER BY user_wallet_id DESC ]]>      
+	</select>
+	
+	<sql id="queryWhere">
+		<if test="userId != null and userId.trim() != ''">
+		and user_id = #{userId}
+		</if>
+		<if test="userName != null and userName.trim() != ''">
+		and user_name = #{userName}
+		</if>
+		<if test="mobile != null and mobile.trim() != ''">
+		and mobile = #{mobile}
+		</if>
+		<if test="createTimeBegin != null and createTimeBegin.trim() != ''">
+		and createTime >= #{createTimeBegin}
+		</if>
+		<if test="createTimeEnd != null and createTimeEnd.trim() != ''">
+		and createTime &lt;= #{createTimeEnd}
+		</if>
+		<if test="updateTimeBegin != null and updateTimeBegin.trim() != ''">
+		and updateTime >= #{updateTimeBegin}
+		</if>
+		<if test="updateTimeEnd != null and updateTimeEnd.trim() != ''">
+		and updateTime &lt;= #{updateTimeEnd}
+		</if>
+		<if test="wallet != null and wallet.trim() != ''">
+		and wallet = #{wallet}
+		</if>
+		<if test="walletType != null and walletType.trim() != ''">
+		and wallet_type  = #{walletType }
+		</if>
+	</sql>
+</mapper>
+
+
