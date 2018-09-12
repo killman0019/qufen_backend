@@ -2,11 +2,14 @@ package com.tzg.entitys.kff.discuss;
 
 import java.io.Serializable;
 
-import com.tzg.common.utils.DateUtil;
-
 public class DiscussRequest implements Serializable {
 
-    private String token;
+    /** 
+	* @Fields serialVersionUID : TODO<用一句话描述这个变量表示什么> 
+	*/ 
+	private static final long serialVersionUID = 1L;
+
+	private String token;
     
     /**
      * projectId
@@ -28,9 +31,17 @@ public class DiscussRequest implements Serializable {
      * 标签ID，名称的json串
      */ 	
 	private java.lang.String tagInfos;
-
-
+	//用户 回答悬赏的帖子id
+	private Integer postId;
 	
+	public Integer getPostId() {
+		return postId;
+	}
+
+	public void setPostId(Integer postId) {
+		this.postId = postId;
+	}
+
 	public String getToken() {
 		return token;
 	}

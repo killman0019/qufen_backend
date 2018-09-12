@@ -56,9 +56,7 @@ public class NavigationController extends BaseController {
 			seMap.put("isShow", sysGlobals.ENABLE);
 			List<Navigation> navis = navigationRmiService.findListByAttr(seMap);
 			if(navis.isEmpty()) {
-				bre.setData(map);
-				bre.setCode(RestErrorCode.NO_DATA_MSG.getValue());
-				bre.setMsg(RestErrorCode.NO_DATA_MSG.getErrorReason());
+				bre.setNoDataMsg();
 				return bre;
 			}
 			for (Navigation navigation : navis) {

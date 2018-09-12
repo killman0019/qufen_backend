@@ -70,6 +70,7 @@ import com.tzg.common.service.kff.ProjectService;
 import com.tzg.common.service.kff.ProjectTradeService;
 import com.tzg.common.service.kff.ProjectevastatService;
 import com.tzg.common.service.kff.QfIndexService;
+import com.tzg.common.service.kff.RewardActivityService;
 import com.tzg.common.service.kff.SuggestService;
 import com.tzg.common.service.kff.TokenawardService;
 import com.tzg.common.service.kff.TokenrecordsService;
@@ -94,6 +95,7 @@ import com.tzg.common.utils.WorkHtmlRegexpUtil;
 import com.tzg.common.utils.sysGlobals;
 import com.tzg.common.utils.web.HttpUtil;
 import com.tzg.common.zookeeper.ZKClient;
+import com.tzg.entitys.kff.activity.RewardActivity;
 import com.tzg.entitys.kff.app.NewsPush;
 import com.tzg.entitys.kff.article.Article;
 import com.tzg.entitys.kff.article.ArticleDetailResponse;
@@ -243,6 +245,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 	private ProjectTradeService projectTradeService;
 	@Autowired
 	private TokenrecordsService tokenrecordsService;
+	@Autowired
+	private RewardActivityService rewardActivityService;
 
 	@Value("#{paramConfig['registerUrl']}")
 	private String contentself;
@@ -1985,22 +1989,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		result.put("postType", newPost.getPostType());
 		// 更新用户发帖数
 		kffUserService.increasePostNum(createUser.getUserId(), KFFConstants.POST_TYPE_ARTICLE);
-		// 个推APP推送消息
-		// if (null != createUser) {
-		// Integer linkedType = null;
-		// if (post.getPostType() == 1) {
-		// linkedType = LinkedType.CUSTOMEVALUATING.getValue();
-		// }
-		// if (post.getPostType() == 2) {
-		// linkedType = LinkedType.COUNTERFEIT.getValue();
-		// }
-		// if (post.getPostType() == 3) {
-		// linkedType = LinkedType.ARTICLE.getValue();
-		// }
-		// appNewsPush(linkedType, post.getPostId(), createUser.getMobile(),
-		// sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle()
-		// + sysGlobals.CONTENT_GETUI_MSG_END);
-		// }
 		return result;
 	}
 
@@ -2166,6 +2154,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			discuss.setNiceChoiceAt(new Date());
 			discuss.setType(DiscussType.AUTHACCOUNTPUBLISH.getValue());
 		}
+<<<<<<< HEAD
 		kffDiscussService.save(discuss);
 		// 个推APP推送消息
 		/*
@@ -2179,26 +2168,68 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			}
 			if (newPost.getPostType() == 3) {
 				linkedType = LinkedType.ARTICLE.getValue();
+=======
+		//判断这个爆料是不是悬赏的答案
+		if(discussRequest.getPostId()!=null) {
+			Map<String,Object> seMap = new HashMap<>();
+			seMap.put("postId", discussRequest.getPostId());
+			List<RewardActivity> rewards = rewardActivityService.findListByAttr(seMap);
+			if(!rewards.isEmpty()) {
+				RewardActivity reward = rewards.get(0);
+				discuss.setRewardActivityId(reward.getId());
+				//精评类型：0-回答超过5个的,3-普通悬赏
+				seMap.clear();
+				seMap.put("rewardActivityId", reward.getId());
+				Integer count = kffDiscussService.findByCount(seMap);
+				if(count==4) {
+					RewardActivity rewardActivity = new RewardActivity();
+					rewardActivity.setId(reward.getId());
+					rewardActivity.setIsNiceChoice(sysGlobals.ENABLE);
+					rewardActivity.setNiceChoiceAt(new Date());
+					//精评类型：0-回答超过5个的，1-认证账号发布，2-人工精选,3-普通悬赏
+					rewardActivity.setType(DiscussType.DOTPRAISE.getValue());
+					rewardActivityService.update(rewardActivity);
+				}
+				newPost.setPostType(4);
+				kffPostService.update(newPost);
+>>>>>>> origin/test_dev
 			}
-			appNewsPush(linkedType, newPost.getPostId(), null, createUser.getMobile(), sysGlobals.CONTENT_GETUI_MSG_BEGIN + newPost.getPostTitle()
-					+ sysGlobals.CONTENT_GETUI_MSG_END);
-			// 向APP端推送消息
-			KFFMessage msg = new KFFMessage();
-			msg.setType(12);
-			msg.setStatus(1);
-			msg.setState(1);
-			msg.setCreateTime(now);
-			msg.setUpdateTime(now);
-			msg.setUserId(newPost.getCreateUserId());
-			msg.setTitle(sysGlobals.GETUI_NOTIFY);
-			msg.setContent(sysGlobals.CONTENT_GETUI_MSG_BEGIN + newPost.getPostTitle() + sysGlobals.CONTENT_GETUI_MSG_END);
-			msg.setSenderUserId(sysGlobals.QUFEN_ACCOUNT_ID);
-			msg.setJumpInfo(sysGlobals.QUFEN_ACCOUNT_ID.toString());
-			msg.setPostId(newPost.getPostId());
-			msg.setPostType(newPost.getPostType());
-			kffMessageService.save(msg);
 		}
+<<<<<<< HEAD
 		*/
+=======
+		kffDiscussService.save(discuss);
+		// 个推APP推送消息
+//		if (null != createUser) {
+//			Integer linkedType = null;
+//			if (newPost.getPostType() == 1) {
+//				linkedType = LinkedType.CUSTOMEVALUATING.getValue();
+//			}
+//			if (newPost.getPostType() == 2) {
+//				linkedType = LinkedType.COUNTERFEIT.getValue();
+//			}
+//			if (newPost.getPostType() == 3) {
+//				linkedType = LinkedType.ARTICLE.getValue();
+//			}
+//			appNewsPush(linkedType, newPost.getPostId(), null, createUser.getMobile(), sysGlobals.CONTENT_GETUI_MSG_BEGIN + newPost.getPostTitle()
+//					+ sysGlobals.CONTENT_GETUI_MSG_END);
+//			// 向APP端推送消息
+//			KFFMessage msg = new KFFMessage();
+//			msg.setType(12);
+//			msg.setStatus(1);
+//			msg.setState(1);
+//			msg.setCreateTime(now);
+//			msg.setUpdateTime(now);
+//			msg.setUserId(newPost.getCreateUserId());
+//			msg.setTitle(sysGlobals.GETUI_NOTIFY);
+//			msg.setContent(sysGlobals.CONTENT_GETUI_MSG_BEGIN + newPost.getPostTitle() + sysGlobals.CONTENT_GETUI_MSG_END);
+//			msg.setSenderUserId(sysGlobals.QUFEN_ACCOUNT_ID);
+//			msg.setJumpInfo(sysGlobals.QUFEN_ACCOUNT_ID.toString());
+//			msg.setPostId(newPost.getPostId());
+//			msg.setPostType(newPost.getPostType());
+//			kffMessageService.save(msg);
+//		}
+>>>>>>> origin/test_dev
 		result.put("postId", newPost.getPostId());
 		result.put("postType", newPost.getPostType());
 		return result;
@@ -3869,7 +3900,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (pageIndex == 1) {
 			seMap.clear();
 			seMap.put("status", "1");
-			seMap.put("postType", "2");
+			seMap.put("postTypec1", PostType.DICCUSS.getValue());
+			seMap.put("postTypec2", PostType.REWARD.getValue());
 			seMap.put("disStickTop", 1);// 置顶的
 			seMap.put("sort", "tds.dis_stick_updateTime");
 			seMap.put("startRecord", 0);
@@ -3884,7 +3916,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		SystemParam sysPar = systemParamService.findByCode(sysGlobals.POST_EVERY_PAGE);
 		query.setRowsPerPage(Integer.valueOf(sysPar.getVcParamValue()));
 		query.addQueryData("status", "1");
-		query.addQueryData("postType", PostType.DICCUSS.getValue());
+		query.addQueryData("postTypec1", PostType.DICCUSS.getValue());
+		query.addQueryData("postTypec2", PostType.REWARD.getValue());
 		query.addQueryData("disStickTop1", 1);// 不置顶的
 		query.addQueryData("isNiceChoice", sysGlobals.ENABLE);// 获取精选的爆料
 		query.addQueryData("sort", "tds.nice_choice_at");
@@ -3927,16 +3960,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			loginUser = kffUserService.findById(loginUserId);
 			registerAward(loginUserId);
 		}
-
 		List<Integer> praisedPostId = null;
-
 		// 获得点赞postidlist集合
-
 		if (null != loginUserId) {
 			praisedPostId = kffPraiseService.findPraisedPostIdByUserId(loginUserId);
 
 		}
-
 		if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
 			result.setCurPageNum(posts.getCurPageNum());
 			result.setPageSize(posts.getPageSize());
@@ -3952,6 +3981,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				response.setCreateUserId(post.getCreateUserId());
 				response.setPostId(post.getPostId());
 				response.setPostType(post.getPostType());
+				System.out.println("post.getPostType()........."+post.getPostType());
 				response.setProjectId(post.getProjectId());
 				response.setStatus(post.getStatus());
 				response.setPraiseIncome(post.getPraiseIncome());
@@ -4006,28 +4036,36 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				if (1 == postType) {
 					// 查询评测和文章的标签
 					Evaluation evation = kffEvaluationService.findByPostId(post.getPostId());
-					if (null != evation) {
+					if(null!=evation) {
 						response.setEvaluationTags(evation.getEvaluationTags());
-					} else {
-						response.setEvaluationTags(null);
 					}
 				}
 				if (2 == postType) {
 					// 查询爆料的标签
 					Discuss discuss = kffDiscussService.findByPostId(post.getPostId());
-					if (null != discuss) {
+					if(null!=discuss) {
 						response.setTagInfos(discuss.getTagInfos());
-					} else {
-						response.setTagInfos(null);
 					}
 				}
 				if (3 == postType) {
 					// 查询文章的标签
 					Article ac = kffArticleService.findByPostId(post.getPostId());
-					if (null != ac) {
+					if(ac!=null) {
 						response.setTagInfos(ac.getTagInfos());
-					} else {
-						response.setTagInfos(null);
+					}
+				}
+				if (4 == postType) {
+					// 查询悬赏的标签
+					Discuss discuss = kffDiscussService.findByPostId(post.getPostId());
+					if(null!=discuss) {
+						response.setTagInfos(discuss.getTagInfos());
+						RewardActivity ac = rewardActivityService.findById(discuss.getRewardActivityId());
+						if(ac!=null) {
+							//取悬赏总奖励
+							response.setRewardMoney(ac.getRewardMoney());
+							response.setRewardMoneyToOne(discuss.getRewardMoney());
+							response.setPostIdToReward(ac.getPostId());
+						}
 					}
 				}
 				// 设置人的关注状态
@@ -4106,9 +4144,15 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			List<PostDiscussVo> postDiscuss = kffPostService.findSetTopPost(seMap);
 			if (!postDiscuss.isEmpty()) {
 				for (PostDiscussVo postDiscussVo : postDiscuss) {
+<<<<<<< HEAD
 					if (postDiscussVo.getPostType() == 1) {
 						Evaluation eval = kffEvaluationService.findByPostId(postDiscussVo.getPostId());
 						if (eval.getModelType() == 1) {
+=======
+					if(postDiscussVo.getPostType()==1) {
+						Evaluation eval = kffEvaluationService.findByPostId(postDiscussVo.getPostId());
+						if(eval.getModelType()==1) {
+>>>>>>> origin/test_dev
 							continue;
 						}
 					}
@@ -4130,9 +4174,15 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				// 从中随机取出rowsPerPage条，等于小于rowsPerPage条就全部取出
 				if (postDiscusWithDt.size() <= nowCount) {
 					for (PostDiscussVo postDiscussVo : postDiscusWithDt) {
+<<<<<<< HEAD
 						if (postDiscussVo.getPostType() == 1) {
 							Evaluation eval = kffEvaluationService.findByPostId(postDiscussVo.getPostId());
 							if (eval.getModelType() == 1) {
+=======
+						if(postDiscussVo.getPostType()==1) {
+							Evaluation eval = kffEvaluationService.findByPostId(postDiscussVo.getPostId());
+							if(eval.getModelType()==1) {
+>>>>>>> origin/test_dev
 								continue;
 							}
 						}
@@ -4152,9 +4202,15 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					}
 					for (int i = 0; i < usList.size(); i++) {
 						PostDiscussVo postDiscussVo = postDiscusWithDt.get(usList.get(i));
+<<<<<<< HEAD
 						if (postDiscussVo.getPostType() == 1) {
 							Evaluation eval = kffEvaluationService.findByPostId(postDiscussVo.getPostId());
 							if (eval.getModelType() == 1) {
+=======
+						if(postDiscussVo.getPostType()==1) {
+							Evaluation eval = kffEvaluationService.findByPostId(postDiscussVo.getPostId());
+							if(eval.getModelType()==1) {
+>>>>>>> origin/test_dev
 								continue;
 							}
 						}
@@ -4311,7 +4367,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			}
 		}
 		result.setRows(postResponse);
-
 		return result;
 	}
 
@@ -4713,13 +4768,13 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 		PageResult<Comments> result = new PageResult<>();
 		List<Comments> finalCommentList = new ArrayList<>();
+		query.addQueryData("sortField", "praise_num");
 		PageResult<Comments> comments = kffCommentsService.findPage(query);
 		if (comments != null && CollectionUtils.isNotEmpty(comments.getRows())) {
 			result.setCurPageNum(comments.getCurPageNum());
 			result.setPageSize(comments.getPageSize());
 			result.setRowCount(comments.getRowCount());
 			result.setRowsPerPage(comments.getRowsPerPage());
-
 			PaginationQuery childQuery = new PaginationQuery();
 			childQuery.setPageIndex(1);
 			childQuery.setRowsPerPage(100);
@@ -4809,24 +4864,12 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		BeanUtils.copyProperties(post, response);
 
 		Discuss discuss = kffDiscussService.findByPostId(postId);
-		if (discuss != null) {
-			response.setDisscussContents(discuss.getDisscussContents());
-			response.setDiscussId(discuss.getDiscussId());
-			response.setTagInfos(discuss.getTagInfos());
+		if (discuss == null) {
+			throw new RestServiceException(RestErrorCode.POST_NOT_EXIST);
 		}
-		// if (loginUser == null) {
-		// response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
-		// } else {
-		// // 返回对帖子用户的关注状态
-		// Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(),
-		// KFFConstants.FOLLOW_TYPE_USER, post.getCreateUserId());
-		// if (follow != null && follow.getStatus() != null && follow.getStatus() ==
-		// KFFConstants.STATUS_ACTIVE) {
-		// response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
-		// } else {
-		// response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
-		// }
-		// }
+		response.setDisscussContents(discuss.getDisscussContents());
+		response.setDiscussId(discuss.getDiscussId());
+		response.setTagInfos(discuss.getTagInfos());
 		// 设置人的关注状态
 		if (loginUser == null) {
 			response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
@@ -4911,9 +4954,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				hotCommentsresult.add(finalComment);
 			}
 		}
-
 		response.setHotComments(hotCommentsresult);
-
 		// 赞赏用户列表最多8个
 		List<Commendation> donateUsers = new ArrayList<>();
 		PaginationQuery query = new PaginationQuery();
@@ -4935,6 +4976,18 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		response.setDonateIncome(post.getDonateIncome());
 		response.setPostTotalIncome(post.getPostTotalIncome());
 		response.setCommentsNum(post.getCommentsNum());
+		//-------v1.6 新增悬赏回答--------------
+		if(post.getPostType()==4) {
+			RewardActivity ac = rewardActivityService.findById(discuss.getRewardActivityId());
+			if(ac!=null) {
+				//取悬赏总奖励
+				response.setRewardMoney(ac.getRewardMoney());
+				response.setRewardMoneyToOne(discuss.getRewardMoney());
+				response.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(post.getPostShortDesc()));
+				response.setPostTitle(post.getPostTitle());
+				response.setPostId(ac.getPostId());
+			}
+		}
 		return response;
 	}
 

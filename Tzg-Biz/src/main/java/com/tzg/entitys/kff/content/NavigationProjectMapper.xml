@@ -108,10 +108,8 @@
 	<select id="findListByAttr" resultMap="BaseResultMap" parameterType="java.util.Map">
 		select *  from <include refid="table_name" />
 		<include refid="condition"/>
-	    <![CDATA[ ORDER BY id desc ]]>
+	    <![CDATA[ ORDER BY sort asc ]]>
 	</select>
-	
-	
 	
 	<sql id="condition">
     	<where>

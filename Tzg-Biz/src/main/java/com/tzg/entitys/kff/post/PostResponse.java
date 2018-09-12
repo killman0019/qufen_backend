@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.tzg.common.utils.DateUtil;
 
-public class PostResponse implements Serializable, Comparable {
+public class PostResponse implements Serializable, Comparable<Object> {
 
 	/**
 	 * 
@@ -182,6 +182,66 @@ public class PostResponse implements Serializable, Comparable {
 	private Integer type;
 	private Integer disStickTop;
 	private Date disStickUpdateTime;
+	//悬赏金额
+	private BigDecimal rewardMoney;
+	//回答人数
+	private Integer answerCount;
+	//截止时间
+	private Date endTime;
+	//悬赏内容
+	private String rewardContents;
+	//每个用户回答悬赏能中奖的金额
+	private BigDecimal rewardMoneyToOne;
+	//悬赏的PostId
+	private Integer postIdToReward;
+	
+	public Integer getPostIdToReward() {
+		return postIdToReward;
+	}
+
+	public void setPostIdToReward(Integer postIdToReward) {
+		this.postIdToReward = postIdToReward;
+	}
+
+	public BigDecimal getRewardMoneyToOne() {
+		return rewardMoneyToOne;
+	}
+
+	public void setRewardMoneyToOne(BigDecimal rewardMoneyToOne) {
+		this.rewardMoneyToOne = rewardMoneyToOne;
+	}
+
+	public String getRewardContents() {
+		return rewardContents;
+	}
+
+	public void setRewardContents(String rewardContents) {
+		this.rewardContents = rewardContents;
+	}
+
+	public BigDecimal getRewardMoney() {
+		return rewardMoney;
+	}
+
+	public void setRewardMoney(BigDecimal rewardMoney) {
+		this.rewardMoney = rewardMoney;
+	}
+
+	public Integer getAnswerCount() {
+		return answerCount;
+	}
+
+	public void setAnswerCount(Integer answerCount) {
+		this.answerCount = answerCount;
+	}
+
+	public Date getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(Date endTime) {
+		this.endTime = endTime;
+	}
 
 	public String getPostUuid() {
 		return postUuid;

@@ -376,7 +376,7 @@
 	</select>
 
 	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
-		select count(*) from tbuser where 1=1
+		select count(1) from tbuser where 1=1
 		<include refid="queryWhere" />
 	</select>
 	<select id="findReferCount" resultType="java.lang.Integer" parameterType="java.lang.Integer">
@@ -390,17 +390,14 @@
 	]]>
 	</select>
 	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
-		select
-		<include refid="columns" />
-		from tbuser where 1=1
+		select * from tbuser where 1=1
 		<include refid="queryWhere" />
-
 		<choose>
 			<when test="sortField != null and sortField != ''">
 				ORDER BY ${sortField} ${sortSequence}
 			</when>
 			<otherwise>
-	    <![CDATA[ ORDER BY user_id DESC ]]>
+	    	<![CDATA[ ORDER BY user_id DESC ]]>
 			</otherwise>
 		</choose>
         <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
@@ -444,7 +441,9 @@
 		<if test="hotUser != null">
 			and fans_num &gt; #{hotUser}
 		</if>
-
+		<if test="title != null">
+			and user_name like "%" #{title} "%"
+		</if>
 		<if test="userId != null and userId.trim() != ''">
 			and user_id = #{userId}
 		</if>
@@ -514,7 +513,7 @@
 		<if test="updateTimeEnd != null and updateTimeEnd.trim() != ''">
 			and updateTime &lt;= #{updateTimeEnd}
 		</if>
-		<if test="status != null and status.trim() != ''">
+		<if test="status != null">
 			and status = #{status}
 		</if>
 		<if test="memo != null and memo.trim() != ''">

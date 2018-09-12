@@ -291,20 +291,17 @@
 	</select>
 
 	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
-		select count(*) from tbproject where 1=1
+		select count(1) from tbproject where 1=1
 		<include refid="queryWhere" />
 	</select>
 
 	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
-		select
-		<include refid="columns" />
-		from tbproject where status=1
+		select * from tbproject where status=1
 		<include refid="queryWhere" />
 		<choose>
 			<when test="sortField != null and sortField != ''">
 				<include refid="orderBy" />
 			</when>
-
 			<otherwise>
 	                <![CDATA[ ORDER BY project_id desc ]]>
 			</otherwise>
@@ -389,6 +386,9 @@
 		<if test="projectId != null">
 			and project_id = #{projectId}
 		</if>
+		<if test="title != null">
+			and (project_english_name like "%" #{title} "%" or project_chinese_name like "%" #{title} "%")
+		</if>
 		<if test="hotProject != null">
 			and follower_num > #{hotProject}
 		</if>
@@ -446,7 +446,7 @@
 		<if test="submitReason != null and submitReason.trim() != ''">
 			and submit_reason = #{submitReason}
 		</if>
-		<if test="status != null and status.trim() != ''">
+		<if test="status != null">
 			and status = #{status}
 		</if>
 		<if test="createTimeBegin != null and createTimeBegin.trim() != ''">

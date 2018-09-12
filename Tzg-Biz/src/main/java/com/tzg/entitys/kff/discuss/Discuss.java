@@ -1,9 +1,8 @@
 package com.tzg.entitys.kff.discuss;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
-
-import com.tzg.common.utils.DateUtil;
 
 public class Discuss implements Serializable {
 
@@ -40,6 +39,25 @@ public class Discuss implements Serializable {
 	private Date niceChoiceAt;
 	//精评类型：0-点赞，1-认证账号发布，2-人工精选,3-普通爆料
 	private Integer type;
+	
+	private Integer rewardActivityId;
+	private BigDecimal rewardMoney;
+
+	public Integer getRewardActivityId() {
+		return rewardActivityId;
+	}
+
+	public void setRewardActivityId(Integer rewardActivityId) {
+		this.rewardActivityId = rewardActivityId;
+	}
+
+	public BigDecimal getRewardMoney() {
+		return rewardMoney;
+	}
+
+	public void setRewardMoney(BigDecimal rewardMoney) {
+		this.rewardMoney = rewardMoney;
+	}
 
 	public Integer getIsNiceChoice() {
 		return isNiceChoice;

@@ -12,12 +12,14 @@
 		<result property="isNiceChoice" jdbcType="INTEGER" column="is_nice_choice"/>
 		<result property="niceChoiceAt" jdbcType="TIMESTAMP" column="nice_choice_at"/>
 		<result property="type" jdbcType="INTEGER" column="type"/>
+		<result property="rewardActivityId" jdbcType="INTEGER" column="reward_activity_id"/>
+		<result property="rewardMoney" jdbcType="DECIMAL" column="reward_money" />
 	</resultMap>
 
 	<sql id="columns">
 	    <![CDATA[
         discuss_id ,post_id ,disscuss_contents ,post_uuid ,tag_infos , dis_stick_top, dis_stick_updateTime ,is_nice_choice
-        ,nice_choice_at,type
+        ,nice_choice_at,type,reward_activity_id,reward_money
 	    ]]>
 	</sql>
 
@@ -35,7 +37,9 @@
         	dis_stick_updateTime,
         	is_nice_choice,
         	nice_choice_at,
-        	type
+        	type,
+        	reward_activity_id,
+        	reward_money
 		) VALUES (
         	#{postId,jdbcType=INTEGER} ,
         	#{disscussContents,jdbcType=VARCHAR} ,
@@ -45,7 +49,9 @@
         	#{disStickUpdateTime,jdbcType=TIMESTAMP},
         	#{isNiceChoice,jdbcType=INTEGER},
         	#{niceChoiceAt,jdbcType=TIMESTAMP},
-        	#{type,jdbcType=INTEGER}
+        	#{type,jdbcType=INTEGER},
+        	#{rewardActivityId,jdbcType=INTEGER} ,
+        	#{rewardMoney,jdbcType=DECIMAL} 
 		)
 	]]>
 	</insert>
@@ -71,6 +77,12 @@
 			<if test="disStickUpdateTime != null">
 				dis_stick_updateTime = #{disStickUpdateTime,jdbcType=TIMESTAMP}
 			</if>
+			<if test="rewardActivityId != null">
+	        	reward_activity_id = #{rewardActivityId,jdbcType=INTEGER} ,
+	        </if>
+	        <if test="rewardMoney != null">
+	        	reward_money = #{rewardMoney,jdbcType=DECIMAL} ,
+	        </if>
 		</set>
 		WHERE
 		discuss_id = #{discussId,jdbcType=INTEGER}
@@ -86,11 +98,24 @@
 				type = #{type,jdbcType=INTEGER} ,
 			</if>
 			<if test="niceChoiceAt != null">
-				nice_choice_at = #{niceChoiceAt,jdbcType=TIMESTAMP}
+				nice_choice_at = #{niceChoiceAt,jdbcType=TIMESTAMP},
+			</if>
+			<if test="disStickTop != null">
+				dis_stick_top = #{disStickTop,jdbcType=INTEGER} ,
+			</if>
+			<if test="rewardMoney != null">
+				reward_money = #{rewardMoney,jdbcType=DECIMAL} 
 			</if>
 		</set>
 		WHERE
-		post_id = #{postId,jdbcType=INTEGER}
+		<choose>
+            <when test="rewardActivityId != null">
+               reward_activity_id = #{rewardActivityId,jdbcType=INTEGER}
+            </when>
+            <otherwise>
+                 post_id = #{postId,jdbcType=INTEGER}
+            </otherwise>
+        </choose>
 	</update>
 
 	<delete id="deleteById" parameterType="java.lang.Integer">
@@ -183,25 +208,30 @@
 		<if test="type != null">
 			and type = #{type}
 		</if>
+		<if test="rewardActivityId != null">
+			and reward_activity_id = #{rewardActivityId}
+		</if>
 	</sql>
 	<select id="findDisscussBypostId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
 		select
 		<include refid="columns" />
 		from tbdiscuss where 1=1
 		and post_id = #{postId}
-
 	</select>
 
 	<select id="findByMap" parameterType="java.util.Map" resultMap="BaseResultMap">
-
 		select
 		<include refid="columns" />
 		from tbdiscuss
 		where 1=1
 		<include refid="queryWhere" />
-
 	</select>
-
+	
+	<select id="findByCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+		select count(1) from tbdiscuss
+		where 1=1
+		<include refid="queryWhere" />
+	</select>
 </mapper>
 
 

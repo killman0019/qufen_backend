@@ -199,6 +199,36 @@
 		</if>
 		
 	</sql>
+	
+	<sql id="table_name">
+		tbcoinproperty
+  	</sql>
+	<sql id="condition">
+    	<where>
+	    	<if test="id != null">
+			 coin_property_id = #{id,jdbcType=INTEGER}
+			</if>
+			<if test="userId != null">
+			and user_id = #{userId}
+			</if>
+    	</where>
+    </sql>
+	
+	<update id="updateByMap" parameterType="java.util.Map">
+	     update <include refid="table_name" /> 
+	    <set>
+	      <if test="coinUnlockTime != null">
+	        coin_unlock_time = #{coinUnlockTime},
+	      </if>
+	    </set>
+	    <include refid="condition"/>
+	</update>
+    
+    <select id="findListByAttr" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select * from <include refid="table_name" />
+		<include refid="condition"/>
+	    <![CDATA[ ORDER BY id DESC ]]>
+	</select>
 </mapper>
 
 

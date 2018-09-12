@@ -232,5 +232,16 @@ public final class sysGlobals {
 
 	/**举报个推发送信息的title*/
 	public static String REPORT_GETUITITLE = "举报结果";
-
+	/**悬赏奖励文字*/
+	public static String REWARD_DESC = "发布悬赏扣除token";
+	/**悬赏奖励类型*/
+	public static Integer REWARD_TYPE = 81;
+	/**悬赏奖励备注*/
+	public static String REWARD_MENO = "发布悬赏需要Token币";
+	/**终止悬赏奖励文字*/
+	public static String END_REWARD_DESC = "终止悬赏返回token";
+	/**终止悬赏奖励类型*/
+	public static Integer END_REWARD_TYPE = 82;
+	/**终止悬赏奖励备注*/
+	public static String END_REWARD_MENO = "终止悬赏返回Token币";
 }

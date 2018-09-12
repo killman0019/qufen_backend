@@ -1,13 +1,11 @@
 package com.tzg.rmi.service;
 
 import java.util.List;
-import java.util.Map;
 
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.entitys.kff.project.KFFProject;
 import com.tzg.entitys.kff.project.ProjectResponse;
-import com.tzg.entitys.kff.projectManage.ProjectManage;
 import com.tzg.entitys.kff.projectManage.ProjectManageTabResponse;
 import com.tzg.entitys.kff.transactionpair.TransactionPairResponse;
 import com.tzg.rest.exception.rest.RestServiceException;
@@ -19,6 +17,8 @@ import com.tzg.rest.exception.rest.RestServiceException;
  *
  */
 public interface KFFProjectRmiService {
+	
+	public PageResult<KFFProject> findPage(PaginationQuery query);
 	/**
 	 * 向前台展示tab键
 	 * 

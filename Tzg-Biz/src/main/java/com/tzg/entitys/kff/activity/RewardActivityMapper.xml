@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.kff.activity.RewardActivityMapper">
+  <resultMap id="BaseResultMap" type="com.tzg.entitys.kff.activity.RewardActivity">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+    <result column="post_id" jdbcType="INTEGER" property="postId" />
+    <result column="reward_date" jdbcType="INTEGER" property="rewardDate" />
+    <result column="begin_time" jdbcType="TIMESTAMP" property="beginTime" />
+    <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+    <result column="reward_money" jdbcType="DECIMAL" property="rewardMoney" />
+    <result column="tag_infos" jdbcType="VARCHAR" property="tagInfos" />
+    <result column="answer_count" jdbcType="INTEGER" property="answerCount" />
+    <result column="state" jdbcType="INTEGER" property="state" />
+    <result column="is_activity" jdbcType="INTEGER" property="isActivity" />
+    <result column="is_nice_choice" jdbcType="INTEGER" property="isNiceChoice" />
+    <result column="nice_choice_at" jdbcType="TIMESTAMP" property="niceChoiceAt" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="dis_stick_top" jdbcType="INTEGER" property="disStickTop" />
+    <result column="dis_stick_updateTime" jdbcType="TIMESTAMP" property="disStickUpdatetime" />
+    <result column="reward_contents" jdbcType="VARCHAR" property="rewardContents" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, created_at, updated_at, post_id, reward_date, begin_time, end_time, reward_money, 
+    tag_infos, answer_count, state, is_activity, is_nice_choice, nice_choice_at, type, 
+    dis_stick_top, dis_stick_updateTime,reward_contents
+  </sql>
+  
+  <sql id="table_name">
+		activity_reward_activity
+  </sql>
+  
+  <select id="findById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select * from <include refid="table_name" />
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <delete id="deleteById" parameterType="java.lang.Integer">
+    delete from <include refid="table_name" />
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <insert id="save" parameterType="com.tzg.entitys.kff.activity.RewardActivity">
+    insert into activity_reward_activity (id, created_at, updated_at, 
+      post_id, reward_date, begin_time, 
+      end_time, reward_money, tag_infos, 
+      answer_count, state, is_activity, 
+      is_nice_choice, nice_choice_at, type, 
+      dis_stick_top, dis_stick_updateTime,reward_contents)
+    values (#{id,jdbcType=INTEGER}, #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, 
+      #{postId,jdbcType=INTEGER}, #{rewardDate,jdbcType=INTEGER}, #{beginTime,jdbcType=TIMESTAMP}, 
+      #{endTime,jdbcType=TIMESTAMP}, #{rewardMoney,jdbcType=DECIMAL}, #{tagInfos,jdbcType=VARCHAR}, 
+      #{answerCount,jdbcType=INTEGER}, #{state,jdbcType=INTEGER}, #{isActivity,jdbcType=INTEGER}, 
+      #{isNiceChoice,jdbcType=INTEGER}, #{niceChoiceAt,jdbcType=TIMESTAMP}, #{type,jdbcType=INTEGER}, 
+      #{disStickTop,jdbcType=INTEGER}, #{disStickUpdatetime,jdbcType=TIMESTAMP},#{rewardContents,jdbcType=VARCHAR})
+  </insert>
+  
+  <update id="update" parameterType="com.tzg.entitys.kff.activity.RewardActivity">
+    update activity_reward_activity
+    <set>
+      <if test="createdAt != null">
+        created_at = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null">
+        updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="postId != null">
+        post_id = #{postId,jdbcType=INTEGER},
+      </if>
+      <if test="rewardDate != null">
+        reward_date = #{rewardDate,jdbcType=INTEGER},
+      </if>
+      <if test="beginTime != null">
+        begin_time = #{beginTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null">
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="rewardMoney != null">
+        reward_money = #{rewardMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="tagInfos != null">
+        tag_infos = #{tagInfos,jdbcType=VARCHAR},
+      </if>
+      <if test="answerCount != null">
+        answer_count = #{answerCount,jdbcType=INTEGER},
+      </if>
+      <if test="state != null">
+        state = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="isActivity != null">
+        is_activity = #{isActivity,jdbcType=INTEGER},
+      </if>
+      <if test="isNiceChoice != null">
+        is_nice_choice = #{isNiceChoice,jdbcType=INTEGER},
+      </if>
+      <if test="niceChoiceAt != null">
+        nice_choice_at = #{niceChoiceAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="disStickTop != null">
+        dis_stick_top = #{disStickTop,jdbcType=INTEGER},
+      </if>
+      <if test="disStickUpdatetime != null">
+        dis_stick_updateTime = #{disStickUpdatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="rewardContents != null">
+        reward_contents = #{rewardContents,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <select id="findSetTopPost" resultType="com.tzg.entitys.kff.post.PostDiscussVo" parameterType="java.util.Map">
+		select
+		tpt.post_id as postId,
+		tpt.stick_top as stickTop,
+		tpt.stick_updateTime as stickUpdateTime,
+		tpt.project_id as projectId,
+		tpt.project_icon as projectIcon,
+		tpt.project_code as projectCode,
+		tpt.project_english_name as projectEnglishName,
+		tpt.project_chinese_name as projectChineseName,
+		tpt.post_title as postTitle,
+		tpt.post_type as postType,
+		tpt.post_short_desc as postShortDesc,
+		tpt.post_small_images as postSmallImages,
+		tpt.comments_num as commentsNum,
+		tpt.praise_num as praiseNum,
+		tpt.pageview_num as pageviewNum,
+		tpt.donate_num as donateNum,
+		tpt.collect_num as collectNum,
+		tpt.create_user_id as createUserId,
+		tpt.create_user_icon as createUserIcon,
+		tpt.create_user_signature as createUserSignature,
+		tpt.create_user_name as createUserName,
+		tpt.createTime as createTime,
+		tpt.updateTime as updateTime,
+		tpt.uuid as uuid,
+		tpt.status as status,
+		tpt.praise_income as praiseIncome,
+		tpt.donate_income as donateIncome,
+		tpt.post_total_income as postTotalIncome,
+		rac.is_nice_choice as isNiceChoice,
+		rac.nice_choice_at as niceChoiceAt,
+		rac.type as type,
+		rac.dis_stick_top as disStickTop,
+		rac.dis_stick_updateTime as disStickUpdateTime
+		from <include refid="table_name" /> as rac
+    	INNER JOIN tbpost as tpt on tpt.post_id=rac.post_id
+		<include refid="condition" />
+		ORDER BY ${sort} desc
+		<if test="startRecord != null and endRecord!=null">
+			LIMIT ${startRecord},${endRecord}
+		</if>
+	</select>
+	
+	<select id="findSetTopPostCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(1) from <include refid="table_name" /> as rac
+    	INNER JOIN tbpost as tpt on tpt.post_id=rac.post_id
+		<include refid="condition" />
+	</select>
+  
+  
+  <select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(1) from <include refid="table_name" />
+		<include refid="condition"/>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select *  from <include refid="table_name" />
+		<include refid="condition"/>
+	    <![CDATA[ ORDER BY id DESC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<select id="findLinkedPage" resultType="com.tzg.entitys.kff.post.PostResponse" parameterType="java.util.Map">
+		select
+		tpt.post_id as postId,
+		tpt.project_id as projectId,
+		tpt.project_icon as projectIcon,
+		tpt.project_code as projectCode,
+		tpt.project_english_name as projectEnglishName,
+		tpt.project_chinese_name as projectChineseName,
+		tpt.post_title as postTitle,
+		tpt.post_type as postType,
+		tpt.post_short_desc as postShortDesc,
+		tpt.post_small_images as postSmallImages,
+		tpt.comments_num as commentsNum,
+		tpt.praise_num as praiseNum,
+		tpt.pageview_num as pageviewNum,
+		tpt.donate_num as donateNum,
+		tpt.collect_num as collectNum,
+		tpt.create_user_id as createUserId,
+		tpt.create_user_icon as createUserIcon,
+		tpt.create_user_signature as createUserSignature,
+		tpt.create_user_name as createUserName,
+		tpt.createTime as createTime,
+		tpt.updateTime as updateTime,
+		tpt.uuid as uuid,
+		tpt.status as status,
+		tpt.praise_income as praiseIncome,
+		tpt.donate_income as donateIncome,
+		tpt.post_total_income as postTotalIncome,
+		tbc.tag_infos as tagInfos,
+		tbc.discuss_id as discussId,
+		tbc.disscuss_contents as disscussContents,
+		tbc.reward_money as rewardMoney
+		from tbdiscuss as tbc
+    	INNER JOIN tbpost as tpt on tpt.post_id=tbc.post_id
+		<include refid="condition" />
+		ORDER BY ${sort} desc
+		<if test="startRecord != null and endRecord!=null">
+			LIMIT ${startRecord},${endRecord}
+		</if>
+	</select>
+	
+	<select id="findLinkedPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(1) from tbdiscuss as tbc
+    	INNER JOIN tbpost as tpt on tpt.post_id=tbc.post_id
+		<include refid="condition" />
+	</select>
+	
+	<select id="findRewardActivityListCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(1) from <include refid="table_name" /> as rac
+    	INNER JOIN tbpost as tpt on tpt.post_id=rac.post_id
+		<include refid="condition" />
+	</select>
+	
+	<select id="findRewardActivityListPage" resultType="com.tzg.entitys.kff.activity.RewardActivityVo" parameterType="java.util.Map">
+		select
+			tpt.post_id as postId,
+			tpt.project_id as projectId,
+			tpt.project_icon as projectIcon,
+			tpt.project_code as projectCode,
+			tpt.post_title as postTitle,
+			rac.reward_money as rewardMoney,
+			rac.begin_time as beginTime,
+			rac.end_time as endTime,
+			rac.state as state
+		from <include refid="table_name" /> as rac
+    	INNER JOIN tbpost as tpt on tpt.post_id=rac.post_id
+		<include refid="condition" />
+		ORDER BY ${sort} desc
+		<if test="startRecord != null and endRecord!=null">
+			LIMIT ${startRecord},${endRecord}
+		</if>
+	</select>
+	
+	
+	<select id="findLinkedCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(1) from <include refid="table_name" /> as rac 
+    	INNER JOIN tbdiscuss as tbc on rac.id=tbc.reward_activity_id
+		<include refid="condition" />
+	</select>
+	
+	<sql id="condition">
+    	<where>
+	    	<if test="id != null">
+			 id = #{id,jdbcType=INTEGER}
+			</if>
+			<if test="rewardActivityId != null">
+			and tbc.reward_activity_id = #{rewardActivityId}
+			</if>
+			<if test="status != null">
+			and tpt.status = #{status}
+			</if>
+			<if test="postTypec != null">
+			and tpt.post_type = #{postTypec}
+			</if>
+			<if test="disStickTopc != null">
+			and rac.dis_stick_top = #{disStickTopc}
+			</if>
+			<if test="disStickTopc1!=null">
+			and (rac.dis_stick_top != #{disStickTopc1} or rac.dis_stick_top is null )
+			</if>
+			<if test="stickTopc!=null">
+			and rac.is_nice_choice = #{stickTopc}
+			</if>
+			<if test="postId!=null">
+			and rac.post_id = #{postId}
+			</if>
+			<if test="createUserId != null">
+			and tpt.create_user_id = #{createUserId}
+			</if>
+			<if test="state != null">
+			and rac.state = #{state}
+			</if>
+			<if test="isActivity != null">
+			and rac.is_activity = #{isActivity}
+			</if>
+			<if test="endTime != null">
+			and rac.end_time &gt; #{endTime}
+			</if>
+    	</where>
+    </sql>
+    
+    <select id="findListByAttr" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select * from <include refid="table_name" /> as rac
+		<include refid="condition"/>
+	    <![CDATA[ ORDER BY id DESC ]]>
+	</select>
+	
+	<select id="findOneByAttr" resultType="java.util.Map" parameterType="java.util.Map">
+		select 
+			rac.id as id,
+			rac.begin_time as beginTime,
+			tpt.post_id as postId
+		from <include refid="table_name" /> as rac
+    	INNER JOIN tbpost as tpt on tpt.post_id=rac.post_id
+		<include refid="condition"/>
+	    <![CDATA[ ORDER BY id DESC ]]>
+	</select>
+</mapper>

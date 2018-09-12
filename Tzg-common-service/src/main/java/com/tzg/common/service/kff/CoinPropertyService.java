@@ -1,7 +1,7 @@
 package com.tzg.common.service.kff;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -11,19 +11,86 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
+import com.tzg.common.utils.DateUtil;
+import com.tzg.common.utils.StringUtil;
+import com.tzg.common.utils.sysGlobals;
 import com.tzg.entitys.kff.coinproperty.CoinProperty;
 import com.tzg.entitys.kff.coinproperty.CoinPropertyMapper;
-import com.tzg.entitys.kff.qfindex.QfIndex;
-import com.tzg.entitys.kff.tokenaward.Tokenaward;
 import com.tzg.entitys.kff.tokenrecords.Tokenrecords;
 import com.tzg.rest.exception.rest.RestServiceException;
 
 @Service(value = "KFFCoinPropertyService")
+<<<<<<< HEAD
 @Transactional(rollbackFor = Exception.class)
+=======
+@Transactional(rollbackFor=Exception.class)
+>>>>>>> origin/test_dev
 public class CoinPropertyService {
 
 	@Autowired
 	private CoinPropertyMapper coinPropertyMapper;
+	@Autowired
+	private TokenrecordsService kffTokenrecordsService;
+	
+	//用户发布悬赏减少token币
+	public boolean countReduceForReward(CoinProperty coinProty,BigDecimal rewardMoney,Integer postId) {
+		//修改token币数据
+		BigDecimal coinLock = StringUtil.toBeBigDecimal(coinProty.getCoinLock().toString());
+		BigDecimal senCount = StringUtil.subBigDecimal(coinLock, rewardMoney);
+		coinProty.setCoinLock(Double.valueOf(senCount.toString()));
+		coinPropertyMapper.update(coinProty);
+		//添加token币的流水
+		Date date = new Date();
+		Tokenrecords tokenrecords = new Tokenrecords();
+		tokenrecords.setUserId(coinProty.getUserId());
+		String stringDate = DateUtil.getDate(date, "yyyy-MM-dd");
+		String replaceAllDate = stringDate.replaceAll("-", "");
+		String format = String.format("%010d", coinProty.getUserId());
+		tokenrecords.setTradeCode("08" + replaceAllDate + format); // 交易流水号
+		tokenrecords.setTradeType(2); // 交易类型 1-收入 2-支出
+		tokenrecords.setFunctionDesc(sysGlobals.REWARD_DESC); // 交易类型
+		tokenrecords.setFunctionType(sysGlobals.REWARD_TYPE); // 交易的类型
+		tokenrecords.setAmount(rewardMoney); // 发放奖励数
+		tokenrecords.setTradeDate(date); // 交易日期
+		tokenrecords.setCreateTime(date);
+		tokenrecords.setUpdateTime(date);
+		tokenrecords.setStatus(1);
+		tokenrecords.setMemo(sysGlobals.REWARD_MENO);
+		tokenrecords.setRewardGrantType(1); // 发放类型 1-一次性发放 2-线性发放
+		tokenrecords.setPostId(postId);
+		kffTokenrecordsService.save(tokenrecords);
+		return true;
+	}
+	
+	//悬赏终止，返还用户的token币
+	public boolean countAddForReward(CoinProperty coinProty,BigDecimal rewardMoney,Integer postId) {
+		//修改token币数据
+		BigDecimal coinLock = StringUtil.toBeBigDecimal(coinProty.getCoinLock().toString());
+		BigDecimal senCount = StringUtil.addBigDecimal(coinLock, rewardMoney);
+		coinProty.setCoinLock(Double.valueOf(senCount.toString()));
+		coinPropertyMapper.update(coinProty);
+		//添加token币的流水
+		Date date = new Date();
+		Tokenrecords tokenrecords = new Tokenrecords();
+		tokenrecords.setUserId(coinProty.getUserId());
+		String stringDate = DateUtil.getDate(date, "yyyy-MM-dd");
+		String replaceAllDate = stringDate.replaceAll("-", "");
+		String format = String.format("%010d", coinProty.getUserId());
+		tokenrecords.setTradeCode("08" + replaceAllDate + format); // 交易流水号
+		tokenrecords.setTradeType(1); // 交易类型 1-收入 2-支出
+		tokenrecords.setFunctionDesc(sysGlobals.END_REWARD_DESC); // 交易类型
+		tokenrecords.setFunctionType(sysGlobals.END_REWARD_TYPE); // 交易的类型
+		tokenrecords.setAmount(rewardMoney); // 发放奖励数
+		tokenrecords.setTradeDate(date); // 交易日期
+		tokenrecords.setCreateTime(date);
+		tokenrecords.setUpdateTime(date);
+		tokenrecords.setStatus(1);
+		tokenrecords.setMemo(sysGlobals.END_REWARD_MENO);
+		tokenrecords.setRewardGrantType(1); // 发放类型 1-一次性发放 2-线性发放
+		tokenrecords.setPostId(postId);
+		kffTokenrecordsService.save(tokenrecords);
+		return true;
+	}
 
 	@Transactional(readOnly = true)
 	public CoinProperty findById(java.lang.Integer id) throws RestServiceException {
@@ -44,12 +111,21 @@ public class CoinPropertyService {
 	public void save(CoinProperty coinProperty) throws RestServiceException {
 		coinPropertyMapper.save(coinProperty);
 	}
+	
+	public void updateByMap(Map<String,Object> map) throws RestServiceException {	
+		coinPropertyMapper.updateByMap(map);
+	}	
 
 	public void update(CoinProperty coinPropertyId) throws RestServiceException {
 		if (coinPropertyId.getUserId() == null) {
 			throw new RestServiceException("id不能为空");
 		}
 		coinPropertyMapper.update(coinPropertyId);
+	}
+	
+	@Transactional(readOnly = true)
+	public List<CoinProperty> findListByAttr(Map<String, Object> map) {
+		return coinPropertyMapper.findListByAttr(map);
 	}
 
 	@Transactional(readOnly = true)

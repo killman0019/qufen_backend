@@ -542,4 +542,14 @@ public class StringUtil extends StringUtils {
 		dd.divide(dd, 2, BigDecimal.ROUND_HALF_UP);
 		return new BigDecimal(df.format(dd));
 	}
+	//将String 转BigDecimal 并保留2位小数
+	public static BigDecimal toBeBigDecimal(String str){
+		if(StringUtil.isBlank(str)) {
+			BigDecimal bb = new BigDecimal("0.00");
+			return bb;
+		}
+		BigDecimal b = new BigDecimal(str); 
+		b=b.setScale(2, BigDecimal.ROUND_DOWN); //小数位 直接舍去，不会四舍五入
+		return b;
+	}
 }

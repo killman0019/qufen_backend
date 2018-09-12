@@ -82,5 +82,8 @@ public class DiscussService {
 		// TODO map 查询条件
 		return discussMapper.findByMap(disMap);
 	}
+	public Integer findByCount(Map<String, Object> map) {
+		return discussMapper.findByCount(map);
+	}
 
 }

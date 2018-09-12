@@ -11,6 +11,15 @@
      http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
      http://code.alibabatech.com/schema/dubbo  
      http://code.alibabatech.com/schema/dubbo/dubbo.xsd ">
+     
+     <dubbo:reference id="rewardActivityRmiService" interface="com.tzg.rmi.service.RewardActivityRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}"
+		retries="0" check="false" />
+		
+	<dubbo:reference id="coinPropertyRmiService" interface="com.tzg.rmi.service.CoinPropertyRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}"
+		retries="0" check="false" />
+     
+     <dubbo:reference id="dTagsRmiService" interface="com.tzg.rmi.service.DtagsRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}"
+		retries="0" check="false" />
 
 	<dubbo:reference id="systemParamRmiService" interface="com.tzg.rmi.service.SystemParamRmiService" timeout="#{sysConfig['service.timeout']}" version="#{sysConfig['service.version']}"
 		retries="0" check="false" />
