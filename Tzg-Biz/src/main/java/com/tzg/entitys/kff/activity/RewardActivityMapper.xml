@@ -295,6 +295,12 @@
 			<if test="endTime != null">
 			and rac.end_time &gt; #{endTime}
 			</if>
+			<if test="statec != null">
+			and rac.state != #{statec}
+			</if>
+			<if test="isNiceChoice != null">
+			and tbc.is_nice_choice != #{isNiceChoice}
+			</if>
     	</where>
     </sql>
     

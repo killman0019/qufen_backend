@@ -43,4 +43,7 @@ public interface RewardActivityRmiService {
 	
 	public Integer findLinkedCount(Map<String, Object> map);
 	
+	public PageResult<PostResponse> findPageForNewAndHighList(Integer loginUserId, PaginationQuery query, Integer type);
+	
+	public PageResult<PostResponse> findPageForBurstList(Integer loginUserId, PaginationQuery query, Integer type);
 }

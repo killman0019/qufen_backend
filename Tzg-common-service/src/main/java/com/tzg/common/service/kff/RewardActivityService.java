@@ -28,7 +28,10 @@ import com.tzg.common.utils.sysGlobals;
 import com.tzg.entitys.kff.activity.RewardActivity;
 import com.tzg.entitys.kff.activity.RewardActivityMapper;
 import com.tzg.entitys.kff.activity.RewardActivityVo;
+import com.tzg.entitys.kff.article.Article;
 import com.tzg.entitys.kff.coinproperty.CoinProperty;
+import com.tzg.entitys.kff.discuss.Discuss;
+import com.tzg.entitys.kff.evaluation.Evaluation;
 import com.tzg.entitys.kff.follow.Follow;
 import com.tzg.entitys.kff.post.Post;
 import com.tzg.entitys.kff.post.PostDiscussVo;
@@ -107,6 +110,24 @@ public class RewardActivityService {
 	}
 	
 	@Transactional(readOnly = true)
+	public PageResult<PostResponse> findPostVoPageToReward(PaginationQuery query) throws RestServiceException {
+		PageResult<PostResponse> result = null;
+		try {
+			Integer count = rewardActivityMapper.findLinkedPageCount(query.getQueryData());
+			if (null != count && count.intValue() > 0) {
+				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
+				query.addQueryData("startRecord", Integer.toString(startRecord));
+				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
+				List<PostResponse> list = rewardActivityMapper.findLinkedPage(query.getQueryData());
+				result = new PageResult<PostResponse>(list, count, query);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	@Transactional(readOnly = true)
 	public Integer findSetTopPostCount(Map<String,Object> map) throws RestServiceException {
 		return rewardActivityMapper.findSetTopPostCount(map);
 	}
@@ -115,6 +136,287 @@ public class RewardActivityService {
 	public Map<String, Object> findOneByAttr(Map<String, Object> map){
 		return rewardActivityMapper.findOneByAttr(map);
 	}
+	
+	@Transactional(readOnly = true)
+	public PageResult<PostResponse> findPageForBurstList(Integer loginUserId, PaginationQuery query, 
+			Integer type){
+		PageResult<PostResponse> result = new PageResult<PostResponse>();
+		List<PostResponse> postResponse = new ArrayList<>();
+		PageResult<PostResponse> posts = findPostVoPageToReward(query);
+		KFFUser loginUser = null;
+		if (loginUserId != null) {
+			loginUser = kffUserService.findById(loginUserId);
+		}
+		List<Integer> praisedPostId = null;
+		// 获得点赞postidlist集合
+		if (null != loginUserId) {
+			praisedPostId = kffPraiseService.findPraisedPostIdByUserId(loginUserId);
+
+		}
+		if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
+			result.setCurPageNum(posts.getCurPageNum());
+			result.setPageSize(posts.getPageSize());
+			result.setQueryParameters(posts.getQueryParameters());
+			result.setRowCount(posts.getRowCount());
+			result.setRowsPerPage(posts.getRowsPerPage());
+			for (PostResponse post : posts.getRows()) {
+				if (StringUtils.isNotBlank(post.getPostShortDesc())) {
+					post.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(post.getPostShortDesc()));
+				}
+				PostResponse response = new PostResponse();
+				response.setcreateTime(post.getcreateTime());
+				response.setCreateUserId(post.getCreateUserId());
+				response.setPostId(post.getPostId());
+				response.setPostType(post.getPostType());
+				response.setProjectId(post.getProjectId());
+				response.setStatus(post.getStatus());
+				response.setPraiseIncome(post.getPraiseIncome());
+				response.setDonateIncome(post.getDonateIncome());
+				response.setPostTotalIncome(post.getPostTotalIncome());
+				// 设置post和project信息
+				response.setPostShortDesc(post.getPostShortDesc());
+				response.setPostSmallImages(post.getPostSmallImages());
+				response.setPraiseIncome(post.getPraiseIncome());
+				response.setDonateIncome(post.getDonateIncome());
+				response.setPostTotalIncome(post.getPostTotalIncome());
+				if (StringUtils.isNotBlank(post.getPostSmallImages())) {
+					try {
+						List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
+						response.setPostSmallImagesList(pfl);
+					} catch (Exception e) {
+						logger.error("首页推荐列表解析帖子缩略图json出错:{}", e);
+					}
+				}
+				response.setPostTitle(post.getPostTitle());
+				response.setCommentsNum(post.getCommentsNum());
+				response.setCollectNum(post.getCollectNum());
+				response.setPraiseNum(post.getPraiseNum());
+				response.setPageviewNum(post.getPageviewNum());
+				response.setDonateNum(post.getDonateNum());
+				response.setCreateUserIcon(post.getCreateUserIcon());
+				response.setCreateUserName(post.getCreateUserName());
+				response.setCreateUserSignature(post.getCreateUserSignature());
+				response.setCommentsNum(post.getCommentsNum());
+				if (post != null) {
+					KFFUser createUser = kffUserService.findByUserId(post.getCreateUserId());
+					response.setUserType(createUser.getUserType());
+				}
+				KFFProject project = kffProjectService.findById(post.getProjectId());
+				if (project != null) {
+					response.setProjectChineseName(project.getProjectChineseName());
+					response.setProjectCode(project.getProjectCode());
+					response.setProjectEnglishName(project.getProjectEnglishName());
+					response.setProjectIcon(project.getProjectIcon());
+					response.setProjectSignature(project.getProjectSignature());
+				}
+				Integer postType = post.getPostType();
+				if (null == postType) {
+					throw new RuntimeException("post没有类型");
+				}
+				if (2 == postType) {
+					// 查询爆料的标签
+					Discuss discuss = discussService.findByPostId(post.getPostId());
+					if(null!=discuss) {
+						response.setTagInfos(discuss.getTagInfos());
+					}
+				}
+				if (4 == postType) {
+					// 查询悬赏的标签
+					Discuss discuss = discussService.findByPostId(post.getPostId());
+					if(null!=discuss) {
+						response.setTagInfos(discuss.getTagInfos());
+						RewardActivity ac = rewardActivityMapper.findById(discuss.getRewardActivityId());
+						if(ac!=null) {
+							//取悬赏总奖励
+							response.setRewardMoney(ac.getRewardMoney());
+							response.setRewardMoneyToOne(discuss.getRewardMoney());
+							response.setPostIdToReward(ac.getPostId());
+						}
+					}
+				}
+				// 设置人的关注状态
+				if (loginUser == null) {
+					response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+				} else {
+					if (type == 2) {
+						Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER,
+								post.getCreateUserId());
+						if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+						} else {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+						}
+					} else if (type == 1) {
+						Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT,
+								post.getProjectId());
+						if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+						} else {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+						}
+					}
+
+					if (null != praisedPostId && !CollectionUtils.isEmpty(praisedPostId)) {
+						if (praisedPostId.contains(post.getPostId())) {
+							response.setPraiseStatus(1);
+						}
+					}
+				}
+				// 爆料字段
+				response.setDiscussId(post.getDiscussId());
+				response.setDisscussContents(post.getDisscussContents());
+				response.setPostUuid(post.getPostUuid());
+//				if (null == post.getIsNiceChoice()) {
+//					response.setIsNiceChoice(sysGlobals.DISABLE);
+//				} else {
+//					response.setIsNiceChoice(post.getIsNiceChoice());
+//				}
+//				response.setNiceChoiceAt(post.getNiceChoiceAt());
+				if (null == post.getType()) {
+					response.setType(DiscussType.ORDINARYBURST.getValue());
+				} else {
+					response.setType(post.getType());
+				}
+//				response.setDisStickTop(post.getDisStickTop());
+//				response.setDisStickUpdateTime(post.getDisStickUpdateTime());
+				postResponse.add(response);
+			}
+		}
+		result.setRows(postResponse);
+		return result;
+		
+	}
+	
+	@Transactional(readOnly = true)
+	public PageResult<PostResponse> findPageForNewAndHighList(Integer loginUserId, PaginationQuery query,
+			Integer type){
+		PageResult<PostResponse> result = new PageResult<PostResponse>();
+		List<PostResponse> postResponse = new ArrayList<>();
+		PageResult<PostDiscussVo> posts = findPostVoPage(query);
+		KFFUser loginUser = null;
+		if (loginUserId != null) {
+			loginUser = kffUserService.findById(loginUserId);
+		}
+		if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
+			List<Integer> praisedPostId = null;
+			// 获得点赞postidlist集合
+			if (null != loginUserId) {
+				praisedPostId = kffPraiseService.findPraisedPostIdByUserId(loginUserId);
+			}
+			result.setCurPageNum(posts.getCurPageNum());
+			result.setPageSize(posts.getPageSize());
+			result.setQueryParameters(posts.getQueryParameters());
+			result.setRowCount(posts.getRowCount());
+			result.setRowsPerPage(posts.getRowsPerPage());
+			for (PostDiscussVo post : posts.getRows()) {
+				post.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(post.getPostShortDesc()));
+				PostResponse response = new PostResponse();
+				response.setcreateTime(post.getCreateTime());
+				response.setCreateUserId(post.getCreateUserId());
+				response.setPostId(post.getPostId());
+				response.setPostType(post.getPostType());
+				response.setProjectId(post.getProjectId());
+				response.setStatus(post.getStatus());
+				response.setPraiseIncome(post.getPraiseIncome());
+				response.setDonateIncome(post.getDonateIncome());
+				response.setPostTotalIncome(post.getPostTotalIncome());
+				// 设置post和project信息
+				response.setPostShortDesc(post.getPostShortDesc());
+				response.setPostSmallImages(post.getPostSmallImages());
+				response.setPraiseIncome(post.getPraiseIncome());
+				response.setDonateIncome(post.getDonateIncome());
+				response.setPostTotalIncome(post.getPostTotalIncome());
+				if (null != praisedPostId && !CollectionUtils.isEmpty(praisedPostId)) {
+					if (praisedPostId.contains(post.getPostId())) {
+						response.setPraiseStatus(1);
+					}
+				}
+				if (StringUtil.isNotBlank(post.getPostSmallImages())) {
+					try {
+						List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
+						response.setPostSmallImagesList(pfl);
+					} catch (Exception e) {
+						logger.error("首页推荐列表解析帖子缩略图json出错:{}", e);
+					}
+				}
+				response.setPostTitle(post.getPostTitle());
+				response.setCommentsNum(post.getCommentsNum());
+				response.setCollectNum(post.getCollectNum());
+				response.setPraiseNum(post.getPraiseNum());
+				response.setPageviewNum(post.getPageviewNum());
+				response.setDonateNum(post.getDonateNum());
+				response.setCreateUserIcon(post.getCreateUserIcon());
+				response.setCreateUserName(post.getCreateUserName());
+				response.setCreateUserSignature(post.getCreateUserSignature());
+				response.setCommentsNum(post.getCommentsNum());
+				if (post != null) {
+					KFFUser createUser = kffUserService.findByUserId(post.getCreateUserId());
+					response.setUserType(createUser.getUserType());
+				}
+				KFFProject project = kffProjectService.findById(post.getProjectId());
+				if (project != null) {
+					response.setProjectChineseName(project.getProjectChineseName());
+					response.setProjectCode(project.getProjectCode());
+					response.setProjectEnglishName(project.getProjectEnglishName());
+					response.setProjectIcon(project.getProjectIcon());
+					response.setProjectSignature(project.getProjectSignature());
+					response.setTotalScore(project.getTotalScore());
+				}
+				// 查询悬赏的标签
+				Map<String,Object> secMap = new HashMap<>();
+				secMap.put("postId", post.getPostId());
+				List<RewardActivity> ac = rewardActivityMapper.findListByAttr(secMap);
+				if(ac.isEmpty()) {
+					response.setTagInfos(null);
+					response.setRewardMoney(null);
+					response.setAnswerCount(null);
+					response.setEndTime(null);
+					response.setType(null);
+				}else {
+					RewardActivity reAct = ac.get(0);
+					response.setRewardMoney(reAct.getRewardMoney());
+					response.setAnswerCount(reAct.getAnswerCount());
+					response.setEndTime(reAct.getEndTime());
+					response.setTagInfos(reAct.getTagInfos());
+					response.setType(reAct.getType());
+				}
+				// 设置人的关注状态
+				if (loginUser == null) {
+					response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+				} else {
+					if (type == 2) {
+						Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER,
+								post.getCreateUserId());
+						if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+						} else {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+						}
+					} else if (type == 1) {
+						Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT,
+								post.getProjectId());
+						if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+						} else {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+						}
+					}
+				}
+//				if (post.getDisStickTop() == null) {
+//					response.setDisStickTop(0);
+//				} else {
+//					response.setDisStickTop(post.getDisStickTop());
+//				}
+//				response.setDisStickUpdateTime(post.getDisStickUpdateTime());
+//				response.setIsNiceChoice(post.getIsNiceChoice());
+//				response.setNiceChoiceAt(post.getNiceChoiceAt());
+				postResponse.add(response);
+			}
+		}
+		result.setRows(postResponse);
+		return result;
+	}
+	
 	
 	@Transactional(readOnly=true)
 	public PageResult<PostResponse> findPageRewardList(Integer loginUserId, PaginationQuery query, Integer type)

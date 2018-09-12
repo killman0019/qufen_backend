@@ -3913,7 +3913,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				response.setCreateUserId(post.getCreateUserId());
 				response.setPostId(post.getPostId());
 				response.setPostType(post.getPostType());
-				System.out.println("post.getPostType()........."+post.getPostType());
 				response.setProjectId(post.getProjectId());
 				response.setStatus(post.getStatus());
 				response.setPraiseIncome(post.getPraiseIncome());
@@ -4043,7 +4042,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				} else {
 					response.setType(post.getType());
 				}
-				response.setType(post.getType());
 				response.setDisStickTop(post.getDisStickTop());
 				response.setDisStickUpdateTime(post.getDisStickUpdateTime());
 				postResponse.add(response);
