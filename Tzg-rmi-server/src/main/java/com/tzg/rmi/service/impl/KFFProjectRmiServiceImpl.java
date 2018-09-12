@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
@@ -21,15 +23,11 @@ import com.tzg.common.service.kff.ProjectForTabService;
 import com.tzg.common.service.kff.ProjectManageService;
 import com.tzg.common.service.kff.ProjectService;
 import com.tzg.common.service.kff.ProjectTradeService;
-
 import com.tzg.common.service.kff.RobotService;
-
 import com.tzg.common.service.kff.TransactionPairService;
 import com.tzg.common.service.kff.UserService;
 import com.tzg.common.utils.DozerMapperUtils;
-
 import com.tzg.common.utils.RandomUtil;
-
 import com.tzg.entitys.kff.follow.Follow;
 import com.tzg.entitys.kff.follow.FollowResponse;
 import com.tzg.entitys.kff.project.KFFProject;
@@ -611,4 +609,5 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 			}
 		}
 	}
+
 }

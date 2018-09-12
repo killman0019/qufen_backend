@@ -18,7 +18,7 @@ public class Exchange implements Serializable {
 	private Integer status;
 
 	private String exchangeName;
-
+	
 	private String exchangeHomeUrl;
 
 	private String exchangeCountry;

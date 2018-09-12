@@ -175,6 +175,7 @@ public class QfIndexService {
 					Double amountSum = 0.0;// 所有挣的币
 					Double loginSum = 0.0;// 所有登陆奖励
 					Double commentSum = 0.0;// 所有评论奖励
+					Double invaAward = 0.0;
 					if (CollectionUtils.isNotEmpty(tokenRecordsList)) {
 						for (Tokenrecords tokenrecords : tokenRecordsList) {
 							amountSum = amountSum + (tokenrecords.getAmount().doubleValue());
@@ -183,6 +184,9 @@ public class QfIndexService {
 							}
 							if (tokenrecords.getFunctionType() == 24) {
 								commentSum = commentSum + (tokenrecords.getAmount().doubleValue());
+							}
+							if (tokenrecords.getFunctionType() == 18) {
+								invaAward = invaAward + (tokenrecords.getAmount().doubleValue());
 							}
 						}
 
@@ -258,7 +262,8 @@ public class QfIndexService {
 					if (readingDegrI == readingDegrIDB) {
 						qfindexResponse.setReadingReceStatus(1);// 阅读领取状态
 					}
-
+					// 邀请奖励
+					qfindexResponse.setInvaAward(new BigDecimal(invaAward));
 				}
 			}
 		}

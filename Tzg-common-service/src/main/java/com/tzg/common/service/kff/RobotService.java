@@ -123,7 +123,7 @@ public class RobotService {
 			Integer fEnd = Integer.valueOf(sysEndf.getVcParamValue());
 			Integer followNum = RandomUtil.randomNumber(fBegin, fEnd);
 			redisService.del("followNumRBT");
-			redisService.put("followNumRBT", followNum + "", 60 * 60 * 24);
+			redisService.put("followNumRBT", followNum + "", 60 * 60);
 
 			// 点赞//每天选一次
 			SystemParam sysBeginp = systemParamService.findByCode(sysGlobals.RBT_PRAISE_NUM_BEGIN);
