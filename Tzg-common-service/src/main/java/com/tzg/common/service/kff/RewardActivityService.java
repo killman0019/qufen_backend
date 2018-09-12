@@ -28,10 +28,8 @@ import com.tzg.common.utils.sysGlobals;
 import com.tzg.entitys.kff.activity.RewardActivity;
 import com.tzg.entitys.kff.activity.RewardActivityMapper;
 import com.tzg.entitys.kff.activity.RewardActivityVo;
-import com.tzg.entitys.kff.article.Article;
 import com.tzg.entitys.kff.coinproperty.CoinProperty;
 import com.tzg.entitys.kff.discuss.Discuss;
-import com.tzg.entitys.kff.evaluation.Evaluation;
 import com.tzg.entitys.kff.follow.Follow;
 import com.tzg.entitys.kff.post.Post;
 import com.tzg.entitys.kff.post.PostDiscussVo;
@@ -610,6 +608,14 @@ public class RewardActivityService {
 	public PageResult<PostResponse> findRewardAnswerList(Integer loginUserId, PaginationQuery query, Integer type){
 		PageResult<PostResponse> result = new PageResult<PostResponse>();
 		List<PostResponse> postResponse = new ArrayList<>();
+		Integer postId = (Integer) query.getQueryData().get("rewardActivityId");
+		Map<String,Object> seMap = new HashMap<>();
+		seMap.put("postId", postId);
+		List<RewardActivity> reActs = rewardActivityMapper.findListByAttr(seMap);
+		if(reActs.isEmpty()) {
+			throw new RuntimeException("暂无数据！");
+		}
+		query.addQueryData("rewardActivityId", reActs.get(0).getId());
 		PageResult<PostResponse> posts = findLinkedPage(query);
 		KFFUser loginUser = null;
 		if (loginUserId != null) {

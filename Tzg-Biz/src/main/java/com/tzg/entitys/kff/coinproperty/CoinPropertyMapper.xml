@@ -227,7 +227,7 @@
     <select id="findListByAttr" resultMap="BaseResultMap" parameterType="java.util.Map">
 		select * from <include refid="table_name" />
 		<include refid="condition"/>
-	    <![CDATA[ ORDER BY id DESC ]]>
+	    <![CDATA[ ORDER BY coin_property_id DESC ]]>
 	</select>
 </mapper>
 
