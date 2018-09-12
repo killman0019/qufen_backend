@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.kff.comments.CommentsMapper">
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.kff.comments.Comments">
+		<result property="commentsId" jdbcType="INTEGER" column="comments_id" />
+		<result property="commentUserId" jdbcType="INTEGER" column="comment_user_id" />
+		<result property="commentUserIcon" jdbcType="VARCHAR" column="comment_user_icon" />
+		<result property="commentUserName" jdbcType="VARCHAR" column="comment_user_name" />
+		<result property="commentContent" jdbcType="VARCHAR" column="comment_content" />
+		<result property="projectId" jdbcType="INTEGER" column="project_id" />
+		<result property="postId" jdbcType="INTEGER" column="post_id" />
+		<result property="postType" jdbcType="INTEGER" column="post_type" />
+		<result property="praiseNum" jdbcType="INTEGER" column="praise_num" />
+		<result property="parentCommentsId" jdbcType="INTEGER" column="parent_comments_id" />
+		<result property="becommentedUserId" jdbcType="INTEGER" column="becommented_user_id" />
+		<result property="becommentedUserName" jdbcType="VARCHAR" column="becommented_user_name" />
+		<result property="becommentedUserIcon" jdbcType="VARCHAR" column="becommented_user_icon" />
+		<result property="createTime" jdbcType="TIMESTAMP" column="createTime" />
+		<result property="updateTime" jdbcType="TIMESTAMP" column="updateTime" />
+		<result property="status" jdbcType="INTEGER" column="status" />
+		<result property="becommentedId" jdbcType="INTEGER" column="becommentedId" />
+		<result property="floor" jdbcType="INTEGER" column="floor" />
+		<result property="commentUUID" jdbcType="VARCHAR" column="commentUUID" />
+	</resultMap>
+
+	<sql id="columns">
+	    <![CDATA[
+        comments_id ,comment_user_id ,comment_user_icon ,comment_user_name ,comment_content ,project_id,post_id ,post_type ,praise_num ,parent_comments_id ,becommented_user_id ,becommented_user_name ,becommented_user_icon ,createTime ,updateTime ,status
+        , becommentedId,floor,commentUUID
+	    ]]>
+	</sql>
+
+	<insert id="save" parameterType="com.tzg.entitys.kff.comments.Comments" useGeneratedKeys="true" keyProperty="commentsId">
+		<selectKey resultType="java.lang.Integer" keyProperty="commentsId" order="AFTER">
+			SELECT LAST_INSERT_ID() AS commentsId
+		</selectKey>
+	<![CDATA[
+		INSERT INTO tbcomments (
+        	comment_user_id ,
+        	comment_user_icon ,
+        	comment_user_name ,
+        	comment_content ,
+        	project_id,
+        	post_id ,
+        	post_type ,
+        	praise_num ,
+        	parent_comments_id ,
+        	becommented_user_id ,
+        	becommented_user_name ,
+        	becommented_user_icon ,
+        	createTime ,
+        	updateTime ,
+        	status ,
+        	becommentedId,
+        	floor,
+        	commentUUID
+		) VALUES (
+        	#{commentUserId,jdbcType=INTEGER} ,
+        	#{commentUserIcon,jdbcType=VARCHAR} ,
+        	#{commentUserName,jdbcType=VARCHAR} ,
+        	#{commentContent,jdbcType=VARCHAR} ,
+        	#{projectId,jdbcType=INTEGER} ,
+        	#{postId,jdbcType=INTEGER} ,
+        	#{postType,jdbcType=INTEGER} ,
+        	#{praiseNum,jdbcType=INTEGER} ,
+        	#{parentCommentsId,jdbcType=INTEGER} ,
+        	#{becommentedUserId,jdbcType=INTEGER} ,
+        	#{becommentedUserName,jdbcType=VARCHAR} ,
+        	#{becommentedUserIcon,jdbcType=VARCHAR} ,
+        	#{createTime,jdbcType=TIMESTAMP} ,
+        	#{updateTime,jdbcType=TIMESTAMP} ,
+        	#{status,jdbcType=INTEGER} ,
+        	#{becommentedId,jdbcType=INTEGER} ,
+        	#{floor,jdbcType=INTEGER},
+        	#{commentUUID,jdbcType=VARCHAR}
+        	
+		)
+	]]>
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.kff.comments.Comments">
+		UPDATE tbcomments
+		<set>
+			<if test="commentUserId != null">
+				comment_user_id = #{commentUserId,jdbcType=INTEGER} ,
+			</if>
+			<if test="commentUserIcon != null">
+				comment_user_icon = #{commentUserIcon,jdbcType=VARCHAR} ,
+			</if>
+			<if test="commentUserName != null">
+				comment_user_name = #{commentUserName,jdbcType=VARCHAR} ,
+			</if>
+			<if test="commentContent != null">
+				comment_content = #{commentContent,jdbcType=VARCHAR} ,
+			</if>
+			<if test="postId != null">
+				post_id = #{postId,jdbcType=INTEGER} ,
+			</if>
+			<if test="postType != null">
+				post_type = #{postType,jdbcType=INTEGER} ,
+			</if>
+			<if test="praiseNum != null">
+				praise_num = #{praiseNum,jdbcType=INTEGER} ,
+			</if>
+			<if test="parentCommentsId != null">
+				parent_comments_id = #{parentCommentsId,jdbcType=INTEGER} ,
+			</if>
+			<if test="becommentedUserId != null">
+				becommented_user_id = #{becommentedUserId,jdbcType=INTEGER} ,
+			</if>
+			<if test="becommentedUserName != null">
+				becommented_user_name = #{becommentedUserName,jdbcType=VARCHAR} ,
+			</if>
+			<if test="becommentedUserIcon != null">
+				becommented_user_icon = #{becommentedUserIcon,jdbcType=VARCHAR} ,
+			</if>
+			<if test="createTime != null">
+				createTime = #{createTime,jdbcType=TIMESTAMP} ,
+			</if>
+			<if test="updateTime != null">
+				updateTime = #{updateTime,jdbcType=TIMESTAMP} ,
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=INTEGER}
+			</if>
+			<if test="becommentedId != null">
+				becommentedId = #{becommentedId,jdbcType=INTEGER}
+			</if>
+			<if test="floor != null">
+				floor = #{floor,jdbcType=INTEGER}
+			</if>
+			<if test="commentUUID != null">
+				commentUUID = #{commentUUID,jdbcType=VARCHAR}
+			</if>
+		</set>
+		WHERE
+		comments_id = #{commentsId,jdbcType=INTEGER}
+	</update>
+
+
+	<update id="increasePraiseNum" parameterType="java.lang.Integer">
+		UPDATE tbcomments set praise_num = praise_num + 1
+		WHERE
+		comments_id = #{commentsId,jdbcType=INTEGER}
+	</update>
+
+	<update id="decreasePraiseNum" parameterType="java.lang.Integer">
+		UPDATE tbcomments set praise_num = praise_num - 1
+		WHERE
+		comments_id = #{commentsId,jdbcType=INTEGER}
+		and praise_num > 0
+	</update>
+
+
+	<update id="updateUserInfo" parameterType="java.util.Map">
+		UPDATE tbcomments
+		<set>
+			<if test="commentUserIcon != null and commentUserIcon.trim() != ''">
+				comment_user_icon = #{commentUserIcon,jdbcType=VARCHAR} ,
+			</if>
+			<if test="commentUserName != null and commentUserName.trim() != ''">
+				comment_user_name = #{commentUserName,jdbcType=VARCHAR} ,
+			</if>
+			<if test="becommentedUserName != null and becommentedUserName.trim() != ''">
+				becommented_user_name = #{becommentedUserName,jdbcType=VARCHAR} ,
+			</if>
+			<if test="becommentedUserIcon != null and becommentedUserIcon.trim() != ''">
+				becommented_user_icon = #{becommentedUserIcon,jdbcType=VARCHAR} ,
+			</if>
+			<if test="updateTime != null">
+				updateTime = now()
+			</if>
+		</set>
+		WHERE
+		<if test="becommentedUserId != null">
+			becommented_user_id = #{becommentedUserId,jdbcType=INTEGER}
+		</if>
+		<if test="commentUserId != null">
+			comment_user_id = #{commentUserId,jdbcType=INTEGER}
+		</if>
+	</update>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbcomments WHERE
+        comments_id = #{commentsId} 
+	]]>
+	</delete>
+
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT
+		<include refid="columns" /> 
+	<![CDATA[
+		FROM tbcomments 
+		WHERE 
+        comments_id = #{commentsId} 
+	]]>
+	</select>
+
+	<sql id="orderBy">
+		<if test="sql_keyword_orderBy!=null">
+			order by ${sql_keyword_orderBy} ${sql_keyword_sort}
+		</if>
+		<if test="sql_keyword_orderByc!=null">
+			order by ${sql_keyword_orderByc} ${sql_keyword_sortc}
+		</if>
+	</sql>
+
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(1) from tbcomments where 1=1
+		<include refid="queryWhere" />
+	</select>
+
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="columns" />
+		from tbcomments where 1=1
+		<include refid="queryWhere" />
+		<choose>
+			<when test="sortField != null">
+				ORDER BY ${sortField} DESC, createTime DESC
+			</when>
+			<otherwise>
+	                <![CDATA[ ORDER BY comments_id desc ]]>
+			</otherwise>
+		</choose>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+
+
+	<select id="findPageCountOrderBy" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="columns" />
+		from tbcomments where status =1
+		<include refid="queryWhere" />
+		ORDER BY praise_num DESC
+	 <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+
+
+
+
+
+	<select id="findAllCommentsByWhere" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="columns" />
+		from tbcomments where 1=1
+		<include refid="queryWhere" />
+		<choose>
+			<when test="sortField != null and sortField != ''">
+				ORDER BY ${sortField} DESC
+			</when>
+			<otherwise>
+	                <![CDATA[ ORDER BY comments_id desc ]]>
+			</otherwise>
+		</choose>
+	</select>
+	<sql id="queryWhere">
+		<if test="commentsId != null">
+		and comments_id = #{commentsId}
+		</if>
+		<if test="commentUserId != null">
+		and comment_user_id = #{commentUserId}
+		</if>
+		<if test="commentUserIcon != null">
+		and comment_user_icon = #{commentUserIcon}
+		</if>
+		<if test="commentUserName != null">
+		and comment_user_name = #{commentUserName}
+		</if>
+		<if test="commentContent != null">
+		and comment_content = #{commentContent}
+		</if>
+		<if test="postId != null">
+		and post_id = #{postId}
+		</if>
+		<if test="projectId != null">
+		and project_id = #{projectId}
+		</if>
+		<if test="postType != null">
+		and post_type = #{postType}
+		</if>
+		<if test="praiseNum != null">
+		and praise_num >= #{praiseNum}
+		</if>
+		<if test="parentCommentsId != null">
+		and parent_comments_id = #{parentCommentsId}
+		</if>
+		<if test="parentCommentsIdNull != null">
+		and parent_comments_id is null
+		</if>
+		<if test="becommentedUserId != null">
+		and becommented_user_id = #{becommentedUserId}
+		</if>
+		<if test="becommentedUserName != null">
+		and becommented_user_name = #{becommentedUserName}
+		</if>
+		<if test="becommentedUserIcon != null">
+		and becommented_user_icon = #{becommentedUserIcon}
+		</if>
+		<if test="createTimeBegin != null">
+		and createTime >= #{createTimeBegin}
+		</if>
+		<if test="createTimeEnd != null">
+		and createTime &lt;= #{createTimeEnd}
+		</if>
+		<if test="updateTimeBegin != null">
+		and updateTime >= #{updateTimeBegin}
+		</if>
+		<if test="updateTimeEnd != null">
+		and updateTime &lt;= #{updateTimeEnd}
+		</if>
+		<if test="status != null">
+		and status = #{status}
+		</if>
+		
+		<if test="becommentedId != null">
+		and becommentedId = #{becommentedId}
+		</if>
+		
+		<if test="floor != null">
+		and floor = #{floor}
+		</if>
+		<if test="commentUUID != null">
+		and commentUUID = #{commentUUID}
+		</if>
+	</sql>
+	<select id="findBidPraiseNum" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="columns" />
+		from tbcomments where status = 1 and post_id = #{postId}
+
+
+		ORDER BY praise_num DESC
+
+	</select>
+
+	<select id="findCommentsSum" resultType="java.lang.Integer">
+		select count(*) from tbcomments where status = 1
+
+	</select>
+
+	<select id="findFlootOrderById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+
+		SELECT
+		<include refid="columns" />
+		FROM tbcomments
+		WHERE post_id = #{postId} and parent_comments_id is NULL and `status` = 1 ORDER BY comments_id ASC
+	</select>
+
+	<select id="findFlootOrderById1" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+
+		SELECT
+		<include refid="columns" />
+		FROM tbcomments
+		WHERE post_id = #{postId} and parent_comments_id is NULL and `status` = 1 ORDER BY comments_id ASC
+	</select>
+	<select id="findByPostId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+
+		SELECT
+		<include refid="columns" />
+		FROM tbcomments
+		WHERE comments_id = #{commentsId}
+	</select>
+
+	<select id="selectIdByCommentUUID" resultMap="BaseResultMap" parameterType="java.lang.String">
+
+		SELECT
+		<include refid="columns" />
+		FROM tbcomments
+		WHERE commentUUID = #{commentUUID}
+	</select>
+
+	<select id="findParentCommentsSum" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+		select count(*) from tbcomments where status = 1 and parent_comments_id is NULL and post_id = #{postId}
+	</select>
+
+
+
+
+</mapper>
+
+

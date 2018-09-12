@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.leopard.system.SystemParamMapper">
+    <resultMap id="SystemParam" type="com.tzg.entitys.leopard.system.SystemParam">
+        <id column="Id" jdbcType="INTEGER" property="id" />
+        <result column="vcParamName" jdbcType="VARCHAR" property="vcParamName" />
+        <result column="vcParamCode" jdbcType="VARCHAR" property="vcParamCode" />
+        <result column="vcParamValue" jdbcType="VARCHAR" property="vcParamValue" />
+        <result column="iValid" jdbcType="INTEGER" property="iValid" />
+        <result column="dtCreate" jdbcType="TIMESTAMP" property="dtCreate" />
+        <result column="dtModify" jdbcType="TIMESTAMP" property="dtModify" />
+    </resultMap>
+
+    <insert id="save" parameterType="com.tzg.entitys.leopard.system.SystemParam"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into tbsystemparam(vcParamName,vcParamCode,vcParamValue,dtCreate)
+        values (#{vcParamName,jdbcType=VARCHAR},#{vcParamCode,jdbcType=VARCHAR},
+        #{vcParamValue,jdbcType=VARCHAR},#{dtCreate,jdbcType=TIMESTAMP})
+    </insert>
+
+    <update id="update" parameterType="com.tzg.entitys.leopard.system.SystemParam">
+        update tbsystemparam set vcParamName = #{vcParamName,jdbcType=VARCHAR},
+        vcParamCode = #{vcParamCode,jdbcType=VARCHAR},
+        vcParamValue = #{vcParamValue,jdbcType=VARCHAR},
+        dtModify = #{dtModify,jdbcType=TIMESTAMP} where id = #{id,jdbcType=INTEGER};
+    </update>
+
+    <select id="findPageCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT count(*) from  tbsystemparam where iValid=1
+        <if test="vcParamName != null and vcParamName.trim()!='' ">
+            and  vcParamName like concat('%',#{vcParamName},'%') 
+        </if>
+        <if test="vcParamCode != null and vcParamCode.trim()!='' ">
+            and  vcParamCode like concat('%',#{vcParamCode},'%') 
+        </if>
+    </select>
+
+    <select id="findPage" parameterType="java.util.Map" resultMap="SystemParam">
+        SELECT * from tbsystemparam where iValid=1
+         <if test="vcParamName != null and vcParamName.trim()!='' ">
+            and  vcParamName like concat('%',#{vcParamName},'%') 
+        </if>
+        <if test="vcParamCode != null and vcParamCode.trim()!='' ">
+            and  vcParamCode like concat('%',#{vcParamCode},'%') 
+        </if>
+        ORDER BY id DESC
+        <![CDATA[ limit #{startRecord,jdbcType=INTEGER},#{endRecord,jdbcType=INTEGER} ]]>
+    </select>
+
+    <select id="findById" parameterType="java.lang.Integer" resultMap="SystemParam">
+        SELECT * from  tbsystemparam a where iValid=1 and id = #{id,jdbcType=INTEGER}
+    </select>
+    
+    <select id="findByCode" parameterType="java.lang.String" resultMap="SystemParam">
+        SELECT * from  tbsystemparam a where iValid=1 and vcParamCode = #{vcParamCode,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        update tbsystemparam set iValid=2 where id = #{id,jdbcType=INTEGER}
+    </delete>
+</mapper>

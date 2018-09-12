@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.kff.devaluationModelDetail.DevaluationModelDetailMapper">	
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.kff.devaluationModelDetail.DevaluationModelDetail">
+		<result property="id" jdbcType="INTEGER" column="id"/>
+		<result property="modelId" jdbcType="INTEGER" column="model_id"/>
+		<result property="detailName" jdbcType="VARCHAR" column="detail_name"/>
+		<result property="detailDesc" jdbcType="VARCHAR" column="detail_desc"/>
+		<result property="detailWeight" jdbcType="INTEGER" column="detail_weight"/>
+		<result property="createTime" jdbcType="TIMESTAMP" column="createTime"/>
+		<result property="updateTime" jdbcType="TIMESTAMP" column="updateTime"/>
+		<result property="createUserId" jdbcType="INTEGER" column="create_user_id"/>
+		<result property="status" jdbcType="INTEGER" column="status"/>
+    </resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+        id ,model_id ,detail_name ,detail_desc ,detail_weight ,createTime ,updateTime ,create_user_id ,status 
+	    ]]>
+	</sql>
+	
+	<insert id="save" parameterType="com.tzg.entitys.kff.devaluationModelDetail.DevaluationModelDetail" useGeneratedKeys="true" keyProperty="id">
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+	      SELECT LAST_INSERT_ID() AS id
+	    </selectKey>
+	<![CDATA[
+		INSERT INTO d_evaluation_model_detail (
+        	model_id ,
+        	detail_name ,
+        	detail_desc ,
+        	detail_weight ,
+        	createTime ,
+        	updateTime ,
+        	create_user_id ,
+        	status 
+		) VALUES (
+        	#{modelId,jdbcType=INTEGER} ,
+        	#{detailName,jdbcType=VARCHAR} ,
+        	#{detailDesc,jdbcType=VARCHAR} ,
+        	#{detailWeight,jdbcType=INTEGER} ,
+        	#{createTime,jdbcType=TIMESTAMP} ,
+        	#{updateTime,jdbcType=TIMESTAMP} ,
+        	#{createUserId,jdbcType=INTEGER} ,
+        	#{status,jdbcType=INTEGER} 
+		)
+	]]>
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.kff.devaluationModelDetail.DevaluationModelDetail">
+		UPDATE d_evaluation_model_detail
+		<set>
+			<if test="modelId != null">
+	        model_id = #{modelId,jdbcType=INTEGER} ,
+	        </if>
+			<if test="detailName != null">
+	        detail_name = #{detailName,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="detailDesc != null">
+	        detail_desc = #{detailDesc,jdbcType=VARCHAR} ,
+	        </if>
+			<if test="detailWeight != null">
+	        detail_weight = #{detailWeight,jdbcType=INTEGER} ,
+	        </if>
+			<if test="createTime != null">
+	        createTime = #{createTime,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="updateTime != null">
+	        updateTime = #{updateTime,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="createUserId != null">
+	        create_user_id = #{createUserId,jdbcType=INTEGER} ,
+	        </if>
+			<if test="status != null">
+	        status = #{status,jdbcType=INTEGER} 
+	        </if>
+	    </set>
+		WHERE 
+	        id = #{id,jdbcType=INTEGER} 
+	</update>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM d_evaluation_model_detail WHERE
+        id = #{id} 
+	]]>
+	</delete>
+    
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM d_evaluation_model_detail 
+		WHERE 
+        id = #{id} 
+	]]>
+	</select>
+	 
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from d_evaluation_model_detail where 1=1
+		<include refid="queryWhere"/>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from d_evaluation_model_detail where 1=1
+		<include refid="queryWhere"/> 
+	    <![CDATA[ ORDER BY id DESC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<select id="findByWhere" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from d_evaluation_model_detail where 1=1
+		<include refid="queryWhere"/> 
+	    <![CDATA[ ORDER BY id DESC ]]>
+	</select>
+	
+	<sql id="queryWhere">
+		<if test="id != null and id.trim() != ''">
+		and id = #{id}
+		</if>
+		<if test="modelId != null and modelId.trim() != ''">
+		and model_id = #{modelId}
+		</if>
+		<if test="detailName != null and detailName.trim() != ''">
+		and detail_name = #{detailName}
+		</if>
+		<if test="detailDesc != null and detailDesc.trim() != ''">
+		and detail_desc = #{detailDesc}
+		</if>
+		<if test="detailWeight != null and detailWeight.trim() != ''">
+		and detail_weight = #{detailWeight}
+		</if>
+		<if test="createTimeBegin != null and createTimeBegin.trim() != ''">
+		and createTime >= #{createTimeBegin}
+		</if>
+		<if test="createTimeEnd != null and createTimeEnd.trim() != ''">
+		and createTime &lt;= #{createTimeEnd}
+		</if>
+		<if test="updateTimeBegin != null and updateTimeBegin.trim() != ''">
+		and updateTime >= #{updateTimeBegin}
+		</if>
+		<if test="updateTimeEnd != null and updateTimeEnd.trim() != ''">
+		and updateTime &lt;= #{updateTimeEnd}
+		</if>
+		<if test="createUserId != null and createUserId.trim() != ''">
+		and create_user_id = #{createUserId}
+		</if>
+		<if test="status != null and status.trim() != ''">
+		and status = #{status}
+		</if>
+	</sql>
+</mapper>
+
+

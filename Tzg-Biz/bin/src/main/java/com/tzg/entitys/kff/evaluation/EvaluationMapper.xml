@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.kff.evaluation.EvaluationMapper">
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.kff.evaluation.Evaluation">
+		<result property="evaluationId" jdbcType="INTEGER" column="evaluation_id" />
+		<result property="projectId" jdbcType="INTEGER" column="project_id" />
+		<result property="postId" jdbcType="INTEGER" column="post_id" />
+		<result property="postUuid" jdbcType="VARCHAR" column="post_uuid" />
+		<result property="modelType" jdbcType="INTEGER" column="model_type" />
+		<result property="totalScore" jdbcType="DECIMAL" column="total_score" />
+		<result property="professionalEvaDetail" jdbcType="LONGVARCHAR" column="professional_eva_detail" />
+		<result property="evauationContent" jdbcType="VARCHAR" column="evauation_content" />
+		<result property="evaluationTags" jdbcType="VARCHAR" column="evaluation_tags" />
+		<result property="status" jdbcType="INTEGER" column="status" />
+		<result property="createTime" jdbcType="TIMESTAMP" column="createTime" />
+		<result property="updateTime" jdbcType="TIMESTAMP" column="updateTime" />
+		<result property="createUserId" jdbcType="INTEGER" column="create_user_id" />
+		<result property="tagInfos" jdbcType="VARCHAR" column="tag_infos" />
+	</resultMap>
+
+
+	<resultMap id="FullPostResultMap" type="com.tzg.entitys.kff.evaluation.EvaluationDetailResponse">
+		<result property="postId" jdbcType="INTEGER" column="post_id" />
+		<result property="projectId" jdbcType="INTEGER" column="project_id" />
+		<result property="projectIcon" jdbcType="VARCHAR" column="project_icon" />
+		<result property="projectCode" jdbcType="VARCHAR" column="project_code" />
+		<result property="projectEnglishName" jdbcType="VARCHAR" column="project_english_name" />
+		<result property="projectChineseName" jdbcType="VARCHAR" column="project_chinese_name" />
+		<result property="postTitle" jdbcType="VARCHAR" column="post_title" />
+		<result property="postType" jdbcType="INTEGER" column="post_type" />
+		<result property="postShortDesc" jdbcType="VARCHAR" column="post_short_desc" />
+		<result property="postSmallImages" jdbcType="VARCHAR" column="post_small_images" />
+		<result property="commentsNum" jdbcType="INTEGER" column="comments_num" />
+		<result property="praiseNum" jdbcType="INTEGER" column="praise_num" />
+		<result property="pageviewNum" jdbcType="INTEGER" column="pageview_num" />
+		<result property="donateNum" jdbcType="INTEGER" column="donate_num" />
+		<result property="collectNum" jdbcType="INTEGER" column="collect_num" />
+		<result property="createUserId" jdbcType="INTEGER" column="create_user_id" />
+		<result property="createUserIcon" jdbcType="VARCHAR" column="create_user_icon" />
+		<result property="createUserSignature" jdbcType="VARCHAR" column="create_user_signature" />
+		<result property="createUserName" jdbcType="VARCHAR" column="create_user_name" />
+		<result property="createTime" jdbcType="TIMESTAMP" column="createTime" />
+		<result property="updateTime" jdbcType="TIMESTAMP" column="updateTime" />
+		<result property="status" jdbcType="INTEGER" column="status" />
+		<result property="stickTop" jdbcType="INTEGER" column="stick_top" />
+		<result property="stickUpdateTime" jdbcType="TIMESTAMP" column="stick_updateTime" />
+		<result property="praiseIncome" jdbcType="DOUBLE" column="praise_income" />
+		<result property="donateIncome" jdbcType="DOUBLE" column="donate_income" />
+		<result property="postTotalIncome" jdbcType="DOUBLE" column="post_total_income" />
+		<result property="modelType" jdbcType="INTEGER" column="model_type" />
+		<result property="totalScore" jdbcType="DECIMAL" column="total_score" />
+		<result property="professionalEvaDetail" jdbcType="LONGVARCHAR" column="professional_eva_detail" />
+		<result property="evauationContent" jdbcType="VARCHAR" column="evauation_content" />
+		<result property="evaluationTags" jdbcType="VARCHAR" column="evaluation_tags" />
+	</resultMap>
+
+	<sql id="columns">
+	    <![CDATA[
+        evaluation_id ,project_id ,post_id,post_uuid,model_type ,total_score ,professional_eva_detail ,evauation_content ,
+        evaluation_tags ,status ,createTime ,updateTime ,create_user_id
+	    ]]>
+	</sql>
+
+	<sql id="fullpostcolumns">
+	    <![CDATA[
+        p.post_id ,p.project_id ,p.project_icon ,p.project_code ,p.project_english_name ,p.project_chinese_name,p.post_title ,p.post_type ,p.post_short_desc ,p.post_small_images ,p.comments_num ,p.praise_num ,p.pageview_num ,p.donate_num ,p.collect_num ,p.create_user_id ,p.create_user_icon ,p.create_user_signature ,p.create_user_name ,p.createTime ,p.updateTime ,p.status,p.uuid,p.stick_top,p.stick_updateTime
+	    ,p.praise_income,p.donate_income,p.post_total_income,e.evaluation_id,e.total_score,e.professional_eva_detail,e.evauation_content,e.evaluation_tags
+	    ]]>
+	</sql>
+
+	<insert id="save" parameterType="com.tzg.entitys.kff.evaluation.Evaluation" useGeneratedKeys="true" keyProperty="evaluationId">
+		<selectKey resultType="java.lang.Integer" keyProperty="evaluationId" order="AFTER">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+	<![CDATA[
+		INSERT INTO tbevaluation (
+        	project_id ,
+        	post_id,
+        	post_uuid,
+        	model_type ,
+        	total_score ,
+        	professional_eva_detail ,
+        	evauation_content ,
+        	evaluation_tags ,
+        	status ,
+        	createTime ,
+        	updateTime ,
+        	create_user_id
+		) VALUES (
+        	#{projectId,jdbcType=INTEGER} ,
+        	#{postId,jdbcType=INTEGER} ,
+        	#{postUuid,jdbcType=VARCHAR} ,
+        	#{modelType,jdbcType=INTEGER} ,
+        	#{totalScore,jdbcType=DECIMAL} ,
+        	#{professionalEvaDetail,jdbcType=LONGVARCHAR} ,
+        	#{evauationContent,jdbcType=VARCHAR} ,
+        	#{evaluationTags,jdbcType=VARCHAR} ,
+        	#{status,jdbcType=INTEGER} ,
+        	#{createTime,jdbcType=TIMESTAMP} ,
+        	#{updateTime,jdbcType=TIMESTAMP} ,
+        	#{createUserId,jdbcType=INTEGER}
+		)
+	]]>
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.kff.evaluation.Evaluation">
+		UPDATE tbevaluation
+		<set>
+			<if test="projectId != null">
+				project_id = #{projectId,jdbcType=INTEGER} ,
+			</if>
+			<if test="modelType != null">
+				model_type = #{modelType,jdbcType=BIT} ,
+			</if>
+			<if test="totalScore != null">
+				total_score = #{totalScore,jdbcType=DECIMAL} ,
+			</if>
+			<if test="professionalEvaDetail != null">
+				professional_eva_detail = #{professionalEvaDetail,jdbcType=LONGVARCHAR} ,
+			</if>
+			<if test="evauationContent != null">
+				evauation_content = #{evauationContent,jdbcType=VARCHAR} ,
+			</if>
+			<if test="evaluationTags != null">
+				evaluation_tags = #{evaluationTags,jdbcType=VARCHAR} ,
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=INTEGER} ,
+			</if>
+			<if test="createTime != null">
+				createTime = #{createTime,jdbcType=TIMESTAMP} ,
+			</if>
+			<if test="updateTime != null">
+				updateTime = #{updateTime,jdbcType=TIMESTAMP} ,
+			</if>
+			<if test="createUserId != null">
+				create_user_id = #{createUserId,jdbcType=INTEGER}
+			</if>
+		</set>
+		WHERE
+		evaluation_id = #{evaluationId,jdbcType=INTEGER}
+	</update>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbevaluation WHERE
+        evaluation_id = #{evaluationId} 
+	]]>
+	</delete>
+
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT
+		<include refid="columns" /> 
+	<![CDATA[
+		FROM tbevaluation 
+		WHERE 
+        evaluation_id = #{evaluationId} 
+	]]>
+	</select>
+
+	<select id="findByPostId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT
+		<include refid="columns" /> 
+	<![CDATA[
+		FROM tbevaluation 
+		WHERE 
+        post_id = #{postId} limit 1
+	]]>
+	</select>
+
+
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(*) from tbevaluation where 1=1
+		<include refid="queryWhere" />
+	</select>
+
+	<select id="countEvaExportOnlyEva" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+		select count(*) from tbevaluation where 1=1
+		and status=1 and model_type != 3 and project_id = #{projectId}
+	</select>
+
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="columns" />
+		from tbevaluation where 1=1
+		<include refid="queryWhere" /> 
+	    <![CDATA[ ORDER BY evaluation_id DESC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+
+	<select id="getAllEvasExceptPartByProjectId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="columns" />
+		from tbevaluation where status=1 and model_type != 3
+		and project_id = #{projectId}
+
+	</select>
+
+	<select id="findByWhere" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="columns" />
+		from tbevaluation where 1=1
+		<include refid="queryWhere" /> 
+	    <![CDATA[ ORDER BY evaluation_id DESC ]]>
+	</select>
+
+	<sql id="queryWhere">
+		<if test="evaluationId != null ">
+			and evaluation_id = #{evaluationId}
+		</if>
+		<if test="projectId != null ">
+			and project_id = #{projectId}
+		</if>
+		<if test="postId != null ">
+			and post_id = #{postId}
+		</if>
+		<if test="postUuid != null">
+			and post_uuid = #{postUuid}
+		</if>
+		<if test="modelType != null ">
+			and model_type = #{modelType}
+		</if>
+		<if test="totalScore != null">
+			and total_score = #{totalScore}
+		</if>
+		<if test="professionalEvaDetail != null ">
+			and professional_eva_detail = #{professionalEvaDetail}
+		</if>
+		<if test="evauationContent != null ">
+			and evauation_content = #{evauationContent}
+		</if>
+		<if test="evaluationTags != null ">
+			and evaluation_tags = #{evaluationTags}
+		</if>
+		<if test="status != null ">
+			and status = #{status}
+		</if>
+		<if test="createTimeBegin != null ">
+			and createTime >= #{createTimeBegin}
+		</if>
+		<if test="createTimeEnd != null ">
+			and createTime &lt;= #{createTimeEnd}
+		</if>
+		<if test="updateTimeBegin != null ">
+			and updateTime >= #{updateTimeBegin}
+		</if>
+		<if test="updateTimeEnd != null ">
+			and updateTime &lt;= #{updateTimeEnd}
+		</if>
+		<if test="createUserId != null ">
+			and create_user_id = #{createUserId}
+		</if>
+		<if test="startTime!=null and endTime==null">
+			and createTime &gt;= #{startTime}
+		</if>
+		<if test="startTime==null and endTime!=null">
+			and createTime &lt;= #{endTime}
+		</if>
+		<if test="startTime!=null and endTime!=null">
+			and createTime &gt;= #{startTime} and createTime &lt;= #{endTime}
+		</if>
+	</sql>
+	<select id="selectEvaluationByPostId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT
+		<include refid="columns" />
+		FROM tbevaluation
+		WHERE
+		post_id = #{postId} and status=1
+	</select>
+
+	<select id="findEvaliationByProjectId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT
+		<include refid="columns" />
+		FROM tbevaluation
+		WHERE
+		project_id = #{projectId} and status=1
+	</select>
+
+	<select id="selectEvaluationOrNotByUserId" resultMap="BaseResultMap">
+		SELECT
+		<include refid="columns" />
+		FROM tbevaluation
+		WHERE
+		create_user_id = #{createUserId} and status=1 and model_type = 2 and project_id = #{projectId}
+		UNION ALL
+		SELECT
+		<include refid="columns" />
+		FROM tbevaluation
+		WHERE
+		create_user_id = #{createUserId} and status=1 and model_type = 4 and project_id = #{projectId}
+	</select>
+
+
+	<select id="findPageSimpleEvaluationCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(*) from tbpost p,tbevaluation e WHERE
+		p.post_id=e.post_id
+		and p.post_type=1
+		and p.status = 1
+		and e.model_type=1
+		<if test="projectId != null ">
+			and p.project_id = #{projectId}
+		</if>
+	</select>
+
+	<select id="findPageSimpleEvaluation" resultMap="FullPostResultMap" parameterType="java.util.Map">
+		select
+		<include refid="fullpostcolumns" />
+		from tbpost p,tbevaluation e WHERE
+		p.post_id=e.post_id
+		and p.post_type=1
+		and p.status = 1
+		and e.model_type=1
+		<if test="projectId != null ">
+			and p.project_id = #{projectId}
+		</if>
+	    <![CDATA[ ORDER BY evaluation_id DESC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+
+</mapper>
+
+

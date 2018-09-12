@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.kff.projectevastat.ProjectevastatMapper">	
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.kff.projectevastat.Projectevastat">
+		<result property="id" jdbcType="INTEGER" column="id"/>
+		<result property="projectId" jdbcType="INTEGER" column="project_id"/>
+		<result property="modelDetailId" jdbcType="INTEGER" column="model_detail_id"/>
+		<result property="totalScore" jdbcType="DECIMAL" column="total_score"/>
+		<result property="raterNum" jdbcType="INTEGER" column="rater_num"/>
+		<result property="createTime" jdbcType="TIMESTAMP" column="createTime"/>
+		<result property="updateTime" jdbcType="TIMESTAMP" column="updateTime"/>
+		<result property="status" jdbcType="INTEGER" column="status"/>
+    </resultMap>
+	
+	<sql id="columns">
+	    <![CDATA[
+        id ,project_id ,model_detail_id ,total_score ,rater_num ,createTime ,updateTime ,status 
+	    ]]>
+	</sql>
+	
+	<insert id="save" parameterType="com.tzg.entitys.kff.projectevastat.Projectevastat" useGeneratedKeys="true" keyProperty="id">
+		<selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+	      SELECT LAST_INSERT_ID() AS id
+	    </selectKey>
+	<![CDATA[
+		INSERT INTO tbprojectevastat (
+        	project_id ,
+        	model_detail_id ,
+        	total_score ,
+        	rater_num ,
+        	createTime ,
+        	updateTime ,
+        	status 
+		) VALUES (
+        	#{projectId,jdbcType=INTEGER} ,
+        	#{modelDetailId,jdbcType=INTEGER} ,
+        	#{totalScore,jdbcType=DECIMAL} ,
+        	#{raterNum,jdbcType=INTEGER} ,
+        	#{createTime,jdbcType=TIMESTAMP} ,
+        	#{updateTime,jdbcType=TIMESTAMP} ,
+        	#{status,jdbcType=INTEGER} 
+		)
+	]]>
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.kff.projectevastat.Projectevastat">
+		UPDATE tbprojectevastat
+		<set>
+			<if test="projectId != null">
+	        project_id = #{projectId,jdbcType=INTEGER} ,
+	        </if>
+			<if test="modelDetailId != null">
+	        model_detail_id = #{modelDetailId,jdbcType=INTEGER} ,
+	        </if>
+			<if test="totalScore != null">
+	        total_score = #{totalScore,jdbcType=DECIMAL} ,
+	        </if>
+			<if test="raterNum != null">
+	        rater_num = #{raterNum,jdbcType=INTEGER} ,
+	        </if>
+			<if test="createTime != null">
+	        createTime = #{createTime,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="updateTime != null">
+	        updateTime = #{updateTime,jdbcType=TIMESTAMP} ,
+	        </if>
+			<if test="status != null">
+	        status = #{status,jdbcType=INTEGER} 
+	        </if>
+	    </set>
+		WHERE 
+	        id = #{id,jdbcType=INTEGER} 
+	</update>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbprojectevastat WHERE
+        id = #{id} 
+	]]>
+	</delete>
+    
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+	    SELECT <include refid="columns"/> 
+	<![CDATA[
+		FROM tbprojectevastat 
+		WHERE 
+        id = #{id} 
+	]]>
+	</select>
+	 
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from tbprojectevastat where 1=1
+		<include refid="queryWhere"/>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns"/>  from tbprojectevastat where 1=1
+		<include refid="queryWhere"/> 
+	    <![CDATA[ ORDER BY id DESC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<sql id="queryWhere">
+		<if test="id != null and id.trim() != ''">
+		and id = #{id}
+		</if>
+		<if test="projectId != null">
+		and project_id = #{projectId}
+		</if>
+		<if test="modelDetailId != null and modelDetailId.trim() != ''">
+		and model_detail_id = #{modelDetailId}
+		</if>
+		<if test="totalScore != null and totalScore.trim() != ''">
+		and total_score = #{totalScore}
+		</if>
+		<if test="raterNum != null and raterNum.trim() != ''">
+		and rater_num = #{raterNum}
+		</if>
+		<if test="createTimeBegin != null and createTimeBegin.trim() != ''">
+		and createTime >= #{createTimeBegin}
+		</if>
+		<if test="createTimeEnd != null and createTimeEnd.trim() != ''">
+		and createTime &lt;= #{createTimeEnd}
+		</if>
+		<if test="updateTimeBegin != null and updateTimeBegin.trim() != ''">
+		and updateTime >= #{updateTimeBegin}
+		</if>
+		<if test="updateTimeEnd != null and updateTimeEnd.trim() != ''">
+		and updateTime &lt;= #{updateTimeEnd}
+		</if>
+		<if test="status != null and status.trim() != ''">
+		and status = #{status}
+		</if>
+	</sql>
+</mapper>
+
+

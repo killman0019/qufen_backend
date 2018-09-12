@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzg.entitys.kff.bgroupmustread.BGroupMustReadMapper">
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.kff.bgroupmustread.BGroupMustRead">
+		<id column="B_group_must_read_id" property="bGroupMustReadId" jdbcType="INTEGER" />
+		<result column="post_id" property="postId" jdbcType="INTEGER" />
+		<result column="title" property="title" jdbcType="VARCHAR" />
+		<result column="create_name" property="createName" jdbcType="VARCHAR" />
+		<result column="pageview_num" property="pageviewNum" jdbcType="INTEGER" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="is_show" property="isShow" jdbcType="INTEGER" />
+		<result column="post_type" property="postType" jdbcType="INTEGER" />
+		<result column="status" property="status" jdbcType="INTEGER" />
+		<result column="project_code" property="projectCode" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="columns">
+		B_group_must_read_id, post_id, title, create_name, pageview_num, create_time, is_show,
+		post_type, status ,project_code,update_time
+	</sql>
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="columns" />
+		from tbbgroupmustread
+		where B_group_must_read_id = #{bGroupMustReadId,jdbcType=INTEGER}
+	</select>
+
+	<insert id="save" parameterType="com.tzg.entitys.kff.bgroupmustread.BGroupMustRead" useGeneratedKeys="true" keyProperty="bGroupMustReadId">
+		<selectKey resultType="java.lang.Integer" keyProperty="bGroupMustReadId" order="AFTER">
+			SELECT LAST_INSERT_ID() AS B_group_must_read_id
+		</selectKey>
+		insert into tbbgroupmustread (B_group_must_read_id, post_id, title,
+		create_name, pageview_num, create_time,
+		is_show, post_type, status,project_code,update_time
+		)
+		values (#{bGroupMustReadId,jdbcType=INTEGER},
+		#{postId,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR},
+		#{createName,jdbcType=VARCHAR}, #{pageviewNum,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP},
+		#{isShow,jdbcType=INTEGER},
+		#{postType,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{projectCode,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.kff.bgroupmustread.BGroupMustRead">
+		update tbbgroupmustread
+		<set>
+			<if test="postId != null">
+				post_id = #{postId,jdbcType=INTEGER},
+			</if>
+			<if test="title != null">
+				title = #{title,jdbcType=VARCHAR},
+			</if>
+			<if test="createName != null">
+				create_name = #{createName,jdbcType=VARCHAR},
+			</if>
+			<if test="pageviewNum != null">
+				pageview_num = #{pageviewNum,jdbcType=INTEGER},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="isShow != null">
+				is_show = #{isShow,jdbcType=INTEGER},
+			</if>
+			<if test="postType != null">
+				post_type = #{postType,jdbcType=INTEGER},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=INTEGER},
+			</if>
+			<if test="projectCode != null">
+				project_code = #{projectCode,jdbcType=VARCHAR},
+			</if>
+			
+		</set>
+		where B_group_must_read_id = #{bGroupMustReadId,jdbcType=INTEGER}
+	</update>
+
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(*) from tbbgroupmustread where 1=1
+		<include refid="queryWhere" />
+	</select>
+
+
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="columns" />
+		from tbbgroupmustread where 1=1
+		<include refid="queryWhere" />
+		<include refid="orderBy" />
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+
+	<sql id="orderBy">
+		<if test="sql_keyword_orderBy!=null">
+			order by ${sql_keyword_orderBy} ${sql_keyword_sort}
+		</if>
+	</sql>
+
+	<sql id="queryWhere">
+		<if test="bGroupMustReadId != null">
+			and B_group_must_read_id = #{bGroupMustReadId,jdbcType=INTEGER}
+		</if>
+		<if test="postId != null">
+			and post_id = #{postId,jdbcType=INTEGER}
+		</if>
+		<if test="title != null">
+			and title = #{title,jdbcType=VARCHAR}
+		</if>
+		<if test="createName != null">
+			and create_name = #{createName,jdbcType=VARCHAR}
+		</if>
+		<if test="pageviewNum != null">
+			and pageview_num = #{pageviewNum,jdbcType=INTEGER}
+		</if>
+		<if test="createTime != null">
+			and create_time = #{createTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="updateTime != null">
+			and update_time = #{updateTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="isShow != null">
+			and is_show = #{isShow,jdbcType=INTEGER}
+		</if>
+		<if test="postType != null">
+			and post_type = #{postType,jdbcType=INTEGER}
+		</if>
+		<if test="status != null">
+			and status = #{status,jdbcType=INTEGER}
+		</if>
+		
+		<if test="projectCode != null">
+			and project_code = #{projectCode,jdbcType=VARCHAR}
+		</if>
+
+	</sql>
+	
+	<sql id="findByMap">
+	select 
+	<include refid="columns"/>
+	from
+	tbbgroupmustread
+	where 1=1
+	<include refid="queryWhere" />
+	<include refid="orderBy" />
+	</sql>
+
+</mapper>

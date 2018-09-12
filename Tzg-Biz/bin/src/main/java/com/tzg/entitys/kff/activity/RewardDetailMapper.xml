@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.kff.activity.RewardDetailMapper">
+  <resultMap id="BaseResultMap" type="com.tzg.entitys.kff.activity.RewardDetail">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+    <result column="activity_id" jdbcType="INTEGER" property="activityId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="reward" jdbcType="DECIMAL" property="reward" />
+    <result column="token_name" jdbcType="VARCHAR" property="tokenName" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="cash" jdbcType="DECIMAL" property="cash" />
+    <result column="project_id" jdbcType="INTEGER" property="projectId" />
+    <result column="project_code" jdbcType="VARCHAR" property="projectCode" />
+    <result column="project_icon" jdbcType="VARCHAR" property="projectIcon" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, created_at, updated_at, activity_id, user_id, user_name, mobile, title, reward, 
+    token_name, status,cash,project_id,project_code,project_icon
+  </sql>
+  
+  <sql id="table_name">
+		activity_reward_detail
+  </sql>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from <include refid="table_name" />
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from <include refid="table_name" />
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+   <delete id="deleteById" parameterType="java.lang.Integer" >
+		delete from <include refid="table_name" />  where id=#{id} 
+   </delete>
+   
+  <insert id="save" parameterType="com.tzg.entitys.kff.activity.RewardDetail" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+    insert into activity_reward_detail (id, created_at, updated_at, 
+      activity_id, user_id, user_name, 
+      mobile, title, reward, token_name, status,cash,project_id,project_code,project_icon)
+    values (#{id,jdbcType=INTEGER}, #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, 
+      #{activityId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, 
+      #{mobile,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, #{reward,jdbcType=DECIMAL}, 
+      #{tokenName,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{cash,jdbcType=DECIMAL},
+      #{projectId,jdbcType=INTEGER}, #{projectCode,jdbcType=VARCHAR}, #{projectIcon,jdbcType=VARCHAR})
+    <selectKey resultType="int" keyProperty="id">  
+       SELECT  
+       LAST_INSERT_ID()  
+    </selectKey>
+  </insert>
+  
+  <update id="update" parameterType="com.tzg.entitys.kff.activity.RewardDetail">
+    update activity_reward_detail
+    <set>
+      <if test="createdAt != null">
+        created_at = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null">
+        updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="activityId != null">
+        activity_id = #{activityId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="userName != null">
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null">
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="reward != null">
+        reward = #{reward,jdbcType=DECIMAL},
+      </if>
+      <if test="tokenName != null">
+        token_name = #{tokenName,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="cash != null">
+        cash = #{cash,jdbcType=DECIMAL},
+      </if>
+       <if test="projectId != null">
+        project_id = #{projectId,jdbcType=INTEGER},
+      </if>
+      <if test="projectCode != null">
+        project_code = #{projectCode,jdbcType=VARCHAR},
+      </if>
+      <if test="projectIcon != null">
+        project_icon = #{projectIcon,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(1) from <include refid="table_name" />
+		<include refid="condition"/>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select *  from <include refid="table_name" />
+		<include refid="condition"/>
+	    <![CDATA[ ORDER BY id DESC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<sql id="condition">
+    	<where>
+	    	<if test="id != null">
+			 id = #{id,jdbcType=INTEGER}
+			</if>
+			<if test="activityId!=null">
+    		  and activity_id = #{activityId}
+    		</if>
+			<if test="userId!=null">
+    		  and user_id = #{userId}
+    		</if>
+			<if test="startTime!=null and endTime==null">
+    		  and created_at &gt;= #{startTime}
+    		</if>
+    		<if test="startTime==null and endTime!=null">
+    		  and created_at &lt;= #{endTime}
+    		</if>
+    		<if test="startTime!=null and endTime!=null">
+    		  and created_at &gt;= #{startTime} and created_at &lt;= #{endTime}
+    		</if>
+    	</where>
+    </sql>
+    
+    <select id="findListByAttr" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select * from <include refid="table_name" />
+		<include refid="condition"/>
+	    <![CDATA[ ORDER BY id DESC ]]>
+	</select>
+</mapper>

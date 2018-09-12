@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.kff.app.NewsFlashMapper">
+  <resultMap id="BaseResultMap" type="com.tzg.entitys.kff.app.NewsFlash">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+    <result column="bzj_id" jdbcType="VARCHAR" property="bzjId" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="abstractc" jdbcType="LONGVARCHAR" property="abstractc" />
+    <result column="host" jdbcType="VARCHAR" property="host" />
+    <result column="publish_time" jdbcType="VARCHAR" property="publishTime" />
+    <result column="rank" jdbcType="DECIMAL" property="rank" />
+    <result column="relevance" jdbcType="LONGVARCHAR" property="relevance" />
+    <result column="sentiment" jdbcType="VARCHAR" property="sentiment" />
+    <result column="site" jdbcType="VARCHAR" property="site" />
+    <result column="tags" jdbcType="VARCHAR" property="tags" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="project_code" jdbcType="VARCHAR" property="projectCode" />
+    <result column="article_events" jdbcType="LONGVARCHAR" property="articleEvents" />
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+    <result column="html" jdbcType="LONGVARCHAR" property="html" />
+    <result column="rise" jdbcType="INTEGER" property="rise" />
+    <result column="fall" jdbcType="INTEGER" property="fall" />
+    <result column="typec" jdbcType="INTEGER" property="typec" />
+    
+  </resultMap>
+  
+  <sql id="Base_Column_List_c">
+    id, created_at, updated_at, bzj_id, title, abstractc, host, publish_time, rank, relevance, 
+    sentiment, site, tags, url,project_code,article_events, content, html,rise,fall,typec
+  </sql>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select *from app_news_flash
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    	id as id,
+    	title as title,
+    	host as host,
+    	html as html,
+    	publish_time as publishTime,
+    	rank as rank,
+    	project_code as projectCode,
+    	site as site,
+    	url as url,
+    	tags as tags
+    from app_news_flash
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <sql id="condition">
+    	<where>
+	    	<if test="id != null">
+			 id = #{id,jdbcType=INTEGER}
+			</if>
+			<if test="projectCode != null">
+			and project_code = #{projectCode} 
+			</if>
+			<if test="bzjId != null">
+			and bzj_id = #{bzjId}
+			</if>
+			<if test="typec != null">
+			and typec = #{typec}
+			</if>
+    	</where>
+    </sql>
+    
+    <update id="updateByMap" parameterType="java.util.Map">
+	     update <include refid="table_name" /> 
+	    <set>
+	      <if test="risec != null">
+	        rise = rise+1,
+	      </if>
+	      <if test="fallc != null">
+	        fall = fall+1,
+	      </if>
+	    </set>
+	    where id = #{id,jdbcType=INTEGER}   
+	</update>
+    
+    <select id="findListByAttr" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select id  from app_news_flash
+		<include refid="condition"/>
+	</select>
+	
+	<sql id="table_name">
+		app_news_flash
+	</sql>
+	
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from <include refid="table_name" />
+		<include refid="condition"/>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select 
+			id as id,
+			created_at as createdAt,
+			publish_time as publishTime,
+			title as title,
+			abstractc as abstractc,
+			site as site ,
+			url as url,
+    		rise as rise,
+    		fall as fall,
+    		typec as typec
+		  from <include refid="table_name" />
+		<include refid="condition"/>
+	    <![CDATA[ ORDER BY publish_time DESC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+</mapper>
