@@ -71,6 +71,16 @@ public class RewardActivityRmiServiceImpl implements RewardActivityRmiService {
 		return rewardActivityService.findPageRewardList(loginUserId, query,type);
 	}
 	
+	public PageResult<PostResponse> findPageForNewAndHighList(Integer loginUserId, PaginationQuery query,
+			Integer type){
+		return rewardActivityService.findPageForNewAndHighList(loginUserId, query,type);
+	}
+	
+	public PageResult<PostResponse> findPageForBurstList(Integer loginUserId, PaginationQuery query, 
+			Integer type){
+		return rewardActivityService.findPageForNewAndHighList(loginUserId, query,type);
+	}
+	
 	public PageResult<PostResponse> findRewardAnswerList(Integer loginUserId, PaginationQuery query, 
 			Integer type){
 		return rewardActivityService.findRewardAnswerList(loginUserId, query,type);
