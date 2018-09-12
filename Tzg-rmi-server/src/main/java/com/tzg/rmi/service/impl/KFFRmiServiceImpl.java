@@ -4971,7 +4971,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				// 取悬赏总奖励
 				response.setRewardMoney(ac.getRewardMoney());
 				response.setRewardMoneyToOne(discuss.getRewardMoney());
-				response.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(post.getPostShortDesc()));
+				response.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(ac.getRewardContents()));
 				response.setPostTitle(post.getPostTitle());
 				response.setPostId(ac.getPostId());
 			}
