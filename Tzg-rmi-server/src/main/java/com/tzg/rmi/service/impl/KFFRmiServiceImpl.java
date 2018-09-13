@@ -5111,8 +5111,13 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			if (qfIndexUser != null && qfindexCreater != null) {
 				if (qfIndexUser.getStatusHierarchyType() > 0) {
 					if (null != qfIndexUser) {
+						int readingDegr = 0;
+						if (qfIndexUser.getReadingDegr() == null) {
+							readingDegr = 0;
+						} else {
+							readingDegr = qfIndexUser.getReadingDegr();
+						}
 
-						Integer readingDegr = qfIndexUser.getReadingDegr();
 						if (readingDegr != 0) {
 
 							if (DateUtil.isToday(qfIndexUser.getUpdateTime().getTime())) {// 判断点赞人的更新时间是不是今天
