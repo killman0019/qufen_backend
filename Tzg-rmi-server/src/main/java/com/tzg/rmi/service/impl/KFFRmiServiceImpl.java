@@ -1892,10 +1892,33 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (createUser == null) {
 			throw new RestServiceException("用户不存在" + articleRequest.getCreateUserId());
 		}
-		KFFProject project = kffProjectService.findById(articleRequest.getProjectId());
-		if (project == null) {
-			throw new RestServiceException("项目不存在" + articleRequest.getProjectId());
+		Post post = new Post();
+		if (articleRequest.getProjectId() == null) {
+			Map<String, Object> codeMap = new HashMap<String, Object>();
+			codeMap.put("status", "1");
+			codeMap.put("projectCode", "FREE");
+			List<KFFProject> projectList = kffProjectService.findProjectByCode(codeMap);
+			if (CollectionUtils.isNotEmpty(projectList)) {
+				KFFProject project = projectList.get(0);
+
+				post.setProjectCode(project.getProjectCode());
+				post.setProjectEnglishName(project.getProjectEnglishName());
+				post.setProjectChineseName(project.getProjectChineseName());
+				post.setProjectIcon(project.getProjectIcon());
+				post.setProjectId(project.getProjectId());
+			}
+		} else {
+			KFFProject project = kffProjectService.findById(articleRequest.getProjectId());
+			if (project == null) {
+				throw new RestServiceException("项目不存在" + articleRequest.getProjectId());
+			}
+			post.setProjectCode(project.getProjectCode());
+			post.setProjectEnglishName(project.getProjectEnglishName());
+			post.setProjectChineseName(project.getProjectChineseName());
+			post.setProjectIcon(project.getProjectIcon());
+			post.setProjectId(project.getProjectId());
 		}
+
 		// 禁止发纯图片的文章
 		String delHTMLTag = WorkHtmlRegexpUtil.delHTMLTag(articleRequest.getArticleContents());
 		delHTMLTag = H5AgainDeltagsUtil.h5AgainDeltags(delHTMLTag);
@@ -1909,7 +1932,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (StringUtils.isBlank(articleRequest.getArticleContents())) {
 			throw new RestServiceException("文章内容不合法");
 		}
-		Post post = new Post();
+
 		Date now = new Date();
 		post.setCollectNum(0);
 		post.setCommentsNum(0);
@@ -1954,11 +1977,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		post.setPostTitle(articleRequest.getPostTitle());
 		post.setPostType(KFFConstants.POST_TYPE_ARTICLE);// 帖子类型：1-评测；2-讨论；3-文章
 		post.setPraiseNum(0);
-		post.setProjectCode(project.getProjectCode());
-		post.setProjectEnglishName(project.getProjectEnglishName());
-		post.setProjectChineseName(project.getProjectChineseName());
-		post.setProjectIcon(project.getProjectIcon());
-		post.setProjectId(project.getProjectId());
+
 		post.setStatus(KFFConstants.STATUS_ACTIVE);
 		post.setUuid(uuid);
 		post.setStickTop(0);// '是否推荐：0-否，1-是'
@@ -5118,7 +5137,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 							readingDegr = qfIndexUser.getReadingDegr();
 						}
 
-						if (readingDegr != 0) {
+						if (readingDegr != 0 || qfIndexUser.getReadingDegr() == null) {
 
 							if (DateUtil.isToday(qfIndexUser.getUpdateTime().getTime())) {// 判断点赞人的更新时间是不是今天
 																							// 是今天不更新
@@ -5135,7 +5154,14 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						// 添加阅读次数
 						SystemParam canGetAwardReadingCountSys = systemParamService.findByCode(sysGlobals.CAN_GET_AWARD_READING_COUNT);
 						int i = Integer.valueOf(canGetAwardReadingCountSys.getVcParamValue());
-						if (qfIndexNew.getReadingDegr() < i) {
+						int readingDegr = 0;
+						if (null == qfIndexNew.getReadingDegr()) {
+							readingDegr = 0;
+						} else {
+							readingDegr = qfIndexNew.getReadingDegr();
+						}
+
+						if (readingDegr < i) {
 							qfIndexService.updateReadingDegr(userId);
 
 							SystemParam readingAwardSys = systemParamService.findByCode(sysGlobals.READING_AWARD);
