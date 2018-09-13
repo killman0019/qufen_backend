@@ -5,57 +5,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.axis2.databinding.types.soapencoding.Array;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.CollectionUtils;
 
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
-import com.tzg.common.redis.RedisService;
-import com.tzg.common.service.kff.ArticleService;
-import com.tzg.common.service.kff.AuthenticationService;
-import com.tzg.common.service.kff.AwardPortService;
 import com.tzg.common.service.kff.BGroupMustReadService;
-import com.tzg.common.service.kff.CoinPropertyService;
-import com.tzg.common.service.kff.CollectService;
-import com.tzg.common.service.kff.CommendationService;
-import com.tzg.common.service.kff.CommentsService;
-import com.tzg.common.service.kff.DareasService;
-import com.tzg.common.service.kff.DevaluationModelDetailService;
-import com.tzg.common.service.kff.DevaluationModelService;
-import com.tzg.common.service.kff.DiscussService;
-import com.tzg.common.service.kff.DprojectTypeService;
-import com.tzg.common.service.kff.DtagsService;
-import com.tzg.common.service.kff.EvaluationService;
-import com.tzg.common.service.kff.FollowService;
-import com.tzg.common.service.kff.MessageService;
-import com.tzg.common.service.kff.MobileversionupdateService;
-import com.tzg.common.service.kff.NoticeService;
 import com.tzg.common.service.kff.PostService;
-import com.tzg.common.service.kff.PraiseService;
-import com.tzg.common.service.kff.ProjectService;
-import com.tzg.common.service.kff.ProjectevastatService;
-import com.tzg.common.service.kff.QfIndexService;
-import com.tzg.common.service.kff.SuggestService;
-import com.tzg.common.service.kff.TokenawardService;
-import com.tzg.common.service.kff.TokenrecordsService;
-import com.tzg.common.service.kff.UserCardService;
-import com.tzg.common.service.kff.UserInvationService;
-import com.tzg.common.service.kff.UserService;
-import com.tzg.common.service.kff.UserWalletService;
-import com.tzg.common.service.systemParam.SystemParamService;
 import com.tzg.common.utils.DozerMapperUtils;
-import com.tzg.common.zookeeper.ZKClient;
 import com.tzg.entitys.kff.bgroupmustread.BGroupMustRead;
-import com.tzg.entitys.kff.dtags.Dtags;
 import com.tzg.entitys.kff.post.Post;
 import com.tzg.entitys.kff.post.PostResponse;
-import com.tzg.entitys.kff.userwallet.KFFUserWalletMapper;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rmi.service.KFFPostRmiService;
-import com.tzg.rmi.service.KFFRmiService;
-import com.tzg.rmi.service.SmsSendRmiService;
 
 /**
  * 
@@ -78,6 +40,10 @@ public class KFFPostRmiServiceImpl implements KFFPostRmiService {
 	public PageResult<Post> findPage(PaginationQuery query) throws RestServiceException {
 		PageResult<Post> result = kffPostService.findPage(query);
 		return result;
+	}
+	
+	public PageResult<Post> findPageWithFollower(PaginationQuery query,Integer typec,Integer userId){
+		return kffPostService.findPageWithFollower(query, typec, userId);
 	}
 	
 	public PageResult<Post> findPageWithEvaluation(PaginationQuery query){

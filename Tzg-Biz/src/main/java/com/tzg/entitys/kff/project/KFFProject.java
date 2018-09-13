@@ -2,7 +2,6 @@ package com.tzg.entitys.kff.project;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
 import com.tzg.common.utils.DateUtil;
 
@@ -139,7 +138,17 @@ public class KFFProject implements Serializable {
 	private Integer projectUserId;
 	private String projectMobile;
 	private Integer projectUserType;
+	//对项目的关注： 0-未关注；1-已关注
+    private Integer followStatus;
 	
+	public Integer getFollowStatus() {
+		return followStatus;
+	}
+
+	public void setFollowStatus(Integer followStatus) {
+		this.followStatus = followStatus;
+	}
+
 	public Integer getProjectUserId() {
 		return projectUserId;
 	}

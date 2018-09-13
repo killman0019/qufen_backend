@@ -31,6 +31,8 @@ import com.tzg.common.utils.Calculation.CalculationUtils;
 import com.tzg.common.utils.getui.PushList;
 import com.tzg.common.utils.getui.iOSPushList;
 import com.tzg.entitys.kff.app.NewsPush;
+import com.tzg.entitys.kff.follow.Follow;
+import com.tzg.entitys.kff.project.KFFProject;
 import com.tzg.entitys.kff.qfindex.QfIndex;
 import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.entitys.kff.user.KFFUserMapper;
@@ -55,6 +57,8 @@ public class UserService {
 	private KFFUserWalletMapper kFFUserWalletMapper;
 	@Autowired
 	private UserCardService userCardService;
+	@Autowired
+	private FollowService kffFollowService;
 
 	@Transactional(readOnly = true)
 	public KFFUser findById(java.lang.Integer id) throws RestServiceException {
@@ -110,6 +114,47 @@ public class UserService {
 		}
 		return result;
 	}
+	
+	@Transactional(readOnly = true)
+	public PageResult<KFFUser> findPageWithFollower(PaginationQuery query,Integer typec,Integer userId) throws RestServiceException {
+		PageResult<KFFUser> result = null;
+		try {
+			Integer count = userMapper.findPageCount(query.getQueryData());
+			if (null != count && count.intValue() > 0) {
+				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
+				query.addQueryData("startRecord", Integer.toString(startRecord));
+				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
+				List<KFFUser> list = userMapper.findPage(query.getQueryData());
+				if(!list.isEmpty()) {
+					KFFUser loginUser = null;
+					if (userId != null) {
+						loginUser = userMapper.findById(userId);
+					}
+					for (KFFUser user : list) {
+						// 设置人的关注状态
+						if (loginUser == null) {
+							user.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+						} else {
+							if (typec == 2) {
+								Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER,
+										user.getUserId());
+								if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+									user.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+								} else {
+									user.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+								}
+							}
+						}
+					}
+				}
+				result = new PageResult<KFFUser>(list, count, query);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
 
 	public KFFUser registerRest(RegisterRequest registerRequest) throws RestServiceException {
 		Date createTime = new Date();

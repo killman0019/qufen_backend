@@ -123,7 +123,16 @@ public class Post implements Serializable {
 	private Integer disStickTop;
 	//置顶时间
 	private Date disStickUpdateTime;
+	//对人的关注： 0-未关注；1-已关注
+    private Integer followStatus;
+	
+	public Integer getFollowStatus() {
+		return followStatus;
+	}
 
+	public void setFollowStatus(Integer followStatus) {
+		this.followStatus = followStatus;
+	}
 	public Integer getType() {
 		return type;
 	}

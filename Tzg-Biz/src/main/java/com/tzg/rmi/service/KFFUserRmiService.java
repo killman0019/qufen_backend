@@ -6,6 +6,7 @@ import java.util.Map;
 import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
+import com.tzg.entitys.kff.project.KFFProject;
 import com.tzg.entitys.kff.qfindex.QfindexResponse;
 import com.tzg.rest.exception.rest.RestServiceException;
 
@@ -19,6 +20,7 @@ import com.tzg.rest.exception.rest.RestServiceException;
 public interface KFFUserRmiService {
 
 	public PageResult<KFFUser> findPage(PaginationQuery query);
+	public PageResult<KFFUser> findPageWithFollower(PaginationQuery query,Integer typec,Integer userId);
 
 	public KFFUser findById(Integer id);
 

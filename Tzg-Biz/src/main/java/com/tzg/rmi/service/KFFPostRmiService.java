@@ -23,6 +23,7 @@ public interface KFFPostRmiService {
 	 * @throws RestServiceException
 	 */
 	public Map<String, Object> countEveryPostIncome(Integer userId) throws RestServiceException;
+	public PageResult<Post> findPageWithFollower(PaginationQuery query,Integer typec,Integer userId);
 
 	/**
 	 * 展示B圈必读

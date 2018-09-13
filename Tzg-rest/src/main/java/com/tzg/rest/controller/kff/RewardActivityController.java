@@ -276,7 +276,7 @@ public class RewardActivityController extends BaseController {
 			seMap.put("state", RewardActivityState.STARTING.getValue());
 			Integer reActCount = rewardActivityRmiService.findLinkedCount(seMap);
 			if(reActCount>0) {
-				bre.setCode(RestErrorCode.SYS_ERROR.getValue());
+				bre.setCode(500);
 				bre.setMsg("该悬赏已有用户回答，无法终止");
 				return bre;
 			}
@@ -296,7 +296,8 @@ public class RewardActivityController extends BaseController {
 				rewardActivityRmiService.updateRewardActivityAndPost(postId,id);
 				bre.setSuccessMsg();
 			}else {
-				bre.setNoDataMsg();
+				bre.setCode(500);
+				bre.setMsg("终止失败");
 			}
 		} catch (RestServiceException e) {
 			logger.error("RewardActivityController rewardList:{}", e);
