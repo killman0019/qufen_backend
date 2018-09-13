@@ -65,9 +65,6 @@
 <!-- 		<task:scheduled ref="taskJobService" method="robotPraise" cron="0/2 * * * * ?" /> -->
 		
 		<!-- 线上版本的定时器 -->
-		
-		
-		
 		<task:scheduled ref="taskJobService" method="updateWeeHours" cron="0 0 1 * * ?" />
 	 	<task:scheduled ref="taskJobService" method="caculateProjectTotalScore" cron="0 0 0/2 * * ? "/> 
 		<task:scheduled ref="taskJobService" method="getProjectDateFromUrlTask" cron="0 0/5 * * * ? " />

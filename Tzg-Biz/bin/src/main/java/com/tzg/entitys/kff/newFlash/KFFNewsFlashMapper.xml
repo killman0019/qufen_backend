@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.kff.newFlash.KFFNewsFlashMapper">
+  <resultMap id="BaseResultMap" type="com.tzg.entitys.kff.newFlash.KFFNewsFlash">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="rise" jdbcType="INTEGER" property="rise" />
+    <result column="fall" jdbcType="INTEGER" property="fall" />
+    <result column="state" jdbcType="INTEGER" property="state" />
+    <result column="author" jdbcType="INTEGER" property="author" />
+    <result column="is_check_details" jdbcType="INTEGER" property="isCheckDetails" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="article_id" jdbcType="INTEGER" property="articleId" />
+    <result column="is_prominent" jdbcType="INTEGER" property="isProminent" />
+    <result column="out_url" jdbcType="VARCHAR" property="outUrl" />
+    <result column="coin_dog_id" jdbcType="INTEGER" property="coinDogId" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    id, created_at, updated_at, title, content, rise, fall,state,author,is_check_details,type,article_id,is_prominent,out_url,coin_dog_id
+  </sql>
+  
+  	<sql id="table_name">
+		system_news_flash
+	</sql>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select * from <include refid="table_name" />
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from <include refid="table_name" /> 
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  
+   <delete id="deleteById" parameterType="java.lang.Integer" >
+		delete from <include refid="table_name" />  where id=#{id} 
+   </delete>
+  
+	<insert id="save" parameterType="com.tzg.entitys.kff.newFlash.KFFNewsFlash"  useGeneratedKeys="true" keyProperty="id" keyColumn="id"> 
+        insert into <include refid="table_name" />(
+	        created_at, updated_at,title, content, rise, fall,state,author,is_check_details,type,article_id,is_prominent,out_url,coin_dog_id
+	        ) values(
+	         #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, 
+     		 #{title,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, #{rise,jdbcType=INTEGER}, 
+             #{fall,jdbcType=INTEGER},#{state,jdbcType=INTEGER},#{author,jdbcType=VARCHAR},#{isCheckDetails,jdbcType=INTEGER}
+             ,#{type,jdbcType=INTEGER},#{articleId,jdbcType=INTEGER},#{isProminent,jdbcType=INTEGER},#{outUrl,jdbcType=VARCHAR},
+             #{coinDogId,jdbcType=INTEGER}
+	        )
+	        <selectKey resultType="int" keyProperty="id">  
+	          SELECT  
+	          LAST_INSERT_ID()  
+	        </selectKey>
+   </insert>
+	
+
+	<update id="update" parameterType="com.tzg.entitys.kff.newFlash.KFFNewsFlash">
+	     update <include refid="table_name" /> 
+	    <set>
+	      <if test="createdAt != null">
+	        created_at = #{createdAt,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="updatedAt != null">
+	        updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="title != null">
+	        title = #{title,jdbcType=VARCHAR},
+	      </if>
+	      <if test="content != null">
+	        content = #{content,jdbcType=VARCHAR},
+	      </if>
+	      <if test="rise != null">
+	        rise = #{rise,jdbcType=INTEGER},
+	      </if>
+	      <if test="fall != null">
+	        fall = #{fall,jdbcType=INTEGER},
+	      </if>
+	      <if test="risec != null">
+	        rise = rise+1,
+	      </if>
+	      <if test="fallc != null">
+	        fall = fall+1,
+	      </if>
+	      <if test="state != null">
+	        state = #{state,jdbcType=INTEGER},
+	      </if>
+	      <if test="author != null">
+	        author = #{author,jdbcType=VARCHAR},
+	      </if>
+	      <if test="isCheckDetails != null">
+	        is_check_details = #{isCheckDetails,jdbcType=INTEGER},
+	      </if>
+	      <if test="type != '' ">
+	        type = #{type,jdbcType=INTEGER},
+	      </if>
+	      <if test="articleId != ''">
+	        article_id = #{articleId,jdbcType=INTEGER},
+	      </if>
+	      <if test="isProminent != null">
+	        is_prominent = #{isProminent,jdbcType=INTEGER},
+	      </if>
+	      <if test="outUrl != ''">
+	        out_url = #{outUrl,jdbcType=VARCHAR},
+	      </if>
+	      <if test="coinDogId != null">
+	        coin_dog_id = #{coinDogId,jdbcType=INTEGER},
+	      </if>
+	    </set>
+	    where id = #{id,jdbcType=INTEGER}   
+	</update>
+	
+	<update id="updateByMap" parameterType="java.util.Map">
+	     update <include refid="table_name" /> 
+	    <set>
+	      <if test="risec != null">
+	        rise = rise+1,
+	      </if>
+	      <if test="fallc != null">
+	        fall = fall+1,
+	      </if>
+	    </set>
+	    where id = #{id,jdbcType=INTEGER}   
+	</update>
+	
+	<sql id="columns">
+	    <![CDATA[
+        id ,created_at, updated_at,title, content, rise, fall,state,author,is_check_details,type,article_id,is_prominent,out_url,coin_dog_id
+	    ]]>
+	</sql>
+	
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(*) from <include refid="table_name" />
+		<include refid="condition"/>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="columns" />  from <include refid="table_name" />
+		<include refid="condition"/>
+	    <![CDATA[ ORDER BY id DESC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	
+	<sql id="condition">
+    	<where>
+	    	<if test="id != null">
+			 id = #{id,jdbcType=INTEGER}
+			</if>
+			<if test="title != null">
+			and title like "%"#{title}"%" 
+			</if>
+			<if test="state != null">
+			and state = #{state}
+			</if>
+			<if test="coinDogId != null">
+	        and	coin_dog_id = #{coinDogId}
+	      	</if>
+			<if test="startTime!=null and endTime==null">
+    		  and created_at &gt;= #{startTime}
+    		</if>
+    		<if test="startTime==null and endTime!=null">
+    		  and created_at &lt;= #{endTime}
+    		</if>
+    		<if test="startTime!=null and endTime!=null">
+    		  and created_at &gt;= #{startTime} and created_at &lt;= #{endTime}
+    		</if>
+    	</where>
+    </sql>
+  
+</mapper>

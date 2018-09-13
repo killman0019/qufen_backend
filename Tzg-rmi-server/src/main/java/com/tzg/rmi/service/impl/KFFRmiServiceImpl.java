@@ -24,8 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import cn.jpush.api.report.UsersResult.User;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -2154,85 +2152,21 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			discuss.setNiceChoiceAt(new Date());
 			discuss.setType(DiscussType.AUTHACCOUNTPUBLISH.getValue());
 		}
-
-		// 个推APP推送消息
-		/*
-		if (null != createUser) {
-			Integer linkedType = null;
-			if (newPost.getPostType() == 1) {
-				linkedType = LinkedType.CUSTOMEVALUATING.getValue();
-			}
-			if (newPost.getPostType() == 2) {
-				linkedType = LinkedType.COUNTERFEIT.getValue();
-			}
-			if (newPost.getPostType() == 3) {
-				linkedType = LinkedType.ARTICLE.getValue();
-		=======
-		//判断这个爆料是不是悬赏的答案
 		if(discussRequest.getPostId()!=null) {
 			Map<String,Object> seMap = new HashMap<>();
 			seMap.put("postId", discussRequest.getPostId());
-			List<RewardActivity> rewards = rewardActivityService.findListByAttr(seMap);
-			if(!rewards.isEmpty()) {
-				RewardActivity reward = rewards.get(0);
-				discuss.setRewardActivityId(reward.getId());
-				//精评类型：0-回答超过5个的,3-普通悬赏
-				seMap.clear();
-				seMap.put("rewardActivityId", reward.getId());
-				Integer count = kffDiscussService.findByCount(seMap);
-				if(count==4) {
-					RewardActivity rewardActivity = new RewardActivity();
-					rewardActivity.setId(reward.getId());
-					rewardActivity.setIsNiceChoice(sysGlobals.ENABLE);
-					rewardActivity.setNiceChoiceAt(new Date());
-					//精评类型：0-回答超过5个的，1-认证账号发布，2-人工精选,3-普通悬赏
-					rewardActivity.setType(DiscussType.DOTPRAISE.getValue());
-					rewardActivityService.update(rewardActivity);
-				}
-				newPost.setPostType(4);
-				kffPostService.update(newPost);
-		>>>>>>> origin/test_dev
+			RewardActivity reAct = rewardActivityService.findFirstByAttr(seMap);
+			if(null!=reAct) {
+				discuss.setRewardActivityId(reAct.getId());
 			}
 		}
-		<<<<<<< HEAD
-		*/
-
 		kffDiscussService.save(discuss);
-		// 个推APP推送消息
-		// if (null != createUser) {
-		// Integer linkedType = null;
-		// if (newPost.getPostType() == 1) {
-		// linkedType = LinkedType.CUSTOMEVALUATING.getValue();
-		// }
-		// if (newPost.getPostType() == 2) {
-		// linkedType = LinkedType.COUNTERFEIT.getValue();
-		// }
-		// if (newPost.getPostType() == 3) {
-		// linkedType = LinkedType.ARTICLE.getValue();
-		// }
-		// appNewsPush(linkedType, newPost.getPostId(), null, createUser.getMobile(),
-		// sysGlobals.CONTENT_GETUI_MSG_BEGIN + newPost.getPostTitle()
-		// + sysGlobals.CONTENT_GETUI_MSG_END);
-		// // 向APP端推送消息
-		// KFFMessage msg = new KFFMessage();
-		// msg.setType(12);
-		// msg.setStatus(1);
-		// msg.setState(1);
-		// msg.setCreateTime(now);
-		// msg.setUpdateTime(now);
-		// msg.setUserId(newPost.getCreateUserId());
-		// msg.setTitle(sysGlobals.GETUI_NOTIFY);
-		// msg.setContent(sysGlobals.CONTENT_GETUI_MSG_BEGIN + newPost.getPostTitle() +
-		// sysGlobals.CONTENT_GETUI_MSG_END);
-		// msg.setSenderUserId(sysGlobals.QUFEN_ACCOUNT_ID);
-		// msg.setJumpInfo(sysGlobals.QUFEN_ACCOUNT_ID.toString());
-		// msg.setPostId(newPost.getPostId());
-		// msg.setPostType(newPost.getPostType());
-		// kffMessageService.save(msg);
-		// }
-
 		result.put("postId", newPost.getPostId());
-		result.put("postType", newPost.getPostType());
+		if(discussRequest.getPostId()!=null) {
+			result.put("postType", 4);
+		}else {
+			result.put("postType", newPost.getPostType());
+		}
 		return result;
 	}
 

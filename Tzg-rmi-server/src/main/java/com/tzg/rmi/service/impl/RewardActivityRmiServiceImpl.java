@@ -3,6 +3,7 @@ package com.tzg.rmi.service.impl;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -106,7 +107,7 @@ public class RewardActivityRmiServiceImpl implements RewardActivityRmiService {
 		return rewardActivityService.findRewardDetail(userId,type,postId);
 	}
 	
-	public void saveRewardActivity(ArticleRequest articleRequest,Integer rewardDate,BigDecimal rewardMoney,
+	public Map<String, Object> saveRewardActivity(ArticleRequest articleRequest,Integer rewardDate,BigDecimal rewardMoney,
 			CoinProperty coinProty) throws RestServiceException {
 		String uuid = UUID.randomUUID().toString().replace("-", "");
 		if (articleRequest.getArticleContents().length() > 16777215) {
@@ -160,7 +161,7 @@ public class RewardActivityRmiServiceImpl implements RewardActivityRmiService {
 		String contentSrcReplace = qiNiuMap.get("contentSrcReplace");
 		// logger.info("缩略图的json串" + uploadIevisList);
 		/************ end *******************/
-		post.setPostSmallImages(uploadIevisList);
+		post.setPostSmallImages(articleRequest.getPostSmallImages());
 		post.setPostTitle(articleRequest.getPostTitle());
 		post.setPostType(KFFConstants.POST_TYPE_REWARD);// 帖子类型：1-评测；2-讨论；3-文章,4-悬赏
 		post.setPraiseNum(0);
@@ -212,5 +213,9 @@ public class RewardActivityRmiServiceImpl implements RewardActivityRmiService {
 			reAct.setTagInfos(articleRequest.getTagInfos());
 		}
 		rewardActivityService.saveRewardActivity(reAct);
+		Map<String, Object> result = new HashMap<>();
+		result.put("postId", post.getPostId());
+		result.put("postType", post.getPostType());
+		return result;
 	}
 }

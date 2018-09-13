@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.kff.project.UserProjectMapper">
+  <resultMap id="BaseResultMap" type="com.tzg.entitys.kff.project.UserProject">
+    <id column="project_id" jdbcType="INTEGER" property="projectId" />
+    <result column="project_icon" jdbcType="VARCHAR" property="projectIcon" />
+    <result column="state" jdbcType="INTEGER" property="state" />
+    <result column="project_code" jdbcType="VARCHAR" property="projectCode" />
+    <result column="project_english_name" jdbcType="VARCHAR" property="projectEnglishName" />
+    <result column="project_chinese_name" jdbcType="VARCHAR" property="projectChineseName" />
+    <result column="project_signature" jdbcType="VARCHAR" property="projectSignature" />
+    <result column="website_url" jdbcType="VARCHAR" property="websiteUrl" />
+    <result column="listed" jdbcType="INTEGER" property="listed" />
+    <result column="issue_date" jdbcType="DATE" property="issueDate" />
+    <result column="issue_num" jdbcType="BIGINT" property="issueNum" />
+    <result column="whitepaper_url" jdbcType="VARCHAR" property="whitepaperUrl" />
+    <result column="project_type_name" jdbcType="VARCHAR" property="projectTypeName" />
+    <result column="project_type_id" jdbcType="INTEGER" property="projectTypeId" />
+    <result column="submit_user_id" jdbcType="INTEGER" property="submitUserId" />
+    <result column="submit_user_contact_info" jdbcType="VARCHAR" property="submitUserContactInfo" />
+    <result column="submit_user_type" jdbcType="INTEGER" property="submitUserType" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="createTime" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="publishTime" jdbcType="TIMESTAMP" property="publishTime" />
+    <result column="updateTime" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="total_score" jdbcType="DECIMAL" property="totalScore" />
+    <result column="rater_num" jdbcType="INTEGER" property="raterNum" />
+    <result column="follower_num" jdbcType="INTEGER" property="followerNum" />
+    <result column="comments_num" jdbcType="INTEGER" property="commentsNum" />
+    <result column="collect_num" jdbcType="INTEGER" property="collectNum" />
+    <result column="totalRaterNum" jdbcType="INTEGER" property="totalraternum" />
+    <result column="cmc_id" jdbcType="INTEGER" property="cmcId" />
+    <result column="github" jdbcType="VARCHAR" property="github" />
+    <result column="bsj_circulate_data" jdbcType="VARCHAR" property="bsjCirculateData" />
+    <result column="project_user_id" jdbcType="INTEGER" property="projectUserId" />
+    <result column="project_mobile" jdbcType="VARCHAR" property="projectMobile" />
+    <result column="project_user_type" jdbcType="INTEGER" property="projectUserType" />
+    <result column="project_desc" jdbcType="LONGVARCHAR" property="projectDesc" />
+    <result column="submit_reason" jdbcType="LONGVARCHAR" property="submitReason" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    project_id, project_icon, state, project_code, project_english_name, project_chinese_name, 
+    project_signature, website_url, listed, issue_date, issue_num, whitepaper_url, project_type_name, 
+    project_type_id, submit_user_id, submit_user_contact_info, submit_user_type, status, 
+    createTime, publishTime, updateTime, total_score, rater_num, follower_num, comments_num, 
+    collect_num, totalRaterNum, cmc_id, github, bsj_circulate_data, project_user_id, 
+    project_mobile, project_user_type,project_desc, submit_reason
+  </sql>
+  <sql id="table_name">
+		tb_user_project
+  </sql>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select *  from <include refid="table_name" /> 
+    where project_id = #{projectId,jdbcType=INTEGER}
+  </select>
+  
+  <delete id="deleteById" parameterType="java.lang.Integer">
+    delete from <include refid="table_name" />
+    where project_id = #{projectId,jdbcType=INTEGER}
+  </delete>
+  
+  <insert id="save" parameterType="com.tzg.entitys.kff.project.UserProject">
+    insert into <include refid="table_name" /> (project_id, project_icon, state, 
+      project_code, project_english_name, project_chinese_name, 
+      project_signature, website_url, listed, 
+      issue_date, issue_num, whitepaper_url, 
+      project_type_name, project_type_id, submit_user_id, 
+      submit_user_contact_info, submit_user_type, 
+      status, createTime, publishTime, 
+      updateTime, total_score, rater_num, 
+      follower_num, comments_num, collect_num, 
+      totalRaterNum, cmc_id, github, 
+      bsj_circulate_data, project_user_id, project_mobile, 
+      project_user_type, project_desc, submit_reason
+      )
+    values (#{projectId,jdbcType=INTEGER}, #{projectIcon,jdbcType=VARCHAR}, #{state,jdbcType=INTEGER}, 
+      #{projectCode,jdbcType=VARCHAR}, #{projectEnglishName,jdbcType=VARCHAR}, #{projectChineseName,jdbcType=VARCHAR}, 
+      #{projectSignature,jdbcType=VARCHAR}, #{websiteUrl,jdbcType=VARCHAR}, #{listed,jdbcType=INTEGER}, 
+      #{issueDate,jdbcType=DATE}, #{issueNum,jdbcType=BIGINT}, #{whitepaperUrl,jdbcType=VARCHAR}, 
+      #{projectTypeName,jdbcType=VARCHAR}, #{projectTypeId,jdbcType=INTEGER}, #{submitUserId,jdbcType=INTEGER}, 
+      #{submitUserContactInfo,jdbcType=VARCHAR}, #{submitUserType,jdbcType=INTEGER}, 
+      #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{publishTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{totalScore,jdbcType=DECIMAL}, #{raterNum,jdbcType=INTEGER}, 
+      #{followerNum,jdbcType=INTEGER}, #{commentsNum,jdbcType=INTEGER}, #{collectNum,jdbcType=INTEGER}, 
+      #{totalraternum,jdbcType=INTEGER}, #{cmcId,jdbcType=INTEGER}, #{github,jdbcType=VARCHAR}, 
+      #{bsjCirculateData,jdbcType=VARCHAR}, #{projectUserId,jdbcType=INTEGER}, #{projectMobile,jdbcType=VARCHAR}, 
+      #{projectUserType,jdbcType=INTEGER}, #{projectDesc,jdbcType=LONGVARCHAR}, #{submitReason,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <update id="update" parameterType="com.tzg.entitys.kff.project.UserProject">
+    update tb_user_project
+    <set>
+      <if test="projectIcon != null">
+        project_icon = #{projectIcon,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null">
+        state = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="projectCode != null">
+        project_code = #{projectCode,jdbcType=VARCHAR},
+      </if>
+      <if test="projectEnglishName != null">
+        project_english_name = #{projectEnglishName,jdbcType=VARCHAR},
+      </if>
+      <if test="projectChineseName != null">
+        project_chinese_name = #{projectChineseName,jdbcType=VARCHAR},
+      </if>
+      <if test="projectSignature != null">
+        project_signature = #{projectSignature,jdbcType=VARCHAR},
+      </if>
+      <if test="websiteUrl != null">
+        website_url = #{websiteUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="listed != null">
+        listed = #{listed,jdbcType=INTEGER},
+      </if>
+      <if test="issueDate != null">
+        issue_date = #{issueDate,jdbcType=DATE},
+      </if>
+      <if test="issueNum != null">
+        issue_num = #{issueNum,jdbcType=BIGINT},
+      </if>
+      <if test="whitepaperUrl != null">
+        whitepaper_url = #{whitepaperUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="projectTypeName != null">
+        project_type_name = #{projectTypeName,jdbcType=VARCHAR},
+      </if>
+      <if test="projectTypeId != null">
+        project_type_id = #{projectTypeId,jdbcType=INTEGER},
+      </if>
+      <if test="submitUserId != null">
+        submit_user_id = #{submitUserId,jdbcType=INTEGER},
+      </if>
+      <if test="submitUserContactInfo != null">
+        submit_user_contact_info = #{submitUserContactInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="submitUserType != null">
+        submit_user_type = #{submitUserType,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        createTime = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="publishTime != null">
+        publishTime = #{publishTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        updateTime = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="totalScore != null">
+        total_score = #{totalScore,jdbcType=DECIMAL},
+      </if>
+      <if test="raterNum != null">
+        rater_num = #{raterNum,jdbcType=INTEGER},
+      </if>
+      <if test="followerNum != null">
+        follower_num = #{followerNum,jdbcType=INTEGER},
+      </if>
+      <if test="commentsNum != null">
+        comments_num = #{commentsNum,jdbcType=INTEGER},
+      </if>
+      <if test="collectNum != null">
+        collect_num = #{collectNum,jdbcType=INTEGER},
+      </if>
+      <if test="totalraternum != null">
+        totalRaterNum = #{totalraternum,jdbcType=INTEGER},
+      </if>
+      <if test="cmcId != null">
+        cmc_id = #{cmcId,jdbcType=INTEGER},
+      </if>
+      <if test="github != null">
+        github = #{github,jdbcType=VARCHAR},
+      </if>
+      <if test="bsjCirculateData != null">
+        bsj_circulate_data = #{bsjCirculateData,jdbcType=VARCHAR},
+      </if>
+      <if test="projectUserId != null">
+        project_user_id = #{projectUserId,jdbcType=INTEGER},
+      </if>
+      <if test="projectMobile != null">
+        project_mobile = #{projectMobile,jdbcType=VARCHAR},
+      </if>
+      <if test="projectUserType != null">
+        project_user_type = #{projectUserType,jdbcType=INTEGER},
+      </if>
+      <if test="projectDesc != null">
+        project_desc = #{projectDesc,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="submitReason != null">
+        submit_reason = #{submitReason,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where project_id = #{projectId,jdbcType=INTEGER}
+  </update>
+  
+  <select id="findAll" resultType="java.lang.String">
+		select project_code from <include refid="table_name" />
+	</select>
+	<select id="findOneByAttr" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select * from <include refid="table_name" />
+		<include refid="condition" />
+	</select>
+  
+  <select id="findListByAttr" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select * from <include refid="table_name" />
+		<include refid="condition" />
+	</select>
+	
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT * FROM <include refid="table_name" />
+		WHERE project_id = #{projectId} 
+	</select>
+  
+  <select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+   	select count(1) from <include refid="table_name" />
+	<include refid="condition"/>
+  </select>
+   
+  <select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+	select *  from <include refid="table_name" />
+	<include refid="condition"/>
+    <![CDATA[ ORDER BY project_id DESC ]]>
+       <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+  </select>
+
+  <sql id="condition">
+   	<where>
+    	<if test="projectId != null">
+			and project_id = #{projectId}
+		</if>
+		<if test="projectIcon != null">
+			and project_icon = #{projectIcon}
+		</if>
+		<if test="state != null">
+			and state = #{state}
+		</if>
+		<if test="projectCode != null">
+			and project_code like "%"#{projectCode}"%"
+		</if>
+		<if test="projectEnglishName != null">
+			and project_english_name like "%"#{projectEnglishName}"%"
+		</if>
+		<if test="projectChineseName != null">
+			and project_chinese_name like "%"#{projectChineseName}"%"
+		</if>
+		<if test="projectSignature != null">
+			and project_signature = #{projectSignature}
+		</if>
+		<if test="websiteUrl != null">
+			and website_url = #{websiteUrl}
+		</if>
+		<if test="listed != null">
+			and listed = #{listed}
+		</if>
+		<if test="issueDateBegin != null">
+			and issue_date &gt;= #{issueDateBegin}
+		</if>
+		<if test="issueDateEnd != null">
+			and issue_date &lt;= #{issueDateEnd}
+		</if>
+		<if test="issueNum != null">
+			and issue_num = #{issueNum}
+		</if>
+		<if test="whitepaperUrl != null">
+			and whitepaper_url = #{whitepaperUrl}
+		</if>
+		<if test="projectTypeName != null">
+			and project_type_name = #{projectTypeName}
+		</if>
+		<if test="projectTypeId != null">
+			and project_type_id = #{projectTypeId}
+		</if>
+		<if test="projectDesc != null">
+			and project_desc = #{projectDesc}
+		</if>
+		<if test="submitUserId != null">
+			and submit_user_id = #{submitUserId}
+		</if>
+		<if test="submitUserContactInfo != null">
+			and submit_user_contact_info = #{submitUserContactInfo}
+		</if>
+		<if test="submitUserType != null">
+			and submit_user_type = #{submitUserType}
+		</if>
+		<if test="submitReason != null">
+			and submit_reason = #{submitReason}
+		</if>
+		<if test="status != null">
+			and status = #{status}
+		</if>
+		<if test="createTimeBegin != null">
+			and createTime &gt;= #{createTimeBegin}
+		</if>
+		<if test="createTimeEnd != null">
+			and createTime &lt;= #{createTimeEnd}
+		</if>
+		<if test="publishTimeBegin != null">
+			and publishTime &gt;= #{publishTimeBegin}
+		</if>
+		<if test="publishTimeEnd != null">
+			and publishTime &lt;= #{publishTimeEnd}
+		</if>
+		<if test="updateTimeBegin != null">
+			and updateTime &gt;= #{updateTimeBegin}
+		</if>
+		<if test="updateTimeEnd != null">
+			and updateTime &lt;= #{updateTimeEnd}
+		</if>
+		<if test="totalScore != null">
+			and total_score = #{totalScore}
+		</if>
+		<if test="raterNum != null">
+			and rater_num = #{raterNum}
+		</if>
+		<if test="followerNum != null">
+			and follower_num = #{followerNum}
+		</if>
+		<if test="commentsNum != null">
+			and comments_num = #{commentsNum}
+		</if>
+		<if test="collectNum != null">
+			and collect_num = #{collectNum}
+		</if>
+		<if test="totalRaterNum != null">
+			and totalRaterNum = #{totalRaterNum}
+		</if>
+		<if test="cmcId != null">
+			and cmc_id = #{cmcId,jdbcType=INTEGER}
+		</if>
+		<if test="github != null">
+			and github = #{github,jdbcType=VARCHAR}
+		</if>
+		<if test="bsjCirculateData != null">
+			and bsj_circulate_data = #{bsjCirculateData,jdbcType=VARCHAR}
+		</if>
+		<if test="projectUserId != null">
+			and project_user_id = #{projectUserId,jdbcType=INTEGER}
+		</if>
+		<if test="projectMobile != null">
+			and project_mobile = #{projectMobile,jdbcType=VARCHAR}
+		</if>
+		<if test="projectUserType != null">
+			and project_user_type = #{projectUserType,jdbcType=INTEGER}
+		</if>
+   	</where>
+   </sql>
+  
+</mapper>

@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzg.entitys.kff.projecttrade.ProjectTradeMapper">
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.kff.projecttrade.ProjectTrade">
+		<id column="project_trade_id" property="projectTradeId" jdbcType="INTEGER" />
+		<result column="project_id" property="projectId" jdbcType="INTEGER" />
+		<result column="CMC_id" property="cmcId" jdbcType="INTEGER" />
+		<result column="rank" property="rank" jdbcType="INTEGER" />
+		<result column="price" property="price" jdbcType="DOUBLE" />
+		<result column="volume_24h" property="volume24h" jdbcType="DOUBLE" />
+		<result column="market_cap" property="marketCap" jdbcType="DOUBLE" />
+		<result column="percent_change_1h" property="percentChange1h" jdbcType="DOUBLE" />
+		<result column="percent_change_24h" property="percentChange24h" jdbcType="DOUBLE" />
+		<result column="percent_change_7d" property="percentChange7d" jdbcType="DOUBLE" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="updata_time" property="updataTime" jdbcType="TIMESTAMP" />
+		<result column="status" property="status" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="columns">
+		project_trade_id, project_id, CMC_id, rank, price, volume_24h, market_cap, percent_change_1h,
+		percent_change_24h, percent_change_7d, create_time, updata_time,status
+	</sql>
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="columns" />
+		from tbprojecttrade
+		where project_trade_id = #{projectTradeId,jdbcType=INTEGER}
+	</select>
+
+	<insert id="save" parameterType="com.tzg.entitys.kff.projecttrade.ProjectTrade">
+		insert into tbprojecttrade (project_trade_id, project_id, CMC_id,
+		rank, price, volume_24h,
+		market_cap, percent_change_1h, percent_change_24h,
+		percent_change_7d,
+		create_time, updata_time,status
+		)
+		values (#{projectTradeId,jdbcType=INTEGER}, #{projectId,jdbcType=INTEGER}, #{cmcId,jdbcType=INTEGER},
+		#{rank,jdbcType=INTEGER}, #{price,jdbcType=DOUBLE},
+		#{volume24h,jdbcType=DOUBLE},
+		#{marketCap,jdbcType=DOUBLE}, #{percentChange1h,jdbcType=DOUBLE}, #{percentChange24h,jdbcType=DOUBLE},
+		#{percentChange7d,jdbcType=DOUBLE},
+		#{createTime,jdbcType=TIMESTAMP}, #{updataTime,jdbcType=TIMESTAMP},#{status,jdbcType=INTEGER}
+		)
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.kff.projecttrade.ProjectTrade">
+		update tbprojecttrade
+		<set>
+			<if test="projectId != null">
+				project_id = #{projectId,jdbcType=INTEGER},
+			</if>
+			<if test="cmcId != null">
+				CMC_id = #{cmcId,jdbcType=INTEGER},
+			</if>
+			<if test="rank != null">
+				rank = #{rank,jdbcType=INTEGER},
+			</if>
+			<if test="price != null">
+				price = #{price,jdbcType=DOUBLE},
+			</if>
+			<if test="volume24h != null">
+				volume_24h = #{volume24h,jdbcType=DOUBLE},
+			</if>
+			<if test="marketCap != null">
+				market_cap = #{marketCap,jdbcType=DOUBLE},
+			</if>
+			<if test="percentChange1h != null">
+				percent_change_1h = #{percentChange1h,jdbcType=DOUBLE},
+			</if>
+			<if test="percentChange24h != null">
+				percent_change_24h = #{percentChange24h,jdbcType=DOUBLE},
+			</if>
+			<if test="percentChange7d != null">
+				percent_change_7d = #{percentChange7d,jdbcType=DOUBLE},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updataTime != null">
+				updata_time = #{updataTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=INTEGER},
+			</if>
+		</set>
+		where project_trade_id = #{projectTradeId,jdbcType=INTEGER}
+	</update>
+
+	<select id="findByMap" parameterType="java.util.Map" resultMap="BaseResultMap">
+		select
+		<include refid="columns" />
+		from
+		tbprojecttrade
+		where
+		1=1
+		<include refid="queryWhere" />
+
+
+	</select>
+	<sql id="queryWhere">
+
+		<if test="projectTradeId != null">
+			and project_trade_id = #{projectTradeId,jdbcType=INTEGER}
+		</if>
+		<if test="projectId != null">
+			and project_id = #{projectId,jdbcType=INTEGER}
+		</if>
+		<if test="cmcId != null">
+			and CMC_id = #{cmcId,jdbcType=INTEGER}
+		</if>
+		<if test="rank != null">
+			and rank = #{rank,jdbcType=INTEGER}
+		</if>
+		<if test="price != null">
+			and price = #{price,jdbcType=DOUBLE}
+		</if>
+		<if test="volume24h != null">
+			and volume_24h = #{volume24h,jdbcType=DOUBLE}
+		</if>
+		<if test="marketCap != null">
+			and market_cap = #{marketCap,jdbcType=DOUBLE}
+		</if>
+		<if test="percentChange1h != null">
+			and percent_change_1h = #{percentChange1h,jdbcType=DOUBLE}
+		</if>
+		<if test="percentChange24h != null">
+			and percent_change_24h = #{percentChange24h,jdbcType=DOUBLE}
+		</if>
+		<if test="percentChange7d != null">
+			and percent_change_7d = #{percentChange7d,jdbcType=DOUBLE}
+		</if>
+		<if test="createTime != null">
+			and create_time = #{createTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="updataTime != null">
+			and updata_time = #{updataTime,jdbcType=TIMESTAMP}
+		</if>
+
+		<if test="status != null">
+			and status = #{status,jdbcType=INTEGER}
+		</if>
+
+	</sql>
+
+
+	<update id="updateBatch" parameterType="java.util.List">
+		update tbprojecttrade
+		<trim prefix="set" suffixOverrides=",">
+			<trim prefix="rank =case" suffix="end,">
+				<foreach collection="list" item="cus">
+					<if test="cus.rank!=null and cus.rank!=''">
+						when project_trade_id = #{cus.projectTradeId} then #{cus.rank}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="price =case" suffix="end,">
+				<foreach collection="list" item="cus">
+					<if test="cus.price!=null and cus.price!=''">
+						when project_trade_id = #{cus.projectTradeId} then #{cus.price}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="volume_24h =case" suffix="end,">
+				<foreach collection="list" item="cus">
+					<if test="cus.volume24h!=null and cus.volume24h!=''">
+						when project_trade_id = #{cus.projectTradeId} then #{cus.volume24h}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="market_cap =case" suffix="end,">
+				<foreach collection="list" item="cus">
+					<if test="cus.marketCap!=null and cus.marketCap!=''">
+						when project_trade_id = #{cus.projectTradeId} then #{cus.marketCap}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="percent_change_1h =case" suffix="end,">
+				<foreach collection="list" item="cus">
+					<if test="cus.percentChange1h!=null and cus.percentChange1h!=''">
+						when project_trade_id = #{cus.projectTradeId} then #{cus.percentChange1h}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="percent_change_24h =case" suffix="end,">
+				<foreach collection="list" item="cus">
+					<if test="cus.percentChange24h!=null and cus.percentChange24h!=''">
+						when project_trade_id = #{cus.projectTradeId} then #{cus.percentChange24h}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="percent_change_7d =case" suffix="end,">
+				<foreach collection="list" item="cus">
+					<if test="cus.percentChange7d!=null and cus.percentChange7d!=''">
+						when project_trade_id = #{cus.projectTradeId} then #{cus.percentChange7d}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="updata_time =case" suffix="end,">
+				<foreach collection="list" item="cus">
+					<if test="cus.updataTime!=null and cus.updataTime!=''">
+						when project_trade_id = #{cus.projectTradeId} then #{cus.updataTime}
+					</if>
+				</foreach>
+			</trim>
+		</trim>
+		<where>
+			<foreach collection="list" separator="or" item="cus">
+				project_trade_id = #{cus.projectTradeId}
+			</foreach>
+		</where>
+	</update>
+
+
+</mapper>

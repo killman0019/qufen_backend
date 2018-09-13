@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzg.entitys.kff.userInvation.UserInvationMapper">
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.kff.userInvation.UserInvation">
+		<id column="userInvationId" property="userinvationid" jdbcType="INTEGER" />
+		<result column="user2Code" property="user2code" jdbcType="VARCHAR" />
+		<result column="user2CodePic" property="user2codepic" jdbcType="VARCHAR" />
+		<result column="userPosterPic" property="userposterpic" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="INTEGER" />
+		<result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
+		<result column="userId" property="userId" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		userInvationId, user2Code, user2CodePic, userPosterPic, status, createTime,userId
+	</sql>
+
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from tbuserinvation
+		where userInvationId = #{userinvationid,jdbcType=INTEGER}
+	</select>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from tbuserinvation
+		where userInvationId = #{userinvationid,jdbcType=INTEGER}
+	</delete>
+
+	<insert id="insert" parameterType="com.tzg.entitys.kff.userInvation.UserInvation">
+		insert into tbuserinvation (userInvationId, user2Code, user2CodePic,
+		userPosterPic, status, createTime,userId
+		)
+		values (#{userinvationid,jdbcType=INTEGER},
+		#{user2code,jdbcType=VARCHAR}, #{user2codepic,jdbcType=VARCHAR},
+		#{userposterpic,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{createtime,jdbcType=TIMESTAMP},#{userId,jdbcType=INTEGER}
+		)
+	</insert>
+
+	<insert id="insertSelective" parameterType="com.tzg.entitys.kff.userInvation.UserInvation">
+		insert into tbuserinvation
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="userinvationid != null">
+				userInvationId,
+			</if>
+			<if test="user2code != null">
+				user2Code,
+			</if>
+			<if test="user2codepic != null">
+				user2CodePic,
+			</if>
+			<if test="userposterpic != null">
+				userPosterPic,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="createtime != null">
+				createTime,
+			</if>
+			<if test="userId != null">
+				userId,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="userinvationid != null">
+				#{userinvationid,jdbcType=INTEGER},
+			</if>
+			<if test="user2code != null">
+				#{user2code,jdbcType=VARCHAR},
+			</if>
+			<if test="user2codepic != null">
+				#{user2codepic,jdbcType=VARCHAR},
+			</if>
+			<if test="userposterpic != null">
+				#{userposterpic,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=INTEGER},
+			</if>
+			<if test="createtime != null">
+				#{createtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="userId != null">
+				#{userId,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.kff.userInvation.UserInvation">
+		update tbuserinvation
+		<set>
+			<if test="user2code != null">
+				user2Code = #{user2code,jdbcType=VARCHAR},
+			</if>
+			<if test="user2codepic != null">
+				user2CodePic = #{user2codepic,jdbcType=VARCHAR},
+			</if>
+			<if test="userposterpic != null">
+				userPosterPic = #{userposterpic,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=INTEGER},
+			</if>
+			<if test="createtime != null">
+				createTime = #{createtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="userId != null">
+				userId = #{userId,jdbcType=INTEGER},
+			</if>
+		</set>
+		where userInvationId = #{userinvationid,jdbcType=INTEGER}
+	</update>
+
+	<update id="updateByPrimaryKey" parameterType="com.tzg.entitys.kff.userInvation.UserInvation">
+		update tbuserinvation
+		set user2Code = #{user2code,jdbcType=VARCHAR},
+		user2CodePic = #{user2codepic,jdbcType=VARCHAR},
+		userPosterPic =
+		#{userposterpic,jdbcType=VARCHAR},
+		status = #{status,jdbcType=INTEGER},
+		createTime = #{createtime,jdbcType=TIMESTAMP},
+		userId = #{userId,jdbcType=VARCHAR}
+		where userInvationId =
+		#{userinvationid,jdbcType=INTEGER}
+	</update>
+
+	<select id="selectUserInvation" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from tbuserinvation
+		where status = 1 and userId = #{userId,jdbcType=INTEGER}
+	</select>
+
+	<update id="updataUserInvation" parameterType="com.tzg.entitys.kff.userInvation.UserInvation">
+		update tbuserinvation
+		<set>
+			<if test="user2code != null">
+				user2Code = #{user2code,jdbcType=VARCHAR},
+			</if>
+			<if test="user2codepic != null">
+				user2CodePic = #{user2codepic,jdbcType=VARCHAR},
+			</if>
+			<if test="userposterpic != null">
+				userPosterPic = #{userposterpic,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=INTEGER},
+			</if>
+			<if test="createtime != null">
+				createTime = #{createtime,jdbcType=TIMESTAMP},
+			</if>
+
+		</set>
+		where userId = #{userId,jdbcType=INTEGER}
+	</update>
+</mapper>

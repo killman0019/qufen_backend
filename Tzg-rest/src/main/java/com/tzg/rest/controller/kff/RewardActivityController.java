@@ -81,8 +81,9 @@ public class RewardActivityController extends BaseController {
 			String rewardContents = params.getString("rewardContents");
 			String postTitle = params.getString("postTitle");
 			String tagInfos = params.getString("tagInfos");
+			String discussImages = params.getString("discussImages");
 			if(null==rewardDate||StringUtil.isBlank(rewardMoney)||StringUtil.isBlank(token)||null==projectId
-					||StringUtil.isBlank(rewardContents)||StringUtil.isBlank(postTitle)) {
+					||StringUtil.isBlank(rewardContents)||StringUtil.isBlank(postTitle)||StringUtil.isBlank(discussImages)) {
 				bre.setNoRequstData();
 				return bre;
 			}
@@ -131,8 +132,9 @@ public class RewardActivityController extends BaseController {
 			articleRequest.setPostTitle(postTitle);
 			articleRequest.setArticleContents(rewardContents);
 			articleRequest.setTagInfos(tagInfos);
-			rewardActivityRmiService.saveRewardActivity(articleRequest, rewardDate,nowRewardMoney,coinProty);
-			bre.setSuccessMsg();
+			articleRequest.setPostSmallImages(discussImages);
+			Map<String, Object> map = rewardActivityRmiService.saveRewardActivity(articleRequest, rewardDate,nowRewardMoney,coinProty);
+			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("RewardActivityController saveRewardActivity:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
@@ -312,7 +314,7 @@ public class RewardActivityController extends BaseController {
 	* @author linj <方法创建作者>
 	* @create 上午11:35:18
 	* @param @param request
-	* @param @param rewarId //悬赏id
+	* @param @param rewarId //postId
 	* @param @param types //回答类型：1-精彩回答，2-全部回答
 	* @param @param token //用户登录唯一标识
 	* @param @param pageIndex //第几页
@@ -330,7 +332,7 @@ public class RewardActivityController extends BaseController {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		try {
 			JSONObject params = getParamJsonFromRequestPolicy(request);
-			Integer rewarId = params.getInteger("rewarId");//悬赏id
+			Integer rewarId = params.getInteger("rewarId");//postId
 			Integer types = params.getInteger("types");//回答类型：1-精彩回答，2-全部回答
 			String token = params.getString("token");
 			Integer pageIndex = params.getInteger("pageIndex");

@@ -1,0 +1,704 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.kff.project.KFFProjectMapper">
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.kff.project.KFFProject">
+		<result property="projectId" jdbcType="INTEGER" column="project_id" />
+		<result property="projectIcon" jdbcType="VARCHAR" column="project_icon" />
+		<result property="state" jdbcType="INTEGER" column="state" />
+		<result property="projectCode" jdbcType="VARCHAR" column="project_code" />
+		<result property="projectEnglishName" jdbcType="VARCHAR" column="project_english_name" />
+		<result property="projectChineseName" jdbcType="VARCHAR" column="project_chinese_name" />
+		<result property="projectSignature" jdbcType="VARCHAR" column="project_signature" />
+		<result property="websiteUrl" jdbcType="VARCHAR" column="website_url" />
+		<result property="listed" jdbcType="INTEGER" column="listed" />
+		<result property="issueDate" jdbcType="DATE" column="issue_date" />
+		<result property="issueNum" jdbcType="BIGINT" column="issue_num" />
+		<result property="whitepaperUrl" jdbcType="VARCHAR" column="whitepaper_url" />
+		<result property="projectTypeName" jdbcType="VARCHAR" column="project_type_name" />
+		<result property="projectTypeId" jdbcType="INTEGER" column="project_type_id" />
+		<result property="projectDesc" jdbcType="LONGVARCHAR" column="project_desc" />
+		<result property="submitUserId" jdbcType="INTEGER" column="submit_user_id" />
+		<result property="submitUserType" jdbcType="INTEGER" column="submit_user_type" />
+		<result property="submitUserContactInfo" jdbcType="VARCHAR" column="submit_user_contact_info" />
+		<result property="submitReason" jdbcType="LONGVARCHAR" column="submit_reason" />
+		<result property="status" jdbcType="INTEGER" column="status" />
+		<result property="createTime" jdbcType="TIMESTAMP" column="createTime" />
+		<result property="publishTime" jdbcType="TIMESTAMP" column="publishTime" />
+		<result property="updateTime" jdbcType="TIMESTAMP" column="updateTime" />
+		<result property="totalScore" jdbcType="DECIMAL" column="total_score" />
+		<result property="raterNum" jdbcType="INTEGER" column="rater_num" />
+		<result property="followerNum" jdbcType="INTEGER" column="follower_num" />
+		<result property="commentsNum" jdbcType="INTEGER" column="comments_num" />
+		<result property="collectNum" jdbcType="INTEGER" column="collect_num" />
+		<result property="totalRaterNum" jdbcType="INTEGER" column="totalRaterNum" />
+		<result property="cmcId" jdbcType="INTEGER" column="cmc_id" />
+		<result property="github" jdbcType="VARCHAR" column="github" />
+		<result property="bsjCirculateData" jdbcType="VARCHAR" column="bsj_circulate_data" />
+		<result property="projectUserId" jdbcType="INTEGER" column="project_user_id" />
+		<result property="projectMobile" jdbcType="VARCHAR" column="project_mobile" />
+		<result property="projectUserType" jdbcType="INTEGER" column="project_user_type" />
+	</resultMap>
+
+	<resultMap type="com.tzg.entitys.kff.project.ProjectResponse" id="projectAndTradeResultMap" extends="BaseResultMap">
+
+		<result column="rank" property="rank" jdbcType="INTEGER" />
+		<result column="price" property="price" jdbcType="DOUBLE" />
+		<result column="volume_24h" property="volume24h" jdbcType="DOUBLE" />
+		<result column="market_cap" property="marketCap" jdbcType="DOUBLE" />
+		<result column="percent_change_1h" property="percentChange1h" jdbcType="DOUBLE" />
+		<result column="percent_change_24h" property="percentChange24h" jdbcType="DOUBLE" />
+		<result column="percent_change_7d" property="percentChange7d" jdbcType="DOUBLE" />
+	</resultMap>
+
+	<sql id="columns">
+	    <![CDATA[
+        project_id ,project_icon ,state ,project_code ,project_english_name ,project_chinese_name ,project_signature ,
+        website_url ,listed ,issue_date ,issue_num ,whitepaper_url ,project_type_name ,project_type_id ,project_desc ,
+        submit_user_id ,submit_user_type,submit_user_contact_info,submit_reason ,status ,createTime ,publishTime ,updateTime ,
+        total_score ,rater_num ,follower_num ,comments_num ,collect_num,totalRaterNum,cmc_id,github,bsj_circulate_data,project_user_id,
+        project_mobile,project_user_type
+	    ]]>
+	</sql>
+
+	<insert id="save" parameterType="com.tzg.entitys.kff.project.KFFProject" useGeneratedKeys="true" keyProperty="projectId">
+		<selectKey resultType="java.lang.Integer" keyProperty="projectId" order="AFTER">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+	<![CDATA[
+		INSERT INTO tbproject (
+        	project_icon ,
+        	state ,
+        	project_code ,
+        	project_english_name ,
+        	project_chinese_name ,
+        	project_signature ,
+        	website_url ,
+        	listed ,
+        	issue_date ,
+        	issue_num ,
+        	whitepaper_url ,
+        	project_type_name ,
+        	project_type_id ,
+        	project_desc ,
+        	submit_user_id ,
+        	submit_user_type,
+        	submit_user_contact_info,
+        	submit_reason ,
+        	status ,
+        	createTime ,
+        	publishTime ,
+        	updateTime ,
+        	total_score ,
+        	rater_num ,
+        	follower_num ,
+        	comments_num ,
+        	collect_num ,
+        	totalRaterNum,
+        	cmc_id,
+        	github,
+        	bsj_circulate_data,
+        	project_user_id,
+        	project_mobile,
+        	project_user_type
+		) VALUES (
+        	#{projectIcon,jdbcType=VARCHAR} ,
+        	#{state,jdbcType=INTEGER} ,
+        	#{projectCode,jdbcType=VARCHAR} ,
+        	#{projectEnglishName,jdbcType=VARCHAR} ,
+        	#{projectChineseName,jdbcType=VARCHAR} ,
+        	#{projectSignature,jdbcType=VARCHAR} ,
+        	#{websiteUrl,jdbcType=VARCHAR} ,
+        	#{listed,jdbcType=INTEGER} ,
+        	#{issueDate,jdbcType=DATE} ,
+        	#{issueNum,jdbcType=BIGINT} ,
+        	#{whitepaperUrl,jdbcType=VARCHAR} ,
+        	#{projectTypeName,jdbcType=VARCHAR} ,
+        	#{projectTypeId,jdbcType=INTEGER} ,
+        	#{projectDesc,jdbcType=LONGVARCHAR} ,
+        	#{submitUserId,jdbcType=INTEGER} ,
+        	#{submitUserType,jdbcType=INTEGER} ,
+        	#{submitUserContactInfo,jdbcType=VARCHAR} ,      	
+        	#{submitReason,jdbcType=LONGVARCHAR} ,
+        	#{status,jdbcType=INTEGER} ,
+        	#{createTime,jdbcType=TIMESTAMP} ,
+        	#{publishTime,jdbcType=TIMESTAMP} ,
+        	#{updateTime,jdbcType=TIMESTAMP} ,
+        	#{totalScore,jdbcType=DECIMAL} ,
+        	#{raterNum,jdbcType=INTEGER} ,
+        	#{followerNum,jdbcType=INTEGER} ,
+        	#{commentsNum,jdbcType=INTEGER} ,
+        	#{collectNum,jdbcType=INTEGER} ,
+        	#{totalRaterNum,jdbcType=INTEGER} ,
+            #{cmcId,jdbcType=INTEGER},
+            #{github,jdbcType=VARCHAR},
+        	#{bsjCirculateData,jdbcType=VARCHAR},
+        	#{projectUserId,jdbcType=INTEGER},
+            #{projectMobile,jdbcType=VARCHAR},
+            #{projectUserType,jdbcType=INTEGER}
+		)
+	]]>
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.kff.project.KFFProject">
+		UPDATE tbproject
+		<set>
+			<if test="projectIcon != null">
+				project_icon = #{projectIcon,jdbcType=VARCHAR} ,
+			</if>
+			<if test="state != null">
+				state = #{state,jdbcType=INTEGER} ,
+			</if>
+			<if test="projectCode != null">
+				project_code = #{projectCode,jdbcType=VARCHAR} ,
+			</if>
+			<if test="projectEnglishName != null">
+				project_english_name = #{projectEnglishName,jdbcType=VARCHAR} ,
+			</if>
+			<if test="projectChineseName != null">
+				project_chinese_name = #{projectChineseName,jdbcType=VARCHAR} ,
+			</if>
+			<if test="projectSignature != null">
+				project_signature = #{projectSignature,jdbcType=VARCHAR} ,
+			</if>
+			<if test="websiteUrl != null">
+				website_url = #{websiteUrl,jdbcType=VARCHAR} ,
+			</if>
+			<if test="listed != null">
+				listed = #{listed,jdbcType=INTEGER} ,
+			</if>
+			<if test="issueDate != null">
+				issue_date = #{issueDate,jdbcType=DATE} ,
+			</if>
+			<if test="issueNum != null">
+				issue_num = #{issueNum,jdbcType="BIGINT"} ,
+			</if>
+			<if test="whitepaperUrl != null">
+				whitepaper_url = #{whitepaperUrl,jdbcType=VARCHAR} ,
+			</if>
+			<if test="projectTypeName != null">
+				project_type_name = #{projectTypeName,jdbcType=VARCHAR} ,
+			</if>
+			<if test="projectTypeId != null">
+				project_type_id = #{projectTypeId,jdbcType=INTEGER} ,
+			</if>
+			<if test="projectDesc != null">
+				project_desc = #{projectDesc,jdbcType=LONGVARCHAR} ,
+			</if>
+			<if test="submitUserId != null">
+				submit_user_id = #{submitUserId,jdbcType=INTEGER} ,
+			</if>
+			<if test="submitUserType != null">
+				submit_user_type = #{submitUserType,jdbcType=INTEGER} ,
+			</if>
+			<if test="submitUserContactInfo != null">
+				submit_user_contact_info = #{submitUserContactInfo,jdbcType=LONGVARCHAR} ,
+			</if>
+			<if test="submitReason != null">
+				submit_reason = #{submitReason,jdbcType=VARCHAR} ,
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=INTEGER} ,
+			</if>
+			<if test="createTime != null">
+				createTime = #{createTime,jdbcType=TIMESTAMP} ,
+			</if>
+			<if test="publishTime != null">
+				publishTime = #{publishTime,jdbcType=TIMESTAMP} ,
+			</if>
+			<if test="updateTime != null">
+				updateTime = #{updateTime,jdbcType=TIMESTAMP} ,
+			</if>
+			<if test="totalScore != null">
+				total_score = #{totalScore,jdbcType=DECIMAL} ,
+			</if>
+			<if test="raterNum != null">
+				rater_num = #{raterNum,jdbcType=INTEGER} ,
+			</if>
+			<if test="followerNum != null">
+				follower_num = #{followerNum,jdbcType=INTEGER} ,
+			</if>
+			<if test="commentsNum != null">
+				comments_num = #{commentsNum,jdbcType=INTEGER} ,
+			</if>
+			<if test="collectNum != null">
+				collect_num = #{collectNum,jdbcType=INTEGER},
+			</if>
+			<if test="totalRaterNum != null">
+				totalRaterNum = #{totalRaterNum,jdbcType=INTEGER},
+			</if>
+			<if test="cmcId != null">
+				cmc_id = #{cmcId,jdbcType=INTEGER},
+			</if>
+			<if test="github != null">
+				github = #{github,jdbcType=VARCHAR},
+			</if>
+			<if test="bsjCirculateData != null">
+				bsj_circulate_data = #{bsjCirculateData,jdbcType=VARCHAR}
+			</if>
+			<if test="projectUserId != null">
+				project_user_id = #{projectUserId,jdbcType=INTEGER},
+			</if>
+			<if test="projectMobile != null">
+				project_mobile = #{projectMobile,jdbcType=VARCHAR},
+			</if>
+			<if test="projectUserType != null">
+				project_user_type = #{projectUserType,jdbcType=INTEGER}
+			</if>
+		</set>
+		WHERE
+		project_id = #{projectId,jdbcType=INTEGER}
+	</update>
+
+
+	<update id="increaseFollowerNum" parameterType="java.lang.Integer">
+		UPDATE tbproject set follower_num = follower_num + 1
+		WHERE
+		project_id = #{projectId,jdbcType=INTEGER}
+	</update>
+
+	<update id="updateTotalScore" parameterType="com.tzg.entitys.kff.project.KFFProject">
+		UPDATE tbproject set total_score = #{totalScore,jdbcType=DECIMAL},totalRaterNum = #{totalRaterNum,jdbcType=INTEGER}
+		WHERE
+		project_id =
+		#{projectId,jdbcType=INTEGER}
+	</update>
+
+	<update id="increaseRaterNum" parameterType="java.lang.Integer">
+		UPDATE tbproject set rater_num = rater_num + 1
+		WHERE
+		project_id = #{projectId,jdbcType=INTEGER}
+	</update>
+
+
+	<update id="decreaseFollowerNum" parameterType="java.lang.Integer">
+		UPDATE tbproject set follower_num = follower_num - 1
+		WHERE
+		project_id = #{projectId,jdbcType=INTEGER}
+		and follower_num > 0
+	</update>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbproject WHERE
+        project_id = #{projectId} 
+	]]>
+	</delete>
+
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT * FROM tbproject 
+		WHERE 
+        project_id = #{projectId}  and status=1
+	</select>
+
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(1) from tbproject where 1=1
+		<include refid="queryWhere" />
+	</select>
+
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select * from tbproject where status=1
+		<include refid="queryWhere" />
+		<choose>
+			<when test="sortField != null and sortField != ''">
+				<include refid="orderBy" />
+			</when>
+			<otherwise>
+	                <![CDATA[ ORDER BY project_id desc ]]>
+			</otherwise>
+		</choose>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+
+	<sql id="orderBy">
+		<if test="sortField != null and sortField != ''">
+			ORDER BY ${sortField} ${sortSequence}
+		</if>
+		<if test="sortFieldNext != null and sortFieldNext != ''">
+			, ${sortFieldNext} ${sortSequenceNext}
+		</if>
+	</sql>
+
+	<select id="findPageCountInList" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(*) from tbproject where 1=1 and status=1
+		<include refid="queryWhereInProjectId" />
+	</select>
+
+	<select id="findPageInList" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="columns" />
+		from tbproject where 1=1 and status =1
+		<include refid="queryWhereInProjectId" />
+
+		<choose>
+			<when test="sortField != null and sortField != ''">
+				ORDER BY ${sortField} ${sortSequence}
+			</when>
+			<otherwise>
+	                <![CDATA[ ORDER BY project_code ASC ]]>
+			</otherwise>
+		</choose>
+
+	</select>
+
+	<sql id="queryWhereInProjectId">
+		<if test="inList != null and inList.trim() != ''">
+			and project_id in ( ${inList} )
+		</if>
+		<if test="projectId != null">
+			and project_id = #{projectId}
+		</if>
+	</sql>
+
+	<select id="findProjectByCode" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="columns" />
+		from tbproject where status=1
+		<include refid="queryWhereByCode" />
+		<choose>
+			<when test="sortField != null and sortField != ''">
+				ORDER BY ${sortField} DESC
+			</when>
+			<otherwise>
+	                <![CDATA[ ORDER BY project_code ASC ]]>
+			</otherwise>
+		</choose>
+
+	</select>
+
+
+	<sql id="queryWhereByCode">
+		<if test="state != null and state.trim() != ''">
+			and state = #{state}
+		</if>
+		<if test="projectCode != null and projectCode.trim() != ''">
+			and ( project_code like CONCAT('%', #{projectCode},'%') or project_english_name like CONCAT('%', #{projectCode},'%') or project_chinese_name like CONCAT('%', #{projectCode},'%'))
+		</if>
+
+	</sql>
+
+	<select id="findListByMap" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select project_id,project_chinese_name,project_icon from tbproject where 1=1
+		<include refid="queryWhere" />
+		ORDER BY follower_num DESC
+	</select>
+
+	<sql id="queryWhere">
+		<if test="projectId != null">
+			and project_id = #{projectId}
+		</if>
+		<if test="title != null">
+			and (project_english_name like "%" #{title} "%" or project_chinese_name like "%" #{title} "%")
+		</if>
+		<if test="hotProject != null">
+			and follower_num > #{hotProject}
+		</if>
+		<if test="projectIcon != null">
+			and project_icon = #{projectIcon}
+		</if>
+		<if test="state != null and state.trim() != ''">
+			and state = #{state}
+		</if>
+		<if test="projectCode != null and projectCode.trim() != ''">
+			and project_code = #{projectCode}
+		</if>
+		<if test="projectCodec != null">
+			and ( project_code like CONCAT('%', #{projectCodec},'%') or project_english_name like CONCAT('%', #{projectCodec},'%') or project_chinese_name like CONCAT('%', #{projectCodec},'%'))
+		</if>
+		<if test="projectEnglishName != null and projectEnglishName.trim() != ''">
+			and project_english_name = #{projectEnglishName}
+		</if>
+		<if test="projectChineseName != null and projectChineseName.trim() != ''">
+			and project_chinese_name = #{projectChineseName}
+		</if>
+		<if test="projectSignature != null and projectSignature.trim() != ''">
+			and project_signature = #{projectSignature}
+		</if>
+		<if test="websiteUrl != null and websiteUrl.trim() != ''">
+			and website_url = #{websiteUrl}
+		</if>
+		<if test="listed != null and listed.trim() != ''">
+			and listed = #{listed}
+		</if>
+		<if test="issueDateBegin != null and issueDateBegin.trim() != ''">
+			and issue_date >= #{issueDateBegin}
+		</if>
+		<if test="issueDateEnd != null and issueDateEnd.trim() != ''">
+			and issue_date &lt;= #{issueDateEnd}
+		</if>
+		<if test="issueNum != null and issueNum.trim() != ''">
+			and issue_num = #{issueNum}
+		</if>
+		<if test="whitepaperUrl != null and whitepaperUrl.trim() != ''">
+			and whitepaper_url = #{whitepaperUrl}
+		</if>
+		<if test="projectTypeName != null and projectTypeName.trim() != ''">
+			and project_type_name = #{projectTypeName}
+		</if>
+		<if test="projectTypeId != null and projectTypeId.trim() != ''">
+			and project_type_id = #{projectTypeId}
+		</if>
+		<if test="projectDesc != null and projectDesc.trim() != ''">
+			and project_desc = #{projectDesc}
+		</if>
+		<if test="submitUserId != null and submitUserId.trim() != ''">
+			and submit_user_id = #{submitUserId}
+		</if>
+		<if test="submitReason != null and submitReason.trim() != ''">
+			and submit_reason = #{submitReason}
+		</if>
+		<if test="status != null">
+			and status = #{status}
+		</if>
+		<if test="createTimeBegin != null and createTimeBegin.trim() != ''">
+			and createTime >= #{createTimeBegin}
+		</if>
+		<if test="createTimeEnd != null and createTimeEnd.trim() != ''">
+			and createTime &lt;= #{createTimeEnd}
+		</if>
+		<if test="publishTimeBegin != null and publishTimeBegin.trim() != ''">
+			and publishTime >= #{publishTimeBegin}
+		</if>
+		<if test="publishTimeEnd != null and publishTimeEnd.trim() != ''">
+			and publishTime &lt;= #{publishTimeEnd}
+		</if>
+		<if test="updateTimeBegin != null and updateTimeBegin.trim() != ''">
+			and updateTime >= #{updateTimeBegin}
+		</if>
+		<if test="updateTimeEnd != null and updateTimeEnd.trim() != ''">
+			and updateTime &lt;= #{updateTimeEnd}
+		</if>
+		<if test="totalScore != null and totalScore.trim() != ''">
+			and total_score = #{totalScore}
+		</if>
+		<if test="raterNum != null and raterNum.trim() != ''">
+			and rater_num = #{raterNum}
+		</if>
+		<if test="followerNum != null and followerNum.trim() != ''">
+			and follower_num = #{followerNum}
+		</if>
+		<if test="commentsNum != null and commentsNum.trim() != ''">
+			and comments_num = #{commentsNum}
+		</if>
+		<if test="collectNum != null and collectNum.trim() != ''">
+			and collect_num = #{collectNum}
+		</if>
+		<if test="totalRaterNum != null and totalRaterNum.trim() != ''">
+			and totalRaterNum = #{totalRaterNum}
+		</if>
+		<if test="cmcId != null">
+			and cmc_id = #{cmcId,jdbcType=INTEGER}
+		</if>
+		<if test="github != null">
+			and github = #{github,jdbcType=VARCHAR}
+		</if>
+		<if test="bsjCirculateData != null">
+			and bsj_circulate_data = #{bsjCirculateData,jdbcType=VARCHAR}
+		</if>
+		<if test="DYtotalRaterNum != null and DYtotalRaterNum.trim() != ''">
+			and totalRaterNum &gt;= #{DYtotalRaterNum}
+		</if>
+		<if test="DYfollowerNum != null and DYfollowerNum.trim() != ''">
+			and follower_num &gt;= #{DYfollowerNum}
+		</if>
+		<if test="projectUserId != null">
+			and project_user_id = #{projectUserId,jdbcType=INTEGER}
+		</if>
+		<if test="projectMobile != null">
+			and project_mobile = #{projectMobile,jdbcType=VARCHAR}
+		</if>
+		<if test="projectUserType != null">
+			and project_user_type = #{projectUserType,jdbcType=INTEGER}
+		</if>
+
+	</sql>
+	<select id="findProjectName" resultMap="BaseResultMap">
+		SELECT
+		DISTINCT
+		project_code , project_chinese_name
+		FROM
+		tbproject where status = 1 and state =2
+	</select>
+	<select id="findProjectIdByCodeAndChineseName" resultMap="BaseResultMap">
+		SELECT
+		<include refid="columns" />
+		FROM
+		tbproject
+		WHERE
+		project_code = #{projectCode}
+		AND project_chinese_name = #{projectChineseName} and status=1
+	</select>
+
+	<select id="findByMap" resultMap="BaseResultMap" parameterType="java.util.Map">
+		SELECT
+		<include refid="columns" />
+		FROM
+		tbproject
+		WHERE
+		1=1
+		<include refid="queryWhere"></include>
+	</select>
+	<sql id="projectAndTradeColumns">
+		tp.project_id project_id,
+		tp.project_icon project_icon,
+		tp.state state,
+		tp.project_code project_code,
+		tp.project_english_name project_english_name,
+		tp.project_chinese_name
+		project_chinese_name,
+		tp.cmc_id cmc_id,
+		tp.project_signature project_signature,
+		tp.website_url website_url,
+		tp.listed listed,
+		tp.issue_date issue_date,
+		tp.issue_num issue_num,
+		tp.whitepaper_url
+		whitepaper_url,
+		tp.project_type_name project_type_name,
+		tp.project_type_id project_type_id,
+		tp.project_desc project_desc,
+		tp.submit_user_id submit_user_id,
+		tp.submit_user_contact_info
+		submit_user_contact_info,
+		tp.submit_user_type submit_user_type,
+		tp.submit_reason submit_reason,
+		tp.`status` STATUS,
+		tp.publishTime publishTime,
+		tp.updateTime updateTime,
+		tp.total_score total_score,
+		tp.rater_num rater_num,
+		tp.follower_num follower_num,
+		tp.comments_num comments_num,
+		tp.collect_num collect_num,
+		tp.totalRaterNum totalRaterNum,
+		tp.cmc_id cmc_id,
+		tp.github github,
+		tp.bsj_circulate_data
+		bsj_circulate_data,
+		tpt.project_trade_id project_trade_id,
+		tpt.rank rank,
+		tpt.price price,
+		tpt.volume_24h volume_24h,
+		tpt.market_cap market_cap,
+		tpt.percent_change_1h percent_change_1h,
+		tpt.percent_change_24h percent_change_24h,
+		tpt.percent_change_7d percent_change_7d
+
+	</sql>
+	<select id="findAllProjectAndTrade" resultMap="projectAndTradeResultMap" parameterType="java.util.Map">
+
+		SELECT
+		<include refid="projectAndTradeColumns" />
+		FROM
+		tbproject tp
+		LEFT JOIN tbprojecttrade tpt ON tp.project_id = tpt.project_id
+		where 1=1 and tp.status =1 and tp.state=2
+		<include refid="inList" />
+		<choose>
+			<when test="sortField != null and sortField != ''">
+				ORDER BY ${sortField} ${sortSequence}
+			</when>
+
+			<otherwise>
+	                <![CDATA[ ORDER BY project_id ASC ]]>
+			</otherwise>
+		</choose>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<select id="findLinkedTabsByAttr" resultType="com.tzg.entitys.kff.post.PostResponse" parameterType="java.util.Map">
+		SELECT
+			tbt.post_type as actionType,
+			tbt.post_id as postId,
+			tbt.project_id as projectId,
+			tbt.post_title as postTitle,
+			tbt.post_type as postType,
+			tbt.post_short_desc as postShortDesc,
+			tbt.post_small_images as postSmallImages,
+			tbt.comments_num as commentsNum,
+			tbt.praise_num as praiseNum,
+			tbt.pageview_num as pageviewNum,
+			tbt.donate_num as donateNum,
+			tbt.collect_num as collectNum,
+			tbt.create_user_id as createUserId,
+			tbt.create_user_icon as createUserIcon,
+			tbt.create_user_signature as createUserSignature,
+			tbt.create_user_name as createUserName,
+			tbt.createTime as createTime,
+			tbt.updateTime as updateTime,
+			tbt.status as status,
+			tbt.praise_income as praiseIncome,
+			tbt.donate_income as donateIncome,
+			tbt.post_total_income as postTotalIncome,
+			tbp.project_icon as projectIcon,
+			tbp.project_code as projectCode,
+			tbp.project_english_name as projectEnglishName,
+			tbp.project_chinese_name as projectChineseName,
+			tbp.project_signature as projectSignature,
+			tbp.total_score as totalScore,
+			tbu.user_type as userType
+		FROM
+			tbproject  as tbp
+		INNER JOIN tbpost tbt ON tbp.project_id = tbt.project_id
+		INNER JOIN tbuser tbu ON tbu.user_id = tbt.create_user_id
+		<if test="commitTp!=null">
+   		  LEFT JOIN tbcomments as tbc ON tbt.create_user_id = tbc.comment_user_id
+   		</if>
+		<include refid="condition"/>
+	    GROUP BY tbt.post_id
+	    ORDER BY tbt.createTime DESC
+	</select>
+	
+	<sql id="condition">
+    	<where>
+			<if test="projectId!=null">
+    		  and tbp.project_id = #{projectId}
+    		</if>
+    		<if test="state!=null">
+    		  and tbp.state = #{state}
+    		</if>
+    		<if test="status!=null">
+    		  and tbt.status != #{status}
+    		</if>
+    		<if test="statusc!=null">
+    		  and tbt.status = #{statusc}
+    		</if>
+    		<if test="praiseNum!=null">
+    		  and tbt.praise_num &gt; #{praiseNum}
+    		</if>
+    		<if test="createUserId!=null">
+    		  and tbt.create_user_id = #{createUserId}
+    		</if>
+    		<if test="commentUserId!=null">
+    		  and tbc.comment_user_id = #{commentUserId}
+    		</if>
+    	</where>
+    </sql>
+	
+	
+
+	<select id="findAllProjectAndTradeCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+
+		SELECT
+		count(1)
+		FROM
+		tbproject tp
+		LEFT JOIN tbprojecttrade tpt
+		ON
+		tp.project_id = tpt.project_id
+		where 1=1 and tp.status = 1 and tp.state=2
+
+		<include refid="inList" />
+	</select>
+
+
+	<sql id="inList">
+		<if test="inList != null">
+			and tp.project_id in
+			<foreach collection="inList" item="projectId" index="index" open="(" separator="," close=")">
+				#{projectId}
+			</foreach>
+		</if>
+	</sql>
+</mapper>
+
+

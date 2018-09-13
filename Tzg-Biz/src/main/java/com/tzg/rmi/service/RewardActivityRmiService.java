@@ -27,7 +27,7 @@ public interface RewardActivityRmiService {
 	
 	public List<RewardActivity> findListByAttr(Map<String, Object> map);
 	
-	public void saveRewardActivity(ArticleRequest articleRequest,Integer rewardDate,BigDecimal rewardMoney,CoinProperty coinProty);
+	public Map<String, Object> saveRewardActivity(ArticleRequest articleRequest,Integer rewardDate,BigDecimal rewardMoney,CoinProperty coinProty);
 	
 	public PageResult<PostResponse> findPageRewardList(Integer loginUserId, PaginationQuery query, Integer type);
 	
