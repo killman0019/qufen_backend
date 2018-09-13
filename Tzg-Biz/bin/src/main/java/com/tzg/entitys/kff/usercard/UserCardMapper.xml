@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzg.entitys.kff.usercard.UserCardMapper">
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.kff.usercard.UserCard">
+		<id column="cardID" property="cardid" jdbcType="INTEGER" />
+		<result column="userId" property="userid" jdbcType="INTEGER" />
+		<result column="userRealName" property="userrealname" jdbcType="VARCHAR" />
+		<result column="userCardNum" property="usercardNum" jdbcType="VARCHAR" />
+		<result column="positiveOfCard" property="positiveofcard" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="INTEGER" />
+		<result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
+		<result column="updataTime" property="updatatime" jdbcType="TIMESTAMP" />
+		<result column="valid" property="valid" jdbcType="INTEGER" />
+		<result column="phone" property="phone" jdbcType="VARCHAR" />
+		<result column="notPassReason" property="notPassReason" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		cardID, userId, userRealName, userCardNum, positiveOfCard,
+		status, createTime,
+		updataTime,valid,phone,notPassReason
+	</sql>
+
+	<select id="selectByCardId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from tbusercard
+		where cardID = #{cardid,jdbcType=INTEGER} and valid = 1
+	</select>
+	<select id="findByUserid" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from tbusercard
+		where 1=1
+		and 
+		userId = #{userId,jdbcType=INTEGER} 
+		and 
+		valid = 1
+		and
+		status = 2 
+	</select>
+
+	<insert id="save" parameterType="com.tzg.entitys.kff.usercard.UserCard">
+
+
+		insert into tbusercard ( userId, userRealName,
+		userCardNum,
+		positiveOfCard, status,
+		createTime, updataTime,valid,phone,notPassReason)
+		values (
+		#{userid,jdbcType=INTEGER},
+		#{userrealname,jdbcType=VARCHAR},
+		#{usercardNum,jdbcType=VARCHAR}, #{positiveofcard,jdbcType=VARCHAR},
+		#{status,jdbcType=INTEGER},
+		#{createtime,jdbcType=TIMESTAMP},
+		#{updatatime,jdbcType=TIMESTAMP},
+		#{valid,jdbcType=INTEGER},#{phone,jdbcType=VARCHAR},#{notPassReason,jdbcType=VARCHAR})
+	</insert>
+
+
+	<update id="update" parameterType="com.tzg.entitys.kff.usercard.UserCard">
+		update tbusercard
+		<set>
+			<if test="userid != null">
+				userId = #{userid,jdbcType=INTEGER},
+			</if>
+			<if test="userrealname != null">
+				userRealName = #{userrealname,jdbcType=VARCHAR},
+			</if>
+			<if test="usercardNum != null">
+				userCardNum = #{usercardNum,jdbcType=VARCHAR},
+			</if>
+			<if test="positiveofcard != null">
+				positiveOfCard = #{positiveofcard,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=INTEGER},
+			</if>
+			<if test="createtime != null">
+				createTime = #{createtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updatatime != null">
+				updataTime = #{updatatime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="valid != null">
+				valid = #{valid,jdbcType=INTEGER},
+			</if>
+			<if test="phone != null">
+				phone = #{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="notPassReason != null">
+				notPassReason = #{notPassReason,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where cardID = #{cardid,jdbcType=INTEGER}
+	</update>
+
+
+	<!-- begin -->
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT
+		<include refid="Base_Column_List" /> 
+	<![CDATA[
+		FROM tbusercard 
+		WHERE 
+       userId = #{userid,jdbcType=INTEGER},
+	]]>
+	</select>
+
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(*) from tbusercard where 1=1
+		<include refid="queryWhere" />
+	</select>
+
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		from tbusercard where 1=1
+		<include refid="queryWhere" /> 
+	    <![CDATA[ ORDER BY userId DESC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+
+	<sql id="queryWhere">
+		<if test="userid != null">
+			userId = #{userid,jdbcType=INTEGER},
+		</if>
+		<if test="userrealname != null">
+			userRealName = #{userrealname,jdbcType=VARCHAR},
+		</if>
+		<if test="usercardNum != null">
+			userCardNum = #{usercardNum,jdbcType=VARCHAR},
+		</if>
+		<if test="positiveofcard != null">
+			positiveOfCard = #{positiveofcard,jdbcType=VARCHAR},
+		</if>
+		<if test="status != null">
+			status = #{status,jdbcType=INTEGER},
+		</if>
+		<if test="createtime != null">
+			createTime = #{createtime,jdbcType=TIMESTAMP},
+		</if>
+		<if test="updatatime != null">
+			updataTime = #{updatatime,jdbcType=TIMESTAMP},
+		</if>
+		<if test="valid != null">
+			valid = #{valid,jdbcType=INTEGER},
+		</if>
+		<if test="phone != null">
+			phone = #{phone,jdbcType=VARCHAR},
+		</if>
+		<if test="notPassReason != null">
+			notPassReason = #{notPassReason,jdbcType=VARCHAR},
+		</if>
+	</sql>
+	<!-- end -->
+
+
+	<select id="selectStatusByUserID" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM tbusercard
+		WHERE userId = #{userid,jdbcType=INTEGER} and valid=1
+		ORDER BY
+		cardID DESC
+	</select>
+	
+		<select id="selectStatusByUserIDOne" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM tbusercard
+		WHERE userId = #{userid,jdbcType=INTEGER} and valid=1
+		ORDER BY
+		cardID DESC limit 0,1
+	</select>
+	
+	<select id="selectUserCardNum" resultType="java.lang.Integer">
+		SELECT
+		cardID
+		FROM
+		tbusercard
+		WHERE
+		userCardNum = #{usercardNum,jdbcType=VARCHAR} and `status`!=3 
+
+	</select>
+
+	<update id="updateUserCard" parameterType="com.tzg.entitys.kff.usercard.UserCard">
+		update tbusercard
+		<set>
+			<if test="userid != null">
+				userId = #{userid,jdbcType=INTEGER},
+			</if>
+			<if test="userrealname != null">
+				userRealName = #{userrealname,jdbcType=VARCHAR},
+			</if>
+			<if test="usercardNum != null">
+				userCardNum = #{usercardNum,jdbcType=VARCHAR},
+			</if>
+			<if test="positiveofcard != null">
+				positiveOfCard = #{positiveofcard,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=INTEGER},
+			</if>
+			<if test="createtime != null">
+				createTime = #{createtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updatatime != null">
+				updataTime = #{updatatime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="valid != null">
+				valid = #{valid,jdbcType=INTEGER},
+			</if>
+			<if test="phone != null">
+				phone = #{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="notPassReason != null">
+				notPassReason = #{notPassReason,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where userId = #{userid,jdbcType=INTEGER} and status =4
+	</update>
+
+</mapper>

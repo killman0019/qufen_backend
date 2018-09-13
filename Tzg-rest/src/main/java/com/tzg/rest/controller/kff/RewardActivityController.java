@@ -81,8 +81,9 @@ public class RewardActivityController extends BaseController {
 			String rewardContents = params.getString("rewardContents");
 			String postTitle = params.getString("postTitle");
 			String tagInfos = params.getString("tagInfos");
+			String discussImages = params.getString("discussImages");
 			if(null==rewardDate||StringUtil.isBlank(rewardMoney)||StringUtil.isBlank(token)||null==projectId
-					||StringUtil.isBlank(rewardContents)||StringUtil.isBlank(postTitle)) {
+					||StringUtil.isBlank(rewardContents)||StringUtil.isBlank(postTitle)||StringUtil.isBlank(discussImages)) {
 				bre.setNoRequstData();
 				return bre;
 			}
@@ -131,8 +132,9 @@ public class RewardActivityController extends BaseController {
 			articleRequest.setPostTitle(postTitle);
 			articleRequest.setArticleContents(rewardContents);
 			articleRequest.setTagInfos(tagInfos);
-			rewardActivityRmiService.saveRewardActivity(articleRequest, rewardDate,nowRewardMoney,coinProty);
-			bre.setSuccessMsg();
+			articleRequest.setPostSmallImages(discussImages);
+			Map<String, Object> map = rewardActivityRmiService.saveRewardActivity(articleRequest, rewardDate,nowRewardMoney,coinProty);
+			bre.setData(map);
 		} catch (RestServiceException e) {
 			logger.error("RewardActivityController saveRewardActivity:{}", e);
 			return this.resResult(e.getErrorCode(), e.getMessage());
@@ -312,7 +314,7 @@ public class RewardActivityController extends BaseController {
 	* @author linj <方法创建作者>
 	* @create 上午11:35:18
 	* @param @param request
-	* @param @param rewarId //悬赏id
+	* @param @param rewarId //postId
 	* @param @param types //回答类型：1-精彩回答，2-全部回答
 	* @param @param token //用户登录唯一标识
 	* @param @param pageIndex //第几页
@@ -330,7 +332,7 @@ public class RewardActivityController extends BaseController {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		try {
 			JSONObject params = getParamJsonFromRequestPolicy(request);
-			Integer rewarId = params.getInteger("rewarId");//悬赏id
+			Integer rewarId = params.getInteger("rewarId");//postId
 			Integer types = params.getInteger("types");//回答类型：1-精彩回答，2-全部回答
 			String token = params.getString("token");
 			Integer pageIndex = params.getInteger("pageIndex");
@@ -418,4 +420,79 @@ public class RewardActivityController extends BaseController {
 		return bre;
 	}
 	
+	/** 
+	* @Title: rewardSquareList 
+	* @Description: TODO <悬赏广场接口>
+	* @author linj <方法创建作者>
+	* @create 下午1:56:04
+	* @param @param request
+	* @param @param pageIndex 第几页
+	* @param @param pageSize 每页几条
+	* @param @param typec 1-最新悬赏，2-高额悬赏，3-精彩回复
+	* @param @param token 当前用户登录唯一标识
+	* @param @return <参数说明>
+	* @return BaseResponseEntity 
+	* @throws 
+	* @update 下午1:56:04
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	*/
+	@ResponseBody
+	@RequestMapping(value = "/rewardSquareList", method = { RequestMethod.POST, RequestMethod.GET })
+	public BaseResponseEntity rewardSquareList(HttpServletRequest request) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+		try {
+			JSONObject params = getParamJsonFromRequestPolicy(request);
+			Integer pageIndex = params.getInteger("pageIndex");
+			Integer pageSize = params.getInteger("pageSize");
+			Integer typec = params.getInteger("typec");//1-最新悬赏，2-高额悬赏，3-精彩回复
+			String token = params.getString("token");
+			if(null==pageIndex||pageSize==null||typec==null) {
+				bre.setNoRequstData();
+				return bre;
+			}
+			Integer userId = null;
+			if (StringUtils.isNotBlank(token)) {
+				userId = getUserIdByToken(token);
+			}
+			PaginationQuery query = new PaginationQuery();
+			// 帖子类型：1-评测；2-讨论；3-文章,4-悬赏
+			query.addQueryData("postTypec", "4");
+			query.addQueryData("status", 1);
+			query.addQueryData("statec", 2);//不是撤销的悬赏都需要显示出来
+			query.addQueryData("endTime", new Date());
+			query.setPageIndex(pageIndex);
+			query.setRowsPerPage(pageSize);
+			Integer type = 2;// 取关注人
+			if(typec==1 || typec==2) {
+				if(typec==1) {
+					query.addQueryData("sort", "rac.created_at");
+				}else if(typec==2) {
+					query.addQueryData("sort", "rac.reward_money");
+				}
+				PageResult<PostResponse> rewards = rewardActivityRmiService.findPageForNewAndHighList(userId, query, type);
+				if(null!=rewards&&!rewards.getRows().isEmpty()) {
+					bre.setData(rewards);
+					return bre;
+				}
+			}
+			if(typec==3) {
+				query.addQueryData("sort", "tbc.nice_choice_at");
+				query.addQueryData("isNiceChoice", sysGlobals.ENABLE);
+				PageResult<PostResponse> rewards = rewardActivityRmiService.findPageForBurstList(userId, query, type);
+				if(null!=rewards&&!rewards.getRows().isEmpty()) {
+					bre.setData(rewards);
+					return bre;
+				}
+			}
+			bre.setNoDataMsg();
+		} catch (RestServiceException e) {
+			logger.error("RewardActivityController rewardList:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("RewardActivityController rewardList:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+		}
+		return bre;
+	}
 }

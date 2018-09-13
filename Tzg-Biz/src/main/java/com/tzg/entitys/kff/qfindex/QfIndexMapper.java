@@ -18,14 +18,6 @@ public interface QfIndexMapper extends BaseMapper<QfIndex, java.lang.Integer> {
 
 	List<QfIndex> findByUserIds(Map<String, Object> qfUsersMap);
 
-	/**
-	 * 
-	 * TODO 分享成功,有效分享次数减少
-	 * @param shareUserId
-	 * @author zhangdd
-	 * @data 2018年8月16日
-	 *
-	 */
 	void updateyxSharePost(Integer userId);
 
 	void updateYxAll();
@@ -40,7 +32,7 @@ public interface QfIndexMapper extends BaseMapper<QfIndex, java.lang.Integer> {
 
 	void updateSetAll(Integer userId);
 
-	void increasePushEvaCount(Integer userId);
+	void updatePushEvaCount(Integer userId);
 
 	void increaseReadingDegr(Integer userId);
 

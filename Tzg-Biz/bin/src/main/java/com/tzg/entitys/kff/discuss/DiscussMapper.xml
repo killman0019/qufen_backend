@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.kff.discuss.DiscussMapper">
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.kff.discuss.Discuss">
+		<result property="discussId" jdbcType="INTEGER" column="discuss_id" />
+		<result property="postId" jdbcType="INTEGER" column="post_id" />
+		<result property="disscussContents" jdbcType="VARCHAR" column="disscuss_contents" />
+		<result property="postUuid" jdbcType="VARCHAR" column="post_uuid" />
+		<result property="tagInfos" jdbcType="VARCHAR" column="tag_infos" />
+		<result property="disStickTop" jdbcType="INTEGER" column="dis_stick_top" />
+		<result property="disStickUpdateTime" jdbcType="TIMESTAMP" column="dis_stick_updateTime" />
+		<result property="isNiceChoice" jdbcType="INTEGER" column="is_nice_choice"/>
+		<result property="niceChoiceAt" jdbcType="TIMESTAMP" column="nice_choice_at"/>
+		<result property="type" jdbcType="INTEGER" column="type"/>
+		<result property="rewardActivityId" jdbcType="INTEGER" column="reward_activity_id"/>
+		<result property="rewardMoney" jdbcType="DECIMAL" column="reward_money" />
+	</resultMap>
+
+	<sql id="columns">
+	    <![CDATA[
+        discuss_id ,post_id ,disscuss_contents ,post_uuid ,tag_infos , dis_stick_top, dis_stick_updateTime ,is_nice_choice
+        ,nice_choice_at,type,reward_activity_id,reward_money
+	    ]]>
+	</sql>
+
+	<insert id="save" parameterType="com.tzg.entitys.kff.discuss.Discuss" useGeneratedKeys="true" keyProperty="discussId">
+		<selectKey resultType="java.lang.Integer" keyProperty="discussId" order="AFTER">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+	<![CDATA[
+		INSERT INTO tbdiscuss (
+        	post_id ,
+        	disscuss_contents ,
+        	post_uuid ,
+        	tag_infos ,
+        	dis_stick_top, 
+        	dis_stick_updateTime,
+        	is_nice_choice,
+        	nice_choice_at,
+        	type,
+        	reward_activity_id,
+        	reward_money
+		) VALUES (
+        	#{postId,jdbcType=INTEGER} ,
+        	#{disscussContents,jdbcType=VARCHAR} ,
+        	#{postUuid,jdbcType=VARCHAR} ,
+        	#{tagInfos,jdbcType=VARCHAR} ,
+        	#{disStickTop,jdbcType=INTEGER} ,
+        	#{disStickUpdateTime,jdbcType=TIMESTAMP},
+        	#{isNiceChoice,jdbcType=INTEGER},
+        	#{niceChoiceAt,jdbcType=TIMESTAMP},
+        	#{type,jdbcType=INTEGER},
+        	#{rewardActivityId,jdbcType=INTEGER} ,
+        	#{rewardMoney,jdbcType=DECIMAL} 
+		)
+	]]>
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.kff.discuss.Discuss">
+		UPDATE tbdiscuss
+		<set>
+			<if test="postId != null">
+				post_id = #{postId,jdbcType=INTEGER} ,
+			</if>
+			<if test="disscussContents != null">
+				disscuss_contents = #{disscussContents,jdbcType=VARCHAR} ,
+			</if>
+			<if test="postUuid != null">
+				post_uuid = #{postUuid,jdbcType=VARCHAR} ,
+			</if>
+			<if test="tagInfos != null">
+				tag_infos = #{tagInfos,jdbcType=VARCHAR}
+			</if>
+			<if test="disStickTop != null">
+				dis_stick_top = #{disStickTop,jdbcType=INTEGER} ,
+			</if>
+			<if test="disStickUpdateTime != null">
+				dis_stick_updateTime = #{disStickUpdateTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="rewardActivityId != null">
+	        	reward_activity_id = #{rewardActivityId,jdbcType=INTEGER} ,
+	        </if>
+	        <if test="rewardMoney != null">
+	        	reward_money = #{rewardMoney,jdbcType=DECIMAL} ,
+	        </if>
+		</set>
+		WHERE
+		discuss_id = #{discussId,jdbcType=INTEGER}
+	</update>
+	
+	<update id="updateByMap" parameterType="java.util.Map">
+		UPDATE tbdiscuss
+		<set>
+			<if test="isNiceChoice != null">
+				is_nice_choice = #{isNiceChoice,jdbcType=INTEGER} ,
+			</if>
+			<if test="type != null">
+				type = #{type,jdbcType=INTEGER} ,
+			</if>
+			<if test="niceChoiceAt != null">
+				nice_choice_at = #{niceChoiceAt,jdbcType=TIMESTAMP},
+			</if>
+			<if test="disStickTop != null">
+				dis_stick_top = #{disStickTop,jdbcType=INTEGER} ,
+			</if>
+			<if test="rewardMoney != null">
+				reward_money = #{rewardMoney,jdbcType=DECIMAL} 
+			</if>
+		</set>
+		WHERE
+		<choose>
+            <when test="rewardActivityId != null">
+               reward_activity_id = #{rewardActivityId,jdbcType=INTEGER}
+            </when>
+            <otherwise>
+                 post_id = #{postId,jdbcType=INTEGER}
+            </otherwise>
+        </choose>
+	</update>
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbdiscuss WHERE
+        discuss_id = #{discussId} 
+	]]>
+	</delete>
+
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT
+		<include refid="columns" /> 
+	<![CDATA[
+		FROM tbdiscuss 
+		WHERE 
+        discuss_id = #{discussId} 
+	]]>
+	</select>
+
+	<select id="findByPostId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT
+		<include refid="columns" /> 
+	<![CDATA[
+		FROM tbdiscuss 
+		WHERE 
+        post_id = #{postId} 
+        order by discuss_id desc limit 1
+	]]>
+	</select>
+	<select id="selectByPostId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT
+		<include refid="columns" /> 
+	<![CDATA[
+		FROM tbdiscuss 
+		WHERE 
+        post_id = #{postId} 
+      
+	]]>
+	</select>
+
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(*) from tbdiscuss where 1=1
+		<include refid="queryWhere" />
+	</select>
+
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="columns" />
+		from tbdiscuss where 1=1
+		<include refid="queryWhere" />
+		<choose>
+			<when test="sortField !=null">
+				ORDER BY ${sortField} ${sortSequence}
+			</when>
+			<otherwise>
+	    <![CDATA[ ORDER BY discuss_id DESC ]]>
+			</otherwise>
+		</choose>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+
+	<sql id="queryWhere">
+		<if test="discussId != null and discussId.trim() != ''">
+			and discuss_id = #{discussId}
+		</if>
+		<if test="postId != null and postId.trim() != ''">
+			and post_id = #{postId}
+		</if>
+		<if test="disscussContents != null and disscussContents.trim() != ''">
+			and disscuss_contents = #{disscussContents}
+		</if>
+		<if test="postUuid != null and postUuid.trim() != ''">
+			and post_uuid = #{postUuid}
+		</if>
+		<if test="tagInfos != null and tagInfos.trim() != ''">
+			and tag_infos = #{tagInfos}
+		</if>
+		<if test="disStickTop != null">
+			and dis_stick_top = #{disStickTop}
+		</if>
+		<if test="disStickUpdateTime != null">
+			and dis_stick_updateTime = #{disStickUpdateTime}
+		</if>
+		<if test="isNiceChoice != null">
+			and is_nice_choice = #{isNiceChoice}
+		</if>
+		<if test="niceChoiceAt != null">
+			and nice_choice_at = #{niceChoiceAt}
+		</if>
+		<if test="type != null">
+			and type = #{type}
+		</if>
+		<if test="rewardActivityId != null">
+			and reward_activity_id = #{rewardActivityId}
+		</if>
+	</sql>
+	<select id="findDisscussBypostId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="columns" />
+		from tbdiscuss where 1=1
+		and post_id = #{postId}
+	</select>
+
+	<select id="findByMap" parameterType="java.util.Map" resultMap="BaseResultMap">
+		select
+		<include refid="columns" />
+		from tbdiscuss
+		where 1=1
+		<include refid="queryWhere" />
+	</select>
+	
+	<select id="findByCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+		select count(1) from tbdiscuss
+		where 1=1
+		<include refid="queryWhere" />
+	</select>
+</mapper>
+
+

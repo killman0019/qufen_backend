@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.kff.follow.FollowMapper">
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.kff.follow.Follow">
+		<result property="followId" jdbcType="INTEGER" column="follow_id" />
+		<result property="followUserId" jdbcType="INTEGER" column="follow_user_id" />
+		<result property="followType" jdbcType="INTEGER" column="follow_type" />
+		<result property="followerUserName" jdbcType="VARCHAR" column="follower_user_name" />
+		<result property="followedUserId" jdbcType="INTEGER" column="followed_user_id" />
+		<result property="followedUserSignature" jdbcType="VARCHAR" column="followed_user_signature" />
+		<result property="followedUserIcon" jdbcType="VARCHAR" column="followed_user_icon" />
+		<result property="followedUserName" jdbcType="VARCHAR" column="followed_user_name" />
+		<result property="followedId" jdbcType="INTEGER" column="followed_id" />
+		<result property="status" jdbcType="INTEGER" column="status" />
+		<result property="createTime" jdbcType="TIMESTAMP" column="createTime" />
+		<result property="updateTime" jdbcType="TIMESTAMP" column="updateTime" />
+	</resultMap>
+
+	<sql id="columns">
+	    <![CDATA[
+        follow_id ,follow_user_id ,follow_type ,follower_user_name ,followed_user_id ,followed_user_signature ,followed_user_icon ,followed_user_name ,followed_id ,status ,createTime ,updateTime 
+	    ]]>
+	</sql>
+
+	<insert id="save" parameterType="com.tzg.entitys.kff.follow.Follow" useGeneratedKeys="true" keyProperty="followId">
+		<selectKey resultType="java.lang.Integer" keyProperty="followId" order="AFTER">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+	<![CDATA[
+		INSERT INTO tbfollow (
+        	follow_user_id ,
+        	follow_type ,
+        	follower_user_name ,
+        	followed_user_id ,
+        	followed_user_signature ,
+        	followed_user_icon ,
+        	followed_user_name ,
+        	followed_id,
+        	status ,
+        	createTime ,
+        	updateTime 
+		) VALUES (
+        	#{followUserId,jdbcType=INTEGER} ,
+        	#{followType,jdbcType=INTEGER} ,
+        	#{followerUserName,jdbcType=VARCHAR} ,
+        	#{followedUserId,jdbcType=INTEGER} ,
+        	#{followedUserSignature,jdbcType=VARCHAR} ,
+        	#{followedUserIcon,jdbcType=VARCHAR} ,
+        	#{followedUserName,jdbcType=VARCHAR} ,
+        	#{followedId,jdbcType=INTEGER} ,
+        	#{status,jdbcType=INTEGER} ,
+        	#{createTime,jdbcType=TIMESTAMP} ,
+        	#{updateTime,jdbcType=TIMESTAMP} 
+		)
+	]]>
+	</insert>
+
+	<update id="update" parameterType="com.tzg.entitys.kff.follow.Follow">
+		UPDATE tbfollow
+		<set>
+			<if test="followUserId != null">
+				follow_user_id = #{followUserId,jdbcType=INTEGER} ,
+			</if>
+			<if test="followType != null">
+				follow_type = #{followType,jdbcType=INTEGER} ,
+			</if>
+			<if test="followerUserName != null">
+				follower_user_name = #{followerUserName,jdbcType=VARCHAR} ,
+			</if>
+			<if test="followedUserId != null">
+				followed_user_id = #{followedUserId,jdbcType=INTEGER} ,
+			</if>
+			<if test="followedUserSignature != null">
+				followed_user_signature = #{followedUserSignature,jdbcType=VARCHAR} ,
+			</if>
+			<if test="followedUserIcon != null">
+				followed_user_icon = #{followedUserIcon,jdbcType=VARCHAR} ,
+			</if>
+			<if test="followedUserName != null">
+				followed_user_name = #{followedUserName,jdbcType=VARCHAR} ,
+			</if>
+			<if test="followedId != null">
+				followed_id = #{followedId,jdbcType=INTEGER} ,
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=INTEGER} ,
+			</if>
+			<if test="createTime != null">
+				createTime = #{createTime,jdbcType=TIMESTAMP} ,
+			</if>
+			<if test="updateTime != null">
+				updateTime = #{updateTime,jdbcType=TIMESTAMP}
+			</if>
+		</set>
+		WHERE
+		follow_id = #{followId,jdbcType=INTEGER}
+	</update>
+
+
+	<update id="updateUserInfo" parameterType="java.util.Map">
+		UPDATE tbfollow
+		<set>
+			<if test="followerUserName != null and followerUserName.trim() != ''">
+				follower_user_name = #{followerUserName,jdbcType=VARCHAR} ,
+			</if>
+			<if test="followedUserName != null and followedUserName.trim() != ''">
+				followed_user_name = #{followedUserName,jdbcType=VARCHAR} ,
+			</if>
+			<if test="followedUserIcon != null and followedUserIcon.trim() != ''">
+				followed_user_icon = #{followedUserIcon,jdbcType=VARCHAR} ,
+			</if>
+			<if test="followedUserSignature != null and followedUserSignature.trim() != ''">
+				followed_user_signature = #{followedUserSignature,jdbcType=VARCHAR} ,
+			</if>
+			<if test="updateTime != null">
+				updateTime = now()
+			</if>
+		</set>
+		WHERE
+		<if test="followedUserId != null">
+			followed_user_id = #{followedUserId,jdbcType=INTEGER}
+		</if>
+		<if test="followUserId != null">
+			follow_user_id = #{followUserId,jdbcType=INTEGER}
+		</if>
+	</update>
+
+
+	<delete id="deleteById" parameterType="java.lang.Integer">
+	<![CDATA[
+		DELETE FROM tbfollow WHERE
+        follow_id = #{followId} 
+	]]>
+	</delete>
+
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		SELECT
+		<include refid="columns" /> 
+	<![CDATA[
+		FROM tbfollow 
+		WHERE 
+        follow_id = #{followId} 
+	]]>
+	</select>
+
+	<select id="findFollowedProjects" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="columns" />
+		from tbfollow where 1=1
+		<include refid="queryWhere" /> 
+	    <![CDATA[ ORDER BY follow_id DESC ]]>
+
+	</select>
+
+
+
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(1) from tbfollow where 1=1
+		<include refid="queryWhere" />
+	</select>
+
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select * from tbfollow where 1=1
+		<include refid="queryWhere" /> 
+	    <![CDATA[ ORDER BY follow_id DESC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+
+
+	<select id="findByWhere" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="columns" />
+		from tbfollow where 1=1
+		<include refid="queryWhere" />
+		limit 1
+	</select>
+
+	<sql id="queryWhere">
+		<if test="followId != null">
+			and follow_id = #{followId}
+		</if>
+		<if test="followUserId != null">
+			and follow_user_id = #{followUserId}
+		</if>
+		<if test="userId != null">
+			and follow_user_id = #{userId}
+		</if>
+		<if test="followType != null">
+			and follow_type = #{followType}
+		</if>
+		<if test="followTypec != null">
+			and follow_type != #{followTypec}
+		</if>
+		<if test="followerUserName != null">
+			and follower_user_name = #{followerUserName}
+		</if>
+		<if test="followedUserId != null">
+			and followed_user_id = #{followedUserId}
+		</if>
+		<if test="followedUserSignature != null">
+			and followed_user_signature = #{followedUserSignature}
+		</if>
+		<if test="followedUserIcon != null">
+			and followed_user_icon = #{followedUserIcon}
+		</if>
+		<if test="followedUserName != null">
+			and followed_user_name = #{followedUserName}
+		</if>
+		<if test="followedId != null">
+			and followed_id = #{followedId}
+		</if>
+		<if test="status != null">
+			and status = #{status}
+		</if>
+		<if test="createTimeBegin != null">
+			and createTime >= #{createTimeBegin}
+		</if>
+		<if test="createTimeEnd != null">
+			and createTime &lt;= #{createTimeEnd}
+		</if>
+		<if test="updateTimeBegin != null">
+			and updateTime >= #{updateTimeBegin}
+		</if>
+		<if test="updateTimeEnd != null">
+			and updateTime &lt;= #{updateTimeEnd}
+		</if>
+
+		<if test="followedIds != null and followedIds.size()>0">
+			and followed_id in
+			<foreach collection="followedIds" item="projectId" index="index" open="(" separator="," close=")">
+				#{projectId}
+			</foreach>
+		</if>
+	</sql>
+
+	<select id="findByMap" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="columns" />
+		from
+		tbfollow
+		where 1=1
+		<include refid="queryWhere" />
+
+	</select>
+
+
+	<select id="findPageCountFans" resultType="java.lang.Integer" parameterType="java.util.Map">
+
+		SELECT
+		count(1)
+		FROM
+		tbfollow tf
+		LEFT JOIN tbuser tu ON tf.follow_user_id
+		= tu.user_id
+		WHERE
+		1=1
+		<if test="followedUserId !=null">
+			and tf.followed_user_id = #{followedUserId}
+		</if>
+
+		<if test="followType !=null">
+			and tf.follow_type = #{followType}
+		</if>
+
+		<if test="followedId !=null">
+			and tf.followed_id = #{followedId}
+		</if>
+
+
+		AND tf.`status` = 1
+		AND tu.`status` = 1
+
+
+	</select>
+
+	<select id="findPageFans" resultType="com.tzg.entitys.kff.follow.FollowResponse" parameterType="java.util.Map">
+
+		SELECT
+		tf.follow_id followId,
+		tf.followed_user_id followedUserId,
+		tf.follower_user_name
+		followerUserName,
+		tf.followed_user_id followedUserId,
+		tf.followed_user_signature followedUserSignature,
+		tf.followed_user_icon followedUserIcon,
+		tf.followed_user_name followedUserName,
+		tf.followed_id followedId,
+
+		tu.user_name userName,
+		tu.user_id userId,
+		tu.user_type userType,
+		tu.user_signature
+		userSignature,
+		tu.icon userIcon
+		FROM
+		tbfollow tf
+		LEFT JOIN tbuser tu ON tf.follow_user_id
+		= tu.user_id
+		WHERE
+		1=1
+		<if test="followedUserId !=null">
+			and tf.followed_user_id = #{followedUserId}
+		</if>
+
+		<if test="followType !=null">
+			and tf.follow_type = #{followType}
+		</if>
+
+		<if test="followedId !=null">
+			and tf.followed_id = #{followedId}
+		</if>
+
+		AND tf.`status` = 1
+		AND tu.`status` = 1
+		<![CDATA[ ORDER BY follow_id DESC ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+
+	<select id="findFollowerByMap" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select
+		followed_id
+		from tbfollow
+		where 1=1
+		<include refid="queryWhere" />
+
+	</select>
+
+</mapper>
+
+

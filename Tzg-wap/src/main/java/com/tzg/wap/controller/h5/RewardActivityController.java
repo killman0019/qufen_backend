@@ -434,4 +434,83 @@ public class RewardActivityController extends BaseController {
 		}
 		return bre;
 	}
+	
+	/** 
+	* @Title: rewardSquareList 
+	* @Description: TODO <悬赏广场接口>
+	* @author linj <方法创建作者>
+	* @create 下午1:56:04
+	* @param @param request
+	* @param @param pageIndex 第几页
+	* @param @param pageSize 每页几条
+	* @param @param typec 1-最新悬赏，2-高额悬赏，3-精彩回复
+	* @param @param token 当前用户登录唯一标识
+	* @param @return <参数说明>
+	* @return BaseResponseEntity 
+	* @throws 
+	* @update 下午1:56:04
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	*/
+	@ResponseBody
+	@RequestMapping(value = "/rewardSquareList", method = { RequestMethod.POST, RequestMethod.GET })
+	public BaseResponseEntity rewardSquareList(HttpServletRequest request,Integer pageIndex,Integer pageSize,
+			Integer typec,String token) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+		try {
+			if(pageIndex==null&&pageSize==null) {
+				JSONObject requestContent = HtmlUtils.getRequestContent(request);
+				pageIndex = (Integer) requestContent.get("pageIndex");
+				pageSize = (Integer) requestContent.get("pageSize");
+				typec = (Integer) requestContent.get("typec");
+				token = (String) requestContent.get("token");
+			}
+			if(null==pageIndex||pageSize==null||typec==null) {
+				bre.setNoRequstData();
+				return bre;
+			}
+			Integer userId = null;
+			if (StringUtils.isNotBlank(token)) {
+				userId = getUserIdByToken(token);
+			}
+			PaginationQuery query = new PaginationQuery();
+			// 帖子类型：1-评测；2-讨论；3-文章,4-悬赏
+			query.addQueryData("postTypec", "4");
+			query.addQueryData("status", 1);
+			query.addQueryData("statec", 2);//不是撤销的悬赏都需要显示出来
+			query.addQueryData("endTime", new Date());
+			query.setPageIndex(pageIndex);
+			query.setRowsPerPage(pageSize);
+			Integer type = 2;// 取关注人
+			if(typec==1 || typec==2) {
+				if(typec==1) {
+					query.addQueryData("sort", "rac.created_at");
+				}else if(typec==2) {
+					query.addQueryData("sort", "rac.reward_money");
+				}
+				PageResult<PostResponse> rewards = rewardActivityRmiService.findPageForNewAndHighList(userId, query, type);
+				if(null!=rewards&&!rewards.getRows().isEmpty()) {
+					bre.setData(rewards);
+					return bre;
+				}
+			}
+			if(typec==3) {
+				query.addQueryData("sort", "tbc.nice_choice_at");
+				query.addQueryData("isNiceChoice", sysGlobals.ENABLE);
+				PageResult<PostResponse> rewards = rewardActivityRmiService.findPageForBurstList(userId, query, type);
+				if(null!=rewards&&!rewards.getRows().isEmpty()) {
+					bre.setData(rewards);
+					return bre;
+				}
+			}
+			bre.setNoDataMsg();
+		} catch (RestServiceException e) {
+			logger.error("RewardActivityController rewardList:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("RewardActivityController rewardList:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+		}
+		return bre;
+	}
 }

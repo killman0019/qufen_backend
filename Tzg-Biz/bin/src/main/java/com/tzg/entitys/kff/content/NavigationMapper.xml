@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tzg.entitys.kff.content.NavigationMapper">
+  <resultMap id="BaseResultMap" type="com.tzg.entitys.kff.content.Navigation">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+    <result column="navigation_title" jdbcType="VARCHAR" property="navigationTitle" />
+    <result column="img_path" jdbcType="VARCHAR" property="imgPath" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="is_show" jdbcType="INTEGER" property="isShow" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, created_at, updated_at, navigation_title, img_path, sort, is_show, remark
+  </sql>
+  
+   <sql id="table_name">
+		content_navigation
+  </sql>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from <include refid="table_name" /> 
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="findAll" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    id,navigation_title
+    from <include refid="table_name" /> 
+    where is_show = 0
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from <include refid="table_name" />
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <insert id="save" parameterType="com.tzg.entitys.kff.content.Navigation" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+    insert into content_navigation (id, created_at, updated_at, 
+      navigation_title, img_path, sort, 
+      is_show, remark)
+    values (#{id,jdbcType=INTEGER}, #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, 
+      #{navigationTitle,jdbcType=VARCHAR}, #{imgPath,jdbcType=VARCHAR}, #{sort,jdbcType=INTEGER}, 
+      #{isShow,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR})
+  </insert>
+  
+  <update id="update" parameterType="com.tzg.entitys.kff.content.Navigation">
+    update content_navigation
+    <set>
+      <if test="createdAt != null">
+        created_at = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null">
+        updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="navigationTitle != null">
+        navigation_title = #{navigationTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="imgPath != null">
+        img_path = #{imgPath,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null">
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="isShow != null">
+        is_show = #{isShow,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select count(1) from <include refid="table_name" />
+		<include refid="condition"/>
+	</select>
+    
+	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select *  from <include refid="table_name" />
+		<include refid="condition"/>
+	    <![CDATA[ ORDER BY sort asc ]]>
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+	
+	<select id="findListByAttr" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select *  from <include refid="table_name" />
+		<include refid="condition"/>
+	    <![CDATA[ ORDER BY sort asc ]]>
+	</select>
+	
+	
+	<sql id="condition">
+    	<where>
+	    	<if test="id != null">
+			 id = #{id,jdbcType=INTEGER}
+			</if>
+			<if test="titlec != null">
+			and navigation_title like "%"#{titlec}"%" 
+			</if>
+    	</where>
+    </sql>
+  
+</mapper>

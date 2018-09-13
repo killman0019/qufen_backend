@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tzg.entitys.kff.exchange.ExchangeMapper">
+	<resultMap id="BaseResultMap" type="com.tzg.entitys.kff.exchange.Exchange">
+		<id column="exchange_id" property="exchangeId" jdbcType="INTEGER" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="status" property="status" jdbcType="INTEGER" />
+		<result column="exchange_name" property="exchangeName" jdbcType="VARCHAR" />
+		<result column="exchange_home_url" property="exchangeHomeUrl" jdbcType="VARCHAR" />
+		<result column="exchange_country" property="exchangeCountry" jdbcType="VARCHAR" />
+		<result column="transaction_pair_sum" property="transactionPairSum" jdbcType="INTEGER" />
+		<result column="exchange_logo" property="exchangeLogo" jdbcType="VARCHAR" />
+		<result column="exchange_display_name" property="exchangeDisplayName" jdbcType="VARCHAR" />
+		<result column="exchang_chinese_name" property="exchangChineseName" jdbcType="VARCHAR" />
+		<result column="memo" property="memo" jdbcType="VARCHAR" />
+		<result column="exchange_signature" property="exchangeSignature" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="columns">
+		exchange_id, create_time,update_time, status, exchange_name, exchange_home_url, exchange_country,
+		transaction_pair_sum, exchange_logo, exchange_display_name, exchang_chinese_name,
+		memo
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="columns" />
+		from tbexchange
+		where exchange_id = #{exchangeId,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from tbexchange
+		where exchange_id = #{exchangeId,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.tzg.entitys.kff.exchange.Exchange">
+		insert into tbexchange (exchange_id, create_time, status,
+		exchange_name, exchange_home_url, exchange_country,
+		transaction_pair_sum, exchange_logo,
+		exchange_display_name,
+		exchang_chinese_name, memo,update_time,exchange_signature)
+		values (#{exchangeId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER},
+		#{exchangeName,jdbcType=VARCHAR}, #{exchangeHomeUrl,jdbcType=VARCHAR}, #{exchangeCountry,jdbcType=VARCHAR},
+		#{transactionPairSum,jdbcType=INTEGER}, #{exchangeLogo,jdbcType=VARCHAR},
+		#{exchangeDisplayName,jdbcType=VARCHAR},
+		#{exchangChineseName,jdbcType=VARCHAR}, #{memo,jdbcType=VARCHAR},#{updateTime,jdbcType=TIMESTAMP},#{exchangeSignature,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.tzg.entitys.kff.exchange.Exchange">
+		insert into tbexchange
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="exchangeId != null">
+				exchange_id,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="exchangeName != null">
+				exchange_name,
+			</if>
+			<if test="exchangeHomeUrl != null">
+				exchange_home_url,
+			</if>
+			<if test="exchangeCountry != null">
+				exchange_country,
+			</if>
+			<if test="transactionPairSum != null">
+				transaction_pair_sum,
+			</if>
+			<if test="exchangeLogo != null">
+				exchange_logo,
+			</if>
+			<if test="exchangeDisplayName != null">
+				exchange_display_name,
+			</if>
+			<if test="exchangChineseName != null">
+				exchang_chinese_name,
+			</if>
+			<if test="memo != null">
+				memo,
+			</if>
+			<if test="exchangeSignature != null">
+				exchange_signature,
+			</if>
+			<if test="updateTime != null">
+				update_time,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="exchangeId != null">
+				#{exchangeId,jdbcType=INTEGER},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=INTEGER},
+			</if>
+			<if test="exchangeName != null">
+				#{exchangeName,jdbcType=VARCHAR},
+			</if>
+			<if test="exchangeHomeUrl != null">
+				#{exchangeHomeUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="exchangeCountry != null">
+				#{exchangeCountry,jdbcType=VARCHAR},
+			</if>
+			<if test="transactionPairSum != null">
+				#{transactionPairSum,jdbcType=INTEGER},
+			</if>
+			<if test="exchangeLogo != null">
+				#{exchangeLogo,jdbcType=VARCHAR},
+			</if>
+			<if test="exchangeDisplayName != null">
+				#{exchangeDisplayName,jdbcType=VARCHAR},
+			</if>
+			<if test="exchangChineseName != null">
+				#{exchangChineseName,jdbcType=VARCHAR},
+			</if>
+			<if test="memo != null">
+				#{memo,jdbcType=VARCHAR},
+			</if>
+			<if test="exchangeSignature != null">
+				#{exchangeSignature,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.tzg.entitys.kff.exchange.Exchange">
+		update tbexchange
+		<set>
+			<if test="createTime != null">
+				create_time = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=INTEGER},
+			</if>
+			<if test="exchangeName != null">
+				exchange_name = #{exchangeName,jdbcType=VARCHAR},
+			</if>
+			<if test="exchangeHomeUrl != null">
+				exchange_home_url = #{exchangeHomeUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="exchangeCountry != null">
+				exchange_country = #{exchangeCountry,jdbcType=VARCHAR},
+			</if>
+			<if test="transactionPairSum != null">
+				transaction_pair_sum = #{transactionPairSum,jdbcType=INTEGER},
+			</if>
+			<if test="exchangeLogo != null">
+				exchange_logo = #{exchangeLogo,jdbcType=VARCHAR},
+			</if>
+			<if test="exchangeDisplayName != null">
+				exchange_display_name = #{exchangeDisplayName,jdbcType=VARCHAR},
+			</if>
+			<if test="exchangChineseName != null">
+				exchang_chinese_name = #{exchangChineseName,jdbcType=VARCHAR},
+			</if>
+			<if test="exchangeSignature != null">
+				exchange_signature = #{exchangeSignature,jdbcType=VARCHAR},
+			</if>
+			<if test="memo != null">
+				memo = #{memo,jdbcType=VARCHAR},
+			</if>
+
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where exchange_id = #{exchangeId,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.tzg.entitys.kff.exchange.Exchange">
+		update tbexchange
+		set create_time = #{createTime,jdbcType=TIMESTAMP},
+		status = #{status,jdbcType=INTEGER},
+		exchange_name =
+		#{exchangeName,jdbcType=VARCHAR},
+		exchange_home_url = #{exchangeHomeUrl,jdbcType=VARCHAR},
+		exchange_country = #{exchangeCountry,jdbcType=VARCHAR},
+		transaction_pair_sum =
+		#{transactionPairSum,jdbcType=INTEGER},
+		exchange_logo = #{exchangeLogo,jdbcType=VARCHAR},
+		exchange_display_name = #{exchangeDisplayName,jdbcType=VARCHAR},
+		exchang_chinese_name =
+		#{exchangChineseName,jdbcType=VARCHAR},
+		memo = #{memo,jdbcType=VARCHAR},
+		exchange_signature = #{exchangeSignature,jdbcType=VARCHAR},
+		update_time = #{updateTime,jdbcType=TIMESTAMP}
+		where exchange_id =
+		#{exchangeId,jdbcType=INTEGER}
+	</update>
+
+	<select id="findByMap" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="columns" />
+		from
+		tbexchange
+		where 1=1
+		<include refid="queryWhere" />
+	</select>
+
+	<sql id="queryWhere">
+		<if test="exchangeId != null">
+			and exchange_id = #{exchangeId,jdbcType=INTEGER}
+		</if>
+		<if test="createTime != null">
+			and create_time = #{createTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="status != null">
+			and status = #{status,jdbcType=INTEGER}
+		</if>
+		<if test="exchangeName != null">
+			and exchange_name = #{exchangeName,jdbcType=VARCHAR}
+		</if>
+		<if test="exchangeHomeUrl != null">
+			and exchange_home_url = #{exchangeHomeUrl,jdbcType=VARCHAR}
+		</if>
+		<if test="exchangeCountry != null">
+			and exchange_country = #{exchangeCountry,jdbcType=VARCHAR}
+		</if>
+		<if test="transactionPairSum != null">
+			and transaction_pair_sum = #{transactionPairSum,jdbcType=INTEGER}
+		</if>
+		<if test="exchangeLogo != null">
+			and exchange_logo = #{exchangeLogo,jdbcType=VARCHAR}
+		</if>
+		<if test="exchangeDisplayName != null">
+			and exchange_display_name = #{exchangeDisplayName,jdbcType=VARCHAR}
+		</if>
+		<if test="exchangChineseName != null">
+			and exchang_chinese_name = #{exchangChineseName,jdbcType=VARCHAR}
+		</if>
+		<if test="memo != null">
+			and memo = #{memo,jdbcType=VARCHAR}
+		</if>
+		<if test="exchangeSignature != null">
+			and exchange_signature = #{exchangeSignature,jdbcType=VARCHAR}
+		</if>
+		<if test="updateTime != null">
+			and update_time = #{updateTime,jdbcType=TIMESTAMP}
+		</if>
+	</sql>
+
+	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(*) from tbexchange where 1=1
+		<include refid="queryWhere" />
+
+	</select>
+
+	<select id="findPage" resultMap="BaseResultMap" resultType="java.util.Map">
+		select
+		<include refid="columns" />
+		from tbexchange where 1=1
+		<include refid="queryWhere" />
+
+		ORDER BY exchange_id desc
+			
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+
+	</select>
+
+</mapper>

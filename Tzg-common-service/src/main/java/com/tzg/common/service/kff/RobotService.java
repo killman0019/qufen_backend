@@ -264,6 +264,10 @@ public class RobotService {
 		try {
 			// 判断时间是否在时间区间内
 			int hour = DateUtil.getHour();
+			int minute = DateUtil.getMinute();
+			if (minute == 0) {
+				return;
+			}
 			if (hour <= 22 && hour >= 9) {
 				newFixedThreadPoolrobot = Executors.newFixedThreadPool(10);
 				while (true) {
