@@ -2,6 +2,7 @@ package com.tzg.rest.controller.kff;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -65,6 +66,11 @@ public class SearchController extends BaseController {
 			Integer curPage = (Integer)policyJson.get("pageIndex");
 			Integer pageSize = (Integer)policyJson.get("pageSize");
 			String title = (String)policyJson.get("title");
+			String token = (String)policyJson.get("token");
+			Integer userId = null;
+			if (StringUtils.isNotBlank(token)) {
+				userId = getUserIdByToken(token);
+			}
 			if(null==type || null==curPage||null==pageSize||
 					StringUtil.isBlank(title)) {
 				bre.setNoRequstData();
@@ -76,9 +82,10 @@ public class SearchController extends BaseController {
 	        query.addQueryData("title", title.trim());
 	        query.addQueryData("status", 1);
 	        if(type==1) {
+	        	Integer typec = 1;// 取关注项目
 				query.addQueryData("sortField", "follower_num");
 				query.addQueryData("sortSequence", "desc");
-				PageResult<KFFProject> data = projectRmiService.findPage(query);
+				PageResult<KFFProject> data = projectRmiService.findPageWithFollower(query,typec,userId);
 				if(null!=data) {
 					if(!data.getRows().isEmpty()) {
 						bre.setData(data);
@@ -87,9 +94,10 @@ public class SearchController extends BaseController {
 				}
 			}
 			if(type==2) {
-				query.addQueryData("sql_keyword_orderBy", "praise_num");
+				Integer typec = 2;// 取关注人
+				query.addQueryData("sql_keyword_orderBy", "createTime");
 				query.addQueryData("sql_keyword_sort", "desc");
-				PageResult<Post> data = postRmiService.findPage(query);
+				PageResult<Post> data = postRmiService.findPageWithFollower(query,typec,userId);
 				if(null!=data) {
 					if(!data.getRows().isEmpty()) {
 						bre.setData(data);
@@ -98,9 +106,10 @@ public class SearchController extends BaseController {
 				}
 			}
 			if(type==3) {
+				Integer typec = 2;// 取关注人
 				query.addQueryData("sortField", "fans_num");
 				query.addQueryData("sortSequence", "desc");
-				PageResult<KFFUser> data = userRmiService.findPage(query);
+				PageResult<KFFUser> data = userRmiService.findPageWithFollower(query,typec,userId);
 				if(null!=data) {
 					if(!data.getRows().isEmpty()) {
 						bre.setData(data);
