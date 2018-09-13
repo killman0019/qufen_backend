@@ -255,21 +255,31 @@ public class RobotService {
 		}
 		if (hour <= 22 && hour >= 9) {
 
-			// 进行延迟
-			Timer timer = new Timer();
 			// 1分钟
-			int min = 1 * 60 * 1000;
+			int min = 5 * 60 * 1000;
 			// 到10分钟
-			int max = 3 * 60 * 1000;
+			int max = 10 * 60 * 1000;
 			int ran = RandomUtil.randomNumber(min, max);
-			timer.schedule(new TimerTask() {
+			ExecutorService executorService = null;
+			try {
+				executorService = Executors.newScheduledThreadPool(ran);
+				executorService.execute(new Runnable() {
 
-				@Override
-				public void run() {
-					robotTask(k);
-					timer.cancel();
+					@Override
+					public void run() {
+
+						robotTask(k);
+					}
+				});
+			} catch (Exception e) {
+
+				e.printStackTrace();
+			} finally {
+				if (executorService.isShutdown()) {
+					executorService.shutdown();
 				}
-			}, ran);
+			}
+
 		}
 	}
 
