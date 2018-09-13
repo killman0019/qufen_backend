@@ -39,4 +39,6 @@ public interface TokenawardMapper extends BaseMapper<Tokenaward, java.lang.Integ
 	Integer findPageCounts(Map<String, Object> queryData);
 
 	List<TokenawardReturn> findPageToken(Map<String, Object> queryData);
+
+	List<Tokenaward> findByMap(Map<String, Object> tokenAwardMap);
 }

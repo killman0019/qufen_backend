@@ -308,79 +308,79 @@
 	<!-- 查询单人的邀请字段 -->
 	<sql id="queryWhere">
 
-		<if test="tokenAwardId != null and tokenAwardId.trim() != ''">
+		<if test="tokenAwardId != null ">
 			and token_award_id = #{tokenAwardId}
 		</if>
-		<if test="userId != null and userId.trim() != ''">
+		<if test="userId != null ">
 			and user_id = #{userId}
 		</if>
-		<if test="tokenRecordsId != null and tokenRecordsId.trim() != ''">
+		<if test="tokenRecordsId != null ">
 			and token_records_id = #{tokenRecordsId}
 		</if>
-		<if test="praiseId != null and praiseId.trim() != ''">
+		<if test="praiseId != null ">
 			and praise_id = #{praiseId}
 		</if>
-		<if test="tokenAwardFunctionDesc != null and tokenAwardFunctionDesc.trim() != ''">
+		<if test="tokenAwardFunctionDesc != null ">
 			and token_award_function_desc = #{tokenAwardFunctionDesc}
 		</if>
-		<if test="tokenAwardFunctionType != null and tokenAwardFunctionType.trim() != ''">
+		<if test="tokenAwardFunctionType != null ">
 			and token_award_function_type = #{tokenAwardFunctionType}
 		</if>
-		<if test="inviteRewards != null and inviteRewards.trim() != ''">
+		<if test="inviteRewards != null ">
 			and invite_rewards = #{inviteRewards}
 		</if>
-		<if test="giveTime != null and giveTime.trim() != ''">
+		<if test="giveTime != null">
 			and give_time &lt;= #{giveTime}
 		</if>
-		<if test="priaiseAward != null and priaiseAward.trim() != ''">
+		<if test="priaiseAward != null ">
 			and priaise_award >= #{priaiseAward}
 		</if>
-		<if test="containerAward != null and containerAward.trim() != ''">
+		<if test="containerAward != null">
 			and container_award = #{containerAward}
 		</if>
-		<if test="createTimeBegin != null and createTimeBegin.trim() != ''">
+		<if test="createTimeBegin != null ">
 			and createTime >= #{createTimeBegin}
 		</if>
-		<if test="createTimeEnd != null and createTimeEnd.trim() != ''">
+		<if test="createTimeEnd != null">
 			and createTime &lt;= #{createTimeEnd}
 		</if>
-		<if test="updateTimeBegin != null and updateTimeBegin.trim() != ''">
+		<if test="updateTimeBegin != null ">
 			and updateTime >= #{updateTimeBegin}
 		</if>
-		<if test="updateTimeEnd != null and updateTimeEnd.trim() != ''">
+		<if test="updateTimeEnd != null ">
 			and updateTime &lt;= #{updateTimeEnd}
 		</if>
-		<if test="giveNext != null and giveNext.trim() != ''">
+		<if test="giveNext != null ">
 			and give_next = #{giveNext}
 		</if>
-		<if test="rewardToken != null and rewardToken.trim() != ''">
+		<if test="rewardToken != null ">
 			and reward_token = #{rewardToken}
 		</if>
-		<if test="awardBalance != null and awardBalance.trim() != ''">
+		<if test="awardBalance != null ">
 			and award_balance = #{awardBalance}
 		</if>
-		<if test="inviteNumber != null and awardBalance.trim() != ''">
+		<if test="inviteNumber != null ">
 			and invite_number = #{inviteNumber}
 		</if>
-		<if test="distributionType != null and awardBalance.trim() != ''">
+		<if test="distributionType != null ">
 			and distribution_type = #{distributionType}
 		</if>
-		<if test="counter != null and awardBalance.trim() != ''">
+		<if test="counter != null ">
 			and counter = #{counter}
 		</if>
-		<if test="grantType != null and awardBalance.trim() != ''">
+		<if test="grantType != null  ">
 			and grant_type = #{grantType}
 		</if>
-		<if test="userName != null and awardBalance.trim() != ''">
+		<if test="userName != null ">
 			and user_name = #{userName}
 		</if>
-		<if test="mobile != null and awardBalance.trim() != ''">
+		<if test="mobile != null ">
 			and mobile = #{mobile}
 		</if>
-		<if test="issuer != null and issuer.trim() != ''">
+		<if test="issuer != null ">
 			and issuer = #{issuer}
 		</if>
-		<if test="remark != null and remark.trim() != ''">
+		<if test="remark != null ">
 			and remark = #{remark}
 		</if>
 		<if test="postId != null ">
@@ -397,6 +397,21 @@
 		token_award_function_type = 18
 		AND user_id = #{userId}
 	</select>
+
+
+	<select id="findByMap" parameterType="java.util.Map" resultMap="BaseResultMap">
+
+		select
+		<include refid="columns" />
+		from
+		tbtokenaward
+		WHERE
+		1=1
+		<include refid="queryWhere" />
+
+	</select>
+
+
 </mapper>
 
 

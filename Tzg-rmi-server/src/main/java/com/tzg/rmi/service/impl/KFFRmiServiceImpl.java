@@ -1893,7 +1893,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			throw new RestServiceException("用户不存在" + articleRequest.getCreateUserId());
 		}
 		Post post = new Post();
-		if (articleRequest.getProjectId() == null) {
+		if (articleRequest.getProjectId() == null || articleRequest.getProjectId() == 0) {
 			Map<String, Object> codeMap = new HashMap<String, Object>();
 			codeMap.put("status", "1");
 			codeMap.put("projectCode", "FREE");
@@ -2082,15 +2082,38 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (createUser == null) {
 			throw new RestServiceException("用户不存在" + discussRequest.getCreateUserId());
 		}
-		KFFProject project = kffProjectService.findById(discussRequest.getProjectId());
-		if (project == null) {
-			throw new RestServiceException("项目不存在" + discussRequest.getProjectId());
+
+		Post post = new Post();
+		if (discussRequest.getProjectId() == null || discussRequest.getProjectId() == 0) {
+			Map<String, Object> codeMap = new HashMap<String, Object>();
+			codeMap.put("status", "1");
+			codeMap.put("projectCode", "FREE");
+			List<KFFProject> projectList = kffProjectService.findProjectByCode(codeMap);
+			if (CollectionUtils.isNotEmpty(projectList)) {
+				KFFProject project = projectList.get(0);
+				post.setProjectCode(project.getProjectCode());
+				post.setProjectEnglishName(project.getProjectEnglishName());
+				post.setProjectChineseName(project.getProjectChineseName());
+				post.setProjectIcon(project.getProjectIcon());
+				post.setProjectId(project.getProjectId());
+			}
+		} else {
+			KFFProject project = kffProjectService.findById(discussRequest.getProjectId());
+			if (project == null) {
+				throw new RestServiceException("项目不存在" + discussRequest.getProjectId());
+			}
+			post.setProjectCode(project.getProjectCode());
+			post.setProjectEnglishName(project.getProjectEnglishName());
+			post.setProjectChineseName(project.getProjectChineseName());
+			post.setProjectIcon(project.getProjectIcon());
+			post.setProjectId(project.getProjectId());
 		}
+
 		discussRequest.setDisscussContents(EmojiParser.removeAllEmojis(discussRequest.getDisscussContents()));
 		if (StringUtils.isBlank(discussRequest.getDisscussContents())) {
 			throw new RestServiceException("文章内容不合法");
 		}
-		Post post = new Post();
+
 		Date now = new Date();
 		post.setCollectNum(0);
 		post.setCommentsNum(0);
@@ -2137,11 +2160,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		post.setPostTitle(discussRequest.getPostTitle());
 		post.setPostType(KFFConstants.POST_TYPE_DISCUSS);// 帖子类型：1-评测；2-讨论；3-文章
 		post.setPraiseNum(0);
-		post.setProjectCode(project.getProjectCode());
-		post.setProjectEnglishName(project.getProjectEnglishName());
-		post.setProjectChineseName(project.getProjectChineseName());
-		post.setProjectIcon(project.getProjectIcon());
-		post.setProjectId(project.getProjectId());
+
 		post.setStatus(KFFConstants.STATUS_ACTIVE);
 		post.setUuid(uuid);
 		post.setStickTop(0);
@@ -3336,35 +3355,37 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				seMap.put("type", DiscussType.DOTPRAISE.getValue());
 				kffPostService.updateByMap(seMap);
 				// 个推APP推送消息
-				KFFUser createUser = kffUserService.findById(praise.getBepraiseUserId());
-				if (null != createUser && post.getPostType() != 4) {
-					Integer linkedType = null;
-					if (post.getPostType() == 1) {
-						linkedType = LinkedType.CUSTOMEVALUATING.getValue();
+				if (null != praise) {
+					KFFUser createUser = kffUserService.findById(praise.getBepraiseUserId());
+					if (null != createUser && post.getPostType() != 4) {
+						Integer linkedType = null;
+						if (post.getPostType() == 1) {
+							linkedType = LinkedType.CUSTOMEVALUATING.getValue();
+						}
+						if (post.getPostType() == 2) {
+							linkedType = LinkedType.COUNTERFEIT.getValue();
+						}
+						if (post.getPostType() == 3) {
+							linkedType = LinkedType.ARTICLE.getValue();
+						}
+						appNewsPush(linkedType, post.getPostId(), null, createUser.getMobile(), sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle()
+								+ sysGlobals.CONTENT_GETUI_MSG_END);
+						// 推送点赞过10上推荐发APP消息
+						KFFMessage msg = new KFFMessage();
+						msg.setType(12);
+						msg.setStatus(1);
+						msg.setState(1);
+						msg.setCreateTime(now);
+						msg.setUpdateTime(now);
+						msg.setUserId(post.getCreateUserId());
+						msg.setTitle(sysGlobals.GETUI_NOTIFY);
+						msg.setContent(sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle() + sysGlobals.CONTENT_GETUI_MSG_END);
+						msg.setSenderUserId(sysGlobals.QUFEN_ACCOUNT_ID);
+						msg.setJumpInfo(sysGlobals.QUFEN_ACCOUNT_ID.toString());
+						msg.setPostId(post.getPostId());
+						msg.setPostType(post.getPostType());
+						kffMessageService.save(msg);
 					}
-					if (post.getPostType() == 2) {
-						linkedType = LinkedType.COUNTERFEIT.getValue();
-					}
-					if (post.getPostType() == 3) {
-						linkedType = LinkedType.ARTICLE.getValue();
-					}
-					appNewsPush(linkedType, post.getPostId(), null, createUser.getMobile(), sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle()
-							+ sysGlobals.CONTENT_GETUI_MSG_END);
-					// 推送点赞过10上推荐发APP消息
-					KFFMessage msg = new KFFMessage();
-					msg.setType(12);
-					msg.setStatus(1);
-					msg.setState(1);
-					msg.setCreateTime(now);
-					msg.setUpdateTime(now);
-					msg.setUserId(post.getCreateUserId());
-					msg.setTitle(sysGlobals.GETUI_NOTIFY);
-					msg.setContent(sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle() + sysGlobals.CONTENT_GETUI_MSG_END);
-					msg.setSenderUserId(sysGlobals.QUFEN_ACCOUNT_ID);
-					msg.setJumpInfo(sysGlobals.QUFEN_ACCOUNT_ID.toString());
-					msg.setPostId(post.getPostId());
-					msg.setPostType(post.getPostType());
-					kffMessageService.save(msg);
 				}
 			}
 		}

@@ -19,6 +19,8 @@ import com.tzg.common.utils.DateUtil;
 import com.tzg.common.utils.sysGlobals;
 import com.tzg.entitys.kff.qfindex.QfIndex;
 import com.tzg.entitys.kff.qfindex.QfindexResponse;
+import com.tzg.entitys.kff.tokenaward.Tokenaward;
+import com.tzg.entitys.kff.tokenaward.TokenawardMapper;
 import com.tzg.entitys.kff.tokenrecords.Tokenrecords;
 import com.tzg.entitys.kff.tokenrecords.TokenrecordsMapper;
 import com.tzg.entitys.leopard.system.SystemParam;
@@ -35,6 +37,9 @@ public class QfIndexService {
 
 	@Autowired
 	private TokenrecordsMapper tokenrecordsMapper;
+
+	@Autowired
+	private TokenawardMapper tokenawardMapper;
 
 	@Transactional(readOnly = true)
 	public QfIndex findById(java.lang.Integer id) throws RestServiceException {
@@ -176,6 +181,7 @@ public class QfIndexService {
 					Double loginSum = 0.0;// 所有登陆奖励
 					Double commentSum = 0.0;// 所有评论奖励
 					Double invaAward = 0.0;// 所有邀请奖励
+					Double invaAward1 = 0.0;// 所有邀请奖励1
 					if (CollectionUtils.isNotEmpty(tokenRecordsList)) {
 						for (Tokenrecords tokenrecords : tokenRecordsList) {
 							amountSum = amountSum + (tokenrecords.getAmount().doubleValue());
@@ -186,11 +192,28 @@ public class QfIndexService {
 								commentSum = commentSum + (tokenrecords.getAmount().doubleValue());
 							}
 							if (tokenrecords.getFunctionType() == 18) {
-								invaAward = invaAward + (tokenrecords.getAmount().doubleValue());
+								invaAward1 = invaAward1 + (tokenrecords.getAmount().doubleValue());
 							}
 						}
 
 					}
+					Double invaAward2 = 0.0;// 所有邀请奖励2
+					Map<String, Object> tokenAwardMap = new HashMap<String, Object>();
+					tokenAwardMap.put("userId", userId);
+					tokenAwardMap.put("tokenAwardTunctionType", "18");
+					tokenAwardMap.put("createTimeBegin", createTimeBegin);
+					tokenAwardMap.put("createTimeEnd", createTimeEnd);
+					tokenAwardMap.put("status", 1);
+					List<Tokenaward> tokenAwardList = tokenawardMapper.findByMap(tokenAwardMap);
+					if (CollectionUtils.isNotEmpty(tokenAwardList)) {
+						for (Tokenaward tokenaward : tokenAwardList) {
+							if (null != tokenaward) {
+								invaAward2 = invaAward2 + tokenaward.getInviteRewards();
+							}
+						}
+					}
+					amountSum = amountSum + invaAward2;
+					invaAward = invaAward1 + invaAward2;
 					qfindexResponse.setTodayAward(amountSum);// 今天所有赚的币
 					qfindexResponse.setLoginAward(BigDecimal.valueOf(loginSum));// 今日的登陆奖励
 					qfindexResponse.setStatusHierarchyType(qfindex.getStatusHierarchyType());// 区分指数
