@@ -19,6 +19,8 @@ import com.tzg.rest.exception.rest.RestServiceException;
 public interface KFFProjectRmiService {
 	
 	public PageResult<KFFProject> findPage(PaginationQuery query);
+	public PageResult<KFFProject> findPageWithFollower(PaginationQuery query,Integer typec,Integer userId);
+	
 	/**
 	 * 向前台展示tab键
 	 * 

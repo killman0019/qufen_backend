@@ -35,6 +35,10 @@ public class KFFUserRmiServiceImpl implements KFFUserRmiService {
 		PageResult<KFFUser> result = userService.findPage(query);
 		return result;
 	}
+	
+	public PageResult<KFFUser> findPageWithFollower(PaginationQuery query,Integer typec,Integer userId){
+		return userService.findPageWithFollower(query,typec,userId);
+	}
 
 	@Autowired
 	private InteractionRootService interactionRootService;

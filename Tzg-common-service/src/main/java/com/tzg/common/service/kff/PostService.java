@@ -17,17 +17,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import com.tzg.common.constants.KFFConstants;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.utils.DateUtil;
 import com.tzg.entitys.kff.commendation.Commendation;
 import com.tzg.entitys.kff.commendation.CommendationMapper;
+import com.tzg.entitys.kff.follow.Follow;
 import com.tzg.entitys.kff.post.Post;
 import com.tzg.entitys.kff.post.PostDiscussVo;
 import com.tzg.entitys.kff.post.PostMapper;
 import com.tzg.entitys.kff.post.PostResponse;
 import com.tzg.entitys.kff.tokenrecords.Tokenrecords;
 import com.tzg.entitys.kff.tokenrecords.TokenrecordsMapper;
+import com.tzg.entitys.kff.user.KFFUser;
 import com.tzg.rest.exception.rest.RestServiceException;
 
 @Service(value = "KFFPostService")
@@ -37,11 +40,13 @@ public class PostService {
 	private static final Log logger = LogFactory.getLog(PostService.class);
 
 	@Autowired
+	private UserService kffUserService;
+	@Autowired
+	private FollowService kffFollowService;
+	@Autowired
 	private PostMapper postMapper;
-
 	@Autowired
 	private CommendationMapper commendationMapper;
-
 	@Autowired
 	private TokenrecordsMapper tokenrecordsMapper;
 
@@ -119,6 +124,48 @@ public class PostService {
 		}
 		return result;
 	}
+	
+	@Transactional(readOnly = true)
+	public PageResult<Post> findPageWithFollower(PaginationQuery query,Integer typec,Integer userId) {
+		PageResult<Post> result = null;
+		try {
+			Integer count = postMapper.findPageCount(query.getQueryData());
+			if (null != count && count.intValue() > 0) {
+				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
+				query.addQueryData("startRecord", Integer.toString(startRecord));
+				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
+				List<Post> list = postMapper.findPage(query.getQueryData());
+				if(!list.isEmpty()) {
+					KFFUser loginUser = null;
+					if (userId != null) {
+						loginUser = kffUserService.findById(userId);
+					}
+					for (Post post : list) {
+						// 设置人的关注状态
+						if (loginUser == null) {
+							post.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+						} else {
+							if (typec == 2) {
+								Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER,
+										post.getCreateUserId());
+								if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+									post.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+								} else {
+									post.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+								}
+							} 
+						}
+					}
+				}
+				result = new PageResult<Post>(list, count, query);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	
 	
 	@Transactional(readOnly = true)
 	public PageResult<Post> findPageWithEvaluation(PaginationQuery query) throws RestServiceException {

@@ -3,11 +3,10 @@ package com.tzg.entitys.kff.project;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.stereotype.Repository;
+
 import com.tzg.common.base.BaseMapper;
 import com.tzg.entitys.kff.post.PostResponse;
-import com.tzg.entitys.kff.user.KFFUser;
-
-import org.springframework.stereotype.Repository;
 
 @Repository
 public interface KFFProjectMapper extends BaseMapper<KFFProject, java.lang.Integer> {

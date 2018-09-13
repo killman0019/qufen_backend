@@ -65,6 +65,10 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 		PageResult<KFFProject> result = kffProjectService.findPage(query);
 		return result;
 	}
+	
+	public PageResult<KFFProject> findPageWithFollower(PaginationQuery query,Integer typec,Integer userId){
+		return kffProjectService.findPageWithFollower(query,typec,userId);
+	}
 
 	@Autowired
 	private RobotService robotService;

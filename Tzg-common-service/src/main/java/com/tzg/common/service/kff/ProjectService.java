@@ -21,6 +21,7 @@ import org.springframework.util.CollectionUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.base.Objects;
+import com.tzg.common.constants.KFFConstants;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.utils.DozerMapperUtils;
@@ -61,10 +62,13 @@ public class ProjectService {
 	private PraiseMapper praiseMapper;
 	@Autowired
 	private UserProjectMapper userProjectMapper;
-
 	@Autowired
 	private ProjectTradeMapper projectTradeMapper;
-
+	@Autowired
+	private UserService kffUserService;
+	@Autowired
+	private FollowService kffFollowService;
+	
 	private static final ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 4);
 
 	public List<KFFProject> findListByMap(Map<String, Object> map) {
@@ -141,7 +145,8 @@ public class ProjectService {
 	}
 
 	@Transactional(readOnly = true)
-	public PageResult<KFFProject> findPage(PaginationQuery query) throws RestServiceException {
+	public PageResult<KFFProject> findPage(PaginationQuery query) 
+			throws RestServiceException {
 		PageResult<KFFProject> result = null;
 		try {
 			Integer count = projectMapper.findPageCount(query.getQueryData());
@@ -150,6 +155,55 @@ public class ProjectService {
 				query.addQueryData("startRecord", Integer.toString(startRecord));
 				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
 				List<KFFProject> list = projectMapper.findPage(query.getQueryData());
+				result = new PageResult<KFFProject>(list, count, query);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	@Transactional(readOnly = true)
+	public PageResult<KFFProject> findPageWithFollower(PaginationQuery query,Integer typec,Integer userId) 
+			throws RestServiceException {
+		PageResult<KFFProject> result = null;
+		try {
+			Integer count = projectMapper.findPageCount(query.getQueryData());
+			if (null != count && count.intValue() > 0) {
+				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
+				query.addQueryData("startRecord", Integer.toString(startRecord));
+				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
+				List<KFFProject> list = projectMapper.findPage(query.getQueryData());
+				if(!list.isEmpty()) {
+					KFFUser loginUser = null;
+					if (userId != null) {
+						loginUser = kffUserService.findById(userId);
+					}
+					for (KFFProject kffProject : list) {
+						// 设置人的关注状态
+						if (loginUser == null) {
+							kffProject.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+						} else {
+							if (typec == 2) {
+//								Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER,
+//										kffProject.getCreateUserId());
+//								if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+//									response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+//								} else {
+//									response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+//								}
+							} else if (typec == 1) {
+								Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT,
+										kffProject.getProjectId());
+								if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+									kffProject.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+								} else {
+									kffProject.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+								}
+							}
+						}
+					}
+				}
 				result = new PageResult<KFFProject>(list, count, query);
 			}
 		} catch (Exception e) {
