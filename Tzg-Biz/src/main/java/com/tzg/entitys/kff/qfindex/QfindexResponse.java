@@ -59,6 +59,11 @@ public class QfindexResponse implements Serializable {
 	 */
 	private Double commentAward;
 	/**
+	 * 首次评论获得奖励
+	 */
+	private Double commentFirstAward;
+
+	/**
 	 * 评论总次数
 	 */
 	private Integer commentSumDegr;
@@ -132,6 +137,14 @@ public class QfindexResponse implements Serializable {
 	 * 今天获得奖励
 	 */
 	private Double todayAward;
+
+	public Double getCommentFirstAward() {
+		return commentFirstAward;
+	}
+
+	public void setCommentFirstAward(Double commentFirstAward) {
+		this.commentFirstAward = commentFirstAward;
+	}
 
 	public Double getPraiseAwardSum() {
 		return praiseAwardSum;

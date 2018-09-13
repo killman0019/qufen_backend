@@ -201,13 +201,14 @@ public class QfIndexService {
 					SystemParam commentAwardSys = systemParamService.findByCode(sysGlobals.COMMENT_AWARD_TOKEN);
 					SystemParam pushEvaGetAwardSys = systemParamService.findByCode(sysGlobals.PUSH_EVA_GET_AWARD);
 					SystemParam readingAwardSys = systemParamService.findByCode(sysGlobals.READING_AWARD);
+					SystemParam commentFirwtAwardSys = systemParamService.findByCode(sysGlobals.COMMENT_FIRST_AWARD_TOKEN);
 					qfindexResponse.setInvaEachAward(new BigDecimal(sys.getVcParamValue()));// 每邀请一个用户获得奖励
 					qfindexResponse.setSharePostAward(Double.valueOf(sharePostSys.getVcParamValue()));// 每次分享获得奖励
 					qfindexResponse.setPraiseAward(Double.valueOf(praiseAwardSys.getVcParamValue()));// 进行点赞给点赞人的奖励
 					qfindexResponse.setCommentAward(Double.valueOf(commentAwardSys.getVcParamValue()));// 给予评论人的奖励
 					qfindexResponse.setEvaAward(Double.valueOf(pushEvaGetAwardSys.getVcParamValue()));// 发布每篇专业评测所获得奖励
 					qfindexResponse.setReadingAward(Double.valueOf(readingAwardSys.getVcParamValue()));// 阅读每篇专业评测所获得奖励
-
+					qfindexResponse.setCommentFirstAward(Double.valueOf(commentFirwtAwardSys.getVcParamValue()));// 首次评论获得奖励
 					int yxComments = qfindex.getYxComments();
 					int yxSharePost = qfindex.getYxSharePost();
 					int yxPraise = qfindex.getYxpraise();
@@ -246,7 +247,7 @@ public class QfIndexService {
 					qfindexResponse.setEvaDegr(pushEvaDegr);// 发布评测的次数
 					qfindexResponse.setEvaAward(Double.valueOf(pushEvaGetAwardSys.getVcParamValue()));// 发布评测单篇奖励
 					qfindexResponse.setEvaAwardSum(pushEvaGetAwardSum);// 发布评测总奖励
-					qfindexResponse.setEvaAwardSumDegr(i);
+					qfindexResponse.setEvaAwardSumDegr(i);// 发布评测的总次数
 					if (pushEvaDegr == i) {
 						qfindexResponse.setEvaReceStatus(1);
 					} else {
