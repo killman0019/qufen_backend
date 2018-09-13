@@ -209,6 +209,7 @@ public class QfIndexService {
 					qfindexResponse.setEvaAward(Double.valueOf(pushEvaGetAwardSys.getVcParamValue()));// 发布每篇专业评测所获得奖励
 					qfindexResponse.setReadingAward(Double.valueOf(readingAwardSys.getVcParamValue()));// 阅读每篇专业评测所获得奖励
 					qfindexResponse.setCommentFirstAward(Double.valueOf(commentFirwtAwardSys.getVcParamValue()));// 首次评论获得奖励
+
 					int yxComments = qfindex.getYxComments();
 					int yxSharePost = qfindex.getYxSharePost();
 					int yxPraise = qfindex.getYxpraise();
@@ -219,14 +220,21 @@ public class QfIndexService {
 					qfindexResponse.setCommentDegr(yxCommentRece);
 					qfindexResponse.setPraiseDegr(yxPraiseRece);
 					qfindexResponse.setSharePostDegr(yxSharePostRece);
+
 					if (yxCommentRece == i) {
 						qfindexResponse.setCommentReceStatus(1);// 评论领取状态
+					} else {
+						qfindexResponse.setCommentReceStatus(0);// 评论领取状态
 					}
 					if (yxPraiseRece == i) {
 						qfindexResponse.setPraiseReceStatus(1);// 点赞领取状态
+					} else {
+						qfindexResponse.setPraiseReceStatus(0);// 点赞领取状态
 					}
 					if (yxSharePostRece == i) {
 						qfindexResponse.setSharePostReceStatus(1);// 分享领取状态
+					} else {
+						qfindexResponse.setSharePostReceStatus(0);// 分享领取状态
 					}
 
 					qfindexResponse.setCommentAwardSum(commentSum);// 评论奖励
@@ -273,6 +281,8 @@ public class QfIndexService {
 					}
 					if (readingDegrI == readingDegrIDB) {
 						qfindexResponse.setReadingReceStatus(1);// 阅读领取状态
+					} else {
+						qfindexResponse.setReadingReceStatus(0);// 阅读领取状态
 					}
 					// 邀请奖励
 					qfindexResponse.setInvaAward(new BigDecimal(invaAward));
