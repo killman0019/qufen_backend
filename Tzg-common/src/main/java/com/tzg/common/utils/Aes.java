@@ -13,7 +13,7 @@ import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
 /**
- * 基于aes加密解密工具类
+ * 鍩轰簬aes鍔犲瘑瑙ｅ瘑宸ュ叿绫�
  * 
  * @author yangpeiliang
  * @version 1.0
@@ -23,24 +23,24 @@ public class Aes {
 	public static final String DEFAL_AESKEY = "tzgapp";
 
 	/**
-	 * 将byte[]转为各种进制的字符串
+	 * 灏哹yte[]杞负鍚勭杩涘埗鐨勫瓧绗︿覆
 	 * 
 	 * @param bytes
 	 *            byte[]
 	 * @param radix
-	 *            可以转换进制的范围，从Character.MIN_RADIX到Character.MAX_RADIX，超出范围后变为10进制
-	 * @return 转换后的字符串
+	 *            鍙互杞崲杩涘埗鐨勮寖鍥达紝浠嶤haracter.MIN_RADIX鍒癈haracter.MAX_RADIX锛岃秴鍑鸿寖鍥村悗鍙樹负10杩涘埗
+	 * @return 杞崲鍚庣殑瀛楃涓�
 	 */
 	public static String binary(byte[] bytes, int radix) {
-		return new BigInteger(1, bytes).toString(radix);// 这里的1代表正数
+		return new BigInteger(1, bytes).toString(radix);// 杩欓噷鐨�1浠ｈ〃姝ｆ暟
 	}
 
 	/**
 	 * base 64 encode
 	 * 
 	 * @param bytes
-	 *            待编码的byte[]
-	 * @return 编码后的base 64 code
+	 *            寰呯紪鐮佺殑byte[]
+	 * @return 缂栫爜鍚庣殑base 64 code
 	 */
 	public static String base64Encode(byte[] bytes) {
 		return new BASE64Encoder().encode(bytes);
@@ -50,17 +50,18 @@ public class Aes {
 	 * base 64 decode
 	 * 
 	 * @param base64Code
-	 *            待解码的base 64 code
-	 * @return 解码后的byte[]
+	 *            寰呰В鐮佺殑base 64 code
+	 * @return 瑙ｇ爜鍚庣殑byte[]
 	 * @throws Exception
 	 */
 	public static byte[] base64Decode(String base64Code) throws Exception {
-		return StringUtil.isEmpty(base64Code) ? null : new BASE64Decoder()
-				.decodeBuffer(base64Code);
+		// return StringUtil.isEmpty(base64Code) ? null : new BASE64Decoder()
+		// .decodeBuffer(base64Code);
+		return null;
 	}
 
 	/**
-	 * 获取byte[]的md5值
+	 * 鑾峰彇byte[]鐨刴d5鍊�
 	 * 
 	 * @param bytes
 	 *            byte[]
@@ -74,7 +75,7 @@ public class Aes {
 	}
 
 	/**
-	 * 获取字符串md5值
+	 * 鑾峰彇瀛楃涓瞞d5鍊�
 	 * 
 	 * @param msg
 	 * @return md5
@@ -85,11 +86,11 @@ public class Aes {
 	}
 
 	/**
-	 * 结合base64实现md5加密
+	 * 缁撳悎base64瀹炵幇md5鍔犲瘑
 	 * 
 	 * @param msg
-	 *            待加密字符串
-	 * @return 获取md5后转为base64
+	 *            寰呭姞瀵嗗瓧绗︿覆
+	 * @return 鑾峰彇md5鍚庤浆涓篵ase64
 	 * @throws Exception
 	 */
 	public static String md5Encrypt(String msg) throws Exception {
@@ -97,111 +98,104 @@ public class Aes {
 	}
 
 	/**
-	 * AES加密
+	 * AES鍔犲瘑
 	 * 
 	 * @param content
-	 *            待加密的内容
+	 *            寰呭姞瀵嗙殑鍐呭
 	 * @param encryptKey
-	 *            加密密钥
-	 * @return 加密后的byte[]
+	 *            鍔犲瘑瀵嗛挜
+	 * @return 鍔犲瘑鍚庣殑byte[]
 	 * @throws Exception
 	 */
-	public static byte[] aesEncryptToBytes(String content, String encryptKey)
-			throws Exception {
+	public static byte[] aesEncryptToBytes(String content, String encryptKey) throws Exception {
 		KeyGenerator kgen = KeyGenerator.getInstance("AES");
 		kgen.init(128, new SecureRandom(encryptKey.getBytes()));
 		Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-		cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(kgen.generateKey()
-				.getEncoded(), "AES"));
+		cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(kgen.generateKey().getEncoded(), "AES"));
 		return cipher.doFinal(content.getBytes("utf-8"));
 	}
 
 	/**
-	 * AES加密为base 64 code
+	 * AES鍔犲瘑涓篵ase 64 code
 	 * 
 	 * @param content
-	 *            待加密的内容
+	 *            寰呭姞瀵嗙殑鍐呭
 	 * @param encryptKey
-	 *            加密密钥
-	 * @return 加密后的base 64 code
+	 *            鍔犲瘑瀵嗛挜
+	 * @return 鍔犲瘑鍚庣殑base 64 code
 	 * @throws Exception
 	 */
-	public static String aesEncrypt(String content, String encryptKey)
-			throws Exception {
+	public static String aesEncrypt(String content, String encryptKey) throws Exception {
 		return base64Encode(aesEncryptToBytes(content, encryptKey));
 	}
 
 	/**
-	 * AES解密
+	 * AES瑙ｅ瘑
 	 * 
 	 * @param encryptBytes
-	 *            待解密的byte[]
+	 *            寰呰В瀵嗙殑byte[]
 	 * @param decryptKey
-	 *            解密密钥
-	 * @return 解密后的String
+	 *            瑙ｅ瘑瀵嗛挜
+	 * @return 瑙ｅ瘑鍚庣殑String
 	 * @throws Exception
 	 */
-	public static String aesDecryptByBytes(byte[] encryptBytes,
-			String decryptKey) throws Exception {
+	public static String aesDecryptByBytes(byte[] encryptBytes, String decryptKey) throws Exception {
 		KeyGenerator kgen = KeyGenerator.getInstance("AES");
 		kgen.init(128, new SecureRandom(decryptKey.getBytes()));
 		Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-		cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(kgen.generateKey()
-				.getEncoded(), "AES"));
+		cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(kgen.generateKey().getEncoded(), "AES"));
 		byte[] decryptBytes = cipher.doFinal(encryptBytes);
 		return new String(decryptBytes);
 	}
 
 	/**
-	 * 将base 64 code AES解密
+	 * 灏哹ase 64 code AES瑙ｅ瘑
 	 * 
 	 * @param encryptStr
-	 *            待解密的base 64 code
+	 *            寰呰В瀵嗙殑base 64 code
 	 * @param decryptKey
-	 *            解密密钥
-	 * @return 解密后的string
+	 *            瑙ｅ瘑瀵嗛挜
+	 * @return 瑙ｅ瘑鍚庣殑string
 	 * @throws Exception
 	 */
-	public static String aesDecrypt(String encryptStr, String decryptKey)
-			throws Exception {
+	public static String aesDecrypt(String encryptStr, String decryptKey) throws Exception {
 		try {
-			return StringUtil.isEmpty(encryptStr) ? null : aesDecryptByBytes(
-					base64Decode(encryptStr), decryptKey);
+			return StringUtil.isEmpty(encryptStr) ? null : aesDecryptByBytes(base64Decode(encryptStr), decryptKey);
 		} catch (Exception e) {
 			return null;
 		}
 	}
-	
-	public static byte[] AES_CBC_Decrypt(byte[] data, byte[] key, byte[] iv) throws Exception{
-        Cipher cipher = getCipher(Cipher.DECRYPT_MODE, key, iv);
-        return cipher.doFinal(data);
-    }
 
-    private static Cipher getCipher(int mode, byte[] key, byte[] iv) throws Exception{
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+	public static byte[] AES_CBC_Decrypt(byte[] data, byte[] key, byte[] iv) throws Exception {
+		Cipher cipher = getCipher(Cipher.DECRYPT_MODE, key, iv);
+		return cipher.doFinal(data);
+	}
 
-        //因为AES的加密块大小是128bit(16byte), 所以key是128、192、256bit无关
-        //System.out.println("cipher.getBlockSize()： " + cipher.getBlockSize());
+	private static Cipher getCipher(int mode, byte[] key, byte[] iv) throws Exception {
+		Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 
-        SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
-        cipher.init(mode, secretKeySpec, new IvParameterSpec(iv));
+		// 鍥犱负AES鐨勫姞瀵嗗潡澶у皬鏄�128bit(16byte), 鎵�浠ey鏄�128銆�192銆�256bit鏃犲叧
+		// System.out.println("cipher.getBlockSize()锛� " + cipher.getBlockSize());
 
-        return cipher;
-    }
-	
+		SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
+		cipher.init(mode, secretKeySpec, new IvParameterSpec(iv));
+
+		return cipher;
+	}
+
 	public static void main(String[] args) throws Exception {
 		try {
 			String content = "82D7DDC4-DD08-4461-9B30-D8240B965F66";
-			System.out.println("加密前：" + content);
+			System.out.println("鍔犲瘑鍓嶏細" + content);
 
 			String key = "123456";
-			System.out.println("加密密钥和解密密钥：" + key);
+			System.out.println("鍔犲瘑瀵嗛挜鍜岃В瀵嗗瘑閽ワ細" + key);
 
 			String encrypt = aesEncrypt(content, key);
-			System.out.println("加密后：" + encrypt);
+			System.out.println("鍔犲瘑鍚庯細" + encrypt);
 
 			String decrypt = aesDecrypt(encrypt, key);
-			System.out.println("解密后：" + decrypt);
+			System.out.println("瑙ｅ瘑鍚庯細" + decrypt);
 		} catch (Exception e) {
 			System.out.println("dd=====" + e);
 		}

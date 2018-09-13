@@ -179,17 +179,19 @@
 		yx_comments=floor(status_hierarchy_type * 0.1),
 		yx_share_post=floor(status_hierarchy_type
 		* 0.1),
-		reading_degr=0,
-		push_eva_degr=0,
+		reading_degr = floor(status_hierarchy_type * 0.1),
+		push_eva_degr = floor(status_hierarchy_type * 0.1),
 		updateTime= NOW()
 		where status_hierarchy_type > 0 and (
-		yxpraise &lt; floor(status_hierarchy_type * 0.1)
+		yxpraise &lt;
+		floor(status_hierarchy_type * 0.1)
 		OR yx_comments &lt; floor(status_hierarchy_type * 0.1)
 		OR
 		yx_share_post &lt;
 		floor(status_hierarchy_type * 0.1)
 		OR reading_degr != 0
-		OR push_eva_degr !=0
+		OR push_eva_degr &lt;
+		floor(status_hierarchy_type * 0.1)
 		)
 
 	</update>
@@ -235,29 +237,31 @@
 		yx_comments=floor(status_hierarchy_type * 0.1),
 		yx_share_post=floor(status_hierarchy_type
 		* 0.1),
-		push_eva_degr =0 ,
-		reading_degr= 0 ,
-		updateTime= NOW() where user_id = #{userId,jdbcType=INTEGER}
+		push_eva_degr = floor(status_hierarchy_type
+		* 0.1) ,
+		reading_degr != 0 ,
+		updateTime= NOW() where user_id =
+		#{userId,jdbcType=INTEGER}
 
 	</update>
 
-	<update id="increasePushEvaCount" parameterType="java.lang.Integer">
+	<update id="updatePushEvaCount" parameterType="java.lang.Integer">
 		update
 		tbqfindex
 		set
-		push_eva_degr = IFNULL(push_eva_degr,0) +1 ,
+		push_eva_degr = push_eva_degr - 1 ,
 		updateTime= NOW()
 		where user_id = #{userId,jdbcType=INTEGER}
 
 
 	</update>
 
-	<update id="increaseReadingDegr" parameterType="java.lang.Integer">
+	<update id="updateReadingDegr" parameterType="java.lang.Integer">
 
 		update
 		tbqfindex
 		set
-		reading_degr = IFNULL(reading_degr,0) +1 ,
+		reading_degr = reading_degr - 1 ,
 		updateTime= NOW()
 		where user_id = #{userId,jdbcType=INTEGER}
 

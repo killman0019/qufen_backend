@@ -2459,9 +2459,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				QfIndex qfIndexNew = qfIndexService.findByUserId(createUser.getUserId());
 				Integer pushEvaDegr = qfIndexNew.getPushEvaDegr();
 				Integer statusHierarchyType = qfIndexNew.getStatusHierarchyType();
-				int i = (int) Math.floor(statusHierarchyType * 0.1);
-				if (pushEvaDegr < i) {
-					qfIndexService.increasePushEvaCount(createUser.getUserId());
+				// int i = (int) Math.floor(statusHierarchyType * 0.1);
+				if (pushEvaDegr > 0) {
+					qfIndexService.updatePushEvaCount(createUser.getUserId());
 					// TODO: 添加发布奖励
 					SystemParam pushEvaGetAwardSys = systemParamService.findByCode(sysGlobals.PUSH_EVA_GET_AWARD);
 					Tokenrecords tokenrecords = new Tokenrecords();
@@ -5127,8 +5127,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						int i = Integer.valueOf(canGetAwardReadingCountSys.getVcParamValue());
 						if (qfIndexNew.getReadingDegr() < i) {
 							qfIndexService.increaseReadingDegr(userId);
-						}
-						if (qfIndexNew.getReadingDegr() == i - 1) {
+
 							SystemParam readingAwardSys = systemParamService.findByCode(sysGlobals.READING_AWARD);
 							Tokenrecords tokenrecords = new Tokenrecords();
 							tokenrecords.setUserId(userId);

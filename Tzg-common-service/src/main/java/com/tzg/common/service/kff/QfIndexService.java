@@ -214,6 +214,7 @@ public class QfIndexService {
 					int yxCommentRece = i - yxComments;
 					int yxSharePostRece = i - yxSharePost;
 					int yxPraiseRece = i = yxPraise;
+
 					qfindexResponse.setCommentDegr(yxCommentRece);
 					qfindexResponse.setPraiseDegr(yxPraiseRece);
 					qfindexResponse.setSharePostDegr(yxSharePostRece);
@@ -233,15 +234,25 @@ public class QfIndexService {
 					qfindexResponse.setPraiseAwardSum(praiseSum);// 点赞奖励
 					double sharePostSum = yxSharePostRece * Double.valueOf(sharePostSys.getVcParamValue());
 					qfindexResponse.setSharePostAwardSum(sharePostSum);// 分享奖励
+
 					int pushEvaDegr = 0;
 					if (null == qfindex.getPushEvaDegr()) {
 						pushEvaDegr = 0;
 					} else {
 
-						pushEvaDegr = qfindex.getPushEvaDegr();
+						pushEvaDegr = i - qfindex.getPushEvaDegr();
 					}
 					Double pushEvaGetAwardSum = pushEvaDegr * Double.valueOf(pushEvaGetAwardSys.getVcParamValue());
+					qfindexResponse.setEvaDegr(pushEvaDegr);// 发布评测的次数
+					qfindexResponse.setEvaAward(Double.valueOf(pushEvaGetAwardSys.getVcParamValue()));// 发布评测单篇奖励
 					qfindexResponse.setEvaAwardSum(pushEvaGetAwardSum);// 发布评测总奖励
+					qfindexResponse.setEvaAwardSumDegr(i);
+					if (pushEvaDegr == i) {
+						qfindexResponse.setEvaReceStatus(1);
+					} else {
+						qfindexResponse.setEvaReceStatus(0);
+					}
+
 					int readingDegr = 0;
 					if (null == qfindex.getReadingDegr()) {
 						readingDegr = 0;
@@ -272,7 +283,7 @@ public class QfIndexService {
 
 	/**
 	 * 
-	* @Title: increasePushEvaCount 
+	* @Title: updatePushEvaCount 
 	* @Description: TODO <增加区分指数表中的有效评测次数>
 	* @author zhangdd <方法创建作者>
 	* @create 上午11:40:39
@@ -283,9 +294,9 @@ public class QfIndexService {
 	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
 	* @updateContext <修改内容>
 	 */
-	public void increasePushEvaCount(Integer userId) {
+	public void updatePushEvaCount(Integer userId) {
 
-		QfIndexMapper.increasePushEvaCount(userId);
+		QfIndexMapper.updatePushEvaCount(userId);
 	}
 
 	/**
@@ -304,4 +315,5 @@ public class QfIndexService {
 	public void increaseReadingDegr(Integer userId) {
 		QfIndexMapper.increaseReadingDegr(userId);
 	}
+
 }
