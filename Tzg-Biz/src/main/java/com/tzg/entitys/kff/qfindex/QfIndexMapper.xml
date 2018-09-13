@@ -179,7 +179,7 @@
 		yx_comments=floor(status_hierarchy_type * 0.1),
 		yx_share_post=floor(status_hierarchy_type
 		* 0.1),
-		reading_degr = floor(status_hierarchy_type * 0.1),
+		reading_degr = 0,
 		push_eva_degr = floor(status_hierarchy_type * 0.1),
 		updateTime= NOW()
 		where status_hierarchy_type > 0 and (
@@ -239,7 +239,7 @@
 		* 0.1),
 		push_eva_degr = floor(status_hierarchy_type
 		* 0.1) ,
-		reading_degr != 0 ,
+		reading_degr = 0 ,
 		updateTime= NOW() where user_id =
 		#{userId,jdbcType=INTEGER}
 
@@ -261,7 +261,7 @@
 		update
 		tbqfindex
 		set
-		reading_degr = reading_degr - 1 ,
+		reading_degr = reading_degr + 1 ,
 		updateTime= NOW()
 		where user_id = #{userId,jdbcType=INTEGER}
 

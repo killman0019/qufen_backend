@@ -87,7 +87,7 @@ public class taskJobService {
 	 */
 	public void robotComment() {
 		logger.info("----start robotComment job---");
-		robotService.robotTask(5);
+		robotService.robotTaskTimer(5);
 		logger.info("----end robotComment job---");
 	}
 
@@ -106,7 +106,7 @@ public class taskJobService {
 	 */
 	public void robotFollow() {
 		logger.info("----start robotFollow job---");
-		robotService.robotTask(4);
+		robotService.robotTaskTimer(4);
 		logger.info("----end robotFollow job---");
 	}
 
@@ -125,7 +125,7 @@ public class taskJobService {
 	 */
 	public void robotCommendation() {
 		logger.info("----start robotCommendation job---");
-		robotService.robotTask(3);
+		robotService.robotTaskTimer(3);
 		logger.info("----end robotCommendation job---");
 	}
 
@@ -144,7 +144,7 @@ public class taskJobService {
 	 */
 	public void robotSecondComment() {
 		logger.info("----start robotSecondComment job---");
-		robotService.robotTask(2);
+		robotService.robotTaskTimer(2);
 		logger.info("----end robotSecondComment job---");
 	}
 
@@ -163,7 +163,7 @@ public class taskJobService {
 	 */
 	public void robotPraise() {
 		logger.info("----start robotPraise job---");
-		robotService.robotTask(1);
+		robotService.robotTaskTimer(1);
 		logger.info("----end robotPraise job---");
 	}
 

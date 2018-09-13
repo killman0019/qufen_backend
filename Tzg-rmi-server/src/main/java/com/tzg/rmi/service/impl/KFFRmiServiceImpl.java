@@ -2152,19 +2152,19 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			discuss.setNiceChoiceAt(new Date());
 			discuss.setType(DiscussType.AUTHACCOUNTPUBLISH.getValue());
 		}
-		if(discussRequest.getPostId()!=null) {
-			Map<String,Object> seMap = new HashMap<>();
+		if (discussRequest.getPostId() != null) {
+			Map<String, Object> seMap = new HashMap<>();
 			seMap.put("postId", discussRequest.getPostId());
 			RewardActivity reAct = rewardActivityService.findFirstByAttr(seMap);
-			if(null!=reAct) {
+			if (null != reAct) {
 				discuss.setRewardActivityId(reAct.getId());
 			}
 		}
 		kffDiscussService.save(discuss);
 		result.put("postId", newPost.getPostId());
-		if(discussRequest.getPostId()!=null) {
+		if (discussRequest.getPostId() != null) {
 			result.put("postType", 4);
-		}else {
+		} else {
 			result.put("postType", newPost.getPostType());
 		}
 		return result;
@@ -2446,6 +2446,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// 更新评测人数
 		kffProjectService.increaseRaterNum(project.getProjectId());
 		// 更新区分指数表中的发布评测次数字段
+		result.put("isCommentAward", false);
 		if (evaluation.getModelType() != 1) {// 去除简单评测的所有专业评测
 			QfIndex qfindex = qfIndexService.findByUserId(createUser.getUserId());
 			if (null != qfindex) {
@@ -2482,6 +2483,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					tokenrecordsService.save(tokenrecords);
 
 					coinPropertyService.updateCoin(tokenrecords, 1);
+
+					result.put("isPushEvaAward", true);
+					result.put("amount", new BigDecimal(pushEvaGetAwardSys.getVcParamValue()));
 
 				}
 
@@ -5102,7 +5106,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 		QfIndex qfIndexUser = qfIndexService.findByUserId(userId);// 阅读人的区分指数
 		QfIndex qfindexCreater = qfIndexService.findByUserId(post.getCreateUserId());
-		if (userId != post.getCreateUserId()) {
+		Integer createUserId = post.getCreateUserId();
+		if (!userId.equals(createUserId)) {
 			if (qfIndexUser != null && qfindexCreater != null) {
 				if (qfIndexUser.getStatusHierarchyType() > 0) {
 					if (null != qfIndexUser) {
@@ -5126,7 +5131,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						SystemParam canGetAwardReadingCountSys = systemParamService.findByCode(sysGlobals.CAN_GET_AWARD_READING_COUNT);
 						int i = Integer.valueOf(canGetAwardReadingCountSys.getVcParamValue());
 						if (qfIndexNew.getReadingDegr() < i) {
-							qfIndexService.increaseReadingDegr(userId);
+							qfIndexService.updateReadingDegr(userId);
 
 							SystemParam readingAwardSys = systemParamService.findByCode(sysGlobals.READING_AWARD);
 							Tokenrecords tokenrecords = new Tokenrecords();

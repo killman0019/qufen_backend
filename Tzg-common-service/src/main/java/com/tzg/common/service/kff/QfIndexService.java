@@ -215,11 +215,14 @@ public class QfIndexService {
 					int yxPraise = qfindex.getYxpraise();
 					int yxCommentRece = i - yxComments;
 					int yxSharePostRece = i - yxSharePost;
-					int yxPraiseRece = i = yxPraise;
+					int yxPraiseRece = i - yxPraise;
+					qfindexResponse.setCommentSumDegr(i);// 评论的总次数
+					qfindexResponse.setSharePostSumDegr(i);// 分享的总次数
 
-					qfindexResponse.setCommentDegr(yxCommentRece);
-					qfindexResponse.setPraiseDegr(yxPraiseRece);
-					qfindexResponse.setSharePostDegr(yxSharePostRece);
+					qfindexResponse.setPraiseSumDegr(i);// 点赞的总次数
+					qfindexResponse.setCommentDegr(yxCommentRece);// 已经评论次数
+					qfindexResponse.setPraiseDegr(yxPraiseRece);// 已经点赞的次数
+					qfindexResponse.setSharePostDegr(yxSharePostRece);// 已经分享的次数
 
 					if (yxCommentRece == i) {
 						qfindexResponse.setCommentReceStatus(1);// 评论领取状态
@@ -270,9 +273,10 @@ public class QfIndexService {
 					}
 					Double readingAwardSum = readingDegr * Double.valueOf(readingAwardSys.getVcParamValue());
 					qfindexResponse.setReadingAwardSum(readingAwardSum);// 阅读获得奖励
-
+					qfindexResponse.setReadingDegr(readingDegr);
 					SystemParam canGetAwardReadingCountSys = systemParamService.findByCode(sysGlobals.CAN_GET_AWARD_READING_COUNT);
 					int readingDegrI = Integer.valueOf(canGetAwardReadingCountSys.getVcParamValue());
+					qfindexResponse.setReadingSumDegr(readingDegrI);
 					int readingDegrIDB = 0;
 					if (null == qfindex.getReadingDegr()) {
 						readingDegrIDB = 0;
@@ -323,8 +327,8 @@ public class QfIndexService {
 	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
 	* @updateContext <修改内容>
 	 */
-	public void increaseReadingDegr(Integer userId) {
-		QfIndexMapper.increaseReadingDegr(userId);
+	public void updateReadingDegr(Integer userId) {
+		QfIndexMapper.updateReadingDegr(userId);
 	}
 
 }
