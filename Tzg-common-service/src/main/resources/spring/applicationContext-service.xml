@@ -59,7 +59,7 @@
 <!-- 		<task:scheduled ref="taskJobService" method="getdatafromUrlByexchangeTask" cron="0 0/30 * * * ? " /> -->
 <!--  		<task:scheduled ref="taskJobService" method="caculatePostTatolIncome" cron="0/5 *  * * * ? "/>  -->
 
-		<task:scheduled ref="taskJobService" method="robotComment" cron=" 0 0/5 * * * ?" />
+		<task:scheduled ref="taskJobService" method="robotComment" cron=" 0 0/37 * * * ?" />
 
 <!-- 		<task:scheduled ref="taskJobService" method="robotFollow" cron="0/3 * * * * ?" /> -->
 <!-- 		<task:scheduled ref="taskJobService" method="robotCommendation" cron="0/5 * * * * ?" /> -->
