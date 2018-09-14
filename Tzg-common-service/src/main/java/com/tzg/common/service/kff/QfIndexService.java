@@ -181,7 +181,7 @@ public class QfIndexService {
 					Double loginSum = 0.0;// 所有登陆奖励
 					Double commentSum = 0.0;// 所有评论奖励
 					Double invaAward = 0.0;// 所有邀请奖励
-					Double invaAward1 = 0.0;// 所有邀请奖励1
+					// Double invaAward1 = 0.0;// 所有邀请奖励1
 					if (CollectionUtils.isNotEmpty(tokenRecordsList)) {
 						for (Tokenrecords tokenrecords : tokenRecordsList) {
 							amountSum = amountSum + (tokenrecords.getAmount().doubleValue());
@@ -191,9 +191,9 @@ public class QfIndexService {
 							if (tokenrecords.getFunctionType() == 24) {
 								commentSum = commentSum + (tokenrecords.getAmount().doubleValue());
 							}
-							if (tokenrecords.getFunctionType() == 18) {
+							/*if (tokenrecords.getFunctionType() == 18) {
 								invaAward1 = invaAward1 + (tokenrecords.getAmount().doubleValue());
-							}
+							}*/
 						}
 
 					}
@@ -212,8 +212,9 @@ public class QfIndexService {
 							}
 						}
 					}
-					amountSum = amountSum + invaAward2;
-					invaAward = invaAward1 + invaAward2;
+
+					invaAward = invaAward2;
+					amountSum = amountSum + invaAward;
 					qfindexResponse.setTodayAward(amountSum);// 今天所有赚的币
 					qfindexResponse.setLoginAward(BigDecimal.valueOf(loginSum));// 今日的登陆奖励
 					qfindexResponse.setStatusHierarchyType(qfindex.getStatusHierarchyType());// 区分指数

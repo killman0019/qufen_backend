@@ -258,7 +258,7 @@ public class RobotService {
 			// 1分钟
 			int min = 1 * 60 * 1000;
 			// 到10分钟
-			int max = 10 * 60 * 1000;
+			int max = 9 * 60 * 1000;
 			int ran = RandomUtil.randomNumber(min, max);
 			ExecutorService executorService = null;
 			try {

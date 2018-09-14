@@ -260,6 +260,7 @@ public class UserController extends BaseController {
 			} else {
 				userCardStatus = loginaccount.getUsercardStatus();
 			}
+
 			map.put("userCardStatus", userCardStatus);
 			map.put("user", this.formatLoginaccount(loginaccount));
 			bre.setData(map);
@@ -1452,6 +1453,8 @@ public class UserController extends BaseController {
 			}
 
 			Integer messageSum = kffRmiService.findSumMessage(loginUserId);
+			String userIdTo2code = HexUtil.userIdTo2code(loginUserId);
+			map.put("invaUIH", userIdTo2code);
 			map.put("messageSum", messageSum);
 			map.put("user", this.formatLoginaccount(loginaccount));
 			bre.setData(map);
