@@ -660,6 +660,7 @@ public class HomeController extends BaseController {
 			newQuery.addQueryData("parentCommentsIdNull", "YES");
 			newQuery.setPageIndex(pageIndex);
 			newQuery.setRowsPerPage(pageSize);
+			newQuery.addQueryData("sortField", "praise_num");
 			PageResult<Comments> newestComments = kffRmiService.findPageNewestCommentsSelf(userId, postId, newQuery);
 			List<Comments> hotComments = new ArrayList<>();
 			if (pageIndex == 1) {

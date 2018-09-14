@@ -4737,7 +4737,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 		PageResult<Comments> result = new PageResult<>();
 		List<Comments> finalCommentList = new ArrayList<>();
-		query.addQueryData("sortField", "praise_num");
 		PageResult<Comments> comments = kffCommentsService.findPage(query);
 		if (comments != null && CollectionUtils.isNotEmpty(comments.getRows())) {
 			result.setCurPageNum(comments.getCurPageNum());
