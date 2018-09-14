@@ -2176,7 +2176,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					post.setPostTitle(ccP.getPostTitle());
 				}
 			}
-		}else {
+		} else {
 			post.setPostType(KFFConstants.POST_TYPE_DISCUSS);// 帖子类型：1-评测；2-讨论；3-文章
 		}
 		kffPostService.save(post);
@@ -4946,8 +4946,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		response.setPostTotalIncome(post.getPostTotalIncome());
 		response.setCommentsNum(post.getCommentsNum());
 		// -------v1.6 新增悬赏回答--------------
-		
-		if(null!=discuss.getRewardActivityId()) {
+
+		if (null != discuss.getRewardActivityId()) {
 			RewardActivity ac = rewardActivityService.findById(discuss.getRewardActivityId());
 			// 取悬赏总奖励
 			response.setRewardMoney(ac.getRewardMoney());
@@ -5187,26 +5187,34 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						}
 
 						if (readingDegr < i) {
-							qfIndexService.updateReadingDegr(userId);
+							Map<String, Object> tokenMap = new HashMap<String, Object>();
+							tokenMap.put("userId", userId);
+							tokenMap.put("functionType", "28");
+							tokenMap.put("postId", postId);
+							List<Tokenrecords> tokenrecordList = tokenrecordsService.findByMap(tokenMap);
+							if (CollectionUtils.isEmpty(tokenrecordList)) {
+								qfIndexService.updateReadingDegr(userId);
+								SystemParam readingAwardSys = systemParamService.findByCode(sysGlobals.READING_AWARD);
+								Tokenrecords tokenrecords = new Tokenrecords();
+								tokenrecords.setUserId(userId);
+								String format = String.format("%010d", postId);
+								tokenrecords.setTradeCode(format);
+								tokenrecords.setTradeDate(now);
+								tokenrecords.setFunctionDesc("阅读专业评测获得奖励");
+								tokenrecords.setFunctionType(28);
+								tokenrecords.setAmount(new BigDecimal(readingAwardSys.getVcParamValue()));
+								tokenrecords.setTradeDate(now);
+								tokenrecords.setTradeType(1);
+								tokenrecords.setMemo("阅读专业评测获得奖励");
+								tokenrecords.setCreateTime(now);
+								tokenrecords.setUpdateTime(now);
+								tokenrecords.setStatus(1);
+								tokenrecords.setRewardGrantType(1);
+								tokenrecords.setPostId(postId);
+								tokenrecordsService.save(tokenrecords);
 
-							SystemParam readingAwardSys = systemParamService.findByCode(sysGlobals.READING_AWARD);
-							Tokenrecords tokenrecords = new Tokenrecords();
-							tokenrecords.setUserId(userId);
-							String format = String.format("%010d", postId);
-							tokenrecords.setTradeCode(format);
-							tokenrecords.setTradeDate(now);
-							tokenrecords.setFunctionDesc("阅读专业评测获得奖励");
-							tokenrecords.setFunctionType(28);
-							tokenrecords.setAmount(new BigDecimal(readingAwardSys.getVcParamValue()));
-							tokenrecords.setTradeDate(now);
-							tokenrecords.setCreateTime(now);
-							tokenrecords.setUpdateTime(now);
-							tokenrecords.setStatus(1);
-							tokenrecords.setRewardGrantType(1);
-							tokenrecords.setPostId(postId);
-							tokenrecordsService.save(tokenrecords);
-
-							coinPropertyService.updateCoin(tokenrecords, 1);
+								coinPropertyService.updateCoin(tokenrecords, 1);
+							}
 						}
 					}
 				}
