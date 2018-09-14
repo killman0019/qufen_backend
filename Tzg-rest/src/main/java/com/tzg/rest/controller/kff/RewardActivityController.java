@@ -350,6 +350,7 @@ public class RewardActivityController extends BaseController {
 			query.addQueryData("rewardActivityId", rewarId);
 			if(types==1) {
 				query.addQueryData("sort", "tpt.praise_num");
+				query.addQueryData("sortc", "tpt.createTime");
 			}
 			if(types==2) {
 				query.addQueryData("sort", "tpt.createTime");
