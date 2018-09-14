@@ -714,6 +714,7 @@ public class RewardActivityService {
 				response.setDiscussId(post.getDiscussId());
 				response.setDisscussContents(post.getDisscussContents());
 				response.setPostUuid(post.getPostUuid());
+				response.setPostIdToReward(postId);
 				postResponse.add(response);
 			}
 		}
@@ -829,6 +830,7 @@ public class RewardActivityService {
 		response.setEndTime(reAct.getEndTime());
 		response.setCommentsNum(post.getCommentsNum());
 		response.setTagInfos(reAct.getTagInfos());
+		response.setPostIdToReward(postId);
 		return response;
 	}
 	
