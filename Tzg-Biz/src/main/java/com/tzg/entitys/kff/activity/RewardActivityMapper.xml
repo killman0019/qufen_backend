@@ -153,9 +153,6 @@
     	INNER JOIN tbpost as tpt on tpt.post_id=rac.post_id
 		<include refid="condition" />
 		ORDER BY ${sort} desc
-		<if test="sortc != null">
-			,${sortc} desc
-		</if>
 		<if test="startRecord != null and endRecord!=null">
 			LIMIT ${startRecord},${endRecord}
 		</if>
@@ -216,6 +213,9 @@
     	INNER JOIN tbpost as tpt on tpt.post_id=tbc.post_id
 		<include refid="condition" />
 		ORDER BY ${sort} desc
+		<if test="sortc != null">
+			,${sortc} desc
+		</if>
 		<if test="startRecord != null and endRecord!=null">
 			LIMIT ${startRecord},${endRecord}
 		</if>
