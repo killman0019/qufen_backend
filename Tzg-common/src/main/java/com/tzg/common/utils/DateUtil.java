@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class DateUtil {
 
@@ -17,8 +18,66 @@ public class DateUtil {
 	public static String datePattern = "yyyy-MM-dd";
 
 	public static String timePattern = "HH:mm:ss";
-	
+
 	public static String dateTimePattern = "yyyy-MM-dd HH:mm:ss";
+
+	/**
+	 * 
+	* @Title: getFirstDayLastMonth 
+	* @Description: TODO <获得上个月的第一天的开始时间>
+	* @author zhangdd <方法创建作者>
+	* @create 下午4:17:44
+	* @param @return <参数说明>
+	* @return String 
+	* @throws 
+	* @update 下午4:17:44
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	 */
+	public static String getFirstDayLastMonth() {
+		String firstDay = null;
+		SimpleDateFormat format = new SimpleDateFormat(dateTimePattern);
+
+		// 获取前月的第一天
+		Calendar cal_1 = Calendar.getInstance();// 获取当前日期
+		cal_1.add(Calendar.MONTH, -1);
+		cal_1.set(Calendar.DAY_OF_MONTH, 1);// 设置为1号,当前日期既为本月第一天
+		long currentBegin = cal_1.getTime().getTime();
+		long zeroBegin = currentBegin / (1000 * 3600 * 24) * (1000 * 3600 * 24) - TimeZone.getDefault().getRawOffset();// 今天零点零分零秒的毫秒数
+		long twelveBegin = zeroBegin + 24 * 60 * 60 * 1000 - 1;// 今天23点59分59秒的毫秒数
+		Date createTimeBegin = new Date(zeroBegin);
+		firstDay = format.format(createTimeBegin);
+		return firstDay;
+	}
+
+	/**
+	 * 
+	* @Title: getLastDayLasyMonth 
+	* @Description: TODO <获得上个月的最后一天的结束时间>
+	* @author zhangdd <方法创建作者>
+	* @create 下午4:20:16
+	* @param @return <参数说明>
+	* @return String 
+	* @throws 
+	* @update 下午4:20:16
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	 */
+	public static String getLastDayLasyMonth() {
+
+		String lastDay = null;
+		SimpleDateFormat format = new SimpleDateFormat(dateTimePattern);
+		// 获取前月的最后一天
+		Calendar cale = Calendar.getInstance();
+		cale.set(Calendar.DAY_OF_MONTH, 0);// 设置为1号,当前日期既为本月最后一天
+		long currentEnd = cale.getTime().getTime();
+		long zeroEnd = currentEnd / (1000 * 3600 * 24) * (1000 * 3600 * 24) - TimeZone.getDefault().getRawOffset();// 今天零点零分零秒的毫秒数
+		long twelveEnd = zeroEnd + 24 * 60 * 60 * 1000 - 1;// 今天23点59分59秒的毫秒数
+		Date createTimeEnd = new Date(twelveEnd);
+		lastDay = format.format(createTimeEnd);
+		return lastDay;
+
+	}
 
 	public static String getCurrentTimeSS() {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
@@ -26,37 +85,37 @@ public class DateUtil {
 		String now = sdf.format(date);
 		return now;
 	}
-	
+
 	public static boolean biTimeCount(String beginTime) {
 		long afTime = getDate(beginTime, dateTimePattern).getTime();
 		long nowTime = new Date().getTime();
-		long tt = nowTime-afTime;
-		if(tt>3600000) {
+		long tt = nowTime - afTime;
+		if (tt > 3600000) {
 			return false;
-		}else {
+		} else {
 			return true;
 		}
 	}
+
 	public static Date countEndTime(Integer rewardDate) throws ParseException {
 		SimpleDateFormat sf = new SimpleDateFormat(datePattern);
-		SimpleDateFormat sft = new SimpleDateFormat(dateTimePattern); 
-		Calendar cal=Calendar.getInstance();      
-		int h=cal.get(Calendar.HOUR_OF_DAY);   
+		SimpleDateFormat sft = new SimpleDateFormat(dateTimePattern);
+		Calendar cal = Calendar.getInstance();
+		int h = cal.get(Calendar.HOUR_OF_DAY);
 		String nowDt = null;
 		cal.add(Calendar.DAY_OF_MONTH, rewardDate);
-		if(h>=0&&h<12) {
-		    nowDt = sf.format(cal.getTime()) + " 12:00:00";
-//		    System.out.println("增加一天后日期:"+nowDt);
-//		    System.out.println("nowTime..."+nowTime);
+		if (h >= 0 && h < 12) {
+			nowDt = sf.format(cal.getTime()) + " 12:00:00";
+			// System.out.println("增加一天后日期:"+nowDt);
+			// System.out.println("nowTime..."+nowTime);
 		}
-		if(h>=12&&h<24) {
-		    nowDt = sf.format(cal.getTime()) + " 00:00:00";
-//		    System.out.println("增加一天后日期:"+nowDt);
-//		    System.out.println("nowTime..."+nowTime);
+		if (h >= 12 && h < 24) {
+			nowDt = sf.format(cal.getTime()) + " 00:00:00";
+			// System.out.println("增加一天后日期:"+nowDt);
+			// System.out.println("nowTime..."+nowTime);
 		}
 		return sft.parse(nowDt);
 	}
-
 
 	/**
 	 * 根据默认日期格式，返回日期字符串。
@@ -755,23 +814,22 @@ public class DateUtil {
 		return temp;
 	}
 
-	 //判断选择的日期是否是今天  
-    public static boolean isToday(long time)  
-    {  
-       return isThisTime(time,"yyyy-MM-dd");  
-    }
-    
-    private static boolean isThisTime(long time,String pattern) {  
-        Date date = new Date(time);  
-         SimpleDateFormat sdf = new SimpleDateFormat(pattern);  
-         String param = sdf.format(date);//参数时间  
-         String now = sdf.format(new Date());//当前时间  
-         System.out.println("param"+param);
-         System.out.println("now"+now);
-         if(param.equals(now)){  
-           return true;  
-         }  
-         return false;  
-    }  
-	
+	// 判断选择的日期是否是今天
+	public static boolean isToday(long time) {
+		return isThisTime(time, "yyyy-MM-dd");
+	}
+
+	private static boolean isThisTime(long time, String pattern) {
+		Date date = new Date(time);
+		SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+		String param = sdf.format(date);// 参数时间
+		String now = sdf.format(new Date());// 当前时间
+		System.out.println("param" + param);
+		System.out.println("now" + now);
+		if (param.equals(now)) {
+			return true;
+		}
+		return false;
+	}
+
 }
