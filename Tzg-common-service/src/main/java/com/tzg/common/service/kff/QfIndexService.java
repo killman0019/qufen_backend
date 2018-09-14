@@ -157,11 +157,15 @@ public class QfIndexService {
 	public QfindexResponse getMember(Integer userId) {
 
 		QfindexResponse qfindexResponse = new QfindexResponse();
+		Double amountSum = 0.0;// 所有挣的币
+		Double loginSum = 0.0;// 所有登陆奖励
+		Double commentSum = 0.0;// 所有评论奖励
+		Double invaAward = 0.0;// 所有邀请奖励
 		if (userId != null) {
 
 			QfIndex qfindex = QfIndexMapper.findByUserId(userId);
 			int i = (int) Math.floor(qfindex.getStatusHierarchyType() * 0.1);// 向下取整
-			if (qfindex.getStatusHierarchyType() > 0 && i > 0) {
+			if (qfindex.getStatusHierarchyType() >= 0 && i >= 0) {
 				if (qfindex != null) {
 					// 今日赚币
 					Map<String, Object> tokenMap = new HashMap<String, Object>();
@@ -177,10 +181,7 @@ public class QfIndexService {
 					tokenMap.put("createTimeEnd", createTimeEnd);
 					tokenMap.put("status", 1);
 					List<Tokenrecords> tokenRecordsList = tokenrecordsMapper.findByMap(tokenMap);
-					Double amountSum = 0.0;// 所有挣的币
-					Double loginSum = 0.0;// 所有登陆奖励
-					Double commentSum = 0.0;// 所有评论奖励
-					Double invaAward = 0.0;// 所有邀请奖励
+
 					// Double invaAward1 = 0.0;// 所有邀请奖励1
 					if (CollectionUtils.isNotEmpty(tokenRecordsList)) {
 						for (Tokenrecords tokenrecords : tokenRecordsList) {
@@ -317,6 +318,8 @@ public class QfIndexService {
 				}
 			}
 		}
+		// 邀请奖励
+		qfindexResponse.setInvaAward(new BigDecimal(invaAward));
 		return qfindexResponse;
 	}
 
