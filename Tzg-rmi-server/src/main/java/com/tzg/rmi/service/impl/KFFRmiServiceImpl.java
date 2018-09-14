@@ -2113,7 +2113,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (StringUtils.isBlank(discussRequest.getDisscussContents())) {
 			throw new RestServiceException("文章内容不合法");
 		}
-
+		Discuss discuss = new Discuss();
 		Date now = new Date();
 		post.setCollectNum(0);
 		post.setCommentsNum(0);
@@ -2164,8 +2164,22 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		post.setStatus(KFFConstants.STATUS_ACTIVE);
 		post.setUuid(uuid);
 		post.setStickTop(0);
+		if (discussRequest.getPostId() != null) {
+			if (discussRequest.getPostId() != null) {
+				Map<String, Object> seMap = new HashMap<>();
+				seMap.put("postId", discussRequest.getPostId());
+				RewardActivity reAct = rewardActivityService.findFirstByAttr(seMap);
+				if (null != reAct) {
+					discuss.setRewardActivityId(reAct.getId());
+					post.setPostType(KFFConstants.POST_TYPE_REWARD);// 帖子类型：1-评测；2-讨论；3-文章
+					Post ccP = kffPostService.findById(reAct.getPostId());
+					post.setPostTitle(ccP.getPostTitle());
+				}
+			}
+		}else {
+			post.setPostType(KFFConstants.POST_TYPE_DISCUSS);// 帖子类型：1-评测；2-讨论；3-文章
+		}
 		kffPostService.save(post);
-
 		Post newPost = kffPostService.findByUUID(uuid);
 		if (newPost == null) {
 			throw new RestServiceException("帖子不存在" + uuid);
@@ -2176,7 +2190,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		 * 用户类型:1-普通用户；2-项目方；3-评测机构；4-机构用户
 		 * 用户认证账号及用户的类型不等于1，发布的爆料就为精选爆料
 		 */
-		Discuss discuss = new Discuss();
 		discuss.setDisscussContents(discussRequest.getDisscussContents());
 		discuss.setPostId(newPost.getPostId());
 		discuss.setPostUuid(uuid);
@@ -2189,14 +2202,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			discuss.setIsNiceChoice(sysGlobals.ENABLE);
 			discuss.setNiceChoiceAt(new Date());
 			discuss.setType(DiscussType.AUTHACCOUNTPUBLISH.getValue());
-		}
-		if (discussRequest.getPostId() != null) {
-			Map<String, Object> seMap = new HashMap<>();
-			seMap.put("postId", discussRequest.getPostId());
-			RewardActivity reAct = rewardActivityService.findFirstByAttr(seMap);
-			if (null != reAct) {
-				discuss.setRewardActivityId(reAct.getId());
-			}
 		}
 		kffDiscussService.save(discuss);
 		result.put("postId", newPost.getPostId());
@@ -4941,16 +4946,15 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		response.setPostTotalIncome(post.getPostTotalIncome());
 		response.setCommentsNum(post.getCommentsNum());
 		// -------v1.6 新增悬赏回答--------------
-		if (post.getPostType() == 4) {
+		
+		if(null!=discuss.getRewardActivityId()) {
 			RewardActivity ac = rewardActivityService.findById(discuss.getRewardActivityId());
-			if (ac != null) {
-				// 取悬赏总奖励
-				response.setRewardMoney(ac.getRewardMoney());
-				response.setRewardMoneyToOne(discuss.getRewardMoney());
-				response.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(ac.getRewardContents()));
-				response.setPostTitle(post.getPostTitle());
-				response.setPostId(ac.getPostId());
-			}
+			// 取悬赏总奖励
+			response.setRewardMoney(ac.getRewardMoney());
+			response.setRewardMoneyToOne(discuss.getRewardMoney());
+			response.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(ac.getRewardContents()));
+			response.setPostTitle(post.getPostTitle());
+			response.setPostId(ac.getPostId());
 		}
 		return response;
 	}
