@@ -315,6 +315,13 @@ public class QfIndexService {
 					}
 					// 邀请奖励
 					qfindexResponse.setInvaAward(new BigDecimal(invaAward));
+					if (qfindex.getStatusHierarchyType() == 0) {
+						qfindexResponse.setReadingReceStatus(0);// 阅读领取状态
+						qfindexResponse.setEvaReceStatus(0);// 发布评测的状态
+						qfindexResponse.setSharePostReceStatus(0);// 分享领取状态
+						qfindexResponse.setPraiseReceStatus(0);// 点赞领取状态
+						qfindexResponse.setCommentReceStatus(0);// 评论领取状态
+					}
 				}
 			}
 		}
