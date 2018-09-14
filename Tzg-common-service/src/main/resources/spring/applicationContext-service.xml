@@ -61,10 +61,10 @@
 
 		<task:scheduled ref="taskJobService" method="robotComment" cron=" 0 0/37 * * * ?" />
 
-<!-- 		<task:scheduled ref="taskJobService" method="robotFollow" cron="0/3 * * * * ?" /> -->
-<!-- 		<task:scheduled ref="taskJobService" method="robotCommendation" cron="0/5 * * * * ?" /> -->
-<!-- 		<task:scheduled ref="taskJobService" method="robotSecondComment" cron="0/5 * * * * ?" /> -->
-<!-- 		<task:scheduled ref="taskJobService" method="robotPraise" cron="0/2 * * * * ?" /> -->
+		<task:scheduled ref="taskJobService" method="robotFollow" cron=" 0 0/41 * * * ?" />
+		<task:scheduled ref="taskJobService" method="robotCommendation" cron=" 0 0/31  * * * ?" />
+		<task:scheduled ref="taskJobService" method="robotSecondComment" cron=" 0 0/57  * * * ?" />
+		<task:scheduled ref="taskJobService" method="robotPraise" cron="0 0/21  * * * ?" />
 		
 		<!-- 线上版本的定时器 -->
 		<task:scheduled ref="taskJobService" method="updateWeeHours" cron="0 0 1 * * ?" />

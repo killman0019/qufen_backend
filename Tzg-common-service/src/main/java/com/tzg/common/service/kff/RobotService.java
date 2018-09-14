@@ -256,9 +256,9 @@ public class RobotService {
 		if (hour <= 22 && hour >= 9) {
 
 			// 1分钟
-			int min = 4 * 60 * 1000;
+			int min = 1 * 60 * 1000;
 			// 到10分钟
-			int max = 15 * 60 * 1000;
+			int max = 10 * 60 * 1000;
 			int ran = RandomUtil.randomNumber(min, max);
 			ExecutorService executorService = null;
 			try {

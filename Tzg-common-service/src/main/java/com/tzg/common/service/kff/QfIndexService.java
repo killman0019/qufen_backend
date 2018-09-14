@@ -200,7 +200,7 @@ public class QfIndexService {
 					Double invaAward2 = 0.0;// 所有邀请奖励2
 					Map<String, Object> tokenAwardMap = new HashMap<String, Object>();
 					tokenAwardMap.put("userId", userId);
-					tokenAwardMap.put("tokenAwardTunctionType", "18");
+					tokenAwardMap.put("tokenAwardFunctionType", "18");
 					tokenAwardMap.put("createTimeBegin", createTimeBegin);
 					tokenAwardMap.put("createTimeEnd", createTimeEnd);
 					tokenAwardMap.put("status", 1);
