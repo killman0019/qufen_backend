@@ -63,7 +63,7 @@ public class ArticleController extends BaseController {
 		}
 		// 将项目名进行拆分 进行查询
 		ArticleRequest articleRequest = new ArticleRequest();
-		if (StringUtils.isEmpty(projectName)) {
+		if (StringUtils.isNotEmpty(projectName)) {
 			String[] str = projectName.split("\\/");
 			System.out.println(str[0]);
 			System.out.println(str[1]);
@@ -77,7 +77,7 @@ public class ArticleController extends BaseController {
 			}
 			articleRequest.setProjectId(SubProject.getProjectId());
 		}
-		if (!StringUtils.isEmpty(projectName)) {
+		if (StringUtils.isEmpty(projectName)) {
 			articleRequest.setProjectId(0);
 		}
 		try {
