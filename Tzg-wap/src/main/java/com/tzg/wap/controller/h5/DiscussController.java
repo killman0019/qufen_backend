@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -69,12 +70,18 @@ public class DiscussController extends BaseController {
 			DiscussRequest discussRequest = new DiscussRequest();
 			Integer userId = getUserIdByToken(token);
 			discussRequest.setCreateUserId(userId);
-			KFFProject subProject = kffRmiService.selectProjectByprojectName(projectName);
-			if (null == subProject) {
-				throw new RestServiceException(RestErrorCode.SYS_ERROR);
+			if (StringUtils.isNotEmpty(projectName)) {
+				KFFProject subProject = kffRmiService.selectProjectByprojectName(projectName);
+				if (null == subProject) {
+					throw new RestServiceException(RestErrorCode.SYS_ERROR);
+				}
+				discussRequest.setProjectId(subProject.getProjectId());
+			}
+			if (StringUtils.isEmpty(projectName)) {
+				discussRequest.setProjectId(0);
 			}
 			discussRequest.setToken(token);
-			discussRequest.setProjectId(subProject.getProjectId());
+
 			discussRequest.setDisscussContents(disscussContents);
 			discussRequest.setTagInfos(tagInfosl);
 			discussRequest.setDiscussImages(discussImagesl);

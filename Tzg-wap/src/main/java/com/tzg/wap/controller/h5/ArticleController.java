@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -61,28 +62,36 @@ public class ArticleController extends BaseController {
 			throw new RestServiceException(RestErrorCode.USER_NOT_LOGIN);
 		}
 		// 将项目名进行拆分 进行查询
-		String[] str = projectName.split("\\/");
-		System.out.println(str[0]);
-		System.out.println(str[1]);
-		KFFProject kffProject = new KFFProject();
-		kffProject.setProjectChineseName(str[1]);
-		kffProject.setProjectCode(str[0]);
-		KFFProject SubProject = kffRmiService.findProjectIdByCodeAndChineseName(kffProject);
-		if (null == SubProject) {
-			throw new RestServiceException(RestErrorCode.SYS_ERROR);
+		ArticleRequest articleRequest = new ArticleRequest();
+		if (StringUtils.isNotEmpty(projectName)) {
+			String[] str = projectName.split("\\/");
+			System.out.println(str[0]);
+			System.out.println(str[1]);
+			KFFProject kffProject = new KFFProject();
+			kffProject.setProjectChineseName(str[1]);
+			kffProject.setProjectCode(str[0]);
+			KFFProject SubProject = kffRmiService.findProjectIdByCodeAndChineseName(kffProject);
+
+			if (null == SubProject) {
+				throw new RestServiceException(RestErrorCode.SYS_ERROR);
+			}
+			articleRequest.setProjectId(SubProject.getProjectId());
+		}
+		if (StringUtils.isEmpty(projectName)) {
+			articleRequest.setProjectId(0);
 		}
 		try {
 			// 进行转义
 			String articleContents = articleRequestData.getArticleContents();
 			articleContents = StringEscapeUtils.unescapeHtml(articleContents);
 			Integer userId = AccountTokenUtil.decodeAccountToken(token);
-			ArticleRequest articleRequest = new ArticleRequest();
+
 			articleRequest.setCreateUserId(userId);
 			articleRequest.setTagInfos(articleRequestData.getTagInfos());
 			articleRequest.setArticleContents(articleContents);
 			String postTitle = articleRequestData.getPostTitle();
 			articleRequest.setPostTitle(postTitle);
-			articleRequest.setProjectId(SubProject.getProjectId());
+
 			String toHtmlTags = articleRequestData.getToHtmlTags();
 			Map<String, Object> saveArticle = kffRmiService.saveArticle(articleRequest, toHtmlTags);
 			bre.setData(saveArticle);
