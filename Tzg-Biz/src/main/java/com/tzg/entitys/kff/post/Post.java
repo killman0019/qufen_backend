@@ -125,7 +125,19 @@ public class Post implements Serializable {
 	private Date disStickUpdateTime;
 	//对人的关注： 0-未关注；1-已关注
     private Integer followStatus;
+    /**
+	 * 标签ID，名称的json串
+	 */
+	private java.lang.String tagInfos;
 	
+	public java.lang.String getTagInfos() {
+		return tagInfos;
+	}
+
+	public void setTagInfos(java.lang.String tagInfos) {
+		this.tagInfos = tagInfos;
+	}
+
 	public Integer getFollowStatus() {
 		return followStatus;
 	}

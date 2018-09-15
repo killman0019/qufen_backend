@@ -896,7 +896,8 @@
 	
 	<select id="findPageWithEvaluation" resultMap="BaseResultMap" parameterType="java.util.Map">
 		select
-		tpt.*
+		tpt.*,
+		tbt.evaluation_tags as tagInfos
 		from tbpost as tpt
 		LEFT JOIN tbevaluation as tbt on tpt.post_id=tbt.post_id
 		<include refid="condition" />
@@ -913,7 +914,8 @@
 	
 	<select id="findPageWithDiscuss" resultMap="BaseResultMap" parameterType="java.util.Map">
 		select
-		tpt.*
+		tpt.*,
+		tbt.tag_infos as tagInfos
 		from tbpost as tpt
 		LEFT JOIN tbdiscuss as tbt on tpt.post_id=tbt.post_id
 		<include refid="condition" />
@@ -930,7 +932,8 @@
 	
 	<select id="findPageWithArticle" resultMap="BaseResultMap" parameterType="java.util.Map">
 		select
-		tpt.*
+		tpt.*,
+		tbt.tag_infos as tagInfos
 		from tbpost as tpt
 		LEFT JOIN tbarticle as tbt on tpt.post_id=tbt.post_id
 		<include refid="condition" />
