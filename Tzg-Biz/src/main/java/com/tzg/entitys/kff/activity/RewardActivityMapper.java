@@ -24,4 +24,5 @@ public interface RewardActivityMapper extends BaseMapper<RewardActivity, java.la
     List<RewardActivityVo> findRewardActivityListPage(Map<String, Object> map);
     Integer findRewardActivityListCount(Map<String, Object> map);
     
+    void updateByMap(Map<String, Object> map);
 }

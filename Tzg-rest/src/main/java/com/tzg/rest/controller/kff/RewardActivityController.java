@@ -479,7 +479,7 @@ public class RewardActivityController extends BaseController {
 				}
 			}
 			if(typec==3) {
-				query.addQueryData("sort", "tbc.nice_choice_at");
+				query.addQueryData("sort", "rac.nice_choice_at");
 				query.addQueryData("isNiceChoice", sysGlobals.ENABLE);
 				PageResult<PostResponse> rewards = rewardActivityRmiService.findPageForBurstList(userId, query, type);
 				if(null!=rewards&&!rewards.getRows().isEmpty()) {
