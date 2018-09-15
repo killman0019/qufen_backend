@@ -83,7 +83,7 @@ public class RewardActivityController extends BaseController {
 			String tagInfos = params.getString("tagInfos");
 			String discussImages = params.getString("discussImages");
 			if(null==rewardDate||StringUtil.isBlank(rewardMoney)||StringUtil.isBlank(token)||null==projectId
-					||StringUtil.isBlank(rewardContents)||StringUtil.isBlank(postTitle)||StringUtil.isBlank(discussImages)) {
+					||StringUtil.isBlank(rewardContents)||StringUtil.isBlank(postTitle)) {
 				bre.setNoRequstData();
 				return bre;
 			}

@@ -71,7 +71,8 @@ public class RewardActivityController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "/saveRewardActivity", method = { RequestMethod.POST, RequestMethod.GET })
 	public BaseResponseEntity saveRewardActivity(BaseRequest baseRequest,HttpServletRequest request,Integer rewardDate,
-			String rewardMoney,String token,Integer projectId,String rewardContents,String postTitle,String tagInfos) {
+			String rewardMoney,String token,Integer projectId,String rewardContents,String postTitle,String tagInfos,
+			String discussImages) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		try {
 			if(rewardDate==null&&StringUtil.isBlank(rewardMoney)&&StringUtil.isBlank(token)&&projectId==null
@@ -84,6 +85,7 @@ public class RewardActivityController extends BaseController {
 				rewardContents = (String) requestContent.get("rewardContents");
 				postTitle = (String) requestContent.get("postTitle");
 				tagInfos = (String) requestContent.get("tagInfos");
+				discussImages = (String) requestContent.get("discussImages");
 			}
 			if(null==rewardDate||StringUtil.isBlank(rewardMoney)||StringUtil.isBlank(token)||null==projectId
 					||StringUtil.isBlank(rewardContents)||StringUtil.isBlank(postTitle)) {
@@ -135,6 +137,7 @@ public class RewardActivityController extends BaseController {
 			articleRequest.setPostTitle(postTitle);
 			articleRequest.setArticleContents(rewardContents);
 			articleRequest.setTagInfos(tagInfos);
+			articleRequest.setPostSmallImages(discussImages);
 			rewardActivityRmiService.saveRewardActivity(articleRequest, rewardDate,nowRewardMoney,coinProty);
 			bre.setSuccessMsg();
 		} catch (RestServiceException e) {
