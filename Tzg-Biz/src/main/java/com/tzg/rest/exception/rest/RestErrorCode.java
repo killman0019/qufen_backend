@@ -9,7 +9,7 @@ public enum RestErrorCode {
 
 	/** ------------------ 全局异常信息 ----------------- */
 
-	SYS_SUCCESS(0, "操作成功"),
+	SYS_SUCCESS(0, "Success"),
 
 	SYS_ERROR(9999, "操作失败，请稍后再试或联系客服"),
 
