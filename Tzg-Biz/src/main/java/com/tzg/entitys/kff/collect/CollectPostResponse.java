@@ -128,6 +128,36 @@ public class CollectPostResponse implements Serializable {
 	private java.lang.String projectSignature;
 
 	private Integer createUserId;
+	//每个用户回答悬赏能中奖的金额
+	private BigDecimal rewardMoneyToOne;
+	//悬赏的PostId
+	private Integer postIdToReward;
+	//悬赏金额
+    private BigDecimal rewardMoney;
+
+	public BigDecimal getRewardMoneyToOne() {
+		return rewardMoneyToOne;
+	}
+
+	public void setRewardMoneyToOne(BigDecimal rewardMoneyToOne) {
+		this.rewardMoneyToOne = rewardMoneyToOne;
+	}
+
+	public Integer getPostIdToReward() {
+		return postIdToReward;
+	}
+
+	public void setPostIdToReward(Integer postIdToReward) {
+		this.postIdToReward = postIdToReward;
+	}
+
+	public BigDecimal getRewardMoney() {
+		return rewardMoney;
+	}
+
+	public void setRewardMoney(BigDecimal rewardMoney) {
+		this.rewardMoney = rewardMoney;
+	}
 
 	public Integer getCreateUserId() {
 		return createUserId;

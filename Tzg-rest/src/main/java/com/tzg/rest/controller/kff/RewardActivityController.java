@@ -271,7 +271,17 @@ public class RewardActivityController extends BaseController {
 			}
 			Integer userId = getUserIdByToken(token);
 			Map<String,Object> seMap = new HashMap<>();
+			//判断这个悬赏有没有被终止
+			seMap.put("postId", postId);
+			seMap.put("state", RewardActivityState.STARTING.getValue());
+			Map<String, Object> reMapc = rewardActivityRmiService.findOneByAttr(seMap);
+			if(reMapc.isEmpty()) {
+				bre.setCode(500);
+				bre.setMsg("该悬赏未在进行中，无法终止");
+				return bre;
+			}		
 			//终止的条件是1小时内没有回答的记录
+			seMap.clear();
 			seMap.put("postId", postId);
 			seMap.put("state", RewardActivityState.STARTING.getValue());
 			Integer reActCount = rewardActivityRmiService.findLinkedCount(seMap);

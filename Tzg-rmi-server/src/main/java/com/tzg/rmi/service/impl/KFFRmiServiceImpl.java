@@ -476,6 +476,19 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 							}
 						}
 					}
+					if(post.getPostType() == 2) {
+						Discuss discuss = kffDiscussService.findByPostId(post.getPostId());
+						if(null!=discuss.getRewardActivityId()) {
+							RewardActivity ac = rewardActivityService.findById(discuss.getRewardActivityId());
+							if (ac != null) {
+								// 取悬赏总奖励
+								response.setPostType(4);
+								response.setRewardMoney(ac.getRewardMoney());
+								response.setRewardMoneyToOne(discuss.getRewardMoney());
+								response.setPostIdToReward(ac.getPostId());
+							}
+						}
+					}
 					postResponse.add(response);
 				}
 			}
@@ -1263,9 +1276,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
 
 			List<Integer> praisedPostId = null;
-
 			// 获得点赞postidlist集合
-
 			if (null != loginUser) {
 				Integer userId = loginUser.getUserId();
 				if (null != userId) {
@@ -1300,6 +1311,17 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					response.setDiscussId(discuss.getDiscussId());
 					response.setDisscussContents(discuss.getDisscussContents());
 					response.setTagInfos(discuss.getTagInfos());
+					//区分爆料和悬赏
+					if(null!=discuss.getRewardActivityId()) {
+						RewardActivity ac = rewardActivityService.findById(discuss.getRewardActivityId());
+						if (ac != null) {
+							// 取悬赏总奖励
+							response.setPostType(4);
+							response.setRewardMoney(ac.getRewardMoney());
+							response.setRewardMoneyToOne(discuss.getRewardMoney());
+							response.setPostIdToReward(ac.getPostId());
+						}
+					}
 				}
 				if (null != post) {
 					KFFUser createUser = kffUserService.findByUserId(post.getCreateUserId());
@@ -1335,6 +1357,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						}
 					}
 				}
+				
+				
+				
+				
 				respones.add(response);
 			}
 			result.setRows(respones);

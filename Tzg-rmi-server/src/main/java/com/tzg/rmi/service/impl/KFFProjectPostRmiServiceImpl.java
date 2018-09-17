@@ -7,11 +7,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -54,6 +52,7 @@ import com.tzg.common.service.kff.PraiseService;
 import com.tzg.common.service.kff.ProjectService;
 import com.tzg.common.service.kff.ProjectevastatService;
 import com.tzg.common.service.kff.QfIndexService;
+import com.tzg.common.service.kff.RewardActivityService;
 import com.tzg.common.service.kff.SuggestService;
 import com.tzg.common.service.kff.TokenawardService;
 import com.tzg.common.service.kff.TokenrecordsService;
@@ -62,11 +61,10 @@ import com.tzg.common.service.kff.UserInvationService;
 import com.tzg.common.service.kff.UserService;
 import com.tzg.common.service.kff.UserWalletService;
 import com.tzg.common.service.systemParam.SystemParamService;
-import com.tzg.common.utils.DateUtil;
 import com.tzg.common.utils.H5AgainDeltagsUtil;
 import com.tzg.common.utils.sysGlobals;
 import com.tzg.common.zookeeper.ZKClient;
-import com.tzg.entitys.kff.app.NewsFlash;
+import com.tzg.entitys.kff.activity.RewardActivity;
 import com.tzg.entitys.kff.article.Article;
 import com.tzg.entitys.kff.comments.Comments;
 import com.tzg.entitys.kff.devaluationModel.DevaluationModel;
@@ -164,6 +162,8 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 	private RedisService redisService;
 	@Autowired
 	private ThreadPoolTaskExecutor taskExecutor;
+	@Autowired
+	private RewardActivityService rewardActivityService;
 
 	public List<KFFProject> findListByMap(Map<String, Object> map) {
 		return kffProjectService.findListByMap(map);
@@ -480,6 +480,17 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 						Evaluation eval = kffEvaluationService.findByPostId(postResponse.getPostId());
 						if(null!=eval) {
 							postResponse.setEvaluationTags(eval.getEvaluationTags());
+						}
+					}
+					Discuss discuss = kffDiscussService.findByPostId(postResponse.getPostId());
+					if(null!=discuss.getRewardActivityId()) {
+						RewardActivity ac = rewardActivityService.findById(discuss.getRewardActivityId());
+						if (ac != null) {
+							// 取悬赏总奖励
+							postResponse.setPostType(4);
+							postResponse.setRewardMoney(ac.getRewardMoney());
+							postResponse.setRewardMoneyToOne(discuss.getRewardMoney());
+							postResponse.setPostIdToReward(ac.getPostId());
 						}
 					}
 	        		returnPost.add(postResponse);

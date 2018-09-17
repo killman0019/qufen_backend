@@ -188,6 +188,7 @@ public class PostResponse implements Serializable, Comparable<Object> {
 	private Integer answerCount;
 	//截止时间
 	private Date endTime;
+	private String endTimeStr;
 	//悬赏内容
 	private String rewardContents;
 	//每个用户回答悬赏能中奖的金额
@@ -238,8 +239,17 @@ public class PostResponse implements Serializable, Comparable<Object> {
 	public Date getEndTime() {
 		return endTime;
 	}
+	
+	public String getEndTimeStr() {
+		return endTimeStr;
+	}
+
+	public void setEndTimeStr(String endTimeStr) {
+		this.endTimeStr = endTimeStr;
+	}
 
 	public void setEndTime(Date endTime) {
+		this.endTimeStr = DateUtil.getDate(endTime, "yyyy-MM-dd HH:mm:ss");
 		this.endTime = endTime;
 	}
 
