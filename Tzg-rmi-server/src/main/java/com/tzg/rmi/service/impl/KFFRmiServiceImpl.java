@@ -41,6 +41,7 @@ import com.tzg.common.constants.KFFConstants;
 import com.tzg.common.enums.DiscussType;
 import com.tzg.common.enums.LinkedType;
 import com.tzg.common.enums.PostType;
+import com.tzg.common.enums.RewardActivityState;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.redis.RedisService;
@@ -2171,6 +2172,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					discuss.setRewardActivityId(reAct.getId());
 					Post ccP = kffPostService.findById(reAct.getPostId());
 					post.setPostTitle(ccP.getPostTitle());
+					if(reAct.getState()!=RewardActivityState.STARTING.getValue()) {
+						discuss.setRewardMoney(new BigDecimal("0"));
+					}
 				}
 			}
 		} 
