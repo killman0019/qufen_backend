@@ -79,7 +79,9 @@ public class SearchController extends BaseController {
 			PaginationQuery query = new PaginationQuery();
 			query.setPageIndex(curPage);
 	        query.setRowsPerPage(pageSize);
-	        query.addQueryData("title", title.trim());
+	        if(StringUtil.isNotBlank(title.trim())) {
+	        	query.addQueryData("title", title.trim());
+	        }
 	        query.addQueryData("status", 1);
 	        if(type==1) {
 	        	Integer typec = 1;// 取关注项目

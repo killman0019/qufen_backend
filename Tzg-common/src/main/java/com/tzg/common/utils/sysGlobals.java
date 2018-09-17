@@ -244,4 +244,10 @@ public final class sysGlobals {
 	public static Integer END_REWARD_TYPE = 82;
 	/**终止悬赏奖励备注*/
 	public static String END_REWARD_MENO = "终止悬赏返回Token币";
+	/**悬赏个推和APP消息的标题*/
+	public static String REWARD_TITLE = "悬赏尽调";
+	/**悬赏个推和APP消息的内容开始*/
+	public static String REWARD_CONTENT_BEGING = "你悬赏的问题<<";
+	/**悬赏个推和APP消息的内容结束*/
+	public static String REWARD_CONTENT_END = ">>有人回答了,快去看看吧!";
 }

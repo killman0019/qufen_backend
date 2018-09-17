@@ -67,6 +67,10 @@ public class RewardActivityService {
 		return rewardActivityMapper.findById(id);
 	}
 	
+	public void updateByMap(Map<String, Object> map) {
+		rewardActivityMapper.updateByMap(map);
+	}
+	
 	@Transactional(readOnly = true)
 	public List<RewardActivity> findListByAttr(Map<String, Object> map) {
 		return rewardActivityMapper.findListByAttr(map);

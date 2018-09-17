@@ -56,6 +56,16 @@
       #{disStickTop,jdbcType=INTEGER}, #{disStickUpdatetime,jdbcType=TIMESTAMP},#{rewardContents,jdbcType=VARCHAR})
   </insert>
   
+  <update id="updateByMap" parameterType="java.util.Map">
+    update activity_reward_activity
+    <set>
+      <if test="answerCount != null">
+        answer_count = ifnull(answer_count,0)+1,
+      </if>
+    </set>
+    where post_id = #{postId,jdbcType=INTEGER}
+  </update>
+  
   <update id="update" parameterType="com.tzg.entitys.kff.activity.RewardActivity">
     update activity_reward_activity
     <set>
@@ -302,7 +312,7 @@
 			and rac.state != #{statec}
 			</if>
 			<if test="isNiceChoice != null">
-			and tbc.is_nice_choice != #{isNiceChoice}
+			and rac.is_nice_choice != #{isNiceChoice}
 			</if>
     	</where>
     </sql>

@@ -296,7 +296,7 @@
 	</select>
 
 	<select id="findPage" resultMap="BaseResultMap" parameterType="java.util.Map">
-		select * from tbproject where status=1
+		select * from tbproject where 1=1
 		<include refid="queryWhere" />
 		<choose>
 			<when test="sortField != null and sortField != ''">
@@ -387,7 +387,7 @@
 			and project_id = #{projectId}
 		</if>
 		<if test="title != null">
-			and (project_english_name like "%" #{title} "%" or project_chinese_name like "%" #{title} "%")
+			and (project_english_name like CONCAT('%', #{title},'%') or project_chinese_name like CONCAT('%', #{title},'%'))
 		</if>
 		<if test="hotProject != null">
 			and follower_num > #{hotProject}
