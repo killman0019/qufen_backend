@@ -221,6 +221,9 @@
 		tbc.reward_money as rewardMoney
 		from tbdiscuss as tbc
     	INNER JOIN tbpost as tpt on tpt.post_id=tbc.post_id
+    	<if test="linkedOne != null">
+			INNER JOIN <include refid="table_name" /> as rac ON rac.id = tbc.reward_activity_id
+		</if>
 		<include refid="condition" />
 		ORDER BY ${sort} desc
 		<if test="sortc != null">
@@ -234,6 +237,9 @@
 	<select id="findLinkedPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
 		select count(1) from tbdiscuss as tbc
     	INNER JOIN tbpost as tpt on tpt.post_id=tbc.post_id
+    	<if test="linkedOne != null">
+			INNER JOIN <include refid="table_name" /> as rac ON rac.id = tbc.reward_activity_id
+		</if>
 		<include refid="condition" />
 	</select>
 	
@@ -314,6 +320,10 @@
 			<if test="isNiceChoice != null">
 			and rac.is_nice_choice != #{isNiceChoice}
 			</if>
+			<if test="isNiceChoicec != null">
+			and tbc.is_nice_choice != #{isNiceChoicec}
+			</if>
+			
     	</where>
     </sql>
     

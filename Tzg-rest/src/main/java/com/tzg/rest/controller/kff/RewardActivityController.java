@@ -404,6 +404,7 @@ public class RewardActivityController extends BaseController {
 			query.addQueryData("state", RewardActivityState.STARTING.getValue());
 			query.addQueryData("isActivity", sysGlobals.ENABLE);
 			query.addQueryData("endTime", new Date());
+			query.addQueryData("status", "1");
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
 			PageResult<RewardActivityVo> data = rewardActivityRmiService.getRewardActivityList(query);
@@ -460,9 +461,7 @@ public class RewardActivityController extends BaseController {
 			PaginationQuery query = new PaginationQuery();
 			// 帖子类型：1-评测；2-讨论；3-文章,4-悬赏
 			query.addQueryData("postTypec", "4");
-			query.addQueryData("status", 1);
 			query.addQueryData("statec", 2);//不是撤销的悬赏都需要显示出来
-			query.addQueryData("endTime", new Date());
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
 			Integer type = 2;// 取关注人
@@ -470,6 +469,7 @@ public class RewardActivityController extends BaseController {
 				if(typec==1) {
 					query.addQueryData("sort", "rac.created_at");
 				}else if(typec==2) {
+					query.addQueryData("status", 1);
 					query.addQueryData("sort", "rac.reward_money");
 				}
 				PageResult<PostResponse> rewards = rewardActivityRmiService.findPageForNewAndHighList(userId, query, type);
@@ -479,8 +479,10 @@ public class RewardActivityController extends BaseController {
 				}
 			}
 			if(typec==3) {
-				query.addQueryData("sort", "rac.nice_choice_at");
-				query.addQueryData("isNiceChoice", sysGlobals.ENABLE);
+				query.addQueryData("status", 1);
+				query.addQueryData("sort", "tbc.nice_choice_at");
+				query.addQueryData("isNiceChoicec", sysGlobals.ENABLE);
+				query.addQueryData("linkedOne", "1");
 				PageResult<PostResponse> rewards = rewardActivityRmiService.findPageForBurstList(userId, query, type);
 				if(null!=rewards&&!rewards.getRows().isEmpty()) {
 					bre.setData(rewards);

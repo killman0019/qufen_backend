@@ -23,7 +23,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.security.core.userdetails.User;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -42,6 +41,7 @@ import com.tzg.common.constants.KFFConstants;
 import com.tzg.common.enums.DiscussType;
 import com.tzg.common.enums.LinkedType;
 import com.tzg.common.enums.PostType;
+import com.tzg.common.enums.RewardActivityState;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.redis.RedisService;
@@ -2170,14 +2170,14 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				RewardActivity reAct = rewardActivityService.findFirstByAttr(seMap);
 				if (null != reAct) {
 					discuss.setRewardActivityId(reAct.getId());
-					post.setPostType(KFFConstants.POST_TYPE_REWARD);// 帖子类型：1-评测；2-讨论；3-文章
 					Post ccP = kffPostService.findById(reAct.getPostId());
 					post.setPostTitle(ccP.getPostTitle());
+					if(reAct.getState()!=RewardActivityState.STARTING.getValue()) {
+						discuss.setRewardMoney(new BigDecimal("0"));
+					}
 				}
 			}
-		} else {
-			post.setPostType(KFFConstants.POST_TYPE_DISCUSS);// 帖子类型：1-评测；2-讨论；3-文章
-		}
+		} 
 		kffPostService.save(post);
 		Post newPost = kffPostService.findByUUID(uuid);
 		if (newPost == null) {
@@ -3177,7 +3177,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 									}
 								}
 							}
-							if (postType == 2) {
+							if (postType == 2 || postType == 4) {
 								// 证明是讨论的帖子
 								System.err.println("执行我就相当于讨论的帖子");
 								if (null != praiseId && praiseId.getPraiseType() == 1) {
@@ -3194,7 +3194,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 										tokenrecords.setRewardGrantType(1);
 										tokenrecords.setCreateTime(new Date());
 										tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
-										tokenrecords.setMemo("用户" + user.getUserName() + "点赞奖励(爆料)"); // 流水备注
+										if(postType == 2) {
+											tokenrecords.setMemo("用户" + user.getUserName() + "点赞奖励(爆料)"); // 流水备注
+										}else if(postType == 4) {
+											tokenrecords.setMemo("用户" + user.getUserName() + "点赞奖励(悬赏回答)"); // 流水备注
+										}
 										tokenrecords.setPostId(postId);
 										tokenrecords.setPraiseId(praiseDBId);
 										kffTokenrecordsService.save(tokenrecords);
@@ -3211,7 +3215,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 										coinPropertyService.update(findByCreateUser);
 
 										tokenaward.setUserId(createUserId);
-										tokenaward.setTokenAwardFunctionDesc("点赞奖励(爆料)");
+										if(postType == 2) {
+											tokenaward.setTokenAwardFunctionDesc("点赞奖励(爆料)");
+										}else if(postType == 4) {
+											tokenaward.setTokenAwardFunctionDesc("点赞奖励(悬赏回答)");
+										}
 										tokenaward.setTokenAwardFunctionType(17);
 										tokenaward.setDistributionType(2);
 										// Double rewardToken = tokenaward.getRewardToken();
@@ -4006,7 +4014,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				response.setcreateTime(post.getCreateTime());
 				response.setCreateUserId(post.getCreateUserId());
 				response.setPostId(post.getPostId());
-				response.setPostType(post.getPostType());
 				response.setProjectId(post.getProjectId());
 				response.setStatus(post.getStatus());
 				response.setPraiseIncome(post.getPraiseIncome());
@@ -4067,9 +4074,20 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				}
 				if (2 == postType) {
 					// 查询爆料的标签
+					response.setPostType(post.getPostType());
 					Discuss discuss = kffDiscussService.findByPostId(post.getPostId());
 					if (null != discuss) {
 						response.setTagInfos(discuss.getTagInfos());
+						if(null!=discuss.getRewardActivityId()) {
+							RewardActivity ac = rewardActivityService.findById(discuss.getRewardActivityId());
+							if (ac != null) {
+								// 取悬赏总奖励
+								response.setPostType(4);
+								response.setRewardMoney(ac.getRewardMoney());
+								response.setRewardMoneyToOne(discuss.getRewardMoney());
+								response.setPostIdToReward(ac.getPostId());
+							}
+						}
 					}
 				}
 				if (3 == postType) {
@@ -4077,20 +4095,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					Article ac = kffArticleService.findByPostId(post.getPostId());
 					if (ac != null) {
 						response.setTagInfos(ac.getTagInfos());
-					}
-				}
-				if (4 == postType) {
-					// 查询悬赏的标签
-					Discuss discuss = kffDiscussService.findByPostId(post.getPostId());
-					if (null != discuss) {
-						response.setTagInfos(discuss.getTagInfos());
-						RewardActivity ac = rewardActivityService.findById(discuss.getRewardActivityId());
-						if (ac != null) {
-							// 取悬赏总奖励
-							response.setRewardMoney(ac.getRewardMoney());
-							response.setRewardMoneyToOne(discuss.getRewardMoney());
-							response.setPostIdToReward(ac.getPostId());
-						}
 					}
 				}
 				// 设置人的关注状态
@@ -4996,6 +5000,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			response.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(ac.getRewardContents()));
 			response.setPostTitle(post.getPostTitle());
 			response.setPostId(ac.getPostId());
+			response.setPostType(4);
 		}
 		return response;
 	}
@@ -7984,7 +7989,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			Double zanToken, Integer postId) throws RestServiceException {
 
 		try {
-			if (postType > 3 || postType < 0) {
+			if (postType > 4 || postType < 0) {
 				return false;
 			}
 			// 点赞人的id 有效赞的个数 当前赞这个对象吧 format replaceAllDate 固定参数
