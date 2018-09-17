@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -234,10 +235,26 @@ public class QfIndexService {
 					qfindexResponse.setEvaAward(Double.valueOf(pushEvaGetAwardSys.getVcParamValue()));// 发布每篇专业评测所获得奖励
 					qfindexResponse.setReadingAward(Double.valueOf(readingAwardSys.getVcParamValue()));// 阅读每篇专业评测所获得奖励
 					qfindexResponse.setCommentFirstAward(Double.valueOf(commentFirwtAwardSys.getVcParamValue()));// 首次评论获得奖励
+					int yxComments = 0;
+					if (qfindex.getYxComments() == null) {
+						yxComments = 0;
+					} else {
+						yxComments = qfindex.getYxComments();
+					}
+					int yxSharePost = 0;
+					if (qfindex.getYxSharePost() == null) {
+						yxSharePost = 0;
+					} else {
+						yxSharePost = qfindex.getYxSharePost();
+					}
 
-					int yxComments = qfindex.getYxComments();
-					int yxSharePost = qfindex.getYxSharePost();
-					int yxPraise = qfindex.getYxpraise();
+					int yxPraise = 0;
+					if (qfindex.getYxpraise() == null) {
+						yxPraise = 0;
+					} else {
+						yxPraise = qfindex.getYxpraise();
+					}
+
 					int yxCommentRece = i - yxComments;
 					int yxSharePostRece = i - yxSharePost;
 					int yxPraiseRece = i - yxPraise;
