@@ -7988,7 +7988,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			Double zanToken, Integer postId) throws RestServiceException {
 
 		try {
-			if (postType > 3 || postType < 0) {
+			if (postType > 4 || postType < 0) {
 				return false;
 			}
 			// 点赞人的id 有效赞的个数 当前赞这个对象吧 format replaceAllDate 固定参数
