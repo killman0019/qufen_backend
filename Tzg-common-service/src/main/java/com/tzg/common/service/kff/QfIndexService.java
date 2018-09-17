@@ -216,7 +216,7 @@ public class QfIndexService {
 
 					invaAward = invaAward2;
 					amountSum = amountSum + invaAward;
-					qfindexResponse.setTodayAward(amountSum);// 今天所有赚的币
+
 					qfindexResponse.setLoginAward(BigDecimal.valueOf(loginSum));// 今日的登陆奖励
 					qfindexResponse.setStatusHierarchyType(qfindex.getStatusHierarchyType());// 区分指数
 
@@ -326,6 +326,8 @@ public class QfIndexService {
 			}
 		}
 		// 邀请奖励
+		amountSum = amountSum + invaAward;
+		qfindexResponse.setTodayAward(amountSum);// 今天所有赚的币
 		qfindexResponse.setInvaAward(new BigDecimal(invaAward));
 		return qfindexResponse;
 	}
