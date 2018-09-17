@@ -4010,7 +4010,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				response.setcreateTime(post.getCreateTime());
 				response.setCreateUserId(post.getCreateUserId());
 				response.setPostId(post.getPostId());
-				response.setPostType(post.getPostType());
 				response.setProjectId(post.getProjectId());
 				response.setStatus(post.getStatus());
 				response.setPraiseIncome(post.getPraiseIncome());
@@ -4071,9 +4070,20 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				}
 				if (2 == postType) {
 					// 查询爆料的标签
+					response.setPostType(post.getPostType());
 					Discuss discuss = kffDiscussService.findByPostId(post.getPostId());
 					if (null != discuss) {
 						response.setTagInfos(discuss.getTagInfos());
+						if(null!=discuss.getRewardActivityId()) {
+							RewardActivity ac = rewardActivityService.findById(discuss.getRewardActivityId());
+							if (ac != null) {
+								// 取悬赏总奖励
+								response.setPostType(4);
+								response.setRewardMoney(ac.getRewardMoney());
+								response.setRewardMoneyToOne(discuss.getRewardMoney());
+								response.setPostIdToReward(ac.getPostId());
+							}
+						}
 					}
 				}
 				if (3 == postType) {
@@ -4081,20 +4091,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					Article ac = kffArticleService.findByPostId(post.getPostId());
 					if (ac != null) {
 						response.setTagInfos(ac.getTagInfos());
-					}
-				}
-				if (4 == postType) {
-					// 查询悬赏的标签
-					Discuss discuss = kffDiscussService.findByPostId(post.getPostId());
-					if (null != discuss) {
-						response.setTagInfos(discuss.getTagInfos());
-						RewardActivity ac = rewardActivityService.findById(discuss.getRewardActivityId());
-						if (ac != null) {
-							// 取悬赏总奖励
-							response.setRewardMoney(ac.getRewardMoney());
-							response.setRewardMoneyToOne(discuss.getRewardMoney());
-							response.setPostIdToReward(ac.getPostId());
-						}
 					}
 				}
 				// 设置人的关注状态
