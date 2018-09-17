@@ -23,7 +23,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.security.core.userdetails.User;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -2170,14 +2169,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				RewardActivity reAct = rewardActivityService.findFirstByAttr(seMap);
 				if (null != reAct) {
 					discuss.setRewardActivityId(reAct.getId());
-					post.setPostType(KFFConstants.POST_TYPE_REWARD);// 帖子类型：1-评测；2-讨论；3-文章
 					Post ccP = kffPostService.findById(reAct.getPostId());
 					post.setPostTitle(ccP.getPostTitle());
 				}
 			}
-		} else {
-			post.setPostType(KFFConstants.POST_TYPE_DISCUSS);// 帖子类型：1-评测；2-讨论；3-文章
-		}
+		} 
 		kffPostService.save(post);
 		Post newPost = kffPostService.findByUUID(uuid);
 		if (newPost == null) {

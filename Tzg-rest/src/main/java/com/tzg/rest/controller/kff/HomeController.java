@@ -507,7 +507,7 @@ public class HomeController extends BaseController {
 			query.setRowsPerPage(baseRequest.getPageSize());
 			query.addQueryData("postId", postId + "");
 			query.addQueryData("status", KFFConstants.STATUS_ACTIVE + "");
-			query.addQueryData("postType", KFFConstants.POST_TYPE_DISCUSS + "");
+//			query.addQueryData("postType", KFFConstants.POST_TYPE_DISCUSS + "");
 			query.addQueryData("parentCommentsIdNull", "YES");
 
 			if (StringUtils.isNotBlank(baseRequest.getSortField())) {
