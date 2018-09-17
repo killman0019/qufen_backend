@@ -644,7 +644,7 @@ public class RewardActivityService {
 				response.setcreateTime(post.getcreateTime());
 				response.setCreateUserId(post.getCreateUserId());
 				response.setPostId(post.getPostId());
-				response.setPostType(post.getPostType());
+				response.setPostType(4);
 				response.setProjectId(post.getProjectId());
 				response.setStatus(post.getStatus());
 				response.setPraiseIncome(post.getPraiseIncome());
