@@ -3173,7 +3173,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 									}
 								}
 							}
-							if (postType == 2) {
+							if (postType == 2 || postType == 4) {
 								// 证明是讨论的帖子
 								System.err.println("执行我就相当于讨论的帖子");
 								if (null != praiseId && praiseId.getPraiseType() == 1) {
@@ -3190,7 +3190,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 										tokenrecords.setRewardGrantType(1);
 										tokenrecords.setCreateTime(new Date());
 										tokenrecords.setTradeCode("01" + replaceAllDate + format); // 交易流水号
-										tokenrecords.setMemo("用户" + user.getUserName() + "点赞奖励(爆料)"); // 流水备注
+										if(postType == 2) {
+											tokenrecords.setMemo("用户" + user.getUserName() + "点赞奖励(爆料)"); // 流水备注
+										}else if(postType == 4) {
+											tokenrecords.setMemo("用户" + user.getUserName() + "点赞奖励(悬赏回答)"); // 流水备注
+										}
 										tokenrecords.setPostId(postId);
 										tokenrecords.setPraiseId(praiseDBId);
 										kffTokenrecordsService.save(tokenrecords);
@@ -3207,7 +3211,11 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 										coinPropertyService.update(findByCreateUser);
 
 										tokenaward.setUserId(createUserId);
-										tokenaward.setTokenAwardFunctionDesc("点赞奖励(爆料)");
+										if(postType == 2) {
+											tokenaward.setTokenAwardFunctionDesc("点赞奖励(爆料)");
+										}else if(postType == 4) {
+											tokenaward.setTokenAwardFunctionDesc("点赞奖励(悬赏回答)");
+										}
 										tokenaward.setTokenAwardFunctionType(17);
 										tokenaward.setDistributionType(2);
 										// Double rewardToken = tokenaward.getRewardToken();
