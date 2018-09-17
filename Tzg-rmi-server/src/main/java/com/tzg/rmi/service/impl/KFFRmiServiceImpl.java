@@ -5000,6 +5000,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			response.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(ac.getRewardContents()));
 			response.setPostTitle(post.getPostTitle());
 			response.setPostId(ac.getPostId());
+			response.setPostType(4);
 		}
 		return response;
 	}
