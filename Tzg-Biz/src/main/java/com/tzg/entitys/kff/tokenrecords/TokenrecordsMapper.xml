@@ -276,7 +276,14 @@
 
 		<if test="functionTypeAll !=null">
 
-			and (function_type =16 or function_type =18 or function_type= 23 or function_type =24 or function_type=26 or function_type=28 or function_type=29)
+			and (function_type in 
+			(15 ,16
+			,17,18
+			,23 ,24 ,26
+			,27 ,28
+			,29 ,80,83)
+			)
+			
 
 		</if>
 	</sql>
