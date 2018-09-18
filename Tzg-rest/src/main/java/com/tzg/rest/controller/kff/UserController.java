@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1445,7 +1446,13 @@ public class UserController extends BaseController {
 				map.put("statusHierarchyType", statusHierarchyType);
 				map.put("statusHierarchyDesc", statusHierarchyDesc);
 			}
-
+			List<CoinProperty> coinpropertyList = kffRmiService.findCoinPropertyByUserId(loginUserId);
+			if (CollectionUtils.isNotEmpty(coinpropertyList)) {
+				CoinProperty coinProperty = coinpropertyList.get(0);
+				if (null != coinProperty) {
+					map.put("coinLock", coinProperty.getCoinLock());
+				}
+			}
 			SystemParam syspara = systemParamRmiService.findByCode(sysGlobals.REGISTER_AWARD_TOKEN_TOTE);
 			if (null != syspara) {
 				Integer awardToken = Integer.valueOf(syspara.getVcParamValue());
