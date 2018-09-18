@@ -184,27 +184,21 @@ public class HomeController extends BaseController {
 		try {
 			BaseRequest baseRequest = getParamMapFromRequestPolicy(request, BaseRequest.class);
 			String token = baseRequest.getToken();
-			Integer userId = null;
-			PaginationQuery query = new PaginationQuery();
-			query.addQueryData("status", "1");
-			// query.addQueryData("sortField", "collect_num");
-			// 关注类型：1-关注项目;2-关注帖子；3-关注用户
-			query.addQueryData("followTypec", "2");
-			query.setPageIndex(baseRequest.getPageIndex());
-			query.setRowsPerPage(baseRequest.getPageSize());
-
-			Integer type = 2;// 取关注人
-			KFFUser loginUser = null;
-			if (StringUtils.isNotBlank(token)) {
-				userId = getUserIdByToken(token);
-				loginUser = kffUserService.findById(userId);
+			Integer pageIndex = baseRequest.getPageIndex();
+			Integer pageSize = baseRequest.getPageSize();
+			if(StringUtils.isBlank(token)||null==pageIndex||null==pageSize) {
+				bre.setNoRequstData();
+				return bre;
 			}
-			query.addQueryData("userId", userId);
+			PaginationQuery query = new PaginationQuery();
+			query.addQueryData("statusc", "1");
+			query.addQueryData("sort", "tbf.createTime");
+			query.setPageIndex(pageIndex);
+			query.setRowsPerPage(pageSize);
+			Integer type = 2;// 取关注人
+			Integer	userId = getUserIdByToken(token);
+			KFFUser	loginUser = kffUserService.findById(userId);
 			PageResult<PostResponse> follows = kffProjectPostRmiService.findPageForFollowList(userId, query, type, loginUser);
-			// PageResult<PostResponse> follows =
-			// kffProjectPostRmiService.findMyPageFollowList(userId, query);
-			// System.err.println("follows" + follows);
-
 			map.put("follows", follows);
 			bre.setData(map);
 			SyseUtil.systemErrOutJson(map);

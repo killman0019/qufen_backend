@@ -1,6 +1,7 @@
 package com.tzg.entitys.kff.follow;
 
 import com.tzg.common.base.BaseMapper;
+import com.tzg.entitys.kff.post.PostResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,6 @@ public interface FollowMapper extends BaseMapper<Follow, java.lang.Integer> {
 
 	List<Integer> findFollowerByMap(Map<String, Object> map);
 
-	
-
+	Integer findLinkedPageCount(Map<String, Object> queryData);
+	List<PostResponse> findLinkedPage(Map<String, Object> queryData);
 }

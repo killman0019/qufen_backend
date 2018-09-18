@@ -107,11 +107,11 @@ public class PolicyUtil {
 //    mytoken ==MzI6MTUzMjY1ODU1MDUwMTphY2ZhMWE3YTM0YzY2MTM2NzMxMjZhZmY0MTkwZDY4Nw==
 //        String str = "{\"phoneNumber\":\"15967158998\",\"password\":\"11111111\",\"dynamicVerifyCode\":\"488258\"}";
 //        String ssr = "{\"token\":\"MTE0OjE1MzYyMTQyNTQxOTE6MTg0ZWZmNWUxZGJmYzFkZDRkZWQzMTdjZWY3MDRlOGU=\",\"pageIndex\":1,\"pageSize\":10}";
-    	String ssr = "{\"typec\":1,\"token\":\"MTE0OjE1MzYyMTQyNTQxOTE6MTg0ZWZmNWUxZGJmYzFkZDRkZWQzMTdjZWY3MDRlOGU=\",\"pageIndex\":1,\"pageSize\":10}";
+    	String ssr = "{\"token\":\"NDAwNzQ6MTUzNzI0OTkxOTAwNTo3MWE1ZWI2NzZmMmUwYzcyYTEzNmZmOWJhOTY3MDMwNg==\",\"pageIndex\":1,\"pageSize\":10}";
         System.out.println("policy:"+encryptPolicy(ssr));
         System.out.println("sign:"+Md5(ssr));
         
-        String token = AccountTokenUtil.getAccountToken(55789);
+        String token = AccountTokenUtil.getAccountToken(40074);
         System.out.println(token);
 //        System.out.println(decryptAES(a));
         
