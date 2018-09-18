@@ -37,6 +37,7 @@ import com.tzg.entitys.kff.article.ArticleDetailResponse;
 import com.tzg.entitys.kff.comments.Comments;
 import com.tzg.entitys.kff.discuss.DiscussDetailResponse;
 import com.tzg.entitys.kff.evaluation.EvaluationDetailResponse;
+import com.tzg.entitys.kff.post.Post;
 import com.tzg.entitys.kff.post.PostResponse;
 import com.tzg.entitys.kff.project.ProjectResponse;
 import com.tzg.entitys.kff.user.KFFUser;
@@ -46,6 +47,7 @@ import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.utils.DateUtil;
 import com.tzg.rest.vo.BaseResponseEntity;
+import com.tzg.rmi.service.KFFPostRmiService;
 import com.tzg.rmi.service.KFFProjectPostRmiService;
 import com.tzg.rmi.service.KFFRmiService;
 import com.tzg.rmi.service.KFFUserRmiService;
@@ -64,7 +66,62 @@ public class HomeController extends BaseController {
 	private SystemParamRmiService systemParamRmiService;
 	@Autowired
 	private KFFUserRmiService kffUserService;
+	@Autowired
+	private KFFPostRmiService postRmiService;
 
+	/** 
+	* @Title: newestList 
+	* @Description: TODO <最新列表接口>
+	* @author linj <方法创建作者>
+	* @create 下午3:12:03
+	* @param @param request
+	* @param @param pageIndex 第几页
+	* @param @param pageSize 每页几条
+	* @param @param token 用户登录唯一标识
+	* @param @return <参数说明>
+	* @return BaseResponseEntity 
+	* @throws 
+	* @update 下午3:12:03
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	*/
+	@ResponseBody
+	@RequestMapping(value = "/newestList", method = { RequestMethod.POST, RequestMethod.GET })
+	public BaseResponseEntity newestList(HttpServletRequest request) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+		try {
+			JSONObject params = getParamJsonFromRequestPolicy(request);
+			Integer pageIndex = params.getInteger("pageIndex");
+			Integer pageSize = params.getInteger("pageSize");
+			String token = params.getString("token");
+			if(null==pageIndex||pageSize==null) {
+				bre.setNoRequstData();
+				return bre;
+			}
+			Integer userId = null;
+			if (StringUtils.isNotBlank(token)) {
+				userId = getUserIdByToken(token);
+			}
+			PaginationQuery query = new PaginationQuery();
+			query.setPageIndex(pageIndex);
+			query.setRowsPerPage(pageSize);
+			Integer type = 2;// 取关注人
+			PageResult<Post> rewards = postRmiService.findPageNewestList(query,userId,type);
+			if(null!=rewards&&!rewards.getRows().isEmpty()) {
+				bre.setData(rewards);
+				return bre;
+			}
+			bre.setNoDataMsg();
+		} catch (RestServiceException e) {
+			logger.error("HomeController newestList:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("HomeController newestList:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+		}
+		return bre;
+	}	
+	
 	/**
 	 * 
 	 * @Title: recommendList
@@ -90,23 +147,18 @@ public class HomeController extends BaseController {
 				userId = getUserIdByToken(token);
 			}
 			PaginationQuery query = new PaginationQuery();
-
 			query.addQueryData("status", "1");
 			query.addQueryData("stickTop", "1");
 			query.addQueryData("sortField", "stick_updateTime");
-
 			query.addQueryData("notDiscuss", "true");
-
 			// query.addQueryData("praiseNum", "10");
 			// 帖子类型：1-评测；2-讨论；3-文章
 			// query.addQueryData("postType", "1");
 			query.setPageIndex(baseRequest.getPageIndex());
 			query.setRowsPerPage(baseRequest.getPageSize());
-
 			Integer nowCount = baseRequest.getPageSize();
 			Integer type = 2;// 取关注人
 			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query, type, nowCount);
-
 			map.put("recommends", recommends);
 			bre.setData(map);
 		} catch (RestServiceException e) {

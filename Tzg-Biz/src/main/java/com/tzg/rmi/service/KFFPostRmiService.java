@@ -24,6 +24,7 @@ public interface KFFPostRmiService {
 	 */
 	public Map<String, Object> countEveryPostIncome(Integer userId) throws RestServiceException;
 	public PageResult<Post> findPageWithFollower(PaginationQuery query,Integer typec,Integer userId);
+	public PageResult<Post> findPageNewestList(PaginationQuery query,Integer typec,Integer userId);
 
 	/**
 	 * 展示B圈必读

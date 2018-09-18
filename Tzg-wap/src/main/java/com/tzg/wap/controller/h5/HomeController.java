@@ -33,6 +33,7 @@ import com.tzg.entitys.kff.discuss.DiscussDetailResponse;
 import com.tzg.entitys.kff.discuss.DiscussShare;
 import com.tzg.entitys.kff.evaluation.EvaluationDetailResponse;
 import com.tzg.entitys.kff.evaluation.ProjectEvaluationDetailShareResponse;
+import com.tzg.entitys.kff.post.Post;
 import com.tzg.entitys.kff.post.PostResponse;
 import com.tzg.entitys.kff.project.ProjectResponse;
 import com.tzg.entitys.kff.user.KFFUser;
@@ -40,6 +41,7 @@ import com.tzg.entitys.leopard.system.SystemParam;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
+import com.tzg.rmi.service.KFFPostRmiService;
 import com.tzg.rmi.service.KFFProjectPostRmiService;
 import com.tzg.rmi.service.KFFRmiService;
 import com.tzg.rmi.service.KFFUserRmiService;
@@ -60,6 +62,64 @@ public class HomeController extends BaseController {
 	private KFFProjectPostRmiService kffProjectPostRmiService;
 	@Autowired
 	private KFFUserRmiService kffUserService;
+	@Autowired
+	private KFFPostRmiService postRmiService;
+	
+	/** 
+	* @Title: newestList 
+	* @Description: TODO <最新列表接口>
+	* @author linj <方法创建作者>
+	* @create 下午3:12:03
+	* @param @param request
+	* @param @param pageIndex 第几页
+	* @param @param pageSize 每页几条
+	* @param @param token 用户登录唯一标识
+	* @param @return <参数说明>
+	* @return BaseResponseEntity 
+	* @throws 
+	* @update 下午3:12:03
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	*/
+	@ResponseBody
+	@RequestMapping(value = "/newestList", method = { RequestMethod.POST, RequestMethod.GET })
+	public BaseResponseEntity newestList(HttpServletRequest request,Integer pageIndex,Integer pageSize,
+			String token) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+		try {
+			if(pageIndex==null&&pageSize==null&&StringUtils.isBlank(token)) {
+				JSONObject requestContent = HtmlUtils.getRequestContent(request);
+				pageIndex = (Integer) requestContent.get("pageIndex");
+				pageSize = (Integer) requestContent.get("pageSize");
+				token = (String) requestContent.get("token");
+			}
+			if(null==pageIndex||pageSize==null) {
+				bre.setNoRequstData();
+				return bre;
+			}
+			Integer userId = null;
+			if (StringUtils.isNotBlank(token)) {
+				userId = getUserIdByToken(token);
+			}
+			PaginationQuery query = new PaginationQuery();
+			query.setPageIndex(pageIndex);
+			query.setRowsPerPage(pageSize);
+			Integer type = 2;// 取关注人
+			PageResult<Post> rewards = postRmiService.findPageNewestList(query,userId,type);
+			if(null!=rewards&&!rewards.getRows().isEmpty()) {
+				bre.setData(rewards);
+				return bre;
+			}
+			bre.setNoDataMsg();
+		} catch (RestServiceException e) {
+			logger.error("HomeController newestList:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("HomeController newestList:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+		}
+		return bre;
+	}
 	
 	/** 
 	* @Title: recommendList 
