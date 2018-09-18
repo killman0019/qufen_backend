@@ -144,6 +144,16 @@ public class KFFUser implements Serializable {
 	 * */
 	private Integer appType;
 
+	private Integer loginCount;
+
+	public Integer getLoginCount() {
+		return loginCount;
+	}
+
+	public void setLoginCount(Integer loginCount) {
+		this.loginCount = loginCount;
+	}
+
 	public Integer getAppType() {
 		return appType;
 	}

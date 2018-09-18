@@ -216,7 +216,6 @@ public class QfIndexService {
 					}
 
 					invaAward = invaAward2;
-					amountSum = amountSum + invaAward;
 
 					qfindexResponse.setLoginAward(BigDecimal.valueOf(loginSum));// 今日的登陆奖励
 					qfindexResponse.setStatusHierarchyType(qfindex.getStatusHierarchyType());// 区分指数

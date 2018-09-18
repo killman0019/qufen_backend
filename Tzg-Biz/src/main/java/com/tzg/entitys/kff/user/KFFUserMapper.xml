@@ -34,13 +34,14 @@
 		<result property="usercardStatus" jdbcType="INTEGER" column="usercardStatus" />
 		<result property="clientId" jdbcType="VARCHAR" column="client_id" />
 		<result property="appType" jdbcType="INTEGER" column="app_type" />
+		<result property="loginCount" jdbcType="INTEGER" column="login_count" />
 	</resultMap>
 
 	<sql id="columns">
 	    <![CDATA[
         user_id ,user_name ,sex ,icon ,mobile ,email ,wechat ,password ,pay_password ,user_type ,user_degree ,user_signature ,fans_num ,praise_num ,evaluation_num ,
         discuss_num ,article_num ,kff_coin_num ,area_name ,createTime ,updateTime ,status ,memo ,province_code ,city_code ,area_code ,refer_user_id ,refer_level,
-        last_login_dateTime,usercardStatus,client_id,app_type
+        last_login_dateTime,usercardStatus,client_id,app_type ,login_count
 	    ]]>
 	</sql>
 
@@ -80,7 +81,7 @@
         	last_login_dateTime,
         	usercardStatus ,
         	client_id,
-        	app_type
+        	app_type ,login_count
 		) VALUES (
         	#{userName,jdbcType=VARCHAR} ,
         	#{sex,jdbcType=INTEGER} ,
@@ -112,7 +113,8 @@
         	#{lastLoginDateTime,jdbcType=TIMESTAMP} ,
         	#{usercardStatus,jdbcType=INTEGER},
         	#{clientId,jdbcType=VARCHAR},
-        	#{appType,jdbcType=INTEGER}
+        	#{appType,jdbcType=INTEGER} ,
+        	#{loginCount,jdbcType=INTEGER}
 		)
 	]]>
 	</insert>
@@ -149,7 +151,8 @@
 		last_login_dateTime ,
 		usercardStatus ,
 		client_id,
-		app_type
+		app_type ,
+		login_count
 		) VALUES (#{userId,jdbcType=INTEGER},
 		#{userName,jdbcType=VARCHAR} ,
 		#{sex,jdbcType=INTEGER} ,
@@ -181,7 +184,8 @@
 		#{lastLoginDateTime,jdbcType=TIMESTAMP} ,
 		#{usercardStatus,jdbcType=INTEGER},
 		#{clientId,jdbcType=VARCHAR},
-		#{appType,jdbcType=INTEGER}
+		#{appType,jdbcType=INTEGER} ,
+		#{loginCount,jdbcType=INTEGER}
 		)
 	</insert>
 
@@ -280,6 +284,9 @@
 			</if>
 			<if test="appType != null">
 				app_type = #{appType,jdbcType=INTEGER} ,
+			</if>
+			<if test="loginCount != null">
+				login_count = #{loginCount,jdbcType=INTEGER} ,
 			</if>
 		</set>
 		WHERE
@@ -542,6 +549,9 @@
 		</if>
 		<if test="appType != null">
 			and app_type = #{appType}
+		</if>
+		<if test="loginCount != null">
+			and login_count = #{loginCount}
 		</if>
 		<if test="DYFansNum != null and DYFansNum.trim() != ''">
 			and fans_num >= #{DYFansNum}

@@ -1416,6 +1416,12 @@ public class UserController extends BaseController {
 			userDB.setUserId(loginUserId);
 			userDB.setLastLoginDateTime(new Date());// 更新最新登陆时间
 			userDB.setKffCoinNum(loginaccount.getKffCoinNum());// 修复user表kffcoinnum 不正确bug
+
+			if (!DateUtil.isToday(loginaccount.getLastLoginDateTime().getTime())) {
+				int loginCount = loginaccount.getLoginCount() + 1;
+				userDB.setLoginCount(loginCount);
+			}
+
 			kffRmiService.updateUser(userDB);
 
 			// 以下 修复移动端出现的取值bug begin

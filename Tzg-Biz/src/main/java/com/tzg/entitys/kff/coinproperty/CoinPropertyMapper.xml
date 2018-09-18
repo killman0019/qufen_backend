@@ -5,6 +5,7 @@
 		<result property="coinPropertyId" jdbcType="INTEGER" column="coin_property_id"/>
 		<result property="userId" jdbcType="INTEGER" column="user_id"/>
 		<result property="coinLock" jdbcType="DOUBLE" column="coin_lock"/>
+		<result property="lastMonthCoinLock" jdbcType="DOUBLE" column="last_month_coin_lock"/>
 		<result property="coinUnlock" jdbcType="DOUBLE" column="coin_unlock"/>
 		<result property="coinUnlockTime" jdbcType="TIMESTAMP" column="coin_unlock_time"/>
 		<result property="coinUnlockType" jdbcType="INTEGER" column="coin_unlock_type"/>
@@ -20,6 +21,7 @@
         coin_property_id ,
         user_id ,
         coin_lock ,
+        last_month_coin_lock,
         coin_unlock ,
         coin_unlock_time ,
         coin_unlock_type ,
@@ -39,6 +41,7 @@
 	        user_id ,
 	        coin_lock ,
 	        coin_unlock ,
+	        last_month_coin_lock,
 	        coin_unlock_time ,
 	        coin_unlock_type ,
 	        coin_distributed ,
@@ -48,6 +51,7 @@
         	#{userId,jdbcType=INTEGER} ,
         	#{coinLock,jdbcType=DOUBLE} ,
         	#{coinUnlock,jdbcType=DOUBLE} ,
+        	#{lastMonthCoinUnlock,jdbcType=DOUBLE} ,
         	#{coinUnlockTime,jdbcType=TIMESTAMP} ,
         	#{coinUnlockType,jdbcType=INTEGER} ,
         	#{coinDistributed,jdbcType=DOUBLE} ,
@@ -69,6 +73,9 @@
 	        </if>
 			<if test="coinUnlock != null">
 	        coin_unlock = #{coinUnlock,jdbcType=DOUBLE} ,
+	        </if>
+	        <if test="lastMonthCoinUnlock != null">
+	       	last_month_coin_unlock = #{lastMonthCoinUnlock,jdbcType=DOUBLE} ,
 	        </if>
 			<if test="coinUnlockTime != null">
 	        coin_unlock_time = #{coinUnlockTime,jdbcType=TIMESTAMP} ,
@@ -181,6 +188,9 @@
 		</if>
 		<if test="coinUnlock != null and coinUnlock.trim() != ''">
 		and coin_unlock = #{coinUnlock}
+		</if>
+		<if test="lastMonthCoinlock != null and lastMonthCoinlock.trim() != ''">
+		and last_month_coin_lock = #{lastMonthCoinlock}
 		</if>
 		<if test="coinUnlockType != null and coinUnlockType.trim() != ''">
 		and coin_unlock_type = #{coinUnlockType}

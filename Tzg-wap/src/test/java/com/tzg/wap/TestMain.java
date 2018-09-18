@@ -11,10 +11,9 @@ import java.util.TimerTask;
 import com.tzg.common.utils.DateUtil;
 
 public class TestMain {
-	private static String firstDay;
-	private static String lastDay;
+	
 
 	public static void main(String[] args) throws ParseException {
-	
+	System.err.println(DateUtil.getCurrentDayOfMonth());
 	}
 }
