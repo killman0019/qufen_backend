@@ -4359,10 +4359,16 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				if (2 == postType) {
 					// 查询爆料的标签
 					Discuss discuss = kffDiscussService.findByPostId(post.getPostId());
-					if (null != discuss) {
-						response.setTagInfos(discuss.getTagInfos());
-					} else {
-						response.setTagInfos(null);
+					response.setTagInfos(discuss.getTagInfos());
+					if(null!=discuss.getRewardActivityId()) {
+						RewardActivity ac = rewardActivityService.findById(discuss.getRewardActivityId());
+						if (ac != null) {
+							// 取悬赏总奖励
+							response.setPostType(4);
+							response.setRewardMoney(ac.getRewardMoney());
+							response.setRewardMoneyToOne(discuss.getRewardMoney());
+							response.setPostIdToReward(ac.getPostId());
+						}
 					}
 				}
 				if (3 == postType) {
