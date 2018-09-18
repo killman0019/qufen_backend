@@ -15,6 +15,7 @@ public class TestMain {
 	private static String lastDay;
 
 	public static void main(String[] args) throws ParseException {
-	
+		System.err.println(DateUtil.getFirstDayLastMonth());
+		System.err.println(DateUtil.getLastDayLasyMonth());
 	}
 }
