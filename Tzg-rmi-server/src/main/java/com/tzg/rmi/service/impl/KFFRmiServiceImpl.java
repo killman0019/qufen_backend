@@ -5228,80 +5228,80 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 
 		// 添加阅读次数
-
-		QfIndex qfIndexUser = qfIndexService.findByUserId(userId);// 阅读人的区分指数
-		QfIndex qfindexCreater = qfIndexService.findByUserId(post.getCreateUserId());
-		Integer createUserId = post.getCreateUserId();
-		if (!userId.equals(createUserId)) {
-			if (qfIndexUser != null && qfindexCreater != null) {
-				if (qfIndexUser.getStatusHierarchyType() > 0) {
-					if (null != qfIndexUser) {
-						int readingDegr = 0;
-						if (qfIndexUser.getReadingDegr() == null) {
-							readingDegr = 0;
-						} else {
-							readingDegr = qfIndexUser.getReadingDegr();
-						}
-
-						if (readingDegr != 0 || qfIndexUser.getReadingDegr() == null) {
-
-							if (DateUtil.isToday(qfIndexUser.getUpdateTime().getTime())) {// 判断点赞人的更新时间是不是今天
-																							// 是今天不更新
-																							// 不是今天更新
-
+		if(null!=userId) {
+			QfIndex qfIndexUser = qfIndexService.findByUserId(userId);// 阅读人的区分指数
+			QfIndex qfindexCreater = qfIndexService.findByUserId(post.getCreateUserId());
+			Integer createUserId = post.getCreateUserId();
+			if (!userId.equals(createUserId)) {
+				if (qfIndexUser != null && qfindexCreater != null) {
+					if (qfIndexUser.getStatusHierarchyType() > 0) {
+						if (null != qfIndexUser) {
+							int readingDegr = 0;
+							if (qfIndexUser.getReadingDegr() == null) {
+								readingDegr = 0;
 							} else {
-								qfIndexService.updateSetAll(qfIndexUser.getUserId());
+								readingDegr = qfIndexUser.getReadingDegr();
 							}
 
-						}
-					}
-					QfIndex qfIndexNew = qfIndexService.findByUserId(userId);
-					if (qfindexCreater.getStatusHierarchyType() > 0) {
-						// 添加阅读次数
-						SystemParam canGetAwardReadingCountSys = systemParamService.findByCode(sysGlobals.CAN_GET_AWARD_READING_COUNT);
-						int i = Integer.valueOf(canGetAwardReadingCountSys.getVcParamValue());
-						int readingDegr = 0;
-						if (null == qfIndexNew.getReadingDegr()) {
-							readingDegr = 0;
-						} else {
-							readingDegr = qfIndexNew.getReadingDegr();
-						}
+							if (readingDegr != 0 || qfIndexUser.getReadingDegr() == null) {
 
-						if (readingDegr < i) {
-							Map<String, Object> tokenMap = new HashMap<String, Object>();
-							tokenMap.put("userId", userId);
-							tokenMap.put("functionType", "28");
-							tokenMap.put("postId", postId);
-							List<Tokenrecords> tokenrecordList = tokenrecordsService.findByMap(tokenMap);
-							if (CollectionUtils.isEmpty(tokenrecordList)) {
-								qfIndexService.updateReadingDegr(userId);
-								SystemParam readingAwardSys = systemParamService.findByCode(sysGlobals.READING_AWARD);
-								Tokenrecords tokenrecords = new Tokenrecords();
-								tokenrecords.setUserId(userId);
-								String format = String.format("%010d", postId);
-								tokenrecords.setTradeCode(format);
-								tokenrecords.setTradeDate(now);
-								tokenrecords.setFunctionDesc("阅读专业评测获得奖励");
-								tokenrecords.setFunctionType(28);
-								tokenrecords.setAmount(new BigDecimal(readingAwardSys.getVcParamValue()));
-								tokenrecords.setTradeDate(now);
-								tokenrecords.setTradeType(1);
-								tokenrecords.setMemo("阅读专业评测获得奖励");
-								tokenrecords.setCreateTime(now);
-								tokenrecords.setUpdateTime(now);
-								tokenrecords.setStatus(1);
-								tokenrecords.setRewardGrantType(1);
-								tokenrecords.setPostId(postId);
-								tokenrecordsService.save(tokenrecords);
+								if (DateUtil.isToday(qfIndexUser.getUpdateTime().getTime())) {// 判断点赞人的更新时间是不是今天
+																								// 是今天不更新
+																								// 不是今天更新
 
-								coinPropertyService.updateCoin(tokenrecords, 1);
+								} else {
+									qfIndexService.updateSetAll(qfIndexUser.getUserId());
+								}
+
+							}
+						}
+						QfIndex qfIndexNew = qfIndexService.findByUserId(userId);
+						if (qfindexCreater.getStatusHierarchyType() > 0) {
+							// 添加阅读次数
+							SystemParam canGetAwardReadingCountSys = systemParamService.findByCode(sysGlobals.CAN_GET_AWARD_READING_COUNT);
+							int i = Integer.valueOf(canGetAwardReadingCountSys.getVcParamValue());
+							int readingDegr = 0;
+							if (null == qfIndexNew.getReadingDegr()) {
+								readingDegr = 0;
+							} else {
+								readingDegr = qfIndexNew.getReadingDegr();
+							}
+
+							if (readingDegr < i) {
+								Map<String, Object> tokenMap = new HashMap<String, Object>();
+								tokenMap.put("userId", userId);
+								tokenMap.put("functionType", "28");
+								tokenMap.put("postId", postId);
+								List<Tokenrecords> tokenrecordList = tokenrecordsService.findByMap(tokenMap);
+								if (CollectionUtils.isEmpty(tokenrecordList)) {
+									qfIndexService.updateReadingDegr(userId);
+									SystemParam readingAwardSys = systemParamService.findByCode(sysGlobals.READING_AWARD);
+									Tokenrecords tokenrecords = new Tokenrecords();
+									tokenrecords.setUserId(userId);
+									String format = String.format("%010d", postId);
+									tokenrecords.setTradeCode(format);
+									tokenrecords.setTradeDate(now);
+									tokenrecords.setFunctionDesc("阅读专业评测获得奖励");
+									tokenrecords.setFunctionType(28);
+									tokenrecords.setAmount(new BigDecimal(readingAwardSys.getVcParamValue()));
+									tokenrecords.setTradeDate(now);
+									tokenrecords.setTradeType(1);
+									tokenrecords.setMemo("阅读专业评测获得奖励");
+									tokenrecords.setCreateTime(now);
+									tokenrecords.setUpdateTime(now);
+									tokenrecords.setStatus(1);
+									tokenrecords.setRewardGrantType(1);
+									tokenrecords.setPostId(postId);
+									tokenrecordsService.save(tokenrecords);
+
+									coinPropertyService.updateCoin(tokenrecords, 1);
+								}
 							}
 						}
 					}
 				}
 			}
 		}
-
 		return response;
 
 	}

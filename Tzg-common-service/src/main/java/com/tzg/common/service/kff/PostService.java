@@ -21,8 +21,12 @@ import com.tzg.common.constants.KFFConstants;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.utils.DateUtil;
+import com.tzg.entitys.kff.activity.RewardActivity;
+import com.tzg.entitys.kff.article.Article;
 import com.tzg.entitys.kff.commendation.Commendation;
 import com.tzg.entitys.kff.commendation.CommendationMapper;
+import com.tzg.entitys.kff.discuss.Discuss;
+import com.tzg.entitys.kff.evaluation.Evaluation;
 import com.tzg.entitys.kff.follow.Follow;
 import com.tzg.entitys.kff.post.Post;
 import com.tzg.entitys.kff.post.PostDiscussVo;
@@ -42,6 +46,8 @@ public class PostService {
 	@Autowired
 	private UserService kffUserService;
 	@Autowired
+	private PraiseService kffPraiseService;
+	@Autowired
 	private FollowService kffFollowService;
 	@Autowired
 	private PostMapper postMapper;
@@ -49,7 +55,15 @@ public class PostService {
 	private CommendationMapper commendationMapper;
 	@Autowired
 	private TokenrecordsMapper tokenrecordsMapper;
-
+	@Autowired
+	private ArticleService kffArticleService;
+	@Autowired
+	private EvaluationService kffEvaluationService;
+	@Autowired
+	private DiscussService kffDiscussService;
+	@Autowired
+	private RewardActivityService rewardActivityService;
+	
 	@Transactional(readOnly = true)
 	public List<PostDiscussVo> findSetTopDiscuss(Map<String,Object> map) throws RestServiceException {
 		return postMapper.findSetTopDiscuss(map);
@@ -106,7 +120,7 @@ public class PostService {
 		}
 		postMapper.update(post);
 	}
-
+	
 	@Transactional(readOnly = true)
 	public PageResult<Post> findPage(PaginationQuery query) throws RestServiceException {
 		PageResult<Post> result = null;
@@ -124,6 +138,94 @@ public class PostService {
 		}
 		return result;
 	}
+	public PageResult<Post> findPageNewestList(PaginationQuery query,Integer typec,
+			Integer userId){
+		query.addQueryData("status", 1);
+		query.addQueryData("postTypec", 4);
+		query.addQueryData("sql_keyword_orderBy", "createTime");
+		query.addQueryData("sql_keyword_sort", "desc");
+		PageResult<Post> result = findPage(query);
+		KFFUser loginUser = null;
+		List<Integer> praisedPostId = null;
+		// 获得点赞postidlist集合
+		if (null != userId) {
+			loginUser = kffUserService.findById(userId);
+			praisedPostId = kffPraiseService.findPraisedPostIdByUserId(loginUser.getUserId());
+		}
+		if(result!=null&&!result.getRows().isEmpty()) {
+			List<Post> postList = result.getRows();
+			for (Post postResponse : postList) {
+				// 设置人的关注状态
+				if (loginUser == null) {
+					postResponse.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+				} else {
+					if (null != praisedPostId && !CollectionUtils.isEmpty(praisedPostId)) {
+						if (praisedPostId.contains(postResponse.getPostId())) {
+							postResponse.setPraiseStatus(1);
+						}
+					}
+					if (typec == 2) {
+						Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER,
+								postResponse.getCreateUserId());
+						if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+							postResponse.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+						} else {
+							postResponse.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+						}
+					} else if (typec == 1) {
+						Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT,
+								postResponse.getProjectId());
+						if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+							postResponse.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+						} else {
+							postResponse.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+						}
+					}
+				}
+				
+				if (null != postResponse.getPostTotalIncome()) {
+					postResponse.setPostTotalIncome(postResponse.getPostTotalIncome());
+				} else {
+					postResponse.setPostTotalIncome(0.0);
+				}
+				Integer postType = postResponse.getPostType();
+				if (1 == postType) {
+					// 查询评测和文章的标签
+					Evaluation evation = kffEvaluationService.findByPostId(postResponse.getPostId());
+					if (null != evation) {
+						postResponse.setTagInfos(evation.getEvaluationTags());
+						postResponse.setTotalScore(evation.getTotalScore());
+					} else {
+						postResponse.setTagInfos(null);
+						postResponse.setTotalScore(new BigDecimal("0"));
+					}
+				}
+				if (2 == postType) {
+					// 查询爆料的标签
+					Discuss discuss = kffDiscussService.findByPostId(postResponse.getPostId());
+					postResponse.setTagInfos(discuss.getTagInfos());
+					if(null!=discuss.getRewardActivityId()) {
+						RewardActivity ac = rewardActivityService.findById(discuss.getRewardActivityId());
+						if (ac != null) {
+							// 取悬赏总奖励
+							postResponse.setPostType(4);
+							postResponse.setRewardMoney(ac.getRewardMoney());
+							postResponse.setRewardMoneyToOne(discuss.getRewardMoney());
+							postResponse.setPostIdToReward(ac.getPostId());
+						}
+					}
+				}
+				if (3 == postType) {
+					// 查询文章的标签
+					Article ac = kffArticleService.findByPostId(postResponse.getPostId());
+					postResponse.setTagInfos(ac.getTagInfos());
+				}
+			}
+		}
+		return result;
+		
+	}
+	
 	
 	@Transactional(readOnly = true)
 	public PageResult<Post> findPageWithFollower(PaginationQuery query,Integer typec,Integer userId) {

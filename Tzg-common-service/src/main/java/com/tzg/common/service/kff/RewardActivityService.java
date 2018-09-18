@@ -723,6 +723,7 @@ public class RewardActivityService {
 				response.setDisscussContents(post.getDisscussContents());
 				response.setPostUuid(post.getPostUuid());
 				response.setPostIdToReward(postId);
+				response.setRewardMoneyToOne(post.getRewardMoney());
 				postResponse.add(response);
 			}
 		}

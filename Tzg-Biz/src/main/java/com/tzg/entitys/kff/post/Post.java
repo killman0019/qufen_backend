@@ -1,6 +1,7 @@
 package com.tzg.entitys.kff.post;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 import com.tzg.common.utils.DateUtil;
@@ -15,6 +16,10 @@ public class Post implements Serializable {
 	 * postId
 	 */
 	private java.lang.Integer postId;
+	/**
+	 * 0 未点 1 点赞
+	 */
+	private Integer praiseStatus = 0;
 	/**
 	 * 是否推荐0否1是
 	 */
@@ -129,7 +134,57 @@ public class Post implements Serializable {
 	 * 标签ID，名称的json串
 	 */
 	private java.lang.String tagInfos;
+	/**
+	 * 项目总评分：1-10精确到1位
+	 */
+	private BigDecimal totalScore = BigDecimal.ZERO;
+	//每个用户回答悬赏能中奖的金额
+	private BigDecimal rewardMoneyToOne;
+	//悬赏的PostId
+	private Integer postIdToReward;
+	//悬赏金额
+	private BigDecimal rewardMoney;
 	
+	public BigDecimal getRewardMoneyToOne() {
+		return rewardMoneyToOne;
+	}
+
+	public void setRewardMoneyToOne(BigDecimal rewardMoneyToOne) {
+		this.rewardMoneyToOne = rewardMoneyToOne;
+	}
+	
+	public BigDecimal getRewardMoney() {
+		return rewardMoney;
+	}
+
+	public void setRewardMoney(BigDecimal rewardMoney) {
+		this.rewardMoney = rewardMoney;
+	}
+
+	public Integer getPostIdToReward() {
+		return postIdToReward;
+	}
+	
+	public void setPostIdToReward(Integer postIdToReward) {
+		this.postIdToReward = postIdToReward;
+	}
+
+	public BigDecimal getTotalScore() {
+		return totalScore;
+	}
+
+	public void setTotalScore(BigDecimal totalScore) {
+		this.totalScore = totalScore;
+	}
+
+	public Integer getPraiseStatus() {
+		return praiseStatus;
+	}
+
+	public void setPraiseStatus(Integer praiseStatus) {
+		this.praiseStatus = praiseStatus;
+	}
+
 	public java.lang.String getTagInfos() {
 		return tagInfos;
 	}

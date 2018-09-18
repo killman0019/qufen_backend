@@ -211,6 +211,13 @@ public class PostResponse implements Serializable, Comparable<Object> {
 	public void setRewardMoneyToOne(BigDecimal rewardMoneyToOne) {
 		this.rewardMoneyToOne = rewardMoneyToOne;
 	}
+	public BigDecimal getRewardMoney() {
+		return rewardMoney;
+	}
+
+	public void setRewardMoney(BigDecimal rewardMoney) {
+		this.rewardMoney = rewardMoney;
+	}
 
 	public String getRewardContents() {
 		return rewardContents;
@@ -218,14 +225,6 @@ public class PostResponse implements Serializable, Comparable<Object> {
 
 	public void setRewardContents(String rewardContents) {
 		this.rewardContents = rewardContents;
-	}
-
-	public BigDecimal getRewardMoney() {
-		return rewardMoney;
-	}
-
-	public void setRewardMoney(BigDecimal rewardMoney) {
-		this.rewardMoney = rewardMoney;
 	}
 
 	public Integer getAnswerCount() {

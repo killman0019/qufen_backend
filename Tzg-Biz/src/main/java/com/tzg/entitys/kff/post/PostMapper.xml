@@ -518,6 +518,9 @@
 		<if test="postType != null and postType.trim() != ''">
 			and post_type = #{postType}
 		</if>
+		<if test="postTypec != null">
+			and post_type != #{postTypec}
+		</if>
 		<if test="postShortDesc != null and postShortDesc.trim() != ''">
 			and post_short_desc = #{postShortDesc}
 		</if>
@@ -582,9 +585,7 @@
 			and post_total_income = #{postTotalIncome,jdbcType=DOUBLE}
 		</if>
 		<if test="isNotEva !=null">
-
 			and (post_type = 2 OR post_type = 3)
-
 		</if>
 	</sql>
 
