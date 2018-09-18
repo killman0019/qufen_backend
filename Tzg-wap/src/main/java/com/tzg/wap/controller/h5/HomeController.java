@@ -144,29 +144,18 @@ public class HomeController extends BaseController {
 				pageSize = (Integer) requestContent.get("pageSize");
 				token = (String) requestContent.get("token");
 			}
-			if(pageIndex==null||pageSize==null) {
+			if(pageIndex==null||pageSize==null||StringUtils.isBlank(token)) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
 			}
-			
-			Integer userId = null;
 			PaginationQuery query = new PaginationQuery();
 			query.addQueryData("status", "1");
-			// query.addQueryData("sortField", "collect_num");
-			// 关注类型：1-关注项目;2-关注帖子；3-关注用户
-			query.addQueryData("followTypec", "2");//除了关注帖子不展示，其他都展示出来
+			query.addQueryData("sort", "tbf.createTime");
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
-
 			Integer type = 2;// 取关注人
-			KFFUser loginUser = null;
-			if(StringUtils.isNotBlank(token)) {
-				userId = getUserIdByToken(token);
-				loginUser = kffUserService.findById(userId);
-			}
-			query.addQueryData("userId", userId);
+			Integer	userId = getUserIdByToken(token);
+			KFFUser	loginUser = kffUserService.findById(userId);
 			PageResult<PostResponse> follows = kffProjectPostRmiService.findPageForFollowList(userId, query,type,loginUser);
-//			PageResult<PostResponse> follows = kffProjectPostRmiService.findMyPageFollowList(userId, query);
-			System.out.println("follows" + follows);
 			map.put("follows", follows);
 			bre.setData(map);
 		} catch (RestServiceException e) {

@@ -315,174 +315,71 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 		return comments;
 
 	}
-
-	/**
-	 * 关注项目：
-		点赞量超过5的内容（评测、爆料、文章）
-		关注用户
-		关注用户发布的内容（评测、爆料、文章）
-		关注用户评论了内容（评测、爆料、文章）；
-		
-		按照发布时间顺序排序，注意去重（不要在1页里展示）。
-	 */
-
+	
+	//关注用户的评测、文章、爆料，全部展示（时间降序）
 	public PageResult<PostResponse> findPageForFollowList(Integer userId, PaginationQuery query, Integer type, KFFUser loginUser) {
-		PageResult<PostResponse> result = new PageResult<>();
-		TreeSet<PostResponse> ts = new TreeSet<PostResponse>();
-		// PageResult<Follow> follows = kffFollowService.findPage(query);
-		List<Follow> followList = kffFollowService.findListByAttr(query.getQueryData());
+		// 关注类型：1-关注项目;2-关注帖子；3-关注用户
+		query.addQueryData("followTypec", 3);
+		query.addQueryData("postTypec", 4);
+		query.addQueryData("followUserIdc", userId);
+		PageResult<PostResponse> result = kffFollowService.findLinkedPage(query);
 		List<Integer> praisedPostId = null;
 		// 获得点赞postidlist集合
 		if (null != loginUser) {
 			praisedPostId = kffPraiseService.findPraisedPostIdByUserId(loginUser.getUserId());
 		}
-		if (!followList.isEmpty()) {
-			SystemParam sysPar = systemParamService.findByCode(sysGlobals.PRISE_TO_FOLLOW_POST);
-			Integer count = Integer.valueOf(sysPar.getVcParamValue());
-			Map<String, Object> seMap = new HashMap<String, Object>();
-			for (int i = 0; i < followList.size(); i++) {
-				Follow follow = followList.get(i);
-				// 查询关注项目
-				if (follow.getFollowType() == FollowType.PROJECTFOLLOW.getValue()) {
-					// 查询项目下的所有帖子（post）
-					seMap.clear();
-					seMap.put("projectId", follow.getFollowedId());
-					seMap.put("state", 2);// 审核状态：1；待审核；2-审核通过；3-拒绝
-					seMap.put("statusc", 1);// 状态：0-删除；1-有效
-					seMap.put("praiseNum", count);// 点赞人数必须大于数据库配置的值
-					List<PostResponse> projectAndPosts = kffProjectService.findLinkedTabsByAttr(seMap);
-//					System.out.println("projectAndPosts1.size------------------------>"+projectAndPosts.size());
-					if(!projectAndPosts.isEmpty()) {
-						for (PostResponse postResponse : projectAndPosts) {
-							ts.add(postResponse);
-						}
-					}
-				}
-				// 查询关注用户
-				if (follow.getFollowType() == FollowType.USERFOLLOW.getValue()) {
-					// 关注用户发布的内容（评测、爆料、文章）
-					seMap.clear();
-					seMap.put("createUserId", follow.getFollowedId());
-					seMap.put("statusc", 1);// 状态：0-删除；1-有效
-					List<PostResponse> projectAndPosts = kffProjectService.findLinkedTabsByAttr(seMap);
-//					System.out.println("projectAndPosts2.size------------------------>"+projectAndPosts.size());
-					if(!projectAndPosts.isEmpty()) {
-						for (PostResponse postResponse : projectAndPosts) {
-							ts.add(postResponse);
-						}
-					}
-					// 关注用户评论了内容（评测、爆料、文章）；
-					seMap.clear();
-					seMap.put("commentUserId", follow.getFollowedId());// 状态：0-删除；1-有效
-					seMap.put("statusc", 1);// 状态：0-删除；1-有效
-					seMap.put("commitTp", 1);// 是否要连接tbcomments
-					List<PostResponse> commitAndPosts = kffProjectService.findLinkedTabsByAttr(seMap);
-//					System.out.println("commitAndPosts.size------------------------>"+commitAndPosts.size());
-					if(!commitAndPosts.isEmpty()) {
-						for (PostResponse postResponse : commitAndPosts) {
-							ts.add(postResponse);
-						}
-					}
-				}
-			}
-		}
-
-		if (!ts.isEmpty()) {
-			List<PostResponse> postResp = new ArrayList<PostResponse>();
-			Iterator<PostResponse> iterator = ts.iterator();
-			while (iterator.hasNext()) {
-				PostResponse postRe = iterator.next();
+		if(result!=null&&!result.getRows().isEmpty()) {
+			List<PostResponse> followList = result.getRows();
+			for (PostResponse postResponse : followList) {
 				// 设置人的关注状态
 				if (loginUser == null) {
-					postRe.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+					postResponse.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
 				} else {
 					if (null != praisedPostId && !CollectionUtils.isEmpty(praisedPostId)) {
-						if (praisedPostId.contains(postRe.getPostId())) {
-							postRe.setPraiseStatus(1);
+						if (praisedPostId.contains(postResponse.getPostId())) {
+							postResponse.setPraiseStatus(1);
 						}
 					}
 					if (type == 2) {
 						Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER,
-								postRe.getCreateUserId());
+								postResponse.getCreateUserId());
 						if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
-							postRe.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+							postResponse.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
 						} else {
-							postRe.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+							postResponse.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
 						}
 					} else if (type == 1) {
 						Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT,
-								postRe.getProjectId());
+								postResponse.getProjectId());
 						if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
-							postRe.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+							postResponse.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
 						} else {
-							postRe.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+							postResponse.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
 						}
 					}
 				}
-				String postSmallImages = postRe.getPostSmallImages();
-				if (StringUtils.isNotBlank(postSmallImages)) {
-					try {
-						List<PostFile> pfl = JSONArray.parseArray(postSmallImages, PostFile.class);
-						if (!pfl.isEmpty()) {
-							for (PostFile postFile : pfl) {
-								if (StringUtils.isNotBlank(postFile.getFileUrl())) {
-									postRe.setPostSmallImagesList(pfl);
-								}
-							}
-						}
-					} catch (Exception e) {
-						logger.error("讨论列表解析帖子缩略图json出错:{}", e);
+				
+				if (null != postResponse.getPostTotalIncome()) {
+					postResponse.setPostTotalIncome(postResponse.getPostTotalIncome());
+				} else {
+					postResponse.setPostTotalIncome(0.0);
+				}
+				Integer postType = postResponse.getPostType();
+				if (1 == postType) {
+					// 查询评测和文章的标签
+					Evaluation evation = kffEvaluationService.findByPostId(postResponse.getPostId());
+					if (null != evation) {
+						postResponse.setTagInfos(evation.getEvaluationTags());
+						postResponse.setTotalScore(evation.getTotalScore());
+					} else {
+						postResponse.setTagInfos(null);
+						postResponse.setTotalScore(new BigDecimal("0"));
 					}
 				}
-				postResp.add(postRe);
-			}
-			//将list降序排列
-			Collections.sort(postResp, new Comparator<PostResponse>(){
-			       @Override
-			       public int compare(PostResponse arg0, PostResponse arg1) {
-				   int mark = 1;
-				   try {
-					Date date0 = arg0.getcreateTime();
-					Date date1 = arg1.getcreateTime();
-					if(date0.getTime() > date1.getTime()){
-					    mark =  -1;
-					}
-					if(arg0.getcreateTime().equals(arg1.getcreateTime())){
-					    mark =  0;
-					}
-				   } catch (Exception e) {
-					logger.error("日期转换异常", e);
-					e.printStackTrace();
-				   }
-				   return mark;
-				} //compare
-			});
-	        List<PostResponse> returnPost = new ArrayList<PostResponse>();
-	        int beginNum = query.getPageIndex();
-	        int endNum = query.getRowsPerPage()*beginNum;
-	        int bbt = (beginNum-1)*10;
-	        for (int i = bbt; i < postResp.size(); i++) {
-	        	if(i<endNum) {
-	        		PostResponse postResponse = postResp.get(i);
-	        		if(postResponse.getPostType()==PostType.ARTICLE.getValue()) {
-						Article article = kffArticleService.findByPostId(postResponse.getPostId());
-						if(null!=article) {
-							postResponse.setTagInfos(article.getTagInfos());
-						}
-					}
-					if(postResponse.getPostType()==PostType.DICCUSS.getValue()) {
-						Discuss discuss = kffDiscussService.findByPostId(postResponse.getPostId());
-						if(null!=discuss) {
-							postResponse.setTagInfos(discuss.getTagInfos());
-						}
-					}
-					if(postResponse.getPostType()==PostType.EVALUATION.getValue()) {
-						Evaluation eval = kffEvaluationService.findByPostId(postResponse.getPostId());
-						if(null!=eval) {
-							postResponse.setEvaluationTags(eval.getEvaluationTags());
-						}
-					}
+				if (2 == postType) {
+					// 查询爆料的标签
 					Discuss discuss = kffDiscussService.findByPostId(postResponse.getPostId());
+					postResponse.setTagInfos(discuss.getTagInfos());
 					if(null!=discuss.getRewardActivityId()) {
 						RewardActivity ac = rewardActivityService.findById(discuss.getRewardActivityId());
 						if (ac != null) {
@@ -493,16 +390,203 @@ public class KFFProjectPostRmiServiceImpl implements KFFProjectPostRmiService {
 							postResponse.setPostIdToReward(ac.getPostId());
 						}
 					}
-	        		returnPost.add(postResponse);
-	        	}else {
-	        		break;
-	        	}
-	        }	
-			Integer count = ts.size();
-			result = new PageResult<PostResponse>(returnPost, count, query);
+				}
+				if (3 == postType) {
+					// 查询文章的标签
+					Article ac = kffArticleService.findByPostId(postResponse.getPostId());
+					postResponse.setTagInfos(ac.getTagInfos());
+				}
+			}
 		}
 		return result;
 	}
+
+	/**
+	 * 关注项目：
+		点赞量超过5的内容（评测、爆料、文章）
+		关注用户
+		关注用户发布的内容（评测、爆料、文章）
+		关注用户评论了内容（评测、爆料、文章）；
+		
+		按照发布时间顺序排序，注意去重（不要在1页里展示）。
+	 */
+//	public PageResult<PostResponse> findPageForFollowList(Integer userId, PaginationQuery query, Integer type, KFFUser loginUser) {
+//		PageResult<PostResponse> result = new PageResult<>();
+//		TreeSet<PostResponse> ts = new TreeSet<PostResponse>();
+//		// PageResult<Follow> follows = kffFollowService.findPage(query);
+//		List<Follow> followList = kffFollowService.findListByAttr(query.getQueryData());
+//		List<Integer> praisedPostId = null;
+//		// 获得点赞postidlist集合
+//		if (null != loginUser) {
+//			praisedPostId = kffPraiseService.findPraisedPostIdByUserId(loginUser.getUserId());
+//		}
+//		if (!followList.isEmpty()) {
+//			SystemParam sysPar = systemParamService.findByCode(sysGlobals.PRISE_TO_FOLLOW_POST);
+//			Integer count = Integer.valueOf(sysPar.getVcParamValue());
+//			Map<String, Object> seMap = new HashMap<String, Object>();
+//			for (int i = 0; i < followList.size(); i++) {
+//				Follow follow = followList.get(i);
+//				// 查询关注项目
+//				if (follow.getFollowType() == FollowType.PROJECTFOLLOW.getValue()) {
+//					// 查询项目下的所有帖子（post）
+//					seMap.clear();
+//					seMap.put("projectId", follow.getFollowedId());
+//					seMap.put("state", 2);// 审核状态：1；待审核；2-审核通过；3-拒绝
+//					seMap.put("statusc", 1);// 状态：0-删除；1-有效
+//					seMap.put("praiseNum", count);// 点赞人数必须大于数据库配置的值
+//					List<PostResponse> projectAndPosts = kffProjectService.findLinkedTabsByAttr(seMap);
+////					System.out.println("projectAndPosts1.size------------------------>"+projectAndPosts.size());
+//					if(!projectAndPosts.isEmpty()) {
+//						for (PostResponse postResponse : projectAndPosts) {
+//							ts.add(postResponse);
+//						}
+//					}
+//				}
+//				// 查询关注用户
+//				if (follow.getFollowType() == FollowType.USERFOLLOW.getValue()) {
+//					// 关注用户发布的内容（评测、爆料、文章）
+//					seMap.clear();
+//					seMap.put("createUserId", follow.getFollowedId());
+//					seMap.put("statusc", 1);// 状态：0-删除；1-有效
+//					List<PostResponse> projectAndPosts = kffProjectService.findLinkedTabsByAttr(seMap);
+////					System.out.println("projectAndPosts2.size------------------------>"+projectAndPosts.size());
+//					if(!projectAndPosts.isEmpty()) {
+//						for (PostResponse postResponse : projectAndPosts) {
+//							ts.add(postResponse);
+//						}
+//					}
+//					// 关注用户评论了内容（评测、爆料、文章）；
+//					seMap.clear();
+//					seMap.put("commentUserId", follow.getFollowedId());// 状态：0-删除；1-有效
+//					seMap.put("statusc", 1);// 状态：0-删除；1-有效
+//					seMap.put("commitTp", 1);// 是否要连接tbcomments
+//					List<PostResponse> commitAndPosts = kffProjectService.findLinkedTabsByAttr(seMap);
+////					System.out.println("commitAndPosts.size------------------------>"+commitAndPosts.size());
+//					if(!commitAndPosts.isEmpty()) {
+//						for (PostResponse postResponse : commitAndPosts) {
+//							ts.add(postResponse);
+//						}
+//					}
+//				}
+//			}
+//		}
+//
+//		if (!ts.isEmpty()) {
+//			List<PostResponse> postResp = new ArrayList<PostResponse>();
+//			Iterator<PostResponse> iterator = ts.iterator();
+//			while (iterator.hasNext()) {
+//				PostResponse postRe = iterator.next();
+//				// 设置人的关注状态
+//				if (loginUser == null) {
+//					postRe.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+//				} else {
+//					if (null != praisedPostId && !CollectionUtils.isEmpty(praisedPostId)) {
+//						if (praisedPostId.contains(postRe.getPostId())) {
+//							postRe.setPraiseStatus(1);
+//						}
+//					}
+//					if (type == 2) {
+//						Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER,
+//								postRe.getCreateUserId());
+//						if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+//							postRe.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+//						} else {
+//							postRe.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+//						}
+//					} else if (type == 1) {
+//						Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT,
+//								postRe.getProjectId());
+//						if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+//							postRe.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+//						} else {
+//							postRe.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+//						}
+//					}
+//				}
+//				String postSmallImages = postRe.getPostSmallImages();
+//				if (StringUtils.isNotBlank(postSmallImages)) {
+//					try {
+//						List<PostFile> pfl = JSONArray.parseArray(postSmallImages, PostFile.class);
+//						if (!pfl.isEmpty()) {
+//							for (PostFile postFile : pfl) {
+//								if (StringUtils.isNotBlank(postFile.getFileUrl())) {
+//									postRe.setPostSmallImagesList(pfl);
+//								}
+//							}
+//						}
+//					} catch (Exception e) {
+//						logger.error("讨论列表解析帖子缩略图json出错:{}", e);
+//					}
+//				}
+//				postResp.add(postRe);
+//			}
+//			//将list降序排列
+//			Collections.sort(postResp, new Comparator<PostResponse>(){
+//			       @Override
+//			       public int compare(PostResponse arg0, PostResponse arg1) {
+//				   int mark = 1;
+//				   try {
+//					Date date0 = arg0.getcreateTime();
+//					Date date1 = arg1.getcreateTime();
+//					if(date0.getTime() > date1.getTime()){
+//					    mark =  -1;
+//					}
+//					if(arg0.getcreateTime().equals(arg1.getcreateTime())){
+//					    mark =  0;
+//					}
+//				   } catch (Exception e) {
+//					logger.error("日期转换异常", e);
+//					e.printStackTrace();
+//				   }
+//				   return mark;
+//				} //compare
+//			});
+//	        List<PostResponse> returnPost = new ArrayList<PostResponse>();
+//	        int beginNum = query.getPageIndex();
+//	        int endNum = query.getRowsPerPage()*beginNum;
+//	        int bbt = (beginNum-1)*10;
+//	        for (int i = bbt; i < postResp.size(); i++) {
+//	        	if(i<endNum) {
+//	        		PostResponse postResponse = postResp.get(i);
+//	        		if(postResponse.getPostType()==PostType.ARTICLE.getValue()) {
+//						Article article = kffArticleService.findByPostId(postResponse.getPostId());
+//						if(null!=article) {
+//							postResponse.setTagInfos(article.getTagInfos());
+//						}
+//					}
+//					if(postResponse.getPostType()==PostType.DICCUSS.getValue()) {
+//						Discuss discuss = kffDiscussService.findByPostId(postResponse.getPostId());
+//						if(null!=discuss) {
+//							postResponse.setTagInfos(discuss.getTagInfos());
+//						}
+//					}
+//					if(postResponse.getPostType()==PostType.EVALUATION.getValue()) {
+//						Evaluation eval = kffEvaluationService.findByPostId(postResponse.getPostId());
+//						if(null!=eval) {
+//							postResponse.setEvaluationTags(eval.getEvaluationTags());
+//						}
+//					}
+//					Discuss discuss = kffDiscussService.findByPostId(postResponse.getPostId());
+//					if(null!=discuss.getRewardActivityId()) {
+//						RewardActivity ac = rewardActivityService.findById(discuss.getRewardActivityId());
+//						if (ac != null) {
+//							// 取悬赏总奖励
+//							postResponse.setPostType(4);
+//							postResponse.setRewardMoney(ac.getRewardMoney());
+//							postResponse.setRewardMoneyToOne(discuss.getRewardMoney());
+//							postResponse.setPostIdToReward(ac.getPostId());
+//						}
+//					}
+//	        		returnPost.add(postResponse);
+//	        	}else {
+//	        		break;
+//	        	}
+//	        }	
+//			Integer count = ts.size();
+//			result = new PageResult<PostResponse>(returnPost, count, query);
+//		}
+//		return result;
+//	}
 
 	@Override
 	public PageResult<PostResponse> findMyPageFollowList(Integer userId, PaginationQuery query) {
