@@ -208,7 +208,7 @@ public class HomeController extends BaseController {
 				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
 			}
 			PaginationQuery query = new PaginationQuery();
-			query.addQueryData("status", "1");
+			query.addQueryData("statusc", "1");
 			query.addQueryData("sort", "tbf.createTime");
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
