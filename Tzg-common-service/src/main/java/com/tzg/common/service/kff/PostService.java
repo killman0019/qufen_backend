@@ -3,10 +3,12 @@ package com.tzg.common.service.kff;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -138,13 +140,23 @@ public class PostService {
 		}
 		return result;
 	}
+	private static Integer getListArr(List<Post> list) {
+		if (list.isEmpty()) {
+			return null;
+		}
+		Random ran = new Random();
+		int con = ran.nextInt(list.size());
+		return con;
+	}
 	public PageResult<Post> findPageNewestList(PaginationQuery query,Integer typec,
-			Integer userId){
+			Integer userId,Integer pageSize){
+		List<Post> postDisscussList = new ArrayList<Post>();
 		query.addQueryData("status", 1);
 		query.addQueryData("postTypec", 4);
 		query.addQueryData("sql_keyword_orderBy", "createTime");
 		query.addQueryData("sql_keyword_sort", "desc");
-		PageResult<Post> result = findPage(query);
+		query.setRowsPerPage(pageSize*2);
+		PageResult<Post> resultc = findPage(query);
 		KFFUser loginUser = null;
 		List<Integer> praisedPostId = null;
 		// 获得点赞postidlist集合
@@ -152,8 +164,33 @@ public class PostService {
 			loginUser = kffUserService.findById(userId);
 			praisedPostId = kffPraiseService.findPraisedPostIdByUserId(loginUser.getUserId());
 		}
-		if(result!=null&&!result.getRows().isEmpty()) {
-			List<Post> postList = result.getRows();
+		if(resultc!=null&&!resultc.getRows().isEmpty()) {
+			resultc.setRowsPerPage(pageSize);
+			List<Post> postList = resultc.getRows();
+			// 从中随机取出rowsPerPage条，等于小于rowsPerPage条就全部取出
+			if (postList.size() <= pageSize) {
+				for (Post postResponse : postList) {
+					postDisscussList.add(postResponse);
+				
+				}
+			} else {
+				List<Integer> usList = new ArrayList<Integer>();
+				for (int i = 0; i < pageSize; i++) {
+					boolean flag = false;
+					while (!flag) {
+						Integer usArr = getListArr(postList);
+						if (!usList.contains(usArr)) {
+							usList.add(usArr);
+							flag = true;
+						}
+					}
+				}
+				for (int i = 0; i < usList.size(); i++) {
+					Post postDiscussVo = postList.get(usList.get(i));
+					postDisscussList.add(postDiscussVo);
+				}
+			}
+			postList = postDisscussList;
 			for (Post postResponse : postList) {
 				// 设置人的关注状态
 				if (loginUser == null) {
@@ -222,8 +259,7 @@ public class PostService {
 				}
 			}
 		}
-		return result;
-		
+		return resultc;
 	}
 	
 	

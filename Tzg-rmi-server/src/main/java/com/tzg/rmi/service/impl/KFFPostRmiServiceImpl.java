@@ -47,8 +47,8 @@ public class KFFPostRmiServiceImpl implements KFFPostRmiService {
 	}
 	
 	public PageResult<Post> findPageNewestList(PaginationQuery query,Integer typec,
-			Integer userId){
-		return kffPostService.findPageNewestList(query, typec, userId);
+			Integer userId,Integer pageSize){
+		return kffPostService.findPageNewestList(query, typec, userId,pageSize);
 	}
 	
 	public PageResult<Post> findPageWithEvaluation(PaginationQuery query){
