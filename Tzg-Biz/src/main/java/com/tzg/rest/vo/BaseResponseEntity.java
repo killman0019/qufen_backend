@@ -1,7 +1,6 @@
 package com.tzg.rest.vo;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;

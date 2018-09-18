@@ -634,8 +634,8 @@ public class RewardActivityService {
 			result.setCurPageNum(posts.getCurPageNum());
 			result.setPageSize(posts.getPageSize());
 			result.setQueryParameters(posts.getQueryParameters());
-			result.setRowCount(posts.getRowCount());
 			result.setRowsPerPage(posts.getRowsPerPage());
+			result.setRowCount(posts.getRowCount());
 			for (PostResponse post : posts.getRows()) {
 				if (StringUtils.isNotBlank(post.getPostShortDesc())) {
 					post.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(post.getPostShortDesc()));
@@ -655,7 +655,11 @@ public class RewardActivityService {
 				response.setPostSmallImages(post.getPostSmallImages());
 				response.setPraiseIncome(post.getPraiseIncome());
 				response.setDonateIncome(post.getDonateIncome());
-				response.setPostTotalIncome(post.getPostTotalIncome());
+				if(post.getPostTotalIncome()==null) {
+					response.setPostTotalIncome(0.0);
+				}else {
+					response.setPostTotalIncome(post.getPostTotalIncome());
+				}
 				if (StringUtils.isNotBlank(post.getPostSmallImages())) {
 					try {
 						List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
@@ -790,7 +794,11 @@ public class RewardActivityService {
 		response.setPostSmallImages(post.getPostSmallImages());
 		response.setPraiseIncome(post.getPraiseIncome());
 		response.setDonateIncome(post.getDonateIncome());
-		response.setPostTotalIncome(post.getPostTotalIncome());
+		if(null==post.getPostTotalIncome()) {
+			response.setPostTotalIncome(0.0);
+		}else {
+			response.setPostTotalIncome(post.getPostTotalIncome());
+		}
 		// 设置人的关注状态
 		if (loginUser == null) {
 			response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);

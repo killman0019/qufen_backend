@@ -225,7 +225,6 @@ public class RewardActivityController extends BaseController {
 	public BaseResponseEntity rewardDetail(HttpServletRequest request,String token,Integer postId) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		try {
-			
 			if(postId==null&&StringUtil.isBlank(token)) {
 				JSONObject requestContent = HtmlUtils.getRequestContent(request);
 				postId = (Integer) requestContent.get("postId");

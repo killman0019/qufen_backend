@@ -152,8 +152,6 @@
 
 	</select>
 
-
-
 	<select id="findPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
 		select count(1) from tbfollow where 1=1
 		<include refid="queryWhere" />
@@ -189,13 +187,16 @@
 			and follow_type = #{followType}
 		</if>
 		<if test="followTypec != null">
-			and follow_type != #{followTypec}
+			and tbf.follow_type = #{followTypec}
 		</if>
 		<if test="followerUserName != null">
 			and follower_user_name = #{followerUserName}
 		</if>
 		<if test="followedUserId != null">
 			and followed_user_id = #{followedUserId}
+		</if>
+		<if test="followUserIdc != null">
+			and tbf.follow_user_id = #{followUserIdc}
 		</if>
 		<if test="followedUserSignature != null">
 			and followed_user_signature = #{followedUserSignature}
@@ -212,6 +213,12 @@
 		<if test="status != null">
 			and status = #{status}
 		</if>
+		<if test="statusc != null">
+			and tbt.status = #{statusc}
+		</if>
+		<if test="postTypec != null">
+			and tbt.post_type != #{postTypec}
+		</if>
 		<if test="createTimeBegin != null">
 			and createTime >= #{createTimeBegin}
 		</if>
@@ -224,7 +231,6 @@
 		<if test="updateTimeEnd != null">
 			and updateTime &lt;= #{updateTimeEnd}
 		</if>
-
 		<if test="followedIds != null and followedIds.size()>0">
 			and followed_id in
 			<foreach collection="followedIds" item="projectId" index="index" open="(" separator="," close=")">
@@ -233,6 +239,56 @@
 		</if>
 	</sql>
 
+
+	<select id="findLinkedPageCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(1) from tbfollow as tbf 
+		INNER JOIN tbuser tbu ON tbu.user_id = tbf.followed_id
+		INNER JOIN tbpost tbt ON tbu.user_id = tbt.create_user_id
+		INNER JOIN tbproject tbp ON tbp.project_id = tbt.project_id
+		where 1=1
+		<include refid="queryWhere" />
+	</select>
+
+	<select id="findLinkedPage" resultType="com.tzg.entitys.kff.post.PostResponse" parameterType="java.util.Map">
+		select 
+			tbt.post_id as postId,
+			tbt.project_id as projectId,
+			tbt.project_icon as projectIcon,
+			tbt.project_code as projectCode,
+			tbt.project_english_name as projectEnglishName,
+			tbt.project_chinese_name as projectChineseName,
+			tbp.project_signature as projectSignature,
+			tbp.total_score as totalScore,
+			tbt.post_title as postTitle,
+			tbt.post_type as postType,
+			tbt.post_short_desc as postShortDesc,
+			tbt.post_small_images as postSmallImages,
+			tbt.comments_num as commentsNum,
+			tbt.praise_num as praiseNum,
+			tbt.pageview_num as pageviewNum,
+			tbt.donate_num as donateNum,
+			tbt.collect_num as collectNum,
+			tbt.create_user_id as createUserId,
+			tbt.create_user_icon as createUserIcon,
+			tbt.create_user_signature as createUserSignature,
+			tbt.create_user_name as createUserName,
+			tbt.createTime as createTime,
+			tbt.updateTime as updateTime,
+			tbt.status as status,
+			tbt.praise_income as praiseIncome,
+			tbt.donate_income as donateIncome,
+			tbt.post_total_income as postTotalIncome,
+			tbu.user_type as userType
+	    from tbfollow as tbf 
+		INNER JOIN tbuser tbu ON tbu.user_id = tbf.followed_id
+		INNER JOIN tbpost tbt ON tbu.user_id = tbt.create_user_id
+		INNER JOIN tbproject tbp ON tbp.project_id = tbt.project_id
+		where 1=1
+		<include refid="queryWhere" /> 
+	    ORDER BY ${sort} desc
+        <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
+	</select>
+
 	<select id="findByMap" resultMap="BaseResultMap" parameterType="java.util.Map">
 		select
 		<include refid="columns" />
@@ -240,12 +296,10 @@
 		tbfollow
 		where 1=1
 		<include refid="queryWhere" />
-
 	</select>
 
 
 	<select id="findPageCountFans" resultType="java.lang.Integer" parameterType="java.util.Map">
-
 		SELECT
 		count(1)
 		FROM
@@ -265,12 +319,8 @@
 		<if test="followedId !=null">
 			and tf.followed_id = #{followedId}
 		</if>
-
-
 		AND tf.`status` = 1
 		AND tu.`status` = 1
-
-
 	</select>
 
 	<select id="findPageFans" resultType="com.tzg.entitys.kff.follow.FollowResponse" parameterType="java.util.Map">

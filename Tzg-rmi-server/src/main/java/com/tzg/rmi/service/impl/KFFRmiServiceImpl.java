@@ -4284,8 +4284,8 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			result.setCurPageNum(posts.getCurPageNum());
 			result.setPageSize(posts.getPageSize());
 			result.setQueryParameters(posts.getQueryParameters());
-			result.setRowCount(posts.getRowCount());
 			result.setRowsPerPage(posts.getRowsPerPage());
+			result.setRowCount(posts.getRowCount());
 			for (PostDiscussVo post : posts.getRows()) {
 				post.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(post.getPostShortDesc()));
 				PostResponse response = new PostResponse();
