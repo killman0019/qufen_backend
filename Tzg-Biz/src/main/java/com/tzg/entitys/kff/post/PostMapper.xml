@@ -837,7 +837,7 @@
 				id = #{id,jdbcType=INTEGER}
 			</if>
 			<if test="modelTypec!=null">
-				and tbe.model_type = #{modelTypec}
+				and tbe.model_type != #{modelTypec}
 			</if>
 			<if test="status!=null">
 				and tpt.status = #{status}

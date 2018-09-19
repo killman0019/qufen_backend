@@ -324,10 +324,9 @@
 			<if test="isNiceChoice != null">
 			and rac.is_nice_choice != #{isNiceChoice}
 			</if>
-			<if test="isNiceChoicec != null">
-			and tbc.is_nice_choice != #{isNiceChoicec}
+			<if test="stickTopc != null">
+			and tpt.stick_top = #{stickTopc}
 			</if>
-			
     	</where>
     </sql>
     
