@@ -2201,6 +2201,15 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				}
 			}
 		}
+		if (createUser.getUserType() != null && createUser.getUserType() == 1) {
+			post.setStickTop(0);
+			post.setType(DiscussType.ORDINARYBURST.getValue());
+		}
+		if (createUser.getUserType() != null && createUser.getUserType() != 1) {
+			post.setStickTop(1);
+			post.setStickUpdateTime(new Date());
+			post.setType(DiscussType.AUTHACCOUNTPUBLISH.getValue());
+		}
 		kffPostService.save(post);
 		Post newPost = kffPostService.findByUUID(uuid);
 		if (newPost == null) {
@@ -2216,15 +2225,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		discuss.setPostId(newPost.getPostId());
 		discuss.setPostUuid(uuid);
 		discuss.setTagInfos(discussRequest.getTagInfos());
-		if (createUser.getUserType() != null && createUser.getUserType() == 1) {
-			discuss.setIsNiceChoice(sysGlobals.DISABLE);
-			discuss.setType(DiscussType.ORDINARYBURST.getValue());
-		}
-		if (createUser.getUserType() != null && createUser.getUserType() != 1) {
-			discuss.setIsNiceChoice(sysGlobals.ENABLE);
-			discuss.setNiceChoiceAt(new Date());
-			discuss.setType(DiscussType.AUTHACCOUNTPUBLISH.getValue());
-		}
 		kffDiscussService.save(discuss);
 		result.put("postId", newPost.getPostId());
 		if (discussRequest.getPostId() != null) {
@@ -2779,16 +2779,16 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 			// 根据 文章详情对象praise 获取帖子类型
 			Post posts = kffPostService.findById(postId);
-			if (null != posts) {
-				// 判断post的点赞数10 ,将推荐状态重置成1 进行推荐
-				if (posts.getPraiseNum() == 50 && posts.getPostType() != 2) {
-					Post postDB = new Post();
-					postDB.setPostId(posts.getPostId());
-					postDB.setStickUpdateTime(now);
-					postDB.setStickTop(1);
-					kffPostService.update(postDB);
-				}
-			}
+//			if (null != posts) {
+//				// 判断post的点赞数10 ,将推荐状态重置成1 进行推荐
+//				if (posts.getPraiseNum() == 50 && posts.getPostType() != 2) {
+//					Post postDB = new Post();
+//					postDB.setPostId(posts.getPostId());
+//					postDB.setStickUpdateTime(now);
+//					postDB.setStickTop(1);
+//					kffPostService.update(postDB);
+//				}
+//			}
 
 			// 判断此post 的发布时间是否在30 天之内
 			QfIndex qfIndexPraiseUser = qfIndexService.findByUserId(userId);
@@ -3387,48 +3387,18 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				}
 			}
 		}
-		// 个推APP推送消息
-		// 查询被点赞的用户
-		// KFFUser kffUserc = kffUserService.findByUserId(post.getCreateUserId());
-		// if (null != kffUserc) {
-		// Integer linkedType = null;
-		// if (post.getPostType() == 1) {
-		// linkedType = LinkedType.CUSTOMEVALUATING.getValue();
-		// }
-		// if (post.getPostType() == 2) {
-		// linkedType = LinkedType.COUNTERFEIT.getValue();
-		// }
-		// if (post.getPostType() == 3) {
-		// linkedType = LinkedType.ARTICLE.getValue();
-		// }
-		// appNewsPush(linkedType, postId, kffUserc.getMobile(), praiseContent);
-		// }
-
 		Post latestPost = kffPostService.findById(postId);
 		if (latestPost != null) {
 			result = latestPost.getPraiseNum() == null ? 0 : (latestPost.getPraiseNum());
 		}
-
 		Map<String, Object> seMap = new HashMap<String, Object>();
 		seMap.put("postId", postId);
 		seMap.put("status", KFFConstants.STATUS_ACTIVE);// 有效的点赞
 		seMap.put("postType", latestPost.getPostType());// 帖子类型：1-评测；2-讨论；3-文章
 		Integer praiseCount = kffPraiseService.findListByAttrByCount(seMap);
-		// 判断爆料的点赞量是否达到表中设定的值，要是相等那么直接将这篇爆料更新为精选爆料
-		if (latestPost.getPostType().equals(PostType.DICCUSS.getValue())) {
-			SystemParam sysCode = systemParamService.findByCode(sysGlobals.DISSCS_POINT_OF_PRAISE);
-			Integer vcPamVal = Integer.valueOf(sysCode.getVcParamValue());
-			if (vcPamVal == praiseCount) {
-				seMap.clear();
-				seMap.put("postId", postId);
-				seMap.put("isNiceChoice", sysGlobals.ENABLE);
-				seMap.put("niceChoiceAt", new Date());
-				seMap.put("type", DiscussType.DOTPRAISE.getValue());
-				kffDiscussService.updateByMap(seMap);
-			}
-		}
-		// 判断评测或文章的点赞量是否达到表中设定的值，要是相等那么直接将这篇评测或文章更新为推荐评测或文章
-		if (latestPost.getPostType().equals(PostType.ARTICLE.getValue()) || latestPost.getPostType().equals(PostType.EVALUATION.getValue())) {
+		// 判断评测，文章，爆料的点赞量是否达到表中设定的值，要是相等那么直接将这篇评测或文章更新为推荐评测或文章
+		if (latestPost.getPostType().equals(PostType.ARTICLE.getValue()) || latestPost.getPostType().equals(PostType.EVALUATION.getValue())
+				||latestPost.getPostType().equals(PostType.DICCUSS.getValue())) {
 			SystemParam sysCode = systemParamService.findByCode(sysGlobals.POST_POINT_OF_PRAISE);
 			Integer vcPamVal = Integer.valueOf(sysCode.getVcParamValue());
 			if (vcPamVal == praiseCount) {
@@ -3473,9 +3443,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				}
 			}
 		}
-
 		caculateEveryPostIncome(postId, post, amountInputDB, 1);
-
 		map.put("isSendPraiseToken", isSendPraiseToken);
 		map.put("retrueDzan", retrueDzan);
 		map.put("praiseNum", result);
