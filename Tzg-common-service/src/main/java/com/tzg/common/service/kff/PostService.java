@@ -151,8 +151,10 @@ public class PostService {
 	public PageResult<Post> findPageNewestList(PaginationQuery query,Integer typec,
 			Integer userId,Integer pageSize){
 		List<Post> postDisscussList = new ArrayList<Post>();
+		List<Post> postResponsec = new ArrayList<>();
+		PageResult<Post> result = new PageResult<Post>();
 		query.addQueryData("status", 1);
-		query.addQueryData("postTypec", 4);
+//		query.addQueryData("postTypec", 4);
 		query.addQueryData("sql_keyword_orderBy", "createTime");
 		query.addQueryData("sql_keyword_sort", "desc");
 		query.setRowsPerPage(pageSize*2);
@@ -191,6 +193,11 @@ public class PostService {
 				}
 			}
 			postList = postDisscussList;
+			result.setCurPageNum(resultc.getCurPageNum());
+			result.setPageSize(resultc.getPageSize());
+			result.setQueryParameters(resultc.getQueryParameters());
+			result.setRowsPerPage(resultc.getRowsPerPage());
+			result.setRowCount(resultc.getRowCount());
 			for (Post postResponse : postList) {
 				// 设置人的关注状态
 				if (loginUser == null) {
@@ -251,15 +258,20 @@ public class PostService {
 							postResponse.setPostIdToReward(ac.getPostId());
 						}
 					}
+					if(13446==postResponse.getPostId()) {
+						System.out.println(postResponse.getPostType());
+					}
 				}
 				if (3 == postType) {
 					// 查询文章的标签
 					Article ac = kffArticleService.findByPostId(postResponse.getPostId());
 					postResponse.setTagInfos(ac.getTagInfos());
 				}
+				postResponsec.add(postResponse);
 			}
 		}
-		return resultc;
+		result.setRows(postResponsec);
+		return result;
 	}
 	
 	

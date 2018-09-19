@@ -105,7 +105,7 @@ public class HomeController extends BaseController {
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
 			Integer type = 2;// 取关注人
-			PageResult<Post> rewards = postRmiService.findPageNewestList(query,userId,type,pageSize);
+			PageResult<Post> rewards = postRmiService.findPageNewestList(query,type,userId,pageSize);
 			if(null!=rewards&&!rewards.getRows().isEmpty()) {
 				bre.setData(rewards);
 				return bre;
