@@ -2575,7 +2575,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				}
 				Integer statusHierarchyType = qfIndexNew.getStatusHierarchyType();
 				// int i = (int) Math.floor(statusHierarchyType * 0.1);
-				if (pushEvaDegr > 0) {
+				if (pushEvaDegr >= 0) {
 					qfIndexService.updatePushEvaCount(createUser.getUserId());
 					// TODO: 添加发布奖励
 					SystemParam pushEvaGetAwardSys = systemParamService.findByCode(sysGlobals.PUSH_EVA_GET_AWARD);
@@ -5371,7 +5371,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 
 		// 添加阅读次数
-		if(null!=userId) {
+		if (null != userId) {
 			QfIndex qfIndexUser = qfIndexService.findByUserId(userId);// 阅读人的区分指数
 			QfIndex qfindexCreater = qfIndexService.findByUserId(post.getCreateUserId());
 			Integer createUserId = post.getCreateUserId();
