@@ -933,7 +933,8 @@
 		select
 		tpt.*,
 		tbt.tag_infos as tagInfos,
-		tbt.reward_activity_id as rewardActivityId
+		tbt.reward_activity_id as rewardActivityId,
+		tbt.reward_money as rewardMoneyToOne
 		from tbpost as tpt
 		LEFT JOIN tbdiscuss as tbt on tpt.post_id=tbt.post_id
 		<include refid="condition" />

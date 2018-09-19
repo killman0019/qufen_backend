@@ -349,6 +349,8 @@ public class PostService {
 					for (Post post : list) {
 						if(post.getRewardActivityId()!=null) {
 							post.setPostType(4);
+							RewardActivity reAct = rewardActivityService.findById(post.getRewardActivityId());
+							post.setRewardMoney(reAct.getRewardMoney());
 						}
 					}
 				}
