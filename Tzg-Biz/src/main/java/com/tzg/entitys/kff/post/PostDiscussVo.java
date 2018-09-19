@@ -135,6 +135,16 @@ public class PostDiscussVo implements Serializable {
 	private Integer disStickTop;
 	//置顶时间
 	private Date disStickUpdateTime;
+	//悬赏的状态：0-进行中，1-已结束，2-已撤销
+	private Integer state;
+	
+	public Integer getState() {
+		return state;
+	}
+
+	public void setState(Integer state) {
+		this.state = state;
+	}
 
 	public Integer getDiscussId() {
 		return discussId;

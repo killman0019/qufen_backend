@@ -4179,9 +4179,171 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		return result;
 	}
 
+	public PageResult<PostResponse> findPageEvaluatingList(Integer loginUserId, PaginationQuery query,
+			Integer type){
+		PageResult<PostResponse> result = new PageResult<PostResponse>();
+		List<PostResponse> postResponse = new ArrayList<>();
+		PageResult<PostDiscussVo> posts = null;
+		int pageIndex = query.getPageIndex();
+		// 第一页先取10条后台人工置顶的文章和评测，然后再从当天所有推荐的评测中随机出去10条
+		List<PostDiscussVo> postDisscussList = new ArrayList<PostDiscussVo>();
+		Map<String, Object> seMap = new HashMap<String, Object>();
+		if (pageIndex == 1) {
+			seMap.clear();
+			seMap.put("status", "1");
+			seMap.put("postTypee", PostType.EVALUATION.getValue());
+			seMap.put("disStickTopc", 1);// 置顶的
+			seMap.put("sort", "dis_stick_updateTime");
+			seMap.put("startRecord", 0);
+			seMap.put("endRecord", 10);
+			seMap.put("linked", "1");
+			seMap.put("modelTypec", "1");//排除简单评测
+			List<PostDiscussVo> postDiscuss = kffPostService.findSetTopPost(seMap);
+			if (!postDiscuss.isEmpty()) {
+				for (PostDiscussVo postDiscussVo : postDiscuss) {
+					postDisscussList.add(postDiscussVo);
+				}
+			}
+		}
+		query.addQueryData("status", "1");
+		query.addQueryData("postTypee", PostType.EVALUATION.getValue());
+		query.addQueryData("disStickTopc1", 1);// 不置顶的
+		query.addQueryData("stickTopc", 1);// 是否推荐：0-否，1-是
+		query.addQueryData("sort", "stick_updateTime");
+		query.addQueryData("linked", "1");
+		query.addQueryData("modelTypec", "1");//排除简单评测
+		PageResult<PostDiscussVo> findPostVoPage = kffPostService.findPostVoPage(query);
+		if (null != findPostVoPage&&!findPostVoPage.getRows().isEmpty()) {
+			List<PostDiscussVo> postDiscusWithDt = findPostVoPage.getRows();
+			for (PostDiscussVo postDiscussVo : postDiscusWithDt) {
+				postDisscussList.add(postDiscussVo);
+			}
+		}
+		Integer count = kffPostService.findSetTopPostCount(query.getQueryData());
+		posts = new PageResult<PostDiscussVo>(postDisscussList, count, query);
+		KFFUser loginUser = null;
+		if (loginUserId != null) {
+			loginUser = kffUserService.findById(loginUserId);
+			registerAward(loginUserId);
+		}
+		if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
+			List<Integer> praisedPostId = null;
+			// 获得点赞postidlist集合
+			if (null != loginUserId) {
+				praisedPostId = kffPraiseService.findPraisedPostIdByUserId(loginUserId);
+			}
+			result.setCurPageNum(posts.getCurPageNum());
+			result.setPageSize(posts.getPageSize());
+			result.setQueryParameters(posts.getQueryParameters());
+			result.setRowsPerPage(posts.getRowsPerPage());
+			result.setRowCount(posts.getRowCount());
+			for (PostDiscussVo post : posts.getRows()) {
+				post.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(post.getPostShortDesc()));
+				PostResponse response = new PostResponse();
+				response.setcreateTime(post.getCreateTime());
+				response.setCreateUserId(post.getCreateUserId());
+				response.setPostId(post.getPostId());
+				response.setPostType(post.getPostType());
+				response.setProjectId(post.getProjectId());
+				response.setStatus(post.getStatus());
+				response.setPraiseIncome(post.getPraiseIncome());
+				response.setDonateIncome(post.getDonateIncome());
+				response.setPostTotalIncome(post.getPostTotalIncome());
+				// 设置post和project信息
+				response.setPostShortDesc(post.getPostShortDesc());
+				response.setPostSmallImages(post.getPostSmallImages());
+				response.setPraiseIncome(post.getPraiseIncome());
+				response.setDonateIncome(post.getDonateIncome());
+				response.setPostTotalIncome(post.getPostTotalIncome());
+				if (null != praisedPostId && !CollectionUtils.isEmpty(praisedPostId)) {
+					if (praisedPostId.contains(post.getPostId())) {
+						response.setPraiseStatus(1);
+					}
+				}
+
+				if (StringUtils.isNotBlank(post.getPostSmallImages())) {
+					try {
+						List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
+						response.setPostSmallImagesList(pfl);
+					} catch (Exception e) {
+						logger.error("首页推荐列表解析帖子缩略图json出错:{}", e);
+					}
+				}
+				response.setPostTitle(post.getPostTitle());
+				response.setCommentsNum(post.getCommentsNum());
+				response.setCollectNum(post.getCollectNum());
+				response.setPraiseNum(post.getPraiseNum());
+				response.setPageviewNum(post.getPageviewNum());
+				response.setDonateNum(post.getDonateNum());
+				response.setCreateUserIcon(post.getCreateUserIcon());
+				response.setCreateUserName(post.getCreateUserName());
+				response.setCreateUserSignature(post.getCreateUserSignature());
+				response.setCommentsNum(post.getCommentsNum());
+				if (post != null) {
+					KFFUser createUser = kffUserService.findByUserId(post.getCreateUserId());
+					response.setUserType(createUser.getUserType());
+				}
+				KFFProject project = kffProjectService.findById(post.getProjectId());
+				if (project != null) {
+					Evaluation eva = kffEvaluationService.findByPostId(post.getPostId());
+					response.setProjectChineseName(project.getProjectChineseName());
+					response.setProjectCode(project.getProjectCode());
+					response.setProjectEnglishName(project.getProjectEnglishName());
+					response.setProjectIcon(project.getProjectIcon());
+					response.setProjectSignature(project.getProjectSignature());
+					if (null != eva) {
+						response.setTotalScore(eva.getTotalScore());
+					} else {
+						response.setTotalScore(project.getTotalScore());
+					}
+				}
+				Integer postType = post.getPostType();
+				if (null!=postType&&1 == postType) {
+					// 查询评测和文章的标签
+					Evaluation evation = kffEvaluationService.findByPostId(post.getPostId());
+					response.setEvaluationTags(evation.getEvaluationTags());
+				}
+				// 设置人的关注状态
+				if (loginUser == null) {
+					response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+				} else {
+					if (type == 2) {
+						Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER,
+								post.getCreateUserId());
+						if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+						} else {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+						}
+					} else if (type == 1) {
+						Follow follow = kffFollowService.findByUserIdAndFollowTypeShow(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT,
+								post.getProjectId());
+						if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+						} else {
+							response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+						}
+					}
+				}
+				if (post.getDisStickTop() == null) {
+					response.setDisStickTop(0);
+				} else {
+					response.setDisStickTop(post.getDisStickTop());
+				}
+				response.setDisStickUpdateTime(post.getDisStickUpdateTime());
+				response.setIsNiceChoice(post.getIsNiceChoice());
+				response.setNiceChoiceAt(post.getNiceChoiceAt());
+				postResponse.add(response);
+			}
+		}
+		result.setRows(postResponse);
+		return result;
+	}
+	
+	
 	@Override
-	public PageResult<PostResponse> findPageRecommendList(Integer loginUserId, PaginationQuery query, Integer type, Integer nowCount)
-			throws RestServiceException {
+	public PageResult<PostResponse> findPageRecommendList(Integer loginUserId, PaginationQuery query,
+			Integer type,Integer nowCount) throws RestServiceException {
 		PageResult<PostResponse> result = new PageResult<PostResponse>();
 		List<PostResponse> postResponse = new ArrayList<>();
 		PageResult<PostDiscussVo> posts = null;

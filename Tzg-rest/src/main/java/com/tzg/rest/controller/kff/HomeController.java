@@ -122,20 +122,63 @@ public class HomeController extends BaseController {
 		return bre;
 	}	
 	
-	/**
-	 * 
-	 * @Title: recommendList
-	 * @Description: 推荐列表
-	 * @param @param request
-	 * @param @param response
-	 * @param @return
-	 * @return BaseResponseEntity
-	 * @see
-	 * @throws
-	 */
-	@RequestMapping(value = "/recommendList", method = { RequestMethod.POST, RequestMethod.GET })
+	/** 
+	* @Title: recommendList 
+	* @Description: TODO <首页评测接口>
+	* @author linj <方法创建作者>
+	* @create 上午9:46:48
+	* @param @param request
+	* @param @param token
+	* @param @param pageIndex
+	* @param @param pageSize
+	* @param @return <参数说明>
+	* @return BaseResponseEntity 
+	* @throws 
+	* @update 上午9:46:48
+	* @updator <推荐列表======>修改为评测接口>
+	* @updateContext <修改内容>
+	*/
 	@ResponseBody
+	@RequestMapping(value = "/recommendList", method = { RequestMethod.POST, RequestMethod.GET })
 	public BaseResponseEntity recommendList(HttpServletRequest request) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+		HashMap<String, Object> map = new HashMap<String, Object>();
+
+		try {
+			BaseRequest baseRequest = getParamMapFromRequestPolicy(request, BaseRequest.class);
+			String token = baseRequest.getToken();
+			Integer userId = null;
+			if (StringUtils.isNotBlank(token)) {
+				userId = getUserIdByToken(token);
+			}
+			PaginationQuery query = new PaginationQuery();
+			query.addQueryData("status", "1");
+			query.addQueryData("stickTop", "1");
+			query.addQueryData("sortField", "stick_updateTime");
+			query.addQueryData("notDiscuss", "true");
+			// query.addQueryData("praiseNum", "10");
+			// 帖子类型：1-评测；2-讨论；3-文章
+			// query.addQueryData("postType", "1");
+			query.setPageIndex(baseRequest.getPageIndex());
+			query.setRowsPerPage(baseRequest.getPageSize());
+			Integer type = 2;// 取关注人
+			PageResult<PostResponse> recommends = kffRmiService.findPageEvaluatingList(userId, query, type);
+			map.put("recommends", recommends);
+			bre.setData(map);
+		} catch (RestServiceException e) {
+			logger.error("HomeController recommendList:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("HomeController recommendList:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+		}
+		return bre;
+	}
+	
+	//新版推荐
+	@ResponseBody
+	@RequestMapping(value = "/newRecommendList", method = { RequestMethod.POST, RequestMethod.GET })
+	public BaseResponseEntity newRecommendList(HttpServletRequest request) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
 
@@ -170,6 +213,7 @@ public class HomeController extends BaseController {
 		}
 		return bre;
 	}
+	
 
 	/**
 	 * @Title: getBurstList

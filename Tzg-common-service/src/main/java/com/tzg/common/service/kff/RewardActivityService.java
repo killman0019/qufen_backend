@@ -144,6 +144,7 @@ public class RewardActivityService {
 			Integer type){
 		PageResult<PostResponse> result = new PageResult<PostResponse>();
 		List<PostResponse> postResponse = new ArrayList<>();
+		query.addQueryData("linkedOne", "1");
 		PageResult<PostResponse> posts = findPostVoPageToReward(query);
 		KFFUser loginUser = null;
 		if (loginUserId != null) {
@@ -166,6 +167,7 @@ public class RewardActivityService {
 					post.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(post.getPostShortDesc()));
 				}
 				PostResponse response = new PostResponse();
+				response.setState(post.getState());
 				response.setcreateTime(post.getcreateTime());
 				response.setCreateUserId(post.getCreateUserId());
 				response.setPostId(post.getPostId());
@@ -313,6 +315,7 @@ public class RewardActivityService {
 			for (PostDiscussVo post : posts.getRows()) {
 				post.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(post.getPostShortDesc()));
 				PostResponse response = new PostResponse();
+				response.setState(post.getState());
 				response.setcreateTime(post.getCreateTime());
 				response.setCreateUserId(post.getCreateUserId());
 				response.setPostId(post.getPostId());
@@ -479,6 +482,7 @@ public class RewardActivityService {
 			for (PostDiscussVo post : posts.getRows()) {
 				post.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(post.getPostShortDesc()));
 				PostResponse response = new PostResponse();
+				response.setState(post.getState());
 				response.setcreateTime(post.getCreateTime());
 				response.setCreateUserId(post.getCreateUserId());
 				response.setPostId(post.getPostId());
@@ -844,6 +848,7 @@ public class RewardActivityService {
 		response.setCommentsNum(post.getCommentsNum());
 		response.setTagInfos(reAct.getTagInfos());
 		response.setPostIdToReward(postId);
+		response.setState(reAct.getState());
 		return response;
 	}
 	
