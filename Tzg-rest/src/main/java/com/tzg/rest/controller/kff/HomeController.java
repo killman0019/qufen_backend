@@ -301,7 +301,7 @@ public class HomeController extends BaseController {
 			}
 			PaginationQuery query = new PaginationQuery();
 			query.addQueryData("statusc", "1");
-			query.addQueryData("sort", "tbf.createTime");
+			query.addQueryData("sort", "tbt.createTime");
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
 			Integer type = 2;// 取关注人

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -154,7 +155,7 @@ public class PostService {
 		List<Post> postResponsec = new ArrayList<>();
 		PageResult<Post> result = new PageResult<Post>();
 		query.addQueryData("status", 1);
-//		query.addQueryData("postTypec", 4);
+		query.addQueryData("postTypec", 4);
 		query.addQueryData("sql_keyword_orderBy", "createTime");
 		query.addQueryData("sql_keyword_sort", "desc");
 		query.setRowsPerPage(pageSize*2);
@@ -187,6 +188,7 @@ public class PostService {
 						}
 					}
 				}
+				Collections.sort(usList);
 				for (int i = 0; i < usList.size(); i++) {
 					Post postDiscussVo = postList.get(usList.get(i));
 					postDisscussList.add(postDiscussVo);
