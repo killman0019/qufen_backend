@@ -2779,16 +2779,16 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 
 			// 根据 文章详情对象praise 获取帖子类型
 			Post posts = kffPostService.findById(postId);
-//			if (null != posts) {
-//				// 判断post的点赞数10 ,将推荐状态重置成1 进行推荐
-//				if (posts.getPraiseNum() == 50 && posts.getPostType() != 2) {
-//					Post postDB = new Post();
-//					postDB.setPostId(posts.getPostId());
-//					postDB.setStickUpdateTime(now);
-//					postDB.setStickTop(1);
-//					kffPostService.update(postDB);
-//				}
-//			}
+			// if (null != posts) {
+			// // 判断post的点赞数10 ,将推荐状态重置成1 进行推荐
+			// if (posts.getPraiseNum() == 50 && posts.getPostType() != 2) {
+			// Post postDB = new Post();
+			// postDB.setPostId(posts.getPostId());
+			// postDB.setStickUpdateTime(now);
+			// postDB.setStickTop(1);
+			// kffPostService.update(postDB);
+			// }
+			// }
 
 			// 判断此post 的发布时间是否在30 天之内
 			QfIndex qfIndexPraiseUser = qfIndexService.findByUserId(userId);
@@ -2829,7 +2829,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					if (null != qfIndex) {// 区分指数不为空
 						createPostUserQFIndex = qfIndex.getStatusHierarchyType();// 获取区分指数分数
 						// 发帖人赞的收益系数
-						createPUF = createPostUserQFIndex * 0.01d;// 得到发帖子的收益系数
+						createPUF = Math.floor(createPostUserQFIndex * 0.01d);// 得到发帖子的收益系数
 					}
 
 					// 满足点赞条件额外送币
@@ -3398,7 +3398,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		Integer praiseCount = kffPraiseService.findListByAttrByCount(seMap);
 		// 判断评测，文章，爆料的点赞量是否达到表中设定的值，要是相等那么直接将这篇评测或文章更新为推荐评测或文章
 		if (latestPost.getPostType().equals(PostType.ARTICLE.getValue()) || latestPost.getPostType().equals(PostType.EVALUATION.getValue())
-				||latestPost.getPostType().equals(PostType.DICCUSS.getValue())) {
+				|| latestPost.getPostType().equals(PostType.DICCUSS.getValue())) {
 			SystemParam sysCode = systemParamService.findByCode(sysGlobals.POST_POINT_OF_PRAISE);
 			Integer vcPamVal = Integer.valueOf(sysCode.getVcParamValue());
 			if (vcPamVal == praiseCount) {
@@ -4147,8 +4147,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		return result;
 	}
 
-	public PageResult<PostResponse> findPageEvaluatingList(Integer loginUserId, PaginationQuery query,
-			Integer type){
+	public PageResult<PostResponse> findPageEvaluatingList(Integer loginUserId, PaginationQuery query, Integer type) {
 		PageResult<PostResponse> result = new PageResult<PostResponse>();
 		List<PostResponse> postResponse = new ArrayList<>();
 		PageResult<PostDiscussVo> posts = null;
@@ -4165,7 +4164,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			seMap.put("startRecord", 0);
 			seMap.put("endRecord", 10);
 			seMap.put("linked", "1");
-			seMap.put("modelTypec", "1");//排除简单评测
+			seMap.put("modelTypec", "1");// 排除简单评测
 			List<PostDiscussVo> postDiscuss = kffPostService.findSetTopPost(seMap);
 			if (!postDiscuss.isEmpty()) {
 				for (PostDiscussVo postDiscussVo : postDiscuss) {
@@ -4179,9 +4178,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		query.addQueryData("stickTopc", 1);// 是否推荐：0-否，1-是
 		query.addQueryData("sort", "stick_updateTime");
 		query.addQueryData("linked", "1");
-		query.addQueryData("modelTypec", "1");//排除简单评测
+		query.addQueryData("modelTypec", "1");// 排除简单评测
 		PageResult<PostDiscussVo> findPostVoPage = kffPostService.findPostVoPage(query);
-		if (null != findPostVoPage&&!findPostVoPage.getRows().isEmpty()) {
+		if (null != findPostVoPage && !findPostVoPage.getRows().isEmpty()) {
 			List<PostDiscussVo> postDiscusWithDt = findPostVoPage.getRows();
 			for (PostDiscussVo postDiscussVo : postDiscusWithDt) {
 				postDisscussList.add(postDiscussVo);
@@ -4260,8 +4259,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					response.setProjectSignature(project.getProjectSignature());
 					if (null == post.getTotalScore()) {
 						response.setTotalScore(project.getTotalScore());
+
 					} else {
 						response.setTotalScore(post.getTotalScore());
+
 					}
 				}
 				response.setTagInfos(post.getTagInfos());
@@ -4301,11 +4302,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		result.setRows(postResponse);
 		return result;
 	}
-	
-	
+
 	@Override
-	public PageResult<PostResponse> findPageRecommendList(Integer loginUserId, PaginationQuery query,
-			Integer type,Integer nowCount) throws RestServiceException {
+	public PageResult<PostResponse> findPageRecommendList(Integer loginUserId, PaginationQuery query, Integer type, Integer nowCount)
+			throws RestServiceException {
 		PageResult<PostResponse> result = new PageResult<PostResponse>();
 		List<PostResponse> postResponse = new ArrayList<>();
 		PageResult<PostDiscussVo> posts = null;
@@ -4479,16 +4479,17 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					// 查询爆料的标签
 					Discuss discuss = kffDiscussService.findByPostId(post.getPostId());
 					response.setTagInfos(discuss.getTagInfos());
-//					if (null != discuss.getRewardActivityId()) {
-//						RewardActivity ac = rewardActivityService.findById(discuss.getRewardActivityId());
-//						if (ac != null) {
-//							// 取悬赏总奖励
-//							response.setPostType(4);
-//							response.setRewardMoney(ac.getRewardMoney());
-//							response.setRewardMoneyToOne(discuss.getRewardMoney());
-//							response.setPostIdToReward(ac.getPostId());
-//						}
-//					}
+					// if (null != discuss.getRewardActivityId()) {
+					// RewardActivity ac =
+					// rewardActivityService.findById(discuss.getRewardActivityId());
+					// if (ac != null) {
+					// // 取悬赏总奖励
+					// response.setPostType(4);
+					// response.setRewardMoney(ac.getRewardMoney());
+					// response.setRewardMoneyToOne(discuss.getRewardMoney());
+					// response.setPostIdToReward(ac.getPostId());
+					// }
+					// }
 				}
 				if (3 == postType) {
 					// 查询文章的标签
