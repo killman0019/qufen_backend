@@ -301,7 +301,7 @@ public class RobotService {
 		ExecutorService newFixedThreadPoolrobot = null;
 		try {
 
-			newFixedThreadPoolrobot = Executors.newFixedThreadPool(10);
+			newFixedThreadPoolrobot = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 4);
 			while (true) {
 				i = i + 1;
 
@@ -700,13 +700,14 @@ public class RobotService {
 			String postCreateBegin = DateUtil.getSpecifiedDayBeforeOrAfter(days);
 			PaginationQuery query = new PaginationQuery();
 			Map<String, Object> map = new HashMap<String, Object>();
+			int j = Runtime.getRuntime().availableProcessors() * 2;
 			map.put("createTimeBegin", postCreateBegin);
 			map.put("sql_keyword_orderBy", "createTime");
 			map.put("sql_keyword_sort", "DESC");
 			map.put("isNotEva", "true");
 			query.setQueryData(map);
 			query.setPageIndex(i);
-			query.setRowsPerPage(5);
+			query.setRowsPerPage(j);
 
 			try {
 				Integer count = postMapper.findPageCount(query.getQueryData());
@@ -729,7 +730,7 @@ public class RobotService {
 			queryEva.addQueryData("postType", "1");
 			queryEva.addQueryData("createTimeBegin", postCreateBegin);
 			queryEva.setPageIndex(i);
-			queryEva.setRowsPerPage(5);
+			queryEva.setRowsPerPage(j);
 			PageResult<Post> posts = kffPostService.findPageRemoveSingleEva(queryEva);
 			if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
 				List<Post> postList = posts.getRows();
