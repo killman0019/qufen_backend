@@ -300,8 +300,11 @@
 			<if test="disStickTopc1!=null">
 			and (rac.dis_stick_top != #{disStickTopc1} or rac.dis_stick_top is null )
 			</if>
-			<if test="stickTopc!=null">
-			and rac.is_nice_choice = #{stickTopc}
+			<if test="stickTopd!=null">
+			and rac.is_nice_choice = #{stickTopd}
+			</if>
+			<if test="stickTope!=null">
+			and tpt.stick_top = #{stickTope}
 			</if>
 			<if test="postId!=null">
 			and rac.post_id = #{postId}

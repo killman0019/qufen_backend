@@ -492,7 +492,7 @@ public class RewardActivityController extends BaseController {
 				query.addQueryData("postTypec", "2");
 				query.addQueryData("status", 1);
 				query.addQueryData("sort", "tpt.stick_updateTime");
-				query.addQueryData("stickTopc", 1);
+				query.addQueryData("stickTope", 1);
 				query.addQueryData("linkedOne", "1");
 				PageResult<PostResponse> rewards = rewardActivityRmiService.findPageForBurstList(userId, query, type);
 				if(null!=rewards&&!rewards.getRows().isEmpty()) {

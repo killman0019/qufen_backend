@@ -449,8 +449,8 @@ public class RewardActivityService {
 		}
 		query.addQueryData("status", "1");
 		query.addQueryData("postTypec", PostType.REWARD.getValue());
-		query.addQueryData("disStickTopc1", 1);// 不置顶的
-		query.addQueryData("stickTopc", 0);// 是否精选：0-是，1-否
+		query.addQueryData("disStickTopc", 0);// 不置顶的
+		query.addQueryData("stickTopd", 0);// 是否精选：0-是，1-否
 		query.addQueryData("sort", "rac.nice_choice_at");
 		PageResult<PostDiscussVo> findPostVoPage = findPostVoPage(query);
 		if (null != findPostVoPage) {

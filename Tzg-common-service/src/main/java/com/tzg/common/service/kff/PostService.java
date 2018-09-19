@@ -345,6 +345,13 @@ public class PostService {
 				query.addQueryData("startRecord", Integer.toString(startRecord));
 				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
 				List<Post> list = postMapper.findPageWithDiscuss(query.getQueryData());
+				if(!list.isEmpty()) {
+					for (Post post : list) {
+						if(post.getRewardActivityId()!=null) {
+							post.setPostType(4);
+						}
+					}
+				}
 				result = new PageResult<Post>(list, count, query);
 			}
 		} catch (Exception e) {

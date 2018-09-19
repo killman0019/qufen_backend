@@ -144,7 +144,17 @@ public class Post implements Serializable {
 	private Integer postIdToReward;
 	//悬赏金额
 	private BigDecimal rewardMoney;
+	//爆料中的悬赏id
+	private Integer rewardActivityId;
 	
+	public Integer getRewardActivityId() {
+		return rewardActivityId;
+	}
+
+	public void setRewardActivityId(Integer rewardActivityId) {
+		this.rewardActivityId = rewardActivityId;
+	}
+
 	public BigDecimal getRewardMoneyToOne() {
 		return rewardMoneyToOne;
 	}
