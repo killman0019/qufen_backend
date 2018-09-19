@@ -28,7 +28,7 @@ import com.tzg.rmi.service.KFFUserRmiService;
 @Controller(value = "KFFDiscussController")
 @RequestMapping("/kff/discuss")
 public class DiscussController extends BaseController {
-	private static Logger log = Logger.getLogger(DiscussController.class);
+	private static Logger logger = Logger.getLogger(DiscussController.class);
 	@Autowired
 	private KFFRmiService kffRmiService;
 	@Autowired
