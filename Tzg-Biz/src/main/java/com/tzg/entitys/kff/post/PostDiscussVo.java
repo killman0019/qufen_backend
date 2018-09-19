@@ -1,6 +1,7 @@
 package com.tzg.entitys.kff.post;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 import com.tzg.common.utils.DateUtil;
@@ -137,7 +138,19 @@ public class PostDiscussVo implements Serializable {
 	private Date disStickUpdateTime;
 	//悬赏的状态：0-进行中，1-已结束，2-已撤销
 	private Integer state;
+	/**
+	 * 项目总评分：1-10精确到1位
+	 */
+	private BigDecimal totalScore = BigDecimal.ZERO;
 	
+	public BigDecimal getTotalScore() {
+		return totalScore;
+	}
+
+	public void setTotalScore(BigDecimal totalScore) {
+		this.totalScore = totalScore;
+	}
+
 	public Integer getState() {
 		return state;
 	}

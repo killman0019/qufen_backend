@@ -4285,24 +4285,16 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				}
 				KFFProject project = kffProjectService.findById(post.getProjectId());
 				if (project != null) {
-					Evaluation eva = kffEvaluationService.findByPostId(post.getPostId());
 					response.setProjectChineseName(project.getProjectChineseName());
 					response.setProjectCode(project.getProjectCode());
 					response.setProjectEnglishName(project.getProjectEnglishName());
 					response.setProjectIcon(project.getProjectIcon());
 					response.setProjectSignature(project.getProjectSignature());
-					if (null != eva) {
-						response.setTotalScore(eva.getTotalScore());
-					} else {
+					if (null == post.getTotalScore()) {
 						response.setTotalScore(project.getTotalScore());
-					}
+					} 
 				}
-				Integer postType = post.getPostType();
-				if (null!=postType&&1 == postType) {
-					// 查询评测和文章的标签
-					Evaluation evation = kffEvaluationService.findByPostId(post.getPostId());
-					response.setEvaluationTags(evation.getEvaluationTags());
-				}
+				response.setTagInfos(post.getTagInfos());
 				// 设置人的关注状态
 				if (loginUser == null) {
 					response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);

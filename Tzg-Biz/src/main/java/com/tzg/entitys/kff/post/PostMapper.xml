@@ -807,6 +807,10 @@
 		tpt.post_total_income as postTotalIncome,
 		tpt.type as type,
 		tpt.dis_stick_top as disStickTop,
+		<if test="linked!=null">
+		tbe.evaluation_tags as tagInfos,
+		tbe.total_score as totalScore,
+		</if>
 		tpt.dis_stick_updateTime as disStickUpdateTime
 		from tbpost as tpt
 		<if test="linked!=null">
