@@ -195,6 +195,16 @@ public class PostResponse implements Serializable, Comparable<Object> {
 	private BigDecimal rewardMoneyToOne;
 	//悬赏的PostId
 	private Integer postIdToReward;
+	//悬赏的状态：0-进行中，1-已结束，2-已撤销
+	private Integer state;
+	
+	public Integer getState() {
+		return state;
+	}
+
+	public void setState(Integer state) {
+		this.state = state;
+	}
 	
 	public Integer getPostIdToReward() {
 		return postIdToReward;

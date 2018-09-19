@@ -807,8 +807,15 @@
 		tpt.post_total_income as postTotalIncome,
 		tpt.type as type,
 		tpt.dis_stick_top as disStickTop,
+		<if test="linked!=null">
+		tbe.evaluation_tags as tagInfos,
+		tbe.total_score as totalScore,
+		</if>
 		tpt.dis_stick_updateTime as disStickUpdateTime
 		from tbpost as tpt
+		<if test="linked!=null">
+			INNER JOIN tbevaluation as tbe on tpt.post_id = tbe.post_id
+		</if>
 		<include refid="condition" />
 		ORDER BY ${sort} desc
 		<if test="startRecord != null and endRecord!=null">
@@ -818,6 +825,9 @@
 
 	<select id="findSetTopPostCount" resultType="java.lang.Integer" parameterType="java.util.Map">
 		select count(1) from tbpost as tpt
+		<if test="linked!=null">
+			INNER JOIN tbevaluation as tbe on tpt.post_id = tbe.post_id
+		</if>
 		<include refid="condition" />
 	</select>
 
@@ -825,6 +835,9 @@
 		<where>
 			<if test="id != null">
 				id = #{id,jdbcType=INTEGER}
+			</if>
+			<if test="modelTypec!=null">
+				and tbe.model_type = #{modelTypec}
 			</if>
 			<if test="status!=null">
 				and tpt.status = #{status}
@@ -837,6 +850,9 @@
 			</if>
 			<if test="postTypec!=null">
 				and tpt.post_type != #{postTypec} and tpt.post_type != 4
+			</if>
+			<if test="postTypee!=null">
+				and tpt.post_type = #{postTypee}
 			</if>
 			<if test="beginDt!=null">
 				and tds.nice_choice_at &gt;= #{beginDt}

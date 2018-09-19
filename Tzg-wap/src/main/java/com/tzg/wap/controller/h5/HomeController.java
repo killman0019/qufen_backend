@@ -105,7 +105,7 @@ public class HomeController extends BaseController {
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
 			Integer type = 2;// 取关注人
-			PageResult<Post> rewards = postRmiService.findPageNewestList(query,userId,type);
+			PageResult<Post> rewards = postRmiService.findPageNewestList(query,userId,type,pageSize);
 			if(null!=rewards&&!rewards.getRows().isEmpty()) {
 				bre.setData(rewards);
 				return bre;
@@ -123,24 +123,68 @@ public class HomeController extends BaseController {
 	
 	/** 
 	* @Title: recommendList 
-	* @Description: TODO <首页推荐列表>
+	* @Description: TODO <首页评测接口>
 	* @author linj <方法创建作者>
-	* @create 下午5:01:53
+	* @create 上午9:46:48
 	* @param @param request
-	* @param @param response
-	* @param @param token 用户登录唯一标识
-	* @param @param pageIndex 第几页
-	* @param @param pageSize 每页几条
+	* @param @param token
+	* @param @param pageIndex
+	* @param @param pageSize
 	* @param @return <参数说明>
 	* @return BaseResponseEntity 
 	* @throws 
-	* @update 下午5:01:53
-	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @update 上午9:46:48
+	* @updator <推荐列表======>修改为评测接口>
 	* @updateContext <修改内容>
 	*/
 	@ResponseBody
 	@RequestMapping(value = "/recommendList", method = { RequestMethod.POST, RequestMethod.GET })
-	public BaseResponseEntity recommendList(HttpServletRequest request, HttpServletResponse response,
+	public BaseResponseEntity recommendList(HttpServletRequest request,String token,Integer pageIndex,
+			Integer pageSize) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		try {
+			if(pageIndex==null&&pageSize==null&&StringUtils.isBlank(token)) {
+				JSONObject requestContent = HtmlUtils.getRequestContent(request);
+				pageIndex = (Integer) requestContent.get("pageIndex");
+				pageSize = (Integer) requestContent.get("pageSize");
+				token = (String) requestContent.get("token");
+			}
+			if (pageIndex==null||pageSize==null) {
+				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
+			}
+			Integer userId = null;
+			if (StringUtils.isNotBlank(token)) {
+				userId = getUserIdByToken(token);
+			}
+			PaginationQuery query = new PaginationQuery();
+			query.addQueryData("status", "1");
+			query.addQueryData("stickTop", "1");
+			query.addQueryData("sortField", "stick_updateTime");
+			query.addQueryData("notDiscuss", "true");
+			// query.addQueryData("praiseNum", "10");
+			// 帖子类型：1-评测；2-讨论；3-文章
+			// query.addQueryData("postType", "1");
+			query.setPageIndex(pageIndex);
+			query.setRowsPerPage(pageSize);
+			Integer type = 2;// 取关注人
+			PageResult<PostResponse> recommends = kffRmiService.findPageEvaluatingList(userId, query, type);
+			map.put("recommends", recommends);
+			bre.setData(map);
+		} catch (RestServiceException e) {
+			logger.error("HomeController recommendList:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("HomeController recommendList:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+		}
+		return bre;
+	}
+	
+	//新版推荐
+	@ResponseBody
+	@RequestMapping(value = "/newRecommendList", method = { RequestMethod.POST, RequestMethod.GET })
+	public BaseResponseEntity newRecommendList(HttpServletRequest request, HttpServletResponse response,
 			String token,Integer pageIndex,Integer pageSize) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
@@ -161,7 +205,6 @@ public class HomeController extends BaseController {
 			PaginationQuery query = new PaginationQuery();
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
-//			Integer type = 1;// 取关项目
 			Integer type = 2;// 取关注人
 			Integer nowCount = pageSize;
 			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query, type, nowCount);
@@ -208,7 +251,7 @@ public class HomeController extends BaseController {
 				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
 			}
 			PaginationQuery query = new PaginationQuery();
-			query.addQueryData("status", "1");
+			query.addQueryData("statusc", "1");
 			query.addQueryData("sort", "tbf.createTime");
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
