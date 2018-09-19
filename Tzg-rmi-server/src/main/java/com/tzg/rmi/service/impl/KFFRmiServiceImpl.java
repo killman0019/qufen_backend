@@ -4347,7 +4347,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		if (pageIndex == 1) {
 			seMap.clear();
 			seMap.put("status", "1");
-			seMap.put("postTypec", PostType.DICCUSS.getValue());
+			seMap.put("postTypec", PostType.REWARD.getValue());
 			seMap.put("disStickTopc", 1);// 置顶的
 			seMap.put("sort", "dis_stick_updateTime");
 			seMap.put("startRecord", 0);
@@ -4355,11 +4355,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			List<PostDiscussVo> postDiscuss = kffPostService.findSetTopPost(seMap);
 			if (!postDiscuss.isEmpty()) {
 				for (PostDiscussVo postDiscussVo : postDiscuss) {
-
 					if (postDiscussVo.getPostType() == 1) {
 						Evaluation eval = kffEvaluationService.findByPostId(postDiscussVo.getPostId());
 						if (eval.getModelType() == 1) {
-
 							continue;
 						}
 					}
@@ -4370,7 +4368,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		SystemParam sysPar = systemParamService.findByCode(sysGlobals.POST_EVERY_PAGE);
 		query.setRowsPerPage(Integer.valueOf(sysPar.getVcParamValue()));
 		query.addQueryData("status", "1");
-		query.addQueryData("postTypec", PostType.DICCUSS.getValue());
+		query.addQueryData("postTypec", PostType.REWARD.getValue());
 		query.addQueryData("disStickTopc1", 1);// 不置顶的
 		query.addQueryData("stickTopc", 1);// 是否推荐：0-否，1-是
 		query.addQueryData("sort", "stick_updateTime");
@@ -4385,7 +4383,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						if (postDiscussVo.getPostType() == 1) {
 							Evaluation eval = kffEvaluationService.findByPostId(postDiscussVo.getPostId());
 							if (eval.getModelType() == 1) {
-
 								continue;
 							}
 						}
@@ -4507,11 +4504,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				if (1 == postType) {
 					// 查询评测和文章的标签
 					Evaluation evation = kffEvaluationService.findByPostId(post.getPostId());
-					if (null != evation) {
-						response.setEvaluationTags(evation.getEvaluationTags());
-					} else {
-						response.setEvaluationTags(null);
-					}
+					response.setTagInfos(evation.getEvaluationTags());
 				}
 				if (2 == postType) {
 					// 查询爆料的标签
@@ -4531,11 +4524,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				if (3 == postType) {
 					// 查询文章的标签
 					Article ac = kffArticleService.findByPostId(post.getPostId());
-					if (null != ac) {
-						response.setTagInfos(ac.getTagInfos());
-					} else {
-						response.setTagInfos(null);
-					}
+					response.setTagInfos(ac.getTagInfos());
 				}
 				// 设置人的关注状态
 				if (loginUser == null) {

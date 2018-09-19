@@ -201,6 +201,11 @@ public class RewardActivityService {
 				response.setCreateUserName(post.getCreateUserName());
 				response.setCreateUserSignature(post.getCreateUserSignature());
 				response.setCommentsNum(post.getCommentsNum());
+				if (null == post.getType()) {
+					response.setType(DiscussType.ORDINARYBURST.getValue());
+				} else {
+					response.setType(post.getType());
+				}
 				if (post != null) {
 					KFFUser createUser = kffUserService.findByUserId(post.getCreateUserId());
 					response.setUserType(createUser.getUserType());
@@ -222,6 +227,14 @@ public class RewardActivityService {
 					Discuss discuss = discussService.findByPostId(post.getPostId());
 					if(null!=discuss) {
 						response.setTagInfos(discuss.getTagInfos());
+						RewardActivity ac = rewardActivityMapper.findById(discuss.getRewardActivityId());
+						if(ac!=null) {
+							//取悬赏总奖励
+							response.setRewardMoney(ac.getRewardMoney());
+							response.setRewardMoneyToOne(discuss.getRewardMoney());
+							response.setPostIdToReward(ac.getPostId());
+							response.setPostType(4);
+						}
 					}
 				}
 				if (4 == postType) {
@@ -270,25 +283,11 @@ public class RewardActivityService {
 				response.setDiscussId(post.getDiscussId());
 				response.setDisscussContents(post.getDisscussContents());
 				response.setPostUuid(post.getPostUuid());
-//				if (null == post.getIsNiceChoice()) {
-//					response.setIsNiceChoice(sysGlobals.DISABLE);
-//				} else {
-//					response.setIsNiceChoice(post.getIsNiceChoice());
-//				}
-//				response.setNiceChoiceAt(post.getNiceChoiceAt());
-				if (null == post.getType()) {
-					response.setType(DiscussType.ORDINARYBURST.getValue());
-				} else {
-					response.setType(post.getType());
-				}
-//				response.setDisStickTop(post.getDisStickTop());
-//				response.setDisStickUpdateTime(post.getDisStickUpdateTime());
 				postResponse.add(response);
 			}
 		}
 		result.setRows(postResponse);
 		return result;
-		
 	}
 	
 	@Transactional(readOnly = true)
