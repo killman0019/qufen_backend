@@ -2829,7 +2829,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					if (null != qfIndex) {// 区分指数不为空
 						createPostUserQFIndex = qfIndex.getStatusHierarchyType();// 获取区分指数分数
 						// 发帖人赞的收益系数
-						createPUF = createPostUserQFIndex * 0.01d;// 得到发帖子的收益系数
+						createPUF = Math.floor(createPostUserQFIndex * 0.01d);// 得到发帖子的收益系数
 					}
 
 					// 满足点赞条件额外送币
@@ -4179,8 +4179,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		return result;
 	}
 
-	public PageResult<PostResponse> findPageEvaluatingList(Integer loginUserId, PaginationQuery query,
-			Integer type){
+	public PageResult<PostResponse> findPageEvaluatingList(Integer loginUserId, PaginationQuery query, Integer type) {
 		PageResult<PostResponse> result = new PageResult<PostResponse>();
 		List<PostResponse> postResponse = new ArrayList<>();
 		PageResult<PostDiscussVo> posts = null;
@@ -4197,7 +4196,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			seMap.put("startRecord", 0);
 			seMap.put("endRecord", 10);
 			seMap.put("linked", "1");
-			seMap.put("modelTypec", "1");//排除简单评测
+			seMap.put("modelTypec", "1");// 排除简单评测
 			List<PostDiscussVo> postDiscuss = kffPostService.findSetTopPost(seMap);
 			if (!postDiscuss.isEmpty()) {
 				for (PostDiscussVo postDiscussVo : postDiscuss) {
@@ -4211,9 +4210,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		query.addQueryData("stickTopc", 1);// 是否推荐：0-否，1-是
 		query.addQueryData("sort", "stick_updateTime");
 		query.addQueryData("linked", "1");
-		query.addQueryData("modelTypec", "1");//排除简单评测
+		query.addQueryData("modelTypec", "1");// 排除简单评测
 		PageResult<PostDiscussVo> findPostVoPage = kffPostService.findPostVoPage(query);
-		if (null != findPostVoPage&&!findPostVoPage.getRows().isEmpty()) {
+		if (null != findPostVoPage && !findPostVoPage.getRows().isEmpty()) {
 			List<PostDiscussVo> postDiscusWithDt = findPostVoPage.getRows();
 			for (PostDiscussVo postDiscussVo : postDiscusWithDt) {
 				postDisscussList.add(postDiscussVo);
@@ -4292,7 +4291,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					response.setProjectSignature(project.getProjectSignature());
 					if (null == post.getTotalScore()) {
 						response.setTotalScore(project.getTotalScore());
-					} 
+					}
 				}
 				response.setTagInfos(post.getTagInfos());
 				// 设置人的关注状态
@@ -4331,11 +4330,10 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		result.setRows(postResponse);
 		return result;
 	}
-	
-	
+
 	@Override
-	public PageResult<PostResponse> findPageRecommendList(Integer loginUserId, PaginationQuery query,
-			Integer type,Integer nowCount) throws RestServiceException {
+	public PageResult<PostResponse> findPageRecommendList(Integer loginUserId, PaginationQuery query, Integer type, Integer nowCount)
+			throws RestServiceException {
 		PageResult<PostResponse> result = new PageResult<PostResponse>();
 		List<PostResponse> postResponse = new ArrayList<>();
 		PageResult<PostDiscussVo> posts = null;
