@@ -4260,7 +4260,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					response.setProjectSignature(project.getProjectSignature());
 					if (null == post.getTotalScore()) {
 						response.setTotalScore(project.getTotalScore());
-					} 
+					} else {
+						response.setTotalScore(post.getTotalScore());
+					}
 				}
 				response.setTagInfos(post.getTagInfos());
 				// 设置人的关注状态
@@ -4428,7 +4430,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 						response.setPraiseStatus(1);
 					}
 				}
-
 				if (StringUtils.isNotBlank(post.getPostSmallImages())) {
 					try {
 						List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
@@ -4478,16 +4479,16 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					// 查询爆料的标签
 					Discuss discuss = kffDiscussService.findByPostId(post.getPostId());
 					response.setTagInfos(discuss.getTagInfos());
-					if (null != discuss.getRewardActivityId()) {
-						RewardActivity ac = rewardActivityService.findById(discuss.getRewardActivityId());
-						if (ac != null) {
-							// 取悬赏总奖励
-							response.setPostType(4);
-							response.setRewardMoney(ac.getRewardMoney());
-							response.setRewardMoneyToOne(discuss.getRewardMoney());
-							response.setPostIdToReward(ac.getPostId());
-						}
-					}
+//					if (null != discuss.getRewardActivityId()) {
+//						RewardActivity ac = rewardActivityService.findById(discuss.getRewardActivityId());
+//						if (ac != null) {
+//							// 取悬赏总奖励
+//							response.setPostType(4);
+//							response.setRewardMoney(ac.getRewardMoney());
+//							response.setRewardMoneyToOne(discuss.getRewardMoney());
+//							response.setPostIdToReward(ac.getPostId());
+//						}
+//					}
 				}
 				if (3 == postType) {
 					// 查询文章的标签
