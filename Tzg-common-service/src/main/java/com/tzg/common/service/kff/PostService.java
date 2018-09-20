@@ -369,6 +369,7 @@ public class PostService {
 							post.setPostType(4);
 							RewardActivity reAct = rewardActivityService.findById(post.getRewardActivityId());
 							post.setRewardMoney(reAct.getRewardMoney());
+							post.setPostIdToReward(reAct.getPostId());
 						}
 					}
 				}
