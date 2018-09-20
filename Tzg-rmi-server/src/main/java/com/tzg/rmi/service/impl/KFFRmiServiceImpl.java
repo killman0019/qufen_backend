@@ -2581,7 +2581,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					statusHierarchyType = 0;
 				}
 
-				if (pushEvaDegr >= 0) {
+				if (pushEvaDegr >= 0 && statusHierarchyType > 0) {
 					qfIndexService.updatePushEvaCount(createUser.getUserId());
 					// TODO: 添加发布奖励
 					SystemParam pushEvaGetAwardSys = systemParamService.findByCode(sysGlobals.PUSH_EVA_GET_AWARD);
