@@ -453,7 +453,7 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 			// PageResult<ProjectResponse> projectsPage = kffRmiService.findProjectByCodePage(1,
 			// userId, null, pageIndex, pageSize);
 			query.addQueryData("sortField", "tpt.rank");
-			query.addQueryData("sortSequence", "desc");
+			query.addQueryData("sortSequence", "asc");
 
 			PageResult<ProjectResponse> projectsPage = kffProjectService.findAllProjectAndTrade(query);
 			if (null != projectsPage && null != projectsPage.getRows() && !CollectionUtils.isEmpty(projectsPage.getRows())) {
