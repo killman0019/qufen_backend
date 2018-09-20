@@ -2616,9 +2616,15 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				if (qfIndexNew.getPushEvaDegr() != null) {
 					pushEvaDegr = qfIndexNew.getPushEvaDegr();
 				}
-				Integer statusHierarchyType = qfIndexNew.getStatusHierarchyType();
-				// int i = (int) Math.floor(statusHierarchyType * 0.1);
-				if (pushEvaDegr >= 0) {
+				Integer statusHierarchyType = 0;
+				if (qfIndexNew.getStatusHierarchyType() != null) {
+					statusHierarchyType = qfIndexNew.getStatusHierarchyType();
+				}
+				if (qfIndexNew.getStatusHierarchyType() == null) {
+					statusHierarchyType = 0;
+				}
+
+				if (pushEvaDegr >= 0 && statusHierarchyType > 0) {
 					qfIndexService.updatePushEvaCount(createUser.getUserId());
 					// TODO: 添加发布奖励
 					SystemParam pushEvaGetAwardSys = systemParamService.findByCode(sysGlobals.PUSH_EVA_GET_AWARD);
@@ -6657,6 +6663,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		qfIndex.setStatusHierarchyType(0);
 		qfIndex.setYxpraise(0);
 		qfIndex.setCreateTime(new Date());
+		qfIndex.setUpdateTime(new Date());
 		qfIndexService.save(qfIndex);
 		// 将用户信息同步到钱包表中
 		KFFUserWallet kffUserWallet = new KFFUserWallet();
