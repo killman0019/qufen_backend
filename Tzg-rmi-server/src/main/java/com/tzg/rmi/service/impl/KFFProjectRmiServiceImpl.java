@@ -452,7 +452,7 @@ public class KFFProjectRmiServiceImpl implements KFFProjectRmiService {
 			// 查询全部项目
 			// PageResult<ProjectResponse> projectsPage = kffRmiService.findProjectByCodePage(1,
 			// userId, null, pageIndex, pageSize);
-			query.addQueryData("sortField", "tpt.market_cap");
+			query.addQueryData("sortField", "tpt.rank");
 			query.addQueryData("sortSequence", "desc");
 
 			PageResult<ProjectResponse> projectsPage = kffProjectService.findAllProjectAndTrade(query);
