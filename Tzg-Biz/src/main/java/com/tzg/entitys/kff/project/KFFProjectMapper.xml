@@ -395,7 +395,7 @@
 		<if test="projectIcon != null">
 			and project_icon = #{projectIcon}
 		</if>
-		<if test="state != null and state.trim() != ''">
+		<if test="state != null">
 			and state = #{state}
 		</if>
 		<if test="projectCode != null and projectCode.trim() != ''">
