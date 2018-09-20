@@ -551,6 +551,7 @@ public class ProjectController extends BaseController {
 			}
 			// 1-按关注数量倒序；2-按名称排序
 			int sortType = (Integer) params.get("sortType") == null ? 2 : (Integer) params.get("sortType");
+			sortType = 1;
 			PageResult<ProjectResponse> projects = kffRmiService.findProjectByCodePage(sortType, userId, projectCode, pageIndex, pageSize);
 			map.put("projects", projects);
 			bre.setData(map);
