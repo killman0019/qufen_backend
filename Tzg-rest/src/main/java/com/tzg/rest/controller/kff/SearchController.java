@@ -100,6 +100,7 @@ public class SearchController extends BaseController {
 				Integer typec = 2;// 取关注人
 				query.addQueryData("sql_keyword_orderBy", "createTime");
 				query.addQueryData("sql_keyword_sort", "desc");
+				query.addQueryData("postTypec", 4);
 				PageResult<Post> data = postRmiService.findPageWithFollower(query,typec,userId);
 				if(null!=data) {
 					if(!data.getRows().isEmpty()) {

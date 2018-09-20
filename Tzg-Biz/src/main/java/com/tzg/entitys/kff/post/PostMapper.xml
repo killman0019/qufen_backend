@@ -515,7 +515,7 @@
 		<if test="postTitle != null and postTitle.trim() != ''">
 			and post_title = #{postTitle}
 		</if>
-		<if test="postType != null and postType.trim() != ''">
+		<if test="postType != null">
 			and post_type = #{postType}
 		</if>
 		<if test="postTypec != null">
