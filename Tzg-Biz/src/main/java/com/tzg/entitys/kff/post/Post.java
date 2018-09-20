@@ -146,7 +146,19 @@ public class Post implements Serializable {
 	private BigDecimal rewardMoney;
 	//爆料中的悬赏id
 	private Integer rewardActivityId;
+	/**
+	 * 用户类型
+	 */
+	private Integer userType;
 	
+	public Integer getUserType() {
+		return userType;
+	}
+
+	public void setUserType(Integer userType) {
+		this.userType = userType;
+	}
+
 	public Integer getRewardActivityId() {
 		return rewardActivityId;
 	}

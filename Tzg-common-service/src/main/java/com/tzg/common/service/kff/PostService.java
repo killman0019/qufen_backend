@@ -239,6 +239,9 @@ public class PostService {
 					// 查询评测和文章的标签
 					Evaluation evation = kffEvaluationService.findByPostId(postResponse.getPostId());
 					if (null != evation) {
+						if(evation.getModelType()==1) {
+							continue;
+						}
 						postResponse.setTagInfos(evation.getEvaluationTags());
 						postResponse.setTotalScore(evation.getTotalScore());
 					} else {
@@ -268,6 +271,13 @@ public class PostService {
 					// 查询文章的标签
 					Article ac = kffArticleService.findByPostId(postResponse.getPostId());
 					postResponse.setTagInfos(ac.getTagInfos());
+				}
+				//查询发布人的类型
+				KFFUser user = kffUserService.findById(postResponse.getCreateUserId());
+				if(user!=null) {
+					postResponse.setUserType(user.getUserType());
+				}else {
+					postResponse.setUserType(1);
 				}
 				postResponsec.add(postResponse);
 			}
