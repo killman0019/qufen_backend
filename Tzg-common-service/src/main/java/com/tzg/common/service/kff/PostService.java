@@ -307,6 +307,12 @@ public class PostService {
 								}
 							} 
 						}
+						Discuss dis = kffDiscussService.findByPostId(post.getPostId());
+						if(null!=dis) {
+							if(dis.getRewardActivityId()!=null) {
+								post.setPostType(4);
+							}
+						}
 					}
 				}
 				result = new PageResult<Post>(list, count, query);
