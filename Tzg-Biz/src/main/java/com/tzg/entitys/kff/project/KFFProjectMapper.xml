@@ -387,7 +387,7 @@
 			and project_id = #{projectId}
 		</if>
 		<if test="title != null">
-			and (project_english_name like CONCAT('%', #{title},'%') or project_chinese_name like CONCAT('%', #{title},'%'))
+			and (project_code like CONCAT('%', #{title},'%') or project_english_name like CONCAT('%', #{title},'%') or project_chinese_name like CONCAT('%', #{title},'%'))
 		</if>
 		<if test="hotProject != null">
 			and follower_num > #{hotProject}
