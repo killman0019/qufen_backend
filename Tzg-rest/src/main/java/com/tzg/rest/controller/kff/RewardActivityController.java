@@ -480,6 +480,7 @@ public class RewardActivityController extends BaseController {
 				}else if(typec==2) {
 					query.addQueryData("status", 1);
 					query.addQueryData("sort", "rac.reward_money");
+					query.addQueryData("state", 0);
 				}
 				query.addQueryData("postTypec", "4");
 				PageResult<PostResponse> rewards = rewardActivityRmiService.findPageForNewAndHighList(userId, query, type);
