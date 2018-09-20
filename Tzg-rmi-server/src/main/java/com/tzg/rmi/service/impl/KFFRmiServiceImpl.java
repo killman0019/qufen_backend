@@ -2573,8 +2573,14 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				if (qfIndexNew.getPushEvaDegr() != null) {
 					pushEvaDegr = qfIndexNew.getPushEvaDegr();
 				}
-				Integer statusHierarchyType = qfIndexNew.getStatusHierarchyType();
-				// int i = (int) Math.floor(statusHierarchyType * 0.1);
+				Integer statusHierarchyType = 0;
+				if (qfIndexNew.getStatusHierarchyType() != null) {
+					statusHierarchyType = qfIndexNew.getStatusHierarchyType();
+				}
+				if (qfIndexNew.getStatusHierarchyType() == null) {
+					statusHierarchyType = 0;
+				}
+
 				if (pushEvaDegr >= 0) {
 					qfIndexService.updatePushEvaCount(createUser.getUserId());
 					// TODO: 添加发布奖励
