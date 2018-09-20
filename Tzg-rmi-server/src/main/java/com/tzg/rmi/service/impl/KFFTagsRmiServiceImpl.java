@@ -95,6 +95,7 @@ public class KFFTagsRmiServiceImpl implements KFFTagsRmiService {
 				DozerMapperUtils.map(tagsType, tagsTypeResponse);
 				Map<String, Object> dtagsMap = new HashMap<String, Object>();
 				dtagsMap.put("typeId", tagsType.getTypeId());
+				dtagsMap.put("status", "1");
 				List<Dtags> dtagsList = dtagsService.findByMap(dtagsMap);
 				tagsTypeResponse.setDtagsList(dtagsList);
 				tagsTypeResponseList.add(tagsTypeResponse);
