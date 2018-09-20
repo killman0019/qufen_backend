@@ -6620,6 +6620,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		qfIndex.setStatusHierarchyType(0);
 		qfIndex.setYxpraise(0);
 		qfIndex.setCreateTime(new Date());
+		qfIndex.setUpdateTime(new Date());
 		qfIndexService.save(qfIndex);
 		// 将用户信息同步到钱包表中
 		KFFUserWallet kffUserWallet = new KFFUserWallet();
