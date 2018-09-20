@@ -7423,7 +7423,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			return null;
 		}
 		QfIndex qfUser = qfIndexService.findByUserId(userId);
-		if (qfUser != null) {
+		if (qfUser != null && qfUser.getStatusHierarchyType() == 0) {
 
 			qfUser.setStatusHierarchyType(100);
 			qfUser.setStatusHierarchyDesc("平民");
