@@ -167,6 +167,8 @@ public final class sysGlobals {
 	 * 阅读达到此篇数的评测才能获到奖励
 	 */
 	public static final String CAN_GET_AWARD_READING_COUNT = "CAN_GET_AWARD_READING_COUNT";
+	public static final String RBT_COMMENT_NUM_BEGIN = "RBT_COMMENT_NUM_BEGIN";
+	public static final String RBT_COMMENT_NUM_END = "RBT_COMMENT_NUM_END";
 
 	/**推送给全部用户默认一次取多少消息*/
 	public static Integer DEFAULT_MSG_COUNT = 1000;

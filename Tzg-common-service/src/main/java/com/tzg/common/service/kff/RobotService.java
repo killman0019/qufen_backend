@@ -148,9 +148,9 @@ public class RobotService {
 			redisService.put("commendationNumRBT", commdationNum + "", 60 * 60 * 24);
 			*/
 			// 评论//每天取一次
-			SystemParam sysBeginC = systemParamService.findByCode(sysGlobals.RBT_PRAISE_NUM_BEGIN);
+			SystemParam sysBeginC = systemParamService.findByCode(sysGlobals.RBT_COMMENT_NUM_BEGIN);
 			Integer CBegin = Integer.valueOf(sysBeginC.getVcParamValue());
-			SystemParam sysEndC = systemParamService.findByCode(sysGlobals.RBT_PRAISE_NUM_END);
+			SystemParam sysEndC = systemParamService.findByCode(sysGlobals.RBT_COMMENT_NUM_END);
 			Integer CEnd = Integer.valueOf(sysEndC.getVcParamValue());
 			Integer commentNum = RandomUtil.randomNumber(CBegin, CEnd);
 			redisService.del("commentNumRBT");
