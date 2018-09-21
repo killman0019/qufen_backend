@@ -2244,15 +2244,15 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				}
 			}
 		}
-		if (createUser.getUserType() != null && createUser.getUserType() == 1) {
-			post.setStickTop(0);
-			post.setType(DiscussType.ORDINARYBURST.getValue());
-		}
-		if (createUser.getUserType() != null && createUser.getUserType() != 1) {
-			post.setStickTop(1);
-			post.setStickUpdateTime(new Date());
-			post.setType(DiscussType.AUTHACCOUNTPUBLISH.getValue());
-		}
+//		if (createUser.getUserType() != null && createUser.getUserType() == 1) {
+//			post.setStickTop(0);
+//			post.setType(DiscussType.ORDINARYBURST.getValue());
+//		}
+//		if (createUser.getUserType() != null && createUser.getUserType() != 1) {
+//			post.setStickTop(1);
+//			post.setStickUpdateTime(new Date());
+//			post.setType(DiscussType.AUTHACCOUNTPUBLISH.getValue());
+//		}
 		kffPostService.save(post);
 		Post newPost = kffPostService.findByUUID(uuid);
 		if (newPost == null) {
