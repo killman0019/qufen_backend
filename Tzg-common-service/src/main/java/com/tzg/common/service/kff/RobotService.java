@@ -12,6 +12,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -256,21 +258,22 @@ public class RobotService {
 		if (hour <= 22 && hour >= 9) {
 
 			// 1分钟
-			int min = 1 * 60 * 1000;
+			int min = 1 * 60;
 			// 到10分钟
-			int max = 9 * 60 * 1000;
+			int max = 10 * 60;
 			int ran = RandomUtil.randomNumber(min, max);
-			ExecutorService executorService = null;
+			ScheduledExecutorService executorService = null;
 			try {
-				executorService = Executors.newScheduledThreadPool(ran);
-				executorService.execute(new Runnable() {
+				executorService = Executors.newScheduledThreadPool(1);
+
+				executorService.schedule(new Runnable() {
 
 					@Override
 					public void run() {
 
 						robotTask(k);
 					}
-				});
+				}, ran, TimeUnit.SECONDS);
 			} catch (Exception e) {
 
 				e.printStackTrace();
