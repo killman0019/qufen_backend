@@ -2260,10 +2260,6 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		}
 		// 更新用户发帖数
 		kffUserService.increasePostNum(createUser.getUserId(), KFFConstants.POST_TYPE_DISCUSS);
-		/**
-		 * 用户类型:1-普通用户；2-项目方；3-评测机构；4-机构用户
-		 * 用户认证账号及用户的类型不等于1，发布的爆料就为精选爆料
-		 */
 		discuss.setDisscussContents(discussRequest.getDisscussContents());
 		discuss.setPostId(newPost.getPostId());
 		discuss.setPostUuid(uuid);
@@ -3448,9 +3444,27 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 		// 判断评测，文章，爆料的点赞量是否达到表中设定的值，要是相等那么直接将这篇评测或文章更新为推荐评测或文章
 		if (latestPost.getPostType().equals(PostType.ARTICLE.getValue()) || latestPost.getPostType().equals(PostType.EVALUATION.getValue())
 				|| latestPost.getPostType().equals(PostType.DICCUSS.getValue())) {
-			SystemParam sysCode = systemParamService.findByCode(sysGlobals.POST_POINT_OF_PRAISE);
-			Integer vcPamVal = Integer.valueOf(sysCode.getVcParamValue());
-			if (vcPamVal == praiseCount) {
+			boolean flag = true;
+			Integer num = 0;
+			if(latestPost.getPostType()==2) {
+				Discuss dis = kffDiscussService.findByPostId(latestPost.getPostId());
+				if(dis!=null&&dis.getRewardActivityId()!=null) {
+					flag = false;
+					SystemParam sysCode = systemParamService.findByCode(sysGlobals.DISSCS_POINT_OF_PRAISE);
+					Integer vcPamVal = Integer.valueOf(sysCode.getVcParamValue());
+					if (vcPamVal == praiseCount) {
+						num = 1;
+					}
+				}
+			}
+			if(flag) {
+				SystemParam sysCode = systemParamService.findByCode(sysGlobals.POST_POINT_OF_PRAISE);
+				Integer vcPamVal = Integer.valueOf(sysCode.getVcParamValue());
+				if (vcPamVal == praiseCount) {
+					num = 2;
+				}
+			}
+			if(num==1||num==2) {
 				seMap.clear();
 				seMap.put("postId", postId);
 				seMap.put("stickTop", 1);// 是否推荐：0-否，1-是
@@ -3491,6 +3505,49 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					}
 				}
 			}
+//			SystemParam sysCode = systemParamService.findByCode(sysGlobals.POST_POINT_OF_PRAISE)
+//			Integer vcPamVal = Integer.valueOf(sysCode.getVcParamValue());
+//			if (vcPamVal == praiseCount) {
+//				seMap.clear();
+//				seMap.put("postId", postId);
+//				seMap.put("stickTop", 1);// 是否推荐：0-否，1-是
+//				seMap.put("stickUpdateTime", new Date()); // 操作推荐时间
+//				seMap.put("type", DiscussType.DOTPRAISE.getValue());
+//				kffPostService.updateByMap(seMap);
+//				// 个推APP推送消息
+//				if (null != praise) {
+//					KFFUser createUser = kffUserService.findById(praise.getBepraiseUserId());
+//					if (null != createUser && post.getPostType() != 4) {
+//						Integer linkedType = null;
+//						if (post.getPostType() == 1) {
+//							linkedType = LinkedType.CUSTOMEVALUATING.getValue();
+//						}
+//						if (post.getPostType() == 2) {
+//							linkedType = LinkedType.COUNTERFEIT.getValue();
+//						}
+//						if (post.getPostType() == 3) {
+//							linkedType = LinkedType.ARTICLE.getValue();
+//						}
+//						appNewsPush(linkedType, post.getPostId(), null, createUser.getMobile(), sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle()
+//								+ sysGlobals.CONTENT_GETUI_MSG_END);
+//						// 推送点赞过10上推荐发APP消息
+//						KFFMessage msg = new KFFMessage();
+//						msg.setType(12);
+//						msg.setStatus(1);
+//						msg.setState(1);
+//						msg.setCreateTime(now);
+//						msg.setUpdateTime(now);
+//						msg.setUserId(post.getCreateUserId());
+//						msg.setTitle(sysGlobals.GETUI_NOTIFY);
+//						msg.setContent(sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle() + sysGlobals.CONTENT_GETUI_MSG_END);
+//						msg.setSenderUserId(sysGlobals.QUFEN_ACCOUNT_ID);
+//						msg.setJumpInfo(sysGlobals.QUFEN_ACCOUNT_ID.toString());
+//						msg.setPostId(post.getPostId());
+//						msg.setPostType(post.getPostType());
+//						kffMessageService.save(msg);
+//					}
+//				}
+//			}
 		}
 		caculateEveryPostIncome(postId, post, amountInputDB, 1);
 		map.put("isSendPraiseToken", isSendPraiseToken);
@@ -4528,17 +4585,16 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					// 查询爆料的标签
 					Discuss discuss = kffDiscussService.findByPostId(post.getPostId());
 					response.setTagInfos(discuss.getTagInfos());
-					// if (null != discuss.getRewardActivityId()) {
-					// RewardActivity ac =
-					// rewardActivityService.findById(discuss.getRewardActivityId());
-					// if (ac != null) {
-					// // 取悬赏总奖励
-					// response.setPostType(4);
-					// response.setRewardMoney(ac.getRewardMoney());
-					// response.setRewardMoneyToOne(discuss.getRewardMoney());
-					// response.setPostIdToReward(ac.getPostId());
-					// }
-					// }
+					 if (null != discuss.getRewardActivityId()) {
+					 RewardActivity ac = rewardActivityService.findById(discuss.getRewardActivityId());
+						 if (ac != null) {
+							 // 取悬赏总奖励
+							 response.setPostType(4);
+							 response.setRewardMoney(ac.getRewardMoney());
+							 response.setRewardMoneyToOne(discuss.getRewardMoney());
+							 response.setPostIdToReward(ac.getPostId());
+						 }
+					 }
 				}
 				if (3 == postType) {
 					// 查询文章的标签
