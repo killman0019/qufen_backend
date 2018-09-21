@@ -2244,15 +2244,15 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				}
 			}
 		}
-//		if (createUser.getUserType() != null && createUser.getUserType() == 1) {
-//			post.setStickTop(0);
-//			post.setType(DiscussType.ORDINARYBURST.getValue());
-//		}
-//		if (createUser.getUserType() != null && createUser.getUserType() != 1) {
-//			post.setStickTop(1);
-//			post.setStickUpdateTime(new Date());
-//			post.setType(DiscussType.AUTHACCOUNTPUBLISH.getValue());
-//		}
+		// if (createUser.getUserType() != null && createUser.getUserType() == 1) {
+		// post.setStickTop(0);
+		// post.setType(DiscussType.ORDINARYBURST.getValue());
+		// }
+		// if (createUser.getUserType() != null && createUser.getUserType() != 1) {
+		// post.setStickTop(1);
+		// post.setStickUpdateTime(new Date());
+		// post.setType(DiscussType.AUTHACCOUNTPUBLISH.getValue());
+		// }
 		kffPostService.save(post);
 		Post newPost = kffPostService.findByUUID(uuid);
 		if (newPost == null) {
@@ -2273,44 +2273,47 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			seMap.put("postId", discussRequest.getPostId());
 			seMap.put("answerCount", 1);
 			rewardActivityService.updateByMap(seMap);
-//			Post ppt = kffPostService.findById(discussRequest.getPostId());
-//			KFFUser createUserc = new KFFUser();
-//			if (null != ppt) {
-//				createUserc = kffUserService.findById(ppt.getCreateUserId());
-//			}
+			// Post ppt = kffPostService.findById(discussRequest.getPostId());
+			// KFFUser createUserc = new KFFUser();
+			// if (null != ppt) {
+			// createUserc = kffUserService.findById(ppt.getCreateUserId());
+			// }
 			// 个推APP推送消息
-//			if (null != createUserc) {
-//				Integer linkedType = null;
-//				if (ppt.getPostType() == 1) {
-//					linkedType = LinkedType.CUSTOMEVALUATING.getValue();
-//				}
-//				if (ppt.getPostType() == 2) {
-//					linkedType = LinkedType.COUNTERFEIT.getValue();
-//				}
-//				if (ppt.getPostType() == 3) {
-//					linkedType = LinkedType.ARTICLE.getValue();
-//				}
-//				if (ppt.getPostType() == 4) {
-//					linkedType = 6;// 悬赏
-//				}
-//				appNewsPush(linkedType, discussRequest.getPostId(), sysGlobals.REWARD_TITLE, createUserc.getMobile(),
-//						sysGlobals.REWARD_CONTENT_BEGING + ppt.getPostTitle() + sysGlobals.REWARD_CONTENT_END);
-//				// 向APP端推送消息
-//				KFFMessage msg = new KFFMessage();
-//				msg.setType(13);
-//				msg.setStatus(1);
-//				msg.setState(1);
-//				msg.setCreateTime(now);
-//				msg.setUpdateTime(now);
-//				msg.setUserId(ppt.getCreateUserId());
-//				msg.setTitle(sysGlobals.REWARD_TITLE);
-//				msg.setContent(sysGlobals.REWARD_CONTENT_BEGING + ppt.getPostTitle() + sysGlobals.REWARD_CONTENT_END);
-//				msg.setSenderUserId(sysGlobals.QUFEN_ACCOUNT_ID);
-//				msg.setJumpInfo(sysGlobals.QUFEN_ACCOUNT_ID.toString());
-//				msg.setPostId(ppt.getPostId());
-//				msg.setPostType(ppt.getPostType());
-//				kffMessageService.save(msg);
-//			}
+			// if (null != createUserc) {
+			// Integer linkedType = null;
+			// if (ppt.getPostType() == 1) {
+			// linkedType = LinkedType.CUSTOMEVALUATING.getValue();
+			// }
+			// if (ppt.getPostType() == 2) {
+			// linkedType = LinkedType.COUNTERFEIT.getValue();
+			// }
+			// if (ppt.getPostType() == 3) {
+			// linkedType = LinkedType.ARTICLE.getValue();
+			// }
+			// if (ppt.getPostType() == 4) {
+			// linkedType = 6;// 悬赏
+			// }
+			// appNewsPush(linkedType, discussRequest.getPostId(), sysGlobals.REWARD_TITLE,
+			// createUserc.getMobile(),
+			// sysGlobals.REWARD_CONTENT_BEGING + ppt.getPostTitle() +
+			// sysGlobals.REWARD_CONTENT_END);
+			// // 向APP端推送消息
+			// KFFMessage msg = new KFFMessage();
+			// msg.setType(13);
+			// msg.setStatus(1);
+			// msg.setState(1);
+			// msg.setCreateTime(now);
+			// msg.setUpdateTime(now);
+			// msg.setUserId(ppt.getCreateUserId());
+			// msg.setTitle(sysGlobals.REWARD_TITLE);
+			// msg.setContent(sysGlobals.REWARD_CONTENT_BEGING + ppt.getPostTitle() +
+			// sysGlobals.REWARD_CONTENT_END);
+			// msg.setSenderUserId(sysGlobals.QUFEN_ACCOUNT_ID);
+			// msg.setJumpInfo(sysGlobals.QUFEN_ACCOUNT_ID.toString());
+			// msg.setPostId(ppt.getPostId());
+			// msg.setPostType(ppt.getPostType());
+			// kffMessageService.save(msg);
+			// }
 		} else {
 			result.put("postType", newPost.getPostType());
 		}
@@ -3446,9 +3449,9 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 				|| latestPost.getPostType().equals(PostType.DICCUSS.getValue())) {
 			boolean flag = true;
 			Integer num = 0;
-			if(latestPost.getPostType()==2) {
+			if (latestPost.getPostType() == 2) {
 				Discuss dis = kffDiscussService.findByPostId(latestPost.getPostId());
-				if(dis!=null&&dis.getRewardActivityId()!=null) {
+				if (dis != null && dis.getRewardActivityId() != null) {
 					flag = false;
 					SystemParam sysCode = systemParamService.findByCode(sysGlobals.DISSCS_POINT_OF_PRAISE);
 					Integer vcPamVal = Integer.valueOf(sysCode.getVcParamValue());
@@ -3457,14 +3460,14 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					}
 				}
 			}
-			if(flag) {
+			if (flag) {
 				SystemParam sysCode = systemParamService.findByCode(sysGlobals.POST_POINT_OF_PRAISE);
 				Integer vcPamVal = Integer.valueOf(sysCode.getVcParamValue());
 				if (vcPamVal == praiseCount) {
 					num = 2;
 				}
 			}
-			if(num==1||num==2) {
+			if (num == 1 || num == 2) {
 				seMap.clear();
 				seMap.put("postId", postId);
 				seMap.put("stickTop", 1);// 是否推荐：0-否，1-是
@@ -3505,49 +3508,51 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					}
 				}
 			}
-//			SystemParam sysCode = systemParamService.findByCode(sysGlobals.POST_POINT_OF_PRAISE)
-//			Integer vcPamVal = Integer.valueOf(sysCode.getVcParamValue());
-//			if (vcPamVal == praiseCount) {
-//				seMap.clear();
-//				seMap.put("postId", postId);
-//				seMap.put("stickTop", 1);// 是否推荐：0-否，1-是
-//				seMap.put("stickUpdateTime", new Date()); // 操作推荐时间
-//				seMap.put("type", DiscussType.DOTPRAISE.getValue());
-//				kffPostService.updateByMap(seMap);
-//				// 个推APP推送消息
-//				if (null != praise) {
-//					KFFUser createUser = kffUserService.findById(praise.getBepraiseUserId());
-//					if (null != createUser && post.getPostType() != 4) {
-//						Integer linkedType = null;
-//						if (post.getPostType() == 1) {
-//							linkedType = LinkedType.CUSTOMEVALUATING.getValue();
-//						}
-//						if (post.getPostType() == 2) {
-//							linkedType = LinkedType.COUNTERFEIT.getValue();
-//						}
-//						if (post.getPostType() == 3) {
-//							linkedType = LinkedType.ARTICLE.getValue();
-//						}
-//						appNewsPush(linkedType, post.getPostId(), null, createUser.getMobile(), sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle()
-//								+ sysGlobals.CONTENT_GETUI_MSG_END);
-//						// 推送点赞过10上推荐发APP消息
-//						KFFMessage msg = new KFFMessage();
-//						msg.setType(12);
-//						msg.setStatus(1);
-//						msg.setState(1);
-//						msg.setCreateTime(now);
-//						msg.setUpdateTime(now);
-//						msg.setUserId(post.getCreateUserId());
-//						msg.setTitle(sysGlobals.GETUI_NOTIFY);
-//						msg.setContent(sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle() + sysGlobals.CONTENT_GETUI_MSG_END);
-//						msg.setSenderUserId(sysGlobals.QUFEN_ACCOUNT_ID);
-//						msg.setJumpInfo(sysGlobals.QUFEN_ACCOUNT_ID.toString());
-//						msg.setPostId(post.getPostId());
-//						msg.setPostType(post.getPostType());
-//						kffMessageService.save(msg);
-//					}
-//				}
-//			}
+			// SystemParam sysCode = systemParamService.findByCode(sysGlobals.POST_POINT_OF_PRAISE)
+			// Integer vcPamVal = Integer.valueOf(sysCode.getVcParamValue());
+			// if (vcPamVal == praiseCount) {
+			// seMap.clear();
+			// seMap.put("postId", postId);
+			// seMap.put("stickTop", 1);// 是否推荐：0-否，1-是
+			// seMap.put("stickUpdateTime", new Date()); // 操作推荐时间
+			// seMap.put("type", DiscussType.DOTPRAISE.getValue());
+			// kffPostService.updateByMap(seMap);
+			// // 个推APP推送消息
+			// if (null != praise) {
+			// KFFUser createUser = kffUserService.findById(praise.getBepraiseUserId());
+			// if (null != createUser && post.getPostType() != 4) {
+			// Integer linkedType = null;
+			// if (post.getPostType() == 1) {
+			// linkedType = LinkedType.CUSTOMEVALUATING.getValue();
+			// }
+			// if (post.getPostType() == 2) {
+			// linkedType = LinkedType.COUNTERFEIT.getValue();
+			// }
+			// if (post.getPostType() == 3) {
+			// linkedType = LinkedType.ARTICLE.getValue();
+			// }
+			// appNewsPush(linkedType, post.getPostId(), null, createUser.getMobile(),
+			// sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle()
+			// + sysGlobals.CONTENT_GETUI_MSG_END);
+			// // 推送点赞过10上推荐发APP消息
+			// KFFMessage msg = new KFFMessage();
+			// msg.setType(12);
+			// msg.setStatus(1);
+			// msg.setState(1);
+			// msg.setCreateTime(now);
+			// msg.setUpdateTime(now);
+			// msg.setUserId(post.getCreateUserId());
+			// msg.setTitle(sysGlobals.GETUI_NOTIFY);
+			// msg.setContent(sysGlobals.CONTENT_GETUI_MSG_BEGIN + post.getPostTitle() +
+			// sysGlobals.CONTENT_GETUI_MSG_END);
+			// msg.setSenderUserId(sysGlobals.QUFEN_ACCOUNT_ID);
+			// msg.setJumpInfo(sysGlobals.QUFEN_ACCOUNT_ID.toString());
+			// msg.setPostId(post.getPostId());
+			// msg.setPostType(post.getPostType());
+			// kffMessageService.save(msg);
+			// }
+			// }
+			// }
 		}
 		caculateEveryPostIncome(postId, post, amountInputDB, 1);
 		map.put("isSendPraiseToken", isSendPraiseToken);
@@ -4585,16 +4590,16 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 					// 查询爆料的标签
 					Discuss discuss = kffDiscussService.findByPostId(post.getPostId());
 					response.setTagInfos(discuss.getTagInfos());
-					 if (null != discuss.getRewardActivityId()) {
-					 RewardActivity ac = rewardActivityService.findById(discuss.getRewardActivityId());
-						 if (ac != null) {
-							 // 取悬赏总奖励
-							 response.setPostType(4);
-							 response.setRewardMoney(ac.getRewardMoney());
-							 response.setRewardMoneyToOne(discuss.getRewardMoney());
-							 response.setPostIdToReward(ac.getPostId());
-						 }
-					 }
+					if (null != discuss.getRewardActivityId()) {
+						RewardActivity ac = rewardActivityService.findById(discuss.getRewardActivityId());
+						if (ac != null) {
+							// 取悬赏总奖励
+							response.setPostType(4);
+							response.setRewardMoney(ac.getRewardMoney());
+							response.setRewardMoneyToOne(discuss.getRewardMoney());
+							response.setPostIdToReward(ac.getPostId());
+						}
+					}
 				}
 				if (3 == postType) {
 					// 查询文章的标签
@@ -7479,7 +7484,7 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			return null;
 		}
 		QfIndex qfUser = qfIndexService.findByUserId(userId);
-		if (qfUser != null && qfUser.getStatusHierarchyType() == 0) {
+		if (qfUser != null && qfUser.getStatusHierarchyType() == 0 && userCards.get(0).getStatus() == 2) {
 
 			qfUser.setStatusHierarchyType(100);
 			qfUser.setStatusHierarchyDesc("平民");
