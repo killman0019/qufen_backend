@@ -7,15 +7,27 @@ import java.util.Date;
 import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import com.tzg.common.utils.DateUtil;
 
 public class TestMain {
-	private static String firstDay;
-	private static String lastDay;
 
 	public static void main(String[] args) throws ParseException {
-		System.err.println(DateUtil.getFirstDayLastMonth());
-		System.err.println(DateUtil.getLastDayLasyMonth());
+		System.err.println(new Date().getTime());
+		ScheduledExecutorService executorService = null;
+
+		executorService = Executors.newScheduledThreadPool(1);
+		executorService.schedule(new Runnable() {
+
+			@Override
+			public void run() {
+				System.err.println("aaaaa");
+
+			}
+		}, 3, TimeUnit.SECONDS);
+		System.err.println(new Date().getTime());
 	}
 }
