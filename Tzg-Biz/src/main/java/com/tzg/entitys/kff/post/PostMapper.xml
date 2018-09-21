@@ -1062,6 +1062,9 @@
 		<if test="postType != null">
 			AND tp.post_type = #{postType}
 		</if>
+		<if test="createTimeBegin != null">
+			AND tp.createTime >= #{createTimeBegin}
+		</if>
 		<include refid="orderBy" />
         <![CDATA[ LIMIT ${startRecord},${endRecord} ]]>
 
