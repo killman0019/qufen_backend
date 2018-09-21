@@ -68,7 +68,7 @@
 		<!-- 自动清除无用连接 -->
 		<property name="removeAbandoned" value="true" />
 		<!-- 清除无用连接的等待时间1800秒，也就是30分钟.关闭长时间不使用的连接 -->
-		<property name="removeAbandonedTimeout" value="180" />
+		<property name="removeAbandonedTimeout" value="1800" />
 		<!-- 关闭abanded连接时输出错误日志 -->
 		<property name="logAbandoned" value="true" />
 		<!-- 连接属性 -->
