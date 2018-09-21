@@ -2273,44 +2273,44 @@ public class KFFRmiServiceImpl implements KFFRmiService {
 			seMap.put("postId", discussRequest.getPostId());
 			seMap.put("answerCount", 1);
 			rewardActivityService.updateByMap(seMap);
-			Post ppt = kffPostService.findById(discussRequest.getPostId());
-			KFFUser createUserc = new KFFUser();
-			if (null != ppt) {
-				createUserc = kffUserService.findById(ppt.getCreateUserId());
-			}
+//			Post ppt = kffPostService.findById(discussRequest.getPostId());
+//			KFFUser createUserc = new KFFUser();
+//			if (null != ppt) {
+//				createUserc = kffUserService.findById(ppt.getCreateUserId());
+//			}
 			// 个推APP推送消息
-			if (null != createUserc) {
-				Integer linkedType = null;
-				if (ppt.getPostType() == 1) {
-					linkedType = LinkedType.CUSTOMEVALUATING.getValue();
-				}
-				if (ppt.getPostType() == 2) {
-					linkedType = LinkedType.COUNTERFEIT.getValue();
-				}
-				if (ppt.getPostType() == 3) {
-					linkedType = LinkedType.ARTICLE.getValue();
-				}
-				if (ppt.getPostType() == 4) {
-					linkedType = 6;// 悬赏
-				}
-				appNewsPush(linkedType, discussRequest.getPostId(), sysGlobals.REWARD_TITLE, createUserc.getMobile(),
-						sysGlobals.REWARD_CONTENT_BEGING + ppt.getPostTitle() + sysGlobals.REWARD_CONTENT_END);
-				// 向APP端推送消息
-				KFFMessage msg = new KFFMessage();
-				msg.setType(13);
-				msg.setStatus(1);
-				msg.setState(1);
-				msg.setCreateTime(now);
-				msg.setUpdateTime(now);
-				msg.setUserId(ppt.getCreateUserId());
-				msg.setTitle(sysGlobals.REWARD_TITLE);
-				msg.setContent(sysGlobals.REWARD_CONTENT_BEGING + ppt.getPostTitle() + sysGlobals.REWARD_CONTENT_END);
-				msg.setSenderUserId(sysGlobals.QUFEN_ACCOUNT_ID);
-				msg.setJumpInfo(sysGlobals.QUFEN_ACCOUNT_ID.toString());
-				msg.setPostId(ppt.getPostId());
-				msg.setPostType(ppt.getPostType());
-				kffMessageService.save(msg);
-			}
+//			if (null != createUserc) {
+//				Integer linkedType = null;
+//				if (ppt.getPostType() == 1) {
+//					linkedType = LinkedType.CUSTOMEVALUATING.getValue();
+//				}
+//				if (ppt.getPostType() == 2) {
+//					linkedType = LinkedType.COUNTERFEIT.getValue();
+//				}
+//				if (ppt.getPostType() == 3) {
+//					linkedType = LinkedType.ARTICLE.getValue();
+//				}
+//				if (ppt.getPostType() == 4) {
+//					linkedType = 6;// 悬赏
+//				}
+//				appNewsPush(linkedType, discussRequest.getPostId(), sysGlobals.REWARD_TITLE, createUserc.getMobile(),
+//						sysGlobals.REWARD_CONTENT_BEGING + ppt.getPostTitle() + sysGlobals.REWARD_CONTENT_END);
+//				// 向APP端推送消息
+//				KFFMessage msg = new KFFMessage();
+//				msg.setType(13);
+//				msg.setStatus(1);
+//				msg.setState(1);
+//				msg.setCreateTime(now);
+//				msg.setUpdateTime(now);
+//				msg.setUserId(ppt.getCreateUserId());
+//				msg.setTitle(sysGlobals.REWARD_TITLE);
+//				msg.setContent(sysGlobals.REWARD_CONTENT_BEGING + ppt.getPostTitle() + sysGlobals.REWARD_CONTENT_END);
+//				msg.setSenderUserId(sysGlobals.QUFEN_ACCOUNT_ID);
+//				msg.setJumpInfo(sysGlobals.QUFEN_ACCOUNT_ID.toString());
+//				msg.setPostId(ppt.getPostId());
+//				msg.setPostType(ppt.getPostType());
+//				kffMessageService.save(msg);
+//			}
 		} else {
 			result.put("postType", newPost.getPostType());
 		}
