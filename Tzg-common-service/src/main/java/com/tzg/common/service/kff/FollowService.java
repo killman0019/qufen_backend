@@ -17,6 +17,7 @@ import com.tzg.common.page.PaginationQuery;
 import com.tzg.entitys.kff.follow.Follow;
 import com.tzg.entitys.kff.follow.FollowMapper;
 import com.tzg.entitys.kff.follow.FollowResponse;
+import com.tzg.entitys.kff.post.PostResponse;
 import com.tzg.rest.exception.rest.RestServiceException;
 
 @Service(value = "KFFFollowService")
@@ -68,6 +69,24 @@ public class FollowService {
 				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
 				List<Follow> list = followMapper.findPage(query.getQueryData());
 				result = new PageResult<Follow>(list, count, query);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	@Transactional(readOnly = true)
+	public PageResult<PostResponse> findLinkedPage(PaginationQuery query) throws RestServiceException {
+		PageResult<PostResponse> result = null;
+		try {
+			Integer count = followMapper.findLinkedPageCount(query.getQueryData());
+			if (null != count && count.intValue() > 0) {
+				int startRecord = (query.getPageIndex() - 1) * query.getRowsPerPage();
+				query.addQueryData("startRecord", Integer.toString(startRecord));
+				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
+				List<PostResponse> list = followMapper.findLinkedPage(query.getQueryData());
+				result = new PageResult<PostResponse>(list, count, query);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

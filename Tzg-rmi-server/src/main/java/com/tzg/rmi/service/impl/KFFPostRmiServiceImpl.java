@@ -46,6 +46,11 @@ public class KFFPostRmiServiceImpl implements KFFPostRmiService {
 		return kffPostService.findPageWithFollower(query, typec, userId);
 	}
 	
+	public PageResult<Post> findPageNewestList(PaginationQuery query,Integer typec,
+			Integer userId,Integer pageSize){
+		return kffPostService.findPageNewestList(query, typec, userId,pageSize);
+	}
+	
 	public PageResult<Post> findPageWithEvaluation(PaginationQuery query){
 		return kffPostService.findPageWithEvaluation(query);
 	}

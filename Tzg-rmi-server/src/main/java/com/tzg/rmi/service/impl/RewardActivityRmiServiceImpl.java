@@ -212,6 +212,7 @@ public class RewardActivityRmiServiceImpl implements RewardActivityRmiService {
 		if (StringUtils.isNotBlank(articleRequest.getTagInfos())) {
 			reAct.setTagInfos(articleRequest.getTagInfos());
 		}
+		reAct.setDisStickTop(0);
 		rewardActivityService.saveRewardActivity(reAct);
 		Map<String, Object> result = new HashMap<>();
 		result.put("postId", post.getPostId());

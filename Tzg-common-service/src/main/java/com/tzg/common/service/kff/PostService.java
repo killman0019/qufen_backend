@@ -3,10 +3,13 @@ package com.tzg.common.service.kff;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -21,8 +24,12 @@ import com.tzg.common.constants.KFFConstants;
 import com.tzg.common.page.PageResult;
 import com.tzg.common.page.PaginationQuery;
 import com.tzg.common.utils.DateUtil;
+import com.tzg.entitys.kff.activity.RewardActivity;
+import com.tzg.entitys.kff.article.Article;
 import com.tzg.entitys.kff.commendation.Commendation;
 import com.tzg.entitys.kff.commendation.CommendationMapper;
+import com.tzg.entitys.kff.discuss.Discuss;
+import com.tzg.entitys.kff.evaluation.Evaluation;
 import com.tzg.entitys.kff.follow.Follow;
 import com.tzg.entitys.kff.post.Post;
 import com.tzg.entitys.kff.post.PostDiscussVo;
@@ -42,6 +49,8 @@ public class PostService {
 	@Autowired
 	private UserService kffUserService;
 	@Autowired
+	private PraiseService kffPraiseService;
+	@Autowired
 	private FollowService kffFollowService;
 	@Autowired
 	private PostMapper postMapper;
@@ -49,7 +58,15 @@ public class PostService {
 	private CommendationMapper commendationMapper;
 	@Autowired
 	private TokenrecordsMapper tokenrecordsMapper;
-
+	@Autowired
+	private ArticleService kffArticleService;
+	@Autowired
+	private EvaluationService kffEvaluationService;
+	@Autowired
+	private DiscussService kffDiscussService;
+	@Autowired
+	private RewardActivityService rewardActivityService;
+	
 	@Transactional(readOnly = true)
 	public List<PostDiscussVo> findSetTopDiscuss(Map<String,Object> map) throws RestServiceException {
 		return postMapper.findSetTopDiscuss(map);
@@ -106,7 +123,7 @@ public class PostService {
 		}
 		postMapper.update(post);
 	}
-
+	
 	@Transactional(readOnly = true)
 	public PageResult<Post> findPage(PaginationQuery query) throws RestServiceException {
 		PageResult<Post> result = null;
@@ -124,6 +141,151 @@ public class PostService {
 		}
 		return result;
 	}
+	private static Integer getListArr(List<Post> list) {
+		if (list.isEmpty()) {
+			return null;
+		}
+		Random ran = new Random();
+		int con = ran.nextInt(list.size());
+		return con;
+	}
+	public PageResult<Post> findPageNewestList(PaginationQuery query,Integer typec,
+			Integer userId,Integer pageSize){
+		List<Post> postDisscussList = new ArrayList<Post>();
+		List<Post> postResponsec = new ArrayList<>();
+		PageResult<Post> result = new PageResult<Post>();
+		query.addQueryData("status", 1);
+		query.addQueryData("postTypec", 4);
+		query.addQueryData("sql_keyword_orderBy", "createTime");
+		query.addQueryData("sql_keyword_sort", "desc");
+		query.setRowsPerPage(pageSize*2);
+		PageResult<Post> resultc = findPage(query);
+		KFFUser loginUser = null;
+		List<Integer> praisedPostId = null;
+		// 获得点赞postidlist集合
+		if (null != userId) {
+			loginUser = kffUserService.findById(userId);
+			praisedPostId = kffPraiseService.findPraisedPostIdByUserId(loginUser.getUserId());
+		}
+		if(resultc!=null&&!resultc.getRows().isEmpty()) {
+			resultc.setRowsPerPage(pageSize);
+			List<Post> postList = resultc.getRows();
+			// 从中随机取出rowsPerPage条，等于小于rowsPerPage条就全部取出
+			if (postList.size() <= pageSize) {
+				for (Post postResponse : postList) {
+					postDisscussList.add(postResponse);
+				
+				}
+			} else {
+				List<Integer> usList = new ArrayList<Integer>();
+				for (int i = 0; i < pageSize; i++) {
+					boolean flag = false;
+					while (!flag) {
+						Integer usArr = getListArr(postList);
+						if (!usList.contains(usArr)) {
+							usList.add(usArr);
+							flag = true;
+						}
+					}
+				}
+				Collections.sort(usList);
+				for (int i = 0; i < usList.size(); i++) {
+					Post postDiscussVo = postList.get(usList.get(i));
+					postDisscussList.add(postDiscussVo);
+				}
+			}
+			postList = postDisscussList;
+			result.setCurPageNum(resultc.getCurPageNum());
+			result.setPageSize(resultc.getPageSize());
+			result.setQueryParameters(resultc.getQueryParameters());
+			result.setRowsPerPage(resultc.getRowsPerPage());
+			result.setRowCount(resultc.getRowCount());
+			for (Post postResponse : postList) {
+				// 设置人的关注状态
+				if (loginUser == null) {
+					postResponse.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
+				} else {
+					if (null != praisedPostId && !CollectionUtils.isEmpty(praisedPostId)) {
+						if (praisedPostId.contains(postResponse.getPostId())) {
+							postResponse.setPraiseStatus(1);
+						}
+					}
+					if (typec == 2) {
+						Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_USER,
+								postResponse.getCreateUserId());
+						if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+							postResponse.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+						} else {
+							postResponse.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+						}
+					} else if (typec == 1) {
+						Follow follow = kffFollowService.findByUserIdAndFollowType(loginUser.getUserId(), KFFConstants.FOLLOW_TYPE_PROJECT,
+								postResponse.getProjectId());
+						if (follow != null && follow.getStatus() != null && follow.getStatus() == KFFConstants.STATUS_ACTIVE) {
+							postResponse.setFollowStatus(KFFConstants.COLLECT_STATUS_COLLECTED);
+						} else {
+							postResponse.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
+						}
+					}
+				}
+				
+				if (null != postResponse.getPostTotalIncome()) {
+					postResponse.setPostTotalIncome(postResponse.getPostTotalIncome());
+				} else {
+					postResponse.setPostTotalIncome(0.0);
+				}
+				Integer postType = postResponse.getPostType();
+				if (1 == postType) {
+					// 查询评测和文章的标签
+					Evaluation evation = kffEvaluationService.findByPostId(postResponse.getPostId());
+					if (null != evation) {
+						if(evation.getModelType()==1) {
+							continue;
+						}
+						postResponse.setTagInfos(evation.getEvaluationTags());
+						postResponse.setTotalScore(evation.getTotalScore());
+					} else {
+						postResponse.setTagInfos(null);
+						postResponse.setTotalScore(new BigDecimal("0"));
+					}
+				}
+				if (2 == postType) {
+					// 查询爆料的标签
+					Discuss discuss = kffDiscussService.findByPostId(postResponse.getPostId());
+					postResponse.setTagInfos(discuss.getTagInfos());
+					if(null!=discuss.getRewardActivityId()) {
+						RewardActivity ac = rewardActivityService.findById(discuss.getRewardActivityId());
+						if (ac != null) {
+							// 取悬赏总奖励
+							postResponse.setPostType(4);
+							postResponse.setRewardMoney(ac.getRewardMoney());
+							postResponse.setRewardMoneyToOne(discuss.getRewardMoney());
+							postResponse.setPostIdToReward(ac.getPostId());
+						}
+					}
+					if(13446==postResponse.getPostId()) {
+						System.out.println(postResponse.getPostType());
+					}
+				}
+				if (3 == postType) {
+					// 查询文章的标签
+					Article ac = kffArticleService.findByPostId(postResponse.getPostId());
+					postResponse.setTagInfos(ac.getTagInfos());
+				}
+				//查询发布人的类型
+				KFFUser user = kffUserService.findById(postResponse.getCreateUserId());
+				if(user!=null) {
+					postResponse.setUserType(user.getUserType());
+				}else {
+					postResponse.setUserType(1);
+				}
+				postResponsec.add(postResponse);
+			}
+		}
+		result.setRows(postResponsec);
+		return result;
+	}
+	
 	
 	@Transactional(readOnly = true)
 	public PageResult<Post> findPageWithFollower(PaginationQuery query,Integer typec,Integer userId) {
@@ -154,6 +316,12 @@ public class PostService {
 									post.setFollowStatus(KFFConstants.COLLECT_STATUS_NOCOLLECT);
 								}
 							} 
+						}
+						Discuss dis = kffDiscussService.findByPostId(post.getPostId());
+						if(null!=dis) {
+							if(dis.getRewardActivityId()!=null) {
+								post.setPostType(4);
+							}
 						}
 					}
 				}
@@ -195,6 +363,16 @@ public class PostService {
 				query.addQueryData("startRecord", Integer.toString(startRecord));
 				query.addQueryData("endRecord", Integer.toString(query.getRowsPerPage()));
 				List<Post> list = postMapper.findPageWithDiscuss(query.getQueryData());
+				if(!list.isEmpty()) {
+					for (Post post : list) {
+						if(post.getRewardActivityId()!=null) {
+							post.setPostType(4);
+							RewardActivity reAct = rewardActivityService.findById(post.getRewardActivityId());
+							post.setRewardMoney(reAct.getRewardMoney());
+							post.setPostIdToReward(reAct.getPostId());
+						}
+					}
+				}
 				result = new PageResult<Post>(list, count, query);
 			}
 		} catch (Exception e) {

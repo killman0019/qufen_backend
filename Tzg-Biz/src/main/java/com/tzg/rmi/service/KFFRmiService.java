@@ -397,6 +397,8 @@ public interface KFFRmiService {
 
 	public PageResult<PostResponse> findPageRecommendList(Integer loginUserId, PaginationQuery query, Integer type, Integer nowCount)
 			throws RestServiceException;
+	
+	public PageResult<PostResponse> findPageEvaluatingList(Integer loginUserId, PaginationQuery query, Integer type);
 
 	public PageResult<PostResponse> findBurstList(Integer loginUserId, PaginationQuery query, Integer type, Integer nowCount);
 

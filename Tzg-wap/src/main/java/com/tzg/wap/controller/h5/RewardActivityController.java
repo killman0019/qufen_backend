@@ -225,7 +225,6 @@ public class RewardActivityController extends BaseController {
 	public BaseResponseEntity rewardDetail(HttpServletRequest request,String token,Integer postId) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		try {
-			
 			if(postId==null&&StringUtil.isBlank(token)) {
 				JSONObject requestContent = HtmlUtils.getRequestContent(request);
 				postId = (Integer) requestContent.get("postId");
@@ -490,12 +489,12 @@ public class RewardActivityController extends BaseController {
 			}
 			PaginationQuery query = new PaginationQuery();
 			// 帖子类型：1-评测；2-讨论；3-文章,4-悬赏
-			query.addQueryData("postTypec", "4");
 			query.addQueryData("statec", 2);//不是撤销的悬赏都需要显示出来
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
 			Integer type = 2;// 取关注人
 			if(typec==1 || typec==2) {
+				query.addQueryData("postTypec", "4");
 				if(typec==1) {
 					query.addQueryData("sort", "rac.created_at");
 				}else if(typec==2) {
@@ -509,9 +508,10 @@ public class RewardActivityController extends BaseController {
 				}
 			}
 			if(typec==3) {
+				query.addQueryData("postTypec", "2");
 				query.addQueryData("status", 1);
-				query.addQueryData("sort", "tbc.nice_choice_at");
-				query.addQueryData("isNiceChoicec", sysGlobals.ENABLE);
+				query.addQueryData("sort", "tpt.stick_updateTime");
+				query.addQueryData("stickTopc", 1);
 				query.addQueryData("linkedOne", "1");
 				PageResult<PostResponse> rewards = rewardActivityRmiService.findPageForBurstList(userId, query, type);
 				if(null!=rewards&&!rewards.getRows().isEmpty()) {

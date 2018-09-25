@@ -33,6 +33,7 @@ import com.tzg.entitys.kff.discuss.DiscussDetailResponse;
 import com.tzg.entitys.kff.discuss.DiscussShare;
 import com.tzg.entitys.kff.evaluation.EvaluationDetailResponse;
 import com.tzg.entitys.kff.evaluation.ProjectEvaluationDetailShareResponse;
+import com.tzg.entitys.kff.post.Post;
 import com.tzg.entitys.kff.post.PostResponse;
 import com.tzg.entitys.kff.project.ProjectResponse;
 import com.tzg.entitys.kff.user.KFFUser;
@@ -40,6 +41,7 @@ import com.tzg.entitys.leopard.system.SystemParam;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
 import com.tzg.rest.vo.BaseResponseEntity;
+import com.tzg.rmi.service.KFFPostRmiService;
 import com.tzg.rmi.service.KFFProjectPostRmiService;
 import com.tzg.rmi.service.KFFRmiService;
 import com.tzg.rmi.service.KFFUserRmiService;
@@ -60,27 +62,144 @@ public class HomeController extends BaseController {
 	private KFFProjectPostRmiService kffProjectPostRmiService;
 	@Autowired
 	private KFFUserRmiService kffUserService;
+	@Autowired
+	private KFFPostRmiService postRmiService;
 	
 	/** 
-	* @Title: recommendList 
-	* @Description: TODO <首页推荐列表>
+	* @Title: newestList 
+	* @Description: TODO <最新列表接口>
 	* @author linj <方法创建作者>
-	* @create 下午5:01:53
+	* @create 下午3:12:03
 	* @param @param request
-	* @param @param response
-	* @param @param token 用户登录唯一标识
 	* @param @param pageIndex 第几页
 	* @param @param pageSize 每页几条
+	* @param @param token 用户登录唯一标识
 	* @param @return <参数说明>
 	* @return BaseResponseEntity 
 	* @throws 
-	* @update 下午5:01:53
+	* @update 下午3:12:03
 	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
 	* @updateContext <修改内容>
 	*/
 	@ResponseBody
+	@RequestMapping(value = "/newestList", method = { RequestMethod.POST, RequestMethod.GET })
+	public BaseResponseEntity newestList(HttpServletRequest request,Integer pageIndex,Integer pageSize,
+			String token) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+		try {
+			if(pageIndex==null&&pageSize==null&&StringUtils.isBlank(token)) {
+				JSONObject requestContent = HtmlUtils.getRequestContent(request);
+				pageIndex = (Integer) requestContent.get("pageIndex");
+				pageSize = (Integer) requestContent.get("pageSize");
+				token = (String) requestContent.get("token");
+			}
+			if(null==pageIndex||pageSize==null) {
+				bre.setNoRequstData();
+				return bre;
+			}
+			Integer userId = null;
+			if (StringUtils.isNotBlank(token)) {
+				userId = getUserIdByToken(token);
+			}
+			PaginationQuery query = new PaginationQuery();
+			query.setPageIndex(pageIndex);
+			query.setRowsPerPage(pageSize);
+			Integer type = 2;// 取关注人
+			PageResult<Post> rewards = postRmiService.findPageNewestList(query,type,userId,pageSize);
+			if(null!=rewards&&!rewards.getRows().isEmpty()) {
+				bre.setData(rewards);
+				return bre;
+			}
+			bre.setNoDataMsg();
+		} catch (RestServiceException e) {
+			logger.error("HomeController newestList:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("HomeController newestList:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+		}
+		return bre;
+	}
+	
+	/** 
+	* @Title: recommendList 
+	* @Description: TODO <首页评测接口>
+	* @author linj <方法创建作者>
+	* @create 上午9:46:48
+	* @param @param request
+	* @param @param token
+	* @param @param pageIndex
+	* @param @param pageSize
+	* @param @return <参数说明>
+	* @return BaseResponseEntity 
+	* @throws 
+	* @update 上午9:46:48
+	* @updator <推荐列表======>修改为评测接口>
+	* @updateContext <修改内容>
+	*/
+	@ResponseBody
 	@RequestMapping(value = "/recommendList", method = { RequestMethod.POST, RequestMethod.GET })
-	public BaseResponseEntity recommendList(HttpServletRequest request, HttpServletResponse response,
+	public BaseResponseEntity recommendList(HttpServletRequest request,String token,Integer pageIndex,
+			Integer pageSize) {
+		BaseResponseEntity bre = new BaseResponseEntity();
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		try {
+			if(pageIndex==null&&pageSize==null&&StringUtils.isBlank(token)) {
+				JSONObject requestContent = HtmlUtils.getRequestContent(request);
+				pageIndex = (Integer) requestContent.get("pageIndex");
+				pageSize = (Integer) requestContent.get("pageSize");
+				token = (String) requestContent.get("token");
+			}
+			if (pageIndex==null||pageSize==null) {
+				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
+			}
+			Integer userId = null;
+			if (StringUtils.isNotBlank(token)) {
+				userId = getUserIdByToken(token);
+			}
+			PaginationQuery query = new PaginationQuery();
+			query.addQueryData("status", "1");
+			query.addQueryData("stickTop", "1");
+			query.addQueryData("sortField", "stick_updateTime");
+			query.addQueryData("notDiscuss", "true");
+			// query.addQueryData("praiseNum", "10");
+			// 帖子类型：1-评测；2-讨论；3-文章
+			// query.addQueryData("postType", "1");
+			query.setPageIndex(pageIndex);
+			query.setRowsPerPage(pageSize);
+			Integer type = 2;// 取关注人
+			PageResult<PostResponse> recommends = kffRmiService.findPageEvaluatingList(userId, query, type);
+			map.put("recommends", recommends);
+			bre.setData(map);
+		} catch (RestServiceException e) {
+			logger.error("HomeController recommendList:{}", e);
+			return this.resResult(e.getErrorCode(), e.getMessage());
+		} catch (Exception e) {
+			logger.error("HomeController recommendList:{}", e);
+			return this.resResult(RestErrorCode.SYS_ERROR, e.getMessage());
+		}
+		return bre;
+	}
+	
+	/** 
+	* @Title: newRecommendList 
+	* @Description: TODO <新版首页推荐接口>
+	* @author linj <方法创建作者>
+	* @create 上午11:01:27
+	* @param @param request
+	* @param @param token
+	* @param @param pageIndex
+	* @param @param pageSize
+	* @param @return <参数说明>
+	* @return BaseResponseEntity 
+	* @throws 
+	* @update 上午11:01:27
+	* @updator <修改人 修改后更新修改时间，不同人修改再添加>
+	* @updateContext <修改内容>
+	*/
+	@ResponseBody
+	@RequestMapping(value = "/newRecommendList", method = { RequestMethod.POST, RequestMethod.GET })
+	public BaseResponseEntity newRecommendList(HttpServletRequest request, HttpServletResponse response,
 			String token,Integer pageIndex,Integer pageSize) {
 		BaseResponseEntity bre = new BaseResponseEntity();
 		HashMap<String, Object> map = new HashMap<String, Object>();
@@ -101,7 +220,6 @@ public class HomeController extends BaseController {
 			PaginationQuery query = new PaginationQuery();
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
-//			Integer type = 1;// 取关项目
 			Integer type = 2;// 取关注人
 			Integer nowCount = pageSize;
 			PageResult<PostResponse> recommends = kffRmiService.findPageRecommendList(userId, query, type, nowCount);
@@ -144,29 +262,18 @@ public class HomeController extends BaseController {
 				pageSize = (Integer) requestContent.get("pageSize");
 				token = (String) requestContent.get("token");
 			}
-			if(pageIndex==null||pageSize==null) {
+			if(pageIndex==null||pageSize==null||StringUtils.isBlank(token)) {
 				throw new RestServiceException(RestErrorCode.MISSING_ARGS);
 			}
-			
-			Integer userId = null;
 			PaginationQuery query = new PaginationQuery();
-			query.addQueryData("status", "1");
-			// query.addQueryData("sortField", "collect_num");
-			// 关注类型：1-关注项目;2-关注帖子；3-关注用户
-			query.addQueryData("followTypec", "2");//除了关注帖子不展示，其他都展示出来
+			query.addQueryData("statusc", "1");
+			query.addQueryData("sort", "tbf.createTime");
 			query.setPageIndex(pageIndex);
 			query.setRowsPerPage(pageSize);
-
 			Integer type = 2;// 取关注人
-			KFFUser loginUser = null;
-			if(StringUtils.isNotBlank(token)) {
-				userId = getUserIdByToken(token);
-				loginUser = kffUserService.findById(userId);
-			}
-			query.addQueryData("userId", userId);
+			Integer	userId = getUserIdByToken(token);
+			KFFUser	loginUser = kffUserService.findById(userId);
 			PageResult<PostResponse> follows = kffProjectPostRmiService.findPageForFollowList(userId, query,type,loginUser);
-//			PageResult<PostResponse> follows = kffProjectPostRmiService.findMyPageFollowList(userId, query);
-			System.out.println("follows" + follows);
 			map.put("follows", follows);
 			bre.setData(map);
 		} catch (RestServiceException e) {

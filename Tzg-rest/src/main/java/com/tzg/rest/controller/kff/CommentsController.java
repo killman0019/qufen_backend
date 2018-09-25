@@ -1,6 +1,5 @@
 package com.tzg.rest.controller.kff;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,11 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.alibaba.fastjson.JSON;
 import com.tzg.common.utils.SyseUtil;
-import com.tzg.entitys.kff.comments.Comments;
 import com.tzg.entitys.kff.comments.CommentsRequest;
-import com.tzg.entitys.kff.project.SubmitKFFProjectRequest;
 import com.tzg.rest.controller.BaseController;
 import com.tzg.rest.exception.rest.RestErrorCode;
 import com.tzg.rest.exception.rest.RestServiceException;
@@ -26,7 +22,7 @@ import com.tzg.rmi.service.KFFRmiService;
 @Controller(value = "KFFCommentsController")
 @RequestMapping("/kff/comments")
 public class CommentsController extends BaseController {
-	private static Logger log = Logger.getLogger(CommentsController.class);
+	private static Logger logger = Logger.getLogger(CommentsController.class);
 
 	@Autowired
 	private KFFRmiService kffRmiService;
@@ -45,8 +41,6 @@ public class CommentsController extends BaseController {
 	@ResponseBody
 	public BaseResponseEntity saveComment(HttpServletRequest request) {
 		BaseResponseEntity bre = new BaseResponseEntity();
-		HashMap<String, Object> map = new HashMap<String, Object>();
-
 		try {
 			CommentsRequest comment = getParamMapFromRequestPolicy(request, CommentsRequest.class);
 			// System.err.println("comment" + JSON.toJSONString(comment));

@@ -12,6 +12,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -146,9 +148,9 @@ public class RobotService {
 			redisService.put("commendationNumRBT", commdationNum + "", 60 * 60 * 24);
 			*/
 			// 评论//每天取一次
-			SystemParam sysBeginC = systemParamService.findByCode(sysGlobals.RBT_PRAISE_NUM_BEGIN);
+			SystemParam sysBeginC = systemParamService.findByCode(sysGlobals.RBT_COMMENT_NUM_BEGIN);
 			Integer CBegin = Integer.valueOf(sysBeginC.getVcParamValue());
-			SystemParam sysEndC = systemParamService.findByCode(sysGlobals.RBT_PRAISE_NUM_END);
+			SystemParam sysEndC = systemParamService.findByCode(sysGlobals.RBT_COMMENT_NUM_END);
 			Integer CEnd = Integer.valueOf(sysEndC.getVcParamValue());
 			Integer commentNum = RandomUtil.randomNumber(CBegin, CEnd);
 			redisService.del("commentNumRBT");
@@ -256,21 +258,22 @@ public class RobotService {
 		if (hour <= 22 && hour >= 9) {
 
 			// 1分钟
-			int min = 1 * 60 * 1000;
+			int min = 1 * 60;
 			// 到10分钟
-			int max = 9 * 60 * 1000;
+			int max = 10 * 60;
 			int ran = RandomUtil.randomNumber(min, max);
-			ExecutorService executorService = null;
+			ScheduledExecutorService executorService = null;
 			try {
-				executorService = Executors.newScheduledThreadPool(ran);
-				executorService.execute(new Runnable() {
+				executorService = Executors.newScheduledThreadPool(1);
+
+				executorService.schedule(new Runnable() {
 
 					@Override
 					public void run() {
 
 						robotTask(k);
 					}
-				});
+				}, ran, TimeUnit.SECONDS);
 			} catch (Exception e) {
 
 				e.printStackTrace();
@@ -301,7 +304,7 @@ public class RobotService {
 		ExecutorService newFixedThreadPoolrobot = null;
 		try {
 
-			newFixedThreadPoolrobot = Executors.newFixedThreadPool(10);
+			newFixedThreadPoolrobot = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 4);
 			while (true) {
 				i = i + 1;
 
@@ -700,13 +703,14 @@ public class RobotService {
 			String postCreateBegin = DateUtil.getSpecifiedDayBeforeOrAfter(days);
 			PaginationQuery query = new PaginationQuery();
 			Map<String, Object> map = new HashMap<String, Object>();
+			int j = Runtime.getRuntime().availableProcessors() * 2;
 			map.put("createTimeBegin", postCreateBegin);
 			map.put("sql_keyword_orderBy", "createTime");
 			map.put("sql_keyword_sort", "DESC");
 			map.put("isNotEva", "true");
 			query.setQueryData(map);
 			query.setPageIndex(i);
-			query.setRowsPerPage(5);
+			query.setRowsPerPage(j);
 
 			try {
 				Integer count = postMapper.findPageCount(query.getQueryData());
@@ -729,7 +733,7 @@ public class RobotService {
 			queryEva.addQueryData("postType", "1");
 			queryEva.addQueryData("createTimeBegin", postCreateBegin);
 			queryEva.setPageIndex(i);
-			queryEva.setRowsPerPage(5);
+			queryEva.setRowsPerPage(j);
 			PageResult<Post> posts = kffPostService.findPageRemoveSingleEva(queryEva);
 			if (posts != null && CollectionUtils.isNotEmpty(posts.getRows())) {
 				List<Post> postList = posts.getRows();

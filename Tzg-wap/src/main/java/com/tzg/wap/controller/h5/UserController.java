@@ -192,6 +192,7 @@ public class UserController extends BaseController {
 				bre.setData(map);
 				return bre;
 			}
+
 		}
 		if (null == phoneNumber) {
 			throw new RestServiceException(RestErrorCode.PHONE_NULL);
@@ -272,6 +273,20 @@ public class UserController extends BaseController {
 				}
 			}
 		}
+
+		if (isRobot == null) {
+
+			if (!dynamicVerifyCode.equals(cacheCode)) {
+
+				map.put("reStatus", 0);// 1注册成功 0 注册不成功
+				map.put("reason", "短信验证码输入不正确");
+				bre.setData(map);
+
+				return bre;
+
+			}
+		}
+
 		// 手机验证码成功 保存用户信息
 		// 将邀请二维码字符进行转码转化成对应的userID
 		Integer invaUserId = null;

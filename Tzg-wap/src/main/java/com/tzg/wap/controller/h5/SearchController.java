@@ -88,6 +88,7 @@ public class SearchController extends BaseController {
 	        	Integer typec = 1;// 取关注项目
 				query.addQueryData("sortField", "follower_num");
 				query.addQueryData("sortSequence", "desc");
+				query.addQueryData("state", 2);
 				PageResult<KFFProject> data = projectRmiService.findPageWithFollower(query,typec,userId);
 				if(null!=data) {
 					if(!data.getRows().isEmpty()) {
@@ -100,6 +101,7 @@ public class SearchController extends BaseController {
 				Integer typec = 2;// 取关注人
 				query.addQueryData("sql_keyword_orderBy", "praise_num");
 				query.addQueryData("sql_keyword_sort", "desc");
+				query.addQueryData("postTypec", 4);
 				PageResult<Post> data = postRmiService.findPageWithFollower(query,typec,userId);
 				if(null!=data) {
 					if(!data.getRows().isEmpty()) {

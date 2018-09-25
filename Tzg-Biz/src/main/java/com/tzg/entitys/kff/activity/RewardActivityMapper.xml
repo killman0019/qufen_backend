@@ -156,6 +156,7 @@
 		tpt.post_total_income as postTotalIncome,
 		rac.is_nice_choice as isNiceChoice,
 		rac.nice_choice_at as niceChoiceAt,
+		rac.state as state,
 		rac.type as type,
 		rac.dis_stick_top as disStickTop,
 		rac.dis_stick_updateTime as disStickUpdateTime
@@ -218,6 +219,9 @@
 		tbc.tag_infos as tagInfos,
 		tbc.discuss_id as discussId,
 		tbc.disscuss_contents as disscussContents,
+		<if test="linkedOne != null">
+			rac.state as state,
+		</if>
 		tbc.reward_money as rewardMoney
 		from tbdiscuss as tbc
     	INNER JOIN tbpost as tpt on tpt.post_id=tbc.post_id
@@ -296,8 +300,11 @@
 			<if test="disStickTopc1!=null">
 			and (rac.dis_stick_top != #{disStickTopc1} or rac.dis_stick_top is null )
 			</if>
-			<if test="stickTopc!=null">
-			and rac.is_nice_choice = #{stickTopc}
+			<if test="stickTopd!=null">
+			and rac.is_nice_choice = #{stickTopd}
+			</if>
+			<if test="stickTope!=null">
+			and tpt.stick_top = #{stickTope}
 			</if>
 			<if test="postId!=null">
 			and rac.post_id = #{postId}
@@ -320,10 +327,9 @@
 			<if test="isNiceChoice != null">
 			and rac.is_nice_choice != #{isNiceChoice}
 			</if>
-			<if test="isNiceChoicec != null">
-			and tbc.is_nice_choice != #{isNiceChoicec}
+			<if test="stickTopc != null">
+			and tpt.stick_top = #{stickTopc}
 			</if>
-			
     	</where>
     </sql>
     

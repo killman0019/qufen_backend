@@ -144,6 +144,7 @@ public class RewardActivityService {
 			Integer type){
 		PageResult<PostResponse> result = new PageResult<PostResponse>();
 		List<PostResponse> postResponse = new ArrayList<>();
+		query.addQueryData("linkedOne", "1");
 		PageResult<PostResponse> posts = findPostVoPageToReward(query);
 		KFFUser loginUser = null;
 		if (loginUserId != null) {
@@ -166,6 +167,7 @@ public class RewardActivityService {
 					post.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(post.getPostShortDesc()));
 				}
 				PostResponse response = new PostResponse();
+				response.setState(post.getState());
 				response.setcreateTime(post.getcreateTime());
 				response.setCreateUserId(post.getCreateUserId());
 				response.setPostId(post.getPostId());
@@ -199,6 +201,11 @@ public class RewardActivityService {
 				response.setCreateUserName(post.getCreateUserName());
 				response.setCreateUserSignature(post.getCreateUserSignature());
 				response.setCommentsNum(post.getCommentsNum());
+				if (null == post.getType()) {
+					response.setType(DiscussType.ORDINARYBURST.getValue());
+				} else {
+					response.setType(post.getType());
+				}
 				if (post != null) {
 					KFFUser createUser = kffUserService.findByUserId(post.getCreateUserId());
 					response.setUserType(createUser.getUserType());
@@ -220,6 +227,14 @@ public class RewardActivityService {
 					Discuss discuss = discussService.findByPostId(post.getPostId());
 					if(null!=discuss) {
 						response.setTagInfos(discuss.getTagInfos());
+						RewardActivity ac = rewardActivityMapper.findById(discuss.getRewardActivityId());
+						if(ac!=null) {
+							//取悬赏总奖励
+							response.setRewardMoney(ac.getRewardMoney());
+							response.setRewardMoneyToOne(discuss.getRewardMoney());
+							response.setPostIdToReward(ac.getPostId());
+							response.setPostType(4);
+						}
 					}
 				}
 				if (4 == postType) {
@@ -268,25 +283,11 @@ public class RewardActivityService {
 				response.setDiscussId(post.getDiscussId());
 				response.setDisscussContents(post.getDisscussContents());
 				response.setPostUuid(post.getPostUuid());
-//				if (null == post.getIsNiceChoice()) {
-//					response.setIsNiceChoice(sysGlobals.DISABLE);
-//				} else {
-//					response.setIsNiceChoice(post.getIsNiceChoice());
-//				}
-//				response.setNiceChoiceAt(post.getNiceChoiceAt());
-				if (null == post.getType()) {
-					response.setType(DiscussType.ORDINARYBURST.getValue());
-				} else {
-					response.setType(post.getType());
-				}
-//				response.setDisStickTop(post.getDisStickTop());
-//				response.setDisStickUpdateTime(post.getDisStickUpdateTime());
 				postResponse.add(response);
 			}
 		}
 		result.setRows(postResponse);
 		return result;
-		
 	}
 	
 	@Transactional(readOnly = true)
@@ -313,6 +314,7 @@ public class RewardActivityService {
 			for (PostDiscussVo post : posts.getRows()) {
 				post.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(post.getPostShortDesc()));
 				PostResponse response = new PostResponse();
+				response.setState(post.getState());
 				response.setcreateTime(post.getCreateTime());
 				response.setCreateUserId(post.getCreateUserId());
 				response.setPostId(post.getPostId());
@@ -447,8 +449,8 @@ public class RewardActivityService {
 		}
 		query.addQueryData("status", "1");
 		query.addQueryData("postTypec", PostType.REWARD.getValue());
-		query.addQueryData("disStickTopc1", 1);// 不置顶的
-		query.addQueryData("stickTopc", 0);// 是否精选：0-是，1-否
+		query.addQueryData("disStickTopc", 0);// 不置顶的
+		query.addQueryData("stickTopd", 0);// 是否精选：0-是，1-否
 		query.addQueryData("sort", "rac.nice_choice_at");
 		PageResult<PostDiscussVo> findPostVoPage = findPostVoPage(query);
 		if (null != findPostVoPage) {
@@ -479,6 +481,7 @@ public class RewardActivityService {
 			for (PostDiscussVo post : posts.getRows()) {
 				post.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(post.getPostShortDesc()));
 				PostResponse response = new PostResponse();
+				response.setState(post.getState());
 				response.setcreateTime(post.getCreateTime());
 				response.setCreateUserId(post.getCreateUserId());
 				response.setPostId(post.getPostId());
@@ -634,8 +637,8 @@ public class RewardActivityService {
 			result.setCurPageNum(posts.getCurPageNum());
 			result.setPageSize(posts.getPageSize());
 			result.setQueryParameters(posts.getQueryParameters());
-			result.setRowCount(posts.getRowCount());
 			result.setRowsPerPage(posts.getRowsPerPage());
+			result.setRowCount(posts.getRowCount());
 			for (PostResponse post : posts.getRows()) {
 				if (StringUtils.isNotBlank(post.getPostShortDesc())) {
 					post.setPostShortDesc(H5AgainDeltagsUtil.h5AgainDeltags(post.getPostShortDesc()));
@@ -655,7 +658,11 @@ public class RewardActivityService {
 				response.setPostSmallImages(post.getPostSmallImages());
 				response.setPraiseIncome(post.getPraiseIncome());
 				response.setDonateIncome(post.getDonateIncome());
-				response.setPostTotalIncome(post.getPostTotalIncome());
+				if(post.getPostTotalIncome()==null) {
+					response.setPostTotalIncome(0.0);
+				}else {
+					response.setPostTotalIncome(post.getPostTotalIncome());
+				}
 				if (StringUtils.isNotBlank(post.getPostSmallImages())) {
 					try {
 						List<PostFile> pfl = JSONArray.parseArray(post.getPostSmallImages(), PostFile.class);
@@ -719,6 +726,7 @@ public class RewardActivityService {
 				response.setDisscussContents(post.getDisscussContents());
 				response.setPostUuid(post.getPostUuid());
 				response.setPostIdToReward(postId);
+				response.setRewardMoneyToOne(post.getRewardMoney());
 				postResponse.add(response);
 			}
 		}
@@ -790,7 +798,11 @@ public class RewardActivityService {
 		response.setPostSmallImages(post.getPostSmallImages());
 		response.setPraiseIncome(post.getPraiseIncome());
 		response.setDonateIncome(post.getDonateIncome());
-		response.setPostTotalIncome(post.getPostTotalIncome());
+		if(null==post.getPostTotalIncome()) {
+			response.setPostTotalIncome(0.0);
+		}else {
+			response.setPostTotalIncome(post.getPostTotalIncome());
+		}
 		// 设置人的关注状态
 		if (loginUser == null) {
 			response.setFollowStatus(KFFConstants.COLLECT_STATUS_NOT_SHOW);
@@ -835,6 +847,7 @@ public class RewardActivityService {
 		response.setCommentsNum(post.getCommentsNum());
 		response.setTagInfos(reAct.getTagInfos());
 		response.setPostIdToReward(postId);
+		response.setState(reAct.getState());
 		return response;
 	}
 	

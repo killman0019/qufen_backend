@@ -250,9 +250,10 @@ public class UserService {
 				// 账号或者密码错误
 				return null;
 			}
-			if (loninUser.getStatus() == 0) {
-				throw new RestServiceException(sysGlobals.DISABLE_ACCOUNT_MSG);
-			}
+			//modify by linj ---2018/9/20--产品要求封号的用户可以登录，不能发表post
+//			if (loninUser.getStatus() == 0) {
+//				throw new RestServiceException(sysGlobals.DISABLE_ACCOUNT_MSG);
+//			}
 			Integer userId = loninUser.getUserId();
 			System.err.println("登录用户的ID  :" + userId);
 			// 根据用户id去tokenaward表中获取发放状态 grantType

@@ -30,7 +30,6 @@ public class Discuss implements Serializable {
 	private java.lang.String tagInfos;
 
 	private Integer disStickTop;
-	
 	private Date disStickUpdateTime;
 	
 	//是否精选：0-是，1-否
@@ -62,39 +61,30 @@ public class Discuss implements Serializable {
 	public Integer getIsNiceChoice() {
 		return isNiceChoice;
 	}
-
 	public void setIsNiceChoice(Integer isNiceChoice) {
 		this.isNiceChoice = isNiceChoice;
 	}
-
 	public Date getNiceChoiceAt() {
 		return niceChoiceAt;
 	}
-
 	public void setNiceChoiceAt(Date niceChoiceAt) {
 		this.niceChoiceAt = niceChoiceAt;
 	}
-
 	public Integer getType() {
 		return type;
 	}
-
 	public void setType(Integer type) {
 		this.type = type;
 	}
-
 	public Integer getDisStickTop() {
 		return disStickTop;
 	}
-
 	public void setDisStickTop(Integer disStickTop) {
 		this.disStickTop = disStickTop;
 	}
-
 	public Date getDisStickUpdateTime() {
 		return disStickUpdateTime;
 	}
-
 	public void setDisStickUpdateTime(Date disStickUpdateTime) {
 		this.disStickUpdateTime = disStickUpdateTime;
 	}
